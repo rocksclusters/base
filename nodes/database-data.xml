@@ -1,0 +1,493 @@
+<?xml version="1.0" standalone="no"?>
+
+
+<kickstart interface="public">
+
+  <description>
+
+  Populate cluster database with initial data
+
+  </description>
+
+        <copyright>
+        Copyright (c) 2000 - 2008 The Regents of the University of California.
+        All rights reserved. Rocks(r) v5.0 www.rocksclusters.org
+        </copyright>
+
+  <changelog>
+  $Log: database-data.xml,v $
+  Revision 1.28  2008/03/06 23:41:30  mjk
+  copyright storm on
+
+  Revision 1.27  2007/07/04 01:25:54  phil
+  Add the base rocks-dist distribution -before- adding the basic appliances
+
+  Revision 1.26  2007/07/03 17:58:06  phil
+  actually apply the apache password
+
+  Revision 1.25  2007/07/03 04:58:42  phil
+  Add a password for apache access to the database.
+  Randomly generate password and store in /root/.my.cnf.
+  Modify rocks.py and sql.py to read the password, if available
+
+  Revision 1.24  2007/06/25 20:19:01  bruno
+  need to execute set commands for public interface
+
+  Revision 1.23  2007/06/23 04:03:18  mjk
+  mars hill copyright
+
+  Revision 1.22  2007/06/18 23:09:17  bruno
+  new 'rocks add host interface' syntax
+
+  Revision 1.21  2007/06/13 20:25:00  bruno
+  put a network address in for the subnet, not an IP address
+
+  Revision 1.20  2007/06/12 01:10:41  mjk
+  - 'rocks add subnet' is now 'rocks add network'
+  - added set network subnet|netmask
+  - added list network
+  - other cleanup
+
+  Revision 1.19  2007/06/09 00:29:17  anoop
+  Using apache rather than root to populate the database. user "apache" is
+  already created at this point.
+  Already tested, and works in an expected manner.
+
+  Revision 1.18  2007/06/07 17:51:40  anoop
+  No more rocks add host new. Now it's just rocks add host.
+
+  Revision 1.17  2007/05/30 23:32:13  anoop
+  The adding of compute nodes and NAS appliance information is moved
+  from the hpc roll to the base roll. This seems to be a little more
+  appropriate.
+
+  Revision 1.16  2007/05/30 23:27:16  anoop
+  Moved the security information that apache uses to log into mysql to the
+  database.xml file.
+  Schema changed slightly to clean column names
+
+  Main changes are the use of command line tools to manipulate the database
+  rather than using sql syntax directly. Still in beta stage.
+
+  Revision 1.15  2007/05/30 19:46:08  bruno
+  use the rocks command line to populate the distributions database
+
+  Revision 1.14  2007/05/11 23:56:02  bruno
+  'rocks add appliance' retooled for latest rocks command line
+
+  Revision 1.13  2007/04/12 19:48:05  bruno
+  added command line: 'rocks add/list/remove appliance'
+
+  updated base, hpc, pvfs2 and viz rolls to use new command line.
+
+  Revision 1.12  2006/09/13 23:08:54  bruno
+  permission cleanup
+
+  Revision 1.11  2006/07/06 23:53:17  bruno
+  stripped out old upgrade procedure
+
+  Revision 1.10  2006/06/21 03:09:53  bruno
+  updates to put the frontend networking info in the database just like
+  a compute node
+
+  Revision 1.9  2006/06/05 17:57:33  bruno
+  first steps towards 4.2 beta
+
+  Revision 1.8  2005/05/25 01:04:25  fds
+  Fixed sql syntax error
+
+  Revision 1.7  2005/05/23 23:59:21  fds
+  Frontend Restore
+
+  Revision 1.6  2005/05/11 06:44:39  phil
+  Added an options line to the networks table
+  Added explicit fields for all sql inserts
+
+  Revision 1.5  2005/04/28 00:31:32  mjk
+  removed nettools, should be on birn roll
+
+  Revision 1.4  2005/04/28 00:27:23  mjk
+  removed frontend-path
+
+  Revision 1.3  2005/04/06 17:55:03  mjk
+  fix entry point in graph for frontend
+
+  Revision 1.2  2005/03/11 04:33:37  bruno
+  vi error
+
+  and a new way to do passwords in mysql
+
+  Revision 1.1  2005/03/04 01:40:04  mjk
+  massive graph cleanup
+
+  Revision 1.1  2005/03/01 00:22:26  mjk
+  moved to base roll
+
+  Revision 1.12  2005/02/18 17:15:48  bruno
+  nuke the everything appliance -- no longer used
+
+  Revision 1.11  2005/02/15 22:58:52  mjk
+  dtd is gone
+
+  Revision 1.10  2004/10/04 18:59:41  fds
+  Keep a copy of the old SQL dump in /root (protected with permissions).
+
+  Revision 1.9  2004/07/15 18:54:22  fds
+  Tweak to javascript.
+
+  Revision 1.8  2004/06/21 20:36:19  fds
+  A born-on date.
+
+  Revision 1.7  2004/06/16 23:55:22  fds
+  Fixed https link (suggested by Christophe Beaumont), and fixed
+  post tags.
+
+  Revision 1.6  2004/05/28 23:25:23  bruno
+  put the clusterold initialization after we write the new database
+
+  Revision 1.5  2004/04/26 20:27:56  fds
+  Safer Mysql. As Eric D Christensen pointed out, it is easy for users to
+  accidentally disrupt the system by altering the database. We protect from
+  outside menaces, but allow read-write access to anyone from localhost.
+
+  This protects read-write access with SSL and passwords, like our wiki. It
+  is not close to being secure, since the -uapache is an option, but it
+  1) Prevents accidental changes from users via the web-interface, and
+  2) Allows admins to access the database safely over the wide-area.
+
+  I have also made a read-only access link, which is accessible for all users
+  but does not allow modification. In addition, users from localhost can
+  get read-only access from the command line without specifying -uapache. This
+  is intended to protect against casual mistakes only.
+
+  Left to the next release: a secure and easy way for kcgi to access the
+  database as user apache.
+
+  Revision 1.4  2004/04/14 02:50:33  bruno
+  cleanup on loader.c regarding central installs
+
+  can now do secure ekv for frontends
+
+  initial cluster database needs 'module' initialized in networks table
+
+  Revision 1.3  2004/04/12 18:19:06  bruno
+  kickstart from any network, even if the node has different types of
+  network cards
+
+  Revision 1.2  2004/03/24 23:37:30  fds
+  Everything appliance type for building updates, etc. Linked into graph
+  via hpc roll, but CANNOT reside there (rollRPMS.py will include everything
+  into the roll).
+  An everything appliance is a compute node with all available packages
+  installed.
+
+  Revision 1.1  2004/03/08 21:01:23  mjk
+  *** empty log message ***
+
+  Revision 1.34  2004/02/06 00:43:55  fds
+  Schema migration.
+
+  Revision 1.33  2004/02/04 17:39:38  bruno
+  on what interface do you want to install?
+
+  Revision 1.32  2004/02/03 20:00:35  mjk
+  decolorize
+
+  Revision 1.31  2004/01/30 04:53:42  mjk
+  colorize
+
+  Revision 1.30  2003/12/19 16:38:55  bruno
+  fix for frontend upgrade
+
+  Revision 1.29  2003/12/19 12:58:01  bruno
+  fix for frontend upgrade regarding updating the hostname in /etc/auto.home
+
+  Revision 1.28  2003/12/17 01:36:08  bruno
+  turn off nettools appliance from public
+
+  Revision 1.27  2003/11/12 19:41:19  mjk
+  rollback from bad BIRN commit
+
+  Revision 1.25  2003/10/30 23:07:10  bruno
+  added build host appliance
+
+  Revision 1.24  2003/10/26 03:39:53  vrowley
+  First attempt at adding new appliance for BIRN
+
+  Revision 1.23  2003/08/26 22:44:20  mjk
+  - File tag now takes "expr" attribute (command evaluation)
+  - Conversion of old code to file tags
+  - Added media-server (used to be server)
+  - Killed replace-server on the hpc roll
+  - Updated Server database membership (now a media-server)
+  - Added Public field to the membership table
+  - Insert-ethers only allows a subset of memberships (Public ones) to be
+    inserted.
+  - Added getArch() to Application class
+  - Kickstart trinity (kcgi,kpp,kgen) all updated self.arch initial value
+
+  Revision 1.22  2003/08/11 18:00:12  fds
+  Putting public hostname as an alias for 10.1.1.1 is not right.
+
+  Revision 1.21  2003/07/23 18:27:54  bruno
+  added server and client
+
+  Revision 1.20  2003/07/16 20:10:41  bruno
+  changed to new 'file' tag
+
+  Revision 1.19  2003/07/16 17:21:17  fds
+  Only add FQDN frontend alias if necessary
+
+  Revision 1.18  2003/07/10 15:37:02  bruno
+  make mysql doesn't stop during install
+
+  Revision 1.17  2003/07/07 20:09:05  bruno
+  new for rolls
+
+  Revision 1.16  2003/06/25 21:01:54  fds
+  VARCHAR fields have a max length of 255.
+
+  Revision 1.15  2003/06/24 20:43:23  fds
+  Frontend FQDN is only an alias.
+
+  Revision 1.14  2002/12/21 02:04:07  bruno
+  first stab at frontend patching
+
+  Revision 1.13  2002/11/13 22:20:00  mjk
+  ia64 changes
+
+  Revision 1.12  2002/11/05 02:09:07  phil
+  Add NAS functionality that looks like a compute node (but no
+  PBS, SGE, or autopartitioning)
+
+  Revision 1.11  2002/10/16 16:39:34  bruno
+  more fixes
+
+  Revision 1.10  2002/10/15 23:33:42  fds
+  MySQL root password identical to frontend root password.
+
+  Revision 1.9  2002/10/15 19:56:07  mjk
+  Myrinet switches are now called 'myri'
+
+  Revision 1.8  2002/10/04 17:36:03  fds
+  Inserting 'Info' components from site.xml, and noe the apache user cannot drop or alter tables in the database.
+
+  Revision 1.7  2002/10/01 21:40:48  bruno
+  more fixes for 2.3
+
+  Revision 1.6  2002/08/31 00:19:58  bruno
+  upgrade fixes
+
+  Revision 1.5  2002/08/21 23:58:39  bruno
+  inching closer to a release
+
+  Revision 1.4  2002/08/16 00:38:08  bruno
+  latest update changes
+
+  Revision 1.3  2002/07/11 16:14:36  bruno
+  more changes for 7.3 CD boot for a frontend
+
+  Revision 1.2  2002/07/03 23:33:11  bruno
+  7.3 fixes
+
+  Revision 1.1  2002/06/24 21:31:09  mjk
+  Static cluster structure.
+  Do not refer to live database for table structure.
+
+  </changelog>
+
+
+<post>
+
+<file name="/tmp/data.sql" perms="0400">
+
+<eval shell="python">
+import os
+import string
+
+# Populate app_globals with all appropriate environment vars.
+for i in os.environ.keys():
+	key = string.split(i, "_")
+	if key[0] in ("Kickstart","Info"):
+		print "insert into app_globals (service, component, value)" ,
+		print "values (\"%s\", \"%s\", \"%s\");" % (key[0], key[1], \
+			 os.environ[i])
+
+</eval>
+
+insert into app_globals (service, component, value) values
+	('Info', 'Born', NOW());
+</file>
+
+/usr/bin/mysql cluster &lt; /tmp/data.sql
+
+<!-- insert the base distributions into the database -->
+/opt/rocks/bin/rocks add distribution rocks-dist 
+
+<!-- insert the base appliances into the database -->
+
+/opt/rocks/bin/rocks add appliance frontend \
+	membership='Frontend' short-name='f' \
+	node='server' graph='default' \
+	compute='no' public='no'
+	
+/opt/rocks/bin/rocks add appliance network \
+	membership='Ethernet Switches' short-name='n' \
+	node='' graph='' \
+	compute='no' public='yes'
+
+/opt/rocks/bin/rocks add appliance power \
+	membership='Power Units' short-name='p' \
+	node='' graph='' \
+	compute='no' public='yes'
+
+/opt/rocks/bin/rocks add appliance manager \
+	membership='Remote Management' \
+	node='' graph='' \
+	compute='no' public='yes'
+
+/opt/rocks/bin/rocks add appliance nas \
+        membership='NAS Appliance' \
+        node='nas' graph='default' \
+        compute='no' public='yes'
+
+/opt/rocks/bin/rocks add appliance compute \
+        membership='Compute' short-name='c' \
+        node='compute' graph='default' \
+        compute='yes' public='yes'
+
+<!-- Insert the networking information to the nodes, subnets, and networks tables -->
+
+/opt/rocks/bin/rocks add network private \
+	subnet=<var name="Kickstart_PrivateNetwork"/> \
+	netmask=<var name="Kickstart_PrivateNetmask"/>
+
+/opt/rocks/bin/rocks add network public \
+	subnet=<var name="Kickstart_PublicNetwork"/> \
+	netmask=<var name="Kickstart_PublicNetmask"/>
+
+/opt/rocks/bin/rocks add host <var name="Kickstart_PrivateHostname"/> \
+	membership=Frontend rack=0 rank=0
+	
+/opt/rocks/bin/rocks add host interface \
+	<var name="Kickstart_PrivateHostname"/> \
+	iface=eth0 subnet=private \
+	ip=<var name="Kickstart_PrivateAddress"/> \
+	name=<var name="Kickstart_PrivateHostname"/>
+
+
+</post>
+
+
+<post arg="--nochroot">
+cp /tmp/interfaces /mnt/sysimage/tmp
+</post>
+
+<post arg="--interpreter /opt/rocks/bin/python">
+import sys
+import os
+import string
+import rocks.ConfigNetworks
+
+#
+# load the 'environment' variables with values that normally are loaded by
+# an eval statement during a kickstart.cgi http request
+#
+
+os.environ['Node_Hostname'] = '<var name="Kickstart_PrivateHostname"/>'
+
+file = open('/tmp/interfaces', 'r')
+
+macstr = 'X-RHN-Provisioning'
+for line in file.readlines():
+	l = string.split(line)
+
+	if len(l) > 3 and l[0][0:len(macstr)] == macstr:
+		tag = l[0][:-1]
+		device = l[1]
+		mac = l[2]
+		driver = l[3]
+                
+		key = 'HTTP_' + string.upper(tag)
+		key = string.replace(key, '-', '_')
+
+		entry = string.join([device, mac, driver])
+
+		#
+		# always make the first interface look like the one we
+		# kickstarted from. this allows us to use the logic in
+		# ConfigNetworks and not have ConfigNetworks rearrange
+		# our NICs in order to assign eth0 to the kickstarted NIC
+		#
+		if device == 'eth0':
+			entry = string.join([entry, 'ks'])
+
+		os.environ[key] = entry
+
+file.close()
+
+#
+# connect to the database
+#
+confignetworks = rocks.ConfigNetworks.App()
+
+confignetworks.params['user'] = [ 'apache', 'host' ]
+confignetworks.connect()
+confignetworks.getMacs()
+confignetworks.setPrimary()
+confignetworks.updateModules()
+confignetworks.adjustPrivateDevice()
+confignetworks.assignDeviceNames()
+</post>
+
+
+<post>
+
+<!-- now assign public network info to eth1 -->
+/opt/rocks/bin/rocks add host interface \
+		<var name="Kickstart_PrivateHostname"/> \
+		iface=eth1
+
+/opt/rocks/bin/rocks set host interface gateway \
+		<var name="Kickstart_PrivateHostname"/> \
+		iface=eth1 gateway=<var name="Kickstart_PublicGateway"/>
+
+/opt/rocks/bin/rocks set host interface ip \
+		<var name="Kickstart_PrivateHostname"/> \
+		iface=eth1 ip=<var name="Kickstart_PublicAddress"/>
+
+/opt/rocks/bin/rocks set host interface name \
+		<var name="Kickstart_PrivateHostname"/> \
+		iface=eth1 name=<var name="Kickstart_PublicHostname"/> \
+
+/opt/rocks/bin/rocks set host interface subnet \
+		<var name="Kickstart_PrivateHostname"/> \
+		iface=eth1 subnet=public
+
+</post>
+
+<post>
+
+<!-- Password Access for the apache  and root user  Create Password -->
+export clupass=`/bin/date +%N`
+
+<!-- now password protect the root user and apache user in database --> 
+<file name="/tmp/perms2.sql" perms="0400">
+update mysql.user set \
+	password='*<var name="Kickstart_PrivateSHARootPassword"/>' \
+	where user='root';
+</file>
+echo "set password for apache@localhost=PASSWORD(\"$clupass\");" &gt;&gt; /tmp/perms2.sql
+echo "set password for apache@<var name='Kickstart_PrivateHostname'/>=PASSWORD(\"$clupass\");" &gt;&gt; /tmp/perms2.sql
+
+/usr/bin/mysql &lt; /tmp/perms2.sql
+
+<!-- create the /root/.my.cnf file so that when root does  
+"mysql -u apache cluster", everything works -->
+<file name="/root/.my.cnf" perms="0440" owner="root.apache">
+[client]
+</file>
+echo "password=$clupass" &gt;&gt; /root/.my.cnf
+</post>
+
+</kickstart>

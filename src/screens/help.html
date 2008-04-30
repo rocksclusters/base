@@ -1,0 +1,49 @@
+<html>
+
+<head>
+
+<link rel="stylesheet" type="text/css" href="common.css" />
+
+<style type="text/css">
+#help-label {
+}
+
+#help-msg {
+}
+</style>
+
+<script language="JavaScript">
+function doHelp()
+{
+	var	v = self.document.getElementById('div-help');
+	var	d = self.document.getElementById('screen-help');
+
+	/*
+	 * remove the previous children
+	 */ 
+	if (d != null) {
+		v.removeChild(d);
+	}
+
+	v.appendChild(top.screen_help[top.screen_number]);
+}
+</script>
+
+</head>
+
+<body class="ProBackground Watermark">
+
+<p>
+<h2 class="ProTitle">Help</h2>
+</p>
+
+<p>
+	<dl class="ProHelpText">
+		<div id="div-help"/>
+	</dl>
+</p>
+
+</body>
+
+</html>
+

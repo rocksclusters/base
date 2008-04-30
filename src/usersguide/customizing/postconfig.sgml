@@ -1,0 +1,52 @@
+<section id="customization-postconfig"
+	xreflabel="Customizing Configuration of Compute Nodes">
+
+<title> Customizing Configuration of Compute Nodes </title>
+
+<para>
+Create a new XML configuration file that will <emphasis>extend</emphasis>
+the current <computeroutput>compute.xml</computeroutput> configuration
+file:
+</para>
+
+<screen>
+# cd /home/install/site-profiles/&document_version;/nodes/
+# cp skeleton.xml extend-compute.xml
+</screen>
+
+<para>
+Inside <computeroutput>extend-compute.xml</computeroutput>,
+add your configuration
+scripts that will be run in the <emphasis>post configuration</emphasis>
+step of the Red Hat installer.
+</para>
+
+<para>
+Put your bash scripts in between the tags
+<computeroutput>&lt;post&gt;</computeroutput>
+and
+<computeroutput>&lt;/post&gt;</computeroutput>:
+</para>
+
+<screen>
+&lt;post&gt;
+	&lt; !-- insert your scripts here --&gt;
+&lt;/post&gt;
+</screen>
+
+<para>
+To apply your customized configuration scripts to compute nodes,
+rebuild the distribution:
+</para>
+
+<screen>
+# cd /home/install
+# rocks-dist dist
+</screen>
+
+<para>
+Then, reinstall your compute nodes.
+</para>
+
+</section>
+

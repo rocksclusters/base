@@ -1,0 +1,24 @@
+<chapter id="installing" xreflabel="Installing">
+<title> Installing a Rocks Cluster </title>
+
+<section id="getting-started" xreflabel="Getting Started">
+<title> Getting Started </title>
+
+<para>
+This chapter describes the steps to build your cluster and install its software.
+</para>
+
+&supported;
+&minimum;
+&physical;
+
+</section>
+
+&frontend;
+&compute;
+&frontend-upgrade;
+&frontend-wan;
+&enable-www;
+
+</chapter>
+

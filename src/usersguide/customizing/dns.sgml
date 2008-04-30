@@ -1,0 +1,64 @@
+<section id="DNS.local">
+<title> Extending DNS </title>
+
+<para>
+Rocks provides a mechanism to put external hostnames under the DNS control of
+your cluster. Generally, external hosts have names served by site-wide DNS
+servers. However if there is no external DNS server available, you may want to
+use your frontend's DNS server to handle the name to IP mappings for certain
+non-cluster nodes.
+
+</para>
+
+<para>
+Since the DNS configuration file is automatically generated Rocks, you
+cannot add static configuration to the standard zone files in /var/named.
+Instead, you need to put local name mappings in the file:
+
+</para>
+
+<para>
+<literal>
+/var/named/rocks.domain.local
+</literal>
+</para>
+
+<para>
+And reverse mappings (IP to name) in:
+</para>
+
+<para>
+<literal>
+/var/named/reverse.rocks.domain.local
+</literal>
+</para>
+
+<para>
+To add the mappings in the above <emphasis>.local</emphasis> files to the
+running configuration, execute:
+</para>
+
+<screen>
+# insert-ethers --update
+</screen>
+
+<para>
+These files are in the BIND configuration format, just like the standard
+<literal>rocks.domain</literal> and <literal>reverse.rocks.domain</literal>
+files.
+</para>
+
+<note>
+<para>
+Your external hosts will have names in the .local cluster domain.
+</para>
+</note>
+
+<warning>
+<para>
+Errors in your local DNS files will cause the entire local cluster domain naming
+to fail. Proceed with caution.
+</para>
+</warning>
+
+</section>

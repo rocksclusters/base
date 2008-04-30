@@ -1,0 +1,24 @@
+<qandaentry>
+<question id="startx">
+
+	<para>
+	Why doesn't startx work on the frontend machine?
+	</para>
+</question>
+
+<answer>
+
+	<para>
+	Before you can run startx you need to configure XFree86 for
+	your video card.  This is done just like on standard Red Hat machines
+	using the <computeroutput>system-config-display</computeroutput>
+        program.  If you do not know anything about
+	your video card just select "4MB" of video RAM and 16 bit
+	color 800x600.  This video mode should work on any modern VGA
+	card.
+	</para> 
+
+</answer>
+
+</qandaentry>
+

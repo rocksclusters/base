@@ -1,0 +1,34 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN"><!-- -*- html-helper -*- -->
+<html>
+<link rel=stylesheet type="text/css" href="../style.css">
+<head>
+<title>@NAME@</title>
+</head>
+
+<body>
+<h1>@NAME@</h1>
+
+<h2>Contents</h2>
+<ul>
+  <li><a href="/manpages/snmp-status.1.html">man-page</a></li>
+  <li><a href="#overview">Overview</a></li>
+  <li><a href="#contact">Contact Information</a></li>
+</ul>
+
+<a name="overview"><h2>Overview</h2></a>
+
+<p>Snmp-status is command line utility to report process and installed
+RPM data for compute nodes.  Information is gathered over standard SNMP
+and reported in ASCII text.  It doesn't get much simpler than
+that.
+
+<a name="contact"><h2>Who to contact</h2></a>
+
+<p><a href="mailto://@MAILTO@">@MAILTO@</a>, <a
+href="http://www.sdsc.edu">San Diego Supercomputer Center</a>.
+                 
+<hr>
+<!-- hhmts start -->
+Last modified: Tue Feb 20 22:52:25 MST 2001
+<!-- hhmts end -->
+</body> </html>

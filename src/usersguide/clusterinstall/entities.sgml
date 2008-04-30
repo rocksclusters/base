@@ -1,0 +1,9 @@
+<!ENTITY supported SYSTEM "supported.sgml">
+<!ENTITY physical SYSTEM "physical.sgml">
+<!ENTITY minimum SYSTEM "minimum.sgml">
+<!ENTITY frontend SYSTEM "frontend.sgml">
+<!ENTITY compute SYSTEM "compute.sgml">
+<!ENTITY frontend-upgrade SYSTEM "frontend-upgrade.sgml">
+<!ENTITY frontend-wan SYSTEM "frontend-wan.sgml">
+<!ENTITY enable-www SYSTEM "enable-www.sgml">
+

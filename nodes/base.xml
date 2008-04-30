@@ -1,0 +1,514 @@
+<?xml version="1.0" standalone="no"?>
+
+<kickstart interface="public">
+
+  <description>
+
+  Base class for all Rocks nodes.  This should include compute nodes,
+  frontend nodes, standalone laptops, computer labs, graphics nodes,
+  nfs servers
+
+  To achieve this level of flexibility this base class should have
+  edges only to those classes that implement the core of Rocks.
+
+  </description>
+
+        <copyright>
+        Copyright (c) 2000 - 2008 The Regents of the University of California.
+        All rights reserved. Rocks(r) v5.0 www.rocksclusters.org
+        </copyright>
+
+  <changelog>
+  $Log: base.xml,v $
+  Revision 1.31  2008/04/21 16:59:28  bruno
+  package name changed
+
+  Revision 1.30  2008/04/17 21:58:11  bruno
+  node file cleanup
+
+  Revision 1.29  2008/04/17 21:55:10  bruno
+  pdksh package no longer exists
+
+  Revision 1.28  2008/04/04 17:59:16  bruno
+  still trying to get the CD eject right
+
+  Revision 1.27  2008/04/01 21:12:09  bruno
+  still trying to get the CD eject just right
+
+  Revision 1.26  2008/03/27 20:02:36  bruno
+  put our rotating graphics back in
+
+  Revision 1.25  2008/03/26 18:24:55  bruno
+  another whack at ejecting the CD early
+
+  Revision 1.24  2008/03/06 23:41:30  mjk
+  copyright storm on
+
+  Revision 1.23  2007/12/13 02:53:40  bruno
+  can now build a bootable kernel CD and build a physical frontend with V
+  on RHEL 5 update 1
+
+  Revision 1.22  2007/12/10 21:28:33  bruno
+  the base roll now contains several elements from the HPC roll, thus
+  making the HPC roll optional.
+
+  this also includes changes to help build and configure VMs for V.
+
+  Revision 1.21  2007/06/23 04:03:18  mjk
+  mars hill copyright
+
+  Revision 1.20  2007/06/11 18:37:41  bruno
+  moved font configuration from viz to base roll -- all appliances need it.
+
+  Revision 1.19  2006/06/28 01:25:10  bruno
+  make sure the hardware clock is UTC
+
+  Revision 1.18  2006/06/15 23:07:34  bruno
+  vnc for monitoring installations is ready for the beta
+
+  Revision 1.17  2006/06/05 17:57:33  bruno
+  first steps towards 4.2 beta
+
+  Revision 1.16  2006/01/27 22:29:42  bruno
+  stable (mostly) after integration of new foundation and localization code
+
+  Revision 1.15  2006/01/16 16:52:45  mjk
+  build graphviz from foundation (needs bison)
+
+  Revision 1.14  2005/09/22 03:20:09  phil
+  Move the creation of the etc/sysconfig/static-routes to different nodes
+
+  Revision 1.13  2005/06/14 00:36:05  bruno
+  remove 'CIDR Block Prefix' from broadcast address. this fixes the 411
+  update problem found on ia64.
+
+  thanks to eugene tay from scalable systems for the fix.
+
+  Revision 1.12  2005/05/25 23:14:35  bruno
+  typing extra characters for mjk
+
+  Revision 1.11  2005/05/25 20:33:46  mjk
+  removed redhat logo/release package disable
+
+  Revision 1.10  2005/04/14 23:03:49  bruno
+  more libraries in order to run code on compute nodes
+
+  Revision 1.9  2005/04/05 16:46:05  bruno
+  make sure rpm-build is everywhere
+
+  Revision 1.8  2005/03/31 21:56:56  mjk
+  thank you anaconda mailing list
+
+  Revision 1.7  2005/03/26 00:00:02  bruno
+  moved macros.rocks
+
+  Revision 1.6  2005/03/16 02:35:40  bruno
+  set the sticky bit for 'other' (make it look like /tmp)
+
+  this good idea was provided by andrew wang
+
+  Revision 1.5  2005/03/12 00:01:51  bruno
+  minor checkin
+
+  Revision 1.4  2005/03/05 04:39:39  bruno
+  change perms to a+rwx on /state/partition* -- fix for bug 124.
+
+  Revision 1.3  2005/03/04 01:40:04  mjk
+  massive graph cleanup
+
+  Revision 1.2  2005/03/02 23:47:52  bruno
+  changes for RHEL 4
+
+  Revision 1.1  2005/03/01 00:22:26  mjk
+  moved to base roll
+
+  Revision 1.12  2005/02/15 22:58:52  mjk
+  dtd is gone
+
+  Revision 1.11  2004/12/09 01:20:01  fds
+  Route broadcast traffic out eth0. Should be a dbreport to
+  find the interface name.
+
+  Revision 1.10  2004/09/16 20:13:54  bruno
+  remove all references to 'kernel' packages -- they now live in the
+  kernel roll
+
+  Revision 1.9  2004/09/11 04:34:07  mjk
+  should be on one line
+
+  Revision 1.8  2004/09/11 02:52:11  mjk
+  run once for run level 5 also
+
+  Revision 1.7  2004/08/30 23:03:35  bruno
+  now install the kernel-unsupported package (bug 31)
+
+  this gives rocks better hardware support
+
+  Revision 1.6  2004/08/25 05:25:41  bruno
+  move from ssh v1 to ssh v2
+
+  (bug 17)
+
+  Revision 1.5  2004/08/23 23:26:02  bruno
+  we now have user-settable timezones and an ntp server.
+
+  this address bug 6.
+
+  Revision 1.4  2004/07/21 21:37:25  fds
+  Support for cluster shepard
+
+  Revision 1.3  2004/04/27 20:54:16  bruno
+  get the authorized keys code to be quiet when frontend is rebuilding
+  kickstart file
+
+  Revision 1.2  2004/04/27 04:40:07  bruno
+  drop down an authorized_keys file for secure remote kickstart
+
+  Revision 1.1  2004/03/08 21:01:23  mjk
+  *** empty log message ***
+
+  Revision 1.44  2004/02/12 00:40:43  fds
+  Tweaks
+
+  Revision 1.43  2004/02/03 20:00:35  mjk
+  decolorize
+
+  Revision 1.42  2004/01/30 04:53:42  mjk
+  colorize
+
+  Revision 1.41  2003/12/23 23:21:32  bruno
+  put i18n stuff back in
+
+  Revision 1.40  2003/12/23 22:08:09  bruno
+  set environment default to whatever redhat sets it to (for now, this is
+  unicode)
+
+  Revision 1.39  2003/12/12 01:17:00  fds
+  Redsplat is killing me on this one. Removed 32 redhat logos in redhat-artwork, kept the 3400 GPL'd ones.
+
+  Revision 1.38  2003/12/09 01:32:52  bruno
+  remove redhat artwork
+
+  Revision 1.37  2003/11/30 15:04:10  bruno
+  removing redhat trademarks
+
+  Revision 1.36  2003/11/17 01:17:08  fds
+  The right static-route syntax for better mcast support.
+
+  Revision 1.35  2003/11/12 17:38:36  bruno
+  change the language back to americano
+
+  Revision 1.34  2003/11/11 22:19:11  fds
+  Working around shell wierdness.
+
+  Revision 1.33  2003/11/05 17:06:50  bruno
+  backed out the motd change
+
+  Revision 1.32  2003/11/05 16:55:32  bruno
+  overwrite the motd with our motd
+
+  Revision 1.31  2003/10/30 23:05:26  fds
+  Cleaner place for multicast route command
+
+  Revision 1.30  2003/10/30 02:38:36  fds
+  'static-routes' file is not used anymore.
+  Adding mcast route using new ip tool. Perhaps there is a better place
+  to put this
+
+  Revision 1.29  2003/10/06 20:23:05  fds
+  Using new rocksrc-modify syntax, which is clearer.
+
+  Revision 1.28  2003/09/25 18:35:25  fds
+  Putting some network information in rocksrc for all nodes.
+
+  Revision 1.27  2003/08/14 17:23:43  bruno
+  turn off unused services
+
+  Revision 1.26  2003/07/23 03:15:24  bruno
+  added rcs
+
+  Revision 1.25  2003/07/22 21:25:20  fds
+  Kickstart and Profile dates in same format.
+
+  Revision 1.24  2003/07/21 22:54:26  bruno
+  cleaned up motd
+
+  Revision 1.23  2003/07/18 06:14:44  bruno
+  next
+
+  Revision 1.22  2003/07/17 23:08:03  bruno
+  pushing towards 2.3.3
+
+  Revision 1.21  2003/07/16 20:10:41  bruno
+  changed to new 'file' tag
+
+  Revision 1.20  2003/07/07 20:08:17  bruno
+  new for rolls
+
+  Revision 1.19  2003/04/25 18:15:09  bruno
+  first pass at adding all the new rocks config screens
+
+  Revision 1.18  2003/04/24 16:59:41  mjk
+  - add order tags
+  - edge and order tags can have children
+  	This just make the graph look nicer, no functional change
+  - added include directory
+  - moved install class code into include directory
+  - dependecies enforced via topological sort
+  - weight attributes are dead
+  - long live order tags
+  - the 'gen' attribute is currently ignored.  This will be used to support
+    other graph ordering requirements (e.g. testing, cfengine, ...)
+
+  Revision 1.17  2003/01/27 21:20:05  fds
+  Added version and release to motd, and made kickstart time more standard.
+
+  Revision 1.16  2002/07/03 23:33:11  bruno
+  7.3 fixes
+
+  Revision 1.15  2002/06/17 19:50:02  bruno
+  7.3-isms
+
+  Revision 1.14  2002/05/30 18:59:45  mjk
+  fixed sendmail bug
+
+  Revision 1.13  2002/02/26 22:52:10  mjk
+  Start font server since X11 doesn't do it for us.
+
+  Revision 1.12  2002/02/15 23:44:23  mjk
+  - Added netscape to frontend
+  - Move package trimming
+
+  Revision 1.11  2002/02/15 21:44:09  mjk
+  Release and DTF changes
+
+  Revision 1.10  2002/02/08 21:51:08  mjk
+  - sample cfengine tag
+  - removed package copy from cdrom at post
+
+  Revision 1.9  2002/02/06 21:22:44  bruno
+  all the little things that releases find ...
+
+  Revision 1.8  2001/10/02 03:40:54  mjk
+  - remove ifup-local creating from base.xml
+  - made nis.xml create ifup-local if it does not exist
+
+  Revision 1.7  2001/10/02 03:16:39  mjk
+  - Update to bruno's new auto-part stuff
+  - Doesn't work but checkin anyway
+
+  Revision 1.6  2001/09/21 20:15:55  mjk
+  Switch from ISC to RedHat's pump.  Pump sucks but it is standard so we
+  moved most of the ISC options into the kickstart file since they don't
+  change often anyway.
+
+  This includes
+  	- NIS domain
+  	- Usher command line flags
+  	- Multicast enable
+  	- NTP configuration
+
+  Revision 1.5  2001/09/18 17:39:52  mjk
+  *** empty log message ***
+
+  Revision 1.4  2001/09/14 21:45:42  mjk
+  - Testing on ia32 compute nodes
+  - A CGI kickstart takes 5 seconds
+  - Working on ia64 compute nodes
+
+  Revision 1.3  2001/09/10 18:24:51  mjk
+  - Compute nodes are correct.
+  - Frontend still need work
+
+  Revision 1.2  2001/09/05 00:27:16  mjk
+  main and packages section is correct for compute nodes
+
+  Revision 1.1  2001/08/28 02:51:31  mjk
+  graph/nodes layout
+  </changelog>
+
+
+<main>
+
+<install>
+%include /tmp/partition-info
+</install>
+
+<lang><var name="Kickstart_Lang"/></lang>
+<keyboard><var name="Kickstart_Keyboard"/></keyboard>
+<mouse><var name="Kickstart_Mouse"/></mouse>
+<timezone>--utc <var name="Kickstart_Timezone"/></timezone>
+<bootloader>--location=mbr</bootloader>
+
+<url> --url http://<var name="Kickstart_PrivateKickstartHost"/>/<var name="Kickstart_PrivateKickstartBasedir"/>/<var name="Node_Distribution"/> </url>
+<interactive/>
+
+</main>
+
+
+  <!-- for the reboot command -->
+  <package>usermode</package>
+
+  <package>tcsh</package>
+  <package>sharutils</package>
+  <package>bc</package>
+  <package>lsof</package>
+  <package>rcs</package>
+  <package>bison</package>
+
+  <package>rpm-build</package>
+
+  <!-- key libraries for dynamically linked executable-->
+  <package>libgcc</package>
+  <package>compat-libf2c-34</package>
+  <package>libgfortran</package>
+  <package>libobjc</package>
+
+  <package>tentakel</package>
+
+<pre>
+
+<!-- propagate root's public ssh key for ekv -->
+
+<!-- if the authorized_keys file already exists, then don't recreate it -->
+if [ -f /tmp/authorized_keys ]
+then
+	exit
+fi
+
+<!--
+	not using 'file' tags as file tags are expanded by kgen to include
+	extra wrapper code and this wrapper code is not present in the 'pre'
+	environment.
+-->
+
+cat &gt; /tmp/authorized_keys &lt;&lt; 'EOF'
+<eval shell="python">
+
+import os
+
+def readkeys(filename):
+	try:
+		file = open(filename, 'r')
+		for key in file.readlines():
+			if len(key) > 0:
+				print '%s' % (key[:-1])
+		file.close()
+	except:
+		pass
+
+	return
+
+#
+# first put in root's public key
+#
+readkeys('/root/.ssh/id_rsa.pub')
+
+#
+# now get all the public keys for the trusted users
+#
+keydir = '/etc/ssh/authorized_keys'
+
+if os.path.isdir(keydir):
+	for keyfile in os.listdir(keydir):
+		filename = os.path.join(keydir, keyfile)
+		readkeys(filename)
+
+</eval>
+EOF
+
+chmod 600 /tmp/authorized_keys
+
+</pre>
+
+
+<pre>
+
+<!--
+	copy over the rotating graphics from updates.img into a location
+	where anaconda will find them
+-->
+
+cd /tmp/updates
+cp -r pixmaps /tmp/product/
+
+</pre>
+
+
+<post>
+
+<!-- enable the rc.rocksconfig directory -->
+
+<file name="/etc/inittab" mode="append">
+bw::bootwait:/etc/rc.d/rc.rocksconfig before-rc
+po:35:wait:/etc/rc.d/rc.rocksconfig after-rc
+</file>
+
+<!-- message of the day -->
+<file name="/etc/motd" mode="append">
+Rocks <var name="Info_RocksVersion"/> (<var name="Info_RocksRelease"/>)
+<eval shell="sh">
+echo "Profile built `date +'%H:%M %d-%b-%Y'`"
+</eval>
+</file>
+
+<file name="/etc/motd" mode="append" vars="expanded">
+Kickstarted `date +"%H:%M %d-%b-%Y"`
+</file>
+
+<file name="/var/cluster/born-on">
+<eval>
+date +"%H:%M:%S %d-%b-%Y"
+python -c 'import time; print "%.7f" % time.time()'
+</eval>
+</file>
+
+for i in kudzu canna cWnn FreeWnn kWnn tWnn mDNSResponder
+do
+	if [ -f /etc/rc.d/init.d/$i ]; then
+		/sbin/chkconfig $i off
+	fi
+done
+
+<file name="/etc/sysconfig/i18n">
+LANG="en_US.iso885915"
+SYSFONT="lat0-sun16"
+</file>
+
+</post>
+
+
+<post>
+chmod a+rwx /state/partition*
+chmod o+t /state/partition*
+</post>
+
+<post>
+
+<file name="/etc/rpm/macros.rocks" perms="0644">
+%distribution Rocks
+
+%debug_package %{nil}
+%_without_check 0
+%_unpackaged_files_terminate_build 0 
+%_missing_doc_files_terminate_build 0
+%__vsflags 0xc0c00
+</file>
+
+</post>
+
+<post>
+<!--
+	create metadata in some font directories. we need this to ensure
+	that the default 'fixed' font is found by xfs
+-->
+for i in misc 75dpi 100dpi
+do
+	/usr/X11R6/bin/mkfontdir /usr/X11R6/lib/X11/fonts/$i
+done
+
+</post>
+
+
+</kickstart> 
+

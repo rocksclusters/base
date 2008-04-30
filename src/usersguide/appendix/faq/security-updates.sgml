@@ -1,0 +1,41 @@
+<qandaentry>
+<question id="security-patches">
+
+	<para>
+	What security patches should I be running with Rocks?
+	</para>
+</question>
+
+<answer>
+
+        <para>
+
+	Every Rocks release is a snapshot of the most up to date
+	software packages from Red Hat for whatever release Rocks is
+	based on.  For example, Rocks 2.2 included all the Red Hat 7.2
+	updates on the of our release.  If you use rocks-dist to
+	mirror your distribution from us you will get updates to our
+	software and some Red Hat updates as we see fit to push them
+	out. There is no automated method of updating the software
+	packages on your frontend machine.  This means you will have
+	to treat it like any other machine on the Internet and track
+	security updates yourself and updates vulnerable services.
+	Only you can decide what level of security is appropriate for
+	your site.  Some sites prefer to secure only network services
+	while others secure the network and local host services.
+
+	</para>
+
+	<para>
+
+	The default Rocks configuration sets up and a firewall on the
+	frontend and permits only SSH traffic into the cluster.  The
+	minimum security requirement is to track SSH updates and apply
+	them to your frontend when needed.
+
+	</para>
+
+</answer>
+
+</qandaentry>
+

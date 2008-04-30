@@ -1,0 +1,51 @@
+<section id="physical-assembly" xreflabel="physical assembly">
+<title> Physical Assembly </title>
+
+<para>
+The first thing to manage is the physical deployment of a cluster. Much
+research exists on the topic of how to physically construct a cluster.
+A majority of the <ulink url="http://www.oreilly.com">O'Reilly
+Book</ulink> <emphasis>Building Linux Clusters</emphasis> is devoted to
+the physical setup of a cluster, how to choose a motherboard, etc.
+Finally, the book <emphasis>How to Build a Beowulf</emphasis> also has
+some good tips on physical construction.
+</para>
+
+<para>
+We favor rack-mounted equipment because of its relative reliability and
+density.
+There are Rocks clusters, however, that are built from mini-towers.
+Choose what makes sense for you.
+</para>
+
+<para>
+The following diagram shows how the frontend and compute nodes must be
+connected:
+</para>
+
+<mediaobject>
+	<imageobject>
+	<imagedata fileref="images/cluster.png" scale=50>
+	</imageobject>
+</mediaobject>
+
+<para>
+On the compute nodes, the Ethernet interface that Linux maps to
+<emphasis> eth0 </emphasis> must be connected to the cluster's Ethernet
+switch.
+This network is considered <emphasis>private</emphasis>, that is, all
+traffic on this network is physically separated from the external public
+network (e.g., the internet).
+</para>
+
+<para>
+On the frontend, at least two ethernet interfaces are required.
+The interface that Linux maps to <emphasis> eth0 </emphasis> must be connected
+to the same ethernet network as the compute nodes.
+The interface that Linux maps to <emphasis> eth1 </emphasis> must be
+connected to the external network (e.g., the internet or your organization's
+intranet).
+</para>
+
+</section>
+

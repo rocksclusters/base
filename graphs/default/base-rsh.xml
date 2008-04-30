@@ -1,0 +1,35 @@
+<?xml version="1.0" standalone="no"?>
+
+<graph>
+
+	<description>
+
+	Enable RSH - Do not do this!
+
+	</description>
+
+
+	<changelog>
+	$Log: base-rsh.xml,v $
+	Revision 1.2  2006/06/05 17:57:32  bruno
+	first steps towards 4.2 beta
+	
+	Revision 1.1  2005/03/01 00:22:24  mjk
+	moved to base roll
+	
+	</changelog>
+
+
+
+	<!-- Uncomment to enable RSH on your cluster
+
+	<edge from="client">
+		<to>xinetd</to>
+		<to>rsh</to>
+	</edge>
+
+	-->
+
+</graph>
+
+

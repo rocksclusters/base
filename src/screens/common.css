@@ -1,0 +1,45 @@
+@import url(palette-blue.css);
+
+.centeredImage {
+    text-align: center;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    padding: 0px;
+}
+
+/* place image at the left with text floating around */
+.FloatLeft {
+    float: left;
+    margin: 4px;
+}
+
+/* place image at the right with text floating around */
+.FloatRight {
+    float: right;
+    margin: 4px;
+}
+
+.TitleLogo {
+	position: absolute;
+	top: 0px;
+	left: 80%;
+	margin: 7px;
+}
+
+.Padded {
+	padding-left: 5pt;
+	padding-right: 5pt;
+}
+
+.Shifted {
+	padding-left: 10pt;
+	padding-right: 5pt;
+}
+
+.Watermark {
+	background-image: url(watermark.png);
+	background-repeat: no-repeat;
+	background-attachment: fixed;
+	background-position: center center;
+}
+

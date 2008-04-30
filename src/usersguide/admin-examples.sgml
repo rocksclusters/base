@@ -1,0 +1,409 @@
+<!-- 
+$Id: admin-examples.sgml,v 1.7 2007/11/20 19:51:30 bruno Exp $
+
+Administration guide
+
+@Copyright@
+@Copyright@
+
+$Log: admin-examples.sgml,v $
+Revision 1.7  2007/11/20 19:51:30  bruno
+touch up frontend NIC swap procedure
+
+Revision 1.6  2007/07/05 21:22:31  phil
+remove extra space in screen areas
+
+Revision 1.5  2007/07/05 21:16:28  phil
+Change description of global action to match the new command line structure
+
+Revision 1.4  2007/06/27 22:04:55  phil
+Docs on how to swap interfaces on a frontend
+
+Revision 1.3  2007/06/26 20:03:03  phil
+Updated for memtest 86
+
+Revision 1.2  2007/06/26 19:55:57  phil
+Memtest link Uses memtest86+
+
+Revision 1.1  2007/06/26 19:49:24  phil
+First attempt at pxe first documentation
+
+Revision 1.1  2007/06/16 03:11:25  mjk
+builds with command reference
+
+Revision 1.2  2006/09/11 18:16:24  mjk
+*** empty log message ***
+
+Revision 1.1  2006/08/15 19:11:26  mjk
+starting new manual
+
+-->
+
+<chapter id="admin-examples" xreflabel="Administrative Examples">
+<title>Administration Examples</title>
+
+<section id="commandline" xreflabel="The Rocks Command Line">
+<title>Introduction to the Rocks Command Line</title>
+<para> In Rocks 4.3 the Rocks command line was introduced to provide a more uniform interface to the underlying structures used to control system configuration
+and behaviour. Wherever possible, Rocks uses a SQL database (MySQL currently)
+to hold information about nodes, partitioning information, boot parameters
+and other information. Based on information in the database, various configuration files are rewritten.  The re-generation of configuration files occurs 
+everytime a node is added or deleted from the cluster. The re-generation of
+configuration files can also be forced.  A large fraction of rocks commands
+manipulate data held in the configuration database. In general, the process
+of changing configuration is a two-step process: 
+</para>
+
+<orderedlist>
+
+<listitem>
+<para>
+Use rocks commands to change configuration in the database 
+(e.g. <computeroutput>rocks set host</computeroutput>)
+</para>
+</listitem>
+
+<listitem>
+<para>
+Rewrite configuration files using  
+<computeroutput>rocks sync config</computeroutput>
+</para>
+</listitem>
+</orderedlist>
+
+<para>
+It should be noted that step 1 above is usually called several times to 
+update in the database and then step 2 is called to write individual 
+confiuration files in the format that the native OS tools understand.  
+</para>
+<note>
+<para> Rocks commands have arguments and parameters. Parameters are of the
+form "param=&lt;value&gt;" and may appear anywhere. Arguments must appear
+in the order defined by the command. To get help on any rocks command type  "help" for the argument to the command. For example
+<computeroutput>  rocks set host interface ip help </computeroutput>
+</para>
+</note>
+</section>
+
+<section id="boot-order" xreflabel="Boot Order">
+<title>Boot Order and PXE First</title>
+
+<para> Prior to Rocks 4.3, the BIOS-defined boot order of a compute node
+<emphasis>required</emphasis> that a network boot (known as PXE) come after
+local hard disk.  In particular the boot order in BIOS would be set as
+</para>
+
+<indexterm>
+<primary>Boot order
+</primary>
+</indexterm>
+
+<screen>  
+1. CDROM
+2. Hard Disk
+3. On-board Network Device (PXE)
+</screen>
+<para>
+A user would have to intercept the boot sequence (often by hitting the
+F12 key on an attached keyboard) to force a network boot.  Rocks also provided
+a small utility on each node
+(<computeroutput>/boot/kickstart/cluster-kickstart-pxe</computeroutput>) that would manipulate the two-bytes on the local hard disk to force BIOS to bypass
+booting from the local disk and try the next device on the boot list.  When
+boot order was set as above, the node would pxe boot and therefore re-install. 
+</para>
+<para>
+The logic for this structure was that a frontend did not need to know the state
+of node (whether it had failed and should be reinstalled or had some other 
+intermediate state). Also it is not required that a frontend by up for a node
+to reboot itself. Another practical issue arises for PXE booting large 
+clusters. Since the PXE client is in NIC firmware, no assumptions about 
+timeouts, retries or other elements that figure into robustness could be made. 
+Large cluster reinstalls (or reboots) for a kernel the comes over PXE would
+often result in hung nodes because of the low level of robustness of TFTP
+(the underlying protocol used to transfer initial kernel and ramdisk image
+for nodes booting over the network). For wholesale re-installation of large
+clusters, PXE does not scale well. For this, Rocks provides the installation
+kernel and initial ramdisk image on the local hard drive. The commmand
+<computeroutput>/boot/kickstart/cluster-kickstart</computeroutput> run
+on a local node will cause that node to re-install itself by using a local (hard disk) copy of the installation kernel and initial ramdisk.
+</para>
+<note>
+<para>
+The above boot order and behaviour continues to be supported in Rocks 4.3. 
+That is, existing rocks clusters can be upgraded without requiring the cluster
+owner to change any BIOS setting.
+</para>
+</note>
+</section>
+
+<section><title>Support for PXE First</title>
+
+<para>Rocks 4.3 supports a network device first (or PXE first)
+ BIOS-defined boot order. It is now  
+<emphasis>recommended</emphasis> that a network boot (known as PXE) come before 
+local hard disk.  In particular the boot order in BIOS should be set as
+<indexterm><primary>Boot order</primary></indexterm>
+</para>
+<screen>  
+1. CDROM
+2. On-board Network Device (PXE)
+3. Hard Disk
+</screen>
+<para>
+The default PXE "action" is to simply pass to the next device down on
+the BIOS boot list. In the usual case, this is to the local hard disk.
+Most of the time decision to boot or reinstall is still left to the local node
+and frontend does not need to know which state the node desires.  If booting
+into re-installation (e.g. the node either did not shut down properly, or
+<computeroutput>/boot/kickstart/cluster-kickstart</computeroutput> was called
+locally) that will proceed as expected.   However, it is possible to change
+this action on a per-node basis.
+</para>
+</section>
+
+<section><title>Forcing a Re-install at Next PXE Boot</title>
+<para> Starting with Rocks 4.3, the frontend must be configured
+to tell a node to re-install at the next PXE boot. This action is controllable
+on a per-node basis.  At the end of successful installation, the node requests
+the frontend to set its pxe boot to <emphasis>os</emphasis>.  To re-install
+a node using PXE (e.g. compute-0-0), then do the following:
+</para>
+<screen>
+# rocks set host pxeboot compute-0-0 action=install
+# ssh compute-0-0 "shutdown -r now" 
+</screen>
+<note>
+<para>
+If the boot order has not been set to pxe first, you can force a pxe boot with
+the local keyboard, or by calling <computeroutput>/boot/kickstart/cluster-kickstart-pxe</computeroutput> on the local node.
+</para>
+</note>
+
+</section>
+<section><title>Inspecting and Changing PXE Behaviour</title>
+<para> 
+There are two parts to the Rocks database for modifying PXE behaviour:
+<emphasis>pxeboot</emphasis> and
+<emphasis>pxeaction</emphasis>.  The pxeboot part determines which logical
+action should be performed. The base roll ships with three logical actions: "os", "install", and "memtest".  The second table in the pxeaction table. The associates a logical action with specific tftp configuration.  The pxeaction table
+supports a default configuration for an action and it supports a per-node 
+override of the default configuration. 
+</para> 
+
+<warning>
+<para>
+It is possible to have commands affect all nodes. In this case use '%' as the host wildcard.  For example <computeroutput>rocks set host pxeboot % action=install </computeroutput> will cause ALL nodes to reinstall at next pxeboot. 
+</para>
+</warning>
+
+<note>
+<para>
+For commands that take lists of hosts, it is possible to use an appliance type
+for the host(s) argument. <computeroutput>rocks list appliance</computeroutput> are the list of valid appliance types. To set the pxeaction of all compute appliances to be install, use
+<computeroutput>rocks set host pxeboot compute action=install </computeroutput>
+</para>
+</note>
+
+
+
+<para>
+The following illustrates how to inspect the current action of nodes and then the specifics of each action.
+</para>
+
+<screen>
+[root@vizzy ~]# rocks list host pxeboot
+HOST         ACTION 
+vizzy:       os     
+compute-0-0: os     
+compute-0-1: os     
+compute-1-0: os     
+compute-1-1: install
+compute-2-0: os     
+compute-2-1: os 
+
+
+[root@vizzy ~]# rocks list host pxeaction compute-1-1
+ACTION           COMMAND        ARGS
+install          kernel vmlinuz append ks initrd=initrd.img ramdisk_size=150000
+                                lang= devfs=nomount pxe kssendmac selinux=0
+install headless kernel vmlinuz append ks initrd=initrd.img ramdisk_size=150000
+                                lang= devfs=nomount pxe kssendmac selinux=0 headless vnc
+memtest          kernel memtest -------------------------------------------------
+os               localboot 0    -----------------------------------------------
+[root@vizzy ~]# 
+</screen>
+<para> In the above, all nodes are set to pxeboot the "os", except for node compute-1-1. That node will call the pxeboot named "install".  In the case the tftp configuration file contain the details arguments of the listed in the install
+action.  The command <computeroutput>rocks list host pxeaction compute-1-1
+</computeroutput> shows the details of each logical action.
+</para>
+<section><title>Changing a logical PXE action</title>
+<para>
+It is possible to override the details of a logical action on a per-node
+basis. Suppose that we wanted to make the logical action of "install" for
+compute-1-1 to be headless and to set a flag <computeroutput>acpi=off</computeroutput>.  Then the following will accomplish this using a Rocks add command. 
+</para>
+<screen>
+[root@vizzy ~]# rocks add host pxeaction compute-1-1 action=install command="kernel vmlinuz" \
+args="append ks initrd=initrd.img ramdisk_size=150000 lang= devfs=nomount pxe kssendmac selinux=0 headless vnc acpi=off" 
+
+</screen>
+<para>
+To inspect that the change is indeed specific to just compute-1-1, then do
+the following
+</para>
+<screen>
+[root@vizzy ~]# rocks list host pxeaction compute-1-1
+ACTION           COMMAND        ARGS
+install          kernel vmlinuz append ks initrd=initrd.img ramdisk_size=150000
+                                lang= devfs=nomount pxe kssendmac selinux=0 headless vnc acpi=off
+install headless kernel vmlinuz append ks initrd=initrd.img ramdisk_size=150000
+                                lang= devfs=nomount pxe kssendmac selinux=0 headless vnc         
+memtest          kernel memtest ------------------------------------------------
+os               localboot 0    ------------------------------------------------
+
+[root@vizzy ~]# rocks list host pxeaction compute-1-0 
+ACTION           COMMAND        ARGS
+install          kernel vmlinuz append ks initrd=initrd.img ramdisk_size=150000
+                                lang= devfs=nomount pxe kssendmac selinux=0
+install headless kernel vmlinuz append ks initrd=initrd.img ramdisk_size=150000
+                                lang= devfs=nomount pxe kssendmac selinux=0 headless vnc
+memtest          kernel memtest ------------------------------------------------
+os               localboot 0    ------------------------------------------------
+</screen>
+<para> In the above, compute-1-1 has a specific override for its install
+pxeaction. compute-1-0 still retains the default install action. 
+</para>
+
+<warning>
+<para>
+Manipulating the pxeaction does NOT update the actual tftp configuration file.
+You must use <computeroutput>rocks set pxeboot action=&lt;action&gt; hostname
+</computeroutput> to actually write the specific tftp configuration file
+</para>
+</warning>
+
+<note> 
+<para> To remove a specific override of a pxeaction for a node use
+<computeroutput>rocks remove host pxeaction action=&lt;action&gt; hostname</computeroutput> 
+</para>
+</note>
+
+
+</section>
+
+<section><title>Running Memtest86</title>
+<para>
+<indexterm><primary>memtest86</primary></indexterm>
+It is often useful to run the memory testing tool
+<ulink url="http://www.memtest.org"> memtest86+ </ulink> to determine
+if memory is valid. The straightforward way to accomplish this in
+Rocks 4.3 is to apply the following procedure (in our example case
+for host compute-1-1) 
+</para>
+<orderedlist>
+
+<listitem>
+<para>
+<computeroutput># rocks set host pxeboot compute-1-1 action=memtest</computeroutput>
+</para>
+</listitem>
+
+<listitem>
+<para>
+Boot node compute-1-1 by power cycle or other means.
+</para>
+</listitem>
+
+<listitem>
+<para>
+After compute-1-1 has successfully started the diagnostic, reset the pxeboot
+parameter
+<computeroutput># rocks set host pxeboot compute-1-1 action=os</computeroutput>
+</para>
+</listitem>
+
+</orderedlist>
+</section>
+
+</section>
+<!-- ####################################### -->
+
+<section><title>Working with and Modifying Network Configuration</title>
+<para> The Rocks database holds information that has been discovered about
+a host and in particular records network interface information including MAC 
+addresses and local device modules. The Rocks command line has several tools
+to inspect and update entries in the database. Reinstallation of a node will
+apply the changes to a node. See the following section on Swapping Frontend
+Ethernet Interfaces. 
+</para>
+<para> For the following discussion, a frontend named "jeebs" will be used for 
+illustation. To list the ethernet interfaces do the following:
+</para>
+<screen>
+# rocks list host interface jeebs
+
+SUBNET  IFACE MAC               IP             NETMASK       GATEWAY      MODULE NAME                   
+private eth0  00:0e:0c:a7:57:d7 10.1.1.1       255.0.0.0     ------------ e1000  jeebs                  
+public  eth1  00:19:b9:21:b8:b6 172.19.119.241 255.255.255.0 172.19.119.1 tg3    jeebs.rocksclusters.org
+</screen>
+<para> This describes the two interfaces, eth0 and eth1. Suppose that it is
+desired to swap these two interfaces. That is is we would want to associate
+the mac address 00:0e:0c:a7:57:d7 with eth1. To do this we must also associate
+the correct module. The following will change the information only in the database. This uses the <computeroutput>rocks set host interface</computeroutput> 
+group of commands.
+</para>
+<screen>
+# rocks set host interface mac jeebs iface=eth1 mac=00:0e:0c:a7:57:d7
+# rocks set host interface module jeebs iface=eth1 module=e1000
+
+# rocks set host interface mac jeebs iface=eth0 mac=00:19:b9:21:b8:b6
+# rocks set host interface module jeebs iface=eth0 module=tg3
+</screen>
+<para>
+Then the updated database configuration is as follows
+</para>
+<screen>
+# rocks list host interface jeebs
+SUBNET  IFACE MAC               IP             NETMASK       GATEWAY      MODULE NAME                   
+private eth0  00:19:b9:21:b8:b6 10.1.1.1       255.0.0.0     ------------ tg3    jeebs                  
+public  eth1  00:0e:0c:a7:57:d7 172.19.119.241 255.255.255.0 172.19.119.1 e1000  jeebs.rocksclusters.org
+</screen>
+<note>
+<para>
+After any such database change, always run 
+<computeroutput>rocks sync config</computeroutput>. This will update service
+configuration files (like dhcpd). Reinstalling a node will apply these types of changes to the node.
+</para>
+</note>
+
+<section><title>Swapping Interfaces on the Frontend</title>
+<para> The previous section described how to swap two interfaces in the database. For compute nodes it is easiest to simply reinstall nodes for the new
+configuration to be applied properly. For frontends, this is not possible
+and you should apply the following procedure after you have updated
+information in the database. This will recreate the appropriate files.
+</para>
+
+<warning>
+<para>
+Before performing this procedure, you must be logged into the frontend's
+console.
+Then, you must shutdown the frontend's network by executing:
+
+<screen>
+# service network stop
+</screen>
+
+</para>
+</warning>
+
+<screen>
+# sed -i -e '/alias eth/d' -e '/^#/d' /etc/modprobe.conf
+# dbreport ifcfg modules jeebs >> /etc/modprobe.conf
+# dbreport ifcfg eth0 jeebs > /etc/sysconfig/network-scripts/ifcfg-eth0
+# dbreport ifcfg eth1 jeebs > /etc/sysconfig/network-scripts/ifcfg-eth1
+
+# shutdown -r now
+</screen>
+</section>
+</section>
+</chapter>

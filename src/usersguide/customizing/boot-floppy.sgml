@@ -1,0 +1,57 @@
+<section id="boot-floppy"
+	xreflabel="Customizing a Boot Floppy">
+
+<title> Customizing a Boot Floppy </title>
+
+<para>
+For compute nodes without a CD or a PXE-enabled network card, there are
+instances where the base RedHat boot floppy image does not support the
+node's network card.
+The following procedure describes how to customize the drivers that are
+included in the boot floppy image.
+</para>
+
+<para>
+First, check out the Rocks source code.
+See <xref linkend="source-access"> for details.
+</para>
+
+<para>
+Change into the directory where you will build the boot floppy:
+</para>
+
+<screen>
+# cd src/rocks/boot/&redhat-version-x86;/images/i386
+</screen>
+
+<para>
+Edit the file <computeroutput>boot-floppy-drivers</computeroutput> and
+replace one (or more) of the existing driver names with your
+desired drivers.
+</para>
+
+<para>
+Build the boot floppy image.
+</para>
+
+<screen>
+# make
+</screen>
+
+<para>
+The new boot floppy image is named
+<computeroutput>bootnet.rocks</computeroutput>.
+Copy this image to a floppy disk:
+</para>
+
+<screen>
+# dd if=bootnet.rocks of=/dev/fd0
+</screen>
+
+<para>
+Put the floppy into your first compute node and follow the procedure
+described at <xref linkend="install-compute-nodes">.
+</para>
+
+</section>
+

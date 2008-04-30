@@ -1,0 +1,38 @@
+<?xml version="1.0" standalone="no"?>
+
+<kickstart>
+
+
+	<description>
+	Remote lights Out
+	</description>
+
+	<copyright>
+	Copyright (c) 2000 - 2008 The Regents of the University of California.
+	All rights reserved. Rocks(r) v5.0 www.rocksclusters.org
+	</copyright>
+
+	<changelog>
+	
+	</changelog>
+
+
+<post>
+## Check if ksdevice specified. If so, try to find the ethernet device that
+## was defined (either by mac or by device) and make certain that IP
+## connectivity is restored during the install
+
+ksMac=`/bin/cat /proc/cmdline | /bin/awk 'BEGIN {RS="[[:space:]]"; FS="="} /ksdevice/{print $2}'| /usr/bin/tr [:upper:] [:lower:]`
+
+if  [ "x$ksMac" != "x" ]; then 
+	ethDev=`/sbin/ifconfig -a | grep -i $ksMac | /bin/awk '{print $1}'`
+	if [ "x$ethDev" != "x" ]; then 
+       		/sbin/ifconfig $ethDev netmask <var name="Kickstart_PublicNetmask"/> <var name="Kickstart_PublicAddress"/> 
+
+       		/sbin/route add default gw <var name="Kickstart_PublicGateway"/> 
+	fi
+fi
+
+</post>
+</kickstart> 
+

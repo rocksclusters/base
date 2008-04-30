@@ -1,0 +1,29 @@
+<?xml version="1.0" standalone="no"?>
+
+<kickstart>
+
+<changelog>
+$Log: partition.xml,v $
+Revision 1.3  2008/04/22 17:47:25  bruno
+tweak partitioning
+
+Revision 1.2  2008/04/01 19:41:29  bruno
+make the default partitioning to only deal with the root disk
+
+Revision 1.1  2008/02/19 23:20:24  bruno
+katz made me do it.
+
+</changelog>
+
+<!-- default partitioning scheme -->
+
+<pre>
+if [ ! -f /tmp/user_partition_info ]
+then
+	echo "rocks force-default-root-disk-only" > /tmp/user_partition_info
+fi
+</pre>
+
+
+</kickstart> 
+

@@ -1,0 +1,104 @@
+<section id="customization-make-cd"
+	xreflabel="Making CDs">
+<title> Making Your Own Cluster Distribution Media </title>
+
+<para>
+You've modified the base Rocks cluster distribution and now you want to
+create a media set (CDs or DVD).
+</para>
+
+<para>
+First, login to your frontend and obtain the entire Rocks cluster distribution:
+</para>
+
+<screen>
+# cd /home/install
+# rocks-dist mirror
+</screen>
+
+<para>
+This puts the entire Rocks distribution under the directory
+<computeroutput>/home/install/ftp.rocksclusters.org/...</computeroutput>
+</para>
+
+<para>
+Now, recompile the distribution in pristine form (without Rolls).
+</para>
+
+<screen>
+# cd /home/install
+# rm -rf rocks-dist
+# rocks-dist --pristine dist
+</screen>
+
+<para>
+This binds all the packages from
+<computeroutput>ftp.rocksclusters.org</computeroutput>, all the packages
+under <computeroutput>/usr/src/redhat/RPMS/...</computeroutput> and all
+the packages under <computeroutput>/home/install/contrib/...</computeroutput>
+into a new Red Hat compliant distribution under 
+<computeroutput>/home/install/rocks-dist</computeroutput>
+</para>
+
+<warning>
+<para>
+After rebuilding a package, before you try to make a media set, you
+must re-execute:
+</para>
+
+<screen>
+# cd /home/install
+# rocks-dist --pristine dist
+</screen>
+
+</warning>
+
+<para>
+Now build the media set (in this case, build the CD set):
+</para>
+
+<screen>
+# cd /home/install
+# rm -rf cdrom
+# rocks-dist --dist=cdrom cdrom
+</screen>
+
+<para>
+This puts the CD set under
+<computeroutput>/home/install/cdrom/...</computeroutput>.
+</para>
+
+<para>
+The first ISO is named
+<computeroutput>/home/install/cdrom/&redhat-version-x86;/en/os/rocks-disk1.iso</computeroutput>,
+the second is 
+<computeroutput>/home/install/cdrom/&redhat-version-x86;/en/os/rocks-disk2.iso</computeroutput>,
+the third is
+<computeroutput>/home/install/cdrom/&redhat-version-x86;/en/os/rocks-disk3.iso</computeroutput>,
+etc.
+</para>
+
+<para>
+You're done -- you now have a customized cluster distribution ready to burn
+onto blank CD media.
+</para>
+
+<para>
+To build a DVD set, execute:
+</para>
+
+<screen>
+# cd /home/install
+# rm -rf dvd
+# rocks-dist --dist=dvd dvd
+</screen>
+
+<para>
+This puts the DVD set under
+<computeroutput>/home/install/dvd/...</computeroutput>.
+The first ISO is named
+<computeroutput>/home/install/dvd/&redhat-version-x86;/en/os/rocks-disk1.iso</computeroutput>.
+</para>
+
+</section>
+

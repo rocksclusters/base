@@ -1,0 +1,26 @@
+<qandaentry>
+
+<question id="cant-mount">
+<para>
+When I try to install a compute node, the error message on the compute node 
+says, "Can't mount /tmp. Please press OK to restart".
+What should I do?
+</para>
+</question>
+
+<answer>
+<para>
+Most likely, this situation arises due to the size of the disk drive on the compute
+node.
+The installation procedure for Rocks formats the disk on the compute node if Rocks
+has never been installed on the compute node before.
+</para>
+
+<para>
+The fix requires changing the way Rocks partitions disk drives.
+See <xref linkend="customization-partitioning"> for details.
+</para>
+
+</answer>
+</qandaentry>
+

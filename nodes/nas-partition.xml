@@ -1,0 +1,22 @@
+<?xml version="1.0" standalone="no"?>
+
+<kickstart>
+
+<description>
+Define a partitioning layout for NAS nodes.
+</description>
+
+
+<changelog>
+$Log: nas-partition.xml,v $
+Revision 1.2  2008/04/22 17:47:25  bruno
+tweak partitioning
+
+Revision 1.1  2008/04/17 18:34:29  bruno
+add a nas-partition XML node to the framework
+
+</changelog>
+
+
+</kickstart> 
+

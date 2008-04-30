@@ -1,0 +1,88 @@
+<?xml version="1.0" standalone="no"?>
+
+<kickstart>
+
+	<description>
+
+	Rocks Foundation Packages
+
+	</description>
+
+        <copyright>
+        Copyright (c) 2000 - 2008 The Regents of the University of California.
+        All rights reserved. Rocks(r) v5.0 www.rocksclusters.org
+        </copyright>
+
+
+	<changelog>
+	$Log: foundation-base.xml,v $
+	Revision 1.13  2008/03/07 18:29:48  mjk
+	foundation-mecurial is on the frontend now
+	
+	Revision 1.12  2008/03/06 23:41:30  mjk
+	copyright storm on
+	
+	Revision 1.11  2007/06/23 04:03:18  mjk
+	mars hill copyright
+	
+	Revision 1.10  2006/08/02 21:34:36  mjk
+	added foundation perl
+	
+	Revision 1.9  2006/07/29 18:29:44  mjk
+	added foundation-ant
+	
+	Revision 1.8  2006/05/02 19:27:28  mjk
+	create dot config file
+	
+	Revision 1.7  2006/01/20 19:28:03  mjk
+	remove python symlink (in rpm now)
+	
+	Revision 1.6  2006/01/20 01:21:41  mjk
+	*** empty log message ***
+	
+	Revision 1.5  2006/01/19 21:27:12  mjk
+	more foundation changes
+	
+	Revision 1.4  2006/01/18 06:12:42  mjk
+	more foundation work
+	
+	Revision 1.3  2006/01/17 00:13:14  mjk
+	move foundation stuff
+	
+	Revision 1.2  2006/01/13 23:57:17  mjk
+	added foundation-python
+	
+	Revision 1.1  2005/07/11 22:00:50  mjk
+	added foundation to graph
+	
+	</changelog>
+
+	<package>foundation-redhat</package>
+	<package>foundation-python</package>
+	<package>foundation-python-extras</package>
+	<package>foundation-perl</package>
+	<package>foundation-perl-tk</package>
+	<package>foundation-graphviz</package>
+	<package>foundation-coreutils</package>
+	<package>foundation-rcs</package>
+	<package>foundation-cvs</package>
+	<package>foundation-gawk</package>
+	<package>foundation-readline</package>
+	<package>foundation-mysql</package>
+	<package>foundation-libxml2</package>
+	<package>foundation-wget</package>
+	<package>foundation-ant</package>
+	<package>foundation-mercurial</package>
+
+<post>
+
+<!-- graphviz requires this to create its config file -->
+
+/opt/rocks/bin/dot -c
+
+</post>
+
+
+
+</kickstart> 
+

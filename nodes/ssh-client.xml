@@ -1,0 +1,109 @@
+<?xml version="1.0" standalone="no"?>
+
+
+<kickstart>
+
+<description>
+
+SSH Config for compute nodes and other non-frontend appliances.
+
+We are using one key pair among all SSH servers in the
+cluster. This implies we do not care about Man-in-the-Middle
+attacks. We have subverted the protection for these attacks for
+several releases (broadcastSSH).
+
+This logic should not be in the ssh.xml node so the frontend will
+generate its own keypair.
+  
+</description>
+
+        <copyright>
+        Copyright (c) 2000 - 2008 The Regents of the University of California.
+        All rights reserved. Rocks(r) v5.0 www.rocksclusters.org
+        </copyright>
+
+  <changelog>
+  $Log: ssh-client.xml,v $
+  Revision 1.3  2008/03/06 23:41:30  mjk
+  copyright storm on
+
+  Revision 1.2  2007/06/23 04:03:18  mjk
+  mars hill copyright
+
+  Revision 1.1  2005/03/01 00:22:26  mjk
+  moved to base roll
+
+  Revision 1.2  2005/02/15 22:58:52  mjk
+  dtd is gone
+
+  Revision 1.1  2004/03/08 21:01:23  mjk
+  *** empty log message ***
+
+  Revision 1.3  2004/02/03 20:00:36  mjk
+  decolorize
+
+  Revision 1.2  2004/01/30 04:53:42  mjk
+  colorize
+
+  Revision 1.1  2003/09/17 22:50:55  fds
+  Moved ssh key files into separate node, so
+  frontend node does not get the key of our build host.
+
+  </changelog>
+  
+<post>
+
+<!-- The way to pass binary files through Kickstart. Should we
+make this part of the file tag? 
+-->
+
+key="
+<eval>
+/opt/rocks/sbin/read-ssh-private-key RSA1 | python -c '
+import base64 
+import sys 
+base64.encode(sys.stdin, sys.stdout)'
+</eval>"
+
+echo $key | python -c '
+import base64
+import sys
+base64.decode(sys.stdin, sys.stdout)' > /etc/ssh/ssh_host_key
+
+chmod 0400 /etc/ssh/ssh_host_key
+
+
+<file name="/etc/ssh/ssh_host_key.pub" perms="0444">
+<eval>
+cat /etc/ssh/ssh_host_key.pub
+</eval>
+</file>
+
+<file name="/etc/ssh/ssh_host_rsa_key" perms="0400">
+<eval>
+/opt/rocks/sbin/read-ssh-private-key RSA
+</eval>
+</file>
+
+<file name="/etc/ssh/ssh_host_rsa_key.pub" perms="0444">
+<eval>
+cat /etc/ssh/ssh_host_rsa_key.pub
+</eval>
+</file>
+
+<file name="/etc/ssh/ssh_host_dsa_key" perms="0400">
+<eval>
+/opt/rocks/sbin/read-ssh-private-key DSA
+</eval>
+</file>
+
+<file name="/etc/ssh/ssh_host_dsa_key.pub" perms="0444">
+<eval>
+cat /etc/ssh/ssh_host_dsa_key.pub
+</eval>
+</file>
+
+</post>
+
+</kickstart>
+

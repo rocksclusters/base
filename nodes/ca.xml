@@ -1,0 +1,152 @@
+<?xml version="1.0" standalone="no"?>
+
+
+<kickstart>
+
+  <description>
+
+Sets up keys for the frontend Certificate Authority
+
+  </description>
+
+        <copyright>
+        Copyright (c) 2000 - 2008 The Regents of the University of California.
+        All rights reserved. Rocks(r) v5.0 www.rocksclusters.org
+        </copyright>
+
+  <changelog>
+  $Log: ca.xml,v $
+  Revision 1.4  2008/03/06 23:41:30  mjk
+  copyright storm on
+
+  Revision 1.3  2007/06/23 04:03:18  mjk
+  mars hill copyright
+
+  Revision 1.2  2005/03/17 22:14:27  fds
+  Moved kickstart key management from ca to security-client for
+  appliances.
+
+  Revision 1.1  2005/03/01 00:22:26  mjk
+  moved to base roll
+
+  Revision 1.6  2005/02/15 22:58:52  mjk
+  dtd is gone
+
+  Revision 1.5  2005/02/12 02:27:55  fds
+  411 second generation: safer, thanks to master-only RSA keypair; all files
+  are now signed for integrity. Faster for master, since we run the random
+  number generator less (only once per cluster lifetime rather than once per
+  encryption).  Keys are kept in /etc/411-security. Amen.
+
+  Revision 1.4  2004/08/21 00:18:05  fds
+  Need this part back. Keys placed by 'pre' into install env.
+
+  Revision 1.3  2004/08/20 23:45:26  fds
+  Simpler. Get a new kickstart cert every time.
+
+  Revision 1.2  2004/08/18 20:47:47  fds
+  Give nodes a copy of our CA cert so they can verify us in the future.
+
+  Revision 1.1  2004/08/10 19:05:42  fds
+  Moved to new security graph hierarchy.
+
+  Revision 1.5  2004/08/09 23:45:55  fds
+  Tighter permissions, carry over ca.serial.
+
+  Revision 1.4  2004/07/26 22:52:48  fds
+  Rocks is done.
+
+  Revision 1.3  2004/07/14 23:54:08  fds
+  cluster-cert (for wan installs) correctly saved from anaconda
+
+  Revision 1.2  2004/07/12 22:17:24  fds
+  Webserver can now issue new certificates. Trusting Apache.
+
+  Revision 1.1  2004/06/29 22:30:57  fds
+  Putting apache conf files in conf.d where they are automatically
+  included.
+
+  </changelog>
+
+<post>
+
+mkdir -p /etc/security/ca
+mkdir -p /etc/security/ca/new-certs
+
+<file name="/etc/security/ca/ca.cfg" perms="0600">
+[ req ]
+default_bits		= 1024
+default_md		= md5
+string_mask		= nombstr	# permitted characters
+distinguished_name	= req_distinguished_name
+
+[ v3_ca ]
+basicConstraints	= CA:TRUE
+subjectKeyIdentifier	= hash
+authorityKeyIdentifier	= keyid:always,issuer:always
+
+[ req_distinguished_name ]
+0.organizationName	= Organization Name (company)
+organizationalUnitName	= Organizational Unit Name (department, division)
+emailAddress		= Email Address
+emailAddress_max	= 64
+localityName		= Locality Name (city, district)
+stateOrProvinceName	= State or Province Name (full name)
+countryName		= Country Name (2 letter code)
+countryName_min		= 2
+countryName_max		= 2
+commonName		= Common Name (hostname, IP, or your name)
+
+commonName_default = <var name="Kickstart_PublicHostname"/>
+organizationalUnitName_default	= <var name="Info_ClusterName"/>-CA
+emailAddress_default		= <var name="Info_ClusterContact"/>
+0.organizationName_default	= <var name="Info_CertificateOrganization"/>
+localityName_default		= <var name="Info_CertificateLocality"/>
+stateOrProvinceName_default	= <var name="Info_CertificateState"/>
+countryName_default		= <var name="Info_CertificateCountry"/>
+</file>
+
+</post>
+
+<post arg="--nochroot">
+
+<!-- Place certificates and keys. -->
+
+<!-- CA -->
+if [ -f /tmp/security/ca.key ]
+then
+	mv /tmp/security/ca.key /mnt/sysimage/etc/security/ca/
+	mv /tmp/security/ca.crt /mnt/sysimage/etc/security/ca/
+	mv /tmp/security/ca.serial /mnt/sysimage/etc/security/ca/
+fi
+
+</post>
+
+<post>
+
+<!-- Our Certificate Authority -->
+if [ ! -f /etc/security/ca/ca.key ]
+then
+(
+cd /etc/security/ca; \
+/usr/bin/openssl req -new -x509 -extensions v3_ca -nodes \
+	-keyout ca.key -days 5000 -batch -config ca.cfg > ca.crt; \
+chmod 0400 ca.key; \
+chmod 0444 ca.crt; \
+echo "01" > ca.serial 
+)
+fi
+
+
+<!-- Set perms so Apache can issue certs -->
+chmod 0750 /etc/security/ca
+chmod 0770 /etc/security/ca/new-certs
+chmod 0664 /etc/security/ca/ca.serial
+chmod 0440 /etc/security/ca/ca.key
+chmod 0640 /etc/security/ca/ca.cfg
+
+chgrp -R apache /etc/security/ca
+
+</post>
+
+</kickstart>

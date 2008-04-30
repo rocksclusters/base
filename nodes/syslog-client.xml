@@ -1,0 +1,63 @@
+<?xml version="1.0" standalone="no"?>
+
+
+
+<kickstart>
+
+  <description>
+
+  Setup Syslog for client machine to forward messages
+
+  </description>
+
+        <copyright>
+        Copyright (c) 2000 - 2008 The Regents of the University of California.
+        All rights reserved. Rocks(r) v5.0 www.rocksclusters.org
+        </copyright>
+
+  <changelog>
+  $Log: syslog-client.xml,v $
+  Revision 1.3  2008/03/06 23:41:30  mjk
+  copyright storm on
+
+  Revision 1.2  2007/06/23 04:03:18  mjk
+  mars hill copyright
+
+  Revision 1.1  2005/03/01 00:22:26  mjk
+  moved to base roll
+
+  Revision 1.2  2005/02/15 22:58:52  mjk
+  dtd is gone
+
+  Revision 1.1  2004/03/08 21:01:23  mjk
+  *** empty log message ***
+
+  Revision 1.5  2004/02/03 20:00:36  mjk
+  decolorize
+
+  Revision 1.4  2004/01/30 04:53:42  mjk
+  colorize
+
+  Revision 1.3  2003/07/16 20:10:41  bruno
+  changed to new 'file' tag
+
+  Revision 1.2  2001/10/02 03:16:40  mjk
+  - Update to bruno's new auto-part stuff
+  - Doesn't work but checkin anyway
+
+  Revision 1.1  2001/09/22 19:06:13  mjk
+  *** empty log message ***
+
+  </changelog>
+
+
+<post>
+
+<file name="/etc/syslog.conf" mode="append">
+*.*		@<var name="Kickstart_PrivateSyslogHost"/>
+</file>
+
+</post>
+
+
+</kickstart> 

@@ -1,0 +1,78 @@
+<qandaentry id="faq-self-partitioning" xreflabel="Self Partitioning">
+
+<question id="self-partitioning">
+<para>
+How do I change the disk drive partitioning on compute nodes to my specifications?
+</para>
+</question>
+
+<answer>
+<para>
+This requires changing the file:
+<computeroutput>/home/install/profiles/nodes/auto-partition.xml</computeroutput>.
+</para>
+
+<para>
+The section below should be removed:
+</para>
+
+<screen>
+<literal>
+&lt;eval shell="python" mode="raw">
+import os
+import string
+
+try:
+        partname = os.environ['rootpartname']
+        print '&lt;part&gt; / --size 1 --onpart %s &lt;/part&gt;' % (partname)
+except:
+        print '&lt;clearpart&gt; --all &lt;/clearpart&gt;'
+        print '&lt;part&gt; / --size 4096 &lt;/part&gt;'
+
+        try:
+                i = 1
+                for device in string.split(os.environ['devnames'], ','):
+                        print '&lt;part&gt; /state/partition%d --size 1 ' % (i),
+                        print '--grow --ondisk %s &lt;/part&gt;' % (device)
+                        i = i + 1
+        except:
+                pass
+&lt;/eval>
+</literal>
+</screen>
+
+<para>
+And replaced with something similar to:
+</para>
+
+<screen>
+<literal>
+&lt;part> / --size 1 --grow &lt;/part>
+</literal>
+</screen>
+
+<para>
+<note>
+<para>
+Please see
+<ulink url="http://www.redhat.com/docs/manuals/linux/RHL-7.2-Manual/custom-guide/s1-kickstart2-options.html">Red Hat Linux 7.2: The Official Red Hat Linux
+Customization Guide</ulink>
+for details on how to specify partitions in kickstart files.
+</para>
+</note>
+</para>
+
+<para>
+<caution>
+<para>
+The downside is, when you specify your own partitioning scheme, your compute nodes
+will <emphasis>not</emphasis> take advantage of the state saving mechanism for all
+non-root partitions (all non-root partitions on Rocks compute nodes are not
+reformatted on reinstallations).
+</para>
+</caution>
+</para>
+
+</answer>
+</qandaentry>
+

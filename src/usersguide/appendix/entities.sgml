@@ -1,0 +1,4 @@
+<!ENTITY rocks-faq SYSTEM "faq/index.sgml">
+<!ENTITY changelog SYSTEM "changelog.sgml">
+<!ENTITY base-nodes SYSTEM "base-nodes.sgml">
+<!ENTITY licenses SYSTEM "licenses.sgml">

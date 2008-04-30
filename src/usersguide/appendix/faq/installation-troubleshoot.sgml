@@ -1,0 +1,37 @@
+<qandaentry>
+
+<question id="no-dhcp">
+<para>
+Insert-ethers never sees new compute nodes. I also don't see any DHCP messages
+from compute nodes on the frontend. What is wrong?
+</para>
+</question>
+
+<answer>
+<para>
+Try bypassing the network switch connecting your nodes to the frontend. The
+swich may be configured to squash broadcast messages from unknown IP addresses,
+which drops DHCP messages from nodes. To verify your switch is indeed the
+problem:
+</para>
+
+<orderedlist>
+<listitem>
+<para>
+Connect an ethernet cable 
+between a single compute node and the frontend's "eth0" interface.
+</para>
+</listitem>
+
+<listitem>
+<para>
+Install the compute node normally (<xref linkend="install-compute-nodes">).
+You should see the DHCP messages from the node at the frontend.
+</para>
+</listitem>
+</orderedlist>
+
+</answer>
+
+
+</qandaentry>

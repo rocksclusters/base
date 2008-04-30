@@ -1,0 +1,34 @@
+<appendix id="rocks-faq" xreflabel="rocks-faq">
+	<title>Frequently Asked Questions</title>
+
+<section id="faq-installation" xreflabel="faq installation">
+<title> Installation </title>
+	<qandaset defaultlabel="number">
+	&installation-troubleshoot;
+	&kickstartfile-compute;
+	&grub-stage2;
+	&smalldisk;
+	&floppy;
+	</qandaset>
+</section>
+
+
+<section id="faq-configuration" xreflabel="faq configuration">
+<title> Configuration </title>
+	<qandaset defaultlabel="number">
+	&removenode;
+	&startx;
+	&dell-powerconnect;
+	&export;
+	&disable-reinstall;
+	</qandaset>
+</section>
+
+<section id="faq-sysadmin" xreflabel="faq sysadmin">
+<title> System Administration </title>
+	<qandaset defaultlabel="number">
+	&faq-411;
+	</qandaset>
+</section>
+
+</appendix>

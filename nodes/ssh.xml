@@ -1,0 +1,161 @@
+<?xml version="1.0" standalone="no"?>
+
+
+<kickstart>
+
+  <description>
+
+  Enable SSH
+
+  </description>
+
+        <copyright>
+        Copyright (c) 2000 - 2008 The Regents of the University of California.
+        All rights reserved. Rocks(r) v5.0 www.rocksclusters.org
+        </copyright>
+
+  <changelog>
+  $Log: ssh.xml,v $
+  Revision 1.8  2008/04/25 16:38:23  bruno
+  remove deprecated config option
+
+  Revision 1.7  2008/04/17 21:58:11  bruno
+  node file cleanup
+
+  Revision 1.6  2008/03/18 23:08:03  bruno
+  include xauth for x11 forwarding
+
+  Revision 1.5  2008/03/06 23:41:30  mjk
+  copyright storm on
+
+  Revision 1.4  2007/06/23 04:03:18  mjk
+  mars hill copyright
+
+  Revision 1.3  2005/10/19 13:04:14  bruno
+  make sure the permissions are correct
+
+  Revision 1.2  2005/03/02 23:47:52  bruno
+  changes for RHEL 4
+
+  Revision 1.1  2005/03/01 00:22:26  mjk
+  moved to base roll
+
+  Revision 1.5  2005/02/16 00:21:21  mjk
+  no more entity
+
+  Revision 1.4  2005/02/15 22:58:52  mjk
+  dtd is gone
+
+  Revision 1.3  2004/08/25 05:25:41  bruno
+  move from ssh v1 to ssh v2
+
+  (bug 17)
+
+  Revision 1.2  2004/05/20 16:08:14  bruno
+  the newest version of ssh now requires laus packages
+
+  Revision 1.1  2004/03/08 21:01:23  mjk
+  *** empty log message ***
+
+  Revision 1.17  2004/02/28 23:29:03  fds
+  Allow user-specified environments.
+
+  Revision 1.16  2004/02/03 20:00:36  mjk
+  decolorize
+
+  Revision 1.15  2004/01/30 04:53:42  mjk
+  colorize
+
+  Revision 1.14  2003/12/18 18:23:14  fds
+  sshd asks for password instead of wacked challenge-response.
+
+  Revision 1.13  2003/09/17 22:50:55  fds
+  Moved ssh key files into separate node, so
+  frontend node does not get the key of our build host.
+
+  Revision 1.12  2003/09/17 22:29:55  fds
+  Using one SSH key pair for the cluster.
+  Obviates the need for broadcastSSH.
+
+  Revision 1.11  2003/09/15 23:29:18  fds
+  There is only ONE. One ssh keypair for cluster.
+  No more broadcastSSH (thank god).
+
+  Revision 1.10  2003/05/29 20:55:19  mjk
+  gateway added to kickstart.cgi
+
+  Revision 1.9  2003/05/21 18:57:31  mjk
+  grid integration checkpoint
+
+  Revision 1.8  2002/01/18 23:27:32  bruno
+  updates for 7.2
+
+  Revision 1.7  2001/11/07 19:21:37  mjk
+  - moved phpMyAdmin the /var/www/html
+  - nuke cluster-config-* as special case rpms in rocks-dist (build.py)
+  - moved around code in rocks-boot
+  - 2.1.1 copyright
+
+  Revision 1.6  2001/10/31 21:22:02  bruno
+  added protocol 2
+
+  Revision 1.5  2001/10/31 00:35:11  bruno
+  rocks v2.1.1 updates
+
+  Revision 1.4  2001/09/21 18:36:54  mjk
+  - Fixed multiple swapfiles
+  - Added models CGI (and genmodel.py)
+  - Kickstart CGI now accepts form data
+  - Fixed turning off services (kudzu, et al)
+
+  Revision 1.3  2001/09/14 21:45:42  mjk
+  - Testing on ia32 compute nodes
+  - A CGI kickstart takes 5 seconds
+  - Working on ia64 compute nodes
+
+  Revision 1.2  2001/09/05 00:27:18  mjk
+  main and packages section is correct for compute nodes
+
+  </changelog>
+
+
+  <package>openssh</package>
+  <package>openssh-clients</package>
+  <package>openssh-server</package>
+  <package>openssh-askpass</package>
+
+  <package>xorg-x11-xauth</package>
+
+<post>
+
+<file name="/etc/ssh/ssh_config">
+Host *
+	CheckHostIP             no
+	ForwardX11              yes
+	ForwardAgent		yes
+	StrictHostKeyChecking   no
+	UsePrivilegedPort       no
+	Protocol		2,1
+</file>
+
+<!--
+change permissions on /root/ and /root/.ssh/ directories so
+cluster-dist can read root's 'id_rsa.pub' when it's run by a
+non-root user
+-->
+
+chmod a+rx /root
+mkdir /root/.ssh
+chmod a+rx /root/.ssh
+
+<!-- Turn off challenge-response so we get normal passwd auth. -->
+sed -e 's/#ChallengeResponseAuthentication yes/ChallengeResponseAuthentication no/' \
+	/etc/ssh/sshd_config > /tmp/sshd_config
+sed -e 's/#PermitUserEnvironment no/PermitUserEnvironment yes/' \
+	/tmp/sshd_config > /etc/ssh/sshd_config
+
+</post>
+
+
+</kickstart> 
+

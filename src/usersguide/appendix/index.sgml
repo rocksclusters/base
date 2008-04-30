@@ -1,0 +1,10 @@
+&rocks-faq;
+&changelog;
+
+<appendix id="appendix-b" xreflabel="node-reference">
+	<title>Kickstart Nodes Reference</title>
+&base-nodes;
+</appendix>
+
+&licenses;
+

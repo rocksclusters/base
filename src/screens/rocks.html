@@ -1,0 +1,289 @@
+<html>
+
+<head>
+<link rel="stylesheet" type="text/css" href="common.css" />
+
+<script language="JavaScript">
+var	form_variables = new Array();
+
+var	screen_title = new Array();
+var	screen_variables = new Array();
+var	screen_help = new Array();
+var	screen_buttons = new Array();
+var	screen_number = 0;
+
+function addTitleText(titletext)
+{
+	var	p = top.workarea.document.createElement('p');
+	var	label = top.workarea.document.createTextNode(titletext);
+
+	p.appendChild(label);
+
+	return(p);
+}
+
+function addButton(label, validator)
+{
+	var	i = top.workarea.document.createElement('input');
+
+	i.type = 'button';
+	i.value = label;
+	i.onclick = validator;
+	i.className = 'ProButton';
+	i.setAttribute("onmouseover",
+		"this.className='ProButton ProButtonHover'");
+	i.setAttribute("onmouseout", "this.className='ProButton'");
+
+	return(i);
+
+}
+
+function suppressEnter(e)
+{
+	if (e.keyCode == 13) {
+		return(false);
+	}
+	return(true);
+}
+
+function addToForm(inputtype, labeltext, name, namesize, default_value,
+		validate)
+{
+	var	tr = top.workarea.document.createElement('tr');
+	var	td_label = top.workarea.document.createElement('td');
+	var	td_input = top.workarea.document.createElement('td');
+	var	i = top.workarea.document.createElement('input');
+	var	label = top.workarea.document.createTextNode(labeltext);
+
+	if (inputtype != 'hidden') {
+		td_label.id = "tr-label";
+		td_label.appendChild(label);
+		td_label.setAttribute("class", "ProLabel Padded"); 
+
+		tr.appendChild(td_label);
+	}
+
+	i.type = inputtype;
+	i.name = name;
+	i.size = namesize;
+	i.value = default_value;
+	i.setAttribute("class", "ProInput Padded"); 
+	i.id = 'input-variable';
+
+	if (validate != null) {
+		if (inputtype == 'radio') {
+			i.onclick = validate;
+		} else {
+			i.onblur = validate;
+		}
+	}
+
+	/*
+	 * if the user hits the return button on a screen, make sure the screen
+	 * is *not* submitted. if there is only one field on a form (which is
+	 * what we use for user variable submission), then the default browser
+	 * behavior is to submit the form.
+	 *
+	 * we need to ensure that the form is submitted only when the last
+	 * screen is displayed.
+	 */
+	i.onkeypress = suppressEnter;
+
+	td_input.id = "tr-input";
+	td_input.appendChild(i);
+
+	tr.appendChild(td_input);
+
+	return(tr);
+}
+
+function addToMenu(labeltext, name, namesize, validate, options, default_value)
+{
+	var	tr = top.workarea.document.createElement('tr');
+	var	td_label = top.workarea.document.createElement('td');
+	var	td_menu = top.workarea.document.createElement('td');
+	var	select = top.workarea.document.createElement('select');
+	var	label = top.workarea.document.createTextNode(labeltext);
+
+	td_label.id = "tr-label";
+	td_label.appendChild(label);
+	td_label.setAttribute("class", "ProLabel Padded"); 
+
+	tr.appendChild(td_label);
+
+	select.name = name;
+	select.size = namesize;
+	select.setAttribute("class", "ProInput");
+	select.id = 'select-variable';
+
+	if (validate != null) {
+		select.onclick = validate;
+	}
+
+	for (val in options) {
+		var	o = top.workarea.document.createElement('option');
+		var	olabel = top.workarea.document.createTextNode(options[val]);
+
+		select.appendChild(o);
+		o.value = val;
+		if (options[val] == default_value) {
+			o.selected = true;
+		}
+		o.appendChild(olabel);
+	}
+
+	td_menu.appendChild(select);
+	tr.appendChild(td_menu);
+
+	return(tr);
+}
+
+function addToHelp(label, msg)
+{
+	var	div = top.help.document.createElement('div');
+	var	dt = top.help.document.createElement('dt');
+	var	dl = top.help.document.createElement('dl');
+	var	helplabel = top.help.document.createTextNode(label);
+	var	helpmsg = top.help.document.createTextNode(msg);
+	var	hr = top.help.document.createElement('hr');
+
+	dt.id = "help-label";
+	dt.appendChild(helplabel);
+	dt.setAttribute("class", "ProLabel"); 
+
+	dl.id = "help-msg";
+	dl.appendChild(helpmsg);
+	dl.setAttribute("class", "Shifted"); 
+
+	div.appendChild(dt);
+	div.appendChild(dl);
+	div.appendChild(hr);
+
+	return(div);
+}
+
+function submitValues()
+{
+	for (name in form_variables) {
+		var	input = top.hidden.document.createElement('input');
+
+		input.type = 'text';
+		input.name = name;
+		input.value = form_variables[name];
+
+		if (input.value == '') {
+			input.value = ' ';
+		}
+
+		top.hidden.document.hiddenform.appendChild(input);
+	}
+
+	top.hidden.document.hiddenform.submit();
+}
+
+function nextScreen()
+{
+	if (top.screen_number < top.screen_variables.length) {
+		/*
+		 * clear the status message before going to the next screen
+		 */
+		top.status.printStatus('');
+
+		/*
+		 * update the screen variables
+		 */
+		top.workarea.doTitle();
+		top.workarea.doVariables();
+		top.workarea.doButtons();
+		top.help.doHelp();
+
+		++top.screen_number;
+	} else {
+		submitValues();
+	}
+}
+
+function prevScreen()
+{
+	/*
+	 * the screen_number is pointing to the next screen (not the
+	 * current screen), so we will need to decrement it by 2.
+	 */
+	if ((top.screen_number - 2)  > 0) {
+		top.screen_number = top.screen_number - 2;
+	} else {
+		top.screen_number = 0;
+	} 
+	nextScreen();
+}
+
+function addit(name, value)
+{
+	form_variables[String(name)] = String(value);
+}
+
+function savevalues()
+{
+	var	len = top.workarea.document.variableform.elements.length;
+	var	i = 0;
+
+	for (i = 0; i < len; ++i) {
+		var element = top.workarea.document.variableform.elements[i];
+
+		if ((element.type == 'text') 
+				|| (element.type == 'password')
+				|| (element.type == 'hidden')) {
+
+			addit(element.name, element.value);
+		} else if (element.type == 'radio') {
+			if (element.checked == true) {
+				addit(element.name, element.value);
+			}
+		} else if (element.id == 'select-variable') {
+			var j = 0;
+
+			for (j = 0; j < element.length; ++j) {
+				var option = element.options[j];
+
+				if (option.selected == true) {
+					addit(element.name, option.text);
+				}
+			}
+		}
+	}
+}
+
+</script>
+
+</head>
+
+<frameset rows="100,* " frameborder="0" border="0" framespacing="0"
+		onLoad="top.resizeTo(screen.availWidth, screen.availHeight); 
+		moveTo(0,0);
+		top.screens.initScreens();
+		top.nextScreen(); ">
+
+	<frame src="header.html" name="header"
+		scrolling="no" marginwidth="0" marginheight="0">
+
+	<frameset cols="30%,70%,*,*" frameborder="0" border="0"
+			framespacing="0">
+
+		<frame src="help.html" name="help">
+
+		<frameset rows="90%,10%"
+				frameborder="0" border="0" framespacing="0">
+
+			<frame src="workarea.html" name="workarea">
+			<frame src="status.html" name="status">
+		</frameset>
+
+		<frame src="hidden.html" name="hidden">
+		<frame src="screens.html" name="screens">
+
+	</frameset>
+
+</frameset>
+
+</html>
+

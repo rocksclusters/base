@@ -1,0 +1,16 @@
+<chapter id="Customization" xreflabel="Customization">
+<title> Customizing your Rocks Installation </title>
+
+&customize-adding-packages;
+&customize-postconfig;
+&customize-adding-applications;
+&customize-extra-nic;
+&customize-partition;
+&customize-kernel;
+&customize-rsh;
+&customization-adding-appliance;
+&customization-driver;
+&customization-dns;
+
+</chapter>
+

@@ -1,0 +1,45 @@
+<?xml version="1.0" standalone="no"?>
+
+<kickstart>
+
+
+<description>
+Client node firewall rules
+</description>
+
+<changelog>
+$Log: client-firewall.xml,v $
+Revision 1.1  2007/12/10 21:28:33  bruno
+the base roll now contains several elements from the HPC roll, thus
+making the HPC roll optional.
+
+this also includes changes to help build and configure VMs for V.
+
+</changelog>
+
+
+<post>
+	
+<file name="/etc/sysconfig/iptables">
+*filter
+:INPUT ACCEPT [0:0]
+:FORWARD DROP [0:0]
+:OUTPUT ACCEPT [0:0]
+
+-A INPUT -i eth0 -j ACCEPT
+-A INPUT -i lo   -j ACCEPT
+
+-A INPUT -m state --state NEW -p tcp --dport ssh -j ACCEPT
+-A INPUT -p icmp --icmp-type any -j ACCEPT
+-A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+
+-A INPUT -p udp --dport 0:1024 -j REJECT
+-A INPUT -p tcp --dport 0:1024 -j REJECT
+-A INPUT -p udp --dport 8649   -j REJECT
+COMMIT
+</file>
+
+</post>
+
+</kickstart> 
+

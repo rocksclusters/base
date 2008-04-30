@@ -1,0 +1,36 @@
+<section id="supported-hardware" xreflabel="supported hardware">
+<title> Supported Hardware </title>
+
+<para>
+Processors
+</para>
+	<itemizedlist>
+	<listitem>
+		<para> x86 (ia32, AMD Athlon, etc.) </para>
+	</listitem>
+
+	<listitem>
+		<para> x86_64 (AMD Opteron and EM64T) </para>
+	</listitem>
+	</itemizedlist>
+
+<para>
+Networks
+</para>
+	<itemizedlist>
+	<listitem>
+		<para> Ethernet </para>
+	</listitem>
+	</itemizedlist>
+
+<note>
+<para>
+Specialized networks and components (e.g., Myrinet, Infiniband, nVidia GPU)
+are also supported.
+Hardware requirements and software (Rocks Rolls) can be found on the
+respective vendor web sites.
+</para>
+</note>
+
+</section>
+

@@ -1,0 +1,67 @@
+<qandaentry>
+<question id="kickstart-file">
+
+<para>
+While trying to bring up my frontend, I boot from the Rocks CD, type
+'frontend' at the boot prompt, insert my floppy and I see the error message
+'Error opening kickstart file /tmp/ks.cfg. No such file or directory'.
+What went wrong?
+</para>
+
+</question>
+
+<answer>
+<para>
+There are two common modes for this problem:
+</para>
+
+<orderedlist>
+	<listitem> <para>
+	The file <emphasis>ks.cfg</emphasis> is not saved on the floppy as
+	a <emphasis>Unix</emphasis> text file, or
+	</para> </listitem>
+
+	<listitem> <para>
+	Your floppy media is bad.
+	</para></listitem>
+</orderedlist>
+
+<para>
+To deal with #1, mount the floppy and make sure the 'end of line' is
+'line feed' (ASCII character '\n' -- the Unix way) and not 'carriage return
++ line feed' (ASCII characters '\r\n' -- the DOS way).
+</para>
+
+<para>
+To verify the <emphasis>ks.cfg</emphasis> file on your floppy, execute:
+</para>
+
+<screen>
+# mount /mnt/floppy
+# od -c /mnt/floppy/ks.cfg | more
+</screen>
+
+<para>
+You should see output similar to:
+</para>
+
+<screen>
+0000000   #       @   C   o   p   y   r   i   g   h   t   @  \n   #    
+0000020  \n   #      \t  \t  \t                       N   P   A   C   I
+0000040       R   o   c   k   s  \n   #      \t  \t  \t                
+0000060   V   e   r   s   i   o   n       2   .   2  \n   #      \n   #
+</screen>
+
+<para>
+Notice the '\n' characters (and not '\r\n').
+</para>
+
+<para>
+If your <emphasis>ks.cfg</emphasis> file is ok, then throw away your
+floppy and copy <emphasis>ks.cfg</emphasis> onto a new floppy.
+During the testing of releases, we go through at least 5 floppies -- to
+sum it up in two words: floppies stink.
+</para>
+</answer>
+</qandaentry>
+

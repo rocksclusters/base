@@ -1,0 +1,36 @@
+<html>
+
+<head>  
+
+<link rel="stylesheet" type="text/css" href="common.css" />
+
+<script language="JavaScript">
+function printStatus(msg)
+{
+	var	msgtext = self.document.createTextNode('' + msg);
+	var	v = self.document.getElementById('status-message');
+
+	while (v.firstChild) {
+		v.removeChild(v.firstChild);
+	}
+
+	v.className = 'ProStatusText';
+
+	v.appendChild(msgtext);
+
+	return(true);
+}
+</script>
+
+</head>
+
+<body class="ProBackground">
+
+<p class="ProStatusText">
+	<div id="status-message"/>
+</p>
+
+</body>
+
+</html>
+

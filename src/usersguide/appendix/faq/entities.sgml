@@ -1,0 +1,16 @@
+<!ENTITY installation-troubleshoot SYSTEM "installation-troubleshoot.sgml">
+<!ENTITY thirdcd SYSTEM "thirdcd.sgml">
+<!ENTITY kickstartfile-compute SYSTEM "kickstartfile-compute.sgml">
+<!ENTITY removenode SYSTEM "removenode.sgml">
+<!ENTITY startx SYSTEM "startx.sgml">
+<!ENTITY dell-powerconnect SYSTEM "dell-powerconnect.sgml">
+<!ENTITY grub-stage2 SYSTEM "grub-stage2.sgml">
+<!ENTITY smalldisk SYSTEM "smalldisk.sgml">
+<!ENTITY mirroring SYSTEM "mirroring.sgml">
+<!ENTITY security-updates SYSTEM "security-updates.sgml">
+<!ENTITY no-kickstart SYSTEM "no-kickstart.sgml">
+<!ENTITY export SYSTEM "export.sgml">
+<!ENTITY faq-411 SYSTEM "411.sgml">
+<!ENTITY disable-reinstall SYSTEM "disable-reinstall.sgml">
+<!ENTITY floppy SYSTEM "floppy.sgml">
+

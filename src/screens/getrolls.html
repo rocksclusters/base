@@ -1,0 +1,28 @@
+<html>
+
+<head>
+<script language="JavaScript">
+
+function load(url) {
+	parent.location.href = url;
+}
+
+</script>
+</head>
+
+<frameset rows="100,* " frameborder="0" border="0" framespacing="0"
+	onLoad="top.resizeTo(screen.availWidth, screen.availHeight);
+		moveTo(0,0); ">
+
+	<frame src="header.html" name="header"
+		scrolling="no" marginwidth="0" marginheight="0">
+
+	<frameset cols="45%,55%" frameborder="0" border="0" framespacing="0">
+
+		<frame src="selected.html" name="selected">
+		<frame src="rolls.html" name="rolls">
+
+	</frameset>
+
+</html>
+

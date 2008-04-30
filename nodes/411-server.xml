@@ -1,0 +1,208 @@
+<?xml version="1.0" standalone="no"?>
+
+<kickstart>
+
+  <description>
+
+  Sets up the 411 Secure Information Service for Master 
+  nodes. Creates the RSA public and private keys for the cluster,
+  and configures Apache for 411.
+
+  </description>
+
+  <changelog>
+  $Log: 411-server.xml,v $
+  Revision 1.3  2007/12/10 21:28:33  bruno
+  the base roll now contains several elements from the HPC roll, thus
+  making the HPC roll optional.
+
+  this also includes changes to help build and configure VMs for V.
+
+  Revision 1.7  2006/06/27 20:51:47  bruno
+  no longer using create-account
+
+  Revision 1.6  2006/01/25 23:10:13  bruno
+  locak out public access
+
+  Revision 1.5  2005/05/27 22:25:46  bruno
+  change the test from no file (-f) to no file *or* zero-length file (-s)
+
+  Revision 1.4  2005/04/14 00:22:23  fds
+  Simpler master key management: on catastrophic recovery, we manually
+  move CA and 411 keys. Makes USB security key operation more intuitive.
+
+  Revision 1.3  2005/03/17 22:13:20  fds
+  Tightened up key management for usb.
+
+  Revision 1.2  2005/03/12 00:01:57  bruno
+  minor checkin
+
+  Revision 1.1  2005/03/01 17:34:02  mjk
+  move 411 to hpc roll
+
+  Revision 1.1  2005/03/01 00:22:25  mjk
+  moved to base roll
+
+  Revision 1.6  2005/02/15 22:58:52  mjk
+  dtd is gone
+
+  Revision 1.5  2005/02/12 02:27:55  fds
+  411 second generation: safer, thanks to master-only RSA keypair; all files
+  are now signed for integrity. Faster for master, since we run the random
+  number generator less (only once per cluster lifetime rather than once per
+  encryption).  Keys are kept in /etc/411-security. Amen.
+
+  Revision 1.4  2004/07/26 22:52:48  fds
+  Rocks is done.
+
+  Revision 1.3  2004/06/29 22:30:57  fds
+  Putting apache conf files in conf.d where they are automatically
+  included.
+
+  Revision 1.2  2004/04/02 03:09:15  fds
+  Cron scripts need to be executable.
+
+  Revision 1.1  2004/03/08 21:01:23  mjk
+  *** empty log message ***
+
+  Revision 1.16  2004/02/03 20:00:35  mjk
+  decolorize
+
+  Revision 1.15  2004/01/30 04:53:42  mjk
+  colorize
+
+  Revision 1.14  2003/11/12 23:41:37  mjk
+  force NIS client off
+
+  Revision 1.13  2003/11/12 20:07:45  fds
+  Opteron tweaks
+
+  Revision 1.12  2003/11/05 23:46:25  fds
+  Added 411-Login-Files service (waits for /etc/passwd, etc)
+
+  Revision 1.11  2003/11/05 21:57:02  mjk
+  hijack useradd/del (was in nis-server
+
+  Revision 1.10  2003/10/30 23:06:29  fds
+  Added hourly cron entry for 411 (like NIS)
+
+  Revision 1.9  2003/10/30 02:34:40  fds
+  adjusted paths
+
+  Revision 1.8  2003/10/23 22:13:27  fds
+  Will improve convergence behavior of 411.
+
+  Revision 1.7  2003/10/10 20:44:56  fds
+  Calling out 411 in rocksrc
+
+  Revision 1.6  2003/09/25 18:34:55  fds
+  No more need to explicitly disable oneself,
+  411 will now ignore alerts coming from itself.
+
+  Revision 1.5  2003/08/14 18:14:42  fds
+  Turned off 411 on frontend for beta period.
+
+  Revision 1.4  2003/08/14 15:32:23  mjk
+  - Built Python2 for Itanic
+  - Root part is now 4GB
+  - Include openssl python tools for 411 on Itanic
+
+  Revision 1.3  2003/08/06 00:01:40  fds
+  Added 411 bootstrap service.
+
+  Revision 1.2  2003/07/24 21:31:30  fds
+  Installing 411 service.
+
+  Revision 1.1  2003/07/24 19:14:10  fds
+  First design
+
+  </changelog>
+
+  <package>rocks-411-master</package>
+
+
+<post arg="--nochroot">
+
+<!-- Retrieve old 411 keys -->
+if [ -f /tmp/security/411-shared.key ]
+then
+	mkdir /mnt/sysimage/etc/411-security
+	mv /tmp/security/411-shared.key /mnt/sysimage/etc/411-security/shared.key
+	chmod 0400 /mnt/sysimage/etc/411-security/shared.key
+
+	mv /tmp/security/411-master.key /mnt/sysimage/etc/411-security/master.key
+	chmod 0400 /mnt/sysimage/etc/411-security/master.key
+fi
+
+</post>
+
+<post>
+
+<file name="/etc/httpd/conf.d/411.conf">
+#
+# 411 Specific Apache configuration.
+# Generated automatically by the 411.xml kickstart node.
+#
+Alias /411.d/ "/etc/411.d/"
+Alias /411.d "/etc/411.d"
+
+&lt;Directory /etc/411.d&gt;
+
+	Options Indexes MultiViews
+	IndexOptions FancyIndexing
+
+	AllowOverride None
+	Order deny,allow
+	Allow from <var name="Kickstart_PrivateNetwork"/>/<var name="Kickstart_PrivateNetmask"/>
+	Allow from 127.0.0.1
+	Deny from all
+
+&lt;/Directory&gt;
+</file>
+
+<!-- 	Generate the 411 shared key. This will be distributed to
+	compute nodes via their kickstart file. 
+-->
+mkdir -p /etc/411-security
+
+if [ ! -s /etc/411-security/shared.key ]
+then
+	/opt/rocks/sbin/411put --make-shared-key &gt; /etc/411-security/shared.key
+	chmod 0400 /etc/411-security/shared.key
+fi
+
+
+<!-- Generate 1024bit RSA master keypair in PEM format. 
+     Used to sign 411 files and alerts. 
+-->
+if [ ! -s /etc/411-security/master.key ]
+then
+	/usr/bin/openssl genrsa 1024 &gt; /etc/411-security/master.key
+	chmod 0400 /etc/411-security/master.key
+fi
+
+
+<!-- Always generate the 411 public key from the private -->
+/usr/bin/openssl rsa -pubout &gt; /etc/411-security/master.pub \
+        &lt; /etc/411-security/master.key
+chmod 0444 /etc/411-security/master.pub
+
+
+/sbin/chkconfig 411 on
+
+
+<!-- Publish altered login files periodically to propagate changes -->
+<file name="/etc/cron.hourly/make411" perms="0555">
+#!/bin/sh
+make -C /var/411 &gt; /dev/null
+</file>
+
+
+<!-- make sure ypbind is off -->
+
+/sbin/chkconfig ypbind off
+
+</post>
+
+</kickstart>
+

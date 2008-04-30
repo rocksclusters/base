@@ -1,0 +1,49 @@
+<qandaentry id="floppy-boot" xreflabel="Using a Floppy to PXE boot">
+<question id="floppy">
+<para>
+My compute nodes don't have a CD drive and my network cards don't PXE
+boot, but my compute nodes do have a floppy drive.
+How can I install the compute nodes?
+</para>
+</question>
+
+<answer>
+<para>
+You will create a boot floppy that emulates the PXE protocol.
+This is accomplished by going to the web site:
+</para>
+
+<para>
+<ulink url="http://www.rom-o-matic.net/">ROM-o-matic.net</ulink>
+</para>
+
+<para>
+Then click on the version number under the
+<emphasis>Latest Production Release</emphasis> (as of this writing,
+this is version 5.4.3).
+</para>
+
+<para>
+Select your device driver in item 1.
+Keep the default setting in item 2 (Floppy bootable ROM Image).
+Then click "Get ROM" in item 4.
+</para>
+
+<para>
+We suggest using <computeroutput>dd</computeroutput> to copy the
+downloaded floppy image to the floppy media.
+For example:
+</para>
+
+<screen>
+# dd if=eb-5.4.0-pcnet32.zdsk of=/dev/fd0
+</screen>
+
+<para>
+Then run <computeroutput>insert-ethers</computeroutput> on your frontend
+and boot your compute node with the floppy.
+</para>
+
+</answer>
+</qandaentry>
+

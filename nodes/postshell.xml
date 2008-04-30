@@ -1,0 +1,47 @@
+<?xml version="1.0" standalone="no"?>
+
+<kickstart>
+
+
+<description>
+Allow interaction after all post sections have run
+If postshell is on the command line, wait until /mnt/sysimage/tmp/postshell
+is removed interactively.
+</description>
+
+        <copyright>
+        Copyright (c) 2000 - 2008 The Regents of the University of California.
+        All rights reserved. Rocks(r) v5.0 www.rocksclusters.org
+        </copyright>
+
+
+<changelog>
+$Log: postshell.xml,v $
+Revision 1.3  2008/03/06 23:41:30  mjk
+copyright storm on
+
+Revision 1.2  2007/06/23 04:03:18  mjk
+mars hill copyright
+
+Revision 1.1  2005/03/31 04:15:10  phil
+debugging flag -- if postshell on the command line
+e.g. frontend central=rocks postshell
+then install will not complete until /mnt/sysimage/tmp/postshell is removed
+interactively by the user
+
+</changelog>
+
+<post>
+
+
+grep -q "postshell" /proc/cmdline
+if [ $? -eq 0 ]; then
+	touch /tmp/postshell
+	while [ -e /tmp/postshell ]; do /bin/sleep 5; done
+fi
+
+</post>
+
+
+</kickstart> 
+

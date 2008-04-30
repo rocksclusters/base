@@ -1,0 +1,76 @@
+I. FreeDOS is a trademark of Jim Hall. (Legal notice)
+
+II. FreeDOS Legal Disclaimer
+
+The FreeDOS Project or any of its sponsors make no guarantees, explicit or implicit, about the contents of this site. Use at your own risk.
+
+FreeDOS is a trademark of Jim Hall. For more information, please read Newsitem 115. All other trademarks are property of their respective owners.
+
+
+III. FreeDOS Trademark
+7 Nov 2001
+
+In a recent fd-dev post, I answered the question about declaring the name "FreeDOS" a trademark:
+
+    * Subject: Re: [fd-dev] License and protectiveness
+    * From: Jim Hall
+    * Date: Tue, 27 Nov 2001 12:04:27 -0600
+    * To: fd-dev @ topica.com
+
+On Sun, 25 Nov 2001, Aitor Santamaria Merino wrote:
+
+    Suppose that one guy/group of developers just take all of FreeDOS, change a couple of things here and there, and start distributing it as FreeDOS, with THIS name: I mean, no MyDOS, AnotherDOS, OtherFreeDOS, FreeDOS-B or whatever, but they choose to do it with the SAME name FreeDOS. Then there would be two FreeDOS distributions out there, and the problem is that, no matter if they do well or wrong, this can cause unneccessary confusion amongst users. I can't think of this as a good idea.
+
+    I know they can take the sources, modify and do with them whatever they like (as long as they remain under the GPL), but can they run over our name? or is the GPL license protecting us against this situation?
+
+Bart Oldeman wrote:
+
+    No not at all.
+
+    Jim Hall (as he is our coordinator) would need to make the term "FreeDOS" a registered trademark (™)
+
+    Linus did the same with Linux. But even then, it would be one non-commercial group vs. another. So both entities wouldn't be very interested in paying large amounts of $$$$ or £££££ to lawyers.
+
+As an aside: the Linux registered trademark is serial number 74560867.
+
+I had once considered applying for a registered trademark, which is (®) not (™), but the issue is tricky. I think I have come to a reasonable understanding of trademarks in the US. First of all, to apply for a registered trademark (®) in the US, I will need to pay a fee (http://www.uspto.gov/web/offices/ac/qs/ope/1999/fee20011001.htm) to the US Patent and Trademark Office (USPTO). Even the small entity fee for basic filing is pretty expensive.
+
+Also, there is the issue of diligence. While I think it is fair to say that anyone who considers themself part of the FreeDOS community will be watching for any violations of the use of the mark "FreeDOS", if the mark holder fails to prosecute or take action, the mark can be found in a court to be unprotected and open for use. There are other ways to lose a mark (http://www.ggmark.com/protect.html), as well.
+
+There are several ways to dispute use of a trademark by a third party. Depending on the situation, the Trademark Office may not be the proper forum. We would need an attorney, preferably one specializing in trademark law. And since inaction would imply that you are giving up the right on the trademark, time to get that lawyer can be of the essence (http://www.uspto.gov/web/offices/tac/tmfaq.htm#Other002).
+
+However, it is not necessary to register a mark with the USPTO (http://www.uspto.gov/web/offices/tac/doc/basic/register.htm) order to claim it as a trademark. "Any time you claim rights in a mark, you may use the "TM" (trademark) or "SM" (service mark) designation to alert the public to your claim, regardless of whether you have filed an application with the USPTO."
+
+Owning a federal trademark registration on the Principal Register does give you several things (http://www.uspto.gov/web/offices/tac/doc/basic/register.htm):
+
+    * constructive notice to the public of the registrant's claim of ownership of the mark;
+    * a legal presumption of the registrant's ownership of the mark and the registrant's exclusive right to use the mark nationwide on or in connection with the goods and/or services listed in the registration;
+    * the ability to bring an action concerning the mark in federal court;
+    * the use of the U.S registration as a basis to obtain registration in foreign countries; and
+    * the ability to file the U.S. registration with the U.S. Customs Service to prevent importation of infringing foreign goods.
+
+But since I think the goal here is to provide a level of protection of the name "FreeDOS" and to alert any newcomers to our claim, I don't think it is critical that we register with the USPTO to claim a trademark on "FreeDOS".
+
+Federal registration is not required to establish rights in a trademark. Common law rights arise from actual use of a mark. Generally, the first to either use a mark in commerce or file an intent to use application with the Patent and Trademark Office has the ultimate right to use a registration (http://www.uspto.gov/web/offices/tac/tmfaq.htm#Search005).
+
+I have done a search for "FREEDOS" and "freedos" (http://tess.uspto.gov/bin/gate.exe?f=login&p_lang=english&p_d=trmk) and several variations on the USPTO on-line trademark search.
+
+Since I don't see any hits in the trademark search, I think we are the first to attempt to list "FreeDOS" as a trademark. In any case, I have not been made aware of anyone who has tried to take use of the name "FreeDOS". The only incident I am aware of is when we first created the FreeDOS Project (then, the "Free-DOS Project") in 1994, and another group called "FreeDOS" was also trying to start. I discussed the name issue with their leader, and they changed their name. Later, when Pat's book was published in 1996, his publisher used the name "FreeDOS" instead of "Free-DOS" in the book title, and later that same year, we changed our name to "FreeDOS" (which I find easier to type.)
+
+Let me be the first to say it:
+
+    THEREFORE, AS FOUNDER AND COORDINATOR OF THE 'FreeDOS Project' [ESTABLISHED JULY 1994, FIRST USED IN COMMERCE (WEB SITE) 06-Nov-1996 AND (BOOK) 1996], I HEREBY MAKE TRADEMARK CLAIM TO THE NAME AND TYPED DRAWING OF 'FreeDOS' and 'FREEDOS' AS IT RELATES TO "computer operating system software to facilitate computer use and operation". DATED 27-NOV-2001. SIGNED JAMES F HALL.
+
+There, that looks official.
+
+-jh
+
+
+IV. FreeDOS License
+
+FreeDOS is a free DOS-compatible operating system for IBM-PC compatible 
+systems. FreeDOS is made of up many different, separate programs that act 
+as "packages" to the overall FreeDOS Project. 
+
+FreeDOS is distributed under the GNU GPL.
+http://sourceforge.net/projects/freedos/

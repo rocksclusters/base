@@ -1,0 +1,95 @@
+<?xml version="1.0" standalone="no"?>
+
+<kickstart>
+
+  <description>
+  
+  A restored server installed over the wide area network, from a central. 
+  Its state is stored on a central server, and the install is non-interactive
+  like a compute node.
+
+  </description>
+
+        <copyright>
+        Copyright (c) 2000 - 2008 The Regents of the University of California.
+        All rights reserved. Rocks(r) v5.0 www.rocksclusters.org
+        </copyright>
+
+  <changelog>
+  $Log: server-restore.xml,v $
+  Revision 1.3  2008/03/06 23:41:30  mjk
+  copyright storm on
+
+  Revision 1.2  2007/06/23 04:03:18  mjk
+  mars hill copyright
+
+  Revision 1.1  2005/05/23 23:59:21  fds
+  Frontend Restore
+
+  </changelog>
+
+<main>
+
+    <!-- Spell out the exact rolls. -->
+<interactive> --dist <var name="Node_DistName"/><eval shell="python">
+import rocks.sql
+import os
+
+rolls = []
+
+try:
+	s = rocks.sql.Application()
+	s.connect()
+	central = os.environ['Kickstart_PublicHostname']
+	basedir = os.environ['Kickstart_PublicKickstartBasedir']
+	client = os.environ['Node_Address']
+	site = s.getSiteId(client)
+	dist = os.environ['Node_Distribution']
+	rollbase = apply(os.path.join, dist.split('/')[:3] + ['rolls'])
+	
+	s.execute('select name,version,arch from rolls where '
+		'site=%d and enabled="yes"' % (site))
+	for name,version,arch in s.fetchall():
+
+		# The kickstart rpm url is now more of a hint. It is
+		# ok if not really there (always true for foreign rolls). Would
+		# be nice to KNOW which rolls were foreign, but ok for now.
+
+		rpm = 'http://%s/%s/%s/%s/%s/%s/' \
+			% (central,basedir,rollbase, name,version,arch)
+		rpm += 'RedHat/RPMS/roll-%s-kickstart-%s-0.noarch.rpm' \
+			% (name,version)
+
+		rolls.append((name,version,arch,rpm))
+except:
+	pass
+
+print ' --rolls "%s"' % (rolls)
+</eval></interactive>
+
+</main>
+
+<pre>
+	<!-- Drop in the generated state for this frontend. -->
+
+mkdir -p /export/profiles/nodes
+mkdir -p /export/profiles/graphs/default
+
+cat &gt; /export/profiles/nodes/restore.xml &lt;&lt; 'EOF'
+<eval shell="sh">
+/opt/rocks/bin/dbreport restore --site=$Node_Address
+</eval>
+EOF
+
+
+cat &gt; /export/profiles/graphs/default/restore.xml &lt;&lt; 'EOF'
+<eval shell="sh">
+/opt/rocks/bin/dbreport restore --kind=graph 
+</eval>
+EOF
+
+
+</pre>
+
+</kickstart> 
+

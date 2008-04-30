@@ -1,0 +1,33 @@
+<qandaentry>
+<question id="remove-node">
+<para>
+How do I remove a compute node from the cluster?
+</para>
+</question>
+
+<answer>
+<para>
+On your frontend end, execute:
+</para>
+
+<screen>
+# rocks remove host "[your compute node name]"
+</screen>
+
+<para>
+For example, if the compute node's name is
+<emphasis>compute-0-1</emphasis>, you'd execute:
+</para>
+
+<screen>
+# rocks remove host compute-0-1
+# rocks sync config
+</screen>
+
+<para>
+The compute node has been removed from the cluster.
+</para>
+
+</answer>
+</qandaentry>
+

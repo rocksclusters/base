@@ -1,0 +1,123 @@
+<?xml version="1.0" standalone="yes"?>
+
+<rocks-dist parent="@PROJECT_NAME@">
+
+	<id>$RCSfile: rocks-distrc.xml,v $</id>
+
+	<copyright>
+	Copyright (c) 2000 - 2008 The Regents of the University of California.
+	All rights reserved. Rocks(r) v5.0 www.rocksclusters.org
+ 	</copyright>
+ 
+  	<changelog>
+	$Log: rocks-distrc.xml,v $
+	Revision 1.11  2008/03/06 23:41:41  mjk
+	copyright storm on
+	
+	Revision 1.10  2007/06/23 04:03:21  mjk
+	mars hill copyright
+	
+	Revision 1.9  2006/09/11 22:47:08  mjk
+	monkey face copyright
+	
+	Revision 1.8  2006/08/10 00:09:31  mjk
+	4.2 copyright
+	
+	Revision 1.7  2006/06/05 17:57:36  bruno
+	first steps towards 4.2 beta
+	
+	Revision 1.6  2005/10/12 18:08:37  mjk
+	final copyright for 4.1
+	
+	Revision 1.5  2005/09/16 01:02:17  mjk
+	updated copyright
+	
+	Revision 1.4  2005/09/07 02:28:50  bruno
+	get the rocks version in a generic way
+	
+	Revision 1.3  2005/05/24 21:21:53  mjk
+	update copyright, release is not any closer
+	
+	Revision 1.2  2005/04/29 01:14:25  mjk
+	Get everything in before travel.  Rocks-roll is looking pretty good and
+	can now build the os roll (centos with updates).  It looks like only the
+	first CDROM of our os/centos roll is needed with 3 extra disks.
+	
+	- rocks-dist cleanup (tossed a ton of code)
+	- rocks-roll growth (added 1/2 a ton of code)
+	- bootable rolls do not work
+	- meta rolls are untested
+	- rocks-dist vs. rocks-roll needs some redesign but fine for 4.0.0
+	
+	Revision 1.1  2005/03/01 02:02:47  mjk
+	moved from core to base
+	
+	Revision 1.16  2004/10/14 00:42:34  bruno
+	needed to bump up CD size
+	
+	Revision 1.15  2004/05/25 01:51:50  fds
+	Multiple mirror support for rocks-dist parser.
+	
+	Revision 1.14  2004/03/25 03:15:36  bruno
+	touch 'em all!
+	
+	update version numbers to 3.2.0 and update copyrights
+	
+	Revision 1.13  2004/02/09 23:15:22  fds
+	Using PublicKickstartBasedir from database.
+	
+	Revision 1.12  2004/02/02 18:39:26  fds
+	New external path for WAN kickstart.
+	
+	Revision 1.11  2004/01/26 21:27:04  fds
+	For WAN Kickstart
+	
+	Revision 1.10  2003/10/28 03:48:03  mjk
+	goto ftp not the nas for dev stuff
+	
+	Revision 1.9  2003/10/28 03:38:32  mjk
+	forgot to comment out the developer stuff
+	
+	Revision 1.8  2003/10/28 03:01:49  mjk
+	Use our NAS to mirror releases
+	
+	Revision 1.7  2003/10/28 02:18:46  mjk
+	go back to rocks-#.#.# name scheme
+	
+	Revision 1.6  2003/10/22 21:00:14  fds
+	Easier to parse if necessary, less repitition.
+	
+	Revision 1.5  2003/09/02 23:30:14  bruno
+	make the whole media set
+	
+	Revision 1.4  2003/08/15 22:34:46  mjk
+	3.0.0 copyright
+	
+	Revision 1.3  2003/08/06 22:52:18  mjk
+	Changed default setting to mirror from a Rocks version
+	specific rocks-dist mirror.  This will allow us to release
+	multiple version based on the same RedHat version w/o breaking
+	older users who choose to re-mirror.
+	
+	Revision 1.2  2003/08/06 21:18:55  mjk
+	added parent
+	
+	Revision 1.1  2003/07/07 20:34:25  mjk
+	*** empty log message ***
+	
+	</changelog>
+
+	<usage name="Rocks Dist" version="@VERSION@"/>
+
+	<mirror>
+		<host>rolls</host>
+		<path>/home/install</path>
+	</mirror>
+
+	<path name="local"  value="/usr/src/redhat"/>
+	<path name="root"   value="/home/install"/>
+	<path name="dist"   value="rocks-dist"/>
+	<path name="cdrom"  value="/mnt/cdrom"/>
+
+</rocks-dist>
+

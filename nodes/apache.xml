@@ -1,0 +1,313 @@
+<?xml version="1.0" standalone="no"?>
+
+<kickstart>
+
+  <description>
+
+  Apache HTTP Server
+
+  </description>
+
+	<copyright>
+	Copyright (c) 2000 - 2008 The Regents of the University of California.
+	All rights reserved. Rocks(r) v5.0 www.rocksclusters.org
+	</copyright>
+
+  <changelog>
+  $Log: apache.xml,v $
+  Revision 1.8  2008/03/06 23:41:30  mjk
+  copyright storm on
+
+  Revision 1.7  2008/03/05 01:20:20  bruno
+  tell php where the mysql socket is
+
+  Revision 1.6  2007/06/23 04:03:18  mjk
+  mars hill copyright
+
+  Revision 1.5  2005/11/21 17:21:17  bruno
+  suppress ganglia PHP errors
+
+  Revision 1.4  2005/06/02 00:04:46  fds
+  Not needed anymore
+
+  Revision 1.3  2005/04/15 23:31:31  fds
+  Force same level of PHP error reporting as RHEL3.
+
+  Revision 1.2  2005/03/02 23:47:52  bruno
+  changes for RHEL 4
+
+  Revision 1.1  2005/03/01 00:22:26  mjk
+  moved to base roll
+
+  Revision 1.8  2005/02/15 22:58:52  mjk
+  dtd is gone
+
+  Revision 1.7  2004/08/20 23:43:56  fds
+  pxe over http for cluster shepherd.
+
+  Revision 1.6  2004/08/10 19:05:42  fds
+  Moved to new security graph hierarchy.
+
+  Revision 1.5  2004/07/12 21:19:28  fds
+  Apache security tweaks
+
+  Revision 1.4  2004/07/01 00:08:21  fds
+  Security, and new rocks-dist structure.
+
+  Revision 1.3  2004/06/29 22:30:57  fds
+  Putting apache conf files in conf.d where they are automatically
+  included.
+
+  Revision 1.2  2004/04/26 20:27:56  fds
+  Safer Mysql. As Eric D Christensen pointed out, it is easy for users to
+  accidentally disrupt the system by altering the database. We protect from
+  outside menaces, but allow read-write access to anyone from localhost.
+
+  This protects read-write access with SSL and passwords, like our wiki. It
+  is not close to being secure, since the -uapache is an option, but it
+  1) Prevents accidental changes from users via the web-interface, and
+  2) Allows admins to access the database safely over the wide-area.
+
+  I have also made a read-only access link, which is accessible for all users
+  but does not allow modification. In addition, users from localhost can
+  get read-only access from the command line without specifying -uapache. This
+  is intended to protect against casual mistakes only.
+
+  Left to the next release: a secure and easy way for kcgi to access the
+  database as user apache.
+
+  Revision 1.1  2004/03/08 21:01:23  mjk
+  *** empty log message ***
+
+  Revision 1.37  2004/02/03 20:00:35  mjk
+  decolorize
+
+  Revision 1.36  2004/01/30 04:53:42  mjk
+  colorize
+
+  Revision 1.35  2003/11/12 02:08:52  fds
+  Mod_SSL stays. Generating a self-signed certificate.
+
+  Revision 1.34  2003/10/21 21:40:10  bruno
+  added index.cgi to the list of directory indexes
+
+  Revision 1.33  2003/10/21 15:47:24  bruno
+  taroon tweaks
+
+  Revision 1.32  2003/10/10 20:45:14  fds
+  No more manual package
+
+  Revision 1.31  2003/09/24 17:08:45  fds
+  Bruno's changes for RH 9
+
+  Revision 1.30  2003/07/24 21:31:19  fds
+  Permissions not needed.
+
+  Revision 1.29  2003/07/21 19:37:57  fds
+  Simplified kgen (regular append) with support for owner,
+  perms, and vars=literal
+
+  Revision 1.28  2003/07/16 21:58:57  bruno
+  can't have xml structure in 'log' section
+
+  Revision 1.27  2003/07/16 21:32:56  fds
+  Using new file mode=append structure.
+
+  Revision 1.26  2003/07/16 20:10:41  bruno
+  changed to new 'file' tag
+
+  Revision 1.25  2003/02/26 20:16:18  fds
+  Got rid of the annoying underscore.
+
+  Revision 1.24  2003/01/29 02:29:55  fds
+  Looks better this way.
+
+  Revision 1.23  2003/01/28 19:02:10  fds
+  Sprinkling the new Info_RocksVersion variable around.
+
+  Revision 1.22  2003/01/14 23:05:55  fds
+  Made more repeatable (still not perfect), Raised PHP memory limit.
+
+  Revision 1.21  2002/11/13 00:18:19  fds
+  Added title to homepage.
+
+  Revision 1.20  2002/11/05 22:07:40  fds
+  Added protection to /home/install link.
+
+  Revision 1.19  2002/11/05 00:15:46  fds
+  New style config for apache. Added protections to phpMyAdmin and /proc.
+
+  Revision 1.18  2002/10/16 17:22:40  fds
+  No border on Image, cleaner.
+
+  Revision 1.17  2002/10/09 22:46:30  fds
+  Built with Rocks now a link to www.rocksclusters.org.
+
+  Revision 1.16  2002/10/04 23:12:49  fds
+  Referencing the image correctly
+
+  Revision 1.15  2002/10/04 00:17:39  fds
+  ClusterInfo screen appears correctly.
+
+  Revision 1.14  2002/10/03 00:20:42  fds
+  Changed service name to Info on some things, and fancy index.html header works.
+
+  Revision 1.13  2002/10/01 20:19:35  fds
+  First draft of header.html creation.
+
+  Revision 1.12  2002/02/26 01:12:52  mjk
+  - Remove more of the --cdrom stuff from bruno, thanks to my screwup
+  - Added audiofile rpm back the x11 config (gnome needs sound, piece of crap)
+  - Burned down a frontend and compute nodes looks pretty good.
+
+  Revision 1.11  2002/02/16 01:10:30  mjk
+  awk syntax error
+
+  Revision 1.10  2002/02/15 21:44:09  mjk
+  Release and DTF changes
+
+  Revision 1.9  2002/01/23 20:24:20  bruno
+  removed homepage building -- it's now in cluster-config
+
+  Revision 1.8  2002/01/18 23:27:32  bruno
+  updates for 7.2
+
+  Revision 1.7  2001/11/19 19:14:32  bruno
+  removed link to '/export/home/install' -- this is done in install.xml
+
+  Revision 1.6  2001/11/08 18:52:17  mjk
+  fixed install html link
+
+  Revision 1.5  2001/11/07 21:50:42  bruno
+  korected kreative katz konjugations
+
+  Revision 1.4  2001/11/07 20:23:36  mjk
+  added /proc entry for webpage
+
+  Revision 1.3  2001/11/07 19:21:37  mjk
+  - moved phpMyAdmin the /var/www/html
+  - nuke cluster-config-* as special case rpms in rocks-dist (build.py)
+  - moved around code in rocks-boot
+  - 2.1.1 copyright
+
+  Revision 1.2  2001/10/31 00:35:10  bruno
+  rocks v2.1.1 updates
+
+  Revision 1.1  2001/10/05 18:59:48  mjk
+  *** empty log message ***
+
+  </changelog>
+
+  <package>httpd</package>
+  <package>httpd-devel</package>
+  <package>mod_ssl</package>
+  <package>libxml2</package>
+  <package>php</package>
+  <package>curl</package>
+
+<!-- RHEL 3
+  <package>pspell</package>
+-->
+
+<post>
+
+/sbin/chkconfig httpd on
+
+<!-- create a link for /proc -->
+ln -sf /proc /var/www/html/ 
+
+<!-- add an entry into the cluster homepage for the proc filesystem. -->
+<file name="/var/www/html/homepage/30-proc.html">
+&lt;a href="proc/"&gt;Proc filesystem&lt;/a&gt;
+</file>
+
+<!-- move default index.html out of the way -->
+mv /var/www/html/index.html /var/www/html/index.orig.html
+
+
+<file name="/etc/httpd/conf.d/rocks.conf">
+#
+# Rocks Specific Apache configuration. 
+# Generated automatically by the apache.xml node.
+#
+&lt;IfModule mod_mime.c&gt;
+	AddHandler cgi-script .cgi
+&lt;/IfModule&gt;
+
+UseCanonicalName Off
+ServerName <var name="Kickstart_PublicHostname"/>
+
+DirectoryIndex index.cgi
+
+&lt;Directory "/var/www/html"&gt;
+	Options FollowSymLinks Indexes ExecCGI
+	AllowOverride None
+	Order allow,deny
+	Allow from all
+&lt;/Directory&gt;
+
+&lt;Directory "/var/www/html/proc"&gt;
+	Options FollowSymLinks Indexes ExecCGI
+	AllowOverride None
+	Order deny,allow
+	Allow from <var name="Kickstart_PrivateNetwork"/>/<var name="Kickstart_PrivateNetmask"/>
+	Allow from 127.0.0.1
+	Deny from all
+&lt;/Directory&gt;
+
+&lt;Directory "/var/www/html/pxelinux"&gt;
+	Options FollowSymLinks Indexes ExecCGI
+	AllowOverride None
+	Order deny,allow
+	Allow from <var name="Kickstart_PrivateNetwork"/>/<var name="Kickstart_PrivateNetmask"/>
+	Allow from 127.0.0.1
+	Deny from all
+&lt;/Directory&gt;
+
+</file>
+
+<!-- This should be done automatically by httpd.conf, but isn't for 
+	some reason. -->
+<file name="/etc/httpd/conf/httpd.conf" mode="append">
+Include conf.d/rocks.conf
+</file>
+
+<!-- Create the header.html file for the cluster homepage. -->
+<file name="/var/www/html/homepage/02-header.html">
+&lt;html&gt;
+&lt;head&gt;
+&lt;title&gt;<var name="Info_ClusterName"/> Cluster&lt;/title&gt;
+&lt;/head&gt;
+&lt;body bgcolor=white&gt;
+
+&lt;TABLE WIDTH=100% CELLSPACING=10&gt;
+ &lt;TR&gt;
+   &lt;TD ALIGN=left&gt;
+    &lt;H1&gt;<var name="Info_ClusterName"/> Cluster&lt;/H1&gt;
+   &lt;/TD&gt;
+   &lt;TD ALIGN=right&gt;
+    &lt;A HREF="http://www.rocksclusters.org/"&gt;
+    &lt;IMG SRC="homepage/built-with-rocks.png" ALT="Built With Rocks" HEIGHT=120 WIDTH=100 BORDER=0&gt;&lt;/A&gt; &lt;BR&gt;
+	v <var name="Info_RocksVersion"/> (<var name="Info_RocksRelease"/>)
+   &lt;/TD&gt;
+ &lt;/TR&gt;
+&lt;/TABLE&gt;
+</file>
+
+<!-- Make some changes to the PHP engine configuration. -->
+<file name="/etc/php.ini" mode="append">
+memory_limit = 64M
+
+; turn off error logging. the ganglia web php code emits many errors
+log_errors = Off
+</file>
+
+<file name="/etc/php.d/mysql.ini" mode="append">
+mysql.default_socket = /var/lib/mysql/mysql.sock
+</file>
+
+
+</post>
+
+</kickstart> 
+

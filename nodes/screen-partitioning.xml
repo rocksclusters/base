@@ -1,0 +1,77 @@
+<?xml version="1.0" standalone="no"?>
+
+<kickstart>
+
+<description>
+</description>
+
+        <copyright>
+        Copyright (c) 2000 - 2008 The Regents of the University of California.
+        All rights reserved. Rocks(r) v5.0 www.rocksclusters.org
+        </copyright>
+
+<changelog>
+$Log: screen-partitioning.xml,v $
+Revision 1.8  2008/03/06 23:41:30  mjk
+copyright storm on
+
+Revision 1.7  2007/06/23 04:03:18  mjk
+mars hill copyright
+
+Revision 1.6  2006/07/21 19:15:28  bruno
+if the user doesn't select a partitioning scheme, then choose
+the default (auto) for them.
+
+Revision 1.5  2006/07/11 21:17:55  bruno
+screen cleanup
+
+Revision 1.4  2006/07/07 17:15:06  bruno
+changed Kickstart_Partitioning to Server_Partitioning (so
+Kickstart_Partitioning won't end up in database).
+
+also, ensure that manual partitioning is always run when the restore
+roll is supplied.
+
+Revision 1.3  2006/07/06 20:27:23  bruno
+support for restore roll
+
+Revision 1.2  2006/07/05 19:13:03  bruno
+use values from /tmp/site.xml for default values
+
+Revision 1.1  2006/05/03 05:01:31  bruno
+screen updates
+
+</changelog>
+
+<screen>
+
+	<title>Disk Partitioning</title>
+
+	<code>
+		<include file="javascript/partitioning.js"/>
+	</code>
+
+
+	<variable>
+		<label>Auto Partitioning</label>
+		<name>Server_Partitioning</name>
+		<type>radio</type>
+		<default>force-default-root-disk-only</default>
+		<value><var name="Server_Partitioning"/></value>
+		<help>The first disk on this machine will be partitioned in the default manner. See the documentation at www.rocksclusters.org for details on the default partitioning scheme.</help>
+		<validate>process_partitioning</validate>
+	</variable>
+
+	<variable>
+		<label>Manual Partitioning</label>
+		<name>Server_Partitioning</name>
+		<type>radio</type>
+		<default>manual</default>
+		<value><var name="Server_Partitioning"/></value>
+		<help>The user will be required to set all partitioning information for this machine. A subsequent installation screen will allow you to enter your partitioning information.</help>
+	</variable>
+
+</screen>
+
+</kickstart> 
+

@@ -1,0 +1,58 @@
+<?xml version="1.0" standalone="no"?>
+
+<kickstart>
+
+  <description>
+
+  The packages and other common elements of the 
+  411 Secure Information Service.
+
+  </description>
+
+  <changelog>
+  $Log: 411-base.xml,v $
+  Revision 1.1  2007/12/10 21:28:33  bruno
+  the base roll now contains several elements from the HPC roll, thus
+  making the HPC roll optional.
+
+  this also includes changes to help build and configure VMs for V.
+
+  Revision 1.2  2006/02/15 22:08:26  mjk
+  moved POW to foundation
+
+  Revision 1.1  2005/03/01 17:34:02  mjk
+  move 411 to hpc roll
+
+  Revision 1.1  2005/03/01 00:22:26  mjk
+  moved to base roll
+
+  Revision 1.2  2005/02/15 22:58:52  mjk
+  dtd is gone
+
+  Revision 1.1  2004/03/08 21:01:23  mjk
+  *** empty log message ***
+
+  Revision 1.5  2004/02/03 20:00:35  mjk
+  decolorize
+
+  Revision 1.4  2004/01/30 04:53:42  mjk
+  colorize
+
+  Revision 1.3  2003/08/14 15:32:23  mjk
+  - Built Python2 for Itanic
+  - Root part is now 4GB
+  - Include openssl python tools for 411 on Itanic
+
+  Revision 1.2  2003/07/30 16:23:47  bruno
+  changes for ia64
+
+  Revision 1.1  2003/07/24 19:14:10  fds
+  First design
+
+  </changelog>
+
+  <package>rocks-411</package>
+  <package>openssl</package>
+
+</kickstart> 
+

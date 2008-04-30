@@ -1,0 +1,111 @@
+<?xml version="1.0" standalone="no"?>
+
+<kickstart>
+
+  <description>
+
+Populates the frontend database with initially selected rolls.
+
+  </description>
+
+        <copyright>
+        Copyright (c) 2000 - 2008 The Regents of the University of California.
+        All rights reserved. Rocks(r) v5.0 www.rocksclusters.org
+        </copyright>
+
+  <changelog>
+  $Log: insert-rolls.xml,v $
+  Revision 1.8  2008/03/06 23:41:30  mjk
+  copyright storm on
+
+  Revision 1.7  2007/07/03 23:06:24  phil
+  one missing fi can ruin your whole cluster
+
+  Revision 1.6  2007/07/03 22:27:47  phil
+  Properly call mysql with user apache
+
+  Revision 1.5  2007/06/23 04:03:18  mjk
+  mars hill copyright
+
+  Revision 1.4  2006/07/06 18:17:38  bruno
+  make sure only root can read /tmp/site.xml
+
+  Revision 1.3  2006/06/09 22:39:35  bruno
+  added keyboard variable
+
+  moved all language-specific variables to screen-clusterinfo.xml
+
+  Revision 1.2  2006/06/05 22:55:44  bruno
+  add installed rolls into the frontend's database
+
+  Revision 1.1  2006/06/05 22:06:29  bruno
+  moved insert-rolls from hpc to base
+
+  Revision 1.3  2005/04/08 23:49:55  fds
+  Dont insert duplicate roll entries into database for multi-disk rolls.
+
+  Revision 1.2  2005/03/16 03:36:30  fds
+  Actually inserting selected rolls into database.
+
+  Revision 1.1  2005/03/15 02:37:49  fds
+  Insert selected rolls into the database during post processing. Must happen
+  before rocks-dist is run again (in rocks-dist.xml).
+
+  </changelog>
+
+<post>
+
+<file name="/tmp/insert-rolls.sql">
+<eval shell="/opt/rocks/bin/python">
+import os
+import os.path
+import sys
+import rocks.roll
+
+if os.environ['Node_Hostname'] == 'None':
+	#
+	# this case can happen when building a cdrom that builds a
+	# kickstart file for 'Server' and 'Client'
+	#
+	sys.exit()
+
+if not os.path.exists('/tmp/rolls.xml'):
+	sys.exit()
+
+generator = rocks.roll.Generator()
+generator.parse('/tmp/rolls.xml')
+
+# 
+# Generate insert statements
+#
+for name, version, arch, url, diskid in generator.rolls:
+	print ('insert into rolls (name,version,arch,enabled) '
+		'values ("%s","%s","%s","yes");' % (name,version,arch))
+</eval>
+</file>
+
+
+if [ -f "/root/.my.cnf" ]; then
+	clupass=`/bin/awk -F= '/password/{print $2}' /root/.my.cnf`
+fi
+
+if [ "x$clupass" != "x" ]; then 
+	/usr/bin/mysql -u apache -p$clupass cluster &lt; /tmp/insert-rolls.sql
+else
+	/usr/bin/mysql cluster &lt; /tmp/insert-rolls.sql
+fi
+
+rm -f /tmp/insert-rolls.sql
+
+</post>
+
+
+<post arg="--nochroot">
+cp /tmp/site.xml /mnt/sysimage/tmp
+chmod 400 /mnt/sysimage/tmp/site.xml
+cp /tmp/rolls.xml /mnt/sysimage/tmp
+</post>
+
+
+</kickstart> 
+

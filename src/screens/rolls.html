@@ -1,0 +1,96 @@
+<html>
+
+<head>
+
+<link rel="stylesheet" type="text/css" href="common.css" />
+
+<script language="JavaScript">
+function setmore(value)
+{
+	self.document.rollform.morerolls.value = value;
+}
+
+function setcentral()
+{
+	var	cpuinfo = navigator.oscpu.split(" ");
+	var	central = "central-i386.rocksclusters.org";
+
+	if (cpuinfo[1] == "x86_64") {
+		central = "central-x86-64.rocksclusters.org";
+	} else if (cpuinfo[1] == "ia64") {
+		central = "central-ia64.rocksclusters.org";
+	}
+
+	self.document.rollform.rollserver.value = central;
+}
+</script>
+
+</head>
+
+<body class="ProBackground" onLoad="self.setcentral();">
+
+<h2 class="ProTitle"> Select Your Rolls </h2>
+
+<hr>
+
+<center>
+
+<form name="rollform" method="post"
+	action="/tmp/updates/opt/rocks/screens/rocks-getroll.cgi">
+
+<input type="hidden" name="morerolls" value="no">
+
+<h3 class="ProLabel"> Local Rolls </h3>
+
+<table cellspacing="5" cellpadding="5">
+<tr>
+	<td align="center">
+	<input type="button" value="CD/DVD-based Roll" class="ProButton"
+		onClick="self.setmore('cd');
+		self.document.rollform.submit(); " >
+	</td>
+</tr>
+</table>
+
+<hr>
+
+<h3 class="ProLabel"> Network-based Rolls </h3>
+
+<table cellspacing="5" cellpadding="5">
+<tr>
+	<td align="center" class="ProLabel">
+	Hostname of Roll Server 
+	<input type="text" name="rollserver" size="30"
+			onFocus="self.setmore('network');">
+	</td>
+</tr>
+
+<tr>
+	<td align="center">
+	<input type="button" value="Download" class="ProButton"
+		onClick="self.setmore('network');
+		self.document.rollform.submit(); ">
+	</td>
+</tr>
+</table>
+
+<hr>
+
+<table cellspacing="5" cellpadding="5">
+<tr>
+	<td align="center" colspan="2">
+	<input type="button" value="Next" class="ProButton"
+		onClick="self.setmore('done');
+		self.document.rollform.submit();">
+	</td>
+</tr>
+</table>
+
+</form>
+
+</center>
+
+</body>
+
+</html>
+

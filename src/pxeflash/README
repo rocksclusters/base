@@ -1,0 +1,32 @@
+How to Customize your floppy bootimage
+
+The file FDSTD.288 is a 2.8MB FreeDOS bootable floppy image and hence
+this procedure supports DOS-based, floppy flashing programs only.
+
+The FDSTD.288 file was downloaded from 
+http://www.fdos.org/bootdisks/autogen/FDSTD.288.gz
+
+
+1. Place your specific flash files (dos-based flash util, .bin file
+and perhaps autoexec.bat) in the addon/  subdirectory
+
+2. # make build
+this will create a floppy image called pxeflash-FDSTD.288. This image includes
+all files in the addon subdirectory. 
+
+3. # make install
+this will copy your floppy image to /tftpboot/pxelinux/pxeflash
+
+4. Set a node to pxeboot from your flash image
+# rocks set host pxeboot <hostname> action=pxeflash
+
+You will need to manually reset the node to install or boot mode using
+# rocks set host pxeboot <hostname> action=os 
+
+
+Important Acknowledgement 
+
+We are grateful for the contribution of Jeremy Lawrence for describing the
+basic approach in his Rocks discussion list posting 
+https://lists.sdsc.edu/pipermail/npaci-rocks-discussion/2005-June/012092.html
+

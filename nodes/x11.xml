@@ -1,0 +1,132 @@
+<?xml version="1.0" standalone="no"?>
+
+
+
+<kickstart>
+
+  <description>
+
+  X11 Desktop applications.
+
+  </description>
+
+        <copyright>
+        Copyright (c) 2000 - 2008 The Regents of the University of California.
+        All rights reserved. Rocks(r) v5.0 www.rocksclusters.org
+        </copyright>
+
+  <changelog>
+  $Log: x11.xml,v $
+  Revision 1.4  2008/03/06 23:41:30  mjk
+  copyright storm on
+
+  Revision 1.3  2007/12/10 21:28:33  bruno
+  the base roll now contains several elements from the HPC roll, thus
+  making the HPC roll optional.
+
+  this also includes changes to help build and configure VMs for V.
+
+  Revision 1.2  2007/06/23 04:03:18  mjk
+  mars hill copyright
+
+  Revision 1.1  2005/03/01 00:22:26  mjk
+  moved to base roll
+
+  Revision 1.3  2005/02/15 22:58:52  mjk
+  dtd is gone
+
+  Revision 1.2  2004/05/05 00:54:01  fds
+  Moved big mozilla packages off Rocks base, and into HPC roll.
+
+  Revision 1.1  2004/03/08 21:01:23  mjk
+  *** empty log message ***
+
+  Revision 1.21  2004/02/03 20:00:36  mjk
+  decolorize
+
+  Revision 1.20  2004/01/30 04:53:42  mjk
+  colorize
+
+  Revision 1.19  2003/12/19 21:01:28  mjk
+  reinstall mozilla so this awesome browser works
+
+  Revision 1.18  2003/12/09 01:32:52  bruno
+  remove redhat artwork
+
+  Revision 1.17  2003/11/15 03:11:14  fds
+  Added some Redhat love: help icons to redhat.com, etc.
+
+  Revision 1.16  2003/11/14 23:11:55  fds
+  May have to be replaced with 'rocks-artwork' in the future...
+
+  Revision 1.15  2003/11/14 22:58:34  fds
+  The file tag should do this for us (later)
+
+  Revision 1.14  2003/11/13 22:40:36  fds
+  We all get mozilla
+
+  Revision 1.13  2003/11/05 18:00:08  bruno
+  added packages to configure X and run mozilla
+
+  Revision 1.12  2003/10/15 22:19:48  bruno
+  fixes for taroon
+
+  Revision 1.11  2003/08/09 01:00:33  fds
+  Debug.
+
+  Revision 1.10  2003/07/24 19:13:50  fds
+  Added Mozilla support (for i386) and set default homepage.
+
+  Revision 1.9  2002/11/13 19:59:23  mjk
+  IA64 has no browser - Yieee
+
+  Revision 1.8  2002/02/26 22:52:10  mjk
+  Start font server since X11 doesn't do it for us.
+
+  Revision 1.7  2002/02/15 23:44:23  mjk
+  - Added netscape to frontend
+  - Move package trimming
+
+  Revision 1.6  2002/02/15 21:44:09  mjk
+  Release and DTF changes
+
+  Revision 1.5  2001/10/02 03:16:40  mjk
+  - Update to bruno's new auto-part stuff
+  - Doesn't work but checkin anyway
+
+  Revision 1.4  2001/09/21 18:36:54  mjk
+  - Fixed multiple swapfiles
+  - Added models CGI (and genmodel.py)
+  - Kickstart CGI now accepts form data
+  - Fixed turning off services (kudzu, et al)
+
+  Revision 1.3  2001/09/18 19:43:44  mjk
+  Gnome
+
+  Revision 1.2  2001/09/18 17:39:53  mjk
+  *** empty log message ***
+
+  Revision 1.1  2001/09/14 23:42:21  mjk
+  initial checkin
+
+  </changelog>
+
+  <package type="meta">base-x</package>
+  <package type="meta">gnome-desktop</package>
+  <package type="meta">x-software-development</package>
+
+  <!-- For the pretty Gnome icons. -->
+  <package>indexhtml</package>
+
+  <!-- support packages used to configure X -->
+  <package>pygtk2</package>
+  <package>pygtk2-libglade</package>
+
+
+<post>
+
+/sbin/chkconfig xfs on
+
+</post>
+
+</kickstart> 

@@ -1,0 +1,176 @@
+<?xml version="1.0" standalone="no"?>
+
+<kickstart>
+
+  <description>
+
+  Minimalist C development support.  This is everything you need to
+  compile the kernel.
+
+  </description>
+
+        <copyright>
+        Copyright (c) 2000 - 2008 The Regents of the University of California.
+        All rights reserved. Rocks(r) v5.0 www.rocksclusters.org
+        </copyright>
+
+  <changelog>
+  $Log: c-development.xml,v $
+  Revision 1.9  2008/03/06 23:41:30  mjk
+  copyright storm on
+
+  Revision 1.8  2007/06/23 04:03:18  mjk
+  mars hill copyright
+
+  Revision 1.7  2005/06/27 21:50:17  mjk
+  fix g++ development
+
+  Revision 1.6  2005/04/08 23:16:13  fds
+  Need this to build anaconda rpm
+
+  Revision 1.5  2005/04/05 16:46:05  bruno
+  make sure rpm-build is everywhere
+
+  Revision 1.4  2005/03/31 04:37:18  bruno
+  extra packages needed to build rocks
+
+  Revision 1.3  2005/03/26 00:00:02  bruno
+  moved macros.rocks
+
+  Revision 1.2  2005/03/22 15:28:16  bruno
+  don't stop a build if docs files don't exist
+
+  Revision 1.1  2005/03/01 00:22:26  mjk
+  moved to base roll
+
+  Revision 1.7  2005/02/21 23:29:04  bruno
+  fixed syntax error
+
+  Revision 1.6  2005/02/21 21:33:51  bruno
+  only set the 'distribution' to Rocks
+
+  Revision 1.5  2005/02/21 00:45:13  bruno
+  also set the 'distribution' to Rocks
+
+  Revision 1.4  2005/02/18 17:35:42  bruno
+  spaz, spaz -- i swear this is the last checkin on this one.
+
+  need to set 'packager' on all nodes (devel.xml is connected to the
+  server node, and c-development is connected to base node)
+
+  Revision 1.3  2005/02/15 22:58:52  mjk
+  dtd is gone
+
+  Revision 1.2  2004/09/16 20:13:54  bruno
+  remove all references to 'kernel' packages -- they now live in the
+  kernel roll
+
+  Revision 1.1  2004/03/08 21:01:23  mjk
+  *** empty log message ***
+
+  Revision 1.23  2004/02/03 20:00:35  mjk
+  decolorize
+
+  Revision 1.22  2004/01/30 04:53:42  mjk
+  colorize
+
+  Revision 1.21  2003/11/13 05:30:19  mjk
+  removed x86-compat-libs package for ia64
+
+  Revision 1.20  2003/10/15 22:19:48  bruno
+  fixes for taroon
+
+  Revision 1.19  2003/09/26 00:07:24  bruno
+  closer to 9
+
+  Revision 1.18  2003/09/24 17:08:45  fds
+  Bruno's changes for RH 9
+
+  Revision 1.17  2003/03/11 23:53:03  fds
+  Added vim-enhanced, doxygen, basic ImageMagic back in.
+
+  Revision 1.16  2003/02/26 19:47:26  bruno
+  dietlibc is i386 only
+
+  Revision 1.15  2003/02/25 06:30:31  bruno
+  gtk+ packages
+
+  Revision 1.14  2003/02/24 04:16:37  bruno
+  added dietlibc in for building boot disks
+
+  Revision 1.13  2003/02/06 21:14:16  bruno
+  added gcc32
+
+  Revision 1.12  2002/11/15 21:05:47  mjk
+  more ia64
+
+  Revision 1.11  2002/11/15 19:51:04  mjk
+  ia64 frontend changes
+
+  Revision 1.10  2002/11/14 23:43:24  bruno
+  added atlas and hpl-eth back in
+
+  Revision 1.9  2002/11/13 20:19:19  mjk
+  more ia64 changes
+
+  Revision 1.8  2002/06/17 19:50:02  bruno
+  7.3-isms
+
+  Revision 1.7  2002/04/15 21:59:03  bruno
+  fix for dhcp and start of ia64 tweaks
+
+  Revision 1.6  2002/02/15 23:44:23  mjk
+  - Added netscape to frontend
+  - Move package trimming
+
+  Revision 1.5  2001/11/08 23:21:43  bruno
+  added atlas
+
+  Revision 1.4  2001/10/05 18:57:40  mjk
+  Got IA64 compute node to http kickstart
+
+  Revision 1.3  2001/10/02 03:16:39  mjk
+  - Update to bruno's new auto-part stuff
+  - Doesn't work but checkin anyway
+
+  Revision 1.2  2001/09/05 00:27:16  mjk
+  main and packages section is correct for compute nodes
+
+  </changelog>
+
+  <!-- most of this can go away -->
+
+  <package>make</package>
+  <package>cpp</package>
+  <package>glibc-common</package>
+  <package>glibc-devel</package>
+  <package>gcc</package>
+  <package>gcc-c++</package>
+  <package>libstdc++-devel</package>
+  <package>binutils</package>
+  <package>patch</package>
+  <package>pump-devel</package>
+  <package arch="i386">dietlibc</package>
+  <package>gtk+</package>
+  <package>gtk+-devel</package>
+  <package>vim-enhanced</package>
+  <package>e2fsprogs-devel</package>
+  <package>libselinux-devel</package>
+  <package>pciutils-devel</package>
+  <package>kudzu-devel</package>
+  <package>slang-devel</package>
+  <package>newt-devel</package>
+  <package>krb5-devel</package>
+  <package>openssl-devel</package>
+  <package>bzip2-devel</package>
+  <package>rpm-devel</package>
+  <package>elfutils-libelf-devel</package>
+  <package>elfutils-devel</package>
+
+  <!-- For makedepend -->
+  <package>xorg-x11-devel</package>
+
+  <package arch="i386">dev86</package>
+
+</kickstart> 
+

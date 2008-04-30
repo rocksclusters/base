@@ -1,0 +1,32 @@
+<qandaentry>
+<question id="apache">
+
+	<para>
+	Why is apache running on my compute nodes?
+	</para>
+</question>
+
+<answer>
+
+        <para>
+
+	The default configuration for compute nodes is to start the
+	Apache service.  This is enabled to allow us to serve (over
+	HTTP) the Linux /proc filesystem to a future monitoring tool.
+	UCB's Ganglia will remain the prefered monitoring tool, but
+	for highly detailed node information only the complete /proc
+	filesystem will suffice.  To disable this feature remove the
+	following line from your distribution's configuration graph.
+	
+	</para>
+
+<screen>
+		&lt;edge from="slave-node" to="apache"/&gt;
+</screen>
+
+
+
+</answer>
+
+</qandaentry>
+

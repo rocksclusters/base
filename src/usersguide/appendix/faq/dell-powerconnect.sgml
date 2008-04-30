@@ -1,0 +1,120 @@
+<qandaentry>
+<question id="dell-powerconnect">
+
+	<para>
+	I can't install compute nodes and I have a Dell Powerconnect
+	5224 network switch, what can I do?
+	</para>
+</question>
+
+<answer>
+
+	<para>
+	Here's how to configure your Dell Powerconnect 5224:
+	</para> 
+
+<para>
+You need to set the <emphasis>edge port</emphasis> flag for all ports
+(in some Dell switches is labeled as <emphasis>fast link</emphasis>).
+</para>
+
+<para>
+First, you'll need to set up an IP address on the switch:
+</para>
+
+<itemizedlist>
+
+	<listitem>
+	<para>
+	Plug in the serial cable that came with the switch.
+	</para>
+	</listitem>
+
+	<listitem>
+	<para>
+	Connect to the switch over the serial cable.
+	</para>
+
+	<para>
+	The username/password is: admin/admin.
+	</para>
+	</listitem>
+
+	<listitem>
+	<para>
+	Assign the switch an IP address:
+	</para>
+
+<screen>
+# config
+# interface vlan 1
+# ip address 10.1.2.3 255.0.0.0
+</screen>
+	</listitem>
+
+	<listitem>
+	<para>
+	Now you should be able to access the switch via the ethernet.
+	</para>
+	</listitem>
+
+	<listitem>
+	<para>
+	Plug an ethernet cable into the switch and to your laptop.
+	</para>
+	</listitem>
+
+	<listitem>
+	<para>
+	Configure the ip address on your laptop to be:
+	</para>
+
+<screen>
+IP: 10.20.30.40
+netmask: 255.0.0.0
+</screen>
+	</listitem>
+
+
+	<listitem>
+	<para>
+	Point your web browser on your laptop to 10.1.2.3
+	</para>
+	</listitem>
+
+
+	<listitem>
+	<para>
+	Username/password is: admin/admin.
+	</para>
+	</listitem>
+
+	<listitem>
+	<para>
+	Set the <emphasis>edge port</emphasis> flag for all ports.
+	This is found under the menu item:
+	<emphasis>System-&gt;Spanning Tree-&gt;Port Settings</emphasis>.
+	</para>
+	</listitem>
+
+	<listitem>
+	<para>
+	Save the configuration.
+	</para>
+
+	<para>
+	This is accomplished by going to
+	<emphasis>System-&gt;Switch-&gt;Configuration</emphasis>
+	and typing 'rocks.cfg' in the last field
+	'Copy Running Config to File'.
+	In the field above it, you should see 'rocks.cfg' as the
+	'File Name' in the 'Start-Up Configuration File'.
+	</para>
+	</listitem>
+
+</itemizedlist>
+
+</answer>
+
+</qandaentry>
+

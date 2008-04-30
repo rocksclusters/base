@@ -1,0 +1,62 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN"><!-- -*- html-helper -*- -->
+<html>
+<link rel=stylesheet type="text/css" href="../style.css">
+<head>
+<title>@NAME@</title>
+</head>
+
+<body>
+<h1>@NAME@</h1>
+
+<h2>Applications</h2>
+<ul>
+  <li><a href="/manpages/ssl-genca.1.html">ssl-genca</a></li>
+  <li><a href="/manpages/ssl-genserver.1.html">ssl-genserver</a></li>
+  <li><a href="/manpages/ssl-genuser.1.html">ssl-genuser</a></li>
+</ul>
+
+<a name="overview"><h2>Overview</h2></a>
+
+<p>This package provides a small collection of tools to create a
+complete infrastructure required to deploy <a
+href="http://www.openssl.org">OpenSSL</a> based services on a cluster.
+A basic SSL setup consists of a Certificate Authority (CA) and Server
+and User certificates.  Individual servers and users present
+certificates to the CA for signing, and this single signature is used
+to verify the validity of such certificates in future SSL
+transactions.
+
+<p>The default install for a Rocks frontend node creates a new
+Certificate Authority.  All compute nodes will generate server
+certificates and use the CA key to sign themselves.  This implies the
+CA private key is not encrypted, rather protected only by UNIX file
+access permissions.  You should fully understand the security
+implications this may have for your site.  Because Rocks frontend and
+compute nodes exists on a private non-Internet routable address space,
+the convenience of this setup was decided to outweigh any security
+concerns.  Our views may not represent yours.  Future releases will
+address security in a more serious manner.
+
+<p>The system administrator creates certificates for users using
+<b>ssl-genuser</b>.  This means the root account sets the user's
+certificate passphrase.
+
+<a name="contact"><h2>To Do</h2></a>
+
+<ul>
+  <li>Encrypt the CA private key</li>
+  <li>Add mechanism for users to change passphrase</li>
+</ul>
+
+<a name="contact"><h2>Who to contact</h2></a>
+
+<p><a href="mailto://@MAILTO@">@MAILTO@</a>, <a
+href="http://www.sdsc.edu">San Diego Supercomputer Center</a>.
+                 
+<hr>
+<!-- hhmts start -->
+Last modified: Tue Feb 20 21:18:17 MST 2001
+<!-- hhmts end -->
+</body> </html>
+
+

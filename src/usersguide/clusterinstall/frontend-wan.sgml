@@ -1,0 +1,122 @@
+<section id="frontend-wan" xreflabel="frontend wan">
+<title> Installing a Frontend over the Network </title>
+
+<para>
+This section describes installing a Rocks frontend from a "Central" server
+over the wide area network, a process called WAN kickstart.
+The client frontend will retrieve Rocks Rolls and configuration over the
+Internet, and use these to install itself.
+</para>
+
+<orderedlist>
+<listitem>
+<para>
+First, boot the node that will be your new frontend with the Kernel/Boot
+Roll CD (see steps 1 and 2 in the section "<xref linkend="install-frontend">").
+</para>
+</listitem>
+
+<listitem>
+<para>
+Then you'll see the screen as described in step 3 in the section
+"<xref linkend="install-frontend">".
+Enter the FQDN of your central server in the <emphasis>Hostname of
+Roll Server</emphasis> text box (don't change this value if you want to
+use the default central server) then and click the
+<computeroutput>Download</computeroutput> button.
+</para>
+
+<para>
+You'll see a screen that lists all the rolls available on the
+central server.
+Here's an example:
+</para>
+
+<mediaobject>
+	<imageobject>
+	<imagedata fileref="images/central-1.png" scale=50>
+	</imageobject>
+</mediaobject>
+
+</listitem>
+
+<listitem>
+<para>
+Now, select the rolls from the central server.
+To select a roll, click the checkbox next to roll.
+For example, this screen shows the <emphasis>area51</emphasis>,
+<emphasis>base</emphasis>, <emphasis>bio</emphasis> and
+<emphasis>viz</emphasis> rolls selected:
+</para>
+
+<mediaobject>
+	<imageobject>
+	<imagedata fileref="images/central-2.png" scale=50>
+	</imageobject>
+</mediaobject>
+
+<para>
+Click the <emphasis>Submit</emphasis> button to continue.
+</para>
+
+</listitem>
+
+<listitem>
+<para>
+Now you'll see a screen similar to the screen below.
+This screen indicates that the <emphasis>area51</emphasis>,
+<emphasis>base</emphasis>, <emphasis>bio</emphasis> and
+<emphasis>viz</emphasis> rolls have been selected.
+</para>
+
+<mediaobject>
+	<imageobject>
+	<imagedata fileref="images/central-3.png" scale=50>
+	</imageobject>
+</mediaobject>
+
+</listitem>
+
+<listitem>
+<para>
+To select more rolls from another server, go to step 1 and enter a different
+FQDN.
+</para>
+</listitem>
+
+<listitem>
+<para>
+If you'd like to include CD-based rolls with your Network-based rolls,
+click the <emphasis>CD/DVD-based Roll</emphasis> button and follow the
+instructions in the section "<xref linkend="install-frontend">" starting at
+step 4.
+</para>
+</listitem>
+
+<listitem>
+<para>
+When you are finished installing CD-based rolls, you will enter into
+the familiar Rocks installation windows.
+These may change depending on what rolls you have selected.
+Again the section "<xref linkend="install-frontend">" has details for
+this process.
+</para>
+</listitem>
+
+<listitem>
+<para>
+The installer will then retrieve the chosen rolls, rebuild the distribution
+with all rolls included, then install the packages.
+Finally, the installer will proceed with the post-section and other
+elements of a standard frontend install.
+</para>
+</listitem>
+
+</orderedlist>
+
+<para>
+Your frontend should now be installed and ready to initialize compute nodes
+(see section <xref linkend="install-compute-nodes">).
+</para>
+
+</section>

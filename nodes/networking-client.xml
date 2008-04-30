@@ -1,0 +1,84 @@
+<?xml version="1.0" standalone="no"?>
+
+<kickstart>
+
+<description>
+Configure a node's network
+</description>
+
+
+<copyright>
+Copyright (c) 2000 - 2007 The Regents of the University of California.
+All rights reserved. Rocks(tm) v4.3 www.rocksclusters.org
+</copyright>
+
+
+<changelog>
+$Log: networking-client.xml,v $
+Revision 1.2  2007/12/11 17:41:35  bruno
+make sure the output of ConfigNetworks is parse by the graph processing
+program and not output as literal XML.
+
+Revision 1.1  2007/12/10 21:28:33  bruno
+the base roll now contains several elements from the HPC roll, thus
+making the HPC roll optional.
+
+this also includes changes to help build and configure VMs for V.
+
+</changelog>
+
+
+<post>
+<eval shell="/opt/rocks/bin/python" mode="xml">
+import rocks.ConfigNetworks
+
+confignetworks = rocks.ConfigNetworks.App()
+
+confignetworks.params['user'] = [ 'apache', 'host' ]
+confignetworks.run()
+</eval>
+</post>
+
+
+<post>
+<file name="/etc/sysconfig/network">
+<eval>
+/opt/rocks/bin/rocks config host network $Node_Hostname
+</eval>
+</file>
+
+<eval mode="xml">
+/opt/rocks/bin/rocks config host interface $Node_Hostname
+</eval>
+
+</post>
+
+
+<post arg="--interpreter /usr/bin/python">
+import string
+
+file = open('/etc/modprobe.conf')
+newfile = open('/tmp/modules.orig', 'w')
+
+for line in file.readlines():
+	tokens = string.split(line)
+	if tokens[0] != 'alias' or tokens[1][0:3] != 'eth':
+		newfile.write(line)
+
+newfile.close()
+file.close()
+</post>
+
+<post>
+<file name="/etc/modprobe.conf" vars="expanded">
+`cat /tmp/modprobe.conf.rocks`
+</file>
+
+<file name="/etc/modprobe.conf" mode="append" vars="expanded">
+`cat /tmp/modules.orig`
+</file>
+</post>
+
+
+</kickstart> 
+

@@ -1,0 +1,1115 @@
+<appendix id="release-notes" xreflabel="release-notes">
+	<title>Release Notes</title>
+
+<section>
+<title>Release 4.3 - changes from 4.2.1</title>
+
+<section>
+	<title> New Features </title>
+
+<itemizedlist>
+
+<listitem>
+	<para> Rocks Command Line </para>
+
+	<para> Initial release of the Rocks command line which
+	facilitates non-SQL administrative access to the database. All Rocks
+	commands have a regular structure of "rocks &lt;verb&gt;
+	&lt;component&gt;". For example, to list all hosts that have been
+	discovered by the frontend, execute: "rocks list host".
+	</para>
+
+	<para>
+	All rocks commands can be listed by executing: rocks. Also, help is
+	included with each command. For example, for help on the command
+	"rocks add host", execute: "rocks add host help".
+	</para>
+
+	<para>
+	For an overview of the Rocks commmand line, see
+	<ulink url="http://www.rocksclusters.org/roll-documentation/base/4.3/commandline.html">Introduction to the Rocks Command Line</ulink>. The reference
+	for all Rocks commands can be found <ulink url="http://www.rocksclusters.org/roll-documentation/base/4.3/c229.html">here</ulink>.
+	</para>
+</listitem>
+
+<listitem>
+	<para> PXE First </para>
+
+	<para>
+	Hosts can now be configured in BIOS with a boot order of CD, PXE,
+	Hard Disk (previous releases of Rocks required: CD, Hard Disk, PXE).
+	In combination with the Rocks command line, node-specific installation
+	parameters are easily supported. For details on PXE First, see
+	<ulink url="http://www.rocksclusters.org/roll-documentation/base/4.3/boot-order.html">Boot Order and PXE First</ulink>.
+	</para>
+
+	<para>
+	Note: The boot order of (CD, HD, PXE) continues to be supported in
+	Rocks 4.3. That is, existing Rocks clusters can be upgraded without
+	requiring the cluster owner to change any BIOS settings.
+	</para>
+</listitem>
+
+</itemizedlist>
+
+</section>
+
+<section>
+	<title> Enhancements </title>
+
+	<para>
+	OS: Based on CentOS release 4/update 5 and all updates as of
+	July 4, 2007.
+	</para>
+
+	<para>Base: Anaconda installer updated to v10.1.1.63.</para>
+
+	<para>
+	Base: Performance improvement when building torrent files for the
+	Avalanche Installer.
+	</para>
+
+	<para>
+	Base: Database indirects. More flexibility with Rocks variables.
+	</para>
+
+	<para>Grid: Globus updated to gt4.0.4 with web services.</para>
+
+	<para>Condor: updated to v6.8.5.</para>
+
+	<para>PVFS2: updated to v2.6.3.</para>
+
+	<para>Java: updated to v1.5.0_10.</para>
+
+	<para>Ganglia: updated to v3.0.4.</para>
+
+	<para>HPC: Now using OpenMPI and PVM from RedHat distribution.</para>
+</section>
+
+<section>
+	<title> Bug Fixes </title>
+
+	<para>
+	Base: Install now supports machines which have more than 26 disk
+	drives.
+	</para>
+
+	<para>Base: 411 clients now atomically update files.</para>
+
+	<para>
+	Condor: Max heap size properly set for java programs on small and
+	large memory machines.
+	</para>
+
+	<para>Condor: All logging written to /var/opt/condor.</para>
+</section>
+</section>
+
+<section>
+<title> Release 3.2.0 - changes from 3.1.0 </title>
+
+	<para>
+	New Feature - Added the Condor Roll.
+	This brings the distributed high-throughput features from the
+	Condor project to Rocks clusters.
+	</para>
+
+	<para>
+	New Feature - Added the Area51 Roll.
+	This roll contains security tools and services to check the
+	integrity of the files and operating system on your cluster.
+	</para>
+
+	<para>
+	New Feature - Ganglia RSS news event service.
+	</para>
+
+	<para>
+	Enhancement - Improved network handling for compute nodes: any
+	interface may be used for the cluster private network, not simply
+	the default "eth0".
+	</para>
+
+	<para>
+	Enhancement - Better support for cross-architecture clusters containing
+	x86 and x86_64 machines. 
+	</para>
+
+	<para>
+	Enhancement - GM device driver now builds and loads on compute nodes
+	that have a custom kernel (e.g., a kernel from kernel.org).
+	</para>
+
+	<para>
+	Enhancement - Software RAID for custom compute node partitioning
+	is supported.
+	</para>
+
+	<para>
+	Enhancement - Added variables for root and swap partition.
+	If you only want to change the size of root and/or swap, you only
+	have to reassign two XML variables.
+	</para>
+
+	<para>
+	Enhancement - The default root partition size has been increased
+	to 6 GB (up from 4 GB).
+	</para>
+
+	<para>
+	Enhancement - SGE ganglia monitor added.
+	The state of all SGE jobs can be tracked from the frontend's web page.
+	</para>
+
+	<para>
+	Enhancement - PXE support extended to support floppy-based Etherboot and
+	ia64.
+	</para>
+
+	<para>
+	Enhancement - EKV uses ssh instead of telnet for security.
+	</para>
+
+	<para>
+	Enhancement - New Myrinet MPICH version 1.2.5..12.
+	</para>
+
+	<para>
+	Enhancement, Java Roll -- Updated JDK to version 1.4.2_04
+	</para>
+
+	<para>
+	Enhancement - Latest software updates recompiled for three architectures
+	from RHEL source rpms.
+	</para>
+
+	<para>
+	Enhancement - Automatic MySQL Cluster database backup.
+	</para>
+
+	<para>
+	Enhancement - MAC addresses are included for each node in the
+	"Cluster Labels" output.
+	</para>
+
+	<para>
+	Enhancement - Frontend rescue mode on the Rocks Base CD enabled.
+	By typing "frontend rescue" at the boot prompt will give you
+	a shell in which you can examine the state of the frontend.
+	</para>
+
+	<para>
+	Bug Fix - 411 hardened. More reliable notification of changed files.
+	Correct Makefile encrypts login files on frontend first-boot. 
+	</para>
+
+	<para>
+	Bug Fix - Multiple CD drives are supported for bringing up a
+	frontend.
+	If you have more than one CD drive connected to your frontend,
+	the installer will now correctly identify which CD you are using.
+	</para>
+
+	<para>
+	Bug Fix - Ganglia metrics are now saved on frontend reboot.
+	After a reboot, all Ganglia history will be restored from the
+	previous boot.
+	</para>
+
+	<para>
+	Bug Fix - PVFS compiled with -mcmodel=kernel on Opteron.
+	</para>
+
+	<para>
+	Bug Fix - XML escape characters (e.g., &amp;, &lt;, &gt;) are
+	supported in the installation screens (e.g., the Cluster Information
+	screen and the Root Password screen).
+	</para>
+
+	<para>
+	Bug Fix, Intel Roll - All the Intel compiler libraries are now copied
+	to the compute nodes.
+	</para>
+
+</section>
+
+
+<section>
+<title>Release 3.2.0 - changes from 3.1.0</title>
+
+	<para>
+	New Feature - Added the Condor Roll.
+	This brings the distributed high-throughput features from the
+	Condor project to Rocks clusters.
+	</para>
+
+	<para>
+	New Feature - Added the Area51 Roll.
+	This roll contains security tools and services to check the
+	integrity of the files and operating system on your cluster.
+	</para>
+
+	<para>
+	New Feature - Ganglia RSS news event service.
+	</para>
+
+	<para>
+	Enhancement - Improved network handling for compute nodes: any
+	interface may be used for the cluster private network, not simply
+	the default "eth0".
+	</para>
+
+	<para>
+	Enhancement - Better support for cross-architecture clusters containing
+	x86 and x86_64 machines. 
+	</para>
+
+	<para>
+	Enhancement - GM device driver now builds and loads on compute nodes
+	that have a custom kernel (e.g., a kernel from kernel.org).
+	</para>
+
+	<para>
+	Enhancement - Software RAID for custom compute node partitioning
+	is supported.
+	</para>
+
+	<para>
+	Enhancement - Added variables for root and swap partition.
+	If you only want to change the size of root and/or swap, you only
+	have to reassign two XML variables.
+	</para>
+
+	<para>
+	Enhancement - The default root partition size has been increased
+	to 6 GB (up from 4 GB).
+	</para>
+
+	<para>
+	Enhancement - SGE ganglia monitor added.
+	The state of all SGE jobs can be tracked from the frontend's web page.
+	</para>
+
+	<para>
+	Enhancement - PXE support extended to support floppy-based Etherboot and
+	ia64.
+	</para>
+
+	<para>
+	Enhancement - EKV uses ssh instead of telnet for security.
+	</para>
+
+	<para>
+	Enhancement - New Myrinet MPICH version 1.2.5..12.
+	</para>
+
+	<para>
+	Enhancement, Java Roll -- Updated JDK to version 1.4.2_04
+	</para>
+
+	<para>
+	Enhancement - Latest software updates recompiled for three architectures
+	from RHEL source rpms.
+	</para>
+
+	<para>
+	Enhancement - Automatic MySQL Cluster database backup.
+	</para>
+
+	<para>
+	Enhancement - MAC addresses are included for each node in the
+	"Cluster Labels" output.
+	</para>
+
+	<para>
+	Enhancement - Frontend rescue mode on the Rocks Base CD enabled.
+	By typing "frontend rescue" at the boot prompt will give you
+	a shell in which you can examine the state of the frontend.
+	</para>
+
+	<para>
+	Bug Fix - 411 hardened. More reliable notification of changed files.
+	Correct Makefile encrypts login files on frontend first-boot. 
+	</para>
+
+	<para>
+	Bug Fix - Multiple CD drives are supported for bringing up a
+	frontend.
+	If you have more than one CD drive connected to your frontend,
+	the installer will now correctly identify which CD you are using.
+	</para>
+
+	<para>
+	Bug Fix - Ganglia metrics are now saved on frontend reboot.
+	After a reboot, all Ganglia history will be restored from the
+	previous boot.
+	</para>
+
+	<para>
+	Bug Fix - PVFS compiled with -mcmodel=kernel on Opteron.
+	</para>
+
+	<para>
+	Bug Fix - XML escape characters (e.g., &amp;, &lt;, &gt;) are
+	supported in the installation screens (e.g., the Cluster Information
+	screen and the Root Password screen).
+	</para>
+
+	<para>
+	Bug Fix, Intel Roll - All the Intel compiler libraries are now copied
+	to the compute nodes.
+	</para>
+
+</section>
+
+
+<section>
+<title>Release 3.1.0 - changes from 3.0.0</title>
+
+	<para>
+	Base Linux packages compiled from publicly available RedHat Enterprise Linux 3 Source (Advanced Workstation) for all architectures.
+	</para>
+
+	<para>
+	Switched to Sun Grid Engine 5.3 as the default batch scheduling system. 
+	</para>
+
+	<para>
+	More Rolls: NMI/Globus Release 4, Java, Condor, Intel compiler rolls available.
+	</para>
+
+	<para>
+	New Architectures: Opteron (x86_64) receives first-class functionality.
+	</para>
+
+	<para>
+	Enhancement - New MPICH version 1.2.5.2. More efficient MPD parallel job-launcher handling. MPICH2 included by default as well.
+	</para>
+
+	<para>
+	Enhancement - Using latest Myrinet mpich-gm 2.0.8 for all architectures.
+	</para>
+
+	<para>
+	Enhancement - Updated SSH version 3.7.1 with no login delay.
+	</para>
+
+	<para>
+	Enhancement - 411 Secure Information Service used by default, replacing NIS.
+	</para>
+
+	<para>
+	Enhancement - Greceptor replaces Gschedule to support mpdring, 411, cluster-top and others. Achieves an order of magnitude better performance than its predecessor.
+	</para>
+</section>
+
+
+<section>
+<title>Release 3.0.0 - changes from 2.3.2</title>
+
+	<para>
+	Based on RedHat 7.3 for x86 and RedHat Advanced Workstation 2.1 for
+	ia64 (all packages recompiled from publicly available source).
+	</para>
+
+	<para>
+	Enhancement - Includes RedHat updated RPMS (and recompiled
+	SRPMs for ia64), as of September 3 2003.
+	</para>
+
+	<para>
+	Enhancement - Includes kernel version 2.4.20-20.7 for x86
+	and version 2.4.18e.37 for ia64.
+	Installation environment includes all drivers from the above kernel
+	packages.
+	</para>
+
+	<para>
+	Enhancement - New full-featured DNS server and
+	structured ".local" naming conventions within cluster.
+	</para>
+
+	<para>
+	Enhancement - Linpack (<computeroutput>xhpl</computeroutput>) works
+	out of the box for Pentium IV and Athlon.
+	</para>
+
+	<para>
+	Enhancement - Added remove node feature to
+	<computeroutput>insert-ethers</computeroutput>.
+	</para>
+
+	<para>
+	Enhancement - New layout of all MPICH transports.
+	See <computeroutput>/opt/mpich</computeroutput> on the frontend
+	for the new directory structure.
+	</para>
+
+	<para>
+	Enhancement - Add support for 'Rolls'.
+	An x86 Rocks frontend install now requires two CDs: the Rocks Base 
+	CD and the HPC Roll.
+	An ia64 frontend still requires only one DVD.
+	</para>
+
+	<para>
+	Enhancement - Added 'Grid' Roll.  This roll includes all
+	packages from NMI R3.1, which includes Globus, the Simple
+	Certificate Authority, and other packages.
+	</para>
+
+	<para>
+	Enhancement - High-Performance, fault-tolerant MPD job launcher
+	made available.
+	Automatic MPD ring creation and healing via KAgreement-mpd
+	protocol.
+	(Currently in beta phase for this release)
+	</para>
+
+	<para>
+	Enhancement - New 411 Secure Information Service to replace NIS. 
+	(Currently in beta phase for this release)
+	</para>
+
+	<para>
+	Enhancement - Latest Ganglia version 2.5.4 including better
+	webfrontend speed and streamlined appearance, and more
+	efficient network and disk metric handling.
+	</para>
+
+	<para>
+	Enhancement - New PhpSysInfo page on compute nodes, available along
+	with /proc link on Ganglia host view page.
+	</para>
+
+	<para>
+	Enhancement - Ganglia command line tool has new --clustersize and
+	--alive=host options.
+	</para>
+
+	<para>
+	Enhancement - Kickstart graph now viewable from frontend web page.
+	</para>
+
+	<para>
+	Enhancement - For kickstart graph files, new &lt;file&gt; tags made
+	available,
+	with owner="root.root" and perms="ga+r" attributes. Beta phase of 
+	RCS-based tracking of all config file changes made for post-section 
+	repeatability.
+	</para>
+
+	<para>
+	Enhancement - Kickstart graph ordering is explicit.
+	Previously the evaluation order of individual nodes depended
+	on graph weights.  Node dependencies can now be explicitly
+	specified using &lt;order&gt; tags in the graph files.
+	</para>
+
+	<para>
+	Bug Fix - UNIX manual pages correctly shown (we extend /etc/man.conf)
+	</para>
+
+	<para>
+	Bug Fix - NTP now synchronizes all compute node clocks with the
+	frontend.
+	</para>
+
+	<para>
+	Bug Fix - <computeroutput>add-extra-nic</computeroutput> now
+	supports multiple NICs per compute node.
+	</para>
+
+	<para>
+	Bug Fix - Ganglia RRD metric histories are archived on
+	physical disk and restored on startup.
+	</para>
+
+	<para>
+	Bug Fix - Includes NCSA's OpenPBS scalability patches.
+	Can now launch PBS jobs that require more than 64 processors.
+	</para>
+
+	<para>
+	Bug Fix - USB keyboard works on all ia64 Tiger boxes
+	</para>
+
+</section>
+
+
+
+
+<section>
+<title>Release 2.3.2 - changes from 2.3.1</title>
+
+	<para>
+	Bug fix - Memory leaks in the broadcastSSH gmetric python module are
+	fixed.
+	</para>
+
+	<para>
+	Bug fix - Gmetad will not crash when long ganglia metric names are
+	introduced in the cluster.
+	</para>
+
+	<para>
+	Bug Fix - Building MPICH-GM package correctly for AMD Athlon processors.
+	</para>
+
+	<para>
+	Bug Fix - Added PBS directories:
+	<computeroutput>/opt/OpenPBS/sched_priv</computeroutput>,
+	<computeroutput>/opt/OpenPBS/sched_logs</computeroutput>,
+	<computeroutput>/opt/OpenPBS/undelivered</computeroutput>.
+	</para>
+
+	<para>
+	Bug Fix - Added <computeroutput>userdel</computeroutput> that
+	correctly updates the NIS database.
+	</para>
+
+	<para>
+	Enhancement - The Rocks-specific Ganglia metrics are much more
+	efficient with a new Python C extension module that publishes
+	ganglia metrics. The PBS job-queue monitor particularly benefits from
+	this new module.
+	</para>
+
+	<para>
+	Enhancement - Updated <computeroutput>rocks-boot</computeroutput>
+	package to contain all the modules from the latest kernel-BOOT
+	package.
+	</para>
+
+	<para>
+	Enhancement - The Ganglia monitor-core and webfrontend packages have
+	been updated to the latest version 2.5.3.
+	</para>
+
+	<para>
+	Enhancement - The frontend is now a fully configured Rocks cluster
+	build host.
+	By checking out all the Rocks source code on a 2.3.2 frontend, one
+	can build all the source code simply by executing
+	<computeroutput>make rpm</computeroutput> in the directory
+	<computeroutput>.../rocks/src/</computeroutput>.
+	</para>
+
+	<para>
+	Enhancement - Updated SGE packages from v5.3p2-4 to v5.3p3-1.
+	</para>
+
+	<para>
+	Enhancement - Added Rocks version number to
+	<computeroutput>/home/install/contrib</computeroutput> directory
+	structure.
+	</para>
+	
+</section>
+
+
+
+<section>
+<title>Release 2.3.1 - changes from 2.3</title>
+
+	<para>
+	Bug fix - Now all the installation device drivers from Red Hat's
+	device disks are included (e.g., Broadcom's Ethernet adapters).
+	In Rocks 2.3, only the device drivers found on Red Hat's installation
+	boot floppy were included.
+	</para>
+
+	<para>
+	Bug fix - User-specified NIS domains are now supported (in
+	Rocks 2.3, only 'rocks' NIS domain was supported).
+	</para>
+
+	<para>
+	Bug fix - User-specified compute node disk partitioning is now
+	supported.
+	</para>
+
+	<para>
+	Bug fix - Sun Grid Engine commd port errors during post installation
+	and Sun Grid Engine warnings during
+	<computeroutput>insert-ethers</computeroutput> were fixed.
+	</para>
+
+	<para>
+	Bug fix - Building for Pentium II/III and Athlon added to ATLAS RPM.
+	(on a side note, ATLAS is now built against gcc version 3.2).
+	</para>
+
+	<para>
+	Enhancement - PVFS upgraded to version 1.5.6.
+	</para>
+
+	<para>
+	Enhancement - More detail has been added to the PBS queue monitoring
+	web page (e.g., can view jobs for only one user and can view
+	nodes for one job).
+	Additionally, the monitoring code now more efficent and it has been
+	hardened due to direct experiences on a 300-node Rocks cluster.
+	</para>
+
+	<para>
+	Enhancement - The <computeroutput>bssh</computeroutput> service has
+	been moved from a standalone service to a task managed by the
+	Ganglia <computeroutput>gschedule</computeroutput> service.
+	</para>
+
+	<para>
+	Enhancement - The ethernet-based MPICH package has been updated
+	to version 1.2.5.
+	</para>
+
+	<para>
+	Enhancement - The Myrinet-based MPICH package has been updated
+	to version 1.2.5..9.
+	</para>
+
+	<para>
+	Enhancement - <computeroutput>OpenPBS</computeroutput> version
+	2.3.16 has replaced PBS.
+	Additionally, the <emphasis>big memory</emphasis> patch has been
+	applied.
+	Also, the license for OpenPBS requires registration for those that
+	use OpenPBS, so if you use OpenPBS to manage your computational
+	resources, please register at http://www.OpenPBS.org.
+	</para>
+
+	<para>
+	Enhancement - The <computeroutput>maui</computeroutput> package has
+	been updated to version 3.2.5.
+	</para>
+
+	<para>
+	Enhancement - Updated Myricom's GM to version 1.6.3.
+	</para>
+
+	<para>
+	New Feature - Added a link of the main web page of the frontend
+	that allows one to make sheets of labels with the names of all
+	the compute nodes.
+	</para>
+
+	<para>
+	New Feature - An alternative version of
+	<computeroutput>gcc</computeroutput> is now installed (version 3.2
+	is installed in /opt/gcc32/...).
+	</para>
+
+</section>
+
+
+
+<section>
+<title>Release 2.2.1 - changes from 2.2</title>
+
+
+	<para>
+	Bug fix - pvfs and gm modules don't build because the kernel source
+	and kernel binary RPMs were of a different version.
+	</para>
+
+	<para>
+	Bug fix - the partitioning on compute nodes only partitioned the
+	first drive.
+	Now all drives on compute nodes are partitioned with a single
+	partition.
+	The default partitioning is: 4 GB root partition, then /state/partition1
+	is the remainder of the first drive. The second drive, if present,
+	will have one partition labeled "/state/partition2".
+	The third drive, if present, will have one partition labeled
+	"/state/partition3", etc.
+	</para>
+ 
+	<para>
+	Bug fix - the Rocks CD didn't support as many hardware devices as the
+	RedHat CD.
+	All the hardware modules found on the RedHat CD have been added to
+	the Rocks CD (including many, many more).
+	</para>
+
+</section>
+
+
+<section>
+<title>Release 2.2 - changes from 2.1.2</title>
+
+	<para>
+	Based on RedHat 7.2.
+	</para>
+
+	<para>
+	Upgraded Ganglia (provided by Matt Massie of UC Berkeley) to 2.1.1.
+	</para>
+
+	<para>
+	Incorporated PVFS RPMs that were graciously provided to us
+	from Najib Ninaba and Laurence Liew who work at
+	Scalable Systems Pte Ltd in Singapore.
+	</para>
+
+	<para>
+	insert-ethers looks to see if a Rocks distribution exists. If it
+	doesn't, insert-ethers rebuilds it.
+	</para>
+
+	<para>
+	Upgraded MPICH-GM to version 1.2.1..7b.
+	</para>
+
+	<para>
+	Added the "stream" memory bandwidth benchmark.
+	</para>
+
+	<para>
+	Added functionality to rocks-dist so distributions can be rebuilt
+	without having to mirror the entire distribution.
+	</para>
+
+	<para>
+	Implemented a "greedy" partitioning scheme on compute nodes. The
+	default partitioning is: 4 GB root partition, then /state/partition1
+	is the remainder of the first drive. The second drive, if present,
+	will have one partition labeled "/state/partition2".
+	The third drive, if present, will have one partition labeled
+	"/state/partition3", etc.
+	</para>
+
+	<para>
+	Bug fix - added a "watchdog" timer to kickstart. This reboots a
+	kickstarting node if it can't find a kickstart file. This problem
+	was reported by folks trying to kickstart multiple nodes at the
+	same time.
+	</para>
+
+	<para>
+	Bug fix - increased the polling intervals for maui so it won't time
+	out when asking PBS about node status on larger clusters.
+	</para>
+
+	<para>
+	Bug fix - makedhcp now adds the full pathname to pxelinux.0 when
+	it builds dhcpd.conf.
+	</para>
+
+	<para>
+	Bug fix - create a device node for /dev/cdrom.
+	</para>
+
+	<para>
+	Bug fix - /var/log/messages is now appropriately rotated.
+	</para>
+
+</section>
+
+
+
+
+<section>
+<title>Release 2.1.2 - changes from 2.1.1</title>
+
+	<para>
+	Many network and storage drivers have been added to the installation
+	CD. For example, SMC 83c170 EPIC/100 (epic100.o), RTL8139 SMC EZ Card
+	Fast Ethernet (8139too.o) and the Promise SuperTrak Driver (pti_st.o)
+	have all been included (as well as about 100 more).
+	</para>
+
+	<para>
+	The cluster configuration web form has been simplified.
+	</para>
+
+	<para>
+	The initial kickstart file that is generated from the web form is
+	now streamed directly back to the user (rather than displaying the
+	kickstart file, and then asking the user to save the file).
+	This should finally kill the "I saved my kickstart file on Windows"
+	problem.
+	</para>
+
+	<para>
+	An option to manually partition a frontend disk has been
+	added to the cluster configuration web form.
+	</para>
+
+	<para>
+	The recursive directory /home/install/install/install/... has been
+	eliminated.
+	</para>
+
+	<para>
+	Ganglia's axon is now started before pbs-server, as the pbs-server
+	initialization script asks ganglia for the number of processor in
+	each node when it creates one of it's configuration files.
+	</para>
+
+	<para>
+	The latest "stable" release of Myricom's GM (1.5) and MPICH-GM 
+	(1.2.1..7) packages.
+	</para>
+
+	<para>
+	High-Performance Linpack is now precompiled for Myrinet and Ethernet.
+	</para>
+
+</section>
+
+
+
+
+<section>
+<title>Release 2.1.1 - changes from 2.1</title>
+
+	<para>
+	The main change in this release is the use of an XML-based
+	<emphasis>kickstart graph</emphasis> to actively manage kickstart files.
+	</para>
+
+	<para>
+	Includes support for IA-64 compute nodes.
+	See the 
+	<ulink url="../howto/ia64.php">Installing IA-64 Compute
+	Nodes HOWTO</ulink> for detailed information.
+	</para>
+
+	<para>
+	A full X server is now installed on frontend machines.
+	</para>
+
+	<para>
+	Added PXE support for kickstarting compute nodes.
+	</para>
+
+	<para>
+	All compute nodes now install ATLAS and high-performance Linpack
+	-- some slick software from the
+	<ulink
+	url="http://icl.cs.utk.edu/">Innovative Computing Laboratory</ulink>
+	at the University of Tennessee.
+	</para>
+
+	<para>
+	Modified to the PBS server initialization script to dynamically
+	determine the number of CPUs in compute nodes by querying
+	<computeroutput>ganglia</computeroutput>.
+	</para>
+
+	<para>
+	Created a <computeroutput>rocks-pylib</computeroutput> package that
+	contains all the common code used by Rocks command line utilties that
+	access the MySQL database, thus giving all the tools the same basic
+	functionality and common user-specified flags.
+	</para>
+
+	<para>
+	Patched Red Hat's installation tool (anaconda) so the default
+	behavior is to get kickstart files with HTTP (Red Hat's default
+	is NFS).
+	This frees the installation procedure of requiring NFS for
+	<emphasis>any</emphasis> of its functions.
+	</para>
+
+	<para>
+	Rewrite of <computeroutput>insert-ethers</computeroutput> to give it
+	the look and feel of a standard Red Hat installation tool.
+	</para>
+
+	<para>
+	Now using Red Hat's <computeroutput>pump</computeroutput> instead of
+	<computeroutput>dhclient</computeroutput> for the DHCP client.
+	</para>
+
+	<para>
+	Properly create the default PBS configuration file
+	(<computeroutput>/usr/apps/pbs/pbs.default</computeroutput>) so PBS
+	is now operational "out of the box".
+	</para>
+
+	<para>
+	Fixed the annoying, but harmless, message
+	<computeroutput>"socket.error: (101, 'Network is
+	unreachable')"</computeroutput> that was seen on frontend boots.
+	</para>
+
+	<para>Fixed the annoying, but harmless, message
+	<computeroutput>"user 0 unknown"</computeroutput> that was seen on a
+	compute node's first boot after kickstarting.
+	</para>
+
+	<para>
+	Fixed the 444 permissions problem on
+	<computeroutput>/usr/man</computeroutput> and
+	moved all the Rocks man pages into the new home for Linux man pages
+	(<computeroutput>/usr/share/man</computeroutput>).
+	</para>
+
+</section>
+
+
+
+<section>
+<title>Release 2.1 - changes from 2.0.1</title>
+
+	<para>
+	The main change in this release is that thanks to RedHat 7.1, we
+	now use the Linux 2.4 kernel.
+	</para>
+  
+	<para>
+	Based on RedHat 7.1, instead of 7.0.
+	</para>
+
+	<para>
+	Linux 2.4.x kernel, instead of 2.2.x.
+	</para>
+
+	<para>
+	Cluster-dist has been replaced with Rocks-dist.
+	Command line arguments are very similar, with the
+	<computeroutput>explode</computeroutput> command being
+	removed and replaced with the
+	<computeroutput>--copy</computeroutput> flag.
+	The new Rocks-dist creates smaller distributions, fixes the problem
+	of expensive mirror updating, and simplifies CD building.
+	Also, it no longer deletes the distribution before rebuilding, this
+	means the build directory (where kickstart files reside) is
+	persistent across distribution builds.
+	</para>
+
+	<para>
+	Frontend is now a stratum 10 NTP server, so compute nodes will
+	clock sync to the frontend even when the frontend cannot reach an
+	external time source.
+	</para>
+
+	<para>
+	Usher daemon now correctly daemonizes, since we patch the GM
+	code to allow processes to fork.
+	</para>
+
+	<para>
+	Symbolic links for Ekv and piece-pipe RPMs removed from the
+	build directory, and <computeroutput>"@Control@"</computeroutput>
+	section added to kickstart files.
+	</para>
+
+	<para>
+	Pbs_mom_config.h generated in the kickstart build directory.
+	</para>
+
+	<para>
+	Added pre-defined types to the models table in the SQL database.
+	Also, removed dead tables from database, and made column order more
+	human friendly.
+	</para>
+
+	<para>
+	Add SQL parsing to cluster-[ps|kill|fork] scripts.
+	</para>
+
+	<para>Removed cluster-config-compute, and cluster-config-frontend from
+	the "%post" section in the kickstart file.
+	The cluster-config rpm is now build and installed on the fly on each
+	compute-node.
+	</para>
+      
+	<para>
+	Bumped lilo timeout to 5 seconds.
+	</para>
+
+	<para>
+	Added FORCE_UNIPROCESSOR macro test to force sick SMP machines
+	to kickstart as uniprocessor nodes.
+	</para>
+
+	<para>
+	Major revision of insert-ethers.
+	Can now be used to replace nodes, and start at arbitrary ranks and
+	basenames.
+	</para>
+
+	<para>
+	Minor maui and pbs bug fixes.
+	</para>
+
+	<para>
+	Added gm-mpich SHMEM support to mpi-launch.
+	</para>
+</section>
+   
+
+
+<section>
+<title>Release 2.0.1 - changes from 2.0</title>
+
+	<para>
+	Changed to new directory structure according to RedHat.
+	Existing users will have to delete their mirror of www.rocksclusters.org
+	and re-mirror to pickup the current RedHat directory naming scheme.
+	NOTE: you need the new cluster-dist from www.rocksclusters.org to
+	create a new mirror!
+	</para>
+
+	<para>
+	Added support to kickstart laptops (still working on this)
+	</para>
+
+	<para>
+	Frontend can now have either a DHCP or static address for the
+	external network.
+	For DHCP the DNS information provided from the
+	external DHCP server is inserted into the Rocks Database and
+	propagated to compute nodes.
+	</para>
+
+	<para>
+	Increased default DHCP lease time
+	</para>
+
+	<para>
+	Replaced Linux's useradd with create-account.
+	</para>
+
+	<para>
+	Force glibc-common RPM to be installed.
+	RedHat 7.0 doesn't install this due to errors in the RPM database.
+	</para>
+
+	<para>
+	NIS database gets rebuilt on the frontend once an hour.
+	</para>
+
+	<para>
+	Create directories on frontend/compute nodes before putting down
+	SSL and SSH keys.
+	Fixed permission on directories.
+	</para>
+
+	<para>
+	Ssh-agent now forwards through nodes
+	</para>
+
+	<para>
+	Ssh doesn't use privileged port (makes firewalls happy)
+	</para>
+
+	<para>cluster-kickstart set real and effect UID to root so all
+	members of the install group can run shoot-node.
+	Previously only root could do this.
+	</para>
+
+	<para>
+	Fixed reinstalls on IDE and SCSI hosts (only IDA host worked before,
+	thanks to a RedHat 7.0 change)
+	</para>
+
+	<para>
+	Fixed bssh bug
+	</para>
+
+</section>
+
+</appendix>

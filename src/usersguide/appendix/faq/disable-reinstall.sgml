@@ -1,0 +1,97 @@
+<qandaentry>
+<question id="disable-reinstall">
+
+	<para>
+	How do I disable the feature that reinstalls compute nodes after a
+	hard reboot?
+	</para>
+
+</question>
+
+<answer>
+
+        <para>
+	When compute nodes experience a <emphasis>hard</emphasis> reboot (e.g., 
+	when the compute node is reset by pushing the power button or after a
+	power failure), they will reformat the root file system and
+	reinstall their base operating environment.
+	</para>
+
+	<para>
+	To disable this feature:
+	</para>
+
+	<itemizedlist>
+	<listitem>
+		<para> Login to the frontend </para>
+	</listitem>
+
+	<listitem>
+		<para>
+		Create a file that will override the default:
+		</para>
+
+<screen>
+# cd /home/install
+# cp rocks-dist/lan/<emphasis>arch</emphasis>/build/nodes/auto-kickstart.xml \
+site-profiles/&document_version;/nodes/replace-auto-kickstart.xml
+</screen>
+
+	<para>
+	Where <emphasis>arch</emphasis> is "i386" or "x86_64".
+	</para>
+
+	</listitem>
+
+	<listitem>
+		<para>
+		Edit the file
+		<computeroutput>
+		site-profiles/&document_version;/nodes/replace-auto-kickstart.xml
+		</computeroutput>
+		</para>
+	</listitem>
+
+	<listitem>
+		<para> Remove the line: </para>
+
+<screen>
+&lt;package&gt;rocks-boot-auto&lt;package&gt;
+</screen>
+
+	</listitem>
+
+	<listitem>
+		<para>
+		Rebuild the distribution:
+		</para>
+
+<screen>
+# cd /home/install
+# rocks-dist dist
+</screen>
+
+	</listitem>
+
+	<listitem>
+		<para> Reinstall all your compute nodes </para>
+
+		<note> <para>
+		An alternative to reinstalling all your compute nodes is to
+		login to each compute node and execute:
+
+<screen>
+# /etc/rc.d/init.d/rocks-grub stop
+# /sbin/chkconfig --del rocks-grub
+</screen>
+
+		</para> </note>
+
+
+	</listitem>
+	</itemizedlist>
+
+</answer>
+
+</qandaentry>
+

@@ -1,0 +1,82 @@
+<section id="customization-rsh"
+	xreflabel="Enabling RSH on Compute Nodes">
+
+<title> Enabling RSH on Compute Nodes </title>
+
+<para>
+The default Rocks configuration does not enable rsh commands or login
+to compute nodes.  Instead, Rocks uses ssh as a drop in replacement
+for rsh.  There may be some circustances where ssh does not have
+exactly the same semantics of rsh.  Further, there may be some users
+that cannot modify their application to switch from rsh to ssh.  If
+you are one of these users you may wish to enable rsh on your cluster.
+</para>
+
+<warning><para> 
+Enabling rsh on your cluster has serious security implicatations.
+While it is true rsh is limited to the private-side network this does
+not mean it is as secure as ssh.
+</para></warning>
+
+<para>
+Enabling rsh is done by modifying the default kickstart graph.
+First copy the default <computeroutput>rsh.xml</computeroutput> into
+the site customization directory:
+</para>
+
+<screen>
+# cp /home/install/rocks-dist/lan/<emphasis>arch</emphasis>/build/graphs/default/base-rsh.xml \
+	/home/install/site-profiles/&document_version;/graphs/default/
+</screen>
+
+<para>
+Where <emphasis>arch</emphasis> is your architecture ("i386" or "x86_64").
+</para>
+
+<para>
+Now edit
+<computeroutput>/home/install/site-profiles/&document_version;/graphs/default/base-rsh.xml</computeroutput>
+and change the following:
+</para>
+
+<screen>
+        &lt;!-- Uncomment to enable RSH on your cluster
+
+        &lt;edge from="client"&gt;
+                &lt;to&gt;xinetd&lt;/to&gt;
+                &lt;to&gt;rsh&lt;/to&gt;
+        &lt;/edge&gt;
+
+        --&gt;
+</screen>
+
+<para>
+Follow the instruction and uncomment this block.  This will force
+all appliance types that reference the client class (compute
+nodes, NAS nodes, ...) to enable an rsh service that trusts all hosts
+on the private side network.  This uncommented block should look like
+this:
+</para>
+
+<screen>
+        &lt;edge from="client"&gt;
+                &lt;to&gt;xinetd&lt;/to&gt;
+                &lt;to&gt;rsh&lt;/to&gt;
+        &lt;/edge&gt;
+</screen>
+
+<para>
+To apply this configuration to the compute nodes, rebuild the distribution:
+</para>
+
+<screen>
+# cd /home/install
+# rocks-dist dist
+</screen>
+
+<para>
+Then, reinstall your compute nodes.
+</para>
+
+</section>
+

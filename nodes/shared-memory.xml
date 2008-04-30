@@ -1,0 +1,60 @@
+<?xml version="1.0" standalone="no"?>
+
+<kickstart>
+
+<description>
+Configure the maximum size of a shared memory segment to be 3/4 of main memory
+</description>
+
+
+<changelog>
+$Log: shared-memory.xml,v $
+Revision 1.1  2007/12/10 21:28:33  bruno
+the base roll now contains several elements from the HPC roll, thus
+making the HPC roll optional.
+
+this also includes changes to help build and configure VMs for V.
+
+Revision 1.7  2005/04/09 01:07:28  bruno
+changes to deal with new format of /proc/meminfo
+
+Revision 1.6  2005/02/16 00:40:04  mjk
+graph cleanup
+
+Revision 1.5  2004/02/03 00:57:25  mjk
+decolorize / derollize
+
+Revision 1.4  2004/01/30 00:22:54  mjk
+color hpc green
+
+Revision 1.3  2003/08/31 14:56:03  bruno
+need to use 'bc' to make sure value not converted to scientific notation
+
+Revision 1.2  2003/08/31 14:44:21  bruno
+calculate shared memory size without scientific notation
+
+Revision 1.1  2003/07/07 20:47:52  bruno
+initial release
+
+Revision 1.2  2002/02/25 17:27:30  bruno
+fixes for 2.2
+
+Revision 1.1  2002/02/23 00:54:39  bruno
+initial release
+
+
+</changelog>
+
+
+<post>
+SHMSIZE=`gawk '/MemTotal:/ { printf("(%s/4) * (3 * 1024)\n", $2); }' \
+	/proc/meminfo | bc`
+
+if [ $SHMSIZE ]
+then
+	echo "kernel.shmmax = " $SHMSIZE >> /etc/sysctl.conf
+fi
+</post>
+
+</kickstart> 
+

@@ -1,0 +1,41 @@
+<section id="customization-adding-applications"
+	xreflabel="Adding Applications">
+
+<title> Adding Applications to Compute Nodes </title>
+
+<para>
+If you have code you'd like to share among the compute nodes, but your
+code isn't in an RPM (or in a roll), then this procedure describes how
+you can share it with NFS.
+</para>
+
+<para>
+On the frontend, go to the directory
+<computeroutput>/export/apps</computeroutput>.
+</para>
+
+<screen>
+# cd /export/apps
+</screen>
+
+<para>
+Then add the files you'd like to share within this directory.
+</para>
+
+<para>
+All files will be available on the compute nodes under:
+<computeroutput>/share/apps</computeroutput>.
+For example:
+</para>
+
+<screen>
+# cd /export/apps
+# touch myapp
+# ssh compute-0-0
+# cd /share/apps
+# ls
+myapp
+</screen>
+
+</section>
+

@@ -1,0 +1,285 @@
+#!/opt/rocks/bin/python
+
+import os
+#
+# make sure we use the native python path
+#
+os.environ['PYTHONPATH'] = ''
+
+import rocks.sql
+import rocks.media
+import rocks.roll
+
+class App(rocks.sql.Application):
+
+	def __init__(self):
+		rocks.sql.Application.__init__(self)
+
+		#self.localRollHost = 'sunchip.rocksclusters.org:8080'
+		self.localRollHost = '127.0.0.1'
+
+		#
+		# helper functions to access roll info from CD/DVDs and
+		# from the network
+		#
+		self.media = rocks.media.Media()
+
+		self.version = '@VERSION@'
+
+		return
+
+
+	def buildScreens(self):
+		#
+		# after we get all the rolls, then build the HTML
+		# 'screens' pages
+		#
+		cmd = '/tmp/updates/opt/rocks/screens/rocks-buildscreens'
+		cmd += ' > /tmp/buildscreens.debug 2>&1'
+		os.system(cmd)
+
+		#
+		# this is a bit twisted
+		# 
+		# we're going to use a timer in javascript to fire off
+		# the reload of the HTML screens pages. this is because
+		# we want the entire 'roll' page to be replaced by the
+		# screens page.
+		#
+		# we can't do this in the form rolls.html, as the the
+		# reloading of rocks.html causes the CGI never to be called.
+		# this is because before the submit on the form is called,
+		# the rocks.html page has replaced the rolls.html page,
+		# therefore, the form no longer exists
+		#
+		redirect = 'parent.load("' + \
+			'/tmp/updates/opt/rocks/screens/rocks.html");'
+	
+		out = '<html>'
+		out += '<head>'
+		out += '<script language="JavaScript">'
+		out += "setTimeout('%s', 1);" % (redirect)
+		out += '</script>'
+		out += '</head>'
+		out += '</html>'
+
+		print 'Content-type: text/html'
+		print 'Content-length: %d' % (len(out))
+		print ''
+		print out
+
+		return
+
+
+	def getNetworkRoll(self, rollserver, path):
+		#
+		# if we made it here, then the user wants to select more rolls
+		#
+		url = 'http://%s/%s' % (rollserver, path)
+
+		#
+		# if this is a CD-based roll, then mount the disk
+		#
+		if rollserver == self.localRollHost and path == 'mnt/cdrom/':
+			self.media.mountCD()
+			diskid = self.media.getId()
+		else:
+			diskid = ''
+
+		rollList = []
+
+		# 
+		# special case for redhat, that is, don't fill out the
+		# rollList when we detect there is a redhat CD/DVD, make
+		# sure we always get that info from getCDInfo
+		# 
+		redhat_prefix = 'Red_Hat'
+		if diskid[0:len(redhat_prefix)] != redhat_prefix:
+			self.media.listRolls(url, diskid, rollList)
+
+		if (rollList == [] and diskid != ''):
+			#
+			# use 'temp_diskid' so we don't overwrite the above
+			# real diskid
+			#
+			(timestamp, rollname, rollarch, temp_diskid) = \
+				self.media.getCDInfo()
+			rollList.append((
+				rollname, self.version, rollarch, diskid))
+
+		cgi = '/tmp/updates/opt/rocks/screens/rocks-recordrolls.cgi'
+
+		out = '<html>'
+		out += '<head>'
+		out += '<link rel="stylesheet" type="text/css" '
+		out += 'href="common.css" />'
+		out += '</head>'
+
+		out += '<body class="ProBackground">'
+
+		out += '<center>'
+		out += '<form name="input" method="post" action="%s">' % (cgi)
+
+		if rollList == []:
+			out += '<p class="ProStatusText">'
+			out += 'No rolls found' 
+			out += '</p>'
+			out += '<input type="submit" value="Continue" '
+
+		else:
+
+			#
+			# add the url as a hidden variable
+			#
+			out += '<input type="hidden" name="rollurl" '
+			out += 'value="%s">' % (url)
+			out += '<input type="hidden" name="diskid" '
+			out += 'value="%s">' % (diskid)
+
+			out += '<table border cellpadding=3 cellspacing=0>'
+
+			out += '<tr align=center>'
+			out += '<td class="ProTitle">Selected</td>'
+			out += '<td class="ProTitle">Roll Name</td>'
+			out += '<td class="ProTitle">Version</td>'
+			out += '<td class="ProTitle">Arch</td>'
+			out += '</tr>'
+
+			for (name, version, arch, diskid) in rollList:
+				out += '<tr align=center>'
+
+				out += '<td>'
+				out += '<input type="checkbox" '
+				out += 'name="%s,%s,%s">' \
+					% (name, version, arch)
+				out += '</td>'
+
+				out += '<td class="ProLabel">'
+				out += '%s' % (name)
+				out += '</td>'
+
+				out += '<td class="ProLabel">'
+				out += '%s' % (version)
+				out += '</td>'
+
+				out += '<td class="ProLabel">'
+				out += '%s' % (arch)
+				out += '</td>'
+
+				out += '</tr>'
+			out += '</table>'
+
+			#out += '<br>'
+
+			out += '<input type="submit" value="Submit" '
+
+		out += 'class="ProButton" '
+		out += '</form>'
+
+		out += '</center>'
+		out += '</body>'
+		out += '</html>'
+
+		print 'Content-type: text/html'
+		print 'Content-length: %d' % (len(out))
+		print ''
+		print out
+
+		return
+
+
+	def getCDRoll(self):
+		self.media.ejectCD()
+
+		cgi = '/tmp/updates/opt/rocks/screens/rocks-getroll.cgi'
+
+		out = '<html>'
+		out += '<head>'
+		out += '<link rel="stylesheet" type="text/css" '
+		out += 'href="common.css" />'
+		out += '</head>'
+
+		out += '<body class="ProBackground">'
+
+		out += '<center>'
+		out += '<form name="input" method="post" action="%s">' % (cgi)
+
+		out += '<input type="hidden" name="morerolls" value="network">'
+		out += '<input type="hidden" name="rollserver" '
+		out += 'value="%s">' % (self.localRollHost)
+		out += '<input type="hidden" name="rollpath" '
+		out += 'value="mnt/cdrom/">'
+
+		out += '<p class="ProLabel">'
+		out += 'Insert the Roll CD/DVD'
+		out += '</p>'
+		out += '<input type="submit" value="Continue" '
+
+		out += 'class="ProButton" '
+		out += 'onClick=top.document.input.submit();>'
+		out += '</form>'
+
+		out += '</center>'
+		out += '</body>'
+		out += '</html>'
+
+		print 'Content-type: text/html'
+		print 'Content-length: %d' % (len(out))
+		print ''
+		print out
+
+		return
+
+
+        def run(self):
+		import cgi
+
+		form = cgi.FieldStorage()
+
+		if form.has_key('morerolls'):
+			if form['morerolls'].value == 'network':
+				if form.has_key('rollserver'):
+					rollserver = form['rollserver'].value
+				else:
+					rollserver = ''
+
+				if form.has_key('rollpath'):
+					rollpath = form['rollpath'].value
+				else:
+					rollpath = 'install/rolls/'
+
+				self.getNetworkRoll(rollserver, rollpath)
+
+			elif form['morerolls'].value == 'cd':
+				#
+				# if no rolls have been selected (e.g., this
+				# is the first roll to be selected), then
+				# automatically scan the disk that is in the
+				# drive and ask the user if they want to
+				# select rolls off this disk.
+				#
+				# otherwise, eject the CD and ask the user
+				# to put a new roll disk in the drive
+				#
+				generator = rocks.roll.Generator()
+				try:
+					generator.parse('/tmp/rolls.xml')
+					rollList = generator.rolls
+				except:
+					rollList = []
+					pass
+
+				if rollList == []:
+					self.getNetworkRoll(self.localRollHost,
+						'mnt/cdrom/')
+				else:
+					self.getCDRoll()
+
+			elif form['morerolls'].value == 'done':
+				self.buildScreens()
+
+		return
+
+app = App()
+app.run()
+

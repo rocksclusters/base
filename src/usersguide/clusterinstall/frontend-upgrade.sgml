@@ -1,0 +1,221 @@
+<section id="upgrade-frontend" xreflabel="Upgrade Frontend">
+<title> Upgrade or Reconfigure Your Existing Frontend </title>
+
+<para>
+This procedure describes how to use a Restore Roll to upgrade or
+reconfigure your existing Rocks cluster.
+</para>
+
+<warning>
+<para>
+If your Rocks frontend is running Rocks version 4.3 and you wish to
+upgrade it to version &document_version;, you first need to install the
+<computeroutput>rocks-devel-env</computeroutput> package:
+</para>
+
+<para>
+For i386, execute:
+</para>
+
+<screen>
+# rpm -ivh --force http://www.rocksclusters.org/ftp-site/pub/rocks/rocks-4.3/upgrade/rocks-devel-env-4.3-1.i386.rpm
+# rpm -ivh --force http://www.rocksclusters.org/ftp-site/pub/rocks/rocks-4.3/upgrade/rocks-command-4.3-0.i386.rpm
+# rpm -ivh --force http://www.rocksclusters.org/ftp-site/pub/rocks/rocks-4.3/upgrade/rocks-pylib-4.3-0.noarch.rpm
+</screen>
+
+<para>
+For x86_64, execute:
+</para>
+
+<screen>
+# rpm -ivh --force http://www.rocksclusters.org/ftp-site/pub/rocks/rocks-4.3/upgrade/rocks-devel-env-4.3-1.x86_64.rpm
+# rpm -ivh --force http://www.rocksclusters.org/ftp-site/pub/rocks/rocks-4.3/upgrade/rocks-command-4.3-0.x86_64.rpm
+# rpm -ivh --force http://www.rocksclusters.org/ftp-site/pub/rocks/rocks-4.3/upgrade/rocks-pylib-4.3-0.noarch.rpm
+</screen>
+</warning>
+
+<para>
+Now we'll create a Restore Roll for your frontend.
+This roll will contain site-specific info that will be used to quickly
+reconfigure your frontend (see the section below for details).
+</para>
+
+<screen>
+# cd /export/site-roll/rocks/src/roll/restore
+# make roll
+</screen>
+
+<para>
+The above command will output a roll ISO image that has the name of the form:
+<emphasis>hostname</emphasis>-restore-<emphasis>date</emphasis>-0.<emphasis>arch</emphasis>.disk1.iso.
+For example, on the i386-based frontend with the FQDN of <emphasis>rocks-45.sdsc.edu</emphasis>, the roll will be named like:
+</para>
+
+<screen>
+rocks-45.sdsc.edu-restore-2006.07.24-0.i386.disk1.iso
+</screen>
+
+<para>
+Burn your restore roll ISO image to a CD.
+</para>
+
+<para>
+Reinstall the frontend by putting the Rocks Boot CD in the CD tray (generally,
+this is the Kernel/Boot Roll) and rebooting the frontend.
+</para>
+
+<para>
+At the <computeroutput>boot:</computeroutput> prompt, type:
+</para>
+
+<screen>
+frontend
+</screen>
+
+<para>
+At this point, the installation follows the same steps as a
+<emphasis>normal</emphasis> frontend installation (See
+the section: <xref linkend="install-frontend">) -- with two exceptions:
+</para>
+
+
+<orderedlist>
+
+<listitem>
+	<para>
+	On the first user-input screen (the screen that asks for 'local' and
+	'network' rolls), be sure to supply the Restore Roll that you just
+	created.
+	</para>
+</listitem>
+
+<listitem>
+	<para>
+	You will be forced to manually partition your frontend's root disk.
+	</para>
+
+	<warning>
+	<para>
+	You must reformat your
+	<computeroutput>/</computeroutput> partition, your 
+	<computeroutput>/var</computeroutput> partition and your 
+	<computeroutput>/boot</computeroutput> partition (if it exists).
+	</para>
+
+	<para>
+	Also, be sure to assign the mountpoint of
+	<computeroutput>/export</computeroutput> to the partition that contains
+	the users' home areas. Do NOT erase or format this partition, or you will lose the
+	user home directories.
+	Generally, this is the largest partition on the first disk.
+	</para>
+	</warning>
+</listitem>
+
+</orderedlist>
+
+<para>
+After your frontend completes its installation, the last step is to force
+a re-installation of all of your compute nodes.
+The following will force a PXE (network install) reboot of
+all your compute nodes.
+</para>
+
+<screen>
+# ssh-agent $SHELL
+# ssh-add
+# tentakel -g compute '/boot/kickstart/cluster-kickstart-pxe'
+</screen>
+
+
+
+<section id="upgrade-frontend-internals"
+	xreflabel="Restore Roll Internals">
+
+<title> Restore Roll Internals </title>
+
+<para>
+By default, the Restore Roll contains two sets of files: system files and
+user files, and some user scripts.
+The system files are listed in the 'FILES' directive in the file:
+<computeroutput>/export/site-roll/rocks/src/roll/restore/src/system-files/version.mk</computeroutput>.
+</para>
+
+<screen>
+FILES           = /etc/passwd /etc/shadow /etc/gshadow /etc/group \
+                  /etc/exports /etc/auto.home /etc/motd
+</screen>
+
+<para>
+The user files are listed in the 'FILES' directive in the file:
+<computeroutput>/export/site-roll/rocks/src/roll/restore/version.mk</computeroutput>.
+</para>
+
+<screen>
+FILES           += /etc/X11/xorg.conf
+</screen>
+
+<para>
+If you have other files you'd like saved and restored, then append them to
+the 'FILES' directive in the file
+<computeroutput>/export/site-roll/rocks/src/roll/restore/version.mk</computeroutput>,
+then rebuild the restore roll.
+</para>
+<para>
+If you'd like to add your own post sections, you can add the name of the script to the 'SCRIPTS'
+directive of the <computeroutput>/export/site-roll/rocks/src/roll/restore/version.mk</computeroutput> file.
+</para>
+<screen>
+SCRIPTS += /export/apps/myscript.sh /export/apps/myscript2.py
+</screen>
+<para>
+This will add the shell script <computeroutput>/export/apps/myscript.sh</computeroutput>, and the python
+script <computeroutput>/export/apps/myscript2.py</computeroutput> in the post section of the restore-user-files.xml file.
+<note><para>If you'd like to run the script in "nochroot" mode, add
+<screen># nochroot</screen>
+as the first comment in your script file after the interpreter line, if one is present.</para>
+<para>
+For example
+<screen>
+#!/bin/bash
+#nochroot
+echo "This is myscript.sh"
+</screen>
+or
+<screen>
+#nochroot
+echo "This is myscript.sh"
+</screen>
+will run the above code in the "nochroot" mode during installation.
+As opposed to
+<screen>
+echo "This is myscript.sh"
+#nochroot
+</screen>
+or
+<screen>
+#!/bin/bash
+echo "This is myscript.sh"
+</screen>
+will NOT run the script under "nochroot" mode.
+</para>
+</note>
+</para>
+<para>
+All the files under
+<computeroutput>/export/home/install/site-profiles</computeroutput> are
+saved and restored.
+So, any user modifications that are added via the XML node method will be
+preserved.
+</para>
+
+<para>
+The networking info for all node interfaces (e.g., the frontend, compute nodes,
+NAS appliances, etc.) are saved and restored.
+This is accomplished via the 'rocks dump' command.
+</para>
+
+</section>
+
+</section>
+

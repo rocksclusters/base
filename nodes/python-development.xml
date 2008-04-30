@@ -1,0 +1,93 @@
+<?xml version="1.0" standalone="no"?>
+
+<kickstart>
+
+	<description>
+
+	Python support
+
+	</description>
+
+        <copyright>
+        Copyright (c) 2000 - 2008 The Regents of the University of California.
+        All rights reserved. Rocks(r) v5.0 www.rocksclusters.org
+        </copyright>
+
+	<changelog>
+	$Log: python-development.xml,v $
+	Revision 1.6  2008/03/06 23:41:30  mjk
+	copyright storm on
+	
+	Revision 1.5  2007/06/23 04:03:18  mjk
+	mars hill copyright
+	
+	Revision 1.4  2006/06/26 17:19:47  bruno
+	no longer needed now that we have the foundation
+	
+	Revision 1.3  2005/03/31 04:37:36  bruno
+	more packages needed to build rocks
+	
+	Revision 1.2  2005/03/11 04:33:37  bruno
+	vi error
+	
+	and a new way to do passwords in mysql
+	
+	Revision 1.1  2005/03/01 00:22:26  mjk
+	moved to base roll
+	
+	Revision 1.3  2005/02/18 00:44:30  bruno
+	dynamically find all python installations and link gmon and rocks python
+	code into it
+	
+	Revision 1.2  2005/02/15 22:58:52  mjk
+	dtd is gone
+	
+	Revision 1.1  2004/03/08 21:01:23  mjk
+	*** empty log message ***
+	
+	Revision 1.12  2004/02/03 20:00:36  mjk
+	decolorize
+	
+	Revision 1.11  2004/01/30 04:53:42  mjk
+	colorize
+	
+	Revision 1.10  2003/10/15 22:19:48  bruno
+	fixes for taroon
+	
+	Revision 1.9  2003/09/24 17:08:45  fds
+	Bruno's changes for RH 9
+	
+	Revision 1.8  2003/08/14 15:32:23  mjk
+	- Built Python2 for Itanic
+	- Root part is now 4GB
+	- Include openssl python tools for 411 on Itanic
+	
+	Revision 1.7  2003/08/13 19:06:52  bruno
+	changes to support ia64 and embedded rolls
+
+	Revision 1.6  2003/08/04 20:42:50  fds
+	Added links for 2.2. Need a better way to specify python
+	library locations.
+
+	Revision 1.5  2002/10/10 21:09:13  bruno
+	needed rocks directory
+
+	Revision 1.4  2002/10/10 21:07:50  bruno
+	added link into python directory
+
+	Revision 1.3  2002/01/18 23:27:32  bruno
+	updates for 7.2
+
+	Revision 1.2  2001/09/05 00:27:18  mjk
+	main and packages section is correct for compute nodes
+
+	</changelog>
+
+	<package>python</package>
+	<package>python-devel</package>
+	<package>PyXML</package>
+	<package>expat</package>
+	<package>rocks-pylib</package>	<!-- Rocks specific -->
+
+
+</kickstart> 

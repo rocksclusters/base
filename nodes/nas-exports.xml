@@ -1,0 +1,51 @@
+<?xml version="1.0" standalone="no"?>
+
+<kickstart>
+
+<description>
+Rocks Cluster NAS Node export file system definitions
+</description>
+
+
+<changelog>
+$Log: nas-exports.xml,v $
+Revision 1.1  2007/12/10 21:28:33  bruno
+the base roll now contains several elements from the HPC roll, thus
+making the HPC roll optional.
+
+this also includes changes to help build and configure VMs for V.
+
+Revision 1.2  2005/10/06 23:57:03  bruno
+added 'async' flag to each /etc/exports entry.
+
+thanks to Bill Hoover for debugging the problem.
+
+Revision 1.1  2005/09/19 22:08:37  bruno
+partitioning tuning.
+
+- the frontend and NAS appliance will no longer nuke all partitions before
+  the partitioning screen
+- a NAS appliance always displays the partitioning screen
+- added a nas-exports node to make it easier for people to customize
+  their export directories on NAS appliances
+- hardened the software raid partitioning code
+
+</changelog>
+
+
+<post>
+
+	<!-- Clone the following export line with other file systems 
+	that should exported. Note: An entry for each physical
+	partition that is to be exported must be explicitly 
+	listed.--> 
+
+<file name="/etc/exports">
+/export/data1 <var name="Kickstart_PrivateNetwork"/>/<var name="Kickstart_PrivateNetmask"/>(rw,no_root_squash,async)
+</file>
+
+</post>
+
+
+</kickstart> 
+

@@ -1,0 +1,205 @@
+<section id="customization-kernel"
+	xreflabel="Creating a Custom Kernel RPM">
+
+<title> Creating a Custom Kernel RPM </title>
+
+<section id="customization-kernel-kernel-org"
+	xreflabel="Creating a Custom Kernel RPM using kernel.org's Source">
+
+<title> Creating a Custom Kernel RPM using kernel.org's Source </title>
+
+<itemizedlist>
+
+<listitem>
+	<para>
+	On the frontend, check out the Rocks source code.
+	See <xref linkend="source-access"> for details.
+	</para>
+</listitem>
+
+<listitem>
+	<para>
+	Change into the directory:
+	</para>
+
+<screen>
+# cd rocks/src/roll/kernel/src/kernel.org
+</screen>
+
+</listitem>
+
+<listitem>
+	<para>
+	Download the kernel source tarball from kernel.org.
+	For example:
+	</para>
+
+<screen>
+# wget http://www.kernel.org/pub/linux/kernel/v2.6/linux-2.6.24.4.tar.gz
+</screen>
+
+</listitem>
+
+<listitem>
+	<para>
+	Create a kernel "config" file and put it in
+	<computeroutput>config-&lt;version&gt;</computeroutput>
+	</para>
+	<para>
+	You can create the config file by using the following procedure:
+	</para>
+
+<screen>
+# tar xzf linux-2.6.24.4.tar.gz
+# cd linux-2.6.24.4
+# make menuconfig
+</screen>
+
+	<para>
+	Configure the kernel anyway you need, and after the configuration is
+	over choose to save the configuration in an alternative location.
+	Enter the name of
+	the file as <computeroutput>../config-2.6.24.4</computeroutput>.
+	Finally, exit the configuration and remove the linux-2.6.24.4
+	directory.
+	</para>
+
+	<note>
+	<para>
+	The <emphasis>&lt;version&gt;</emphasis> number must match the
+	version number of the kernel source.
+	For example, if you downloaded
+	<computeroutput>linux-2.6.24.4.tar.gz</computeroutput>, the name of
+	the config file must be 
+	<computeroutput>config-2.6.24.4</computeroutput>.
+	</para>
+	</note>
+</listitem>
+
+<listitem>
+	<para>
+	Update <computeroutput>version.mk</computeroutput>.
+	</para>
+
+	<para>
+	The file <computeroutput>version.mk</computeroutput> has the
+	following contents:
+	</para>
+
+<screen>
+NAME            = kernel
+RELEASE         = 1
+
+VERSION         = 2.6.24.4
+PAE             = 0
+XEN             = 0
+</screen>
+	
+	<para>
+	The <computeroutput>VERSION</computeroutput> value must match that
+	of the linux kernel tarball you downloaded (e.g., 2.6.24.4).
+	</para>
+
+	<para>
+	If you are building a kernel for an i386 system that has more than
+	4 GB, you'll need to set the PAE (page address extension) flag. 
+	This will name the resulting kernel <emphasis>kernel-PAE*rpm</emphasis>.
+	If the anaconda installer detects more that 4 GB memory, then it
+	will install the kernel-PAE RPM and not the kernel RPM.
+	</para>
+
+<screen>
+PAE             = 1
+</screen>
+
+	<para>
+	If you are building a kernel that contains Xen support, then set
+	the XEN flag.
+	This will name the resulting kernel <emphasis>kernel-xen*rpm</emphasis>.
+	</para>
+
+<screen>
+XEN             = 1
+</screen>
+
+	<para>
+	It is illegal to set both the PAE and XEN flags.
+	</para>
+
+	<para>
+	If you want to build a kernel that the installer will use, then
+	you must unset both the PAE and XEN flags (the default configuration
+	of version.mk). 
+	This will name the resulting kernel <emphasis>kernel*rpm</emphasis>.
+	</para>
+
+	<note>
+	<para>
+	If you want to build a custom kernel for both the installer and for the
+	running system and the running system requires either the kernel-PAE
+	or kernel-xen RPM, then you'll have to execute this procedure twice:
+	once to build the installer kernel (PAE = 0 and XEN = 0) and once
+	to build the kernel that will be used on the running system
+	(PAE = 1 or XEN = 1).
+	</para>
+	</note>
+	
+</listitem>
+
+<listitem>
+	<para>
+	Build the kernel:
+	</para>
+
+<screen>
+# make rpm
+</screen>
+</listitem>
+
+<listitem>
+	<para>
+	Copy the resulting RPMs into the current distribution:
+	</para>
+
+<screen>
+# cp ../../RPMS/&lt;arch&gt;/kernel*rpm /home/install/contrib/&document_version;/&lt;arch&gt;/RPMS/
+</screen>
+
+	<para>
+	Where <emphasis>&lt;arch&gt;</emphasis> is i386 or x86_64.
+	</para>
+</listitem>
+
+<listitem>
+	<para>
+	Rebuild the distribution:	
+	</para>
+
+<screen>
+# cd /home/install
+# rocks-dist dist
+</screen>
+
+</listitem>
+
+<listitem>
+	<para>
+	Test the new kernel by reinstalling a compute node:
+	</para>
+
+<screen>
+# shoot-node compute-0-0
+</screen>
+</listitem>
+
+<listitem>
+	<para>
+	If the kernel works to your satisfaction, reinstall all the compute
+	nodes that you want to run the new kernel.
+	</para>
+</listitem>
+</itemizedlist>
+
+</section>
+
+</section>

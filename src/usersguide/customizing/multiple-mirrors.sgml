@@ -1,0 +1,121 @@
+<section id="customization-mirroring"
+	xreflabel="Mirroring">
+<title> Mirroring the Rocks and Red Hat Distributions </title>
+
+<section id="customization-mirroring-rocks"
+	xreflabel="Mirroring Rocks">
+<title> Mirroring the Rocks Cluster Distribution </title>
+
+<para>
+After the frontend is installed, only a portition of the entire Rocks cluster
+distribution is installed on the frontend (in fact, only the portion that
+could fit on the first CD is present).
+</para>
+
+<para>
+To obtain the entire Rocks cluster distribution, execute:
+</para>
+
+<screen>
+# cd /home/install
+# rocks-dist mirror
+</screen>
+
+<para>
+This puts the entire Rocks distribution under the directory
+<computeroutput>/home/install/ftp.rocksclusters.org</computeroutput>
+</para>
+
+<para>
+To recompile the distribution, that is, to incorporate all the packages
+from the updated mirror, execute:
+</para>
+
+<screen>
+# cd /home/install
+# rocks-dist dist
+</screen>
+
+<para>
+This binds all the packages from
+<computeroutput>ftp.rocksclusters.org</computeroutput>
+into a new Red Hat compliant distribution under 
+<computeroutput>/home/install/rocks-dist</computeroutput>
+</para>
+
+</section>
+
+
+<section id="customization-multiple-mirrors"
+	xreflabel="Multiple Mirrors">
+<title> Incorporating Multiple Red Hat Mirrors </title>
+
+<para>
+The following is a procedure on how to mirror an official Red Hat
+mirror (e.g., in order to incorporate the
+latest Red Hat packages as they are made available).
+</para>
+
+<para>
+First, select a
+<ulink url="http://www.redhat.com/download/mirror.html">mirror host</ulink>
+(we mirror from <computeroutput>andromeda.acs.uci.edu</computeroutput>).
+</para>
+
+<para>
+Then find the <emphasis>root</emphasis> of the mirror.
+This the directory that has the directory names
+<computeroutput>7.2, 7.3, 8.0, etc.</computeroutput>.
+Again, using our example, on 
+<computeroutput>andromeda.acs.uci.edu</computeroutput>.
+this is 
+<computeroutput>mirrors/redhat/linux</computeroutput>.
+</para>
+
+<para>
+To pass the above info to <computeroutput>rocks-dist</computeroutput>, create
+the file <computeroutput>/home/install/rocks-distrc</computeroutput> and
+place the following in it:
+</para>
+
+<programlisting>
+&lt;?xml version="1.0" standalone="yes"?&gt;
+
+&lt;rocks-dist&gt;
+        &lt;host name="updates" value="andromeda.acs.uci.edu"/&gt;
+        &lt;path name="updates" value="mirrors/redhat/linux"/&gt;
+&lt;/rocks-dist&gt;
+</programlisting>
+
+<para>
+Now you can download RPMs from the specified mirror site by executing:
+</para>
+
+<screen>
+# cd /home/install
+# rocks-dist mirror
+</screen>
+
+<para>
+Now build a new distribution that merges the Rocks mirror
+(<computeroutput>ftp.rockscluster.org</computeroutput>) and your selected
+Red Hat mirror:
+</para>
+
+<screen>
+# rocks-dist dist
+</screen>
+
+<para>
+This compiles a new distribution under the directory
+<computeroutput>/home/install/rocks-dist</computeroutput>.
+</para>
+
+<para>
+Now reinstall your compute nodes.
+</para>
+
+</section>
+
+</section>
+

@@ -1,0 +1,253 @@
+<?xml version="1.0" standalone="no"?>
+
+<kickstart>
+
+<description>
+Provides pre-execution environment (PXE) support for frontend machines.
+</description>
+
+        <copyright>
+        Copyright (c) 2000 - 2008 The Regents of the University of California.
+        All rights reserved. Rocks(r) v5.0 www.rocksclusters.org
+        </copyright>
+
+<changelog>
+$Log: pxe.xml,v $
+Revision 1.17  2008/03/24 21:03:27  bruno
+keep the UNDI stack around after a PXE boot
+
+Revision 1.16  2008/03/06 23:41:30  mjk
+copyright storm on
+
+Revision 1.15  2008/03/05 05:18:35  phil
+add pxeflash action
+
+Revision 1.14  2007/12/10 21:28:33  bruno
+the base roll now contains several elements from the HPC roll, thus
+making the HPC roll optional.
+
+this also includes changes to help build and configure VMs for V.
+
+Revision 1.13  2007/07/03 18:13:08  phil
+Move the pxe table schema to database-schema
+
+Revision 1.12  2007/06/23 04:03:18  mjk
+mars hill copyright
+
+Revision 1.11  2007/06/06 19:43:37  bruno
+call mysql with the right user to lay down the PXE schema
+
+Revision 1.10  2007/05/31 19:19:54  bruno
+moved 'rocks set host pxeaction' to 'rocks add host pxeaction'
+
+Revision 1.9  2007/05/24 20:39:27  bruno
+fix the permissions so apache can write new configuration files
+in /tftpboot/pxelinux/pxelinux.cfg
+
+Revision 1.8  2007/05/02 20:20:53  bruno
+added 'pxeaction' table -- allows for adding and removing pxeboot actions
+
+Revision 1.7  2007/05/01 22:48:26  bruno
+pxeboot works for pxe first and pxe last nodes
+
+Revision 1.6  2007/04/30 22:03:12  bruno
+more pxe first support
+
+Revision 1.5  2006/10/26 20:55:06  bruno
+change ram disk size to 300,000 for ia64 PXE installs
+
+Revision 1.4  2006/10/18 19:07:54  bruno
+bumped the ramdisk size for ia64
+
+Revision 1.3  2006/07/21 02:55:03  phil
+Placeholder for the rocks-pxe package. Build the schema, but don't use it until
+we've turned another cycle with bruno
+
+Revision 1.2  2006/07/21 02:50:53  phil
+rocks-pxe helper function support
+
+Revision 1.1  2006/06/05 21:35:03  bruno
+moved PXE config from HPC to base
+
+Revision 1.21  2005/09/02 00:11:18  bruno
+remove PXE multicast xinetd configuration (bug 154)
+
+Revision 1.20  2005/03/25 00:16:57  bruno
+make sure selinux is disabled during PXE installs
+
+Revision 1.19  2005/02/16 00:40:04  mjk
+graph cleanup
+
+Revision 1.18  2004/10/20 16:29:24  bruno
+set all references to 'ramdisk_size' to 150000
+
+Revision 1.17  2004/07/12 22:46:04  fds
+Calling out xinetd explicitly
+
+Revision 1.16  2004/04/29 17:07:18  bruno
+need to make directory before copying over files
+
+Revision 1.15  2004/04/29 02:32:25  bruno
+added support for ia64 PXE
+
+Revision 1.14  2004/04/08 06:00:52  bruno
+turns out, it was a blown stack and not this
+
+Revision 1.13  2004/04/07 23:16:27  bruno
+force the load of the bcm7500 driver for opterons
+
+Revision 1.12  2004/03/28 16:01:55  bruno
+i386 needs syslinux, not ia64
+
+Revision 1.11  2004/02/04 17:39:40  bruno
+on what interface do you want to install?
+
+Revision 1.10  2004/02/03 00:57:25  mjk
+decolorize / derollize
+
+Revision 1.9  2004/01/30 00:22:54  mjk
+color hpc green
+
+Revision 1.8  2003/11/12 18:29:54  bruno
+tweaks
+
+Revision 1.7  2003/10/22 22:47:33  fds
+Added atlas, moved syslinux
+
+Revision 1.6  2003/10/21 15:48:31  bruno
+set the interface to eth0 for pxe installs
+
+Revision 1.5  2003/10/02 20:32:01  fds
+PXE coordination is done by dhcp, so activate it for all platforms.
+
+Revision 1.4  2003/08/28 03:17:38  bruno
+configure tftp and tftp-mast to only have one outstanding server at a time
+
+Revision 1.3  2003/07/16 18:52:45  bruno
+changes all file creation code to use 'file' tag
+
+Revision 1.2  2003/07/10 22:20:20  bruno
+closer
+
+Revision 1.1  2003/07/07 20:47:51  bruno
+initial release
+
+Revision 1.4  2002/09/12 20:59:33  bruno
+removed  EXTRAOPTIONS flag
+
+Revision 1.3  2002/07/22 16:24:04  bruno
+ipchains -> iptables
+more OO on installclass
+
+Revision 1.2  2001/10/31 00:35:11  bruno
+rocks v2.1.1 updates
+
+Revision 1.1  2001/10/11 21:33:40  bruno
+initial release
+
+</changelog>
+
+<package>tftp-server</package>
+<package arch="x86_64, i386">syslinux</package>
+<package>xinetd</package>
+<package>memtest86+</package>
+<package>rocks-pxeboot</package>
+<package>pxeflash</package>
+
+
+<post>
+
+<!-- pxe needs a tftp server -->
+<file name="/etc/xinetd.d/tftp">
+service tftp
+{
+        socket_type             = dgram
+        protocol                = udp
+        wait                    = yes
+        user                    = root
+        server                  = /usr/sbin/in.tftpd
+        server_args             = -s /tftpboot/pxelinux
+        instances               = 1
+	per_source		= 11
+	cps			= 1000 2
+	flags			= IPv4
+        disable                 = no
+}
+</file>
+
+
+<!--	
+	copy vmlinuz and initrd.img that pxelinux will grab from
+	this server
+-->
+mkdir -p /tftpboot/pxelinux
+
+cp /boot/kickstart/default/vmlinuz /tftpboot/pxelinux/
+cp /boot/kickstart/default/initrd.img /tftpboot/pxelinux/
+
+cp /boot/memtest86* /tftpboot/pxelinux/memtest
+
+</post>
+
+
+<post arch="i386, x86_64">
+
+mkdir -p /tftpboot/pxelinux/pxelinux.cfg
+chown root.apache /tftpboot/pxelinux/pxelinux.cfg
+chmod 775 /tftpboot/pxelinux/pxelinux.cfg
+
+<!-- need pxelinux.0 , this is the file that PXE boot roms load first -->
+cp /usr/lib/syslinux/pxelinux.0 /tftpboot/pxelinux/
+
+</post>
+
+
+<post arch="ia64">
+
+cp /boot/efi/efi/redhat/elilo.efi /tftpboot/pxelinux/
+
+
+<file name="/tftpboot/pxelinux/elilo.conf">
+default=ks
+prompt
+timeout=50
+
+image=vmlinuz
+        label=ks
+        initrd=initrd.img
+        read-only
+        append="ramdisk_size=300000 maxcpus=1 ks pxe kssendmac selinux=0"
+</file>
+
+</post>
+
+<post>
+
+<!-- now setup the global PXE boot default actions -->
+/opt/rocks/bin/rocks add host pxeaction action="install" \
+	command="kernel vmlinuz" \
+	args="append ks initrd=initrd.img ramdisk_size=150000 lang= devfs=nomount pxe kssendmac selinux=0 noipv6"
+
+/opt/rocks/bin/rocks add host pxeaction action="os" \
+	command="localboot 0"
+
+/opt/rocks/bin/rocks add host pxeaction action="memtest" \
+	command="kernel memtest"
+
+/opt/rocks/bin/rocks add host pxeaction action="install headless" \
+	command="kernel vmlinuz" \
+	args="append ks initrd=initrd.img ramdisk_size=150000 lang= devfs=nomount pxe kssendmac selinux=0 noipv6 headless vnc"
+
+/opt/rocks/bin/rocks add host pxeaction action="rescue" \
+	command="kernel vmlinuz" \
+	args="append ks initrd=initrd.img ramdisk_size=150000 lang= devfs=nomount pxe kssendmac selinux=0 noipv6 rescue"
+
+/opt/rocks/bin/rocks add host pxeaction action="pxeflash" \
+	command="kernel memdisk bigraw" \
+	args="append initrd=pxeflash.img keeppxe"
+
+</post>
+
+
+</kickstart> 
+

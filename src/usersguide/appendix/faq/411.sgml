@@ -1,0 +1,47 @@
+<qandaentry>
+
+<question id="four11-nis">
+<para>
+How do I use user accounts from an external NIS server on my cluster?
+</para>
+</question>
+
+<answer>
+<para>
+While there is no certain method to do this correctly, if necessary we recommend you use "ypcat" to periodically gather external NIS user accounts on the frontend, and let the default 411 system distribute the information inside the cluster.
+</para>
+
+<para>
+The following cron script will collect NIS information from your external network onto the frontend. The login files created here will be automatically distributed to cluster nodes via 411. This code courtesy of Chris Dwan at the University of Minnesota.
+</para>
+
+<para>
+<screen>
+(in /etc/cron.hourly/get-NIS on frontend)
+
+#!/bin/sh
+ypcat -k auto.master > /etc/auto.master
+ypcat -k auto.home   > /etc/auto.home
+ypcat -k auto.net    > /etc/auto.net
+ypcat -k auto.web    > /etc/auto.web
+
+ypcat passwd      > /etc/passwd.nis
+cat   /etc/passwd.local /etc/passwd.nis > /etc/passwd.combined
+cp    /etc/passwd.combined /etc/passwd
+
+ypcat group       > /etc/group.nis
+cat   /etc/group.local /etc/group.nis > /etc/group.combined
+cp    /etc/group.combined /etc/group
+</screen>
+</para>
+
+<para>
+<caution>
+<para>
+There is no way to insure that UIDs GIDs from NIS will not conflict with those already present in the cluster. You must always be careful that such collisions do not occur, as unpredicatble and undefined behavior will result.
+</para>
+</caution>
+</para>
+
+</answer>
+</qandaentry>

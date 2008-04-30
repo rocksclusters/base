@@ -1,0 +1,82 @@
+<qandaentry>
+<question id="third-cd">
+<para>
+When I install Rocks, it asks for a third CD.
+I insert the CD and the install program rejects it. What should I do?
+</para>
+</question>
+
+<answer>
+<para>
+Most likely, this situation arises due to the video chip on your frontend.
+RedHat 7.3 ships with XFree86 version 4.0 and not all video chips are
+supported with version 4.0.
+So, RedHat's installation program tries to install a
+<emphasis>compatibility</emphasis>
+package from version 3 of XFree86.
+This package is on the 3rd Rocks CD.
+</para>
+
+<para>
+If you see the install program trying to install the package
+<emphasis>XFree86-compat-modules-3.3.6-42</emphasis>, then you have hit
+the issue described above.
+</para>
+
+<para>
+Unfortunately, we have not engineered a multi-CD solution.
+A work-around for this problem is to edit the <emphasis>ks.cfg</emphasis>
+file you downloaded when you filled out the
+<emphasis>Rocks Cluster Configuration</emphasis> web form.
+Here's the procedure:
+</para>
+
+<itemizedlist>
+
+	<listitem><para>
+	Edit <emphasis>ks.cfg</emphasis>
+	</para></listitem>
+
+	<listitem>
+	<para>
+	change the line:
+	</para>
+
+<screen>
+XFree86-libs
+</screen>
+
+	<para>
+	to:
+	</para>
+
+<screen>
+XFree86-libs
+-XFree86-compat-modules
+</screen>
+
+	</listitem>
+
+	<listitem><para>
+	Copy <emphasis>ks.cfg</emphasis> back on to your floppy.
+	</para></listitem>
+
+	<listitem><para>
+	Reinstall your frontend.
+	</para></listitem>
+
+</itemizedlist>
+
+<para>
+After your frontend comes up, install the
+<emphasis>XFree86-compat-modules</emphasis>
+package by hand, by executing:
+</para>
+
+<screen>
+rpm -Uvh http://www.rocksclusters.org/install/rocks-dist/7.3/en/os/i386/RedHat/RPMS/XFree86-compat-modules-3.3.6-42.i386.rpm
+</screen>
+
+</answer>
+</qandaentry>
+

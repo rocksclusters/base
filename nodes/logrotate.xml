@@ -1,0 +1,140 @@
+<?xml version="1.0" standalone="no"?>
+
+<kickstart>
+
+<description>
+
+Append rules to logrotate to prune files in /var/log
+
+</description>
+
+        <copyright>
+        Copyright (c) 2000 - 2008 The Regents of the University of California.
+        All rights reserved. Rocks(r) v5.0 www.rocksclusters.org
+        </copyright>
+
+<changelog>
+
+$Log: logrotate.xml,v $
+Revision 1.3  2008/03/06 23:41:30  mjk
+copyright storm on
+
+Revision 1.2  2007/06/23 04:03:18  mjk
+mars hill copyright
+
+Revision 1.1  2005/03/01 00:22:26  mjk
+moved to base roll
+
+Revision 1.5  2005/02/15 22:58:52  mjk
+dtd is gone
+
+Revision 1.4  2004/12/15 02:50:48  bruno
+the real fix for bug 82.
+
+Revision 1.3  2004/12/15 02:32:56  bruno
+apply same technique to squash the ever growing 1.1.1 problem to the
+auth log file.
+
+this addresses bug 82.
+
+Revision 1.2  2004/04/13 17:42:16  mjk
+i suck
+
+Revision 1.1  2004/03/08 21:01:23  mjk
+*** empty log message ***
+
+Revision 1.8  2004/02/03 20:00:35  mjk
+decolorize
+
+Revision 1.7  2004/01/30 04:53:42  mjk
+colorize
+
+Revision 1.6  2003/12/16 22:37:21  mjk
+syslog fixes
+
+Revision 1.5  2003/07/21 19:37:57  fds
+Simplified kgen (regular append) with support for owner,
+perms, and vars=literal
+
+Revision 1.4  2003/07/16 20:10:41  bruno
+changed to new 'file' tag
+
+Revision 1.3  2002/01/31 01:05:22  bruno
+bug report -- removed '/var/log/messages' entry. it's already in
+/etc/logrotate.d/syslog
+
+Revision 1.2  2001/10/15 23:11:14  bruno
+lessons learned
+
+Revision 1.1  2001/10/11 21:33:40  bruno
+initial release
+:
+
+</changelog>
+
+
+<post>
+
+<file name="/etc/logrotate.d/rocks">
+/var/log/auth {
+	size=100M
+	postrotate
+		/bin/kill -HUP `cat /var/run/syslogd.pid 2&gt; /dev/null` \
+			2&gt; /dev/null || true
+	endscript
+}
+/var/log/daemon {
+	size=100M
+	postrotate
+		/bin/kill -HUP `cat /var/run/syslogd.pid 2&gt; /dev/null` \
+			2&gt; /dev/null || true
+	endscript
+}
+/var/log/lpr {
+	size=100M
+	postrotate
+		/bin/kill -HUP `cat /var/run/syslogd.pid 2&gt; /dev/null` \
+			2&gt; /dev/null || true
+	endscript
+}
+/var/log/mail {
+	size=100M
+	postrotate
+		/bin/kill -HUP `cat /var/run/syslogd.pid 2&gt; /dev/null` \
+			2&gt; /dev/null || true
+	endscript
+}
+/var/log/kern {
+	size=100M
+	postrotate
+		/bin/kill -HUP `cat /var/run/syslogd.pid 2&gt; /dev/null` \
+			2&gt; /dev/null || true
+	endscript
+}
+/var/log/syslog {
+	size=100M
+	postrotate
+		/bin/kill -HUP `cat /var/run/syslogd.pid 2&gt; /dev/null` \
+			2&gt; /dev/null || true
+	endscript
+}
+/var/log/user {
+	size=100M
+	postrotate
+		/bin/kill -HUP `cat /var/run/syslogd.pid 2&gt; /dev/null` \
+			2&gt; /dev/null || true
+	endscript
+}
+/var/log/local[1-9] {
+	size=10M
+	postrotate
+		/bin/kill -HUP `cat /var/run/syslogd.pid 2&gt; /dev/null` \
+			2&gt; /dev/null || true
+	endscript
+}
+</file>
+
+</post>
+
+
+</kickstart> 

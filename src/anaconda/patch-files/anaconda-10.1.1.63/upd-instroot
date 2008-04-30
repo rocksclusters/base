@@ -1,0 +1,1204 @@
+#!/bin/bash
+
+ORIGDIR=`pwd`
+COMPONENT=""
+DEBUG=""
+
+if [ "$1" == "--debug" ]; then
+    DEBUG="--debug"
+    shift
+fi
+
+if [ "$1" == "--comp" ]; then
+    COMPONENT=$2
+    shift; shift
+fi
+
+if [ -z "$1" ]; then
+	echo "upd-instroot: updates instimage from a Red Hat RPMS directory"
+	echo "usage:        $0 --comp <comp> <packagedir> [templatedir] [instroot]"
+	exit 1
+fi
+
+if [ ! -d $1 ]; then
+	if [ -z "$ARCH" ]; then
+		echo "ARCH must be set" >&2
+		exit 1
+	fi
+	LATEST="latest --arch $ARCH"
+fi
+
+PACKAGEDIR=$1
+
+if [ -z "$ARCH" ]; then
+	ARCH=`rpm --nodigest --nosignature -qp --qf "%{ARCH}" $PACKAGEDIR/anaconda-runtime*.rpm`
+fi
+
+if [ $ARCH = x86_64 -o $ARCH = s390x ]; then
+    LIBDIR=lib64
+else
+    LIBDIR=lib
+fi
+
+NEEDGR=yes
+
+prunePackageList() {
+	PACKAGEPATH=$1
+	PACKAGES="$2"
+
+	if [ -n "$LATEST" ]; then
+	    $LATEST $PACKAGEPATH $PACKAGES
+	    if [ $? != 0 ]; then
+		$LATEST $PACKAGEPATH $PACKAGES >&2
+		kill -9 $$
+	    fi
+		
+	    return
+	fi
+
+	PATTERN=""
+	PACKAGEFILES=""
+	for PKG in $PACKAGES; do
+	    PATTERN="${PATTERN:+${PATTERN}|}(^$PKG )"
+	    PACKAGEFILES="$PACKAGEFILES $(ls $PACKAGEPATH/$PKG*{$ARCH,noarch}.rpm 2>/dev/null)"
+	done
+
+	# gtk+, enough said
+	PATTERN=$(echo $PATTERN | sed 's,[\+\*],\\&,g')
+
+	PACKAGEFILES=$(ls $PACKAGEFILES | sort -u)
+
+	rpm --nodigest --nosignature --qf "%{NAME} $PACKAGEPATH/%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}.rpm\n" \
+		-qp $PACKAGEFILES  | egrep "$PATTERN"  | sed 's/.* //' 
+}
+
+expandPackageSet() {
+    RPMS=$1
+    PKGDEST=$2
+    KEEPFILES=$3
+
+    [ -d $PKGDEST ] || die "ERROR: directory missing: $PKGDEST"
+    for n in $RPMS; do 
+	[ -n "$DEBUG" ] && echo -ne "\rExpanding packages..." $(basename $n)
+	if [ "$(rpm --nosignature --nodigest -qp --qf '%{NAME}' $n)" = "tzdata" ] ; then
+	    TZDATA=$n
+	fi 
+	rpm2cpio $n | (cd $PKGDEST; cpio -E $KEEPFILES --quiet -iumd)
+	[ -n "$DEBUG" ] && echo -ne "\rExpanding packages..." "$(basename $n | sed 's/./ /g')"
+    done
+}
+
+die () {
+    echo "$@"
+    echo "Aborting instroot creation..."
+    exit 1
+}
+
+if [ -z "$2" ]; then
+    DEST=/tmp/upd-instroot
+else
+    DEST=$2
+fi
+
+if [ -z "$3" ]; then
+    DESTGR=/tmp/upd-instroot
+else
+    DESTGR=$3
+fi
+
+rm -rf $DEST $DESTGR
+mkdir -p $DEST
+mkdir -p $DESTGR
+
+PACKAGES="glibc glibc-common setup openssl python newt slang libselinux
+	 libsepol libtermcap zlib ash e2fsprogs util-linux raidtools popt mdadm
+	 procps rpm rpm-libs XFree86 Xconfigurator anaconda tzdata
+	 anaconda-runtime kudzu hwdata bzip2 beecrypt ncurses readline
+	 bzip2-libs dosfstools pciutils reiserfs-utils parted sed
+	 busybox-anaconda rpm-python booty hdparm lvm2 beecrypt device-mapper
+	 rhpl pyxf86config libxml2 libxml2-python glib2 audit-libs
+	 elfutils-libelf bogl-bterm bogl krb5-libs convertdb1 jfsutils
+ 	 xfsprogs xfsdump dmapi libacl libattr attr acl bogl-devel
+         policy policycoreutils pyparted xorg-x11 selinux-policy-targeted"
+
+if [ $ARCH = i386 -o $ARCH = x86_64 ]; then
+    PACKAGES="$PACKAGES kernel-pcmcia-cs kernel-utils"
+fi
+
+if [ $ARCH = ia64 ]; then
+    PACKAGES="$PACKAGES elilo"
+fi
+
+if [ $ARCH = s390 -o $ARCH = s390x ]; then
+    PACKAGES="$PACKAGES s390utils binutils libgcc tcp_wrappers
+              sed net-tools xinetd openssl openssh openssh-server coreutils
+              login initscripts XFree86-xauth bash portmap pam 
+              telnet-server login mount grep modutils gawk
+              XFree86-libs strace xorg-x11-xauth xorg-x11-libs"
+fi
+
+if [ $ARCH = ppc -o $ARCH = ppc64 ]; then
+    PACKAGES="$PACKAGES kernel-pcmcia-cs pdisk yaboot hfsutils"
+fi
+
+# xpm is missing
+
+# Some packages are listed twice, but that's okay
+#
+# The packages in this list are needed for the graphical installer to run
+# 
+# Extra stuff we want for rescue mode should go in PACKAGESRESCUE
+#
+PACKAGESGR="anaconda XFree86-libs libpng XFree86-75dpi-fonts
+           XFree86-ISO8859-2-75dpi-fonts gtk2
+           XFree86-ISO8859-9-75dpi-fonts esound audiofile libgnome
+           XFree86-100dpi-fonts fonts-ISO8859-2 fonts-ISO8859-9
+           XFree86-xfs e2fsprogs coreutils glibc glibc-common
+           readline popt specspo util-linux rpm rpm-libs tzdata
+           procps ncurses bash cpio gpm
+           XFree86 Xconfigurator gnome-python2 pygtk2 gdk-pixbuf 
+           XFree86-KOI8-R XFree86-KOI8-R-75dpi-fonts pam 
+           reiserfs-utils atk pango freetype gnome-python2-canvas 
+           libgnomecanvas libart_lgpl libgcc libacl libattr libstdc++ expat
+           anaconda-images anaconda-help XFree86-base-fonts
+           ttfonts-ko taipeifonts XFree86-ISO8859-15-75dpi-fonts rhpl
+           system-config-keyboard Xft fontconfig redhat-artwork audit-libs
+           ttfonts-ja ttfonts-zh_TW bitmap-fonts-cjk urw-fonts fonts-arabic
+           comps-extras XFree86-libs-data convertdb1 fonts-bengali
+           vnc-server libjpeg tcp_wrappers system-config-date
+           xfsprogs xfsdump dmapi attr acl policy policycoreutils
+           selinux-policy-targeted ttfonts-zh_CN
+           xorg-x11-libs xorg-x11-ISO8859-2-75dpi-fonts
+           xorg-x11-ISO8859-9-75dpi-fonts xorg-x11-100dpi-fonts
+           xorg-x11-xfs xorg-x11 xorg-x11-KOI8-R xorg-x11-KOI8-R-75dpi-fonts
+           xorg-x11-base-fonts xorg-x11-ISO8859-15-75dpi-fonts
+           fonts-xorg-ISO8859-2-75dpi fonts-xorg-ISO8859-15-75dpi
+           fonts-xorg-ISO8859-9-75dpi fonts-xorg-100dpi
+           fonts-xorg-KOI8-R fonts-xorg-KOI8-R-75dpi fonts-xorg-base
+           xorg-x11-base xorg-x11-ISO8859-15-75dpi 
+           xorg-x11-libs-data xorg-x11-xfs prelink redhat-logos fedora-logos
+           ttfonts-ta ttfonts-bn ttfonts-gu ttfonts-hi ttfonts-pa"
+
+#
+# stuff ONLY included for rescue mode
+#
+# these packages are combined with the PACKAGES and PACKAGESGR for big stage 2
+#
+PACKAGESRESCUE="bzip2 bzip2-libs dump
+                findutils ftp gzip iputils joe krb5-libs less man
+                modutils mtools mt-st mtr net-tools open 
+                openssh openssh-clients pciutils rsh traceroute tar"
+
+if [ $ARCH = i386 ]; then
+    PACKAGESRESCUE="$PACKAGESRESCUE"
+fi
+
+# turn off options we dont want, ie. set package list to something harmless
+if [ -z "$NEEDGR" ]; then
+    PACKAGESGR="bash"
+    PACKAGESRESCUE="bash"
+fi
+
+#
+# add bootloader for particular arch
+#
+if [ $ARCH = sparc ]; then
+    PACKAGESGR="$PACKAGESGR tilo silo"
+fi
+
+if [ $ARCH = i386 -o $ARCH = x86_64 ]; then
+    PACKAGESGR="$PACKAGESGR syslinux memtest86+" 
+fi
+
+if [ $ARCH = alpha ]; then
+    PACKAGESGR="$PACKAGESGR aboot"
+fi
+
+if [ $ARCH = ia64 ]; then
+    PACKAGESGR="$PACKAGESGR elilo"
+fi
+
+if [ $ARCH = ppc ]; then
+    PACKAGESGR="$PACKAGESGR fbset yaboot ppc64-utils"
+fi
+
+#
+# KEEPFILE is all files to keep from the packages in PACKAGES
+#
+# This is what is present in http, ftp, and hard drive installs, and is
+# supposed to be a small image because these methods keep it in RAM.
+#
+# It also is the base on which the other install images build on top of,
+# so if something is needed by all images it should go here
+#
+KEEPFILE=/tmp/keepfile.$$
+cat > $KEEPFILE <<EOF
+boot/efi/EFI/redhat/elilo.efi
+bin/ash
+bin/fdisk*
+bin/mkfs*
+bin/sed
+etc/group
+etc/passwd
+etc/protocols
+etc/services
+etc/selinux/targeted/booleans
+etc/selinux/targeted/policy/policy.*
+etc/selinux/targeted/contexts/files/file_contexts
+etc/security/selinux/policy.*
+etc/security/selinux/file_contexts
+$LIBDIR/ld*.so*
+$LIBDIR/libblkid*
+$LIBDIR/libc*
+$LIBDIR/libcom_err*
+$LIBDIR/libcrypt*
+$LIBDIR/libdevmapper*
+$LIBDIR/libdl*
+$LIBDIR/libe2p*
+$LIBDIR/libext2fs*
+$LIBDIR/liblvm-10.so*
+$LIBDIR/libm[-.]*
+$LIBDIR/libnsl*
+$LIBDIR/libnss_dns*
+$LIBDIR/libnss_files*
+$LIBDIR/libpthread*
+$LIBDIR/libresolv*
+$LIBDIR/librt[-.]*
+$LIBDIR/libselinux*
+$LIBDIR/libsepol*
+$LIBDIR/libss*
+$LIBDIR/libtermcap*
+$LIBDIR/libhandle*
+$LIBDIR/libattr*
+$LIBDIR/libaudit*.so*
+$LIBDIR/libdm*
+$LIBDIR/libutil*
+$LIBDIR/libuuid*
+sbin/badblocks
+sbin/busybox.anaconda
+sbin/clock
+sbin/debugfs
+sbin/dosfslabel
+sbin/e2fsck
+sbin/e2fsadm
+sbin/e2label
+sbin/fsck.ext2
+sbin/fsck.ext3
+sbin/fsck.jfs
+sbin/fsck.xfs
+sbin/fdisk
+sbin/hdparm
+sbin/hwclock
+sbin/jfs_tune
+sbin/ldconfig
+sbin/lvm*
+sbin/mdadm
+sbin/mkdosfs
+sbin/mke2fs
+sbin/mkfs.ext2
+sbin/mkfs.ext3
+sbin/mkfs.jfs
+sbin/mkfs.xfs
+sbin/mkfs.msdos
+sbin/mkfs.vfat
+sbin/mkreiserfs
+sbin/mkraid
+sbin/mkswap
+sbin/parted
+sbin/pdisk
+sbin/probe
+sbin/resize2fs
+sbin/sfdisk
+sbin/tune2fs
+sbin/xfsdump
+sbin/xfsrestore
+sbin/xfs_repair
+usr/sbin/xfs_db
+usr/sbin/xfs_check
+usr/sbin/xfs_copy
+usr/X11R6/share/Xconfigurator/MonitorsDB
+usr/bin/python
+usr/bin/python?.?
+usr/bin/hmount
+usr/bin/humount
+usr/bin/hcopy
+usr/bin/hattrib
+usr/bin/hformat
+usr/lib/anaconda-runtime/*
+usr/lib/anaconda/*
+usr/lib/anaconda/installclasses/*
+usr/lib/anaconda/textw/*
+usr/$LIBDIR/bogl/font.bgf.gz
+usr/lib/booty/*
+usr/kerberos/$LIBDIR/libkrb5.so*
+usr/kerberos/$LIBDIR/libk5crypto.so*
+usr/kerberos/$LIBDIR/libcom_err.so*
+usr/kerberos/$LIBDIR/libgssapi_krb5.so*
+usr/$LIBDIR/libkrb5.so*
+usr/$LIBDIR/libk5crypto.so*
+usr/$LIBDIR/libcom_err.so*
+usr/$LIBDIR/libgssapi_krb5.so*
+usr/$LIBDIR/gconv/ISO8859-1.so
+usr/$LIBDIR/gconv/gconv-modules
+usr/$LIBDIR/libbeecrypt*
+usr/$LIBDIR/libglib*
+usr/$LIBDIR/libgmodule*
+usr/$LIBDIR/libgobject*
+usr/$LIBDIR/libgthread*
+usr/$LIBDIR/libssl*
+usr/$LIBDIR/libcrypto*
+usr/$LIBDIR/libbz2*
+usr/$LIBDIR/libelf*
+usr/$LIBDIR/libncurses*
+usr/$LIBDIR/libnewt*
+usr/$LIBDIR/libparted*
+usr/$LIBDIR/libpopt*
+usr/$LIBDIR/libpython*
+usr/$LIBDIR/libreadline*
+usr/$LIBDIR/librpm-*4.?.so*
+usr/$LIBDIR/librpmdb*4.?.so*
+usr/$LIBDIR/librpmio*4.?.so*
+usr/$LIBDIR/libslang*
+usr/$LIBDIR/libxml2.so*
+usr/$LIBDIR/libz.*
+usr/$LIBDIR/libbogl.so*
+usr/$LIBDIR/python?.?/*
+usr/$LIBDIR/python?.?/site-packages/libxml2*
+usr/$LIBDIR/python?.?/site-packages/*kudzu*
+usr/$LIBDIR/python?.?/site-packages/rpmmodule.so
+usr/$LIBDIR/python?.?/site-packages/partedmodule.so
+usr/$LIBDIR/python?.?/site-packages/ixf86configmodule.so
+usr/$LIBDIR/python?.?/site-packages/xf86config.py
+usr/$LIBDIR/python?.?/site-packages/rhpl
+usr/lib/rpm/macros
+usr/lib/rpm/rpmpopt
+usr/lib/rpm/rpmrc
+usr/lib/yaboot/addnote
+usr/lib/yaboot/ofboot
+usr/lib/yaboot/yaboot
+usr/libexec/convertdb1
+usr/share/locale/*/LC_MESSAGES/anaconda.mo
+usr/sbin/anaconda
+usr/sbin/ddcprobe
+usr/sbin/dmidecode
+usr/sbin/mkofboot
+usr/sbin/ofpath
+usr/sbin/ybin
+usr/sbin/load_policy
+usr/share/anaconda/locale-list
+usr/share/anaconda/anaconda.conf
+usr/share/terminfo/b/bterm
+usr/share/terminfo/l/linux
+usr/share/terminfo/v/vt100
+usr/share/terminfo/v/vt100-nav
+usr/share/hwdata/pcitable
+usr/share/hwdata/pci.ids
+usr/share/hwdata/Cards
+usr/share/hwdata/MonitorsDB
+usr/share/rhpl/extramodes
+usr/share/rhpl/vesamodes
+EOF
+
+if [ $ARCH = s390 -o $ARCH = s390x ]; then
+    cat >> $KEEPFILE <<EOF
+usr/share/terminfo/a/ansi
+usr/share/terminfo/d/dumb
+usr/share/terminfo/k/kterm
+usr/share/terminfo/s/screen
+usr/share/terminfo/v/vt100
+usr/share/terminfo/v/vt100-nav
+usr/share/terminfo/v/vt102
+usr/share/terminfo/x/xterm
+usr/share/terminfo/x/xterm-color
+usr/bin/strace
+usr/bin/ldd
+usr/sbin/chroot
+usr/sbin/sshd
+usr/sbin/glibc_post_upgrade
+usr/sbin/in.telnetd
+usr/sbin/xinetd
+sbin/cmsfslst
+sbin/cmsfscat
+sbin/busybox.anaconda
+sbin/ifconfig
+sbin/route
+sbin/portmap
+sbin/fdasd
+sbin/dasdfmt
+sbin/swapon
+sbin/swapoff
+sbin/mkswap
+bin/bash
+bin/dd
+bin/gawk
+bin/mount
+bin/umount
+bin/mknod
+bin/sleep
+bin/login
+bin/cat
+bin/chmod
+bin/sort
+$LIBDIR/libpam.so*
+$LIBDIR/libdl.so*
+$LIBDIR/libdl-*.so*
+usr/$LIBDIR/libz.so*
+$LIBDIR/libnsl.so*
+$LIBDIR/libnsl-*.so*
+$LIBDIR/libnss*
+$LIBDIR/libutil.so*
+$LIBDIR/libutil-*.so*
+$LIBDIR/libcrypt*
+$LIBDIR/libc.so*
+$LIBDIR/libc-*so*
+lib/ld*.so*
+$LIBDIR/ld*.so*
+$LIBDIR/libresolv.so*
+$LIBDIR/libresolv-*.so*
+$LIBDIR/libvtoc*.so*
+lib/modules/ibm/*
+etc/xinetd.conf
+etc/pam.d/sshd
+etc/pam.d/other
+etc/security/limits.conf
+etc/security/pam_env.conf
+lib/security
+$LIBDIR/security/pam_*
+usr/$LIBDIR/libwrap.so*
+usr/X11R6/$LIBDIR/libXmuu.so*
+usr/X11R6/$LIBDIR/libX11.so*
+usr/X11R6/$LIBDIR/libXext.so*
+usr/X11R6/$LIBDIR/libXxf86misc.so*
+usr/X11R6/bin/xauth
+EOF
+fi
+      
+#
+# KEEPFILEGR is all files to keep from the packages in PACKAGESGR
+#
+# This defines the files in addition to KEEPFILE that make up the install
+# images for NFS and CD/DVD based installs.  This image is not loaded into
+# memory so it can be considerably larger.
+#
+# The rescue mode of anaconda uses these files as well as those defined
+# by KEEPFILERESCUE below.  The total size of this image should be
+# under the size of the miniature CD used for the rescue CD (around 68MB).
+#
+KEEPFILEGR=/tmp/keepfilegr.$$
+cp $KEEPFILE $KEEPFILEGR
+cat >> $KEEPFILEGR <<EOF
+boot/efi/EFI/redhat/elilo.efi
+boot/memtest86*
+bin/bash
+bin/cat
+bin/chmod
+bin/cp
+bin/cpio
+bin/dd
+bin/df
+bin/du
+bin/ln
+bin/ls
+bin/mkdir
+bin/mv
+bin/ps
+bin/rm
+bin/rpm
+bin/touch
+boot/*.b
+boot/bootlx
+etc/fb.modes
+etc/gtk-2.0/gtkrc*
+etc/im_palette.pal
+etc/imrc
+etc/man.config
+etc/pango/*
+etc/fonts/*
+etc/prelink.conf
+etc/rpm/macros.prelink
+$LIBDIR/libacl*
+$LIBDIR/libattr*
+$LIBDIR/libgcc*
+$LIBDIR/libnss_dns*
+$LIBDIR/libpam*
+$LIBDIR/libproc*
+sbin/addRamDisk
+sbin/addSystemMap
+sbin/debugfs
+sbin/e2fsck
+sbin/e2label
+sbin/reiserfsck
+sbin/fsck
+sbin/fsck.ext2
+sbin/fsck.ext3
+sbin/fsck.jfs
+sbin/fsck.reiserfs
+sbin/parted
+sbin/silo
+sbin/tune2fs
+usr/X11R6/bin/XFree86
+usr/X11R6/bin/Xorg
+usr/X11R6/bin/setxkbmap
+usr/X11R6/bin/xsetroot
+usr/X11R6/lib/X11/XKeysymDB
+usr/X11R6/lib/X11/fonts/misc/6x13*
+usr/X11R6/lib/X11/fonts/misc/fonts*
+usr/X11R6/lib/X11/fonts/misc/cursor*
+usr/X11R6/lib/X11/fonts/misc/olcursor*
+usr/X11R6/lib/X11/fonts/Type1/l047013t*
+usr/X11R6/lib/X11/fonts/Type1/*
+usr/X11R6/lib/X11/locale/*
+usr/X11R6/lib/X11/rgb*
+usr/X11R6/lib/X11/xkb/*
+usr/X11R6/lib/X11/xserver/SecurityPolicy
+usr/X11R6/$LIBDIR/libICE*
+usr/X11R6/$LIBDIR/libSM*
+usr/X11R6/$LIBDIR/libXaw.so*
+usr/X11R6/$LIBDIR/libX11*
+usr/X11R6/$LIBDIR/libXcursor*
+usr/X11R6/$LIBDIR/libXext*
+usr/X11R6/$LIBDIR/libXft*
+usr/X11R6/$LIBDIR/libXi*
+usr/X11R6/$LIBDIR/libxkbfile*
+usr/X11R6/$LIBDIR/libXmu*
+usr/X11R6/$LIBDIR/libXpm*
+usr/X11R6/$LIBDIR/libXrandr*
+usr/X11R6/$LIBDIR/libXrender*
+usr/X11R6/$LIBDIR/libXt*
+usr/X11R6/$LIBDIR/libXxf86misc*
+usr/X11R6/$LIBDIR/modules/*
+usr/X11R6/share/Xconfigurator/pixmaps/*
+usr/bin/chattr*
+usr/bin/fc-cache
+usr/bin/gtk-query*
+usr/bin/gdk-pixbuf-query-loaders*
+usr/bin/head
+usr/bin/lsattr*
+usr/bin/maketilo
+usr/bin/mini-wm
+usr/bin/pango*
+usr/bin/syslinux
+usr/bin/mkzimage
+usr/bin/tac
+usr/bin/tail
+usr/bin/tilo
+usr/bin/uniq
+usr/bin/Xvnc
+usr/bin/vncconfig
+usr/bin/vncpasswd
+usr/bin/reduce-font
+usr/bin/bdftobogl
+usr/lib/anaconda/iw
+usr/$LIBDIR/gconv/*
+usr/$LIBDIR/gdk-pixbuf/loaders/*png*
+usr/$LIBDIR/gdk-pixbuf/loaders/*la*
+usr/$LIBDIR/gtk-2.0/*/engines/libbluecurve.so
+usr/$LIBDIR/gtk-2.0/*/loaders/*png*
+usr/$LIBDIR/gtk-2.0/*/loaders/*la*
+usr/$LIBDIR/gtk-2.0/immodules/
+usr/$LIBDIR/libImlib*
+usr/$LIBDIR/libXft*
+usr/$LIBDIR/libart*
+usr/$LIBDIR/libatk*
+usr/$LIBDIR/libaudio*
+usr/$LIBDIR/libesd*
+usr/$LIBDIR/libexpat*
+usr/$LIBDIR/libfontconfig*
+usr/$LIBDIR/libfreetype*
+usr/$LIBDIR/libgdk*
+usr/$LIBDIR/libgnomecanvas*
+usr/$LIBDIR/libgnomeui*
+usr/$LIBDIR/libgpm*
+usr/$LIBDIR/libgtk*
+usr/$LIBDIR/libjpeg*
+usr/$LIBDIR/libncurses*
+usr/$LIBDIR/libpango*
+usr/$LIBDIR/libpng.so.3*
+usr/$LIBDIR/libpng12.so*
+usr/$LIBDIR/libreadline*
+usr/$LIBDIR/libstdc++.so.*
+usr/$LIBDIR/libwrap*
+usr/lib/locale/*
+usr/$LIBDIR/pango/*
+usr/$LIBDIR/python?.?/site-packages/gtk*/gtk/*
+usr/$LIBDIR/rpm/rpmpopt
+usr/lib/syslinux/*
+usr/lib/yaboot/*
+usr/sbin/chroot
+usr/sbin/ddcprobe
+usr/sbin/fbset
+usr/sbin/prelink
+usr/sbin/smartctl
+usr/share/anaconda/*
+usr/share/icons/default/*
+usr/share/icons/Bluecurve/cursors/*
+usr/share/icons/Bluecurve/*/stock/*
+usr/share/icons/Bluecurve/index.theme
+usr/share/fonts/default/Type1/n019003l*
+usr/share/fonts/default/Type1/n019004l*
+usr/share/fonts/default/Type1/n019023l*
+usr/share/fonts/default/Type1/n019024l*
+usr/share/fonts/default/Type1/n021003l*
+usr/share/fonts/default/Type1/n021004l*
+usr/share/fonts/default/Type1/n021023l*
+usr/share/fonts/default/Type1/n021024l*
+usr/share/fonts/ko/TrueType/dotum.ttf
+usr/share/fonts/ja/TrueType/kochi-gothic-subst.ttf
+usr/share/fonts/zh_CN/TrueType/gbsn00lp.ttf
+usr/share/fonts/zh_TW/TrueType/bsmi00lp.ttf
+usr/share/fonts/bengali/MuktiNarrow.ttf
+usr/share/fonts/arabic/KacstFarsi.ttf
+usr/share/fonts/arabic/KacstQura.ttf
+usr/share/fonts/ta/lohit_ta.ttf
+usr/share/fonts/gu/lohit_gu.ttf
+usr/share/fonts/bn/lohit_bn.ttf
+usr/share/fonts/hi/lohit_hi.ttf
+usr/share/fonts/pa/lohit_pa.ttf
+usr/share/locale/*/LC_MESSAGES/anaconda.mo
+usr/share/locale/*/LC_MESSAGES/system-config-date.mo
+usr/share/locale/*/LC_MESSAGES/redhat-dist.mo
+usr/share/locale/*/LC_MESSAGES/system-config-keyboard.mo
+usr/share/locale/*/LC_MESSAGES/gtk20.mo
+usr/share/locale/*/LC_MESSAGES/libc.mo
+usr/share/locale/*/LC_MESSAGES/rhpl.mo
+usr/share/locale/*/LC_MESSAGES/parted.mo
+usr/share/pixmaps/comps/*.png
+usr/share/pixmaps/gnome-default-dlg.png
+usr/share/pixmaps/gnome-error.png
+usr/share/pixmaps/gnome-info.png
+usr/share/pixmaps/gnome-question.png
+usr/share/pixmaps/gnome-warning.png
+usr/share/pixmaps/no.xpm
+usr/share/pixmaps/yes.xpm
+usr/share/ppc64-utils/zImage.lds
+usr/share/system-config-keyboard/*
+usr/share/terminfo/l/linux
+usr/share/terminfo/x/xterm
+usr/share/terminfo/v/vt100
+usr/share/terminfo/v/vt100-nav
+usr/share/themes/Bluecurve/gtk-2.0/*
+usr/share/themes/Bluecurve/index.theme
+usr/share/vte/termcap/xterm
+usr/share/zoneinfo/zone.tab
+EOF
+
+TIMEZONES="
+usr/share/zoneinfo/Africa
+usr/share/zoneinfo/America
+usr/share/zoneinfo/Antarctica
+usr/share/zoneinfo/Arctic
+usr/share/zoneinfo/Asia
+usr/share/zoneinfo/Atlantic
+usr/share/zoneinfo/Australia
+usr/share/zoneinfo/Canada
+usr/share/zoneinfo/Europe
+usr/share/zoneinfo/Indian
+usr/share/zoneinfo/Japan
+usr/share/zoneinfo/Mideast
+usr/share/zoneinfo/Pacific
+usr/share/zoneinfo/US
+"
+
+# sparc needs 100dpi fonts as well, otherwise
+# things look ugly
+
+if [ $ARCH = sparc ]; then
+    cat >> $KEEPFILEGR <<-EOF
+usr/X11R6/lib/X11/fonts/100dpi/cour*
+usr/X11R6/lib/X11/fonts/100dpi/helv*
+usr/X11R6/lib/X11/fonts/100dpi/tim*
+usr/X11R6/lib/X11/fonts/100dpi/fonts*
+usr/share/fonts/ISO8859-2/100dpi/cour*
+usr/share/fonts/ISO8859-2/100dpi/helv*
+usr/share/fonts/ISO8859-2/100dpi/tim*
+usr/share/fonts/ISO8859-2/100dpi/fonts*
+EOF
+fi
+
+#
+# KEEPFILERESCUE is all files to keep from the packages in PACKAGESRESCUE
+#
+# This defines the files in addition to KEEPFILE and KEEPFILEGR that make up 
+# the install images for NFS and CD/DVD based rescue mode installs.  This 
+# image is not loaded into memory so it can be considerably larger.
+#
+# NOTE: hd, ftp, and http rescue mode use and image based on KEEPFILE since
+#       it has to be much smaller due to memory usage.
+#
+KEEPFILERESCUE=/tmp/keepfilerescue.$$
+cat > $KEEPFILERESCUE <<EOF
+bin/gunzip
+bin/gzip
+bin/mt
+bin/ping
+bin/sync
+bin/tar
+bin/zcat
+etc/joe/*
+sbin/arp
+sbin/depmod
+sbin/dump
+sbin/ifconfig
+sbin/insmod
+sbin/lsmod
+sbin/lspci
+sbin/modinfo
+sbin/modprobe
+sbin/netstat
+sbin/restore
+sbin/rrestore
+sbin/rmmod
+sbin/route
+usr/bin/bunzip2
+usr/bin/bzcat
+usr/bin/bzip2
+usr/bin/emacs
+usr/bin/find
+usr/bin/ftp
+usr/bin/jmacs
+usr/bin/joe
+usr/bin/jpico
+usr/bin/less
+usr/bin/mattrib
+usr/bin/mbadblocks
+usr/bin/mcd
+usr/bin/mcopy
+usr/bin/mdel
+usr/bin/mdeltree
+usr/bin/mdir
+usr/bin/mdu
+usr/bin/mformat
+usr/bin/minfo
+usr/bin/mlabel
+usr/bin/mmd
+usr/bin/mmount
+usr/bin/mmove
+usr/bin/mpartition
+usr/bin/mrd
+usr/bin/mread
+usr/bin/mren
+usr/bin/mshowfat
+usr/bin/mtools
+usr/bin/mtype
+usr/bin/mzip
+usr/bin/open
+usr/bin/rcp
+usr/bin/rlogin
+usr/bin/rsh
+usr/bin/scp
+usr/bin/sftp
+usr/bin/shred
+usr/bin/ssh
+usr/bin/termidx
+usr/bin/xargs
+usr/kerberos/$LIBDIR/libgssapi*
+usr/kerberos/$LIBDIR/libkrb5*
+usr/kerberos/$LIBDIR/libk5crypto*
+usr/kerberos/$LIBDIR/libcom_err*
+usr/sbin/mtr
+usr/sbin/traceroute
+EOF
+
+echo "Assembling package list..."
+RPMS=$(prunePackageList $PACKAGEDIR "$PACKAGES")
+[ -n "$DEBUG" ] && echo "RPMS are $RPMS"
+RPMSGR=$(prunePackageList $PACKAGEDIR "$PACKAGESGR $PACKAGESRESCUE")
+[ -n "$DEBUG" ] && echo "RPMSGR are $RPMSGR"
+
+rm -rf $DEST; mkdir -p $DEST/usr/sbin
+rm -rf $DESTGR; mkdir -p $DESTGR/usr/sbin $DESTGR/var/lib $DESTGR/boot
+ln -s /tmp $DESTGR/var/lib/xkb 
+
+#
+# concat KEEPFILEGR and KEEPFILERESCUE lists
+#
+cat $KEEPFILERESCUE >> $KEEPFILEGR
+
+#
+# filter paths in keepfile lists for use by cpio
+#
+for file in $KEEPFILE $KEEPFILEGR; do
+   cat $file | awk '{print $1 "\n./" $1}' > $file-
+   mv -f $file- $file
+done
+
+echo "Expanding text packages..."
+expandPackageSet "$RPMS" $DEST $KEEPFILE
+
+(cd $DEST; tar cSpf - .) | (cd $DESTGR; tar xSpf -)
+
+echo "Expanding graphical packages..."
+expandPackageSet "$RPMSGR" $DESTGR $KEEPFILEGR
+
+echo "retrieving timezones"
+TZDIR=/tmp/glibc-timezone-$$
+mkdir -p $TZDIR/usr/share/zoneinfo
+rpm2cpio $TZDATA | (cd $TZDIR; cpio --quiet -iumd usr/share/zoneinfo ./usr/share/zoneinfo ./usr/share/zoneinfo/* usr/share/zoneinfo/*)
+[ $? = 0 ] || die "ERROR: Unable to expand timezone data ($TZDATA)"
+(cd $TZDIR; tar cSpf - $TIMEZONES) | (cd $DEST; tar xSpf -)
+(cd $TZDIR; tar cSpf - $TIMEZONES) | (cd $DESTGR; tar xSpf -)
+
+chown -R root:root $DEST $DESTGR
+chmod -R a+rX-w $DEST $DESTGR
+if [ $ARCH = s390 -o $ARCH = s390x ]; then
+    for i in $DEST $DESTGR; do
+	mv $i/bin/sed $i/bin/sed_save
+	mv $i/bin/sort $i/bin/sort_save
+    done
+fi
+
+# change mtimes to 0 (to match what happens on the cramfs)
+for p in $DEST $DESTGR; do
+    if [ -x /usr/bin/runroot -a -n "$COMPONENT" ]; then
+	runroot $COMPONENT --onlyone --arch $ARCH "cd $p\; usr/lib/anaconda-runtime/fixmtime.py $DEBUG $p"
+    else
+	$p/usr/lib/anaconda-runtime/fixmtime.py $DEBUG $p
+    fi
+done
+
+# Remove locales unused during the install
+cat $DESTGR/usr/lib/anaconda/lang-table* | awk '
+{ gsub("-", "", $4);
+  print $4;
+  print gensub(/\..*$/,"","",$4);
+  print gensub(/_.*$/,"","",$4);
+  if (split ($4, a, ".") > 1) {
+    print gensub(/\..*$/,tolower("." a[2]),"",$4);
+  };
+  gsub("-", "", $7);
+  print $7;
+  print gensub(/\..*$/,"","",$7);
+  print gensub(/_.*$/,"","",$7);
+  if (split ($7, a, ".") > 1) {
+    print gensub(/\..*$/,tolower("." a[2]),"",$7);
+  };
+}
+' | LC_ALL=C sort -u > $DESTGR/locales
+for p in lib share; do (
+cd $DESTGR/usr/$p/locale && {
+ls | grep -v locale.alias | LC_ALL=C sort > $DESTGR/locales.list
+LC_ALL=C comm -13 $DESTGR/locales $DESTGR/locales.list | xargs rm -rf
+}
+); done
+rm -f $DESTGR/locales $DESTGR/locales.list
+
+# Remove unneeded XFree86 modules
+rm -rf $DESTGR/usr/X11R6/$LIBDIR/modules/dri
+rm -f $DESTGR/usr/X11R6/$LIBDIR/modules/libscanpci.a
+rm -f $DESTGR/usr/X11R6/$LIBDIR/modules/libxf1bpp.a
+rm -f $DESTGR/usr/X11R6/$LIBDIR/modules/fonts/libspeedo.a
+rm -f $DESTGR/usr/X11R6/$LIBDIR/modules/drivers/linux/v4l_drv.o
+rm -f $DESTGR/usr/X11R6/$LIBDIR/modules/extensions/libdri.a
+rm -f $DESTGR/usr/X11R6/$LIBDIR/modules/extensions/libxtrap.a
+rm -f $DESTGR/usr/X11R6/$LIBDIR/modules/extensions/librecord.a
+
+rm -f $DESTGR/usr/X11R6/$LIBDIR/modules/extensions/lib{GLcore,glx,pex5}*
+
+# fixup joe links
+ln -fs jpicorc $DESTGR/etc/joe/picorc
+ln -fs jmacsrc $DESTGR/etc/joe/emacsrc
+ln -fs jmacs $DESTGR/usr/bin/emacs
+ln -fs jpico $DESTGR/usr/bin/pico
+
+echo "Creating nsswitch.conf"
+cat > $DEST/etc/nsswitch.conf <<EOF
+# munged nsswitch.conf with just what anaconda needs
+# created by upd-instroot
+#
+passwd:     files
+shadow:     files
+group:      files
+hosts:      files dns
+ethers:     files
+netmasks:   files
+networks:   files
+protocols:  files
+rpc:        files
+services:   files
+netgroup:   files
+automount:  files
+aliases:    files
+EOF
+
+cp $DEST/etc/nsswitch.conf $DESTGR/etc/nsswitch.conf
+
+# fixup man.config to point into /mnt/sysimage for rescue
+echo "Fixing up /etc/man.config to point into /mnt/sysimage"
+if [ -n "$NEEDGR" ]; then
+    mv $DESTGR/etc/man.config $DESTGR/etc/man.config-old
+    cat $DESTGR/etc/man.config-old | sed 's^/usr/bin^/mnt/sysimage/usr/bin^' | sed 's^/bin/cat^/mnt/sysimage/usr/bin/cat^'  > $DESTGR/etc/man.config
+    rm -f $DESTGR/etc/man.config-old
+fi
+
+# SDSC
+#echo "Creating bogl font.."
+#OLDLANG=$LANG
+#export LANG=en_US.UTF-8
+#zcat $DESTGR/usr/lib/bogl/font.bdf.gz > $DESTGR/usr/lib/bogl/font.bdf
+#(cat $DESTGR/usr/lib/anaconda-runtime/unicode-linedraw-chars.txt ; find $DESTGR/usr/share/locale -name '*.mo' -exec msgunfmt {} \;) | $DESTGR/usr/bin/reduce-font $DESTGR/usr/lib/bogl/font.bdf > $DESTGR/usr/lib/anaconda-runtime/loader/font-reduced.bdf
+#$DESTGR/usr/bin/bdftobogl -b $DESTGR/usr/lib/anaconda-runtime/loader/font-reduced.bdf > $DESTGR/usr/lib/anaconda-runtime/loader/font.bgf
+#rm -f $DESTGR/usr/lib/anaconda-runtime/loader/font-reduced.bdf $DESTGR/usr/lib/bogl/font.bdf $DESTGR/usr/bin/reduce-font $DESTGR/usr/bin/bdftobogl
+#gzip -9 $DESTGR/usr/lib/anaconda-runtime/loader/font.bgf
+#export LANG=$OLDLANG
+# SDSC
+
+echo "Running mkfontdir..."
+if [ -n "$NEEDGR" ]; then
+    /usr/X11R6/bin/mkfontdir $DESTGR/usr/X11R6/lib/X11/fonts/* 
+    rm -f $DESTGR/usr/X11R6/bin/mkfontdir
+fi
+
+echo "Getting pango modules"
+if [ -n "$NEEDGR" ]; then
+    # sick sick sick hack for pango-querymodules being -32 or -64
+    mv $DESTGR/usr/bin/pango-querymodules* $DESTGR/usr/bin/pango-querymodules
+    if [ -x /usr/bin/runroot -a -n "$COMPONENT" ]; then
+    	runroot $COMPONENT --onlyone --arch $ARCH "LD_LIBRARY_PATH=/usr/X11R6/$LIBDIR:$LD_LIBRARY_PATH /usr/sbin/chroot $DESTGR /usr/bin/pango-querymodules 2> $DESTGR/etc/pango/pango.modules"
+    else
+	LD_LIBRARY_PATH=/usr/X11R6/$LIBDIR:$LD_LIBRARY_PATH /usr/sbin/chroot $DESTGR /usr/bin/pango-querymodules > $DESTGR/etc/pango/pango.modules
+    fi
+    rm -f $DESTGR/usr/bin/pango-querymodules
+    # more sick hackery since it doesn't fall back to this like owen thought
+    cat > $DESTGR/etc/pango/pangorc <<EOF
+[Pango]
+ModuleFiles=/etc/pango/pango.modules
+EOF
+fi
+
+host=`rpm --nodigest --nosignature -qp --qf "%{POSTIN}\n" $PACKAGEDIR/gtk2*.$ARCH.rpm |grep update-gdk-pixbuf |awk {'print $2;'}`
+
+case "$host" in
+  *linux) canonhost="$host-gnu"
+  ;;
+  *) canonhost=$host
+  ;;
+esac
+ 
+# autoconf uses powerpc not ppc
+HOSTTRIPLET=`echo $canonhost | sed "s/^ppc/powerpc/"`
+
+
+mkdir -p $DESTGR/etc/gtk-2.0/$HOSTTRIPLET
+
+echo "Getting gtk2 input method modules"
+if [ -n "$NEEDGR" ]; then
+    mv $DESTGR/usr/bin/gtk-query-immodules-2.0* $DESTGR/usr/bin/gtk-query-immodules-2.0
+    if [ -x /usr/bin/runroot -a -n "$COMPONENT" ]; then
+	runroot $COMPONENT --onlyone --arch $ARCH "LD_LIBRARY_PATH=/usr/X11R6/$LIBDIR:$LD_LIBRARY_PATH /usr/sbin/chroot $DESTGR /usr/bin/gtk-query-immodules-2.0 2> $DESTGR/etc/gtk-2.0/$HOSTTRIPLET/gtk.immodules"
+    else
+	LD_LIBRARY_PATH=/usr/X11R6/$LIBDIR:$LD_LIBRARY_PATH /usr/sbin/chroot $DESTGR /usr/bin/gtk-query-immodules-2.0 > $DESTGR/etc/gtk-2.0/$HOSTTRIPLET/gtk.immodules
+    fi
+    rm -f $DESTGR/usr/bin/gtk-query-immodules-2.0
+fi
+
+echo "Getting gtk2 gdk-pixbuf loaders"
+if [ -n "$NEEDGR" ]; then
+    mv $DESTGR/usr/bin/gdk-pixbuf-query-loaders* $DESTGR/usr/bin/gdk-pixbuf-query-loaders
+    if [ -x /usr/bin/runroot -a -n "$COMPONENT" ]; then
+	runroot $COMPONENT --onlyone --arch $ARCH "LD_LIBRARY_PATH=/usr/X11R6/$LIBDIR:$LD_LIBRARY_PATH /usr/sbin/chroot $DESTGR /usr/bin/gdk-pixbuf-query-loaders 2> $DESTGR/etc/gtk-2.0/$HOSTTRIPLET/gdk-pixbuf.loaders"
+    else
+	LD_LIBRARY_PATH=/usr/X11R6/$LIBDIR:$LD_LIBRARY_PATH /usr/sbin/chroot $DESTGR /usr/bin/gdk-pixbuf-query-loaders > $DESTGR/etc/gtk-2.0/$HOSTTRIPLET/gdk-pixbuf.loaders
+    fi
+    rm -f $DESTGR/usr/bin/gdk-pixbuf-query-loaders
+fi
+
+rm -f $KEEPFILE $KEEPFILEGR $KEEPFILERESCUE
+
+for p in $DEST $DESTGR; do
+	echo "Scrubbing trees..." "$p"
+	cp $p/usr/lib/anaconda/raidstart-stub $p/usr/bin/raidstart
+	cp $p/usr/lib/anaconda/raidstop-stub $p/usr/bin/raidstop
+	cp $p/usr/lib/anaconda/losetup-stub $p/usr/bin/losetup
+	cp $p/usr/lib/anaconda/pump-stub $p/usr/bin/pump
+	cp $p/usr/lib/anaconda/list-harddrives-stub $p/usr/bin/list-harddrives
+	cp $p/usr/lib/anaconda/kudzu-probe-stub $p/usr/bin/kudzu-probe
+	cp $p/usr/lib/anaconda/loadkeys-stub $p/usr/bin/loadkeys
+	cp $p/usr/lib/anaconda/mknod-stub $p/usr/bin/mknod
+	cp $p/usr/lib/anaconda/rescue-startx-stub $p/usr/bin/rescue-startx
+	mv $p/usr/sbin/anaconda $p/usr/bin/anaconda
+	mv $p/usr/lib/anaconda-runtime/lib* $p/usr/$LIBDIR
+
+	# we only want the libunicode-lite stuff on the minimal image
+	if [ $p = $DESTGR ]; then
+	    rm -f $p/usr/$LIBDIR/libunicode-lite*
+	fi
+
+	find $p -type d | xargs chmod 755
+
+	if [ -f $p/bin/bash ]; then
+	    rm -f $p/bin/ash
+	    ln -s bash $p/bin/sh
+	else
+	    ln -s ash $p/bin/sh
+	fi
+
+	[ -d $p/bin ] || die "ERROR: directory missing: $p/bin"
+	[ -d $p/sbin ] || die "ERROR: directory missing: $p/sbin"
+	(cd $p/bin; find) | (cd $p/bin; /bin/cpio --quiet -pdmu $p/usr/bin)
+	(cd $p/sbin; find) | (cd $p/sbin; /bin/cpio --quiet -pdmu $p/usr/sbin)
+	rm -rf $p/bin
+	rm -rf $p/sbin
+
+	# copy bootloader files for sparc
+	if [ $ARCH = sparc -a $p = $DESTGR ]; then
+	    mkdir -p $p/usr/lib/anaconda-runtime/boot
+	    [ -d $p/boot ] || die "ERROR: directory missing: $p/boot"
+	    (cd $p/boot; find -name "*.b") | (cd $p/boot; /bin/cpio --quiet -pdmu $p/usr/lib/anaconda-runtime/boot)
+        fi
+
+	# copy bootloader file for alpha
+	if [ $ARCH = alpha -a $p = $DESTGR ]; then
+	    mkdir -p $p/usr/lib/anaconda-runtime/boot
+	    cp -af $p/boot/bootlx $p/usr/lib/anaconda-runtime/boot
+        fi
+	
+	# copy bootloader files for ia64
+	if [ $ARCH = ia64 -a $p = $DESTGR ]; then
+	    mkdir -p $p/usr/lib/anaconda-runtime/boot
+	    cp -af $p/boot/efi/EFI/redhat//* $p/usr/lib/anaconda-runtime/boot
+	fi    
+
+	# copy bootloader files for i386/x86_64
+	if [ $ARCH = i386 -o $ARCH = x86_64 ]; then
+	    if [ $p = $DESTGR ]; then
+		mkdir -p $p/usr/lib/anaconda-runtime/boot
+		cp -af $p/boot/memtest* $p/usr/lib/anaconda-runtime/boot
+	    fi
+	fi
+
+	rm -rf $p/boot $p/home $p/root $p/tmp
+
+	find $p -name "*.a" | grep -v "usr/X11R6/$LIBDIR/modules" | xargs rm -rf
+	find $p -name "lib*.la" |grep -v "usr/$LIBDIR/gtk-2.0" | xargs rm -rf
+	for f in newt popt rpm rpmio; do
+	    rm -f $p/usr/$LIBDIR/lib$f.so
+	done
+
+	if [ "$ARCH" != "s390" -a "$ARCH" != "s390x" ]; then
+	   (cd $p/lib && rm -f libnss_files.so.1 libnss_dns.so.1)
+	fi
+
+	if [ -d $DEST/usr/share/zoneinfo ]; then
+	    (cd $DEST/usr/share/zoneinfo; find . -type f -or -type l | 
+		grep '^./[A-Z]' | sort | sed 's/^..//' | 
+		gzip -9) > $p/usr/lib/timezones.gz
+	else
+	    echo "ERROR: unable to explode tzdata for small images"
+	fi
+
+	if [ -x /usr/bin/runroot -a -n "$COMPONENT" ]; then
+            runroot $COMPONENT --onlyone --arch $ARCH "cd $p\; usr/lib/anaconda-runtime/scrubtree $DEBUG $p"
+	else
+	    $p/usr/lib/anaconda-runtime/scrubtree $p
+	fi
+done
+
+echo "Compressing .mo files in stage2 images..."
+if [ -d $DEST/usr/share/locale ]; then
+    for i in `find $DEST/usr/share/locale -name anaconda.mo`; do
+	gzip -9 $i
+	mv -f $i.gz $i
+    done
+fi
+
+echo "Creating fontconfig cache"
+if [ -n "$NEEDGR" ]; then
+    if [ -x /usr/bin/runroot -a -n "$COMPONENT" ]; then
+	runroot $COMPONENT --onlyone --arch $ARCH "LD_LIBRARY_PATH=/usr/X11R6/$LIBDIR:$LD_LIBRARY_PATH /usr/sbin/chroot $DESTGR /usr/bin/fc-cache"
+    else
+	LD_LIBRARY_PATH=/usr/X11R6/$LIBDIR:$LD_LIBRARY_PATH /usr/sbin/chroot $DESTGR /usr/bin/fc-cache
+    fi
+    rm -f $DESTGR/usr/bin/fc-cache
+fi
+
+echo "Creating debug dir"
+for p in $DEST $DESTGR ; do
+    mkdir -p $p/usr/lib/debug
+done
+
+if [ $ARCH = "alpha" ]; then
+    rm -rf $DEST/usr/share/locale
+    rm -rf $DEST/usr/$LIBDIR/locale
+fi
+
+echo "Patching python library..."
+
+# always use passive mode for ftp installs
+cd $DEST/usr/$LIBDIR/python2.3
+patch -p0 > /dev/null <<EOF
+--- urllib.py.orig	Thu Oct 25 17:05:06 2001
++++ urllib.py	Thu Oct 25 17:05:34 2001
+@@ -453,6 +453,7 @@
+         path, attrs = splitattr(path)
+         path = unquote(path)
+         dirs = path.split('/')
++        dirs[0] = '/' + dirs[0]
+         dirs, file = dirs[:-1], dirs[-1]
+         if dirs and not dirs[0]: dirs = dirs[1:]
+         if dirs and not dirs[0]: dirs[0] = '/'
+@@ -707,6 +708,7 @@
+         self.ftp = ftplib.FTP()
+         self.ftp.connect(self.host, self.port)
+         self.ftp.login(self.user, self.passwd)
++        self.ftp.set_pasv(1)
+         for dir in self.dirs:
+             self.ftp.cwd(dir)
+EOF
+cd -
+
+echo -n -e "Removing unused python files in hdimage... "
+
+if [ -x /usr/bin/runroot -a -n "$COMPONENT" ]; then
+    runroot $COMPONENT --onlyone --arch $ARCH "cd $DEST\; usr/lib/anaconda-runtime/pythondeps $DEST"
+else
+    $DEST/usr/lib/anaconda-runtime/pythondeps $DEST
+fi
+echo "done."
+
+for p in $DEST $DESTGR; do
+	find $p -name "*.py" | while read fn; do
+	    rm -f ${fn}o
+	    if [ $p = $DEST ]; then
+		rm -f ${fn}c
+		ln -sf /dev/null ${fn}c
+	    fi
+	done
+done
+
+# do some stripping of debugging symbols
+if [ -x /usr/bin/runroot -a -n "$COMPONENT" ]; then
+    runroot $COMPONENT --onlyone --arch $ARCH "\"find $DEST -type f -name '*.so' -exec strip -g '{}' ';'\""
+    runroot $COMPONENT --onlyone --arch $ARCH "\"find $DESTGR -type f -name '*.so' -exec strip -g '{}' ';'\""
+else
+    find $DEST -type f -name '*.so' |xargs strip -g
+    find $DESTGR -type f -name '*.so' |xargs strip -g
+fi
+
+# some python stuff we don't need for stage2
+rm -f $DESTGR/usr/$LIBDIR/python?.?/site-packages/distutils/
+rm -f $DESTGR/usr/$LIBDIR/python?.?/site-packages/lib-dynload/japanese
+rm -f $DESTGR/usr/$LIBDIR/python?.?/site-packages/encodings/
+rm -f $DESTGR/usr/$LIBDIR/python?.?/site-packages/compiler/
+rm -f $DESTGR/usr/$LIBDIR/python?.?/site-packages/email/
+rm -f $DESTGR/usr/$LIBDIR/python?.?/site-packages/curses/
+rm -f $DESTGR/usr/$LIBDIR/python?.?/site-packages/pydoc.py
+
+# clean up tzdata
+rm -rf $TZDIR
+
+# this is only for the minimal second stage
+echo "Cleaning ramdisk install images..."
+rm -rf $DEST/usr/lib/anaconda-runtime
+
+if [ "$ARCH" != "s390" -a "$ARCH" != "s390x" ]; then
+   if [ $NEEDGR ]; then
+       # Xserver needs a place to put the compiled xkb maps.
+       rm -rf $DESTGR/usr/X11R6/lib/X11/xkb/compiled
+       ln -s /tmp $DESTGR/usr/X11R6/lib/X11/xkb/compiled
+   fi
+
+   if [ -n "$NEEDGR" ]; then
+    cd $ORIGDIR
+    $DESTGR/usr/lib/anaconda-runtime/checkcards.py $DESTGR/usr/share/hwdata/pcitable $DESTGR/usr/share/hwdata/Cards
+   fi
+fi

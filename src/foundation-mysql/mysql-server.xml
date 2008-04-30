@@ -1,0 +1,81 @@
+<?xml version="1.0"?>
+<!DOCTYPE service_bundle SYSTEM "/usr/share/lib/xml/dtd/service_bundle.dtd.1">
+
+<service_bundle type='manifest' name='ROCKSfoundation-mysql:mysql'>
+
+<service 
+	name='network/mysql'
+	type='service'
+	version='1'>
+
+	<create_default_instance enabled='false' />
+
+	<single_instance />
+
+	<dependency name='fs-local'
+		grouping='require_all'
+		restart_on='none'
+		type='service'>
+		<service_fmri
+			value='svc:/system/filesystem/local' />
+	</dependency>
+
+	<dependency name='fs-autofs'
+		grouping='optional_all'
+		restart_on='none'
+		type='service'>
+		<service_fmri value='svc:/system/filesystem/autofs' />
+	</dependency>
+
+	<dependency name='net-loopback'
+		grouping='require_all'
+		restart_on='none'
+		type='service'>
+		<service_fmri value='svc:/network/loopback' />
+	</dependency>
+
+	<dependency name='net-physical'
+		grouping='require_all'
+		restart_on='none'
+		type='service'>
+		<service_fmri value='svc:/network/physical' />
+	</dependency>
+
+	<dependency name='config_data'
+		grouping='require_all'
+		restart_on='restart'
+		type='path'>
+		<service_fmri value='file://localhost/opt/rocks/etc/my.cnf' />
+	</dependency>
+
+	<exec_method
+		type='method'
+		name='start'
+		exec='/lib/svc/method/mysqld start'
+		timeout_seconds='60'/>
+
+	<exec_method
+		type='method'
+		name='stop'
+		exec='/lib/svc/method/mysqld stop'
+		timeout_seconds='60' />
+
+	<exec_method
+		type='method'
+		name='refresh'
+		exec='/lib/svc/method/mysqld restart'
+		timeout_seconds='60' />
+	
+	<property_group name='startd'
+		type='framework'>
+		<propval name='ignore_error'
+		    type='astring' value='core,signal' />
+	</property_group>
+
+        <property_group name='general' type='framework'>
+                <propval name='action_authorization' type='astring'
+                        value='solaris.smf.manage.mysql' />
+        </property_group>
+</service>
+
+</service_bundle>

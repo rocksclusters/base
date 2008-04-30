@@ -1,0 +1,78 @@
+<?xml version="1.0" standalone="no"?>
+
+
+<kickstart>
+
+  <description>
+
+  IA-64 Bootloader support
+
+  </description>
+
+        <copyright>
+        Copyright (c) 2000 - 2008 The Regents of the University of California.
+        All rights reserved. Rocks(r) v5.0 www.rocksclusters.org
+        </copyright>
+
+  <changelog>
+  </changelog>
+
+<post>
+<!-- Set the default link to the current release's boot floppy image -->
+<eval shell="python">
+import os
+import string
+
+# Get the RedHat release number from the distribution path.
+if os.environ['Node_Distribution']:
+	dist    = os.environ['Node_Distribution']
+	tmp     = string.split(dist, '/')
+	release = tmp[len(tmp)-4]
+	release = '7.2-hybrid'
+	print 'ln -s /boot/kickstart/%s /boot/kickstart/default' % release
+</eval>
+
+<!-- Find the first EFI shell and make it the default boot -->
+
+#
+# strip off the 'Boot' from the front of the EFI boot line, then
+# strip off the '*' from the back of the EFI boot line.
+#
+# the '-o' flag sets the boot order
+#
+/usr/sbin/efibootmgr -o `/usr/sbin/efibootmgr | awk '		\
+/Boot[0-9]+.*EFI/ {						\
+	sub("Boot", "", $1);					\
+	sub("\*", "", $1);					\
+	print $1;						\
+	exit;							\
+}'`
+
+#
+# now make the boot entry active (-a flag)
+#
+/usr/sbin/efibootmgr -b `/usr/sbin/efibootmgr | awk '		\
+/Boot[0-9]+.*EFI/ {						\
+	sub("Boot", "", $1);					\
+	sub("\*", "", $1);					\
+	print $1;						\
+	exit;							\
+}'` -a 
+
+<!-- add autoexec.bat for IA64 dos -->
+<file name="/boot/efi/startup.nsh">
+
+echo -off
+echo Itanium2 Rocks
+
+fs0:
+cd efi\redhat
+elilo
+</file>
+
+
+
+</post>
+
+</kickstart> 
+

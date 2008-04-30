@@ -1,0 +1,23 @@
+<qandaentry>
+<question id="rekickstart">
+
+	<para>
+	Why can't I re-kickstart compute nodes?  Shoot-node fails, and
+	power cycling the machine doesn't force a re-install.
+	</para>
+</question>
+
+<answer>
+
+        <para>
+	Older BIOS versions required the boot image to reside in the
+	first GB of the hard disk.  If the boot image, in this case
+	the kickstart kernel image, resides after the first GB of the
+	disk the image will not be loaded by GRUB.  Update your BIOS
+	and this problem should get fixed.
+	</para>
+
+</answer>
+
+</qandaentry>
+

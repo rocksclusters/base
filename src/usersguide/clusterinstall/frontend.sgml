@@ -1,0 +1,631 @@
+<section id="install-frontend" xreflabel="Install Frontend">
+<title> Install and Configure Your Frontend </title>
+
+<para>
+This section describes how to install your Rocks cluster frontend.
+</para>
+
+<warning>
+<para>
+The minimum requirement to bring up a frontend is to have the following
+rolls:
+</para>
+
+<itemizedlist>
+	<listitem> <para> Kernel/Boot Roll CD </para> </listitem>
+	<listitem> <para> Base Roll CD </para> </listitem>
+	<listitem> <para> Web Server Roll CD </para> </listitem>
+	<listitem> <para> OS Roll CD - Disk 1 </para> </listitem>
+	<listitem> <para> OS Roll CD - Disk 2 </para> </listitem>
+</itemizedlist>
+
+<para>
+The Core Meta Roll CD can be substituted for the individual
+Base and Web-Server Rolls.
+</para>
+
+<para>
+Additionally, the official Red Hat Enterprise Linux 5 update 1 CDs can be
+substituted for the OS Rolls.
+Also, any <emphasis>true</emphasis> rebuild of RHEL 5 update 1 can be
+used -- distributions known to work are: CentOS 5 update 1 and
+Scientific Linux 5 update 1.
+If you substitute the OS Rolls with one of the above distributions, you
+must supply <emphasis>all</emphasis> the CDs from the distribution (which
+usually is 6 or 7 CDs).
+</para>
+</warning>
+
+
+<orderedlist>
+
+<listitem>
+	<para>
+	Insert the Kernel/Boot Roll CD 
+	into your frontend machine and reset the frontend machine.
+	</para>
+
+	<note>
+	<para>
+	For the remainder of this section, we'll use the example of installing
+	a <emphasis>bare-bones</emphasis> frontend, that is, we'll be using
+	using the Kernel/Boot Roll, Core Roll, OS - Disk 1 Roll and the
+	OS - Disk 2 Roll.
+	</para>
+	</note>
+</listitem>
+
+<listitem>
+
+	<para>
+	After the frontend boots off the CD, you will see:
+	</para>
+
+	<para>
+	<mediaobject>
+		<imageobject>
+		<imagedata
+			fileref="images/install/splash.png" scale=50>
+		</imageobject>
+	</mediaobject>
+	</para>
+
+	<para>
+	When you see the screen above, type:
+	</para>
+
+<screen>
+frontend
+</screen>
+
+	<warning>
+	<para>
+ 	The <quote><literal>boot:</literal></quote> prompt arrives and
+	departs the screen quickly.
+	It is easy to miss.
+	If you do miss it, the node will assume it is a
+	<emphasis>compute</emphasis> appliance, and the frontend installation
+	will fail and you will have to restart the installation (by rebooting
+	the node).
+	</para>
+	</warning>
+
+	<tip>
+	<para>
+	If the installation fails, very often you will see a screen that
+	complains of a missing <filename>/tmp/ks.cfg</filename> kickstart
+	file.
+	To get more information about the failure, access the kickstart and
+	system log by pressing
+	<literal>Ctrl-Alt-F3</literal> and <literal>Ctrl-Alt-F4</literal>
+	respectively.
+	</para>
+	</tip>
+
+	<para>
+	After you type <computeroutput>frontend</computeroutput>,
+	the installer will start running.
+	</para>
+</listitem>
+
+<listitem>
+	<warning>
+	<para>
+	All screens in this step may not appear during your installation.
+	You will only see these screens if there is not a DNS server on your
+	public network that answers the frontend's DHCP request.
+	</para>
+	</warning>
+
+	<para>
+	If you see the screen below:
+	</para>
+
+	<para>
+	<mediaobject>
+		<imageobject>
+		<imagedata fileref="images/install/2.png" scale=30>
+		</imageobject>
+	</mediaobject>
+	</para>
+
+	<para>
+	You'll want to: 1) enable IPv4 support, 2) select manual configuration
+	for the IPv4 support (no DHCP) and, 3) disable IPv6 support.
+	The screen should look like:
+	</para>
+
+	<para>
+	<mediaobject>
+		<imageobject>
+		<imagedata fileref="images/install/3.png" scale=30>
+		</imageobject>
+	</mediaobject>
+	</para>
+
+	<para>
+	After your screen looks like the above, hit "OK".
+	Then you'll see the "Manual TCP/IP Configuration" screen:
+	</para>
+
+	<para>
+	<mediaobject>
+		<imageobject>
+		<imagedata fileref="images/install/4.png" scale=30>
+		</imageobject>
+	</mediaobject>
+	</para>
+
+	<para>
+	In this screen, enter the <emphasis>public</emphasis> IP configuration.
+	Here's an example of the public IP info we entered for one our 
+	frontends:
+	</para>
+
+	<para>
+	<mediaobject>
+		<imageobject>
+		<imagedata fileref="images/install/5.png" scale=30>
+		</imageobject>
+	</mediaobject>
+	</para>
+
+	<para>
+	After you fill in the public IP info, hit "OK".
+	</para>
+</listitem>
+
+<listitem>
+	<para>
+	Soon, you'll see a screen that looks like:
+	</para>
+
+	<para>
+	<mediaobject>
+		<imageobject>
+		<imagedata fileref="images/install/20.png" scale=30>
+		</imageobject>
+	</mediaobject>
+	</para>
+
+	<para>
+	From this screen, you'll select your rolls.
+	</para>
+
+	<para>
+	In this procedure, we'll only be using CD media, so we'll only
+	be clicking on the 'CD/DVD-based Roll' button.
+	</para>
+
+	<para>
+	Click the 'CD/DVD-based Roll' button.
+	</para>
+</listitem>
+
+<listitem>
+	<para>
+	The CD will eject and you will see this screen:
+	</para>
+
+	<para>
+	<mediaobject>
+		<imageobject>
+		<imagedata fileref="images/install/21.png" scale=50>
+		</imageobject>
+	</mediaobject>
+	</para>
+
+	<para>
+	Put your first roll in the CD tray (for the first roll, since the
+	Kernel/Boot Roll is already in the tray, simply push the tray back in).
+	</para>
+
+	<para>
+	Click the 'Continue' button.
+	</para>
+</listitem>
+
+<listitem>
+	<para>
+	The Kernel/Boot Roll will be discovered and display the screen:
+	</para>
+
+	<para>
+	<mediaobject>
+		<imageobject>
+		<imagedata fileref="images/install/22.png" scale=50>
+		</imageobject>
+	</mediaobject>
+	</para>
+
+	<para>
+	Select the Kernel/Boot Roll by checking the 'Selected' box and clicking
+	the 'Submit' button.
+	</para>
+</listitem>
+
+<listitem>
+	<para>
+	This screen shows you have properly selected the Kernel/Boot Roll.
+	</para>
+
+	<para>
+	<mediaobject>
+		<imageobject>
+		<imagedata fileref="images/install/23.png" scale=50>
+		</imageobject>
+	</mediaobject>
+	</para>
+
+	<para>
+	Repeat steps 3-5 for the Base Roll, Web Server Roll and the OS rolls.
+	</para>
+</listitem>
+
+<listitem>
+	<para>
+	When you have selected all the rolls associated with a
+	<emphasis>bare-bones</emphasis> frontend, the screen should look like: 
+	</para>
+
+	<para>
+	<mediaobject>
+		<imageobject>
+		<imagedata fileref="images/install/7.png" scale=50>
+		</imageobject>
+	</mediaobject>
+	</para>
+
+	<para>
+	When you are done with roll selection, click the 'Next' button.
+	</para>
+</listitem>
+
+<listitem>
+	<para>
+	Then you'll see the <emphasis>Cluster Information</emphasis> screen:
+	</para>
+
+	<para>
+	<mediaobject>
+		<imageobject>
+		<imagedata fileref="images/install/25.png" scale=50>
+		</imageobject>
+	</mediaobject>
+	</para>
+
+	<note>
+	<para>
+	The one important field in this screen is the
+	<emphasis>Fully-Qualified Host Name</emphasis> (all other fields
+	are optional).
+	</para>
+
+	<para>
+	Choose your hostname carefully.  The hostname is written to
+	dozens of files on both the frontend and compute nodes. If the
+	hostname is changed after the frontend is installed,
+	several cluster services will no longer be able to
+	find the frontend machine.  Some of these services include:
+	SGE, Globus, NFS, AutoFS, and Apache.
+	</para>
+
+	<para>
+	If you plan on adding
+	the Grid Roll (or other Globus PKI services) the hostname must
+	be the primary FQDN for your host.
+	</para>
+	</note>
+
+	<para>
+	Fill out the form, then click the 'Next' button.
+	</para>
+</listitem>
+
+<listitem>
+	<para>
+	The private cluster network configuration screen allows you to
+	set up the networking parameters for the ethernet network that connects
+	the frontend to the compute nodes.
+	</para>
+
+	<para>
+	<mediaobject>
+		<imageobject>
+		<imagedata fileref="images/install/26.png" scale=50>
+		</imageobject>
+	</mediaobject>
+	</para>
+
+	<note>
+	<para>
+	It is recommended that you accept the defaults (by clicking the
+	'Next' button).
+	But for those who have unique circumstances that requires different
+	values for the internal ethernet connection, we have exposed the
+	network configuration parameters.
+	</para>
+	</note>
+
+</listitem>
+
+<listitem>
+	<para>
+	The public cluster network configuration screen allows you to
+	set up the networking parameters for the ethernet network that connects
+	the frontend to the outside network (e.g., the internet).
+	</para>
+
+	<para>
+	<mediaobject>
+		<imageobject>
+		<imagedata fileref="images/install/27.png" scale=50>
+		</imageobject>
+	</mediaobject>
+	</para>
+
+	<para>
+	The above window is an example of how we configured the external
+	network on one of our frontend machines.
+	</para>
+</listitem>
+
+<listitem>
+	<para>
+	Configure the the <emphasis>Gateway</emphasis>
+	and <emphasis>DNS</emphasis> entries:
+	</para>
+
+	<para>
+	<mediaobject>
+		<imageobject>
+		<imagedata fileref="images/install/28.png" scale=50>
+		</imageobject>
+	</mediaobject>
+	</para>
+</listitem>
+
+<listitem>
+	<para>
+	Input the root password:
+	</para>
+
+	<para>
+	<mediaobject>
+		<imageobject>
+		<imagedata fileref="images/install/29.png" scale=50>
+		</imageobject>
+	</mediaobject>
+	</para>
+</listitem>
+
+<listitem>
+	<para>
+	Configure the time:
+	</para>
+
+	<para>
+	<mediaobject>
+		<imageobject>
+		<imagedata fileref="images/install/30.png" scale=50>
+		</imageobject>
+	</mediaobject>
+	</para>
+</listitem>
+
+
+<listitem>
+	<para>
+	The disk partitioning screen allows you to select
+	<emphasis>automatic</emphasis> or <emphasis>manual</emphasis>
+	partitioning.
+	</para>
+
+	<para>
+	<mediaobject>
+		<imageobject>
+		<imagedata fileref="images/install/31.png" scale=50>
+		</imageobject>
+	</mediaobject>
+	</para>
+
+	<para>
+	To select automatic partitioning, click the
+	<computeroutput>Auto Partitioning</computeroutput> radio button.
+	This will repartition and reformat the first discovered hard drive
+	that is connected to the frontend.
+	All other drives connected to the frontend will be left untouched.
+	</para>
+
+	<para>
+	The first discovered drive will be partitioned like:
+	</para>
+
+	<para>
+	<table frame=all>
+		<title> Frontend -- Default Root Disk Partition </title>
+	<tgroup cols=2 align=left colsep=1 rowsep=1>
+
+	<thead>
+	<row>
+		<entry> Partition Name </entry>
+		<entry> Size </entry>
+	</row>
+	</thead>
+
+	<tbody>
+	<row>
+		<entry>
+			/
+		</entry>
+		<entry>
+			8 GB
+		</entry>
+	</row>
+
+	<row>
+		<entry>
+			/var
+		</entry>
+		<entry>
+			4 GB
+		</entry>
+	</row>
+
+	<row>
+		<entry>
+			swap
+		</entry>
+		<entry>
+			1 GB
+		</entry>
+	</row>
+
+	<row>
+		<entry>
+			/export (symbolically linked to /state/partition1)
+		</entry>
+		<entry>
+			<emphasis> remainder of root disk </emphasis>
+		</entry>
+	</row>
+
+	</tbody> </tgroup> </table>
+	</para>
+
+	<warning>
+	<para>
+	When you use automatic partitioning, the installer will repartition
+	and reformat the <emphasis>first hard drive</emphasis> that the
+	installer discovers.
+	All previous data on this drive will be erased.
+	All other drives will be left untouched.
+	</para>
+
+	<para>
+	The drive discovery process uses the output of
+	<computeroutput>cat /proc/partitions</computeroutput> to get the
+	list of drives.
+	</para>
+
+	<para>
+	For example, if the node has an IDE drive (e.g., "hda") and a
+	SCSI drive (e.g., "sda"), generally the IDE drive is the first
+	drive discovered.
+	</para>
+
+	<para>
+	But, there are instances when a drive you don't expect is the
+	first discovered drive (we've seen this with certain fibre channel
+	connected drives).
+	If you are unsure on how the drives will be discovered in a multi-disk
+	frontend, then use manual partitioning.
+	</para>
+	</warning>
+
+</listitem>
+
+</orderedlist>
+
+<orderedlist continuation="continues">
+
+<listitem>
+	<para>
+	If you selected manual partitioning, then you will now see Red Hat's
+	manual partitioning screen:
+	</para>
+
+	<para>
+	<mediaobject>
+		<imageobject>
+		<imagedata fileref="images/install/41.png" scale=50>
+		</imageobject>
+	</mediaobject>
+	</para>
+
+	<para>
+	Above is an example of creating a '/', '/var', swap and '/export'
+	partitions.
+	</para>
+
+	<warning>
+	<para>
+	If you select manual partitioning, you must specify at least 8 GBs
+	for the root partition and you must create a separate
+	<computeroutput>/export</computeroutput> partition.
+	</para>
+	</warning>
+
+	<warning>
+	<para>
+	LVM is not supported by Rocks.
+	</para>
+	</warning>
+
+	<para>
+	When you finish describing your partitions, click the 'Next' button.
+	</para>
+</listitem>
+
+<listitem>
+	<para>
+	The frontend will format its file systems, 
+	then it will ask for each of the roll CDs you added at
+	the beginning of the frontend installation.
+	</para>
+
+	<para>
+	<mediaobject>
+		<imageobject>
+		<imagedata fileref="images/install/32.png" scale=50>
+		</imageobject>
+	</mediaobject>
+	</para>
+
+	<para>
+	In the example screen above, insert the Kernel/Boot Roll into
+	the CD tray and click 'OK'.
+	</para>
+
+	<para>
+	The contents of the CD will now be copied to the frontend's hard disk.
+	</para>
+
+	<para>
+	Repeat this step for each roll you supplied in steps 3-5.
+	</para>
+
+	<note>
+	<para>
+	After all the Rolls are copied, no more user interaction is required.
+	</para>
+	</note>
+</listitem>
+
+<listitem>
+	<para>
+	After the last roll CD is copied, the packages will be installed:
+	</para>
+
+	<para>
+	<mediaobject>
+		<imageobject>
+		<imagedata fileref="images/install/33.png" scale=50>
+		</imageobject>
+	</mediaobject>
+	</para>
+</listitem>
+
+<listitem>
+	<para>
+	Finally, the boot loader will be installed
+	and post configuration scripts will be run in the background.
+	When they complete, the frontend will reboot.
+	</para>
+</listitem>
+
+
+</orderedlist>
+
+</section>
+

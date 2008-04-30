@@ -1,0 +1,82 @@
+<section id="customization-extra-nic"
+	xreflabel="Extra NIC">
+
+<title> Configuring Additional Ethernet Interfaces </title>
+
+<para>
+For compute nodes, Rocks uses the first ethernet interface
+(<computeroutput>eth0</computeroutput>) for management (e.g., reinstallation),
+monitoring (e.g., Ganglia) and message passing (e.g., MPICH over ethernet).
+
+Often, compute nodes have more than one ethernet interface.
+
+This procedure describes how to configure them.
+</para>
+
+<para>
+Additional ethernet interfaces are configured from the frontend via the
+Rocks command line.
+It modifies entries in the networks table on the frontend to add information
+about an extra interface on a node.
+</para>
+
+<para>
+Once you have the
+information in the networks table, every time you reinstall, the additional
+NIC will be configured.
+</para>
+
+<para>
+Suppose you have a compute node with one configured network (eth0) and one
+unconfigured network (eth1):
+</para>
+
+<screen>
+# rocks list host interface compute-1-1 
+SUBNET  IFACE MAC               IP             NETMASK   GATEWAY MODULE NAME
+private eth0  00:0e:0c:5d:7e:5e 10.255.255.251 255.0.0.0 ------- e1000  compute-1-1
+------- eth1  00:30:1b:b2:ea:61 -------------- --------- ------- tg3    -----------
+</screen>
+
+<para>
+We'll configure eth1 with the following network info and associate
+eth1 with the public subnet:
+</para>
+
+<itemizedlist>
+<listitem>
+	<para> IP address = 192.168.1.1 </para>
+</listitem>
+<listitem>
+	<para> Gateway = 192.168.1.254 </para>
+</listitem>
+<listitem>
+	<para> Name = fast-1-1 </para>
+</listitem>
+</itemizedlist>
+
+<screen>
+# rocks set host interface ip compute-1-1 eth1 192.168.1.1
+# rocks set host interface gateway compute-1-1 eth1 192.168.1.254
+# rocks set host interface name compute-1-1 eth1 fast-1-1     
+# rocks set host interface subnet compute-1-1 eth1 public       
+</screen>
+
+<para>
+The interface eth1 is now configured:
+</para>
+
+<screen>
+# rocks list host interface compute-1-1
+SUBNET  IFACE MAC               IP             NETMASK       GATEWAY       MODULE NAME       
+private eth0  00:0e:0c:5d:7e:5e 10.255.255.251 255.0.0.0     ------------- e1000  compute-1-1
+public  eth1  00:30:1b:b2:ea:61 192.168.1.1    255.255.255.0 192.168.1.254 tg3    fast-1-1 
+</screen>
+
+<para>
+After specifying new network settings to a node, you will need to reinstall
+the node in order for the changes to take effect.
+</para>
+
+</section>
+

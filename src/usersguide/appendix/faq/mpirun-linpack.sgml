@@ -1,0 +1,39 @@
+<qandaentry>
+<question id="linpack-ethernet">
+<para>
+When I run the ethernet version of Linpack
+(<computeroutput>/usr/share/mpi/bin/mpirun -nolocal -np 2
+-machinefile machines /opt/hpl-eth/bin/xhpl</computeroutput>), 
+I get the error: "Program /opt/hpl-eth/bin/xhpl either does not exist, is not
+executable, or is an erroneous argument to mpirun."
+What's up?
+</para>
+</question>
+
+<answer>
+<para>
+<computeroutput>mpirun</computeroutput> requires that the executable be
+present on the node that is lauching the job, even if it is launched
+with the flag <computeroutput>-nolocal</computeroutput>.
+</para>
+
+<para>
+The workaround is to add the ethernet version hpl to your frontend, by
+logging into your frontend and executing:
+</para>
+
+<screen>
+# rpm -Uvh /home/install/rocks-dist/7.2/en/os/i386/RedHat/RPMS/hpl-eth-1.0-0.i386.rpm
+</screen>
+
+<para>
+<note>
+<para>
+This bug will be fixed in the next release of Rocks.
+</para>
+</note>
+</para>
+
+</answer>
+</qandaentry>
+

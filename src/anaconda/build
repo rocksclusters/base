@@ -1,0 +1,9 @@
+#!/bin/bash
+
+echo rpm -Uvh $ROCKS_REBUILD_SRPM
+rpm -Uvh $ROCKS_REBUILD_SRPM
+
+export SPECFILE=anaconda.spec
+
+rpmbuild -bb /tmp/$SPECFILE
+

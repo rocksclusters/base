@@ -1,0 +1,431 @@
+<appendix id="service-411" xreflabel="411 Secure Information Service Internals">
+	<title>411 Secure Information Service Internals</title>
+
+<para>
+The 411 Secure Information Service provides NIS-like functionality for Rocks clusters. It is named after the common "411" code for information in the phone system. We use 411 to securely distribute password files, user and group configuration files and the like. 
+</para>
+
+<para>
+411 uses Public Key Cryptography to protect file contents. It operates on a file level, rather than the RPC-based per-line maps of NIS. 411 does not rely on RPC, and instead distributes the files themselves using HTTP (web service). Its central task is to securely maintain critical login/password files on the worker nodes of a cluster. It does this by implementing a file-based distributed database with weak consistency semantics. The design goals of 411 include scalability, security, low-latency when changes occur, and resilience to failures. 
+</para>
+
+<tip>
+<para>
+Beginning with the Rocks 3.1.0 Matterhorn release, 411 replaces NIS as the default method of distributing /etc/passwd and other login files. We no longer support NIS.
+</para>
+</tip>
+
+<section>
+<title>Using the 411 Service</title>
+
+<para>
+The 411 system intentionally mimics the NIS interface for system administrators. Of course there are elements in 411 which are not present in NIS, namely RSA public and private cryptographic keys. However we have attempted to make 411 as easy to use as an NIS replacement.
+</para>
+
+<para>
+Files listed in <literal>/var/411/Files.mk</literal> are automatically serviced by 411. This means that any file listed there will be kept up to date by the 411 agents on all compute nodes in your cluster. This is done using the makefile <literal>/var/411/Makefile</literal> in a similar fashion to NIS. To force the 411 system to flush all changes, execute the following on the frontend node:
+</para>
+
+<screen>
+# make -C /var/411
+</screen>
+
+<para>
+Note that this command is run by cron every hour on the frontend to propagate changes to compute nodes. New files can be added to Files.mk as necessary for custom services on the cluster.
+</para>
+
+<para>
+To force all 411 files to be re-encrypted and change alerts sent to all compute
+nodes, run this on the frontend
+</para>
+
+<para>
+<screen>
+# make -C /var/411 force
+</screen>
+</para>
+
+<tip>
+<para>
+The 411 service uses IP broadcast messages on your cluster's private network to
+achieve optimal performance. 
+</para>
+<para>
+To force all compute nodes to retrieve the latest files from the frontend,
+execute:
+</para>
+<para>
+<screen>
+# cluster-fork 411get --all
+</screen>
+</para>
+</tip>
+
+</section>
+
+<section>
+<title>Structure</title>
+
+<section>
+<title>Listener</title>
+
+<para>
+Client nodes listen on the IP broadcast channel for "411alert" messages from the
+master (the frontend). The master will send 411alerts during a 411put operation,
+just after it has encrypted a 411 file. The alert message serves as a cue to the
+client nodes that a file has changed and needs to be retrieved. In this way the
+411 system generally achieves a low-latency response to changes. 411 alerts are
+resent periodically to compensate for lost messages.
+</para>
+
+<mediaobject>
+	<imageobject>
+	<imagedata fileref="images/411-listener.png" scale=50>
+	</imageobject>
+</mediaobject>
+
+<blockquote>
+<para>
+<emphasis>Figure:</emphasis> The 411 listener architecture. When the frontend
+changes a login file, the 411 makefile sends out a broadcast alert to the
+cluster nodes notifying of the event. Nodes then pull the file from the frontend
+via HTTP. 
+</para>
+</blockquote>
+
+<para>
+To prevent flooding the master server with requests, the listeners keep an
+estimate of the cluster size, and use it to calibrate a random backoff for
+their requests. A client does not immediately request the changed file, but
+waits some amount of time before asking for it. 
+</para>
+
+<caution>
+<para>
+411 is akin to a distributed database, and is not a centralized lookup service
+like NIS. While scalable, 411 does not provide instantaneous distribution of new
+files. The delay between running the 411 makefile and all nodes receiving the
+changed file depends on cluster size. A large password file on a cluster
+with many nodes can take up to a minute to fully synchronize on all nodes.
+</para>
+</caution>
+</section>
+
+<section>
+<title>Poller</title>
+
+<para>
+In addition to the 411 listener agent on nodes, another agent retrieves all
+messages from the frontend at a regular interval, regardless of whether the
+files have changed or not.
+</para>
+
+<para>
+The polling interval at nodes is set to 5 hours by default. To change it, set
+the "interval" option in the 411 configuration file on nodes.
+</para>
+
+<para>
+<screen>
+/etc/411.conf:
+
+...
+&lt;interval sec="300"&gt;
+...
+</screen>
+</para>
+
+<para>
+There is automatically some randomness introduced to the polling interval to
+avoid storms on the network.
+</para>
+
+<para>
+The poller is implemented as a <literal>greceptor</literal> event module, and relies on the operation of that daemon. 411 pollers obtain their master servers by reading a configuration file on their local disk. This file, written in XML, is generated automatically by the 411 listener. 
+</para>
+
+<warning>
+<para>
+Because the 411 polling daemon runs as root on client nodes, it is
+essential that the 411 http directory on a master server be writable only by
+root to avoid any chance of <emphasis>privilege elevation</emphasis>. This is
+the default in Rocks.
+</para>
+</warning>
+</section>
+
+</section>
+
+
+<section>
+<title>Security</title>
+
+<para>
+See the 411 paper in the <xref linkend="Bibliography"> section for details of
+411 security mechanisms.
+</para>
+
+</section>
+
+
+<section id="four11-groups">
+<title>411 Groups</title>
+
+<para>
+Beginning in Rocks 3.3.0, 411 has the ability to send messages to subsets of the cluster. This facility, called 411 groups, allows us to distribute different files to nodes depending on their type. The group mechanism depends on the client nodes specifying group names in their local 411 configuration file; these are called the client's "registered" groups.
+</para>
+
+<warning>
+<para>
+There is no per-group key in 411. The groups mechanism is only a convenience
+feature, without strong security to enforce it. Specifically, a node can
+eavesdrop on messages for a foreign group that it is not a member of.
+</para>
+</warning>
+
+<para>
+Group names are multi-level, and resemble file paths. By default, every node is a member of the '/' group (corresponding to the traditional top-level 411 group), and the '/Membership' group, where <emphasis>membership</emphasis> is the node membership in the frontend database, such as "Compute" or "NAS".
+</para>
+
+<tip>
+<para>
+A special Makefile called /var/411/Group.mk is available to help you setup and
+maintain 411 groups. After editing this file to specify which files go to which
+group, run 
+</para>
+<para>
+<screen>
+# make -C /var/411 groups
+# make -C /var/411
+</screen>
+</para>
+<para>
+To activate the 411 group makefile actions.
+</para>
+</tip>
+
+<para>
+By default, nodes are members of a group with the same name as their
+<emphasis>Membership</emphasis>. For example compute nodes are automatically a
+member of the group "Compute". A sample <literal>411.conf</literal> file with
+several groups looks like: 
+</para>
+<para>
+<screen>
+&lt;!-- Configuration file for the 411 Information Service --&gt;
+&lt;config&gt;
+&lt;master url="http://10.1.1.1/411.d/" score="0"/&gt;
+&lt;group&gt;/light/blue&lt;/group&gt;
+&lt;group&gt;Compute&lt;/group&gt;
+&lt;/config&gt;
+</screen>
+</para>
+
+<para>
+Multi-element group names have a simple inheritance model: specific groups imply more general ones. For example, if you are a member of the group <literal>/compute/light</literal>, you will automatically be interested in messages in group "/compute/light" and "/compute". You will not be interested in messages from group "/compute/heavy". In this case "/compute/light" is the specific group, and "/compute" is the more general one.
+</para>
+
+<mediaobject>
+	<imageobject>
+	<imagedata fileref="images/411-groups.png" scale=50>
+	</imageobject>
+</mediaobject>
+
+<blockquote>
+<para>
+<emphasis>Figure:</emphasis> 411 groups. The client uses registered groups from its local configuration file to filter a stream of offered messages from the master. The messages with the dashed border represent newly changed 411 files on the master, the solid messages at the bottom have been chosen by the client. Note that group "/compute/light" implies "/compute".
+</para>
+</blockquote>
+
+</section>
+
+
+<section>
+<title>Commands</title>
+
+<section>
+<title>411get</title>
+
+<screen>
+411get [--all] [--master=url] [--conf] [--pub] [--shared] [--local] [file]
+</screen>
+
+<para>
+Retrieves and decrypts 411 messages. Prints resulting file to stdout. When invoked with no files, 411get will list the available 411 messages.
+</para>
+
+<para>
+The following options are available:
+</para>
+
+<itemizedlist>
+<listitem>
+<para>
+<emphasis>--all</emphasis> Retrieves and writes all available 411 messages from the most attractive master. Does not print output to stdout, nor ask for confirmation before overwriting files.
+</para>
+</listitem>
+
+<listitem>
+<para>
+<emphasis>--master</emphasis> The url of a 411 master server to use. Defaults to "http://10.1.1.1/411.d/" or whatever is present in "/etc/411.conf". If given, this master takes precedence over those listed in the configuration file.
+</para>
+</listitem>
+
+<listitem>
+<para>
+<emphasis>--file, --local</emphasis> Assume the file is local, ie present in the
+current directory. Does not use http to retrieve the file. Decrypts and prints
+the file contents.
+</para>
+</listitem>
+
+<listitem>
+<para>
+<emphasis>--conf</emphasis> The configuration file to use. Defaults to "/etc/411.conf".
+</para>
+</listitem>
+
+<listitem>
+<para>
+<emphasis>--pub</emphasis> The location of the cluster public RSA key. Defaults to "/etc/security/cluster-public-key.pem". 
+</para>
+</listitem>
+
+<listitem>
+<para>
+<emphasis>--shared</emphasis> The location of the cluster shared key. Defaults
+to "/etc/411-security/shared.key"
+</para>
+</listitem>
+</itemizedlist>
+
+<para>
+The master servers, along with their quality score, are listed in the "/etc/411.conf" file on compute nodes.
+</para>
+
+</section>
+
+
+<section>
+<title>411put</title>
+
+<screen>
+411put [--411dir=dir] [--urldir=dir] [--see] [--noalert] [--alert=channel]
+[--411name] [--pub] [--priv] [--comment=char] [--chroot=dir] 
+[--chroot-here] [--group=group] file1 file2 ...
+</screen>
+
+<para>
+Encrypts and publishes files using the 411 secure information service. Will send
+a broadcast message to client nodes by default, alerting them of a changed file.
+</para>
+
+<para>
+The following options are available:
+</para>
+
+<itemizedlist>
+<listitem>
+<para>
+<emphasis>--chroot=dir</emphasis> Turn "dir" into the root directory of the destination file. This allows files to be located in a different place on the master and clients.
+</para>
+
+<para>
+<screen>
+Example:
+411put --chroot=/var/411/groups/compute /var/411/groups/compute/etc/passwd
+
+</screen>
+</para>
+
+<para>
+Will put "/var/411/groups/compute/etc/passwd" on compute nodes as "/etc/passwd". 
+</para>
+</listitem>
+
+<listitem>
+<para>
+<emphasis>--chroot-here</emphasis> A convenience option, equivalent to --chroot=$PWD.
+</para>
+</listitem>
+
+<listitem>
+<para>
+<emphasis>--group=name</emphasis> A 411 group for this file. Clients will ignore 411 messages in groups which they are not a part of. Allows 411 files to be published to a subset of the cluster. Name is path-like: "Compute/green", or "/Compute/green". Spaces are ok: "a space/yellow" is a valid group name as well.
+</para>
+</listitem>
+
+<listitem>
+<para>
+<emphasis>--comment</emphasis> The comment character for this file. Used to place a descriptive header without disrupting normal operations. Often set to "#". Default is none.
+</para>
+</listitem>
+
+<listitem>
+<para>
+<emphasis>--411dir</emphasis> The local directory to place encrypted 411 messages. Defaults to "/etc/411.d/". Be careful about the permissions of this directory.
+</para>
+</listitem>
+
+<listitem>
+<para>
+<emphasis>--urldir</emphasis> The web directory where 411 messages are available. Defaults to "/411.d/".
+</para>
+</listitem>
+
+<listitem>
+<para>
+<emphasis>--see</emphasis> Shows the encrypted file contents on stdout.
+</para>
+</listitem>
+
+<listitem>
+<para>
+<emphasis>--noalert</emphasis> Suppresses alert message.
+</para>
+</listitem>
+
+<listitem>
+<para>
+<emphasis>--alert</emphasis> Specifies the alert channel, which can be multicast
+or unicast UDP. Defaults to the IP broadcast channel (255.255.255.255).
+</para>
+</listitem>
+
+<listitem>
+<para>
+<emphasis>--411name</emphasis> Prints the 411 message name for the file. Provided for convenience.
+</para>
+</listitem>
+
+<listitem>
+<para>
+<emphasis>--pub</emphasis> The location of the 411 master public RSA key.
+Defaults to a 1024 bit key in "/etc/411-security/master.pub". This file should have permissions 0444 (read by all) and be owned by root.
+</para>
+</listitem>
+
+<listitem>
+<para>
+<emphasis>--priv</emphasis> The location of the 411 master private RSA key.
+Defaults to a 1024 bit key in "/etc/411-security/master.key". This file should
+exist only on the master node and be owned by root and have permissions 0400
+(read only by root). 
+</para>
+</listitem>
+
+<listitem>
+<para>
+<emphasis>--make-shared-key</emphasis> Generate a new random shared key. The key
+is a 256 random number encoded in base64.
+</para>
+</listitem>
+
+</itemizedlist>
+
+</section>
+
+</section>
+
+</appendix>
+

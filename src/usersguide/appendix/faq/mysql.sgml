@@ -1,0 +1,17 @@
+<qandaentry>
+<question id="mysql-browser">
+<para>
+How do I examine the Rocks MySQL database and/or Ganglia information with
+a browser?
+</para>
+</question>
+
+<answer>
+<para>
+Point your browser to http://localhost for access to the ganglia info
+and MySQL database.
+</para>
+
+</answer>
+</qandaentry>
+

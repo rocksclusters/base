@@ -1,0 +1,31 @@
+<qandaentry>
+<question id="mirror">
+
+	<para>
+	When I mirror, I see output that says
+	<computeroutput>No such file `'.</computeroutput>.
+	Is that OK?
+	</para>
+
+</question>
+
+<answer>
+<para>
+Yes, it is ok to see output like:
+</para>
+
+<screen>
+FINISHED --00:54:08--
+Downloaded: 9 bytes in 1 files
+00:54:08 URL: ftp://www.rocksclusters.org/%2Fpub/rocks/rocks-dist/updates/7.2/en/os/i386/ [9] -> "www.rocksclusters.org/pub/rocks/rocks-dist/updates/7.2/en/os/i386/.listing" [1]
+No such file `'.
+
+
+FINISHED --00:54:08--
+Downloaded: 9 bytes in 1 files
+No such directory `/pub/rocks/rocks-dist/updates/7.2/en/os/noarch'.
+</screen>
+
+</answer>
+</qandaentry>
+

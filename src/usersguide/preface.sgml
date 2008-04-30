@@ -1,0 +1,39 @@
+<!--
+$Id: preface.sgml,v 1.2 2008/04/04 21:45:12 bruno Exp $
+
+@Copyright@
+@Copyright@
+
+$Log: preface.sgml,v $
+Revision 1.2  2008/04/04 21:45:12  bruno
+start of the doc restructuring
+
+Revision 1.1  2007/06/16 03:11:25  mjk
+builds with command reference
+
+Revision 1.4  2006/09/11 18:16:24  mjk
+*** empty log message ***
+
+Revision 1.3  2006/08/15 19:11:26  mjk
+starting new manual
+
+-->
+
+<preface>
+<title>Preface</title>
+
+<para>
+
+Since May 2000, the Rocks group has been addressing the
+difficulties of deploying manageable clusters.  We have been driven by one
+goal: <emphasis>make clusters easy</emphasis>. By
+<emphasis>easy</emphasis> we mean easy to deploy, manage, upgrade and
+scale.  We are driven by this goal to help deliver the computational power
+of clusters to a wide range of scientific users.  It is clear that making
+stable and manageable parallel computing platforms available to a wide
+range of scientists will aid immensely in improving the state of the art
+in parallel tools.
+
+</para>
+
+</preface>

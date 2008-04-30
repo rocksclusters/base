@@ -1,0 +1,399 @@
+<?xml version="1.0" standalone="no"?>
+
+<graph>
+
+	<changelog>
+	$Log: base.xml,v $
+	Revision 1.38  2008/04/25 22:22:57  bruno
+	fixes for V
+	
+	Revision 1.37  2008/04/17 18:34:29  bruno
+	add a nas-partition XML node to the framework
+	
+	Revision 1.36  2008/02/19 23:20:24  bruno
+	katz made me do it.
+	
+	Revision 1.35  2008/02/14 22:46:40  bruno
+	media XML node is no longer needed
+	
+	Revision 1.34  2007/12/13 02:53:40  bruno
+	can now build a bootable kernel CD and build a physical frontend with V
+	on RHEL 5 update 1
+	
+	Revision 1.33  2007/12/10 21:28:32  bruno
+	the base roll now contains several elements from the HPC roll, thus
+	making the HPC roll optional.
+	
+	this also includes changes to help build and configure VMs for V.
+	
+	Revision 1.32  2007/06/30 01:09:26  phil
+	Restore IP connecivity during the post if kickstarting a frontend over
+	the detected eth0 network
+	
+	Revision 1.31  2007/04/30 22:03:12  bruno
+	more pxe first support
+	
+	Revision 1.30  2006/07/21 02:50:52  phil
+	rocks-pxe helper function support
+	
+	Revision 1.29  2006/07/11 21:17:54  bruno
+	screen cleanup
+	
+	Revision 1.28  2006/07/07 20:12:36  bruno
+	removed upgrade node -- now handled by restore roll
+	
+	Revision 1.27  2006/07/05 17:40:36  bruno
+	sql statements were added to the server.xml node file, so make sure the
+	server node is ordered after the database setup nodes.
+	
+	Revision 1.26  2006/06/21 03:09:52  bruno
+	updates to put the frontend networking info in the database just like
+	a compute node
+	
+	Revision 1.25  2006/06/05 22:06:29  bruno
+	moved insert-rolls from hpc to base
+	
+	Revision 1.24  2006/06/05 21:54:50  bruno
+	moved PXE from hpc to base
+	
+	Revision 1.23  2006/06/05 17:57:32  bruno
+	first steps towards 4.2 beta
+	
+	Revision 1.22  2006/05/24 19:52:52  phil
+	Add ethers-server-postshell processing to rewrite ethernet configuration
+	
+	Revision 1.21  2006/01/20 20:07:32  bruno
+	correct console support for multi-byte character sets
+	
+	Revision 1.20  2005/10/11 05:36:19  phil
+	Probe the ethernet hardware on the frontend and put it into the database
+	
+	Revision 1.19  2005/09/27 19:32:06  bruno
+	put 'routes-server' on the tail of database-security. this ensures the
+	database is fully configured and dbreport will be able to run.
+	
+	Revision 1.18  2005/09/22 03:21:08  phil
+	create static-routes with a dbreport
+	
+	Revision 1.17  2005/09/02 23:41:33  bruno
+	make sure the foundation is configured before calling dbreport
+	
+	Revision 1.16  2005/07/20 23:09:17  mjk
+	fixed foundation name
+	
+	Revision 1.15  2005/07/11 22:00:49  mjk
+	added foundation to graph
+	
+	Revision 1.14  2005/05/25 03:29:24  bruno
+	need to ensure that all nodes that call 'dbreport' are after
+	database-security
+	
+	Revision 1.13  2005/05/23 23:59:20  fds
+	Frontend Restore
+	
+	Revision 1.12  2005/04/01 15:37:10  bruno
+	disable yum
+	
+	Revision 1.11  2005/03/31 04:13:25  phil
+	for Bruno ... because if it isn't in CVS it does not exist
+	
+	Revision 1.10  2005/03/12 07:35:18  bruno
+	put python-development before base -- this ensures that rocksrc-modify
+	will be able to import its rocks pylib files
+	
+	Revision 1.9  2005/03/12 00:01:49  bruno
+	minor checkin
+	
+	Revision 1.8  2005/03/04 01:40:04  mjk
+	massive graph cleanup
+	
+	Revision 1.7  2005/03/02 20:57:27  mjk
+	bad node name
+	
+	Revision 1.6  2005/03/01 17:51:06  mjk
+	compilers like scripting - small tweak
+	
+	Revision 1.5  2005/03/01 17:34:58  mjk
+	move 411 to hpc
+	
+	Revision 1.4  2005/03/01 02:26:01  mjk
+	we do not thin the OS anymore
+	
+	Revision 1.3  2005/03/01 00:22:24  mjk
+	moved to base roll
+	
+	</changelog>
+
+	<description>
+
+	Default Graph for Rocks.
+
+	</description>
+
+
+	<!-- Graph Ordering for Kickstart Generation -->
+
+	<order tail="HEAD">
+		<head>partitions-save</head>
+		<head>python-development</head>
+		<head>rlo</head>
+	</order>
+
+	<order head="python-development">
+		<tail>base</tail>
+	</order>
+
+	<order head="compute-appliance">
+		<tail>base</tail>
+	</order>
+
+	<order head="TAIL">
+		<tail>install</tail>
+		<tail>postshell</tail>
+		<tail>pxeboot</tail>
+		<tail>nas</tail>
+		<tail>compute</tail>
+	</order>
+
+	<order head="postshell">
+		<tail>ethers-server-postshell</tail>
+	</order>
+
+	<order head="node" tail="database-data"/>
+
+	<order head="syslog" tail="syslog-client"/>
+
+	<order head="database">
+		<tail>database-schema</tail>
+		<tail>foundation-server</tail>
+	</order>
+
+	<order head="database-schema">
+		<tail>database-data</tail>
+	</order>
+
+	<order head="database-data">
+		<tail>database-security</tail>
+		<tail>rocks-dist</tail>
+	</order>
+
+	<order head="database-security">
+		<tail>install</tail>
+		<tail>routes-server</tail>
+		<tail>insert-rolls</tail>
+		<tail>server</tail>
+		<tail>pxe</tail>
+		<tail>networking-server</tail>
+		<tail>dhcp-server</tail>
+		<tail>dns-server</tail>
+		<tail>resolv</tail>
+	</order>
+
+	<order head="grub">
+		<tail>grub-client</tail>
+		<tail>grub-server</tail>
+	</order>
+
+	<order head="ca">
+		<tail>ssl-client</tail>
+		<tail>ssl-server</tail>
+		<tail>central</tail>
+	</order>
+
+	<order head="apache">
+		<tail>database</tail>
+	</order>
+
+	<order head="firewall">
+		<tail>client-firewall</tail>
+		<tail>server-firewall</tail>
+	</order>
+
+	<order head="partition">
+		<tail>do-partition</tail>
+	</order>
+
+	<order head="nas-partition">
+		<tail>do-partition</tail>
+	</order>
+
+	<!-- order the screens -->
+	<order head="screen-clusterinfo">
+		<tail>screen-network-eth0</tail>
+	</order>
+	<order head="screen-network-eth0">
+		<tail>screen-network-eth1</tail>
+	</order>
+	<order head="screen-network-eth1">
+		<tail>screen-network-misc</tail>
+	</order>
+	<order head="screen-network-misc">
+		<tail>screen-root-password</tail>
+	</order>
+	<order head="screen-root-password">
+		<tail>screen-timezone</tail>
+	</order>
+	<order head="screen-timezone">
+		<tail>screen-partitioning</tail>
+	</order>
+
+
+	<!-- Graph OO Framework -->
+
+	<edge from="compute">
+		<to>compute-appliance</to>
+	</edge>
+
+	<edge to="client">
+		<from>compute-appliance</from>
+	</edge>
+
+	<edge from="nas">
+		<to>nas-appliance</to>
+		<to>nas-exports</to>
+		<to>nas-partition</to>
+		<to>client</to>
+	</edge>
+
+	<edge from="base">
+		<to>foundation-base</to>
+		<to>autofs</to>
+		<to>snmp-server</to>
+		<to>syslog</to>
+		<to>security</to>
+		<to>apache</to>
+		<to>disk-stamp</to>
+		<to arch="ia64">elilo</to>
+		<to arch="i386, x86_64">grub</to>
+		<to>ip-diag</to>
+		<to arch="ia64">keyboard</to>
+		<to>logrotate</to>
+		<to>rpc</to>
+		<to>scripting</to>
+		<to>node</to>
+		<to>ntp</to>
+		<to>firewall</to>
+		<to>selinux</to>
+		<to>postshell</to>
+		<to>i18n</to>
+		<to>411-base</to>
+		<to>auto-kickstart</to>
+		<to>greceptor</to>
+		<to>mail</to>
+		<to>partition</to>
+		<to>partitions-save</to>
+	</edge>
+
+	<edge from="server">
+		<to>foundation-server</to>
+		<to>base</to>
+		<to>devel</to>
+		<to>rocks-dist</to>
+		<to>security-server</to>
+		<to>ntp-server</to>
+		<to>autofs-server</to>
+		<to>database</to>
+		<to arch="i386, x86_64">grub-server</to>
+		<to>install</to>
+		<to>x11</to>
+		<to>snmp-client</to>
+		<to>routes-server</to>
+		<to>pxe</to>
+		<to>insert-rolls</to>
+		<to>rlo</to>
+		<to>nfs-server</to>
+		<to>networking-server</to>
+		<to>411-server</to>
+		<to>dhcp-server</to>
+		<to>dns-server</to>
+		<to>labels</to>
+		<to>mail-server</to>
+		<to>rocks-devel</to>
+		<to>syslog-server</to>
+		<to>server-firewall</to>
+	</edge>
+
+	<edge from="server">
+		<to>screen-clusterinfo</to>
+		<to>screen-network-eth0</to>
+		<to>screen-network-eth1</to>
+		<to>screen-network-misc</to>
+		<to>screen-root-password</to>
+		<to>screen-timezone</to>
+		<to>screen-partitioning</to>
+	</edge>
+
+	<edge from="client">
+		<to>foundation-client</to>
+		<to>dhcp-client</to>
+		<to>base</to>
+		<to>security-client</to>
+		<to>ntp-client</to>
+		<to>syslog-client</to>
+		<to>autofs-client</to>
+		<to arch="i386, x86_64">grub-client</to>
+		<to>routes-client</to>
+		<to>pxeboot</to>
+		<to>networking-client</to>
+		<to>411-client</to>
+		<to>mail-client</to>
+		<to>node-certs</to>
+		<to>resolv</to>
+		<to>shared-memory</to>
+		<to>client-firewall</to>
+	</edge>
+
+	<edge from="security-client">
+		<to>ssl-client</to>
+		<to>ssh-client</to>
+		<to>cert</to>
+	</edge>
+
+	<edge from="security-server">
+		<to>ssl-server</to>
+		<to>ca</to>
+		<to>central</to>
+	</edge>
+
+	<edge from="security">
+		<to>ssl</to>
+		<to>ssh</to>
+	</edge>
+
+	<edge from="partition">
+		<to>do-partition</to>
+	</edge>
+
+	<edge from="compilers">
+		<to>c-development</to>
+		<to>fortran-development</to>
+	</edge>
+
+	<edge from="devel">
+		<to>cdr</to>
+		<to>emacs</to>
+		<to>docbook</to>
+		<to>compilers</to>
+	</edge>
+
+	<edge from="scripting">
+		<to>perl-development</to>
+		<to>python-development</to>
+		<to>tcl-development</to>
+	</edge>
+
+	<edge from="wan-install"    to="server"/>
+	<edge from="server-wan"     to="wan-install"/>
+	<edge from="server-restore" to="wan-install"/>
+
+	<edge from="database">
+		<to>database-schema</to>
+		<to>database-data</to>
+		<to>database-security</to>
+	</edge>
+
+	<edge from="postshell"   to="ethers-server-postshell"/>
+
+</graph>
+
+

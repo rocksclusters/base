@@ -1,0 +1,86 @@
+<?xml version="1.0" standalone="no"?>
+
+<kickstart>
+
+  <description>
+
+  Generates the resolv.conf file for slave nodes.
+  We point to all nameservers listed in the PrivateDNSServers
+  entry in the app_globals table in the database.
+
+  This node used to be named copy-resolv.xml.
+
+  </description>
+
+  <changelog>
+  $Log: resolv.xml,v $
+  Revision 1.1  2007/12/10 21:28:33  bruno
+  the base roll now contains several elements from the HPC roll, thus
+  making the HPC roll optional.
+
+  this also includes changes to help build and configure VMs for V.
+
+  Revision 1.8  2005/02/16 00:40:04  mjk
+  graph cleanup
+
+  Revision 1.7  2004/06/07 21:44:41  fds
+  Goes with change to dbreport hosts. Public frontend is public.
+
+  Revision 1.6  2004/02/03 00:57:25  mjk
+  decolorize / derollize
+
+  Revision 1.5  2004/01/30 00:22:54  mjk
+  color hpc green
+
+  Revision 1.4  2003/08/12 16:35:13  bruno
+  still dorkin with the public/private hostname stuff
+
+  Revision 1.3  2003/08/11 21:52:12  bruno
+  added a mapping to /etc/hosts file on the compute nodes that maps the
+  public name of the frontend to the private side IP address. this is for PBS.
+
+  Revision 1.2  2003/07/16 18:52:45  bruno
+  changes all file creation code to use 'file' tag
+
+  Revision 1.1  2003/07/07 20:47:51  bruno
+  initial release
+
+  Revision 1.4  2003/06/21 00:29:31  fds
+  Compute hosts file looks like a smaller version of frontends now.
+
+  Revision 1.3  2003/06/19 22:12:10  mjk
+  required full path for dbreport
+
+  Revision 1.2  2003/06/07 08:45:55  fds
+  Setting /etc/hosts for compute nodes so they know their own name.
+
+  Revision 1.1  2003/06/07 00:08:48  fds
+  Making real /etc/resolv.conf now.
+
+  Revision 1.2  2001/09/05 00:27:16  mjk
+  main and packages section is correct for compute nodes
+
+  </changelog>
+
+<post>
+
+<file name="/etc/resolv.conf">
+<eval shell="sh">
+/opt/rocks/bin/dbreport resolv private
+</eval>
+</file>
+
+<!-- Give each host knowledge of itself. -->
+
+<file name="/etc/hosts">
+# Do not remove the following line, or various programs
+# that require network functionality will fail.
+127.0.0.1 localhost.localdomain localhost
+<var name="Kickstart_PublicAddress"/> <var name="Kickstart_PublicHostname"/>
+<var name="Node_Address"/>  <var name="Node_Hostname"/>.<var name="Kickstart_PrivateDNSDomain"/>  <var name="Node_Hostname"/>
+</file>
+
+</post>
+
+</kickstart> 
+

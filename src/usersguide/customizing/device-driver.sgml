@@ -1,0 +1,218 @@
+<section id="customization-driver"
+	xreflabel="Adding a Device Driver">
+
+<title> Adding a Device Driver </title>
+
+<para>
+This section describes how to add a device driver to the installation
+environment (<emphasis>initrd.img</emphasis>).
+This enables the installation environment to use the new driver as well
+as installing the device driver into the running environment (that is,
+after the node has installed).
+</para>
+
+<para>
+This feature is enabled by 
+<ulink url="http://dup.et.redhat.com/ddiskit/">ddiskit</ulink>
+which is maintained by Jon Masters at Red Hat.
+</para>
+
+<orderedlist>
+<listitem>
+<para>
+Set up a build environment:
+</para>
+
+<screen>
+# cd /export
+# cvs -d:pserver:anonymous@src.rocksclusters.org:/export/cvs checkout rocks-&document_version;
+</screen>
+</listitem>
+
+<listitem>
+<para>
+Go to the directory which holds the device driver code:
+</para>
+
+<screen>
+# cd /export/rocks-&document_version;/rocks/src/roll/kernel/src/rocks-boot/enterprise/5/images/drivers
+</screen>
+</listitem>
+
+<listitem>
+<para>
+In this directory, you'll see some example drivers.
+Let's look at the <emphasis>e1000</emphasis> driver:
+</para>
+
+<screen>
+# cd e1000
+</screen>
+</listitem>
+
+<listitem>
+<para>
+If you want to supply a new version of the driver, you'll have to download
+the e1000 source tarball and copy the *.c and *.h files from the tarball
+to this directory.
+Make sure all the *.c and *.h files are listed at the top of the 
+<emphasis>Makefile</emphasis>:
+</para>
+
+<screen>
+MODULES := e1000
+
+SOURCES := e1000_main.c e1000_hw.c e1000_ethtool.c e1000_param.c
+
+HEADERS := e1000.h e1000_hw.h e1000_osdep.h
+</screen>
+</listitem>
+
+<listitem>
+<para>
+You'll need to make sure the proper PCI ids are in the file
+<emphasis>pcitable</emphasis>.
+For example, to test on one of our Dell SC1425's, we added the line:
+</para>
+
+<screen>
+0x8086  0x1076  "e1000" "Intel|82541GI/PI Gigabit Ethernet Controller (rev 05)"
+</screen>
+</listitem>
+
+<listitem>
+<para>
+Now we'll need to specify to the device driver building code that the
+e1000 driver should be built.
+To do this, edit the file 
+<emphasis>subdirs</emphasis>:
+</para>
+
+<screen>
+# cd ..
+# vi subdirs
+</screen>
+</listitem>
+
+<listitem>
+<para>
+Change the section from:
+</para>
+
+<screen>
+#
+# put a list of all the driver directories that you'd like to build.
+#
+# for example, to build the 'e1000' driver, uncomment the line below:
+#e1000
+</screen>
+
+<para>
+to:
+</para>
+
+<screen>
+#
+# put a list of all the driver directories that you'd like to build.
+#
+# for example, to build the 'e1000' driver, uncomment the line below:
+e1000
+</screen>
+</listitem>
+
+<listitem>
+<para>
+Build the <emphasis>rocks-boot</emphasis> package:
+</para>
+
+<screen>
+# cd /export/rocks-&document_version;/rocks/src/roll/kernel/src/rocks-boot
+# make rpm
+</screen>
+</listitem>
+
+<listitem>
+<para>
+When this completes, copy the binary RPMs into a directory where the
+distribution building utility (<emphasis>rocks-dist</emphasis>) will find
+and include them:
+</para>
+
+<screen>
+# cp /export/rocks-&document_version;/rocks/src/roll/kernel/RPMS/x86_64/rocks-boot* \
+	/home/install/contrib/&document_version;/x86_64/RPMS/
+</screen>
+
+<note>
+<para>
+If you are building on an i386 system, change the above x86_64 references 
+to i386.
+</para>
+</note>
+</listitem>
+
+<listitem>
+<para>
+Rebuild the distro:
+</para>
+
+<screen>
+# cd /home/install
+# rocks-dist dist
+</screen>
+</listitem>
+
+<listitem>
+<para>
+Install the newly created <emphasis>initrd.img</emphasis> and its matching
+kernel <emphasis>vmlinuz</emphasis> so PXE booted nodes will get the new
+device drivers:
+</para>
+
+<screen>
+# cd /home/install
+# rpm -Uvh --force rocks-dist/lan/x86_64/RedHat/RPMS/rocks-boot-4*.rpm
+# cp /boot/kickstart/default/initrd.img /tftpboot/pxelinux/
+# cp /boot/kickstart/default/vmlinuz /tftpboot/pxelinux/
+</screen>
+</listitem>
+
+<listitem>
+<para>
+Now PXE boot a node.
+This node will load your new driver and will install this driver into the
+running environment.
+</para>
+</listitem>
+</orderedlist>
+
+
+<section id="customization-driver-new"
+	xreflabel="Adding a New Device Driver">
+
+<title>
+Adding a New Device Driver (That Isn't One of the Example Drivers)
+</title>
+
+<para>
+If the name of your device driver you wish to add is not one of the example
+device drivers (e.g., ata_piix, cciss, e1000, sk98lin, or tg3), then
+you'll need to create a new directory and populate it with the appropriate
+files.
+</para>
+
+<para>
+For help on how to populate your new driver directory, see:
+/export/rocks-&document_version;/rocks/src/roll/kernel/src/rocks-boot/enterprise/5/images/drivers/INSTALL.
+</para>
+
+<para>
+The rest of the build process follows the same procedure as above starting
+at step 6 where you'll have to add the name of your new driver 
+to the file <emphasis>subdirs</emphasis>.
+</para>
+
+</section>
+
+</section>
+

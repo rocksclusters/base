@@ -1,0 +1,45 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR ORGANIZATION
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: insert-access VERSION\n"
+"POT-Creation-Date: 2006-01-24 06:30+KST\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Yuchan Park <yuchan@kisti.re.kr>\n"
+"Language-Team: Korean<LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+
+
+#: insert-access.py:198
+msgid "Clusters from %s"
+msgstr "%s 에서 클러스터링"
+
+#: insert-access.py:204
+msgid "%s -- version %s"
+msgstr "%s -- 버전 %s"
+
+#: insert-access.py:230
+msgid "Discovered New Cluster"
+msgstr "새로운 클러스터를 발견함"
+
+#: insert-access.py:232
+msgid "Discovered a new cluster at IP %s"
+msgstr "IP %s 에서 새로운 클러스터를 발견함"
+
+#: insert-access.py:256
+msgid "Apache log file not well formed!"
+msgstr "아파치 로그 파일이 올바르지 않습니다!"
+
+#: insert-access.py:299
+msgid "lock file %s exists"
+msgstr "%s lock 파일이 존재합니다"
+
+#: insert-access.py:327
+msgid " Press <F10> to quit "
+msgstr " 종료: <F10>"
+

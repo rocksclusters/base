@@ -1,0 +1,129 @@
+<?xml version="1.0" standalone="no"?>
+
+
+
+<kickstart>
+
+  <description>
+
+  Distribution building with rocks-dist
+
+  </description>
+
+        <copyright>
+        Copyright (c) 2000 - 2008 The Regents of the University of California.
+        All rights reserved. Rocks(r) v5.0 www.rocksclusters.org
+        </copyright>
+
+  <changelog>
+  $Log: rocks-dist.xml,v $
+  Revision 1.17  2008/03/06 23:41:30  mjk
+  copyright storm on
+
+  Revision 1.16  2008/02/26 21:42:32  bruno
+  rocks-roll and rocks-mirror nuked (they've been ported to the command line)
+
+  Revision 1.15  2007/06/23 04:03:18  mjk
+  mars hill copyright
+
+  Revision 1.14  2006/11/02 21:51:58  mjk
+  added rocks-command
+
+  Revision 1.13  2006/09/15 02:32:00  mjk
+  removed ROCK_ROOT variable, bug 80 (trac.rocksclusters.org)
+
+  Revision 1.12  2006/07/24 22:01:22  bruno
+  add '/opt/rocks/bin' to path so insert-ethers can find dbreport.
+
+  Revision 1.11  2006/07/19 19:20:24  bruno
+  removed all traces to mount-loop and umount-loop
+
+  Revision 1.10  2006/06/01 18:11:46  mjk
+  remove suid bit from mount-loop,umount-loop utils
+
+  Revision 1.9  2005/12/30 19:35:24  mjk
+  removed some of the specfiles
+
+  Revision 1.8  2005/10/19 04:33:04  bruno
+  need ROCKS_ROOT before calling insert-ethers
+
+  Revision 1.7  2005/10/19 02:32:02  bruno
+  saw a strange race condition where /etc/dhcpd.conf was zero-length.
+
+  still don't know the root cause, but running 'insert-ethers --update' should
+  mask the error.
+
+  Revision 1.6  2005/09/21 17:05:31  mjk
+  put our key into the rpm database
+
+  Revision 1.5  2005/05/26 23:37:41  bruno
+  the holy trinity of distro building
+
+  Revision 1.4  2005/03/31 01:20:21  bruno
+  rebuild the distro after the node is up
+
+  Revision 1.3  2005/03/12 00:01:51  bruno
+  minor checkin
+
+  Revision 1.2  2005/03/02 20:30:50  mjk
+  *** empty log message ***
+
+  Revision 1.1  2005/03/01 00:22:26  mjk
+  moved to base roll
+
+  Revision 1.2  2005/02/15 22:58:52  mjk
+  dtd is gone
+
+  Revision 1.1  2004/03/08 21:01:23  mjk
+  *** empty log message ***
+
+  Revision 1.3  2004/02/03 20:00:36  mjk
+  decolorize
+
+  Revision 1.2  2004/01/30 04:53:42  mjk
+  colorize
+
+  Revision 1.1  2001/10/05 18:59:49  mjk
+  *** empty log message ***
+
+  </changelog>
+
+  <package>rocks-command</package>
+  <package>rocks-dist</package>
+  <package>wget</package>
+
+
+<post>
+
+<!-- insert distribution key into rpm database -->
+
+if [ -f /opt/rocks/etc/ROCKS-GPG-KEY ]
+then
+	rpm --import /opt/rocks/etc/ROCKS-GPG-KEY
+fi
+
+<file name="/etc/rc.d/rocksconfig.d/post-01-rocks-dist" perms="755">
+#!/bin/bash
+
+#
+# saw a race condition where /etc/dhcpd.conf was zero-length, so before
+# rebuilding the distro, just run an update that will rebuild /etc/dhcpd.conf
+# and restart dhcpd (this will also restart other relevant rocks services,
+# e.g., named).
+#
+export PATH=$PATH:/opt/rocks/bin
+/opt/rocks/sbin/insert-ethers --update
+
+cd /export/home/install
+rm -rf rocks-dist
+
+/opt/rocks/bin/rocks-dist \
+	dist2mirror makecontrib dist &gt; /tmp/rocks-dist.debug 2&gt;&amp;1
+
+rm -f /etc/rc.d/rocksconfig.d/post-01-rocks-dist
+</file>
+
+</post>
+
+</kickstart> 
+

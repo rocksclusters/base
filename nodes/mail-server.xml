@@ -1,0 +1,86 @@
+<?xml version="1.0" standalone="no"?>
+
+<kickstart>
+
+  <description>
+  
+  Mail hub for the cluster. This node serves as the post-office
+  for the whole cluster.
+
+  </description>
+
+
+  <changelog>
+  $Log: mail-server.xml,v $
+  Revision 1.1  2007/12/10 21:28:33  bruno
+  the base roll now contains several elements from the HPC roll, thus
+  making the HPC roll optional.
+
+  this also includes changes to help build and configure VMs for V.
+
+  Revision 1.9  2005/02/16 00:40:04  mjk
+  graph cleanup
+
+  Revision 1.8  2004/09/11 04:25:09  fds
+  Frontend and computes have same 'from' email address
+
+  Revision 1.7  2004/04/26 21:48:22  fds
+  Being paranoid. Catch all mail to root@public even though this should not
+  occur. Such mail will stay on the root account of the frontend.
+
+  Revision 1.6  2004/04/23 08:17:09  fds
+  Simpler. Also allows sending to local recipients: mail from compute to
+  fds@local will now work too.
+
+  Revision 1.5  2004/04/21 07:34:37  fds
+  Keep mail to root@foo.com on the frontend. This retains mail bounce alerts
+  and such locally like we want it.
+
+  Revision 1.4  2004/04/21 06:50:56  fds
+  This was painful. If the frontend has a public domain foo.org I do not want it
+  to "accept" all mail for *@foo.org, since there will most likely be a better
+  mail server out there. This change tells the frontend postfix server to accept
+  mail only for *@local, and to send out anything else.  But sending from @local
+  will not get you very far, so we always rewrite our sending envelope address to
+  our public domain.
+
+  Revision 1.3  2004/03/08 23:14:19  fds
+  Here is Postfix.
+
+  Revision 1.2  2004/03/05 01:18:17  fds
+  Postfix tweaks.
+
+  Revision 1.1  2004/03/04 19:33:32  fds
+  Moving from sendmail to Postfix.
+
+  </changelog>
+
+<post>
+
+<file name="/etc/postfix/main.cf" mode="append">
+#
+# Rocks Postfix configuration for mail server.
+#
+mydomain = <var name="Kickstart_PrivateDNSDomain"/>
+mydestination = $mydomain, $myhostname, localhost.$mydomain
+mynetworks = <var name="Kickstart_PrivateNetwork"/>/<var name="Kickstart_PrivateNetmaskCIDR"/>, 127.0.0.0/8
+inet_interfaces = all
+append_dot_mydomain = no
+sender_canonical_maps = hash:/etc/postfix/sender-canonical
+recipient_canonical_maps = hash:/etc/postfix/recipient-canonical
+</file>
+
+<file name="/etc/postfix/sender-canonical">
+@<var name="Kickstart_PrivateDNSDomain"/> @<var name="Kickstart_PublicHostname"/>
+</file>
+
+<file name="/etc/postfix/recipient-canonical">
+root@<var name="Kickstart_PublicDNSDomain"/> root
+</file>
+
+/usr/sbin/postmap /etc/postfix/sender-canonical
+/usr/sbin/postmap /etc/postfix/recipient-canonical
+
+</post>
+
+</kickstart> 

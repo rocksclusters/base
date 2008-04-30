@@ -1,0 +1,163 @@
+<?xml version="1.0" standalone="no"?>
+
+<kickstart>
+
+  <description>
+
+  Rocks Development
+
+  </description>
+
+  <changelog>
+  $Log: rocks-devel.xml,v $
+  Revision 1.4  2008/03/14 21:26:41  bruno
+  extra package needed to build foundation-graphviz
+
+  Revision 1.3  2008/01/14 22:20:10  bruno
+  more for V
+
+  Revision 1.2  2007/12/20 21:58:59  bruno
+  fixes for RHEL 5 update 1
+
+  Revision 1.1  2007/12/10 21:28:33  bruno
+  the base roll now contains several elements from the HPC roll, thus
+  making the HPC roll optional.
+
+  this also includes changes to help build and configure VMs for V.
+
+  Revision 1.24  2005/03/12 00:53:17  fds
+  Added ganglia-pylib
+
+  Revision 1.23  2005/03/12 00:01:57  bruno
+  minor checkin
+
+  Revision 1.22  2005/02/16 00:40:04  mjk
+  graph cleanup
+
+  Revision 1.21  2005/02/01 23:37:10  mjk
+  remove roll attrs
+
+  Revision 1.20  2004/08/23 23:24:14  bruno
+  need for building rocks packages
+
+  Revision 1.19  2004/02/03 00:57:25  mjk
+  decolorize / derollize
+
+  Revision 1.18  2004/01/30 00:22:54  mjk
+  color hpc green
+
+  Revision 1.17  2003/12/09 22:13:57  bruno
+  closer
+
+  Revision 1.16  2003/11/13 15:55:11  bruno
+  added packages in order to build splash screens
+
+  Revision 1.15  2003/11/04 14:15:25  bruno
+  added support packages to rebuild graphviz
+
+  Revision 1.14  2003/10/30 21:09:14  bruno
+  more packages required to build rocks-boot
+
+  Revision 1.13  2003/10/23 02:01:25  fds
+  Needed for building rrdtool
+
+  Revision 1.12  2003/10/22 22:47:33  fds
+  Added atlas, moved syslinux
+
+  Revision 1.11  2003/10/22 20:55:33  fds
+  Needed to build rocks-boot
+
+  Revision 1.10  2003/10/20 22:02:33  fds
+  For bruno
+
+  Revision 1.9  2003/10/20 21:30:23  bruno
+  more support packages
+
+  Revision 1.8  2003/10/19 17:50:40  bruno
+  touchups for taroon
+
+  Revision 1.7  2003/10/16 22:21:17  fds
+  Kickstart graph changes for opteron.
+
+  Revision 1.6  2003/08/27 04:30:08  bruno
+  added new packages in order to build rocks-boot
+
+  Revision 1.5  2003/08/16 00:48:58  bruno
+  error in xml coding -- yet another bruno bug
+
+  Revision 1.4  2003/08/15 21:39:50  bruno
+  added rpm-python for building rolls
+
+  Revision 1.3  2003/08/15 18:21:46  bruno
+  added two packages in order to build syslinux
+
+  Revision 1.2  2003/08/14 19:51:38  bruno
+  added rrdtool-devel
+
+  Revision 1.1  2003/07/07 20:47:51  bruno
+  initial release
+
+  Revision 1.3  2003/03/12 18:22:15  bruno
+  linked in rocks-devel package and also included 'kernel-BOOT' package for
+  i386
+
+  Revision 1.2  2003/03/11 06:19:10  bruno
+  added 'kernel-BOOT' for i386 devel
+
+  Revision 1.1  2001/09/22 19:06:13  mjk
+  *** empty log message ***
+
+
+  </changelog>
+
+  <package arch="i386">nasm</package>
+  <package arch="i386, x86_64">netpbm-progs</package>
+
+  <package>tcl-devel</package>
+  <package>rpm-python</package>
+
+  <package>ghostscript</package>
+  <package>ghostscript-fonts</package>
+  <package>Omni</package>
+  <package>urw-fonts</package>
+
+  <package>bogl</package>
+  <package>bogl-devel</package>
+  <package>bogl-bterm</package>
+  <package>beecrypt-devel</package>
+  <package>atk-devel</package>
+  <package>glib2-devel</package>
+  <package>gtk2</package>
+  <package>pango-devel</package>
+  <package>gtk2-devel</package>
+  <package>fontconfig-devel</package>
+  <package>freetype-devel</package>
+  <package>anaconda</package>
+  <package>booty</package>
+  <package>busybox-anaconda</package>
+  <package>netpbm</package>
+  <package>libjpeg-devel</package>
+  <package>libpng-devel</package>
+  <package>tk-devel</package>
+  <package>cups-libs</package>
+  <package>ImageMagick</package>
+  <package>libpcap</package>
+  <package>intltool</package>
+  <package>mkinitrd-devel</package>
+  <package>pygobject2-devel</package>
+  <package>pycairo-devel</package>
+  <package>binutils-devel</package>
+  <package>libglade2-devel</package>
+  <package>libtool-ltdl</package>
+
+
+<post>
+ln -s /usr/share/latex2html /usr/lib/latex2html
+</post>
+
+<post>
+/sbin/chkconfig cups off
+</post>
+
+</kickstart> 
+

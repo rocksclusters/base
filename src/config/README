@@ -1,0 +1,18 @@
+#
+# $Id: README,v 1.1 2005/03/01 02:02:42 mjk Exp $
+#
+this package contains the support files used to configure (or reconfigure)
+compute nodes.
+
+the files in the 'bootdisk' directory are from the bootnet.img of the red hat
+distribution. to keep the 'bootdisk' directory current for future red hat
+releases, do:
+
+	- get a working kickstart boot floppy
+	- mount the floppy
+	- copy the minimal set of files to 'bootdisk'
+
+for red hat 6.2, the "minimal set of files" are:
+
+	initrd.img
+	vmlinuz

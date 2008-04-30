@@ -1,0 +1,23 @@
+<section id="source-access" xreflabel="Access to Rocks Source Code">
+<title> Access to Rocks Source Code </title>
+
+<para>
+To checkout the source:
+</para>
+
+<screen>
+put in mercurial stuff here
+</screen>
+
+
+<section id="read-write-source-access" xreflabel="Read/Write Access to the Source">
+<title>Read-Write Access to the Source</title>
+
+<para>
+To get write access to the head of the source tree, send a note to
+<computeroutput>source@rocksclusters.org</computeroutput>.
+</para>
+
+</section>
+
+</section>

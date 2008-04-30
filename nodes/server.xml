@@ -1,0 +1,37 @@
+<?xml version="1.0" standalone="no"?>
+
+<kickstart interface="public">
+
+	<description>
+	The 'server node' in the graph.
+
+	This file is used as a connection point for other XML
+	configuration nodes.
+	</description>
+
+        <copyright>
+        Copyright (c) 2000 - 2008 The Regents of the University of California.
+        All rights reserved. Rocks(r) v5.0 www.rocksclusters.org
+        </copyright>
+
+
+<package>roll-base-usersguide</package>
+<package>rocks-config-server</package>
+<package>rocks-admin</package>
+
+
+<post>
+
+<file name="/etc/rc.d/rocksconfig.d/post-50-insert-pci" perms="555">
+#!/bin/bash
+
+/opt/rocks/sbin/insert-pcis &gt; /dev/null 2&gt;&amp;1 
+</file>
+
+<!-- On servers, turn off auto reinstall -->
+/sbin/chkconfig rocks-grub off
+
+</post>
+
+</kickstart> 
+

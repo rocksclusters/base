@@ -1,0 +1,197 @@
+<?xml version="1.0" standalone="no"?>
+
+<kickstart>
+
+  <description>
+
+  Sets up the 411 Secure Information Service for clients.  The
+  411 service will automatically configure itself when a file 
+  is published.
+
+  Also puts all current 411 files from the frontend into the 
+  kickstart file for services that cannot tolerate a single
+  411 failure.
+
+  Note that 411 can never guarentee full absolute success at any
+  single time. It only offers consistancy over the long term.
+
+  </description>
+
+  <changelog>
+  $Log: 411-client.xml,v $
+  Revision 1.3  2007/12/10 21:28:33  bruno
+  the base roll now contains several elements from the HPC roll, thus
+  making the HPC roll optional.
+
+  this also includes changes to help build and configure VMs for V.
+
+  Revision 1.3  2006/01/16 06:49:09  mjk
+  fix python path for source built foundation python
+
+  Revision 1.2  2005/09/23 21:41:51  bruno
+  make sure the python code that is run in the post section and that
+  imports rocks python code, uses the rocks foundation.
+
+  Revision 1.1  2005/03/01 17:34:02  mjk
+  move 411 to hpc roll
+
+  Revision 1.1  2005/03/01 00:22:25  mjk
+  moved to base roll
+
+  Revision 1.10  2005/02/15 22:58:52  mjk
+  dtd is gone
+
+  Revision 1.9  2005/02/12 02:27:55  fds
+  411 second generation: safer, thanks to master-only RSA keypair; all files
+  are now signed for integrity. Faster for master, since we run the random
+  number generator less (only once per cluster lifetime rather than once per
+  encryption).  Keys are kept in /etc/411-security. Amen.
+
+  Revision 1.8  2004/08/10 19:05:42  fds
+  Moved to new security graph hierarchy.
+
+  Revision 1.7  2004/07/21 21:49:25  fds
+  Add Membership name as a default 411 group.
+
+  Revision 1.6  2004/04/30 20:35:45  fds
+  No blocking for 411 files at startup
+
+  Revision 1.5  2004/04/13 20:08:34  fds
+  Encrypted (not plain) 411 files in kickstart file. Decoded on compute
+  nodes locally. Turned off 411-Login-Files service.  Why not have initial
+  411 pull on appliance startup?
+  1. More http load on frontend, which often is already heavily loaded with
+  many installs.
+  2. Slows down boot time on computes.
+  3. If process fails, due to network partition or otherwise, important
+  components are not configured on first boot (sge).
+
+  Revision 1.4  2004/04/06 23:43:32  mjk
+  turn initial 411 pull back on
+
+  Revision 1.3  2004/03/30 03:57:00  fds
+  Dont go to the local apache server for the 411 file contents, by calling
+  the raw decrypt() of 411. Saves httpd accesses, and prevents memory leaks.
+  Especially useful for heavy reinstall activity.
+
+  Revision 1.2  2004/03/29 23:42:36  fds
+  Putting all current 411 files into compute node's kickstart file.
+
+  Revision 1.1  2004/03/08 21:01:23  mjk
+  *** empty log message ***
+
+  Revision 1.9  2004/02/03 20:00:35  mjk
+  decolorize
+
+  Revision 1.8  2004/01/30 04:53:42  mjk
+  colorize
+
+  Revision 1.7  2003/11/05 23:46:25  fds
+  Added 411-Login-Files service (waits for /etc/passwd, etc)
+
+  Revision 1.6  2003/10/30 02:34:40  fds
+  adjusted paths
+
+  Revision 1.5  2003/10/23 22:13:27  fds
+  Will improve convergence behavior of 411.
+
+  Revision 1.4  2003/08/14 17:56:01  fds
+  Using the setuid read-private-key utility.
+
+  Revision 1.3  2003/08/14 15:32:23  mjk
+  - Built Python2 for Itanic
+  - Root part is now 4GB
+  - Include openssl python tools for 411 on Itanic
+
+  Revision 1.2  2003/08/06 00:01:40  fds
+  Added 411 bootstrap service.
+
+  Revision 1.1  2003/07/24 19:14:10  fds
+  First design
+
+  </changelog>
+
+<post>
+
+mkdir -p /etc/411-security
+
+<!-- Only root can read the 411 shared key. -->
+<file name="/etc/411-security/shared.key" owner="root.root" perms="0400">
+<eval shell="sh">
+/opt/rocks/sbin/read-411-shared-key
+</eval>
+</file>
+
+<file name="/etc/411-security/master.pub" owner="root.root" perms="0444">
+<eval shell="sh">
+cat /etc/411-security/master.pub
+</eval>
+</file>
+
+<!-- Although the 411 service can spring to life autonomously, it 
+requires an alert to do so. We set the config file explicitly so we
+do not have to resend alerts for every new node in the cluster. -->
+<file name="/etc/411.conf">
+&lt;!-- Configuration file for the 411 Information Service --&gt;
+&lt;config&gt;
+&lt;master url="http://<var name='Kickstart_PrivateAddress'/>/411.d/"/&gt;
+&lt;group&gt;<var name='Node_Membership'/>&lt;/group&gt;
+&lt;/config&gt;
+</file>
+
+<!-- Write all 411 messages into ks file. -->
+mkdir -p /tmp/411.d
+
+<eval shell="/opt/rocks/bin/python" mode="xml">
+import os
+from xml.sax.saxutils import escape
+
+base411 = '/etc/411.d'
+
+for m in os.listdir(base411):
+	try:
+		filename = os.path.join(base411, m)
+		file = open(filename, 'r')
+		ciphertext = file.read()
+		file.close()
+		print '&lt;file name="/tmp/411.d/%s"&gt;' % (m)
+		for line in ciphertext.split('\n'):
+			print escape(line)
+		print '&lt;/file&gt;'
+	except:
+		pass
+	print
+</eval>
+
+</post>
+
+<!-- Decrypt 411 msgs on compute node -->
+<post arg="--interpreter=/opt/rocks/bin/python">
+import os
+import rocks.service411
+
+four11 = rocks.service411.Service411()
+four11.master = rocks.service411.Master('http://127.0.0.1/411.d/')
+
+base411 = '/tmp/411.d'
+
+for m in os.listdir(base411):
+	try:
+		filename = os.path.join(base411, m)
+		if os.path.isdir(filename):
+			continue
+		file = open(filename, 'r')
+		contents, meta = four11.decrypt(file.read())
+		file.close()
+		four11.write(contents,meta)
+	except:
+		pass
+
+</post>
+
+<post>
+rm -rf /tmp/411.d
+</post>
+
+</kickstart> 
+

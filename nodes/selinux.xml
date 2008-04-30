@@ -1,0 +1,40 @@
+<?xml version="1.0" standalone="no"?>
+
+<kickstart>
+
+
+<description>
+Configure SELinux
+</description>
+
+        <copyright>
+        Copyright (c) 2000 - 2008 The Regents of the University of California.
+        All rights reserved. Rocks(r) v5.0 www.rocksclusters.org
+        </copyright>
+
+<changelog>
+$Log: selinux.xml,v $
+Revision 1.3  2008/03/06 23:41:30  mjk
+copyright storm on
+
+Revision 1.2  2007/06/23 04:03:18  mjk
+mars hill copyright
+
+Revision 1.1  2005/03/12 00:05:47  bruno
+new files
+
+</changelog>
+
+
+<post>
+
+<!-- disable SELinux -->
+<file name="/etc/sysconfig/selinux">
+SELINUX=disabled
+</file>
+
+</post>
+
+
+</kickstart> 
+

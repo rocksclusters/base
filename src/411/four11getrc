@@ -1,0 +1,6 @@
+<?xml version="1.0" standalone="yes"?>
+
+<four11get>
+	<option name="pub" value="/etc/411-security/master.pub"/>
+	<option name="shared" value="/etc/411-security/shared.key"/>
+</four11get>

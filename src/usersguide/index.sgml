@@ -1,0 +1,93 @@
+<!-- 
+$Id: index.sgml,v 1.5 2008/04/04 21:45:12 bruno Exp $
+
+@Copyright@
+@Copyright@
+
+$Log: index.sgml,v $
+Revision 1.5  2008/04/04 21:45:12  bruno
+start of the doc restructuring
+
+Revision 1.4  2007/07/03 19:15:05  phil
+Darn it. Phil Checked in something when he didn't mean to. Revert to
+version 1.2 of each of these
+
+Revision 1.2  2007/06/26 19:49:24  phil
+First attempt at pxe first documentation
+
+Revision 1.1  2007/06/16 03:11:25  mjk
+builds with command reference
+
+-->
+
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook V3.1//EN" [
+
+<!ENTITY clusterinstall SYSTEM "clusterinstall/index.sgml">
+<!ENTITY % clusterinstall-entities SYSTEM "clusterinstall/entities.sgml">
+
+<!ENTITY customizing SYSTEM "customizing/index.sgml">
+<!ENTITY % customizing-entities SYSTEM "customizing/entities.sgml">
+
+<!ENTITY community SYSTEM "community/index.sgml">
+<!ENTITY % community-entities SYSTEM "community/entities.sgml">
+
+<!ENTITY appendix SYSTEM "appendix/index.sgml">
+<!ENTITY % appendix-entities SYSTEM "appendix/entities.sgml">
+
+<!ENTITY appendix-faq SYSTEM "appendix/faq/index.sgml">
+<!ENTITY % appendix-faq-entities SYSTEM "appendix/faq/entities.sgml">
+
+<!ENTITY % entities SYSTEM "entities.sgml">
+
+%clusterinstall-entities;
+%customizing-entities;
+%community-entities;
+%appendix-entities;
+%appendix-faq-entities;
+%entities;
+
+]>
+<book>
+
+<bookinfo>
+
+	<title>Base Roll: Users Guide</title>
+
+	<subtitle>
+		<inlinemediaobject>
+			<imageobject>
+				<imagedata fileref="images/rocks.png">
+			</imageobject>
+		</inlinemediaobject>
+	</subtitle>
+
+	<edition>Version &document_version;</edition>
+	<pubdate>&document_pubdate;</pubdate>
+	<copyright id="copyright" xreflabel="copyright">
+		<year>&document_year;</year>
+		<holder>&document_copyright;</holder>	
+	</copyright>
+
+	<releaseinfo>
+		<ulink url="roll-base-usersguide.pdf">(PDF version)</ulink>
+	</releaseinfo>
+
+	<legalnotice>
+		<para>
+		This document is subject to the Rocks License 
+		(see <xref linkend="rocks-copyright">).
+		</para>
+	</legalnotice>
+
+</bookinfo>
+
+&source_preface;
+&source_roll-overview;
+&clusterinstall;
+&customizing;
+&community;
+&source_admin-examples;
+&source_roll-commands;
+&appendix;
+
+</book>

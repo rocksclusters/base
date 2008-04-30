@@ -1,0 +1,103 @@
+<?xml version="1.0" standalone="no"?>
+
+
+<kickstart>
+
+  <description>
+
+  Setup the DHCP server for the cluster
+
+  </description>
+
+  <changelog>
+  $Log: dhcp-server.xml,v $
+  Revision 1.3  2007/12/10 21:28:33  bruno
+  the base roll now contains several elements from the HPC roll, thus
+  making the HPC roll optional.
+
+  this also includes changes to help build and configure VMs for V.
+
+  Revision 1.1  2005/03/04 01:40:08  mjk
+  massive graph cleanup
+
+  Revision 1.1  2005/03/01 00:22:26  mjk
+  moved to base roll
+
+  Revision 1.2  2005/02/15 22:58:52  mjk
+  dtd is gone
+
+  Revision 1.1  2004/03/08 21:01:23  mjk
+  *** empty log message ***
+
+  Revision 1.11  2004/02/03 20:00:35  mjk
+  decolorize
+
+  Revision 1.10  2004/01/30 04:53:42  mjk
+  colorize
+
+  Revision 1.9  2003/08/26 22:44:20  mjk
+  - File tag now takes "expr" attribute (command evaluation)
+  - Conversion of old code to file tags
+  - Added media-server (used to be server)
+  - Killed replace-server on the hpc roll
+  - Updated Server database membership (now a media-server)
+  - Added Public field to the membership table
+  - Insert-ethers only allows a subset of memberships (Public ones) to be
+    inserted.
+  - Added getArch() to Application class
+  - Kickstart trinity (kcgi,kpp,kgen) all updated self.arch initial value
+
+  Revision 1.8  2002/10/10 20:43:08  bruno
+  fixed dbreports
+
+  Revision 1.7  2002/10/03 18:30:17  mjk
+  add dbreport
+
+  Revision 1.6  2002/03/01 05:53:27  bruno
+  changed to DHCPDARGS
+
+  Revision 1.5  2001/10/31 00:35:10  bruno
+  rocks v2.1.1 updates
+
+  Revision 1.4  2001/10/11 21:33:40  bruno
+  initial release
+
+  Revision 1.3  2001/10/02 03:16:39  mjk
+  - Update to bruno's new auto-part stuff
+  - Doesn't work but checkin anyway
+
+  Revision 1.2  2001/09/05 00:27:17  mjk
+  main and packages section is correct for compute nodes
+
+  </changelog>
+
+  <package>dhcp</package>
+
+<post>
+
+<!-- tell dhcp just to listen to eth0 -->
+awk ' \
+	/^DHCPDARGS/ { \
+		printf("DHCPDARGS=\"eth0\"\n"); \
+		next; \
+	}  \
+ \
+	{ \
+		print $0; \
+	} ' /etc/sysconfig/dhcpd &gt; /tmp/dhcpd
+
+mv /tmp/dhcpd /etc/sysconfig/dhcpd
+
+<!-- dhcpd rpm was written by monkeys, add this missing file -->
+<file name="/var/lib/dhcp/dhcpd.leases"/>
+
+<!-- turn me on dead man -->
+/sbin/chkconfig dhcpd on
+
+<!-- configure the skeleton dhcpd.conf -->
+<file name="/etc/dhcpd.conf" expr="/opt/rocks/bin/dbreport dhcpd"/>
+
+</post>
+
+</kickstart> 
+

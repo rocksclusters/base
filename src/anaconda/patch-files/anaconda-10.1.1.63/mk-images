@@ -1,0 +1,1181 @@
+#!/bin/bash -x
+
+PATH=$PATH:/sbin:/usr/sbin
+IMAGEUUID=$(date +%Y%m%d%H%M)
+
+usage () {
+	echo "usage: mk-images <pkgsrc> <toplevel> <template> <imgdir> <buildarch> <productname> <version> [<productpath>]"
+    exit 0
+}
+
+DEBUG=""
+if [ "$1" == "--debug" ]; then
+    DEBUG="--debug"
+fi
+
+if [ -z "$1" -o -z "$2" -o -z "$3" -o -z "$4" -o -z "$5" -o -z "$6" -o -z "$7" ]; then usage; fi
+
+PRODUCT=$6
+VERSION=$7
+if [ -z "$8" ]; then
+    PRODUCTPATH="RedHat"
+else
+    PRODUCTPATH=$8
+fi
+
+TOPDIR=$(echo $0 | sed "s,/[^/]*$,,")
+if [ $TOPDIR = $0 ]; then
+    $TOPDIR="."
+fi
+
+TOPDIR=$(cd $TOPDIR; pwd)
+
+# Set, verify, and create paths
+    KERNELPATH=$1
+    TOPDESTPATH=$2
+    IMAGEPATH=$TOPDESTPATH/images
+    FULLMODPATH=/tmp/instimagemods.$$
+    FINALFULLMODPATH=$4/modules
+    INSTIMGPATH=$TOPDESTPATH/$PRODUCTPATH/base
+    INSTIMGTEMPLATE=$3
+    IMGPATH=$4
+    KERNELBASE=/tmp/updboot.kernel.$$
+    MODDEPS=$KERNELBASE/moddeps
+    MODMAPS=$KERNELBASE/modules.pcimap
+    USBMAPS=$KERNELBASE/modules.usbmap
+    BUILDARCH=$5
+
+    KERNELNAME=vmlinuz
+
+    if [ "$BUILDARCH" = "ia64" ]; then
+	KERNELDIR="/boot/efi/EFI/redhat"
+    else
+	KERNELDIR="/boot"
+    fi
+    
+    if [ "$BUILDARCH" = "sparc64" ]; then
+	BASEARCH=sparc
+    else
+	BASEARCH=$BUILDARCH
+    fi
+
+    # explicit block size setting for some arches (FIXME: we compose 
+    # ppc64-ish trees as ppc, so we have to set the "wrong" block size)
+    if [ "$BUILDARCH" = "sparc64" ]; then
+	CRAMBS="--blocksize 8192"
+    elif [ "$BUILDARCH" = "sparc" ]; then
+	CRAMBS="--blocksize 4096"
+    else
+	CRAMBS=""
+    fi
+
+    if [ ! -d "$1" ]; then
+	LATEST="rsh porkchop latest --arch $BUILDARCH"
+    else
+	LATEST=findPackage
+    fi
+
+    if [ $BUILDARCH = x86_64 -o $BUILDARCH = s390x ]; then
+	LIBDIR=lib64
+    else
+	LIBDIR=lib
+    fi
+
+    rm -rf $IMAGEPATH
+    rm -rf $FULLMODPATH
+    rm -rf $FINALFULLMODPATH
+    rm -rf $KERNELBASE
+    mkdir -p $IMAGEPATH
+    mkdir -p $FULLMODPATH
+    mkdir -p $FINALFULLMODPATH
+    mkdir -p $KERNELBASE
+    mkdir -p $INSTIMGPATH
+
+# Stuff that we need
+    TRIMPCITABLE=$IMGPATH/usr/lib/anaconda-runtime/trimpcitable
+    TRIMMODMAP=$IMGPATH/usr/lib/anaconda-runtime/trimmodmap
+    TRIMPCIIDS=$IMGPATH/usr/lib/anaconda-runtime/trimpciids
+    TRIMUSBMAP=$IMGPATH/usr/lib/anaconda-runtime/trimusbmap
+    GETKEYMAPS=$IMGPATH/usr/lib/anaconda-runtime/getkeymaps
+    KEYMAPS=/tmp/keymaps-$BUILDARCH.$$
+    SCREENFONT=$IMGPATH/usr/lib/anaconda-runtime/screenfont-${BASEARCH}.gz
+    GETMODDEPS=$IMGPATH/usr/lib/anaconda-runtime/moddeps
+    MODLIST=$IMGPATH/usr/lib/anaconda-runtime/modlist
+    MODINFO=$IMGPATH/usr/lib/anaconda-runtime/loader/module-info
+    FILTERMODDEPS=$IMGPATH/usr/lib/anaconda-runtime/filtermoddeps
+    LOADERBINDIR=$IMGPATH/usr/lib/anaconda-runtime/loader
+    BOOTDISKDIR=$IMGPATH/usr/lib/anaconda-runtime/boot
+    LANGTABLE=$IMGPATH/usr/lib/anaconda/lang-table
+    PCITABLE=$IMGPATH/usr/share/hwdata/pcitable
+    PCIIDS=$IMGPATH/usr/share/hwdata/pci.ids
+    CACHE=$KERNELBASE/.cache
+    MODULESUSED=$KERNELBASE/modules-used
+
+    touch $MODULESUSED
+
+    REQUIREMENTS="$TRIMPCITABLE $TRIMMODMAP $TRIMPCIIDS $PCITABLE $PCIIDS $GETMODDEPS $MODINFO
+		  $FILTERMODDEPS $LANGTABLE $GETKEYMAPS $TRIMUSBMAP"
+
+    dieLater=
+    for n in $REQUIREMENTS; do
+	if [ ! -f $n ]; then
+	    echo "$n doesn't exist"
+	    dieLater=1
+	fi
+    done
+
+    for n in $BOOTDISKDIR; do
+	if [ ! -d $n ]; then
+	    echo "$n doesn't exist"
+	    dieLater=1
+	fi
+    done
+
+    if [ -n "$dieLater" ]; then exit 1; fi
+
+    if [ "$BUILDARCH" != "s390" -a "$BUILDARCH" != "s390x" ]; then
+       # go ahead and create the keymaps so we only have to do it once
+       if [ -f $IMGPATH/usr/lib/anaconda-runtime/keymaps-override-$BUILDARCH ]; then
+	   echo "Found keymap override, using it"
+	   cp $IMGPATH/usr/lib/anaconda-runtime/keymaps-override-$BUILDARCH $KEYMAPS
+       else
+	   echo "Running: $GETKEYMAPS $BUILDARCH $KEYMAPS $IMGPATH"
+	   $GETKEYMAPS $BUILDARCH $KEYMAPS $IMGPATH
+	   if [ $? != 0 ]; then
+	       echo "Unable to create keymaps and thus can't create initrd."
+	       exit 1
+	   fi
+       fi
+    fi
+ 
+findPackage() {
+    dir=$1
+    name=$2
+    
+    for n in $dir/$name*{$KERNELARCH,noarch}.rpm; do
+	thisName=$(rpm --nodigest --nosignature --qf '%{NAME}' -qp $n)
+	if [ -z "$thisName" ]; then
+	    continue
+	fi
+	if [ $thisName = $name ]; then
+	    echo $n
+	    return
+	fi
+    done
+
+    echo "cannot find package $name in path $dir" >&2
+}
+
+findmodule () {
+    if [ ! -f $CACHE ]; then
+        find $KERNELROOT/lib/modules/ > $CACHE
+    fi
+    
+    grep "/$1\.ko" $CACHE
+}
+
+rundepmod () {
+    what=$1
+    final=$2
+
+    $FAKEARCH /sbin/depmod -a -F $KERNELROOT/boot/System.map-$version \
+            -b $KERNELROOT $version
+    mv $KERNELROOT/lib/modules/$version/modules.pcimap $MODMAPS
+    mv $KERNELROOT/lib/modules/$version/modules.usbmap $USBMAPS
+
+    cat $KERNELROOT/lib/modules/$version/modules.dep | $FILTERMODDEPS > $final 
+}
+
+getmoddeps () {
+    what=$1
+    final=$2
+
+    for mod in $what ; do
+	mod=$(echo $mod | sed 's/\.ko  */|^/g;s/\.ko$//;s/.*\///')
+	egrep $mod $MODDEPS >> $final.foo
+    done
+    mv $final.foo $final
+}
+
+padfile () {
+    PS_FILE=$1
+    PS_SIZE=$2
+
+    size=`cat $PS_FILE | wc -c`
+    filler=`expr $PS_SIZE "*" 1024 - $size`
+    dd if=/dev/zero bs=$filler count=1 >> $PS_FILE 2> /dev/null
+}
+
+intcopymodules () {
+    dir=$2
+
+    for n in $1; do
+	m=$(findmodule $n)
+	if [ -z "$m" ]; then
+            [ -n "$DEBUG" ] && echo "Module $n not found in kernel rpm" >&2
+        else 
+	    echo $n >> $MODULESUSED
+	    for o in $m ; do 
+		echo $n
+		ver=$(echo $o |cut -d / -f 7)
+		myarch=$(echo $o |cut -d / -f 4)
+		if ! [ -d $dir/$ver/$myarch ] ; then mkdir -p $dir/$ver/$myarch ; fi
+		if ! cp $o $dir/$ver/$myarch; then
+		    echo "Failed to copy $o to $dir/$ver/$myarch (for module $n)" >&2
+		fi
+	    done
+        fi
+    done
+}
+
+# This loops to make sure it resolves dependencies of dependencies of...
+resdeps () {
+    items="$*"
+
+    before=1
+    after=2
+
+    while [ $before != $after ]; do
+	before=`echo $items | wc -c`
+
+	if [ $? != "0" ] ; then
+	    kill -9 $$
+	fi	
+	list=`$GETMODDEPS -m $MODDEPS $items`
+	items=$(for n in $items $list; do echo $n; done | sort -u)
+	after=`echo $items | wc -c`
+    done
+
+    echo $items
+}
+
+expandModuleSet() {
+    SET=""
+    for name in $1; do
+	char=$(echo $name | cut -c1)
+        if [ $char = '=' ]; then
+	    NAME=$(echo $name | cut -c2-)
+	    SET="$SET $($MODLIST --modinfo-file $MODINFO $NAME)"
+	elif [ $char = '+' ]; then
+	    NAME=$(echo $name | cut -c2-)
+
+	    # all of the modules of this type
+	    $MODLIST --modinfo-file $MODINFO $NAME > /tmp/emsAll.$$
+	    # the modules used that are of this type
+	    sort -u $MODULESUSED | cat - /tmp/emsAll.$$ | sort | 
+		    uniq -d > /tmp/emsUsed.$$
+	    # the modules that are of this type, but not used
+	    SET="$SET $(cat /tmp/emsAll.$$ /tmp/emsUsed.$$ | sort | uniq -u)"
+
+	    rm -f /tmp/emsAll.$$ /tmp/emsUsed.$$
+	else
+	    SET="$SET $name"
+	fi
+    done
+
+    echo $SET
+}
+
+makemoduleball() {
+    unset MMB_DD
+    MMB_MODINFO="module-info"
+    MMB_NAME="modules.cgz"
+
+    while [ x$(echo $1 | cut -c1-2) = x"--" ]; do
+	if [ "$1" = "--dd" ]; then
+	    MMB_DD="$2"
+	    shift; shift
+	    MMB_MODINFO="modinfo"
+	    continue
+	elif [ "$1" = "--name" ]; then
+	    MMB_NAME="$2"
+	    shift; shift
+	    continue
+	fi
+	echo "unknown option passed to $0"
+	exit 1
+    done
+
+    MMB_DIR=$1
+    MMB_MODULESET=$(resdeps $2)
+
+    rm -rf $MMB_DIR/modules $MMB_DIR/$MMB_NAME $MMB_DIR/modules.dep \
+	   $MMB_DIR/modules.pcimap $MMB_DIR/pcitable $MMB_DIR/$MMB_MODINFO \
+	   $MMB_DIR/pci.ids
+    mkdir -p $MMB_DIR/modules
+
+    MMB_MODULESET=$(intcopymodules "$MMB_MODULESET" $MMB_DIR/modules)
+
+    pushd $MMB_DIR/modules > /dev/null
+
+    $MODLIST --modinfo-file $MODINFO --ignore-missing --modinfo \
+	$MMB_MODULESET > ../$MMB_MODINFO
+
+    getmoddeps "$(find . -name *.ko)" ../modules.dep
+
+    # create the pcitable
+    $TRIMPCITABLE ignore $(find . -name *.ko -exec basename {} \;) < $PCITABLE > ../pcitable
+    
+    # create the modules.pcimap
+    $TRIMMODMAP $PCITABLE $(find . -name *.ko -exec basename {} \;) < $MODMAPS > ../modules.pcimap
+
+    # create the modules.usbmap
+    $TRIMUSBMAP $(find . -name *.ko -exec basename {} \;) < $USBMAPS > ../modules.usbmap
+    # remove a zero-byte modules.usbmap
+    if [ "$(ls -s ../modules.usbmap |cut -f 1 -d ' ')" = "0" ]; then
+	rm -f ../modules.usbmap
+    fi
+    # create the pci.ids
+    awk '!/^(\t\t|#)/ { print ;if ($0 == "ffff  Illegal Vendor ID") nextfile; }' < $PCIIDS | \
+      $TRIMPCIIDS ../pcitable ../modules.pcimap > ../pci.ids
+
+    if [ -n "$MMB_DD" ]; then
+	echo $MMB_DD > $MMB_DIR/rhdd
+    fi
+
+    find . -type f | cpio --quiet -H crc -o | gzip -9 > ../$MMB_NAME
+    cd ..
+    rm -rf modules
+    chmod 644 *
+    popd  > /dev/null
+}
+
+makemainmodules() {
+    modlist=`expandModuleSet "$1"`
+
+    if [ -n "$2" ]; then
+	extraargs="--name $2"
+    fi
+
+    rm -rf $FULLMODPATH
+    rm -rf $FINALFULLMODPATH
+
+    if [ "$BUILDARCH" = "s390" -o "$BUILDARCH" = "s390x" ]; then
+       mkdir -p $KERNELROOT/lib/modules/misc
+       find $KERNELROOT/lib/modules/*/kernel/drivers/s390/ -name "*.ko" \
+          -exec cp -f {} $KERNELROOT/lib/modules/misc \;
+    fi
+    makemoduleball $extraargs $FULLMODPATH "$modlist"
+    cp -ar $FULLMODPATH $FINALFULLMODPATH
+    rm -rf $FULLMODPATH
+}
+
+makeproductfile() {
+    root=$1
+
+    rm -f $root/.buildstamp
+    echo $IMAGEUUID > $root/.buildstamp
+    echo $PRODUCT >> $root/.buildstamp
+    echo $VERSION >> $root/.buildstamp
+    echo $PRODUCTPATH >> $root/.buildstamp
+}
+
+setupShellEnvironment() {
+    # setup password/group entries
+    cat > $MBD_DIR/etc/passwd << EOF
+root::0:0::/:/sbin/loader
+debug::0:0:debug shell:/:/bin/bash
+sshd:x:74:74:Privilege-separated SSH:/var/empty/sshd:/sbin/nologin
+EOF
+    echo "sshd:x:74:" >> $MBD_DIR/etc/group
+    echo "telnet          23/tcp" > $MBD_DIR/etc/services 
+    echo "tcp     6       TCP" > $MBD_DIR/etc/protocols
+
+    # PAM configuration
+    for i in pam_limits.so pam_env.so pam_unix.so pam_deny.so; do
+       cp -f $IMGPATH/$LIBDIR/security/$i $MBD_DIR/$LIBDIR/security
+    done
+    
+    cp -f $IMGPATH/etc/pam.d/other $MBD_DIR/etc/pam.d
+    cat > $MBD_DIR/etc/pam.d/login << EOF
+#%PAM-1.0
+auth        required      pam_env.so
+auth        sufficient    pam_unix.so likeauth nullok
+auth        required      pam_deny.so
+account     required      pam_unix.so
+password    sufficient    pam_unix.so nullok use_authtok md5 shadow
+password    required      pam_deny.so
+session     required      pam_limits.so
+session     required      pam_unix.so
+EOF
+    cp -f $MBD_DIR/etc/pam.d/login $MBD_DIR/etc/pam.d/sshd
+    cp -f $MBD_DIR/etc/pam.d/login $MBD_DIR/etc/pam.d/remote
+
+    cp -f $IMGPATH/etc/security/{limits.conf,pam_env.conf} $MBD_DIR/etc/security/
+
+    # setup xinetd for telnet
+    cp -f $IMGPATH/etc/xinetd.conf $MBD_DIR/etc/xinetd.conf
+    mkdir -p $MBD_DIR/etc/xinetd.d
+    cat > $MBD_DIR/etc/xinetd.d/telnet <<EOF
+service telnet
+{
+        flags           = REUSE
+        socket_type     = stream
+        wait            = no
+        user            = root
+        server          = /sbin/in.telnetd
+        log_on_failure  += USERID
+        disable         = no
+}
+EOF
+
+    # key generation takes ages on s390, you really don't want this for every
+    # installation attempt. These are NOT the keys of the installed system!
+    mkdir -m 0700 -p $MBD_DIR/etc/ssh
+    echo -n "Generating SSH1 RSA host key: "
+    /usr/bin/ssh-keygen -q -t rsa1 -f $MBD_DIR/etc/ssh/ssh_host_key \
+                        -C '' -N '' >&/dev/null
+    echo
+    echo -n "Generating SSH2 RSA host key: "
+    /usr/bin/ssh-keygen -q -t rsa -f $MBD_DIR/etc/ssh/ssh_host_rsa_key \
+                        -C '' -N '' >&/dev/null
+    echo
+    echo -n "Generating SSH2 DSA host key: "
+    /usr/bin/ssh-keygen -q -t dsa -f $MBD_DIR/etc/ssh/ssh_host_dsa_key \
+                        -C '' -N '' >&/dev/null
+    echo
+    (cd $MBD_DIR/etc/ssh; \
+        chmod 600 ssh_host_key ssh_host_rsa_key ssh_host_dsa_key; \
+        chmod 644 ssh_host_key.pub ssh_host_rsa_key.pub ssh_host_dsa_key.pub; )
+
+
+    cat > $MBD_DIR/etc/ssh/sshd_config <<EOF
+Port 22
+HostKey /etc/ssh/ssh_host_key
+HostKey /etc/ssh/ssh_host_rsa_key
+HostKey /etc/ssh/ssh_host_dsa_key
+PermitRootLogin yes
+IgnoreRhosts yes
+StrictModes yes
+X11Forwarding yes
+X11DisplayOffset 10
+PrintMotd yes
+XAuthLocation /sbin/xauth
+KeepAlive yes
+SyslogFacility AUTHPRIV
+RSAAuthentication yes
+PasswordAuthentication yes
+PermitEmptyPasswords yes
+PermitUserEnvironment yes
+EOF
+    chmod 600 $MBD_DIR/etc/ssh/sshd_config
+
+    # copy in the binaries
+    cp -f $IMGPATH/usr/bin/login $MBD_DIR/sbin/login
+    cp -f $IMGPATH/usr/sbin/sshd $MBD_DIR/sbin/sshd
+    cp -f $IMGPATH/usr/sbin/xinetd $MBD_DIR/sbin/xinetd
+    cp -f $IMGPATH/usr/sbin/in.telnetd $MBD_DIR/sbin/in.telnetd
+    cp -f $IMGPATH/usr/bin/bash $MBD_DIR/sbin/bash
+    cp -f $IMGPATH/usr/bin/busybox $MBD_DIR/sbin/busybox
+    
+    # make some symlinks
+    ln -sf bash $MBD_DIR/sbin/sh
+    (cd $MBD_DIR/sbin;
+    	set $(./busybox 2>&1| awk '/^\t([[:alnum:]_\[]+,)+/' | sed 's/,//g' | sed 's/ +//');
+    	while [ -n "$1" ]; do
+    	      if [ $1 != "busybox" -a $1 != "sh" ]; then
+              	 # if file doesnt already exist, link to busybox
+		   if [ ! -f "$1" ]; then
+	    	      ln -sf ./busybox $1
+		   else
+		      [ -n "$DEBUG" ] && echo "Overriding busybox version of $1"
+		   fi
+    	      fi
+    	      shift
+	 done )
+
+    # and copy libraries too
+    mkdir -p $MBD_DIR/$LIBDIR
+    for lib in $IMGPATH/$LIBDIR/libc.so* \
+	       $IMGPATH/$LIBDIR/libc-*.so* \
+       	       $IMGPATH/$LIBDIR/ld-*.so* \
+       	       $IMGPATH/$LIBDIR/ld.so* \
+       	       $IMGPATH/$LIBDIR/ld64.so* \
+	       $IMGPATH/$LIBDIR/libtermcap.so* \
+               $IMGPATH/$LIBDIR/libpam.so* \
+    	       $IMGPATH/$LIBDIR/libdl.so* \
+    	       $IMGPATH/$LIBDIR/libdl-*.so* \
+	       $IMGPATH/$LIBDIR/libnss_files* \
+	       $IMGPATH/$LIBDIR/libnsl* \
+	       $IMGPATH/$LIBDIR/libutil.so* \
+	       $IMGPATH/$LIBDIR/libutil-*.so* \
+	       $IMGPATH/$LIBDIR/libcrypt*so* \
+	       $IMGPATH/$LIBDIR/libselinux*so* \
+	       $IMGPATH/$LIBDIR/libsepol*so* \
+	       $IMGPATH/$LIBDIR/libattr*so* \
+	       $IMGPATH/$LIBDIR/libaudit*so* \
+	       $IMGPATH/$LIBDIR/libresolv.so* \
+	       $IMGPATH/$LIBDIR/libresolv-*.so* \
+	       $IMGPATH/$LIBDIR/libm.so* \
+	       $IMGPATH/$LIBDIR/libm-*.so* \
+	       $IMGPATH/usr/$LIBDIR/libz.so* \
+	       $IMGPATH/$LIBDIR/libssl* \
+	       $IMGPATH/$LIBDIR/libcom_err* \
+	       $IMGPATH/$LIBDIR/libe2p* \
+	       $IMGPATH/$LIBDIR/libuuid* \
+	       $IMGPATH/usr/$LIBDIR/libwrap*.so* \
+               $IMGPATH/usr/X11R6/$LIBDIR/libX11.so* \
+	       $IMGPATH/usr/X11R6/$LIBDIR/libXmuu.so* \
+	       $IMGPATH/usr/X11R6/$LIBDIR/libXext.so* \
+	       $IMGPATH/usr/X11R6/$LIBDIR/libXt.so* \
+	       $IMGPATH/usr/X11R6/$LIBDIR/libSM.so* \
+	       $IMGPATH/usr/X11R6/$LIBDIR/libICE.so* ; do
+	if [ -e $lib ]; then cp -df $lib $MBD_DIR/$LIBDIR/ ; fi
+    done 
+
+    mkdir -p $MBD_DIR/usr/$LIBDIR
+    for lib in $IMGPATH/usr/$LIBDIR/libkrb5.so* \
+	       $IMGPATH/usr/$LIBDIR/libgssapi_krb5.so* \
+	       $IMGPATH/usr/$LIBDIR/libk5crypto.so* \
+	       $IMGPATH/usr/$LIBDIR/libcom_err.so* ; do
+	if [ -e $lib ]; then cp -df $lib $MBD_DIR/usr/$LIBDIR/ ; fi
+    done 
+}
+
+makeinitrd() {
+    EXTRAINITRDPATH=""
+    PCMCIA=""
+    INITRDSIZE=""
+    KEEP=""
+    PADSIZE=""
+    LOADERBIN=""
+    INITRDMODULES=""
+    MODULEBALLNAME="modules.cgz"
+    MYLANGTABLE=$LANGTABLE
+    MYLOADERTR=loader.tr
+    BOGL=yes
+    while [ x$(echo $1 | cut -c1-2) = x"--" ]; do
+	if [ $1 = "--initrdto" ]; then
+	    EXTRAINITRDPATH=$2
+	    shift; shift
+	    continue
+	elif [ $1 = "--pcmcia" ]; then
+	    PCMCIA=yes
+	    shift
+	    continue
+	elif [ $1 = "--keep" ]; then
+	    KEEP=yes
+	    shift
+	    continue
+	elif [ $1 = "--initrdsize" ]; then
+	    INITRDSIZE=$2
+	    shift; shift
+	    continue
+	elif [ $1 = "--padsize" ]; then
+	    PADSIZE=$2
+	    shift; shift
+	    continue
+	elif [ $1 = "--loaderbin" ]; then
+	    LOADERBIN=$2
+	    shift; shift
+	    continue
+	elif [ $1 = "--modules" ]; then
+	    INITRDMODULES=$2
+	    shift; shift
+	    continue
+	elif [ $1 = "--moduleballname" ]; then
+	    MODULEBALLNAME=$2
+	    shift; shift
+	    continue
+	elif [ $1 = "--nobogl" ]; then
+	    BOGL=""
+	    shift
+	    continue
+	fi
+	echo "Unknown option passed to makeinitrd"
+	exit 1
+    done
+    if [ -z "$LOADERBIN" ]; then
+	echo "no loader binary specified!" >&2
+	exit 1
+    fi
+    if [ -z "$INITRDMODULES" ]; then
+	echo "warning: no loader modules specified!" >&2
+    fi
+    if [ -z "$INITRDSIZE" ]; then
+	echo "I don't know how big to make the initrd image!" >&2
+	exit 1
+    fi
+
+    MBD_DIR=/tmp/makebootdisk.dir.$$
+    MBD_FSIMAGE=/tmp/makebootdisk.initrdimage.$$
+    MBD_MNTPOINT=/tmp/makebootdisk.mount.$$
+    MBD_TMPIMAGE=/tmp/makebootdisk.image.$$
+    MBD_BOOTTREE=/tmp/makebootdisk.tree.$$
+
+    rm -rf $MBD_DIR MBD_FSIMAGE
+    mkdir -p $MBD_DIR/modules
+    mkdir -p $MBD_DIR/sbin
+    mkdir -p $MBD_DIR/dev/pts
+    mkdir -p $MBD_DIR/dev/input
+    mkdir -p $MBD_DIR/etc
+    mkdir -p $MBD_DIR/proc
+    mkdir -p $MBD_DIR/selinux
+    mkdir -p $MBD_DIR/sys
+    mkdir -p $MBD_DIR/tmp
+    mkdir -p $MBD_DIR/etc/terminfo/{a,b,d,l,s,v,x}
+    mkdir -p $MBD_DIR/var/state
+    mkdir -p $MBD_DIR/var/run
+    mkdir -p $MBD_DIR/var/lock/rpm
+
+    if [ "$BUILDARCH" = "ppc" -o "$BUILDARCH" = "ppc64" ]; then
+	mkdir -p $MBD_DIR/dev/iseries
+    fi
+
+    if [ "$BUILDARCH" = "s390" -o "$BUILDARCH" = "s390x" ]; then
+	mkdir -m 111 -p $MBD_DIR/var/empty/sshd
+	mkdir -p $MBD_DIR/etc/{pam.d,security}
+	mkdir -p $MBD_DIR/$LIBDIR/security
+	cp $IMGPATH/$LIBDIR/libpam_misc.so.0.* $MBD_DIR/$LIBDIR/libpam_misc.so.0
+	ln -s /tmp $MBD_DIR/var/state/xkb
+	cp $IMGPATH/usr/X11R6/bin/xauth $MBD_DIR/sbin/xauth
+        cp $IMGPATH/usr/sbin/cmsfs* $MBD_DIR/sbin/
+    fi
+
+    if [ -n "$INITRDMODULES" ]; then
+	MODSET=`expandModuleSet "$INITRDMODULES"`
+        makemoduleball --name $MODULEBALLNAME $MBD_DIR/modules "$MODSET"
+    fi
+
+    cat > $MBD_DIR/etc/passwd << EOF
+    root::0:0:root:/:/bin/bash
+EOF
+
+    # set up the arch bits
+    echo $arch > $MBD_DIR/etc/arch
+
+    install -s -m 755 $LOADERBINDIR/$LOADERBIN $MBD_DIR/sbin/loader
+    if [ "$BUILDARCH" != "s390" -a "$BUILDARCH" != "s390x" ]; then
+	install -s -m 755 $LOADERBINDIR/init $MBD_DIR/sbin
+	ln -s ./init $MBD_DIR/sbin/shutdown
+	ln -s ./init $MBD_DIR/sbin/halt
+	ln -s ./init $MBD_DIR/sbin/poweroff
+    else
+	install -s -m 755 $LOADERBINDIR/shutdown $MBD_DIR/sbin/shutdown
+	install -m 755 $IMGPATH/usr/lib/anaconda-runtime/loader/linuxrc.s390 $MBD_DIR/sbin/init
+	install -m 755 $IMGPATH/usr/sbin/dasdfmt $MBD_DIR/sbin/dasdfmt
+    fi
+
+    if [ "$BUILDARCH" != "s390" -a "$BUILDARCH" != "s390x" ]; then
+       install -m 644 $KEYMAPS $MBD_DIR/etc/keymaps.gz
+       install -m 644 $SCREENFONT $MBD_DIR/etc/screenfont.gz
+    fi
+    install -m 644 $MYLANGTABLE $MBD_DIR/etc/lang-table
+    
+    install -m 644 $LOADERBINDIR/$MYLOADERTR $MBD_DIR/etc/loader.tr
+    for i in a/ansi d/dumb l/linux s/screen v/vt100 v/vt100-nav v/vt102 x/xterm x/xterm-color b/bterm g/gnome ; do
+	[ -f $IMGPATH/usr/share/terminfo/$i ] && \
+	  install -m 644 $IMGPATH/usr/share/terminfo/$i $MBD_DIR/etc/terminfo/$i
+    done
+
+    makeproductfile $MBD_DIR
+
+    if [ -n "$BOGL" ]; then
+	install -m 644 $LOADERBINDIR/font.bgf.gz $MBD_DIR/etc
+    fi
+
+    if [ -n "$PCMCIA" ]; then
+	mkdir -p $MBD_BOOTTREE/etc
+	cp -a $KERNELROOT/etc/pcmcia $MBD_DIR/etc
+    fi
+
+    for n in insmod rmmod modprobe; do
+	ln -s loader $MBD_DIR/sbin/$n
+    done
+
+    ln -s /usr/bin/sh $MBD_DIR/sbin/sh
+    ln -s /sbin/init $MBD_DIR/linuxrc
+    ln -s /proc/mounts $MBD_DIR/etc/mtab
+    ln -s sbin $MBD_DIR/bin
+    ln -s /usr/bin/echo $MBD_DIR/bin/echo
+
+    awk '{ printf("mknod %s/dev/%s %s %s %s\n", $1, $2, $3, $4, $5);
+	   printf("chmod %s %s/dev/%s\n", $6, $1, $2);
+	   printf("chown %s %s/dev/%s\n", $7, $1, $2); 
+	 }' <<EOF | sh
+	$MBD_DIR console c 5 1 600 root:root
+	$MBD_DIR ttyS0 c 4 64 600 root:root
+	$MBD_DIR ttyS1 c 4 65 600 root:root
+	$MBD_DIR ttyS2 c 4 66 600 root:root
+	$MBD_DIR ttyS3 c 4 67 600 root:root
+	$MBD_DIR psaux c 10 1 644 root:root
+	$MBD_DIR null c 1 3 666 root:root
+	$MBD_DIR zero c 1 5 666 root:root
+	$MBD_DIR md0 b 9 0 644 root:root
+	$MBD_DIR mem c 1 1 600 root:root
+	$MBD_DIR ram b 1 1 640 root:root
+	$MBD_DIR ptmx c 5 2 666 root:root
+	$MBD_DIR tty  c 5 0 666 root:root
+	$MBD_DIR tty0 c 4 0 600 root:tty
+	$MBD_DIR tty1 c 4 1 600 root:tty
+	$MBD_DIR tty2 c 4 2 600 root:tty
+	$MBD_DIR tty3 c 4 3 600 root:tty
+	$MBD_DIR tty4 c 4 4 600 root:tty
+	$MBD_DIR tty5 c 4 5 600 root:tty
+	$MBD_DIR tty6 c 4 6 600 root:tty
+	$MBD_DIR tty7 c 4 7 600 root:tty
+	$MBD_DIR tty8 c 4 8 600 root:tty
+	$MBD_DIR tty9 c 4 9 600 root:tty
+	$MBD_DIR fb0 c 29 0 600 root:tty
+	$MBD_DIR fb1 c 29 32 600 root:tty
+	$MBD_DIR fb2 c 29 64 600 root:tty
+	$MBD_DIR fb3 c 29 96 600 root:tty
+	$MBD_DIR fb4 c 29 128 600 root:tty
+	$MBD_DIR fb5 c 29 160 600 root:tty
+	$MBD_DIR fb6 c 29 192 600 root:tty
+	$MBD_DIR fb7 c 29 224 600 root:tty
+	$MBD_DIR openprom c 10 139 644 root:root
+	$MBD_DIR sunmouse c 10 6 644 root:root
+	$MBD_DIR kbd c 11 0 644 root:root
+	$MBD_DIR ptyp0 c 2 0 644 root:root
+	$MBD_DIR ttyp0 c 3 0 644 root:root
+	$MBD_DIR ttyp1 c 3 1 644 root:root
+	$MBD_DIR ttyp2 c 3 2 644 root:root
+	$MBD_DIR ttyp3 c 3 3 644 root:root
+	$MBD_DIR ttyp4 c 3 4 644 root:root
+	$MBD_DIR ttyp5 c 3 5 644 root:root
+	$MBD_DIR ttyp6 c 3 6 644 root:root
+	$MBD_DIR ttyp7 c 3 7 644 root:root
+	$MBD_DIR ttyp8 c 3 8 644 root:root
+	$MBD_DIR ttyp9 c 3 9 644 root:root
+	$MBD_DIR agpgart c 10 175 664 root:root
+	$MBD_DIR input/mice c 13 63 664 root:root
+	$MBD_DIR fd0 b 2 0 644 root:root
+	$MBD_DIR fd1 b 2 1 644 root:root
+	$MBD_DIR sg0 c 21 0 666 root:root
+	$MBD_DIR st0 c 9 0 666 root:root
+	$MBD_DIR nst0 c 9 128 666 root:root
+	$MBD_DIR random c 1 8 644 root:root
+	$MBD_DIR urandom c 1 9 644 root:root
+	$MBD_DIR nvram c 10 144 644 root:root
+	$MBD_DIR adb c 56 0 644 root:root
+        $MBD_DIR rtc c 10 135 644 root:root
+EOF
+    ln -s fb0 $MBD_DIR/dev/fb
+
+    # s390 console fun
+    if [ "$BUILDARCH" = "s390" -o "$BUILDARCH" = "s390x" ]; then
+	for i in `seq 2 9`; do
+	    rm -f $MBD_DIR/dev/tty$i
+	    ln -s console $MBD_DIR/dev/tty$i
+	done
+    fi
+
+    # s390/s390x need sshd/telnet setup
+    if [ "$BUILDARCH" = "s390" -o "$BUILDARCH" = "s390x" ]; then
+	setupShellEnvironment
+    fi
+
+    # weird ppc consoles
+    if [ "$BUILDARCH" = "ppc" -o "$BUILDARCH" = "ppc64" ]; then
+	mknod $MBD_DIR/dev/hvsi0 c 229 128
+	mknod $MBD_DIR/dev/hvsi1 c 229 129
+	mknod $MBD_DIR/dev/hvsi2 c 229 130
+	mknod $MBD_DIR/dev/hvc0 c 229 0
+	chown root:root $MBD_DIR/dev/hvsi0 $MBD_DIR/dev/hvsi1 $MBD_DIR/dev/hvsi2 $MBD_DIR/dev/hvc0
+	chmod 644 $MBD_DIR/dev/hvsi0 $MBD_DIR/dev/hvsi1 $MBD_DIR/dev/hvsi2 $MBD_DIR/dev/hvc0
+    fi
+
+    # weird ia64 consoles
+    if [ "$BUILDARCH" = "ia64" ]; then
+	# SGI Altix
+	mknod $MBD_DIR/dev/ttySG0 c 204 40
+	chown root:root $MBD_DIR/dev/ttySG0
+	chmod 644 $MBD_DIR/dev/ttySG0
+    fi
+
+    # weird xen console
+    if [ "$BUILDARCH" = "i386" -o "$BUILDARCH" = "x86_64" -o "$BUILDARCH" = "ia64" ]; then
+	mknod $MBD_DIR/dev/xvc0 c 204 191
+	chown root:root $MBD_DIR/dev/xvc0
+	chmod 644 $MBD_DIR/dev/xvc0
+    fi
+
+    dd if=/dev/zero of=$MBD_DIR/etc/ramfs.img.big bs=1k count=20000 2>/dev/null
+    mke2fs -F -q $MBD_DIR/etc/ramfs.img.big
+    tune2fs -c0 -i0 $MBD_DIR/etc/ramfs.img.big >/dev/null
+    gzip -9 < $MBD_DIR/etc/ramfs.img.big > $MBD_DIR/etc/ramfs.img
+    rm -f $MBD_DIR/etc/ramfs.img.big
+
+cat > $MBD_DIR/.profile <<EOF
+PATH=/bin:/usr/bin:/usr/sbin:/usr/X11R6/bin:/mnt/sysimage/sbin:/mnt/sysimage/usr/sbin:/mnt/sysimage/bin:/mnt/sysimage/usr/bin
+export PATH
+EOF
+
+    rm -f $MBD_FSIMAGE
+    dd if=/dev/zero of=$MBD_FSIMAGE bs=1k count=$INITRDSIZE 2> /dev/null
+    /sbin/mke2fs -F -i 1024 -q $MBD_FSIMAGE $INITRDSIZE > /dev/null 2>/dev/null
+    /sbin/tune2fs -c0 -i0 $MBD_FSIMAGE >/dev/null
+
+    rm -rf $MBD_MNTPOINT
+    mkdir $MBD_MNTPOINT
+    mount -o loop -t ext2 $MBD_FSIMAGE $MBD_MNTPOINT
+    (cd $MBD_DIR; find . | cpio --quiet -p $MBD_MNTPOINT)
+
+    left=$(df $MBD_MNTPOINT | tail +2)
+    left=$(echo $left | awk '{print $4'})
+
+    umount $MBD_MNTPOINT
+
+    mv -f $MBD_FSIMAGE $MBD_FSIMAGE.uncompressed
+    gzip -9 < $MBD_FSIMAGE.uncompressed > $MBD_FSIMAGE
+    rm -rf $MBD_FSIMAGE.uncompressed $MBD_DIR
+
+    size=$(du $MBD_FSIMAGE | awk '{ print $1 }')
+
+    echo "Wrote $MBD_BOOTTREE (${size}k compressed, ${left}k free)"
+
+    rm -rf $MBD_TMPIMAGE $MBD_BOOTTREE
+
+    if [ -n "$PADSIZE" ]; then
+	padfile $MBD_FSIMAGE $PADSIZE
+    fi
+
+    if [ -n "$EXTRAINITRDPATH" ]; then
+	mkdir -p `dirname $EXTRAINITRDPATH`
+	cp -a $MBD_FSIMAGE $EXTRAINITRDPATH
+    fi
+
+    if [ -z "$KEEP" ]; then
+	rm -rf $MBD_TMPIMAGE $MBD_FSIMAGE $MBD_MNTPOINT $MBD_BOOTTREE
+    fi
+}
+
+makebootdisk() {
+    BOOTDISKSIZE=""
+    EXTRAKERNELPATH=""
+    INITRDFLAGS=""
+    MBD_FILENAME=""
+    INITRDFILE=""
+    while [ x$(echo $1 | cut -c1-2) = x"--" ]; do
+	if [ $1 = "--bootdisksize" ]; then
+	     BOOTDISKSIZE=$2
+	     shift; shift
+	     continue
+	elif [ $1 = "--kernelto" ]; then
+	    EXTRAKERNELPATH=$2
+	    shift; shift
+	    continue
+	elif [ $1 = "--initrdflags" ]; then
+	    INITRDFLAGS=$2
+	    shift; shift
+	    continue
+	elif [ $1 = "--initrd" ]; then
+	    INITRDFILE=$2
+	    shift; shift
+	    continue
+	elif [ $1 = "--imagename" ]; then
+	    MBD_FILENAME=$IMAGEPATH/$2
+	    shift; shift
+	    continue
+	fi
+	echo "Unknown option passed to makebootdisk"
+	exit 1
+    done
+
+    if [ -z "$MBD_FILENAME" ]; then
+	echo "No imagename passed"
+	exit 1
+    fi
+
+    if [ -n "$INITRDFILE" ]; then
+	MBD_FSIMAGE="$INITRDFILE"
+    elif [ -n "$INITRDFLAGS" ]; then
+	eval makeinitrd --keep $INITRDFLAGS
+    fi
+
+    mkdir -p $MBD_BOOTTREE
+
+    # provided by the mk-image.$ARCH file
+    prepareBootImage
+
+    left=$(df $MBD_BOOTTREE | tail +2)
+    left=$(echo $left | awk '{print $4'})
+
+    umount $MBD_BOOTTREE
+
+    if [ -n "$EXTRAKERNELPATH" ]; then
+	mkdir -p `dirname $EXTRAKERNELPATH`
+	cp -f $KERNELROOT/$KERNELDIR/${KERNELNAME}-* $EXTRAKERNELPATH
+    fi
+
+    mkdir -p `dirname $MBD_FILENAME`
+    rm -f $MBD_FILENAME
+    mv -f $MBD_TMPIMAGE $MBD_FILENAME
+    rm -rf $MBD_TMPIMAGE $MBD_MNTPOINT $MBD_BOOTTREE
+    if [ -z "$INITRDFILE" ]; then
+	rm -f $MBD_FSIMAGE
+    fi
+
+    echo "Wrote $MBD_FILENAME (${left}k free)"
+}
+
+makeImage () {
+    MI_FROM=$1
+    MI_SIZE=$2
+    MI_TO=$3
+    MI_TMPIMAGE=/tmp/makeimage.img.$$
+    MI_MNTPOINT=/tmp/makeimage.mnt.$$
+
+    mkdir -p $MI_MNTPOINT
+
+    dd if=/dev/zero of=$MI_TMPIMAGE bs=1k count=$MI_SIZE 2>/dev/null
+    /sbin/mke2fs -q -F -i 4096 $MI_TMPIMAGE  > /dev/null 2>/dev/null
+    /sbin/tune2fs -c0 -i0 $MI_TMPIMAGE >/dev/null
+    mount -o loop $MI_TMPIMAGE $MI_MNTPOINT
+    (cd $MI_FROM; find . | cpio --quiet -p $MI_MNTPOINT)
+
+    left=$(df $MI_MNTPOINT | tail +2)
+    left=$(echo $left | awk '{print $4'})
+
+    umount $MI_MNTPOINT
+    rmdir $MI_MNTPOINT
+
+    gzip -9 < $MI_TMPIMAGE > $MI_TO
+    chmod 644 $MI_TO
+
+    echo "Wrote $MI_TO (${left}k of ${MI_SIZE}k free)"
+    rm -f $MI_TMPIMAGE
+}
+
+makeinstimage () {
+    imagename=$1
+    modlist=$(expandModuleSet "$2")
+    tmpdir=/tmp/instimage.dir.$$
+
+    rm -rf $tmpimage $tmpdir
+    mkdir -p $mntpoint $tmpdir
+
+    mkdir -p $tmpdir
+    (cd $INSTIMGTEMPLATE; find . | cpio --quiet -p $tmpdir)
+    if [ "$BUILDARCH" = "s390" -o "$BUILDARCH" = "s390x" ]; then
+       mkdir -p $KERNELROOT/lib/modules/misc
+       find $KERNELROOT/lib/modules/*/kernel/drivers/s390/ -name "*.ko" \
+         -exec cp -f {} $KERNELROOT/lib/modules/misc \;
+    fi
+    makemoduleball $tmpdir/modules "$modlist"
+    makeproductfile $tmpdir
+
+    echo "Running mkcramfs $CRAMBS $tmpdir $INSTIMGPATH/${imagename}2.img"
+    mkcramfs $CRAMBS $tmpdir /tmp/${imagename}2.img.$$
+    cp /tmp/${imagename}2.img.$$ $INSTIMGPATH/${imagename}2.img
+    size=$(ls -l $INSTIMGPATH/${imagename}2.img | awk '{print $5}')
+    size=$(expr $size / 1024)
+    echo "Wrote $INSTIMGPATH/${imagename}2.img (${size}k)..."
+    rm -rf $tmpdir
+}
+
+findloopdevice () {
+    if [ -z "$1" ]; then
+	echo "usage: findloopdevice image"
+	exit 1
+    fi
+
+    for devnum in 0 1 2 3 4 5 6 7 8; do
+        if losetup /dev/loop$devnum $1 2>/dev/null ; then break; fi
+    done
+    echo /dev/loop$devnum
+}
+
+makemainimage () {
+    imagename=$1
+    type=$2
+    mmi_tmpimage=/tmp/instimage.img.$$
+    mmi_mntpoint=/tmp/instimage.mnt.$$
+    
+    rm -rf $mmi_tmpimage $mmi_mntpoint
+    mkdir $mmi_mntpoint
+
+    if [ $type = "ext2" ]; then
+        SIZE=$(du -sk $IMGPATH | awk '{ print int($1 * 1.1) }')
+        if [ -d $IMGPATH/usr/lib/anaconda-runtime ]; then
+	    ERROR=$(du -sk $IMGPATH/usr/lib/anaconda-runtime | awk '{ print $1 }')
+	    SIZE=$(expr $SIZE - $ERROR)
+        fi
+        dd if=/dev/zero bs=1k count=${SIZE} of=$mmi_tmpimage 2>/dev/null
+        mke2fs -q -F $mmi_tmpimage > /dev/null 
+	tune2fs -c0 -i0 $mmi_tmpimage >/dev/null
+        mount -o loop $mmi_tmpimage $mmi_mntpoint
+
+        (cd $IMGPATH; find . | fgrep -v "./usr/lib/anaconda-runtime" |
+	        cpio -H crc -o) | (cd $mmi_mntpoint; cpio -iumd)
+        makeproductfile $mmi_mntpoint
+        umount $mmi_mntpoint
+        rmdir $mmi_mntpoint
+    elif [ $type = "cramfs" ]; then
+        makeproductfile $IMGPATH
+        echo "Running mkcramfs $CRAMBS $IMGPATH $mmi_tmpimage"
+        mkcramfs $CRAMBS $IMGPATH $mmi_tmpimage
+        SIZE=$(expr `cat $mmi_tmpimage | wc -c` / 1024)
+    fi
+    
+    cp $mmi_tmpimage $INSTIMGPATH/${imagename}.img
+    chmod 644 $INSTIMGPATH/${imagename}.img
+
+    echo "Wrote $INSTIMGPATH/${imagename}.img (${SIZE}k)"
+    
+    rm $mmi_tmpimage
+}
+
+makedriverdisk () {
+    PADSIZE=""
+
+    while [ x$(echo $1 | cut -c1-2) = x"--" ]; do
+	if [ $1 = "--padsize" ]; then
+	    PADSIZE=$2
+	    shift; shift
+	    continue
+	fi
+
+	echo "Unknown option passed to makedriverdisk"
+	exit 1
+    done
+
+    modlabel=$1
+    diskname=$2
+    modlist=$(expandModuleSet "$3")
+    diskpath=/tmp/makedriverdisk.$$
+
+    rm -rf $diskpath
+    mkdir -p $diskpath
+
+    makemoduleball --dd "$modlabel" $diskpath "$modlist"
+
+    size=$(expr 60 + $(du -sk $diskpath | awk '{print $1}'))
+    if [ $size -lt 57 ]; then
+	size=64
+    fi
+
+    dd if=/dev/zero of=/tmp/$diskname.img bs=1k count=$size 2> /dev/null
+    /sbin/mke2fs -q -F -i 4096 /tmp/$diskname.img  > /dev/null 2>/dev/null
+    /sbin/tune2fs -c0 -i0 /tmp/$diskname.img >/dev/null
+    mkdir -p /tmp/mkdd.$$
+    mount -t ext2 -o loop /tmp/$diskname.img /tmp/mkdd.$$
+    rmdir /tmp/mkdd.$$/lost+found
+    (cd $diskpath; tar cSpf - .) | (cd /tmp/mkdd.$$; tar xSpf -)
+    DIE=""
+    diff -upr $diskpath /tmp/mkdd.$$ > /dev/null 2>&1
+    if [ $? != 0 ]; then
+	echo copy to disk image failed
+	ls -l /tmp/mkdd.$$
+	echo "disk size: $size"
+	ls -l $diskpath
+	DIE=1
+    fi
+    umount /tmp/mkdd.$$
+    rm -rf /tmp/mkdd.$$
+
+    if [ -n "$DIE" ]; then
+	kill -9 $$
+    fi
+
+    cp /tmp/${diskname}.img $IMAGEPATH/${diskname}.img
+    rm /tmp/${diskname}.img
+    rm -rf $diskpath
+
+    size=$(ls -l $IMAGEPATH/${diskname}.img | awk '{ print $5 }')
+    size=$(expr $size / 1024)
+
+    echo "Wrote $IMAGEPATH/${diskname}.img (${size}k)"
+    echo "${diskname}.img - ${modlabel}" >> $IMAGEPATH/README
+
+    if [ -n "$PADSIZE" ]; then
+	padfile $IMAGEPATH/${diskname}.img $PADSIZE
+    fi
+}
+
+# source the architecture specific mk-images file so we can call functions
+# in it
+if [ ${BUILDARCH} = s390x ]; then
+    # FIXME: this is a bad hack for s390, but better than copying for now
+    source $TOPDIR/mk-images.s390
+else
+    source $TOPDIR/mk-images.${BUILDARCH}
+fi
+
+# Find the kernel, unpack it, and verify it
+kerneltags="kernel"
+arches="$BUILDARCH"
+if [ "$BUILDARCH" = "ppc" -o "$BUILDARCH" = "ppc64" ]; then
+    arches="ppc64pseries ppc64 ppc64iseries ppc"
+elif [ "$BUILDARCH" = "i386" ]; then
+    arches="i586"
+    # SDSC
+    kerneltags="kernel"
+    #kerneltags="kernel kernel-xenU"
+    # SDSC
+elif [ "$BUILDARCH" = "x86_64" ]; then
+    kerneltags="kernel kernel-xenU"
+fi
+foundakernel=""
+for KERNELARCH in $arches; do
+  for kernelvers in $kerneltags; do
+    kpackage=$($LATEST $KERNELPATH $kernelvers)
+    if [ "$KERNELARCH" = "i586" -a ! -f "$kpackage" ]; then
+	echo "No i586 kernel, trying i686..."
+	KERNELARCH="i686"
+	kpackage=$($LATEST $KERNELPATH kernel)
+    fi
+
+    if [ ! -f "$kpackage" ]; then
+	echo "kernel ($kernelvers) does not exist for $KERNELARCH. skipping"
+	continue
+    fi
+
+    KERNELROOT=$KERNELBASE/$KERNELARCH
+    mkdir -p $KERNELROOT/lib/modules/misc
+
+    foundakernel="yes"
+    if [ "${kernelvers}" = "kernel-xenU" ]; then kerneltag="xenU" ; fi
+
+    ppackage=$($LATEST $KERNELPATH hwdata)
+    if [ ! -f "$ppackage" ]; then
+	ppackage=""
+    fi
+
+    version=$(rpm --nodigest --nosignature --qf '%{VERSION}-%{RELEASE}' -qp $kpackage)${kerneltag}
+    arch=$(rpm --nodigest --nosignature --qf '%{ARCH}\n' -qp $kpackage)
+    echo "unpacking $kpackage.$arch"
+
+    rpm2cpio $kpackage | (cd $KERNELROOT; cpio --quiet -iumd)
+    if [ ! -z $ppackage ]; then 
+	rpm2cpio $ppackage | (cd $KERNELROOT; cpio --quiet -iumd etc/pcmcia/* ./etc/pcmcia/*)
+    fi
+
+    if [ ! -d "$KERNELROOT/lib/modules/$version" ]; then
+	echo "$KERNELROOT/lib/modules/$version is not a valid modules directory" 2>&1
+	exit 1
+    fi
+
+    if [ ! -f "$KERNELROOT/$KERNELDIR/${KERNELNAME}-$version" ]; then
+	echo "$KERNELROOT/$KERNELDIR/${KERNELNAME}-$version does not exist"
+	exit 1
+    fi
+
+    if [ -f $KERNELROOT/etc/pcmcia/config ]; then
+	# This gets everything mentioned in /etc/pcmcia/config.  We probably
+	# want to do some module-info stuff here too
+	PCMCIAMODULES=$((perl -e 'while (<>) { s/^.*class.*(network|scsi|ide).*module +"// || next; s/[" ]//g; s/,/\n/g; print }' $KERNELROOT/etc/pcmcia/config | sed 's/\.ko//g') | sort -u)
+    fi
+
+    allmods=$(find $KERNELROOT/lib/modules/$version -name *.ko)
+
+    rundepmod "$allmods" $MODDEPS
+    find $KERNELROOT/lib/modules/$version > $CACHE
+
+    # make the boot images
+    echo ROCKS:1
+    makeBootImages
+  done
+done
+
+echo ROCKS:2
+
+if [ -n "$foundakernel" ]; then
+  # make the second stage
+  find $KERNELBASE/*/lib/modules/ > $CACHE
+  makeSecondStage
+  rm -rf $KERNELBASE
+fi
+
+cd $TOPDIR

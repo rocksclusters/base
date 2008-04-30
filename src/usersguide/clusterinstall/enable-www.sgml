@@ -1,0 +1,70 @@
+<section id="enable-www" xreflabel="Enable WWW access">
+<title>Enabling Public Web Access to Your Frontend</title>
+
+<para>
+To permenantly enable selected web access to the cluster from other
+machines on the public network, follow the steps below. Apache's access 
+control directives will provide protection for the most sensitive parts of the
+cluster web site, however some effort will be necessary to make effective use of them.
+</para>
+
+<warning>
+<para>
+HTTP (web access protocol) is a clear-text channel into your cluster. 
+Although the Apache webserver is mature and well tested, security holes 
+in the PHP engine have been found and exploited. Opening web access to the
+outside world by following the instructions below will make your
+cluster more prone to malicious attacks and breakins.
+</para>
+</warning>
+
+<orderedlist>
+<listitem>
+<para>
+Edit the <filename>/etc/sysconfig/iptables</filename> file. Uncomment the lines
+as indicated in the file.
+</para>
+
+<para>
+<screen>
+...
+# Uncomment the lines below to activate web access to the cluster.
+#-A INPUT -m state --state NEW -p tcp --dport https -j ACCEPT
+#-A INPUT -m state --state NEW -p tcp --dport www -j ACCEPT
+... other firewall directives ...
+</screen>
+</para>
+</listitem>
+
+<listitem>
+<para>
+Restart the iptables service. You must execute this command as the root user.
+</para>
+
+<para>
+<userinput>
+$ service iptables restart
+</userinput>
+</para>
+</listitem>
+
+<listitem>
+<para>
+Test your changes by pointing a web browser to 
+<literal>http://my.cluster.org/</literal>,
+where "my.cluster.org" is the DNS name of your frontend machine. 
+</para>
+
+<tip>
+<para>
+If you cannot connect to this address, the problem is most
+likely in your network connectivity between your web browser and
+the cluster. Check that you can ping the frontend machine from
+the machine running the web browser, that you can ssh into it, etc.
+</para>
+</tip>
+</listitem>
+</orderedlist>
+
+</section>
+

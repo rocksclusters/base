@@ -1,0 +1,172 @@
+<section id="customization-adding-appliance"
+	xreflabel="Adding a New Appliance Type">
+
+<title> Adding a New Appliance Type to the Cluster </title>
+
+<para>
+This procedure describes how to add a new appliance type to your cluster.
+This is useful when you want a subset of compute nodes to have specific
+behavior that is different from the rest of the compute nodes.
+For example, if you want all the nodes in cabinet 1 to be configured
+differently from the rest of the compute nodes.
+</para>
+
+<para>
+Before you begin, you'll want to be comfortable with the Rocks XML framework
+that is used to produce a configuration graph.
+Details on this framework are found in the
+<ulink
+url="http://www.rocksclusters.org/rocks-documentation/reference-guide/&document_version;/">Reference Guide</ulink>.
+</para>
+
+<para>
+First, you'll need to create a new node XML file.
+This file will contain the configuration scripts and/or packages that
+will be applied to each of your appliances.
+Let's call it <computeroutput>my-compute.xml</computeroutput>.
+This file should be created in the directory
+<computeroutput>/home/install/site-profiles/&document_version;/nodes</computeroutput>.
+Below is the contents of the file:
+</para>
+
+<screen>
+&lt;?xml version="1.0" standalone="no"?&gt;
+
+&lt;kickstart&gt;
+  
+&lt;description&gt;
+My specialized compute node
+&lt;/description&gt;
+
+  
+&lt;changelog&gt;
+&lt;/changelog&gt;
+
+&lt;post&gt;
+
+&lt;file name="/etc/motd" mode="append"&gt;
+My Compute Appliance
+&lt;/file&gt;
+
+&lt;/post&gt;
+
+&lt;/kickstart&gt; 
+</screen>
+
+<para>
+Now, we'll link the above file into the existing XML configuration graph.
+We'll simply point the above XML node to the existing
+<computeroutput>compute.xml</computeroutput> node.
+In object-oriented terms, we are inheriting all the functionality of the
+compute appliance and then extending it.
+</para>
+
+<para>
+To link <computeroutput>my-compute.xml</computeroutput> to 
+<computeroutput>compute.xml</computeroutput>, in the directory
+<computeroutput>/home/install/site-profiles/&document_version;/graphs/default</computeroutput>, 
+create the file <computeroutput>my-appliance.xml</computeroutput> and
+have it contain:
+</para>
+
+<screen>
+&lt;?xml version="1.0" standalone="no"?&gt;
+
+&lt;graph&gt;
+
+&lt;description&gt;
+&lt;/description&gt;
+
+&lt;changelog&gt;
+&lt;/changelog&gt;
+
+&lt;edge from="my-compute"&gt;
+        &lt;to&gt;compute&lt;/to&gt;
+&lt;/edge&gt; 
+
+&lt;order gen="kgen" head="TAIL"&gt;
+        &lt;tail&gt;my-compute&lt;/tail&gt;
+&lt;/order&gt;
+
+&lt;/graph&gt;
+</screen>
+
+<para>
+To apply the changes above to the current distribution, execute:
+</para>
+
+<screen>
+# cd /home/install
+# rocks-dist dist
+</screen>
+
+<para>
+Now we need to add an entry into the Rocks MySQL database.
+This is accomplished with the rocks command line:
+</para>
+
+<screen>
+# /opt/rocks/bin/rocks add appliance my-compute membership='My Compute' \
+  short-name='mc' node='my-compute'
+</screen>
+
+<para>
+Now let's retarget an existing compute node.
+We'll use <computeroutput>insert-ethers</computeroutput> to accomplish this
+task.
+First, ask <computeroutput>insert-ethers</computeroutput> to replace
+<computeroutput>compute-0-0</computeroutput>:
+</para>
+
+<screen>
+# insert-ethers --replace compute-0-0
+</screen>
+
+<para>
+This displays the screen:
+</para>
+
+<para>
+<mediaobject>
+	<imageobject>
+	<imagedata fileref="images/add-new-appliance.png" scale=50>
+	</imageobject>
+</mediaobject>
+</para>
+
+<para>
+Select <emphasis>My Compute</emphasis> then hit <emphasis>Ok</emphasis>.
+This removes 
+<computeroutput>compute-0-0</computeroutput> from the database and the
+next node that asks to be configured (that is, the next node that sends
+out a DHCP request) will be assigned the name
+<computeroutput>my-compute-0-0</computeroutput>.
+To see this in action, instruct
+<computeroutput>compute-0-0</computeroutput> to reinstall itself:
+</para>
+
+<screen>
+# shoot-node compute-0-0
+</screen>
+
+<para>
+Eventually, you'll see <computeroutput>insert-ethers</computeroutput>
+report that it discovered <computeroutput>my-compute-0-0</computeroutput>.
+After the node installs, it will be configured as a
+<emphasis>my-appliance</emphasis>.
+You can login to the node by executing:
+</para>
+
+<screen>
+# ssh my-compute-0-0
+</screen>
+
+<para>
+Your custom appliance can be applied to any new node in your system
+by starting <computeroutput>insert-ethers</computeroutput> as instructed
+above, then by booting a new node in configuration mode (by forcing
+it to PXE boot or by booting the node with the Kernel/Boot Roll).
+</para>
+
+</section>
+

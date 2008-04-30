@@ -1,0 +1,39 @@
+<?xml version="1.0" standalone="no"?>
+
+<graph>
+
+
+<description>
+The Root of Rocks
+</description>
+
+
+<changelog>
+$Log: root.xml,v $
+Revision 1.1  2005/03/04 01:47:16  mjk
+*** empty log message ***
+
+Revision 1.2  2005/02/16 00:40:03  mjk
+graph cleanup
+
+Revision 1.1  2003/07/07 20:47:51  bruno
+initial release
+
+</changelog>
+
+<!-- Graph Ordering for Kickstart Generation -->
+
+<order head="root">
+	<tail>server</tail>
+</order>
+
+
+<!-- Graph OO Framework -->
+
+<edge from="root">
+	<to>server</to>
+</edge>
+
+
+</graph>
+

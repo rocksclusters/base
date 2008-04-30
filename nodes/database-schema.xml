@@ -1,0 +1,413 @@
+<?xml version="1.0" standalone="no"?>
+
+<kickstart>
+
+  <description>
+
+  Cluster Database SQL table structure.  This used to be generated
+  from a dump of the structure on Meteor.  Now we just edit this
+  directly.
+
+  </description>
+
+        <copyright>
+        Copyright (c) 2000 - 2008 The Regents of the University of California.
+        All rights reserved. Rocks(r) v5.0 www.rocksclusters.org
+        </copyright>
+
+  <changelog>
+  $Log: database-schema.xml,v $
+  Revision 1.18  2008/03/06 23:41:30  mjk
+  copyright storm on
+
+  Revision 1.17  2008/02/13 01:02:12  anoop
+  The rolls table now has the OS column
+
+  Revision 1.16  2008/01/23 19:05:34  bruno
+  can now add kernel boot parameters to the running configuration with the rocks
+  command line
+
+  Revision 1.15  2007/07/03 18:13:08  phil
+  Move the pxe table schema to database-schema
+
+  Revision 1.14  2007/06/23 04:03:18  mjk
+  mars hill copyright
+
+  Revision 1.13  2007/06/05 19:50:24  mjk
+  fix prev comment
+
+  Revision 1.12  2007/06/05 19:49:20  mjk
+  - removed indexes from schema
+  - removed unused versions table
+
+  Revision 1.11  2007/05/30 23:27:16  anoop
+  Moved the security information that apache uses to log into mysql to the
+  database.xml file.
+  Schema changed slightly to clean column names
+
+  Main changes are the use of command line tools to manipulate the database
+  rather than using sql syntax directly. Still in beta stage.
+
+  Revision 1.10  2007/05/15 01:50:28  anoop
+  Small addition to the Networks table to support subnets as opposed to devices.
+
+  Revision 1.9  2007/05/08 23:36:19  anoop
+  A new table added to the database schema. This subnet table is going to
+  be used to obtain the IP addresses belonging to a certain network defined
+  by a subnet
+
+  Revision 1.8  2006/07/03 23:14:39  bruno
+  increase size of roll name -- this is useful for restore rolls which contain
+  the FQDN as part of the roll name.
+
+  Revision 1.7  2005/09/01 22:41:44  bruno
+  i wish i wouldn't have put the comma there -- oh wait, i didn't.
+  i wonder who did?
+
+  Revision 1.6  2005/09/01 16:25:51  mjk
+  add comment field to networks and routes tables
+
+  Revision 1.5  2005/05/24 21:30:10  fds
+  Tweaks
+
+  Revision 1.4  2005/05/23 23:59:21  fds
+  Frontend Restore
+
+  Revision 1.3  2005/05/11 06:44:39  phil
+  Added an options line to the networks table
+  Added explicit fields for all sql inserts
+
+  Revision 1.2  2005/04/28 21:47:24  bruno
+  partitioning function updates in order to support itanium.
+
+  itanics need 'parted' as 'sfdisk' only looks at block 0 on a disk and
+  itanics put their real partition info in block 1 (this is the GPT partitioning
+  scheme)
+
+  Revision 1.1  2005/03/04 01:40:04  mjk
+  massive graph cleanup
+
+  Revision 1.1  2005/03/01 00:22:26  mjk
+  moved to base roll
+
+  Revision 1.9  2005/02/15 22:58:52  mjk
+  dtd is gone
+
+  Revision 1.8  2005/02/14 21:55:01  bruno
+  support for phil's phartitioning phun
+
+  Revision 1.7  2005/01/26 21:24:51  mjk
+  added Rolls table
+
+  Revision 1.6  2004/10/22 04:51:50  mjk
+  added Device to routes tables
+
+  Revision 1.5  2004/10/04 19:02:08  fds
+  The proper way to add indexes to database tables. This will speed
+  node install processing for large clusters.
+
+  Revision 1.4  2004/08/16 21:55:17  mjk
+  Revert back to previous version and remove the optimization.  This would
+  have caused virtual IPs to fail.  Optimizations cannot restrict
+  functionality.
+
+  Revision 1.3  2004/08/16 21:28:02  fds
+  Make an index (hash) on MAC column for faster lookups in large clusters.
+
+  Revision 1.2  2004/04/12 18:19:06  bruno
+  kickstart from any network, even if the node has different types of
+  network cards
+
+  Revision 1.1  2004/03/08 21:01:23  mjk
+  *** empty log message ***
+
+  Revision 1.18  2004/03/04 19:57:50  bruno
+  added gateway column to networks table -- it is populated by add-extra-nic
+  and ConfigNetworks writes the GATEWAY field into the ifcfg file
+
+  Revision 1.17  2004/02/06 00:43:55  fds
+  Schema migration.
+
+  Revision 1.16  2004/02/04 17:39:39  bruno
+  on what interface do you want to install?
+
+  Revision 1.15  2004/02/03 20:00:35  mjk
+  decolorize
+
+  Revision 1.14  2004/01/30 04:53:42  mjk
+  colorize
+
+  Revision 1.13  2003/09/30 22:30:21  fds
+  Removed sshkeys, and added pci tables.
+
+  Revision 1.12  2003/08/26 22:44:20  mjk
+  - File tag now takes "expr" attribute (command evaluation)
+  - Conversion of old code to file tags
+  - Added media-server (used to be server)
+  - Killed replace-server on the hpc roll
+  - Updated Server database membership (now a media-server)
+  - Added Public field to the membership table
+  - Insert-ethers only allows a subset of memberships (Public ones) to be
+    inserted.
+  - Added getArch() to Application class
+  - Kickstart trinity (kcgi,kpp,kgen) all updated self.arch initial value
+
+  Revision 1.11  2003/07/16 20:10:41  bruno
+  changed to new 'file' tag
+
+  Revision 1.10  2003/06/26 02:24:34  fds
+  String compares done on TEXT fields are case-insensitive. BLOBs are better.
+
+  Revision 1.9  2003/06/25 21:21:31  fds
+  Fixing small things.
+
+  Revision 1.8  2003/06/25 21:01:54  fds
+  VARCHAR fields have a max length of 255.
+
+  Revision 1.7  2003/05/29 20:55:19  mjk
+  gateway added to kickstart.cgi
+
+  Revision 1.6  2003/04/18 17:16:04  fds
+  Fixed primary key problem permenantly.
+
+  Revision 1.5  2003/04/18 15:19:39  mjk
+  fixed networks table (thought I already did)
+
+  Revision 1.4  2003/02/11 23:50:20  mjk
+  table name are case sensitive
+
+  Revision 1.3  2003/02/11 19:07:04  mjk
+  - Pretty format :)
+  - Added Routes table (complements Networks table)
+
+  </changelog>
+
+<post>
+
+/usr/bin/mysqladmin create cluster
+
+<file name="/tmp/tables.sql">
+<!-- Aliases -->
+
+DROP TABLE IF EXISTS aliases;
+CREATE TABLE aliases (
+  ID		int(11) NOT NULL auto_increment,
+  Node		int(11) NOT NULL default '0',
+  Name		varchar(32) default NULL,
+  PRIMARY KEY (ID)
+) TYPE=MyISAM;
+
+
+<!-- App_Globals -->
+
+
+DROP TABLE IF EXISTS app_globals;
+CREATE TABLE app_globals (
+  ID		int(11) NOT NULL auto_increment,
+  Site		int(11) NOT NULL default '0',
+  Membership	int(11) NOT NULL default '0',
+  Service	varchar(64) default NULL,
+  Component	varchar(64) default NULL,
+  Value		text,
+  PRIMARY KEY (ID)
+) TYPE=MyISAM;
+
+
+<!-- Appliances -->
+
+DROP TABLE IF EXISTS appliances;
+CREATE TABLE appliances (
+  ID		int(11) NOT NULL auto_increment,
+  Name		varchar(32) NOT NULL default '',
+  ShortName	varchar(32) default NULL,
+  Graph		varchar(64) NOT NULL default 'default',
+  Node		varchar(64) NOT NULL default '',
+  PRIMARY KEY (ID)
+) TYPE=MyISAM;
+
+
+<!-- Distributions -->
+
+DROP TABLE IF EXISTS distributions;
+CREATE TABLE distributions (
+  ID		int(11) NOT NULL auto_increment,
+  Name		varchar(32) NOT NULL default '',
+  OS_Release	varchar(32) NOT NULL default '',
+  Lang		varchar(32) NOT NULL default '',
+  PRIMARY KEY (ID)
+) TYPE=MyISAM;
+
+
+<!-- Memberships -->
+
+DROP TABLE IF EXISTS memberships;
+CREATE TABLE memberships (
+  ID		int(11) NOT NULL auto_increment,
+  Name		varchar(64) NOT NULL default '',
+  Appliance	int(11) default '0',
+  Distribution	int(11) default '1',
+  Compute	enum('yes','no') NOT NULL default 'yes',
+  Public	enum('yes','no') NOT NULL default 'no',
+  PRIMARY KEY (ID)
+) TYPE=MyISAM;
+
+
+<!-- Nodes
+ NOT NORMALIZED: Name is a repeat from the networks table. Nodes.name should be
+ "networks.name where device='eth0'"
+ -->
+
+DROP TABLE IF EXISTS nodes;
+CREATE TABLE nodes (
+  ID		int(11) NOT NULL auto_increment,
+  Site		int(11) NOT NULL default '0',
+  Name		varchar(128) default NULL,
+  Membership	int(11) default '2',
+  CPUs		int(11) NOT NULL default '1',
+  Rack		int(11) default NULL,
+  Rank		int(11) default NULL,
+  Comment	varchar(128) default NULL,
+  PRIMARY KEY  (ID)
+) TYPE=MyISAM;
+
+
+<!-- Networks -->
+
+DROP TABLE IF EXISTS networks;
+CREATE TABLE networks (
+  ID		int(11) NOT NULL auto_increment,
+  Node		int(11) default NULL,
+  MAC		varchar(64) default NULL,
+  IP		varchar(32) default NULL,
+  Netmask	varchar(32) default NULL,
+  Gateway	varchar(32) default NULL,
+  Name		varchar(128) default NULL,
+  Device	varchar(32) default NULL,
+  Subnet	int(11)	default NULL references subnets,
+  Module	varchar(128) default NULL,
+  Options	varchar(128) default NULL,
+  Comment	varchar(128) default NULL,
+  PRIMARY KEY(ID)
+) TYPE=MyISAM;
+
+<!-- Subnets Table -->
+
+DROP TABLE IF EXISTS subnets;
+CREATE TABLE subnets (
+	ID		int(11)	NOT NULL AUTO_INCREMENT,
+	name		varchar(32)	NOT NULL,
+	subnet		varchar(32)	NOT NULL,
+	netmask		varchar(32)	NOT NULL,
+	PRIMARY KEY(ID)
+) TYPE=MyISAM;
+
+<!-- Routes -->
+
+DROP TABLE IF EXISTS routes;
+CREATE TABLE routes (
+  Owner		enum('membership','node') NOT NULL default 'node',
+  ID		int(11) NOT NULL default '0',
+  Network	varchar(32) NOT NULL default '',
+  Netmask	int(11) NOT NULL default '24',
+  Gateway	varchar(32) default NULL,
+  Device	varchar(32) default NULL,
+  Comment	varchar(128) default NULL
+) TYPE=MyISAM;
+
+
+<!-- PCIs. Columns hold hex values. -->
+
+DROP TABLE IF EXISTS pcis;
+CREATE TABLE pcis (
+  ID		int(11) NOT NULL auto_increment,
+  Class         varchar(16) NOT NULL default '',
+  Vendor        varchar(16) NOT NULL default '',
+  Device        varchar(16) NOT NULL default '',
+  Version       smallint,
+  PRIMARY KEY(ID)
+) TYPE=MyISAM;
+
+
+<!-- Nodes_PCI. Connects nodes table to pcis. -->
+
+DROP TABLE IF EXISTS nodes_pcis;
+CREATE TABLE nodes_pcis (
+  Node      int(11) NOT NULL default 0,
+  PCI       int(11) NOT NULL default 0,
+  PRIMARY KEY(node, pci)
+) TYPE=MyISAM;
+
+
+<!-- Roll.  What Rolls are installed and used by default. -->
+
+DROP TABLE IF EXISTS rolls;
+CREATE TABLE rolls (
+  Site		int(11) NOT NULL default '0',
+  Name		varchar(128) NOT NULL default '',
+  Version	varchar(32) NOT NULL default '',
+  Arch		varchar(32) NOT NULL default '',
+  OS		varchar(32) NOT NULL default 'linux',
+  Enabled	enum('yes','no') NOT NULL default 'yes'
+) TYPE=MyISAM;
+
+
+<!-- Sites. Stores info about other clusters -->
+
+DROP TABLE IF EXISTS sites;
+CREATE TABLE sites (
+  ID 		int(11) NOT NULL auto_increment,
+  Address	varchar(32) NOT NULL default '',
+  PRIMARY KEY(ID, Address)
+) TYPE=MyISAM;
+
+
+<!-- Partitions. stores all the partitions for all the appliances -->
+
+DROP TABLE IF EXISTS partitions;
+CREATE TABLE partitions (
+	ID		int(11) NOT NULL auto_increment,
+	Node		int(11) NOT NULL default '0',
+	Device		varchar(128) NOT NULL default '',
+	Mountpoint	varchar(128) NOT NULL default '',
+	SectorStart	varchar(128) NOT NULL default '',
+	PartitionSize	varchar(128) NOT NULL default '',
+	PartitionID	varchar(128) NOT NULL default '',
+	FsType		varchar(128) NOT NULL default '',
+	PartitionFlags	varchar(128) NOT NULL default '',
+	FormatFlags	varchar(128) NOT NULL default '',
+	PRIMARY KEY (ID)
+) TYPE=MyISAM;
+
+<!-- PXE Boot/Action Tables -->
+DROP TABLE IF EXISTS pxeboot;
+CREATE TABLE pxeboot (
+  ID            int(11) NOT NULL auto_increment,
+  Node          int(11) NOT NULL default '0',
+  Action        varchar(256) default NULL,
+  PRIMARY KEY (ID)
+) TYPE=MyISAM;
+
+DROP TABLE IF EXISTS pxeaction;
+CREATE TABLE pxeaction (
+  ID            int(11) NOT NULL auto_increment,
+  Node          int(11) NOT NULL default '0',
+  Action        varchar(256) default NULL,
+  Command       varchar(256) default NULL,
+  Args          varchar(1024) default NULL,
+  PRIMARY KEY (ID)
+) TYPE=MyISAM;
+
+DROP TABLE IF EXISTS bootflags;
+CREATE TABLE bootflags (
+  ID            int(11) NOT NULL auto_increment,
+  Node          int(11) NOT NULL default '0',
+  Flags         varchar(256) default NULL,
+  PRIMARY KEY (ID)
+) TYPE=MyISAM;
+
+</file>
+
+/usr/bin/mysql cluster &lt; /tmp/tables.sql
+
+</post>
+</kickstart>

@@ -1,0 +1,90 @@
+<section id="cross" xreflabel="Cross Kickstarting">
+<title> Cross Kickstarting </title>
+
+<para>
+Rocks supports heterogeneous clusters that contain nodes of different hardware
+architectures with a process called cross-kickstarting.  To support an
+architecture different than its own, a frontend needs to expand its local
+distribution with additional packages.  This section describes how to install
+distributions for other architectures on your frontend.
+</para>
+
+<para>
+Start with a frontend node, as described by <xref linkend="install-frontend">,
+or <xref linkend="upgrade-frontend">. Follow the instructions below for every
+desired architecture. 
+</para>
+
+<para>
+For this example, we assume the frontend is an x86 (Pentium) and the
+compute nodes are x86_64 CPUs (Opteron).
+</para>
+
+<orderedlist>
+<listitem>
+<para>
+Retrieve the required Rocks rolls for x86_64 (and optional rolls as desired)
+</para>
+
+<para>
+Mount one of the new rolls on /mnt/cdrom. This can be done without actually
+burning the CD, using the command:
+</para>
+
+<screen>
+# mount -o loop &lt;roll-name&gt;.iso /mnt/cdrom
+</screen>
+
+<para>
+Then copy its contents into the local mirror with:
+</para>
+
+<screen>
+# rocks-dist --install copyroll
+</screen>
+</listitem>
+
+<listitem>
+<para>
+Unmount /mnt/cdrom, and repeat the process for each roll. 
+</para>
+</listitem>
+
+<listitem>
+<para>
+Rebuild your distribution for the new architecture with the following flags. 
+</para>
+
+<para>
+<screen>
+# cd /home/install
+# rocks-dist --arch=x86_64 dist
+</screen>
+</para>
+
+<para>
+This requires that you have built the distribution for your native 
+architecture first.
+</para>
+</listitem>
+
+</orderedlist>
+
+<para>
+Now your frontend is prepared to cross-kickstart compute nodes and other
+cluster appliances of different architectures.
+</para>
+
+<caution>
+<para>
+Rocks does not currently support PXE cross-kickstart installs; you must boot
+non-native compute nodes from a native-architecture Rocks CD that
+contains the Kernel Roll.
+In the above example you must install a x86_64 compute node from an
+x86_64 boot media instead of PXE.
+</para>
+
+</caution>
+
+</section>
+

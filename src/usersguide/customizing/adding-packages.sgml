@@ -1,0 +1,137 @@
+<section id="customization-adding-packages"
+	xreflabel="Adding Packages">
+
+<title> Adding Packages to Compute Nodes </title>
+
+<para>
+Put the package you want to add in:
+</para>
+
+<screen>
+/home/install/contrib/&document_version;/<emphasis>arch</emphasis>/RPMS
+</screen>
+
+<para>
+Where <emphasis>arch</emphasis> is your architecture
+("i386" or "x86_64").
+</para>
+
+<para>
+Create a new XML configuration file that will <emphasis>extend</emphasis>
+the current <computeroutput>compute.xml</computeroutput> configuration
+file:
+</para>
+
+<screen>
+# cd /home/install/site-profiles/&document_version;/nodes
+# cp skeleton.xml extend-compute.xml
+</screen>
+
+<para>
+Inside <computeroutput>extend-compute.xml</computeroutput>, add
+the package name by changing the section from:
+</para>
+
+<screen>
+&lt;package&gt; &lt;!-- insert your package name here --&gt; &lt;/package&gt;
+</screen>
+
+<para> to: </para>
+
+<screen>
+&lt;package&gt; <emphasis>your package </emphasis> &lt;/package&gt;
+</screen>
+
+<para> <caution>
+<para>
+It is important that you enter the <emphasis>base name</emphasis> of the 
+package in <computeroutput>extend-compute.xml</computeroutput> and not
+the full name.
+</para>
+
+<para>
+For example, if the package you are adding is named
+<emphasis>XFree86-100dpi-fonts-4.2.0-6.47.i386.rpm</emphasis>, 
+input <emphasis>XFree86-100dpi-fonts</emphasis> as the package name in
+<computeroutput>extend-compute.xml</computeroutput>.
+</para>
+</caution> </para>
+
+<screen>
+&lt;package&gt;XFree86-100dpi-fonts&lt;/package&gt;
+</screen>
+
+<para>
+If you have multiple packages you'd like to add, you'll need a separate
+<computeroutput>&lt;package&gt</computeroutput> tag for each.
+For example, to add both the 100 and 75 dpi fonts, the 
+the following lines should be in
+<computeroutput>extend-compute.xml</computeroutput>:
+</para>
+
+<screen>
+&lt;package&gt;XFree86-100dpi-fonts&lt;/package&gt;
+&lt;package&gt;XFree86-75dpi-fonts&lt;/package&gt;
+</screen>
+
+<para>Also, make sure that you remove any package lines which do not have a package in them.
+For example, the file should NOT contain any lines such as:
+<screen>
+&lt;package&gt; &lt;!-- insert your package name here --&gt; &lt;/package&gt;
+</screen>
+</para>
+
+<para>
+Now build a new Rocks distribution.
+This will bind the new package into a RedHat compatible distribution in
+the directory <emphasis>/home/install/rocks-dist/...</emphasis>.
+</para>
+
+<screen>
+# cd /home/install
+# rocks-dist dist
+</screen>
+
+<para>
+Now, reinstall your compute nodes.
+</para>
+
+
+<section id="customization-adding-packages-arch"
+	xreflabel="Adding Specific Architecture Packages">
+
+<title> Adding Specific Architecture Packages to Compute Nodes </title>
+
+<para>
+Often on x86_64-based clusters, one wants to add the x86_64 and i386 version
+of a package to compute nodes.
+To do this, in your <computeroutput>extend-compute.xml</computeroutput> file,
+supply the section:
+</para>
+
+<screen>
+&lt;package&gt;pkg.x86_64&lt;/package&gt;
+&lt;package&gt;pkg.i386&lt;/package&gt;
+</screen>
+
+<para>
+Where <emphasis>pkg</emphasis> is the basename of the package.
+</para>
+
+<para>
+Now build a new Rocks distribution.
+</para>
+
+<screen>
+# cd /home/install
+# rocks-dist dist
+</screen>
+
+<para>
+Now, reinstall your compute nodes.
+</para>
+
+</section>
+
+</section>
+

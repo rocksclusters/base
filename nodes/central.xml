@@ -1,0 +1,178 @@
+<?xml version="1.0" standalone="no"?>
+
+<kickstart>
+
+  <description>
+  
+  A Rocks Cluster Central server. Can kickstart other servers
+  over the network.
+
+  Also contains general Apache security setup.
+
+  </description>
+
+        <copyright>
+        Copyright (c) 2000 - 2008 The Regents of the University of California.
+        All rights reserved. Rocks(r) v5.0 www.rocksclusters.org
+        </copyright>
+
+  <changelog>
+  $Log: central.xml,v $
+  Revision 1.7  2008/03/06 23:41:30  mjk
+  copyright storm on
+
+  Revision 1.6  2007/12/10 21:28:33  bruno
+  the base roll now contains several elements from the HPC roll, thus
+  making the HPC roll optional.
+
+  this also includes changes to help build and configure VMs for V.
+
+  Revision 1.5  2007/08/14 19:18:51  bruno
+  move the wan configuration from the rocks-kickstart-external package
+  into a node XML file
+
+  Revision 1.4  2007/06/23 04:03:18  mjk
+  mars hill copyright
+
+  Revision 1.3  2006/06/06 23:24:52  bruno
+  allow all access to the rolls RPMS
+
+  Revision 1.2  2005/04/18 19:02:54  fds
+  Fix authenticated wan installs.
+
+  Revision 1.1  2005/03/01 00:22:26  mjk
+  moved to base roll
+
+  Revision 1.8  2005/02/15 22:58:52  mjk
+  dtd is gone
+
+  Revision 1.7  2004/07/28 23:18:33  fds
+  Tweaks
+
+  Revision 1.6  2004/07/27 21:30:39  fds
+  insert-access and insert-ethers will not collide with .htaccess.
+
+  Revision 1.5  2004/07/26 22:52:48  fds
+  Rocks is done.
+
+  Revision 1.4  2004/07/01 00:08:21  fds
+  Security, and new rocks-dist structure.
+
+  Revision 1.3  2004/06/29 22:30:57  fds
+  Putting apache conf files in conf.d where they are automatically
+  included.
+
+  Revision 1.2  2004/03/24 00:23:45  fds
+  Dont keep our pants so far down.
+
+  Revision 1.1  2004/03/08 21:01:23  mjk
+  *** empty log message ***
+
+  Revision 1.1  2004/02/12 21:56:35  fds
+  Enabling Wan kickstart
+
+  </changelog>
+
+<post>
+
+<file name="/etc/httpd/conf.d/central.conf">
+#
+# Rocks Apache configuration for Wide Area Kickstart.
+# Various levels of security used to control access.
+#
+
+&lt;Directory /var/www/html/install&gt;
+	Options FollowSymLinks Indexes ExecCGI
+	AllowOverride None
+	Deny from all
+&lt;/Directory&gt;
+
+# HTTP Package access for WAN installs.
+
+&lt;Directory /var/www/html/install/*/wan&gt;
+	AllowOverride Limit
+	Deny from all
+&lt;/Directory&gt;
+	
+# HTTP Package access for LAN installs.
+
+&lt;Directory /var/www/html/install/*/lan&gt;
+	AllowOverride Limit
+	Allow from <var name="Kickstart_PrivateNetwork"/>/<var name="Kickstart_PrivateNetmask"/>
+	Allow from 127.0.0.1
+	Deny from all
+&lt;/Directory&gt;
+	
+# HTTPS access for serving kickstart files: Lan, Wan.
+
+&lt;Directory /var/www/html/install/sbin&gt;
+	AllowOverride None
+	SSLRequireSSL
+
+	# Clients need a cert signed by a trusted CA
+	SSLVerifyClient require
+	SSLVerifyDepth 1
+	Allow from all
+&lt;/Directory&gt;
+
+# allow all access to the rolls RPMS
+&lt;Directory /var/www/html/install/rolls&gt;
+	DirectoryIndex /install/rolls/index.cgi
+	Allow from all
+&lt;/Directory&gt;
+
+&lt;Directory /var/www/html/install/sbin/wan&gt;
+	AllowOverride None
+	SSLRequireSSL
+	SSLVerifyClient require
+	SSLVerifyDepth 1
+	Allow from all
+&lt;/Directory&gt;
+
+# HTTPS access for kickstart files (IP-based security).
+
+&lt;Directory /var/www/html/install/sbin/public&gt;
+	AllowOverride Limit
+	SSLVerifyClient None
+	Deny from all
+&lt;/Directory&gt;
+
+&lt;Directory /var/www/html/install/sbin/wan/public&gt;
+	AllowOverride Limit
+	SSLVerifyClient None
+	Deny from all
+&lt;/Directory&gt;
+
+SSLCACertificateFile /etc/httpd/conf/ssl.ca/ca-bundle
+</file>
+
+mkdir -p /etc/httpd/conf/ssl.ca
+
+cp /etc/security/ca/ca.crt /etc/httpd/conf/ssl.ca/
+
+<file name="/etc/httpd/conf/ssl.ca/Makefile">
+# Makefile to build the ca-bundle for HTTPS authentication.
+
+CERTS = $(wildcard *.crt)
+
+ca-bundle: $(CERTS)
+	cat $(CERTS) &gt; $@
+
+clean:
+	rm ca-bundle
+</file>
+
+make -C /etc/httpd/conf/ssl.ca
+
+mkdir -p /export/home/install/sbin/wan
+(
+	cd /export/home/install/sbin/wan ;
+	ln -sf ../kickstart.cgi . ;
+	ln -sf ../sqlCheckpoint.cgi . ;
+)
+touch /var/www/html/robots.txt
+
+</post>
+
+</kickstart> 
+

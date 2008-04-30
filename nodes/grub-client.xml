@@ -1,0 +1,95 @@
+<?xml version="1.0" standalone="no"?>
+
+<kickstart>
+
+  <description>
+
+  Boot loader configuration for cluster appliances.
+
+  </description>
+
+        <copyright>
+        Copyright (c) 2000 - 2008 The Regents of the University of California.
+        All rights reserved. Rocks(r) v5.0 www.rocksclusters.org
+        </copyright>
+
+  <changelog>
+  $Log: grub-client.xml,v $
+  Revision 1.7  2008/03/06 23:41:30  mjk
+  copyright storm on
+
+  Revision 1.6  2008/02/20 19:35:24  bruno
+  bootflag generation should only by on clients, not server nodes
+  (e.g., frontends)
+
+  Revision 1.5  2007/06/23 04:03:18  mjk
+  mars hill copyright
+
+  Revision 1.4  2006/01/14 01:42:50  mjk
+  new python path
+
+  Revision 1.3  2005/09/23 21:41:50  bruno
+  make sure the python code that is run in the post section and that
+  imports rocks python code, uses the rocks foundation.
+
+  Revision 1.2  2005/06/07 18:26:28  bruno
+  make sure selinux is put on the Rocks Reinstall line in rocks.conf
+
+  Revision 1.1  2005/03/01 00:22:26  mjk
+  moved to base roll
+
+  Revision 1.6  2005/02/15 22:58:52  mjk
+  dtd is gone
+
+  Revision 1.5  2004/11/02 00:29:30  fds
+  grub-client.xml
+
+  Revision 1.4  2004/09/14 18:43:09  bruno
+  short circuit the code that finds the internal interface when the node
+  name is 'None'. this case can happen when building a cdrom that builds a
+  kickstart file for 'Server' and 'Client'.
+
+  Revision 1.3  2004/08/26 23:14:53  fds
+  Dont need the mac, we will try every interface.
+
+  Revision 1.2  2004/08/20 23:44:57  fds
+  No-dhcp install for cluster shepherd.
+
+  Revision 1.1  2004/04/26 20:17:20  fds
+  New structure to support shooting frontends. All destructive buttons
+  off by default. Uses logic in rocks.grub from pylib.
+
+  </changelog>
+
+<!-- Setup /boot/grub/rocks.conf file -->
+<post arg="--interpreter /opt/rocks/bin/python">
+import os
+import rocks.grub
+
+args = "ks selinux=0"
+makegrub=rocks.grub.App()
+makegrub.run(args)
+
+</post>
+
+
+<!-- apply the kernel boot flags for this node -->
+<post arg="--interpreter /opt/rocks/bin/python">
+import os
+import rocks.grub
+
+<eval mode="xml">
+BOOTFLAGS=`/opt/rocks/bin/rocks report host bootflags $Node_Hostname`
+echo "args = \"$BOOTFLAGS\""
+</eval>
+
+makegrub = rocks.grub.App()
+
+makegrub.setFilename('grub.conf')
+makegrub.setBootTitle('title')
+makegrub.append(args)
+</post>
+
+
+</kickstart> 
+

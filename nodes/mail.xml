@@ -1,0 +1,69 @@
+<?xml version="1.0" standalone="no"?>
+
+<kickstart>
+
+  <description>
+  
+  Mail support for the cluster.
+
+  </description>
+
+
+  <changelog>
+  $Log: mail.xml,v $
+  Revision 1.1  2007/12/10 21:28:33  bruno
+  the base roll now contains several elements from the HPC roll, thus
+  making the HPC roll optional.
+
+  this also includes changes to help build and configure VMs for V.
+
+  Revision 1.9  2005/02/16 00:40:04  mjk
+  graph cleanup
+
+  Revision 1.8  2004/07/21 20:33:49  fds
+  Change sendmail link to postfix
+
+  Revision 1.7  2004/04/15 21:21:30  fds
+  Dont be stupid. Also ensure root's email goes to root (not postfix user)
+
+  Revision 1.6  2004/04/13 20:52:05  fds
+  Silence postfix aliases.
+
+  Revision 1.5  2004/03/17 05:27:41  bruno
+  don't disable, remove.
+
+  Revision 1.4  2004/03/10 00:00:48  bruno
+  dear federico,
+
+  pine doesn't exist in enterprise linux 3.0 -- really.
+
+  Revision 1.3  2004/03/08 23:14:19  fds
+  Here is Postfix.
+
+  Revision 1.2  2004/03/05 01:18:17  fds
+  Postfix tweaks.
+
+  Revision 1.1  2004/03/04 19:33:32  fds
+  Moving from sendmail to Postfix.
+
+  </changelog>
+
+  <package>postfix</package>
+
+<post>
+
+/sbin/chkconfig sendmail off
+/sbin/chkconfig postfix on
+
+<!-- Dont complain about aliases -->
+rm -f /etc/postfix/aliases.db
+
+<!-- Send root mail to root -->
+sed -e '/^root:/d' /etc/postfix/aliases &gt; /tmp/aliases
+mv /tmp/aliases /etc/postfix/aliases
+
+ln -sf /usr/sbin/sendmail.postfix /etc/alternatives/mta
+
+</post>
+
+</kickstart> 

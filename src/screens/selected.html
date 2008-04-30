@@ -1,0 +1,47 @@
+<html>
+
+<head>
+<link rel="stylesheet" type="text/css" href="common.css" />
+</head>
+
+<body class="ProBackground">
+
+<h2 class="ProTitle"> Selected Rolls </h2>
+
+<p class="ProHelpText">
+No rolls have been selected.
+</p>
+
+<p class="ProHelpText">
+If you have CD/DVD-based rolls (that is, ISO images that have been burned
+onto CDs or a DVD), then click the <i>CD/DVD-based Roll</i> button.
+The media tray will eject.
+Then, place your first roll disk in the tray and click <i>Continue</i>.
+Repeat this process for each roll disk.
+</p>
+
+<p class="ProHelpText">
+If you are performing a network-based installation (also known as
+a <i>central</i> installation), then input the name of your roll server
+into the <i>Hostname of Roll Server</i> field and then click the
+<i>Download</i> button.
+This will query the roll server and all the rolls that the roll server
+has available will be displayed.
+Click the <i>selected</i> checkbox for each roll you will to install
+from the roll server.
+</p>
+
+<p class="ProHelpText">
+When you have completed your roll selections, click the <i>Next</i> button
+to proceed to cluster input screens (e.g., IP address selection, root
+password setup, etc.).
+</p>
+
+<form name="selectedform" method="post"
+	action="/tmp/updates/opt/rocks/screens/rocks-status-rolls.cgi">
+</form>
+
+</body>
+
+</html>
+

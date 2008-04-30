@@ -1,0 +1,303 @@
+<section id="install-compute-nodes" xreflabel="Install Compute Nodes">
+<title> Install Your Compute Nodes </title>
+
+<orderedlist>
+<listitem>
+	<para>
+	Login to the frontend node as <computeroutput>root</computeroutput>.
+	</para>
+</listitem>
+
+<listitem>
+	<para>
+	Run the program which captures compute node DHCP requests and puts
+	their information into the Rocks MySQL database:
+	</para>
+
+<screen>
+# insert-ethers
+</screen>
+
+	<para>
+	This presents a screen that looks like:
+	</para>
+
+	<mediaobject>
+		<imageobject>
+		<imagedata fileref="images/insert-ethers-1.png" scale=50>
+		</imageobject>
+	</mediaobject>
+
+	<warning>
+	<para>
+	If your frontend and compute nodes are connected via a managed
+	ethernet switch, you'll want to select 'Ethernet Switches' from 
+	the list above.
+	This is because the default behavior of many managed ethernet switches
+	is to issue DHCP requests in order to receive an IP address that
+	clients can use to configure and monitor the switch.
+	</para>
+
+	<para>
+	When <computeroutput>insert-ethers</computeroutput> captures the DHCP
+	request for the managed switch, it will configure it as an ethernet
+	switch and store that information in the MySQL database on the
+	frontend.
+	</para>
+
+	<para>
+	As a side note, you may have to wait several minutes before the
+	ethernet switch broadcasts its DHCP request.
+	If after 10 minutes (or if
+	<computeroutput>insert-ethers</computeroutput> has correctly detected
+	and configured the ethernet switch), then you should quit
+	<computeroutput>insert-ethers</computeroutput> by hitting the
+	<computeroutput>F8</computeroutput> key.
+	</para>
+
+	<para>
+	Now, restart <computeroutput>insert-ethers</computeroutput> and
+	continue reading below to configure your compute nodes.
+	</para>
+	</warning>
+
+	<para>
+	Take the default selection, <computeroutput>Compute</computeroutput>,
+	hit 'Ok'.
+	</para>
+</listitem>
+
+<listitem>
+	<para>
+	Then you'll see:
+	</para>
+
+	<mediaobject>
+		<imageobject>
+		<imagedata fileref="images/insert-ethers-2.png" scale=50>
+		</imageobject>
+	</mediaobject>
+
+	<para>
+	This indicates that <computeroutput>insert-ethers</computeroutput>
+	is waiting for new compute nodes.
+	</para>
+</listitem>
+
+<listitem>
+	<para>
+	Power up the first compute node.
+	</para>
+
+	<note>
+	<para>
+	The BIOS boot order of your compute nodes should be: PXE (Network
+	Boot), CD, Hard Disk.
+	</para>
+
+	<para>
+	If you can't configure PXE to be the first boot device on your compute
+	nodes, then you'll need to boot your compute nodes with the
+	Kernel Roll CD.
+	</para>
+
+	<para>
+	If you don't have a CD drive in your compute nodes and if the
+	network adapters in your compute nodes don't support PXE,
+	see <xref linkend="floppy-boot">.
+	</para>
+	</note>
+</listitem>
+
+<listitem>
+	<para>
+	When the frontend machine receives the DHCP request from the compute
+	node, you will see something similar to:
+	</para>
+
+	<mediaobject>
+		<imageobject>
+		<imagedata fileref="images/insert-ethers-3.png" scale=50>
+		</imageobject>
+	</mediaobject>
+      
+	<para>
+	This indicates that <computeroutput>insert-ethers</computeroutput>
+	received the DHCP request from the compute node, inserted it into the
+	database and updated all configuration files (e.g.,
+	<computeroutput>/etc/hosts, /etc/dhcpd.conf</computeroutput> and DNS).
+	</para>
+
+	<para>
+	The above screen will be displayed for a few seconds and then you'll
+	see the following:
+	</para>
+
+	<mediaobject>
+		<imageobject>
+		<imagedata fileref="images/insert-ethers-4.png" scale=50>
+		</imageobject>
+	</mediaobject>
+
+<para>
+In the above image, insert-ethers has discovered a
+compute node.
+The "( )" next to compute-0-0 indicates the node has not yet requested a
+kickstart file.
+You will see this type of output for each compute node that is successfully identified by insert-ethers. 
+</para>
+
+	<mediaobject>
+		<imageobject>
+		<imagedata fileref="images/insert-ethers-5.png" scale=50>
+		</imageobject>
+	</mediaobject>
+
+<blockquote>
+<para>
+<emphasis>Figure:</emphasis> The compute node has successfully requested a kickstart file from the frontend. If there are no more compute nodes, you may now quit insert-ethers. Kickstart files are retrieved via HTTPS. If there was an error during the transmission, the error code will be visible instead of "*". 
+</para>
+</blockquote>
+</listitem>
+
+<listitem>
+	<para>
+	At this point, you can monitor the installation by using
+	<computeroutput>rocks-console</computeroutput>.
+	Just extract the name of the installing compute node from the
+	<computeroutput>insert-ethers</computeroutput> output (in the example
+	above, the compute node name is
+	<computeroutput>compute-0-0</computeroutput>), and execute:
+	</para>
+
+<screen>
+# rocks-console compute-0-0
+</screen>
+
+</listitem>
+
+<listitem>
+	<para>
+	After you've installed all the compute nodes in a cabinet,
+	quit <computeroutput>insert-ethers</computeroutput> by hitting
+	the 'F8' key.
+	</para>
+</listitem>
+
+<listitem>
+	<para>
+	After you've installed all the compute nodes in the first cabinet and
+	you wish to install the compute nodes in the next cabinet, just
+	start <computeroutput>insert-ethers</computeroutput> like:
+	</para>
+
+<screen>
+# insert-ethers --cabinet=1
+</screen>
+
+	<para>
+	This will name all new compute nodes like
+	<computeroutput>compute-1-0</computeroutput>, 
+	<computeroutput>compute-1-1</computeroutput>, ... 
+	</para>
+</listitem>
+      
+</orderedlist>
+
+<!--
+
+<section id="usb-boot">
+<title> USB Boot </title>
+
+<para>
+You may use a USB drive to boot compute nodes. 
+</para>
+
+<orderedlist>
+<listitem>
+<para>
+Create the usb drive image. The resulting image will be around 20MB.
+</para>
+<para>
+<screen>
+# cd /home/install
+# rocks-dist usb
+Creating Bootable USB filesystem ...
+ Making new certificate keypair
+ Signing the certificate with our CA
+ Wrote: /home/install/rocks-dist/lan/rocks-usb-[...].img
+ ...
+</screen>
+</para>
+</listitem>
+
+<listitem>
+<para>
+Insert a usb drive (at least 32MB) into a USB slot in the frontend. 
+</para>
+</listitem>
+
+<listitem>
+<para>
+Run 'dmesg' to see what name linux has given to the device. It will be a scsi
+device name like "/dev/sda".
+</para>
+</listitem>
+
+<listitem>
+<para>
+Use the 'dd' command to write the usb drive image directly to the usb drive.
+Note we do not partition the drive at all.
+</para>
+<para>
+<screen>
+# dd < /home/install/rocks-dist/lan/rocks-usb-[...].img > /dev/sda
+</screen>
+</para>
+</listitem>
+
+<listitem>
+<para>
+When the dd command finishes, remove the usb drive from the frontend.
+</para>
+</listitem>
+
+<listitem>
+<para>
+On the compute node, insert the usb drive, then power on the node and enter its
+BIOS setup.
+</para>
+</listitem>
+
+<listitem>
+<para>
+Instruct the BIOS to treat the usb drive as a hard disk, and choose to boot from
+the usb drive first. Save your changes and reboot, leaving the usb key inserted.
+</para>
+<tip>
+<para>
+Only modern BIOS support booting from usb drive. If your BIOS does not support
+this, see <xref linkend="floppy-boot">.
+</para>
+</tip>
+</listitem>
+
+<listitem>
+<para>
+Boot the compute node normally. 
+</para>
+<tip>
+<para>
+This also works on a frontend for installing from a central server (<xref
+linkend="frontend-wan">).
+</para>
+</tip>
+</listitem>
+</orderedlist>
+
+</section>
+
+-->
+
+</section>
+

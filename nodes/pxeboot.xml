@@ -1,0 +1,65 @@
+<?xml version="1.0" standalone="no"?>
+
+<kickstart>
+
+<description>
+PXE first configuration for client nodes
+</description>
+
+        <copyright>
+        Copyright (c) 2000 - 2008 The Regents of the University of California.
+        All rights reserved. Rocks(r) v5.0 www.rocksclusters.org
+        </copyright>
+
+<changelog>
+$Log: pxeboot.xml,v $
+Revision 1.6  2008/03/26 22:22:24  bruno
+make wget quiet
+
+Revision 1.5  2008/03/07 17:11:11  bruno
+correctly set the output file to /dev/null when we use wget to set the
+pxeaction.
+
+Revision 1.4  2008/03/06 23:41:30  mjk
+copyright storm on
+
+Revision 1.3  2007/06/23 04:03:18  mjk
+mars hill copyright
+
+Revision 1.2  2007/05/01 22:48:26  bruno
+pxeboot works for pxe first and pxe last nodes
+
+Revision 1.1  2007/04/30 22:03:12  bruno
+more pxe first support
+
+</changelog>
+
+<post>
+
+<file name="/boot/kickstart/cluster-kickstart-pxe"
+				perms="u+rwxs,g+rx,o-rwx" owner="root.wheel">
+#!/bin/bash
+
+touch /boot/grub/pxe-install
+
+/etc/rc.d/init.d/rocks-grub start
+
+/usr/bin/wget --quiet --no-check-certificate -O /dev/null https://<var name="Kickstart_PrivateAddress"/>/install/sbin/public/setPxeboot.cgi?action="install"
+
+/boot/kickstart/cluster-kickstart
+</file>
+
+</post>
+
+
+<post>
+
+<!-- set the node to boot from local disk on the next reboot -->
+/usr/bin/wget --no-check-certificate -O /dev/null \
+	https://<var name="Kickstart_PrivateAddress"/>/install/sbin/public/setPxeboot.cgi
+
+</post>
+
+
+</kickstart> 
+

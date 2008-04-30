@@ -1,0 +1,82 @@
+<?xml version="1.0" standalone="no"?>
+
+<kickstart>
+
+<description>
+Take a root partition, and make it ours!
+
+This is the key to determining, on reinstalls, if we should save partitions
+(because the stamp is there) or blow away all the paritions on the
+disk (because the stamp isn't there).
+</description>
+
+        <copyright>
+        Copyright (c) 2000 - 2008 The Regents of the University of California.
+        All rights reserved. Rocks(r) v5.0 www.rocksclusters.org
+        </copyright>
+
+<changelog>
+$Log: disk-stamp.xml,v $
+Revision 1.3  2008/03/06 23:41:30  mjk
+copyright storm on
+
+Revision 1.2  2007/06/23 04:03:18  mjk
+mars hill copyright
+
+Revision 1.1  2005/03/01 00:22:26  mjk
+moved to base roll
+
+Revision 1.3  2005/02/15 22:58:52  mjk
+dtd is gone
+
+Revision 1.2  2005/02/14 21:55:01  bruno
+support for phil's phartitioning phun
+
+Revision 1.1  2004/03/08 21:01:23  mjk
+*** empty log message ***
+
+Revision 1.9  2004/02/03 20:00:35  mjk
+decolorize
+
+Revision 1.8  2004/01/30 04:53:42  mjk
+colorize
+
+Revision 1.7  2003/12/09 21:54:58  bruno
+remove 'Red Hat' from boot up
+
+Revision 1.6  2003/07/22 21:25:20  fds
+Kickstart and Profile dates in same format.
+
+Revision 1.5  2003/07/16 20:10:41  bruno
+changed to new 'file' tag
+
+Revision 1.4  2003/01/28 19:09:20  fds
+Using version variable.
+
+Revision 1.3  2002/06/17 19:50:02  bruno
+7.3-isms
+
+Revision 1.2  2002/02/20 17:56:52  bruno
+changed format of release version
+
+Revision 1.1  2001/10/01 19:09:58  bruno
+initial release
+
+</changelog>
+
+
+<post>
+
+<file name="/etc/rocks-release">
+Rocks release <var name="Info_RocksVersion"/> (<var name="Info_RocksRelease"/>)
+</file>
+
+sed "s/redhat-release/rocks-release/" /etc/rc.sysinit &gt; /tmp/rc.sysinit
+cp /tmp/rc.sysinit /etc/rc.sysinit
+rm /tmp/rc.sysinit
+
+</post>
+
+
+</kickstart> 
+

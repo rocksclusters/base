@@ -1,0 +1,102 @@
+<?xml version="1.0" standalone="no"?>
+
+
+
+<kickstart>
+
+  <description>
+
+  Setup Syslog
+
+  </description>
+
+        <copyright>
+        Copyright (c) 2000 - 2008 The Regents of the University of California.
+        All rights reserved. Rocks(r) v5.0 www.rocksclusters.org
+        </copyright>
+
+  <changelog>
+  $Log: syslog.xml,v $
+  Revision 1.5  2008/03/06 23:41:30  mjk
+  copyright storm on
+
+  Revision 1.4  2007/06/23 04:03:18  mjk
+  mars hill copyright
+
+  Revision 1.3  2006/05/04 22:28:05  mjk
+  daemon.info for dhcpd and inser-ethers
+
+  Revision 1.2  2006/04/18 17:46:59  mjk
+  less logging
+
+  Revision 1.1  2005/03/01 00:22:26  mjk
+  moved to base roll
+
+  Revision 1.3  2005/02/15 22:58:52  mjk
+  dtd is gone
+
+  Revision 1.2  2004/09/01 22:23:41  mjk
+  syslog to maillog not mail
+
+  Revision 1.1  2004/03/08 21:01:23  mjk
+  *** empty log message ***
+
+  Revision 1.7  2004/02/03 20:00:36  mjk
+  decolorize
+
+  Revision 1.6  2004/01/30 04:53:42  mjk
+  colorize
+
+  Revision 1.5  2003/12/22 19:25:54  mjk
+  dmseg fix moved to init script -- must be done after syslog is up
+
+  Revision 1.4  2003/12/16 22:37:21  mjk
+  syslog fixes
+
+  Revision 1.3  2003/07/16 20:10:41  bruno
+  changed to new 'file' tag
+
+  Revision 1.2  2001/09/22 19:08:47  mjk
+  *** empty log message ***
+
+  Revision 1.1  2001/09/22 19:06:13  mjk
+  *** empty log message ***
+
+  </changelog>
+
+
+<post>
+
+<file name="/etc/syslog.conf">
+*.err		/var/log/messages
+auth.info	/var/log/auth
+authpriv.info	/var/log/authpriv
+cron.err	/var/log/cron
+daemon.info	/var/log/daemon
+kern.err	/var/log/kern
+lpr.err		/var/log/lpr
+mail.info	/var/log/maillog
+news.info	/var/log/news
+syslog.err	/var/log/syslog
+user.err	/var/log/user
+local0.*	/var/log/local0
+local1.*	/var/log/local1
+local2.*	/var/log/local2
+local3.*	/var/log/local3
+local4.*	/var/log/local4
+local5.*	/var/log/local5
+local6.*	/var/log/local6
+local7.*	/var/log/local7
+</file>
+
+
+<!-- logrotate thinks the following files should exist -->
+
+<file name="/var/log/boot.log"/>
+
+/sbin/chkconfig rocks-dmesg on
+
+</post>
+
+
+</kickstart> 

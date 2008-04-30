@@ -1,0 +1,4 @@
+NAME		= firerox
+RELEASE		= 0
+
+FIREFOX_VERSION	= 2.0.0.6

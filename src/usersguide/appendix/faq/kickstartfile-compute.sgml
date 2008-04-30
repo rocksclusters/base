@@ -1,0 +1,92 @@
+<qandaentry>
+<question id="compute-kickstart-file">
+
+<para>
+While trying to install a compute node, 
+and when I plug a monitor into the compute node, I see the error message
+'Error opening kickstart file /tmp/ks.cfg. No such file or directory' or
+I see a screen on the compute node asking me to select a language.
+What went wrong?
+</para>
+
+</question>
+
+<answer>
+<para>
+A compute node kickstart requires the following services to be running
+on the frontend:
+</para>
+
+<orderedlist>
+	<listitem> <para> dhcpd </para> </listitem>
+	<listitem> <para> httpd </para> </listitem>
+	<listitem> <para> mysqld </para> </listitem>
+	<listitem> <para> autofs </para> </listitem>
+</orderedlist>
+
+<para>
+To check if httpd and mysqld are running:
+</para>
+
+<screen>
+# ps auwx | grep httpd
+# ps auwx | grep mysqld
+</screen>
+
+<para>
+If either one is not running, restart them with:
+</para>
+
+<screen>
+# /etc/rc.d/init.d/httpd restart
+</screen>
+
+<para>
+and/or
+</para>
+
+<screen>
+# /etc/rc.d/init.d/mysqld restart
+</screen>
+
+<para>
+The autofs service is called 'automount'.
+To check if it is running:
+</para>
+
+<screen>
+# ps auwx | grep automount
+</screen>
+
+<para>
+If it isn't, restart it:
+</para>
+
+<screen>
+# /etc/rc.d/init.d/autofs restart
+</screen>
+
+<para>
+Finally, to test if the Rocks installation infrastructure is working:
+</para>
+
+<screen>
+# rocks list host profile compute-0-0
+</screen>
+
+<para>
+This should return a kickstart file.
+</para>
+
+<para>
+And to see if there are any errors associated with constructing kickstart
+files on the frontend:
+</para>
+
+<screen>
+# rocks list host profile compute-0-0 > /dev/null
+</screen>
+
+</answer>
+</qandaentry>
+

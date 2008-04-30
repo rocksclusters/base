@@ -1,0 +1,136 @@
+<qandaentry id="faq-default-partitioning" xreflabel="Default Partitioning">
+<question id="default-partitioning">
+<para>
+What is the default partitioning for Rocks compute nodes?
+</para>
+</question>
+
+<answer>
+<para>
+The default root partition is setup to be 4 GB.
+Swap space is setup as a file on a the root partition (filename
+<computeroutput>/swap1</computeroutput> and is the size of main memory.
+The remainder of the root disk is setup as the partition
+<computeroutput>/state/partition1</computeroutput>.
+</para>
+
+<para>
+<table frame=all> <title> Compute Node -- Default Root Disk Partition </title>
+<tgroup cols=2 align=left colsep=1 rowsep=1>
+
+<thead>
+<row>
+	<entry> Partition Name </entry>
+	<entry> Size </entry>
+</row>
+</thead>
+
+<tbody>
+<row>
+	<entry>
+		/
+        </entry>
+        <entry>
+		4 GB
+        </entry>
+</row>
+
+<row>
+	<entry>
+		/state/partition1
+        </entry>
+        <entry>
+		<emphasis> remainder of root disk </emphasis>
+        </entry>
+</row>
+
+</tbody> </tgroup> </table>
+</para>
+
+<para>
+All remaining disk drives will have one partition with the name
+<computeroutput> /state/partition2, /state/partition3, ... </computeroutput>
+</para>
+
+<para>
+For example, the following table describes the default partitioning for a
+compute node with 3 SCSI drives.
+</para>
+
+<para>
+<table frame=all> <title> A Compute Node with 3 SCSI Drives </title>
+<tgroup cols=3 align=left colsep=1 rowsep=1>
+
+<thead>
+<row>
+	<entry> Device Name </entry>
+	<entry> Mountpoint </entry>
+	<entry> Size </entry>
+</row>
+</thead>
+
+<tbody>
+<row>
+	<entry>
+		/dev/sda1
+        </entry>
+	<entry>
+		/
+        </entry>
+        <entry>
+		4 GB
+        </entry>
+</row>
+
+<row>
+	<entry>
+		/dev/sda2
+        </entry>
+	<entry>
+		/state/partition1
+        </entry>
+        <entry>
+		<emphasis> remainder of root disk </emphasis>
+        </entry>
+</row>
+
+<row>
+	<entry>
+		/dev/sdb1
+        </entry>
+	<entry>
+		/state/partition2
+        </entry>
+        <entry>
+		<emphasis> size of disk </emphasis>
+        </entry>
+</row>
+
+<row>
+	<entry>
+		/dev/sdc1
+        </entry>
+	<entry>
+		/state/partition3
+        </entry>
+        <entry>
+		<emphasis> size of disk </emphasis>
+        </entry>
+</row>
+
+</tbody> </tgroup> </table>
+</para>
+
+<para>
+<note>
+<para>
+After the initial installation, all data in the file systems labeled
+<computeroutput> /state/partitionX</computeroutput>
+will be preserved over reinstallations.
+</para>
+</note>
+</para>
+
+</answer>
+</qandaentry>
+

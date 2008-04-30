@@ -1,0 +1,128 @@
+<html>
+
+<head>
+
+<link rel="stylesheet" type="text/css" href="common.css" />
+
+<style type="text/css">
+#div-title {
+    text-align: center;
+}
+
+#tr-label {
+    text-align: right;
+}
+
+#tr-input {
+    text-align: left;
+    color: blue;
+}
+</style>
+
+<script language="JavaScript">
+function doTitle()
+{
+	var	v = self.document.getElementById('div-title');
+	var	d = self.document.getElementById('screen-title');
+
+	if (v == null) {
+		return(false);
+	}
+
+	/*
+	 * remove the previous children
+	 */ 
+	if (d != null) {
+		v.removeChild(d);
+	}
+
+	v.appendChild(top.screen_title[top.screen_number]);
+}
+
+function doVariables()
+{
+	var	v = self.document.getElementById('div-variables');
+	var	d = self.document.getElementById('screen-variables');
+
+	if (v == null) {
+		return(false);
+	}
+
+	/*
+	 * remove the previous children -- the form variables from the
+	 * previous screen
+	 */ 
+	if (d != null) {
+		v.removeChild(d);
+	}
+
+	v.appendChild(top.screen_variables[top.screen_number]);
+
+	/*
+	 * set the input to the first input field
+	 */
+	var	t = self.document.getElementById('input-variable');
+	t.focus();
+}
+
+function doButtons()
+{
+	var	v = self.document.getElementById('div-buttons');
+	var	d = self.document.getElementById('screen-buttons');
+	var	i = 0;
+
+	if (v == null) {
+		return(false);
+	}
+
+	/*
+	 * remove the previous children
+	 */ 
+	if (d != null) {
+		v.removeChild(d);
+	}
+
+	v.appendChild(top.screen_buttons[top.screen_number]);
+
+	/*
+	 * make sure the button styles are initialized for each screen
+	 */
+	d = self.document.getElementById('screen-buttons');
+
+	for (i = 0; i < d.childNodes.length; ++i) {
+		var	node = d.childNodes[i];
+
+		if (node.nodeName == "INPUT") {
+			node.setAttribute("class", "ProButton"); 
+		}
+	}
+}
+</script>
+
+</head>
+
+<body class="ProBackground">
+
+<center>
+
+<h2 class="ProTitle"> <div id="div-title"/> </h2>
+
+<form name="variableform" method="post"
+	action="/tmp/updates/opt/rocks/screens/rocks-form.cgi">
+
+	<table>
+		<div id="div-variables"/>
+	</table>
+
+	<p>
+		<div id="div-buttons"/>
+	</p>
+
+</form>
+
+</center>
+
+</body>
+
+</html>
+

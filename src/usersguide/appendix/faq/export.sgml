@@ -1,0 +1,95 @@
+<qandaentry>
+<question id="export">
+	<para>
+	How do I export a new directory from the frontend to all the compute
+	nodes that is accessible under 
+	<computeroutput>/home</computeroutput>?
+	</para>
+</question>
+
+<answer>
+<para> Execute this procedure: </para>
+
+<itemizedlist>
+<listitem>
+	<para>
+	Add the directory you want to export to the file
+	<computeroutput>/etc/exports</computeroutput>.
+	</para>
+
+	<para>
+	For example, if you want to export the directory
+	<computeroutput>/export/disk1</computeroutput>, add the following
+	to <computeroutput>/etc/exports</computeroutput>:
+	</para> 
+
+<screen>
+/export/disk1 10.0.0.0/255.0.0.0(rw)
+</screen>
+
+	<note>
+	<para> 
+	This exports the directory only to nodes that are on the internal
+	network (in the above example, the internal network is 
+	configured to be <computeroutput>10.0.0.0</computeroutput>)
+	</para> 
+	</note>
+</listitem>
+
+<listitem>
+	<para> 
+	Restart NFS:
+	</para> 
+
+<screen>
+# /etc/rc.d/init.d/nfs restart
+</screen>
+
+</listitem>
+
+<listitem>
+	<para> 
+	Add an entry to <computeroutput>/etc/auto.home</computeroutput>.
+	</para> 
+
+	<para> 
+	For example, say you want
+	<computeroutput>/export/disk1</computeroutput> on the frontend
+	machine (named <emphasis>frontend-0</emphasis>) to be mounted as
+	<computeroutput>/home/scratch</computeroutput> on each compute
+	node.
+	</para> 
+
+	<para> 
+	Add the following entry to 
+	<computeroutput>/etc/auto.home</computeroutput>:
+	</para> 
+
+<screen>
+scratch		frontend-0:/export/disk1
+</screen>
+
+</listitem>
+
+<listitem>
+	<para> 
+	Inform 411 of the change:
+	</para> 
+
+<screen>
+# make -C /var/411
+</screen>
+
+</listitem>
+</itemizedlist>
+
+	<para>
+	Now when you login to any compute node and change your directory
+	to <computeroutput>/home/scratch</computeroutput>, it will
+	be automounted.
+	</para>
+
+</answer>
+
+</qandaentry>
+

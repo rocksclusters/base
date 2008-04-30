@@ -1,0 +1,29 @@
+<?xml version="1.0" standalone="no"?>
+
+<kickstart interface="public">
+
+	<description>
+	
+	Compute Appliance Node.  You should create your own extend-compute.xml
+	file to add functionality to this appliance type.
+
+	</description>
+
+	<changelog>
+	$Log: compute.xml,v $
+	Revision 1.1  2007/12/10 21:28:33  bruno
+	the base roll now contains several elements from the HPC roll, thus
+	making the HPC roll optional.
+	
+	this also includes changes to help build and configure VMs for V.
+	
+	Revision 1.9  2005/03/04 01:40:08  mjk
+	massive graph cleanup
+	
+	Revision 1.8  2005/02/16 00:40:04  mjk
+	graph cleanup
+	
+	</changelog>
+
+</kickstart> 
+
