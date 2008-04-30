@@ -2,22 +2,43 @@
 <title> Access to Rocks Source Code </title>
 
 <para>
-To checkout the source:
+The source code for Rocks is available from a public read-only <ulink url="http://www.selenic.com/mercurial/wiki/">Mercurial</ulink> repository.  
+As of Rocks 5.0 Mercurial (hg) is installed on your frontend machine, for older version of Rocks (or non-Rocks platforms) you will need to install the Mercurial package yourself.
+Binary packages for Mercurial are available <ulink url="http://www.selenic.com/mercurial/wiki/index.cgi/BinaryPackages">here</ulink>.
+</para>
+
+<para>
+Mercurial is a distributed source control system.  
+A very good explanation on how this differs from CVS is available on the Mercurial <ulink url="http://www.selenic.com/mercurial/wiki/index.cgi/CvsConcepts">site</ulink>.
+Fundamentally, distributed source control turns your checked out source code from a read-only copy into a repository and then grants read-write access to others based on your checked out repository.
+In the context of Rocks this means individual Roll developers can independently control who has access to their code.
+</para>
+
+<para>
+To check out the current source code you will first need to clone master Rocks read-only repository as follows.  This operation will take several minutes (if not hours) and unlike a CVS checkout it may appear to hang, be patient.
 </para>
 
 <screen>
-put in mercurial stuff here
+$ hg clone http://fyp.rocksclusters.org/hg/rocks
+destination directory: rocks
+real URL is http://fyp.rocksclusters.org/hg/rocks/
+requesting all changes
+adding changesets
+adding manifests
+adding file changes
+added 199 changesets with 4754 changes to 3409 files
+2815 files updated, 0 files merged, 0 files removed, 0 files unresolved
 </screen>
 
-
-<section id="read-write-source-access" xreflabel="Read/Write Access to the Source">
-<title>Read-Write Access to the Source</title>
-
 <para>
-To get write access to the head of the source tree, send a note to
-<computeroutput>source@rocksclusters.org</computeroutput>.
+Once you have your own cloned repository, just like with CVS, you will want to update the your copy of the code to the head of the tree.  
+This is done with the following Mercurial operations.
 </para>
 
-</section>
+<screen>
+$ hg pull
+$ hg update
+</screen>
 
 </section>
+
