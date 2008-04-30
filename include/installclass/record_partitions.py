@@ -6,6 +6,7 @@ import rocks_partition
 import httplib
 import random
 import time
+import string
 sys.path.append('/tmp')
 import db_partition_info
 
@@ -43,16 +44,26 @@ p = rocks_partition.RocksPartition()
 disks = p.getDisks() + p.getRaids()
 nodepartinfo = p.getNodePartInfo(disks)
 
-random.seed(int(time.time()))
+#
+# only try to report the partitions back to the frontend, if this isn't
+# a frontend
+#
+file = open('/proc/cmdline', 'r')
+args = string.split(file.readline())
+file.close()
 
-for i in range(0, 5):
-	status = sendit(db_partition_info.KickstartHost,
-		'/install/sbin/public/setDbPartitions.cgi', nodepartinfo)
+if 'frontend' not in args:
+	random.seed(int(time.time()))
+
+	for i in range(0, 5):
+		status = sendit(db_partition_info.KickstartHost,
+			'/install/sbin/public/setDbPartitions.cgi',
+			nodepartinfo)
 	
-	if status == 200:
-		break
-	else:
-		time.sleep(random.randint(0, 10))
+		if status == 200:
+			break
+		else:
+			time.sleep(random.randint(0, 10))
 		
 #
 # mark each disk as a 'rocks' disk -- this let's us know that we have
