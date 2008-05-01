@@ -2,7 +2,8 @@
 	<title>All Past Rocks Releases</title>
 
 <para>
-All past Rocks releases can be found at ftp.rocksclusters.org.
+All past Rocks releases can be found at
+<computeroutput>ftp.rocksclusters.org:/pub/rocks</computeroutput>.
 </para>
 
 </section>
