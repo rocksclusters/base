@@ -1,5 +1,5 @@
 # --------------------------------------------------- -*- Makefile -*- --
-# $Id: Makefile,v 1.7 2008/03/06 23:41:43 mjk Exp $
+# $Id: Makefile,v 1.8 2008/05/02 00:10:54 anoop Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.8  2008/05/02 00:10:54  anoop
+# Wget builds in slightly different ways on Solaris and Linux
+#
 # Revision 1.7  2008/03/06 23:41:43  mjk
 # copyright storm on
 #
@@ -117,14 +120,7 @@ include Rules.mk
 
 
 build:
-	gunzip -c wget-$(VERSION).tar.gz | $(TAR) -xf -
-#	(cd patch-files && find . -type f | grep -v CVS | cpio -pduv ../)
-	( 								\
-		cd wget-$(VERSION);					\
-		./configure --prefix=$(PKGROOT);			\
-		$(MAKE);							\
-	)
-	
+
 install::
 	mkdir -p $(ROOT)/$(PKGROOT)
 	(								\
