@@ -1,5 +1,5 @@
 # --------------------------------------------------- -*- Makefile -*- --
-# $Id: Makefile,v 1.4 2008/03/07 18:29:49 mjk Exp $
+# $Id: Makefile,v 1.5 2008/05/02 00:11:27 anoop Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.5  2008/05/02 00:11:27  anoop
+# $(MAKE) ... not make
+#
 # Revision 1.4  2008/03/07 18:29:49  mjk
 # foundation-mecurial is on the frontend now
 #
@@ -83,7 +86,7 @@ build:
 		cd mercurial-$(VERSION);			\
 		export PYTHON=$(PY.PATH);			\
 		PATH=/opt/rocks/bin:$$PATH;			\
-		make all;					\
+		$(MAKE) all;					\
 	)
 
 install::
@@ -92,7 +95,7 @@ install::
 		cd mercurial-$(VERSION);			\
 		export PYTHON=$(PY.PATH);			\
 		PATH=/opt/rocks/bin:$$PATH;			\
-		make PREFIX=$(ROOT)/$(PKGROOT) install;		\
+		$(MAKE) PREFIX=$(ROOT)/$(PKGROOT) install;		\
 	)
 
 clean::
