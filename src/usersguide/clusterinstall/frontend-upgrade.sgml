@@ -6,36 +6,8 @@ This procedure describes how to use a Restore Roll to upgrade or
 reconfigure your existing Rocks cluster.
 </para>
 
-<warning>
 <para>
-If your Rocks frontend is running Rocks version 4.3 and you wish to
-upgrade it to version &document_version;, you first need to install the
-<computeroutput>rocks-devel-env</computeroutput> package:
-</para>
-
-<para>
-For i386, execute:
-</para>
-
-<screen>
-# rpm -ivh --force http://www.rocksclusters.org/ftp-site/pub/rocks/rocks-4.3/upgrade/rocks-devel-env-4.3-1.i386.rpm
-# rpm -ivh --force http://www.rocksclusters.org/ftp-site/pub/rocks/rocks-4.3/upgrade/rocks-command-4.3-0.i386.rpm
-# rpm -ivh --force http://www.rocksclusters.org/ftp-site/pub/rocks/rocks-4.3/upgrade/rocks-pylib-4.3-0.noarch.rpm
-</screen>
-
-<para>
-For x86_64, execute:
-</para>
-
-<screen>
-# rpm -ivh --force http://www.rocksclusters.org/ftp-site/pub/rocks/rocks-4.3/upgrade/rocks-devel-env-4.3-1.x86_64.rpm
-# rpm -ivh --force http://www.rocksclusters.org/ftp-site/pub/rocks/rocks-4.3/upgrade/rocks-command-4.3-0.x86_64.rpm
-# rpm -ivh --force http://www.rocksclusters.org/ftp-site/pub/rocks/rocks-4.3/upgrade/rocks-pylib-4.3-0.noarch.rpm
-</screen>
-</warning>
-
-<para>
-Now we'll create a Restore Roll for your frontend.
+Let's create a Restore Roll for your frontend.
 This roll will contain site-specific info that will be used to quickly
 reconfigure your frontend (see the section below for details).
 </para>
@@ -203,7 +175,7 @@ will NOT run the script under "nochroot" mode.
 </para>
 <para>
 All the files under
-<computeroutput>/export/home/install/site-profiles</computeroutput> are
+<computeroutput>/export/rocks/install/site-profiles</computeroutput> are
 saved and restored.
 So, any user modifications that are added via the XML node method will be
 preserved.
