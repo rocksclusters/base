@@ -19,25 +19,15 @@ To check out the current source code you will first need to clone master Rocks r
 </para>
 
 <screen>
-$ hg clone http://fyp.rocksclusters.org/hg/rocks
-destination directory: rocks
-real URL is http://fyp.rocksclusters.org/hg/rocks/
+$ hg clone http://fyp.rocksclusters.org/hg/rocks-&document_version;
+destination directory: rocks-&document_version;
+real URL is http://fyp.rocksclusters.org/hg/rocks-&document_version;/
 requesting all changes
 adding changesets
 adding manifests
 adding file changes
-added 199 changesets with 4754 changes to 3409 files
+added 1 changesets with 2815 changes to 2815 files
 2815 files updated, 0 files merged, 0 files removed, 0 files unresolved
-</screen>
-
-<para>
-Once you have your own cloned repository, just like with CVS, you will want to update the your copy of the code to the head of the tree.  
-This is done with the following Mercurial operations.
-</para>
-
-<screen>
-$ hg pull
-$ hg update
 </screen>
 
 </section>

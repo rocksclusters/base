@@ -25,7 +25,7 @@ Set up a build environment:
 
 <screen>
 # cd /export
-# cvs -d:pserver:anonymous@src.rocksclusters.org:/export/cvs checkout rocks-&document_version;
+# hg clone http://fyp.rocksclusters.org/hg/rocks-rocks-&document_version;
 </screen>
 </listitem>
 
