@@ -112,7 +112,7 @@ frontend
 	<warning>
 	<para>
 	All screens in this step may not appear during your installation.
-	You will only see these screens if there is not a DNS server on your
+	You will only see these screens if there is not a DHCP server on your
 	public network that answers the frontend's DHCP request.
 	</para>
 	</warning>
