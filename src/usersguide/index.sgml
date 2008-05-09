@@ -1,10 +1,13 @@
 <!-- 
-$Id: index.sgml,v 1.5 2008/04/04 21:45:12 bruno Exp $
+$Id: index.sgml,v 1.6 2008/05/09 20:08:55 bruno Exp $
 
 @Copyright@
 @Copyright@
 
 $Log: index.sgml,v $
+Revision 1.6  2008/05/09 20:08:55  bruno
+added 'advanced tasks' section to the users guide
+
 Revision 1.5  2008/04/04 21:45:12  bruno
 start of the doc restructuring
 
@@ -28,6 +31,9 @@ builds with command reference
 <!ENTITY customizing SYSTEM "customizing/index.sgml">
 <!ENTITY % customizing-entities SYSTEM "customizing/entities.sgml">
 
+<!ENTITY advanced SYSTEM "advanced/index.sgml">
+<!ENTITY % advanced-entities SYSTEM "advanced/entities.sgml">
+
 <!ENTITY community SYSTEM "community/index.sgml">
 <!ENTITY % community-entities SYSTEM "community/entities.sgml">
 
@@ -41,6 +47,7 @@ builds with command reference
 
 %clusterinstall-entities;
 %customizing-entities;
+%advanced-entities;
 %community-entities;
 %appendix-entities;
 %appendix-faq-entities;
@@ -87,6 +94,7 @@ builds with command reference
 &customizing;
 &community;
 &source_admin-examples;
+&advanced;
 &source_roll-commands;
 &appendix;
 

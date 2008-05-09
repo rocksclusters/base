@@ -1,0 +1,110 @@
+<section id="pxeflash" xreflabel="PXE Flash">
+	<title> Flashing BIOS on Compute Nodes Using PXE </title>
+
+<para>
+This procedure describes how to flash BIOS on a client node (e.g., compute node 
+or viz tile node) by using the Rocks command line and PXE.
+</para>
+
+<itemizedlist>
+
+<listitem>
+	<para>
+	First, you must add the BIOS flashing files (e.g., a DOS-based flash
+	utility, .bin file or an autoexec.bat) to the directory
+	<computeroutput>/opt/pxeflash/addon</computeroutput>.
+	</para>
+
+	<para>
+	As an example, to flash a Dell Dimension E521 desktop, we executed:
+	</para>
+
+<screen>
+# cd /opt/pxeflash/addon
+# wget http://ftp.us.dell.com/bios/DME521-010111.EXE
+</screen>
+
+</listitem>
+
+<listitem>
+	<para>
+	To add the BIOS flashing file to a bootable floppy image, execute:
+	</para>
+
+<screen>
+# cd /opt/pxeflash
+# make build
+</screen>
+
+	<para>
+	This will incorporate all files in the
+	<computeroutput>/opt/pxeflash/addon</computeroutput> directory into
+	a floppy image named
+	<computeroutput>pxeflash-FDSTD.288</computeroutput>.
+	</para>
+
+</listitem>
+
+<listitem>
+	<para>
+	Now copy the floppy image into 
+	<computeroutput>/tftpboot/pxelinux/pxeflash</computeroutput>, by
+	executing:
+	</para>
+
+<screen>
+# make install
+</screen>
+
+</listitem>
+
+<listitem>
+	<para>
+	Set a client node to PXE boot your flash image:
+	</para>
+
+<screen>
+# rocks set host pxeboot &lt;hostname&gt; action=pxeflash
+</screen>
+
+</listitem>
+
+<listitem>
+	<para>
+	PXE boot the client node.
+	After the client boots, it will display a DOS prompt.
+	</para>
+</listitem>
+
+<listitem>
+	<para>
+	Before flashing the client node, on the frontend, reset the PXE action
+	so the client boots the OS from local disk:
+	</para>
+
+<screen>
+# rocks set host pxeboot &lt;hostname&gt; action=os
+</screen>
+
+</listitem>
+
+<listitem>
+	<para>
+	On the client, execute the BIOS flash program.
+	</para>
+
+	<para>
+	In our example, we executed the program
+	<computeroutput>DME521-010111.EXE</computeroutput>.
+	</para>
+</listitem>
+
+<listitem>
+	<para>
+	When the flash process completes, reboot the client node.
+	</para>
+</listitem>
+
+</itemizedlist>
+
+</section>

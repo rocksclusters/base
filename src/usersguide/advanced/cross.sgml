@@ -16,8 +16,8 @@ desired architecture.
 </para>
 
 <para>
-For this example, we assume the frontend is an x86 (Pentium) and the
-compute nodes are x86_64 CPUs (Opteron).
+For this example, we assume the frontend is an x86 (32-bit) and the
+compute nodes are x86_64 CPUs (64-bit).
 </para>
 
 <orderedlist>
@@ -27,27 +27,13 @@ Retrieve the required Rocks rolls for x86_64 (and optional rolls as desired)
 </para>
 
 <para>
-Mount one of the new rolls on /mnt/cdrom. This can be done without actually
-burning the CD, using the command:
+For each roll, add it to the frontend's roll repository:
 </para>
 
 <screen>
-# mount -o loop &lt;roll-name&gt;.iso /mnt/cdrom
+# rocks add roll &lt;roll-name&gt;.iso
 </screen>
 
-<para>
-Then copy its contents into the local mirror with:
-</para>
-
-<screen>
-# rocks-dist --install copyroll
-</screen>
-</listitem>
-
-<listitem>
-<para>
-Unmount /mnt/cdrom, and repeat the process for each roll. 
-</para>
 </listitem>
 
 <listitem>
@@ -55,17 +41,24 @@ Unmount /mnt/cdrom, and repeat the process for each roll.
 Rebuild your distribution for the new architecture with the following flags. 
 </para>
 
-<para>
 <screen>
 # cd /home/install
+# rocks-dist dist
 # rocks-dist --arch=x86_64 dist
 </screen>
-</para>
 
 <para>
-This requires that you have built the distribution for your native 
-architecture first.
+The above assumes your frontend is running the i386 version of Rocks.
+If your frontend is running the x86_64 version of Rocks and you want to support
+i386-based nodes with the frontend, you'll execute:
 </para>
+
+<screen>
+# cd /home/install
+# rocks-dist dist
+# rocks-dist --arch=i386 dist
+</screen>
+
 </listitem>
 
 </orderedlist>
