@@ -107,4 +107,14 @@ or viz tile node) by using the Rocks command line and PXE.
 
 </itemizedlist>
 
+<note>
+<para>
+<emphasis>Important Acknowledgement:</emphasis>
+We are grateful for the contribution of Jeremy Lawrence for describing the
+basic approach in his Rocks discussion list posting 
+https://lists.sdsc.edu/pipermail/npaci-rocks-discussion/2005-June/012092.html.
+</para>
+</note>
+
 </section>
+
