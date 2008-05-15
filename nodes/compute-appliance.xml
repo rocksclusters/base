@@ -11,6 +11,9 @@
 
   <changelog>
   $Log: compute-appliance.xml,v $
+  Revision 1.2  2008/05/15 15:31:47  phil
+  Append to motd instead of replace
+
   Revision 1.1  2007/12/10 21:28:33  bruno
   the base roll now contains several elements from the HPC roll, thus
   making the HPC roll optional.
@@ -107,7 +110,7 @@
 
 <post>
 
-<file name="/etc/motd">
+<file name="/etc/motd" mode="append">
 Rocks Compute Node
 </file>
 
