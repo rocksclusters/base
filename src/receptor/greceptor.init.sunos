@@ -1,0 +1,51 @@
+#!/bin/sh
+#
+# description: greceptor startup
+#
+# @Copyright@
+# @Copyright@
+# $Log: greceptor.init.sunos,v $
+# Revision 1.1  2008/05/20 02:09:42  anoop
+# Made changes to greceptor to make it a bit more usable on Solaris
+#
+#
+
+NAME=greceptor
+DAEMON=/opt/rocks/bin/$NAME
+
+. /lib/svc/share/smf_include.sh
+
+case "$1" in
+	start)
+		echo "Starting Ganglia Receptor: "
+		[ -x $DAEMON ] || exit 1
+		rm -f /var/lock/greceptor-startup/*
+		$DAEMON
+		RETVAL=$?
+		echo
+		[ $RETVAL -eq 0 ] && touch /var/lock/subsys/$NAME
+		;;
+
+	stop)
+		echo -n "Shutting down Ganglia Receptor: "
+		pkill -TERM ${NAME}
+		RETVAL=$?
+		echo
+		[ $RETVAL -eq 0 ] && rm -f /var/lock/subsys/$NAME
+		;;
+
+	restart)
+		$0 stop
+		$0 start
+		;;
+	status)
+		status $NAME
+		;;
+	*)
+		echo "Usage: $NAME {start|stop|restart|status}"
+		exit 1
+esac
+
+exit 0
+
+

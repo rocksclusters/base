@@ -53,6 +53,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.4  2008/05/20 02:09:42  anoop
+# Made changes to greceptor to make it a bit more usable on Solaris
+#
 # Revision 1.3  2008/05/20 01:04:29  anoop
 # Made Makefiles more Solaris friendly
 #
@@ -153,6 +156,11 @@ install::
 
 	mkdir -p $(ROOT)/$(INIT_SCRIPTS_DIR)
 	$(INSTALL) -m0555 greceptor.init $(ROOT)/$(INIT_SCRIPTS_DIR)/greceptor
+	(\
+	if [ $(OS) == sunos ]; then	\
+	$(INSTALL) -m0555 greceptor.init.sunos $(ROOT)/$(INIT_SCRIPTS_DIR)/greceptor;\
+	fi;\
+	)
 
 	mkdir -p $(ROOT)/var/lock/greceptor-startup/
 	mkdir -p $(ROOT)/var/cluster/
