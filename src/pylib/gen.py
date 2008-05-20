@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: gen.py,v $
+# Revision 1.31  2008/05/20 21:08:07  anoop
+# Added '' to heredoc so that shell special chars don't get expanded
+# before their time
+#
 # Revision 1.30  2008/05/20 01:08:38  anoop
 # Modified gen.py to output service instance lines correctly. Now we can specify
 # multiple instances of the same service. Affects Solaris only
@@ -1159,7 +1163,7 @@ class Generator_sunos(Generator):
 
 		list = []
 		if chroot == 'yes':
-			list.append("cat > /a/tmp/post_section_%d << __eof__"
+			list.append("cat > /a/tmp/post_section_%d << '__eof__'"
 					% self.finish_section)
 			list.append("#!%s" % interpreter)
 			list.append(self.getChildText(node))
@@ -1170,7 +1174,7 @@ class Generator_sunos(Generator):
 					% (self.finish_section, arg))
 		else:
 			if interpreter is not '/bin/sh':
-				list.append("cat > /tmp/post_section_%d << __eof__"
+				list.append("cat > /tmp/post_section_%d << '__eof__'"
 					% self.finish_section)
 				list.append("#!%s" % interpreter)
 				list.append(self.getChildText(node))
@@ -1214,7 +1218,7 @@ class Generator_sunos(Generator):
 		# an explicit cp command in the post section. Then enable
 		# these services by adding them to the site.xml command
 		# on the target machine.
-		list.append('cat > /a/var/svc/profile/site.xml << _xml_eof_')
+		list.append("cat > /a/var/svc/profile/site.xml << '_xml_eof_'")
 		list += self.generate_services()
 		list.append('_xml_eof_')
 		# And we're done
