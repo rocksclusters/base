@@ -1,4 +1,4 @@
-# $Id: linux.mk,v 1.13 2008/03/06 23:41:31 mjk Exp $
+# $Id: linux.mk,v 1.14 2008/05/20 01:01:21 anoop Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: linux.mk,v $
+# Revision 1.14  2008/05/20 01:01:21  anoop
+# Added new packages to the base roll. Linux.mk excludes those new packages
+# when building the roll on Linux
+#
 # Revision 1.13  2008/03/06 23:41:31  mjk
 # copyright storm on
 #
@@ -120,7 +124,10 @@ SRCDIRS = `find . -type d -maxdepth 1 \
 	-not -name kudzu \
 	-not -name rocks-pxe \
 	-not -name updates.img \
-	-not -name anaconda`
+	-not -name anaconda	\
+	-not -name pcre		\
+	-not -name php		\
+	-not -name postfix`
 
 #
 # make sure we build anaconda last, that's because it includes many packages

@@ -1,4 +1,4 @@
-# $Id: sunos.mk,v 1.2 2008/03/06 23:41:31 mjk Exp $
+# $Id: sunos.mk,v 1.3 2008/05/20 01:01:21 anoop Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: sunos.mk,v $
+# Revision 1.3  2008/05/20 01:01:21  anoop
+# Added new packages to the base roll. Linux.mk excludes those new packages
+# when building the roll on Linux
+#
 # Revision 1.2  2008/03/06 23:41:31  mjk
 # copyright storm on
 #
@@ -110,7 +114,9 @@ SRCDIRS = foundation-coreutils foundation-gawk	\
 	  foundation-readline foundation-wget	\
 	  foundation-mysql foundation-python	\
 	  foundation-perl foundation-libxml2	\
-	  foundation-python-extras 		\
+	  foundation-python-extras php postfix	\
+	  foundation-perl-tk			\
 	  foundation-graphviz foundation-rcs	\
-	  pylib command admin dbreport dist	\
-	  kpp kickstart roll sql bittorrent
+	  pcre pylib command dbreport 411	\
+	  411-master bittorrent tentakel	\
+	  ganglia-pylib receptor ssl
