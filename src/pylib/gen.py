@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: gen.py,v $
+# Revision 1.30  2008/05/20 01:08:38  anoop
+# Modified gen.py to output service instance lines correctly. Now we can specify
+# multiple instances of the same service. Affects Solaris only
+#
 # Revision 1.29  2008/03/06 23:41:44  mjk
 # copyright storm on
 #
@@ -938,6 +942,7 @@ class Generator_sunos(Generator):
 		self.finish_section	= 0  # Iterator. This counts up for
 					     # every post section that's encountered
 					     
+		self.service_instances	= {}
 		self.setRCSTag('JGEN')
 						
 
@@ -1041,22 +1046,29 @@ class Generator_sunos(Generator):
 		# Get name and enabled flags
 		attr = node.attributes
 		name = None
-		enabled = 'yes'
+		enabled = 'true'
+		instance = 'default'
 		if attr.getNamedItem((None, 'name')):
 			name = attr.getNamedItem((None, 'name')).value
 		# If there's no name return
 		if not name:
 			return ''
 
+		if attr.getNamedItem((None, 'instance')):
+			instance = attr.getNamedItem((None, 'instance')).value
+
 		# populate the correct list, depending on
 		# whether the service is enabled or disabled.
 		if attr.getNamedItem((None, 'enabled')):
 			enabled = attr.getNamedItem((None, 'enabled')).value
-		if enabled == 'no':
-			self.ks['service_off'].append(name)
+		if enabled == 'no' or enabled == 'false':
+			enabled = 'false'
 		else:
-			self.ks['service_on'].append(name)
-		
+			enabled='true'
+
+		if not self.service_instances.has_key(name):
+			self.service_instances[name] = []
+		self.service_instances[name].append((instance,enabled))
 		# This is only to placate the getChildText
 		# function. There's no need to return anything, as
 		# a separate list is being populated to be used
@@ -1263,18 +1275,13 @@ class Generator_sunos(Generator):
 
 		# Start service bundle
 		list.append("<service_bundle type='profile' name='site'"
-			"\n\txmlns:xi='http://www.w3.org/2003/XInclude' >")
+			"\n\txmlns:xi='http://www.w3.org/2001/XInclude' >")
 
-		# List all enabled Services
-		for i in self.ks['service_on']:
+		for i in self.service_instances.keys():
 			list.append("\t<service name='%s' version='1' type='service'>" % i)
-			list.append("\t\t<instance name='default' enabled='true'/>")
-			list.append("\t</service>")
-
-		# List all disabled Services
-		for i in self.ks['service_off']:
-			list.append("\t<service name='%s' version='1' type='service'>" % i)
-			list.append("\t\t<instance name='default' enabled='false'/>")
+			for j in self.service_instances[i]:
+				list.append("\t\t<instance name='%s' enabled='%s'/>" \
+						% (j[0], j[1]))
 			list.append("\t</service>")
 
 		# End Service bundle
