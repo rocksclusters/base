@@ -1,4 +1,4 @@
-# $Id: sunos.mk,v 1.3 2008/05/20 01:01:21 anoop Exp $
+# $Id: sunos.mk,v 1.4 2008/05/20 21:52:40 anoop Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: sunos.mk,v $
+# Revision 1.4  2008/05/20 21:52:40  anoop
+# More packages on Solaris
+#
 # Revision 1.3  2008/05/20 01:01:21  anoop
 # Added new packages to the base roll. Linux.mk excludes those new packages
 # when building the roll on Linux
@@ -115,7 +118,8 @@ SRCDIRS = foundation-coreutils foundation-gawk	\
 	  foundation-mysql foundation-python	\
 	  foundation-perl foundation-libxml2	\
 	  foundation-python-extras php postfix	\
-	  foundation-perl-tk			\
+	  foundation-perl-tk foundation-ant	\
+	  foundation-cvs			\
 	  foundation-graphviz foundation-rcs	\
 	  pcre pylib command dbreport 411	\
 	  411-master bittorrent tentakel	\
