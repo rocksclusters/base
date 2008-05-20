@@ -3,10 +3,14 @@
  *
  * Copyright (c) 2001 Dug Song <dugsong@monkey.org>
  *
- * $Id: intf.c,v 1.1 2008/01/04 23:04:43 bruno Exp $
+ * $Id: intf.c,v 1.2 2008/05/20 02:10:25 anoop Exp $
  */
 
 //#include "config.h"
+
+#if defined (__SVR4) && defined (__sun)
+#define HAVE_SYS_SOCKIO_H
+#endif
 
 #include <sys/param.h>
 #include <sys/types.h>
