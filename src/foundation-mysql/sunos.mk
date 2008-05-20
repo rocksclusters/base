@@ -1,4 +1,4 @@
-# $Id: sunos.mk,v 1.3 2008/03/06 23:41:42 mjk Exp $
+# $Id: sunos.mk,v 1.4 2008/05/20 01:05:49 anoop Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: sunos.mk,v $
+# Revision 1.4  2008/05/20 01:05:49  anoop
+# refreshed mysql for solaris only
+#
 # Revision 1.3  2008/03/06 23:41:42  mjk
 # copyright storm on
 #
@@ -91,8 +94,9 @@
 #
 
 build:
-LDFLAGS = -L/opt/SUNWspro/lib -lCrun -lCstd
-export LDFLAGS
+VERSION	= 5.0.41
+MYSQL_LDFLAGS	= "-L/opt/SUNWspro/lib -lCstd -lCrun"
+#MYSQL_CFLAGS	= "-lCrun -lCstd"
 
 install::
 	mkdir -p $(ROOT)/$(PKGROOT)/share/mysql/
