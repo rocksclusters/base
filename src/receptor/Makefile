@@ -53,6 +53,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.3  2008/05/20 01:04:29  anoop
+# Made Makefiles more Solaris friendly
+#
 # Revision 1.2  2008/03/06 23:41:45  mjk
 # copyright storm on
 #
@@ -121,7 +124,7 @@
 #
 
 PKGROOT		= /opt/rocks
-REDHAT.ROOT     = $(PWD)/../../
+REDHAT.ROOT     = $(CURDIR)/../../
 ROCKSROOT       = ../../../../..
 -include $(ROCKSROOT)/etc/Rules.mk
 include Rules.mk
@@ -137,19 +140,19 @@ build:	$(SCRIPTS)
 
 install::
 	mkdir -p $(ROOT)/$(PKGROOT)/bin/
-	install -ma+rx $(SCRIPTS)  $(ROOT)/$(PKGROOT)/bin/
+	$(INSTALL) -m0555 $(SCRIPTS)  $(ROOT)/$(PKGROOT)/bin/
 
 	mkdir -p $(ROOT)/$(PY.ROCKS)/gmon/
-	install -ma+r $(PYLIB) $(ROOT)/$(PY.ROCKS)/gmon/
+	$(INSTALL) -m0444 $(PYLIB) $(ROOT)/$(PY.ROCKS)/gmon/
 
 	mkdir -p $(ROOT)/$(PY.ROCKS)/gmon/listeners/
-	install -ma+r $(LISTENERS) $(ROOT)/$(PY.ROCKS)/gmon/listeners/
+	$(INSTALL) -m0444 $(LISTENERS) $(ROOT)/$(PY.ROCKS)/gmon/listeners/
 
 	mkdir -p $(ROOT)/$(PY.ROCKS)/gmon/metrics/
-	install -ma+r $(METRICS) $(ROOT)/$(PY.ROCKS)/gmon/metrics/
+	$(INSTALL) -m0444 $(METRICS) $(ROOT)/$(PY.ROCKS)/gmon/metrics/
 
-	mkdir -p $(ROOT)/etc/rc.d/init.d/
-	install -ma+rx greceptor.init $(ROOT)/etc/rc.d/init.d/greceptor
+	mkdir -p $(ROOT)/$(INIT_SCRIPTS_DIR)
+	$(INSTALL) -m0555 greceptor.init $(ROOT)/$(INIT_SCRIPTS_DIR)/greceptor
 
 	mkdir -p $(ROOT)/var/lock/greceptor-startup/
 	mkdir -p $(ROOT)/var/cluster/

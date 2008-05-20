@@ -1,5 +1,5 @@
 # --------------------------------------------------- -*- Makefile -*- --
-# $Id: Makefile,v 1.18 2008/03/06 23:41:42 mjk Exp $
+# $Id: Makefile,v 1.19 2008/05/20 01:04:29 anoop Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.19  2008/05/20 01:04:29  anoop
+# Made Makefiles more Solaris friendly
+#
 # Revision 1.18  2008/03/06 23:41:42  mjk
 # copyright storm on
 #
@@ -153,7 +156,7 @@
 #
 
 PKGROOT		= /opt/rocks
-PKGVAR		= /var$(PKGROOT)/mysql
+PKGVAR		= /var/$(PKGROOT)/mysql
 INSTALLDB	= $(PKGROOT)/sbin/mysql-install-db
 REDHAT.ROOT     = $(CURDIR)/../../
 ROCKSROOT       = ../../../../..
@@ -163,7 +166,7 @@ include Rules.mk
 
 build:
 	gunzip -c mysql-$(VERSION).tar.gz | $(TAR) -xf -
-	(cd patch-files && find . -type f | grep -v CVS | cpio -pduv ../)
+	(cd patch-files && find mysql-$(VERSION) -type f | grep -v CVS | cpio -pduv ../)
 	( 								\
 		cd mysql-$(VERSION);					\
 		./configure --prefix=$(PKGROOT)				\
@@ -175,10 +178,11 @@ build:
 			--with-yassl					\
 			--without-bench					\
 			--without-debug					\
+			LDFLAGS=$(MYSQL_LDFLAGS) CFLAGS=$(MYSQL_CFLAGS)	\
 			;						\
 		$(MAKE);						\
 	)
-	
+
 install::
 	mkdir -p $(ROOT)/$(PKGROOT)/etc/
 	mkdir -p $(ROOT)/$(PKGROOT)/sbin/

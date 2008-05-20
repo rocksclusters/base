@@ -1,5 +1,5 @@
 # --------------------------------------------------- -*- Makefile -*- --
-# $Id: Makefile,v 1.3 2008/03/06 23:41:46 mjk Exp $
+# $Id: Makefile,v 1.4 2008/05/20 01:04:29 anoop Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.4  2008/05/20 01:04:29  anoop
+# Made Makefiles more Solaris friendly
+#
 # Revision 1.3  2008/03/06 23:41:46  mjk
 # copyright storm on
 #
@@ -86,7 +89,7 @@
 
 PKGROOT	= /opt/rocks
 
-REDHAT.ROOT = $(PWD)/../../
+REDHAT.ROOT = $(CURDIR)/../../
 ROCKSROOT = ../../../../..
 -include $(ROCKSROOT)/etc/Rules.mk
 include Rules.mk

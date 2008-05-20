@@ -53,6 +53,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.3  2008/05/20 01:04:29  anoop
+# Made Makefiles more Solaris friendly
+#
 # Revision 1.2  2008/03/06 23:41:43  mjk
 # copyright storm on
 #
@@ -184,7 +187,7 @@
 PYLIB   = $(wildcard gmon/*.py) 
 MODULES  = $(wildcard modules/*so)
 
-REDHAT.ROOT = $(PWD)/../../
+REDHAT.ROOT = $(CURDIR)/../../
 ROCKSROOT = ../../../../..
 
 -include $(ROCKSROOT)/etc/Rules.mk

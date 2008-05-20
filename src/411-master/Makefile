@@ -53,6 +53,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.3  2008/05/20 01:04:29  anoop
+# Made Makefiles more Solaris friendly
+#
 # Revision 1.2  2008/03/06 23:41:32  mjk
 # copyright storm on
 #
@@ -100,7 +103,7 @@
 SCRIPTS = 411put
 PKGROOT = /opt/rocks
 
-REDHAT.ROOT     = $(PWD)/../../
+REDHAT.ROOT     = $(CURDIR)/../../
 ROCKSROOT       = ../../../../..
 -include $(ROCKSROOT)/etc/Rules.mk
 include Rules.mk
@@ -113,11 +116,11 @@ install:: build
 	chmod 0755 $(ROOT)/etc/411.d
 	mkdir -p $(ROOT)/var/411/groups/Compute
 	mkdir -p $(ROOT)/etc/rc.d/init.d
-	install -ma+rx $(SCRIPTS)  $(ROOT)/$(PKGROOT)/sbin/
-	install -m700 init.d/411 $(ROOT)/etc/rc.d/init.d
-	install -ma+r var/Makefile $(ROOT)/var/411
-	install -m644 var/Files.mk $(ROOT)/var/411
-	install -m644 var/Group.mk $(ROOT)/var/411
+	$(INSTALL) -m555 $(SCRIPTS)  $(ROOT)/$(PKGROOT)/sbin/
+	$(INSTALL) -m700 init.d/411 $(ROOT)/etc/rc.d/init.d
+	$(INSTALL) -m444 var/Makefile $(ROOT)/var/411
+	$(INSTALL) -m644 var/Files.mk $(ROOT)/var/411
+	$(INSTALL) -m644 var/Group.mk $(ROOT)/var/411
 
 
 clean::

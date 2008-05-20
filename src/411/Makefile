@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.2 2008/03/06 23:41:32 mjk Exp $
+# $Id: Makefile,v 1.3 2008/05/20 01:04:29 anoop Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.3  2008/05/20 01:04:29  anoop
+# Made Makefiles more Solaris friendly
+#
 # Revision 1.2  2008/03/06 23:41:32  mjk
 # copyright storm on
 #
@@ -165,7 +168,7 @@
 SCRIPTS = 411get
 PKGROOT = /opt/rocks
 
-REDHAT.ROOT     = $(PWD)/../../
+REDHAT.ROOT     = $(CURDIR)/../../
 ROCKSROOT       = ../../../../..
 -include $(ROCKSROOT)/etc/Rules.mk
 include Rules.mk
@@ -186,11 +189,11 @@ install:: build
 	mkdir -p $(ROOT)/$(METRICS)
 	mkdir -p $(ROOT)/$(LISTENERS)
 	mkdir -p $(ROOT)/$(PY.ROCKS)/rocks
-	install -ma+rx $(SCRIPTS)  $(ROOT)/$(PKGROOT)/bin/
-	install -ma+r metrics/*.py  $(ROOT)/$(METRICS)
-	install -ma+r listeners/*.py $(ROOT)/$(LISTENERS)
-	install -ma+r rocks/*.py $(ROOT)/$(PY.ROCKS)/rocks
-	install -m644 $(RCFILES) $(ROOT)/$(PKGROOT)/etc/
+	$(INSTALL) -m0555 $(SCRIPTS)  $(ROOT)/$(PKGROOT)/bin/
+	$(INSTALL) -m0555 metrics/*.py  $(ROOT)/$(METRICS)
+	$(INSTALL) -m0444 listeners/*.py $(ROOT)/$(LISTENERS)
+	$(INSTALL) -m0444 rocks/*.py $(ROOT)/$(PY.ROCKS)/rocks
+	$(INSTALL) -m0644 $(RCFILES) $(ROOT)/$(PKGROOT)/etc/
 
 
 clean::

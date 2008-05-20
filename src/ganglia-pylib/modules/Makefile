@@ -1,5 +1,5 @@
 # --------------------------------------------------- -*- Makefile -*- --
-# $Id: Makefile,v 1.2 2008/03/06 23:41:43 mjk Exp $
+# $Id: Makefile,v 1.3 2008/05/20 01:04:29 anoop Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.3  2008/05/20 01:04:29  anoop
+# Made Makefiles more Solaris friendly
+#
 # Revision 1.2  2008/03/06 23:41:43  mjk
 # copyright storm on
 #
@@ -147,7 +150,7 @@ PY.VERSION = 2.4
 # The 411 service requires Python 2.1 or better.
 PY_INCLUDE = /opt/rocks/include/python$(PY.VERSION)
 
-SRCDIRS = `find . -type d -not -name "CVS" -not -name "." -maxdepth 1`
+SRCDIRS = `find * -prune -type d ! -name "CVS" ! -name "."`
 
 modules:: these_modules
 	for i in $(SRCDIRS) ; do \

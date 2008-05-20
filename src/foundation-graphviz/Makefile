@@ -1,5 +1,5 @@
 # --------------------------------------------------- -*- Makefile -*- --
-# $Id: Makefile,v 1.8 2008/03/06 23:41:42 mjk Exp $
+# $Id: Makefile,v 1.9 2008/05/20 01:04:29 anoop Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.9  2008/05/20 01:04:29  anoop
+# Made Makefiles more Solaris friendly
+#
 # Revision 1.8  2008/03/06 23:41:42  mjk
 # copyright storm on
 #
@@ -120,9 +123,11 @@ include Rules.mk
 
 build:
 	gunzip -c graphviz-$(VERSION).tar.gz | $(TAR) -xf -
-	( 								\
-		cd graphviz-$(VERSION);					\
-		./configure --prefix=$(PKGROOT);			\
+	( 					\
+		cd graphviz-$(VERSION);		\
+		./configure --prefix=$(PKGROOT)	\
+		LDFLAGS=$(GRAPHVIZ_LDFLAGS)	\
+		CPPFLAGS=$(GRAPHVIZ_CPPFLAGS);	\
 		$(MAKE);							\
 	)
 	
