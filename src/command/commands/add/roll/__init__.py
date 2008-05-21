@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.30 2008/03/06 23:41:35 mjk Exp $
+# $Id: __init__.py,v 1.31 2008/05/21 18:05:06 anoop Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.31  2008/05/21 18:05:06  anoop
+# Bug fix
+#
 # Revision 1.30  2008/03/06 23:41:35  mjk
 # copyright storm on
 #
@@ -228,7 +231,7 @@ class RollHandler:
 		"""Mount the ISO Image on Linux"""
 		os.system('mount -o loop %s %s' % (iso, self.cdrom_mount))
 
-	def mount_iso_solaris(self, iso):
+	def mount_iso_sunos(self, iso):
 		"""Mount the ISO Image on Solaris"""
 		r, w = popen2.popen2('lofiadm -a %s' % os.path.abspath(iso))
 		self.lofidev = r.read().strip()
@@ -364,6 +367,7 @@ class RollHandler:
 			if os.path.exists(roll_dir):
 				print 'Cleaning %s from the Rolls Directory' % roll_name
 				self.clean_dir(roll_dir)
+		if not os.path.exists(roll_dir):
 			os.makedirs(roll_dir)
 
 		# Navigate to the Roll directory <cdrom>/<roll_name>
