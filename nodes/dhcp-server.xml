@@ -11,6 +11,12 @@
 
   <changelog>
   $Log: dhcp-server.xml,v $
+  Revision 1.4  2008/05/22 21:02:06  bruno
+  rocks-dist is dead!
+
+  moved default location of distro from /export/home/install to
+  /export/rocks/install
+
   Revision 1.3  2007/12/10 21:28:33  bruno
   the base roll now contains several elements from the HPC roll, thus
   making the HPC roll optional.
@@ -95,7 +101,7 @@ mv /tmp/dhcpd /etc/sysconfig/dhcpd
 /sbin/chkconfig dhcpd on
 
 <!-- configure the skeleton dhcpd.conf -->
-<file name="/etc/dhcpd.conf" expr="/opt/rocks/bin/dbreport dhcpd"/>
+<file name="/etc/dhcpd.conf" expr="/opt/rocks/bin/rocks report host dhcpd"/>
 
 </post>
 

@@ -17,6 +17,12 @@
 
   <changelog>
   $Log: rocks-dist.xml,v $
+  Revision 1.18  2008/05/22 21:02:06  bruno
+  rocks-dist is dead!
+
+  moved default location of distro from /export/home/install to
+  /export/rocks/install
+
   Revision 1.17  2008/03/06 23:41:30  mjk
   copyright storm on
 
@@ -89,7 +95,6 @@
   </changelog>
 
   <package>rocks-command</package>
-  <package>rocks-dist</package>
   <package>wget</package>
 
 
@@ -112,13 +117,11 @@ fi
 # e.g., named).
 #
 export PATH=$PATH:/opt/rocks/bin
-/opt/rocks/sbin/insert-ethers --update
+rocks sync config
 
-cd /export/home/install
+cd <var name="Kickstart_DistroDir"/>
 rm -rf rocks-dist
-
-/opt/rocks/bin/rocks-dist \
-	dist2mirror makecontrib dist &gt; /tmp/rocks-dist.debug 2&gt;&amp;1
+rocks create distro
 
 rm -f /etc/rc.d/rocksconfig.d/post-01-rocks-dist
 </file>

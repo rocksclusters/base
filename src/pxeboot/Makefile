@@ -1,5 +1,5 @@
 #
-# $Id: Makefile,v 1.4 2008/03/06 23:41:44 mjk Exp $
+# $Id: Makefile,v 1.5 2008/05/22 21:02:07 bruno Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,12 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.5  2008/05/22 21:02:07  bruno
+# rocks-dist is dead!
+#
+# moved default location of distro from /export/home/install to
+# /export/rocks/install
+#
 # Revision 1.4  2008/03/06 23:41:44  mjk
 # copyright storm on
 #
@@ -71,7 +77,7 @@
 #
 #
 
-PKGROOT		= /export/home/install/sbin/
+PKGROOT		= /export/rocks/install/sbin/
 REDHAT.ROOT     = $(CURDIR)/../../
 ROCKSROOT       = ../../../../..
 -include $(ROCKSROOT)/etc/Rules.mk

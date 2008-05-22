@@ -17,6 +17,12 @@
 
   <changelog>
   $Log: autofs-server.xml,v $
+  Revision 1.9  2008/05/22 21:02:06  bruno
+  rocks-dist is dead!
+
+  moved default location of distro from /export/home/install to
+  /export/rocks/install
+
   Revision 1.8  2008/03/06 23:41:30  mjk
   copyright storm on
 
@@ -100,7 +106,6 @@
 
 <file name="/etc/auto.share">
 apps <var name="Kickstart_PrivateHostname"/>.<var name="Kickstart_PrivateDNSDomain"/>:/export/&amp;
-install <var name="Kickstart_PrivateHostname"/>.<var name="Kickstart_PrivateDNSDomain"/>:/export/home/&amp;
 </file>
 
 

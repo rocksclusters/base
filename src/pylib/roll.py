@@ -54,6 +54,12 @@
 # @Copyright@
 #
 # $Log: roll.py,v $
+# Revision 1.15  2008/05/22 21:02:07  bruno
+# rocks-dist is dead!
+#
+# moved default location of distro from /export/home/install to
+# /export/rocks/install
+#
 # Revision 1.14  2008/03/06 23:41:44  mjk
 # copyright storm on
 #
@@ -135,8 +141,7 @@ class KickstartFile:
 		os.environ['Node_Hostname'] = 'BOOTSTRAP' # silences errors
 
 		cwd = os.getcwd()
-		os.chdir(os.path.join(self.dist.name,
-			'lan', self.dist.arch, 'build'))
+		os.chdir(os.path.join(self.dist.name, self.dist.arch, 'build'))
 		list = []
 		cmd = 'kpp %s %s | kgen %s' % (self.kppFlags, start,
 			self.kgenFlags)
@@ -155,11 +160,13 @@ class Distribution:
 		self.name = name
 	
 	def getPath(self):
-		return os.path.join(self.name, 'lan', self.arch)
+		return os.path.join(self.name, self.arch)
 		
 	def generate(self, flags=""):
-		rocks.util.system('rocks-dist %s --dist=%s dist' % 
-			(flags, self.name))
+		#rocks.util.system('rocks-dist %s --dist=%s dist' % 
+			#(flags, self.name))
+		rocks.util.system('/opt/rocks/bin/rocks create distro dist=%s'
+			% (self.name))
 		self.tree = rocks.file.Tree(os.path.join(os.getcwd(), 
 			self.getPath()))
 		

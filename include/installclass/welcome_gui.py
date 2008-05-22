@@ -1,5 +1,5 @@
 #
-# $Id: welcome_gui.py,v 1.6 2008/03/26 19:48:18 bruno Exp $
+# $Id: welcome_gui.py,v 1.7 2008/05/22 21:02:06 bruno Exp $
 #
 # Our patch to redhat's installer
 #
@@ -57,6 +57,12 @@
 # @Copyright@
 #
 # $Log: welcome_gui.py,v $
+# Revision 1.7  2008/05/22 21:02:06  bruno
+# rocks-dist is dead!
+#
+# moved default location of distro from /export/home/install to
+# /export/rocks/install
+#
 # Revision 1.6  2008/03/26 19:48:18  bruno
 # forgot to remove all references to 'media'
 #
@@ -184,8 +190,12 @@ class WelcomeWindow(InstallWindow):
 		import rocks.util
 
 		nativearch = rocks.util.getNativeArch()
-		os.chdir('/export/home/install/rocks-dist/lan/' + \
-						'%s/build' % (nativearch))
+
+		cmd = '/opt/rocks/bin/rocks report distro'
+		for line in os.popen(cmd).readlines():
+			distrodir = line[:-1]
+
+		os.chdir('%s/rocks-dist/%s/build' % (distrodir, nativearch))
 
 		os.environ['PYTHONPATH'] = ''
 

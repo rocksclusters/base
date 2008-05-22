@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.24 2008/03/06 23:41:38 mjk Exp $
+# $Id: __init__.py,v 1.25 2008/05/22 21:02:06 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,12 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.25  2008/05/22 21:02:06  bruno
+# rocks-dist is dead!
+#
+# moved default location of distro from /export/home/install to
+# /export/rocks/install
+#
 # Revision 1.24  2008/03/06 23:41:38  mjk
 # copyright storm on
 #
@@ -320,7 +326,7 @@ class Command(rocks.commands.list.command):
 		var['Node_Hostname']     = host
 		var['Node_Address']      = addr
 		var['Node_Membership']   = membership
-		var['Node_Distribution'] = os.path.join(dist, 'lan', arch)
+		var['Node_Distribution'] = os.path.join(dist, arch)
 		var['Node_DistName']     = dist
 		var['Node_Architecture'] = arch
 		var['Node_OS']		 = self.os
@@ -341,12 +347,11 @@ class Command(rocks.commands.list.command):
 		if not self.db:
 			kickstart_dir = 'install'
 		else:
-			kickstart_dir = self.db.getGlobalVar('Kickstart',
-                                        'PrivateKickstartBasedir', host)
+			kickstart_dir = self.command('report.distro').strip()
 
 		if not basedir:
 			os.chdir(os.path.join(os.sep, 'home', 
-				kickstart_dir, dist, 'lan', arch, 'build'))
+				kickstart_dir, dist, arch, 'build'))
 		else:
 			os.chdir(basedir)
 

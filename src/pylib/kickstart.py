@@ -54,6 +54,12 @@
 # @Copyright@
 #
 # $Log: kickstart.py,v $
+# Revision 1.12  2008/05/22 21:02:07  bruno
+# rocks-dist is dead!
+#
+# moved default location of distro from /export/home/install to
+# /export/rocks/install
+#
 # Revision 1.11  2008/03/06 23:41:44  mjk
 # copyright storm on
 #
@@ -208,12 +214,11 @@ class Application(rocks.sql.Application):
 		return 1
 		
 		
-	def readDist(self, type='lan'):
-		"""Read in the RPM tree from our local distribution.
-		Type can currently be 'lan' or 'wan'. """
+	def readDist(self):
+		"""Read in the RPM tree from our local distribution."""
 		
 		dist = self.dist.getDist()
-		self.dist.setDist(os.path.join(dist, type))
+		self.dist.setDist(dist)
 		
 		if not os.path.isdir(self.dist.getHomePath()):
 			raise DistError, "Cannot find distribution %s" \

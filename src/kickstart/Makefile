@@ -1,5 +1,5 @@
 #
-# $Id: Makefile,v 1.19 2008/03/06 23:41:43 mjk Exp $
+# $Id: Makefile,v 1.20 2008/05/22 21:02:07 bruno Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,12 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.20  2008/05/22 21:02:07  bruno
+# rocks-dist is dead!
+#
+# moved default location of distro from /export/home/install to
+# /export/rocks/install
+#
 # Revision 1.19  2008/03/06 23:41:43  mjk
 # copyright storm on
 #
@@ -94,14 +100,14 @@ install::
 	mkdir -p $(ROOT)/$(PKGROOT)/etc
 	$(INSTALL) -m 0644 $(RCFILES) $(ROOT)/$(PKGROOT)/etc/
 
-	mkdir -p $(ROOT)/export/home/install/sbin
-	$(INSTALL) -m 0755 kcgi $(ROOT)/export/home/install/sbin/kickstart.cgi
+	mkdir -p $(ROOT)/export/rocks/install/sbin
+	$(INSTALL) -m 0755 kcgi $(ROOT)/export/rocks/install/sbin/kickstart.cgi
 	$(INSTALL) -m 0755 utils/setDbPartitions.cgi utils/sqlCheckpoint.cgi \
-		utils/setPxeMode.cgi $(ROOT)/export/home/install/sbin/
+		utils/setPxeMode.cgi $(ROOT)/export/rocks/install/sbin/
 
-	mkdir -p $(ROOT)/export/home/install/site-profiles/$(VERSION)/nodes
+	mkdir -p $(ROOT)/export/rocks/install/site-profiles/$(VERSION)/nodes
 	$(INSTALL) -m 0644 $(wildcard site-nodes/*.xml) \
-		$(ROOT)/export/home/install/site-profiles/$(VERSION)/nodes/
+		$(ROOT)/export/rocks/install/site-profiles/$(VERSION)/nodes/
 
 
 

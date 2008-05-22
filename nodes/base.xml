@@ -20,6 +20,12 @@
 
   <changelog>
   $Log: base.xml,v $
+  Revision 1.32  2008/05/22 21:02:06  bruno
+  rocks-dist is dead!
+
+  moved default location of distro from /export/home/install to
+  /export/rocks/install
+
   Revision 1.31  2008/04/21 16:59:28  bruno
   package name changed
 
@@ -340,7 +346,7 @@
 <timezone>--utc <var name="Kickstart_Timezone"/></timezone>
 <bootloader>--location=mbr</bootloader>
 
-<url> --url http://<var name="Kickstart_PrivateKickstartHost"/>/<var name="Kickstart_PrivateKickstartBasedir"/>/<var name="Node_Distribution"/> </url>
+<url> --url http://<var name="Kickstart_PrivateKickstartHost"/>/install/<var name="Node_Distribution"/> </url>
 <interactive/>
 
 </main>

@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.1 2008/05/10 01:49:28 bruno Exp $
+# $Id: __init__.py,v 1.2 2008/05/22 21:02:06 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,12 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.2  2008/05/22 21:02:06  bruno
+# rocks-dist is dead!
+#
+# moved default location of distro from /export/home/install to
+# /export/rocks/install
+#
 # Revision 1.1  2008/05/10 01:49:28  bruno
 # first draft of rocks-dist replacement
 #
@@ -92,6 +98,10 @@ class Command(rocks.commands.create.command):
 	<param type='string' name='root'>
 	The path prefix location of the rolls. The default is:
 	/export/rocks/install.
+	</param>
+
+	<param type='string' name='dist'>
+	The directory name of the distribution. The default is: "rocks-dist".
 	</param>
 
 	<example cmd='create distro'>
@@ -143,11 +153,12 @@ class Command(rocks.commands.create.command):
 		#
 		# args = arch
 		#
-		(arch, version, rolls, root) = self.fillParams(
+		(arch, version, rolls, root, dist) = self.fillParams(
 			[ ('arch', self.arch),
 			('version', rocks.version),
 			('rolls', []),
-			('root', '/export/rocks/install') ])
+			('root', '/export/rocks/install'),
+			('dist', 'rocks-dist') ])
 
 		lockFile = '/var/lock/rocks-dist'
 		os.system('touch %s' % (lockFile))
@@ -164,24 +175,24 @@ class Command(rocks.commands.create.command):
 		mirrors = []
 		mirrors.append(mirror)
 
-		dist = rocks.dist.Distribution(mirrors, rocks.version)
-		dist.setRoot(os.getcwd())
-		dist.setDist('rocks-dist')
-		dist.setLocal('/usr/src/redhat')
-		dist.setContrib(os.path.join(mirror.getRootPath(), 'contrib',
+		distro = rocks.dist.Distribution(mirrors, rocks.version)
+		distro.setRoot(os.getcwd())
+		distro.setDist(dist)
+		distro.setLocal('/usr/src/redhat')
+		distro.setContrib(os.path.join(mirror.getRootPath(), 'contrib',
 			rocks.version))
 
-		builder = self.commandDist(dist, rolls)
-		base = dist.getBasePath()
+		builder = self.commandDist(distro, rolls)
+		base = distro.getBasePath()
 		try:
-			self.makeTorrents(dist)
+			self.makeTorrents(distro)
 		except:
 			pass
 
 		#
 		# make sure everyone can traverse the the rolls directories
 		#
-		mirrors = dist.getMirrors()
+		mirrors = distro.getMirrors()
 		fullmirror = mirrors[0].getRollsPath()
 		os.system('find %s -type d ' % (fullmirror) + \
 			'-exec chmod -R 0755 {} \;')

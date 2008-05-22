@@ -1,5 +1,5 @@
 #
-# $Id: rocks_getrolls.py,v 1.3 2008/03/06 23:41:30 mjk Exp $
+# $Id: rocks_getrolls.py,v 1.4 2008/05/22 21:02:06 bruno Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,12 @@
 # @Copyright@
 #
 # $Log: rocks_getrolls.py,v $
+# Revision 1.4  2008/05/22 21:02:06  bruno
+# rocks-dist is dead!
+#
+# moved default location of distro from /export/home/install to
+# /export/rocks/install
+#
 # Revision 1.3  2008/03/06 23:41:30  mjk
 # copyright storm on
 #
@@ -165,7 +171,11 @@ def RocksGetRolls(anaconda):
 	w = anaconda.intf.waitWindow(_("Rocks-Dist"),
 			 _("Rebuilding the Distribution..."))
 
-	rootdir = '/mnt/sysimage/export/home/install'
+	cmd = '/opt/rocks/bin/rocks report distro'
+	for line in os.popen(cmd).readlines():
+		distrodir = line[:-1]
+
+	rootdir = '/mnt/sysimage/%s' % (distrodir)
 	
 	path = ''
 	try:
@@ -193,7 +203,7 @@ def RocksGetRolls(anaconda):
 
 	os.system('umount /mnt/cdrom')
 	os.system('rm -rf /mnt/cdrom')
-	dir = '/mnt/sysimage/export/home/install/rocks-dist/lan/%s/' % (arch)
+	dir = '/mnt/sysimage/%s/rocks-dist/%s/' % (distrodir, arch)
 	os.system('ln -s %s /mnt/cdrom' % (dir))
 
 	w.pop()
@@ -247,8 +257,12 @@ def downloadRoll(anaconda, roll):
 			isrocksroll = 0
 
 	path = os.path.join(rollname, rollversion, rollarch)
-	localpath = os.path.join(
-			'/mnt/sysimage/export/home/install/rolls', path)
+
+	cmd = '/opt/rocks/bin/rocks report distro'
+	for line in os.popen(cmd).readlines():
+		distrodir = line[:-1]
+
+	localpath = '/mnt/sysimage/%s/rolls/%s' % (distrodir, path)
 
 	if isrocksroll:
 		url = '%s' % os.path.join(rollurl, path)

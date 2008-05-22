@@ -18,6 +18,12 @@
 
   <changelog>
   $Log: central.xml,v $
+  Revision 1.8  2008/05/22 21:02:06  bruno
+  rocks-dist is dead!
+
+  moved default location of distro from /export/home/install to
+  /export/rocks/install
+
   Revision 1.7  2008/03/06 23:41:30  mjk
   copyright storm on
 
@@ -76,36 +82,23 @@
 <post>
 
 <file name="/etc/httpd/conf.d/central.conf">
-#
-# Rocks Apache configuration for Wide Area Kickstart.
-# Various levels of security used to control access.
-#
-
-&lt;Directory /var/www/html/install&gt;
+<![CDATA[
+<Directory /var/www/html/install>
 	Options FollowSymLinks Indexes ExecCGI
 	AllowOverride None
 	Deny from all
-&lt;/Directory&gt;
+</Directory>
 
-# HTTP Package access for WAN installs.
-
-&lt;Directory /var/www/html/install/*/wan&gt;
+<Directory /var/www/html/install/rocks-dist>
 	AllowOverride Limit
-	Deny from all
-&lt;/Directory&gt;
-	
-# HTTP Package access for LAN installs.
-
-&lt;Directory /var/www/html/install/*/lan&gt;
-	AllowOverride Limit
-	Allow from <var name="Kickstart_PrivateNetwork"/>/<var name="Kickstart_PrivateNetmask"/>
+	Allow from 10.0.0.0/255.0.0.0
 	Allow from 127.0.0.1
 	Deny from all
-&lt;/Directory&gt;
-	
-# HTTPS access for serving kickstart files: Lan, Wan.
+</Directory>
 
-&lt;Directory /var/www/html/install/sbin&gt;
+# HTTPS access for serving kickstart files
+
+<Directory /var/www/html/install/sbin>
 	AllowOverride None
 	SSLRequireSSL
 
@@ -113,37 +106,24 @@
 	SSLVerifyClient require
 	SSLVerifyDepth 1
 	Allow from all
-&lt;/Directory&gt;
+</Directory>
 
 # allow all access to the rolls RPMS
-&lt;Directory /var/www/html/install/rolls&gt;
+<Directory /var/www/html/install/rolls>
 	DirectoryIndex /install/rolls/index.cgi
 	Allow from all
-&lt;/Directory&gt;
-
-&lt;Directory /var/www/html/install/sbin/wan&gt;
-	AllowOverride None
-	SSLRequireSSL
-	SSLVerifyClient require
-	SSLVerifyDepth 1
-	Allow from all
-&lt;/Directory&gt;
+</Directory>
 
 # HTTPS access for kickstart files (IP-based security).
 
-&lt;Directory /var/www/html/install/sbin/public&gt;
+<Directory /var/www/html/install/sbin/public>
 	AllowOverride Limit
 	SSLVerifyClient None
 	Deny from all
-&lt;/Directory&gt;
-
-&lt;Directory /var/www/html/install/sbin/wan/public&gt;
-	AllowOverride Limit
-	SSLVerifyClient None
-	Deny from all
-&lt;/Directory&gt;
+</Directory>
 
 SSLCACertificateFile /etc/httpd/conf/ssl.ca/ca-bundle
+]]>
 </file>
 
 mkdir -p /etc/httpd/conf/ssl.ca
@@ -164,12 +144,6 @@ clean:
 
 make -C /etc/httpd/conf/ssl.ca
 
-mkdir -p /export/home/install/sbin/wan
-(
-	cd /export/home/install/sbin/wan ;
-	ln -sf ../kickstart.cgi . ;
-	ln -sf ../sqlCheckpoint.cgi . ;
-)
 touch /var/www/html/robots.txt
 
 </post>

@@ -10,6 +10,12 @@
 
   <changelog>
   $Log: nfs-server.xml,v $
+  Revision 1.2  2008/05/22 21:02:06  bruno
+  rocks-dist is dead!
+
+  moved default location of distro from /export/home/install to
+  /export/rocks/install
+
   Revision 1.1  2007/12/10 21:28:33  bruno
   the base roll now contains several elements from the HPC roll, thus
   making the HPC roll optional.
@@ -60,7 +66,6 @@
 /sbin/chkconfig nfs on
 
 /bin/mkdir -p /export/home
-
 
 <file name="/etc/exports" mode="append">
 /export <var name="Kickstart_PrivateNetwork"/>/<var name="Kickstart_PrivateNetmask"/>(rw,async)

@@ -18,6 +18,12 @@
 
   <changelog>
   $Log: install.xml,v $
+  Revision 1.18  2008/05/22 21:02:06  bruno
+  rocks-dist is dead!
+
+  moved default location of distro from /export/home/install to
+  /export/rocks/install
+
   Revision 1.17  2008/03/06 23:41:30  mjk
   copyright storm on
 
@@ -223,16 +229,14 @@ if [ -f $cluster_kickstart ]; then
 fi
 
 
-<!-- make sure /home/install is automounted -->
-<file name="/etc/auto.home" mode="append">
-install		<var name="Kickstart_PrivateHostname"/>.<var name="Kickstart_PrivateDNSDomain"/>:/export/home/&amp;
-</file>
-
 <!-- in order to automount, the hostname must be in /etc/hosts -->
 <file name="/etc/hosts" expr="/opt/rocks/bin/dbreport hosts"/>
 
 <!-- set up the install directory so it can be served by the web -->
-(cd /var/www/html; ln -s /export/home/install/ install) 
+(
+	cd /var/www/html;
+	ln -s <var name="Kickstart_DistroDir"/> install;
+) 
 
 <!-- now add an entry in the cluster homepage -->
 <file name="/var/www/html/homepage/40-install.html">

@@ -55,6 +55,12 @@
 # @Copyright@
 #
 # $Log: 01-dhcpd.py,v $
+# Revision 1.12  2008/05/22 21:02:07  bruno
+# rocks-dist is dead!
+#
+# moved default location of distro from /export/home/install to
+# /export/rocks/install
+#
 # Revision 1.11  2008/03/06 23:41:46  mjk
 # copyright storm on
 #
@@ -118,6 +124,6 @@ class Plugin(rocks.sql.InsertEthersPlugin):
 				'--norestart' in self.app.caller_args:
 			return
 
-		os.system('/opt/rocks/bin/dbreport dhcpd > ' +
-			  '/etc/dhcpd.conf 2> /dev/null')
+		os.system('/opt/rocks/bin/rocks report host dhcpd ' +
+			  '> /etc/dhcpd.conf 2> /dev/null')
 		os.system('/etc/rc.d/init.d/dhcpd restart > /dev/null 2>&1')

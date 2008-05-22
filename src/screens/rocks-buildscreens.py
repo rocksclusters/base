@@ -81,7 +81,10 @@ class App(rocks.sql.Application):
 
 
 	def buildScreens(self):
-		dir = '/export/home/install'
+		cmd = '/opt/rocks/bin/rocks report distro'
+		for line in os.popen(cmd).readlines():
+			distrodir = line[:-1]
+		dir = distrodir
 
 		#
 		# now use rocks-dist to extract all the kickstart
@@ -92,7 +95,7 @@ class App(rocks.sql.Application):
 		os.chdir(dir)
 
 		#
-		# need a /export/home/install/.popt 
+		# need a .popt 
 		#
 		self.installcgi.createPopt(dir)
 
@@ -102,8 +105,7 @@ class App(rocks.sql.Application):
 		self.installcgi.rebuildDistro(self.generator.rolls)
 
 		nativearch = rocks.util.getNativeArch()
-		builddir = '/export/home/install/rocks-dist/lan/' + \
-						'%s/build' % (nativearch)
+		builddir = '%s/rocks-dist/%s/build' % (distrodir, nativearch)
 
 		isbasicSiteXML = 0
 		if os.path.exists('%s/nodes/site.xml' % (builddir)):
@@ -122,8 +124,7 @@ class App(rocks.sql.Application):
 		#
 		# build the screens
 		#
-		os.chdir('/export/home/install/rocks-dist/lan/' + \
-						'%s/build' % (nativearch))
+		os.chdir(builddir)
 
 		cmd = '/opt/rocks/sbin/kpp root '
 		cmd += '| /opt/rocks/sbin/screengen > '

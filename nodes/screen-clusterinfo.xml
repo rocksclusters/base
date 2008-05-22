@@ -12,6 +12,12 @@
 
 <changelog>
 $Log: screen-clusterinfo.xml,v $
+Revision 1.12  2008/05/22 21:02:06  bruno
+rocks-dist is dead!
+
+moved default location of distro from /export/home/install to
+/export/rocks/install
+
 Revision 1.11  2008/03/06 23:41:30  mjk
 copyright storm on
 
@@ -185,21 +191,12 @@ first pass at new screens
 	</variable>
 
 	<variable>
-		<label>Private Kickstart Basedir</label>
-		<name>Kickstart_PrivateKickstartBasedir</name>
+		<label>Kickstart Distribution</label>
+		<name>Kickstart_DistroDir</name>
 		<type>hidden</type>
-		<size>20</size>
-		<default>install</default>
-		<value><var name="Kickstart_PrivateKickstartBasedir"/></value>
-	</variable>
-
-	<variable>
-		<label>Public Kickstart Basedir</label>
-		<name>Kickstart_PublicKickstartBasedir</name>
-		<type>hidden</type>
-		<size>20</size>
-		<default>install</default>
-		<value><var name="Kickstart_PublicKickstartBasedir"/></value>
+		<size>50</size>
+		<default>/export/rocks/install</default>
+		<value><var name="Kickstart_DistroDir"/></value>
 	</variable>
 
 	<variable>

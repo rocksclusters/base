@@ -1,6 +1,6 @@
 #! /opt/rocks/bin/python
 #
-# $Id: installcgi.py,v 1.10 2008/03/24 20:58:44 bruno Exp $
+# $Id: installcgi.py,v 1.11 2008/05/22 21:02:07 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -56,6 +56,12 @@
 # @Copyright@
 #
 # $Log: installcgi.py,v $
+# Revision 1.11  2008/05/22 21:02:07  bruno
+# rocks-dist is dead!
+#
+# moved default location of distro from /export/home/install to
+# /export/rocks/install
+#
 # Revision 1.10  2008/03/24 20:58:44  bruno
 # more apache vs. lighttpd directory listing parsing
 #
@@ -87,7 +93,10 @@ class InstallCGI:
 
 	def __init__(self, rootdir=None):
 		if rootdir == None:
-			self.rootdir = '/export/home/install'
+			cmd = '/opt/rocks/bin/rocks report distro'
+			for line in os.popen(cmd).readlines():
+				distrodir = line[:-1]
+			self.rootdir = distrodir
 		else:
 			self.rootdir = rootdir
 
@@ -231,7 +240,10 @@ class InstallCGI:
 		# use rocks-dist to find the location of the 'contrib'
 		# directory
 		#
-		rootdir = '/export/home/install'
+		cmd = '/opt/rocks/bin/rocks report distro'
+		for line in os.popen(cmd).readlines():
+			distrodir = line[:-1]
+		rootdir = distrodir
 		self.createPopt(rootdir)
 
 		cmd = 'HOME=%s && /opt/rocks/bin/rocks-dist ' % (rootdir) + \

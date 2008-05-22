@@ -15,6 +15,12 @@ Configure yum
 
 <changelog>
 $Log: yum.xml,v $
+Revision 1.5  2008/05/22 21:02:06  bruno
+rocks-dist is dead!
+
+moved default location of distro from /export/home/install to
+/export/rocks/install
+
 Revision 1.4  2008/03/06 23:41:30  mjk
 copyright storm on
 
@@ -48,7 +54,7 @@ assumeyes=1
 
 [base]
 name=Rocks <var name="Info_RocksVersion"/>
-baseurl=http://<var name="Kickstart_PrivateHostname"/>/<var name="Kickstart_PrivateKickstartBasedir"/>/<var name="Node_Distribution"/>
+baseurl=http://<var name="Kickstart_PrivateHostname"/>/install/<var name="Node_Distribution"/>
 </file>
 
 </post>

@@ -1,6 +1,6 @@
 #!/opt/rocks/usr/bin/python
 #
-# $Id: build-updates-img.py,v 1.4 2008/03/06 23:41:46 mjk Exp $
+# $Id: build-updates-img.py,v 1.5 2008/05/22 21:02:07 bruno Exp $
 #
 # @Copyright@
 # 
@@ -56,6 +56,12 @@
 # @Copyright@
 #
 # $Log: build-updates-img.py,v $
+# Revision 1.5  2008/05/22 21:02:07  bruno
+# rocks-dist is dead!
+#
+# moved default location of distro from /export/home/install to
+# /export/rocks/install
+#
 # Revision 1.4  2008/03/06 23:41:46  mjk
 # copyright storm on
 #
@@ -144,11 +150,12 @@ class Distribution:
 
 	
 	def getPath(self):
-		return os.path.join(self.name, 'lan', self.arch)
+		return os.path.join(self.name, self.arch)
 		
 	def generate(self, flags=""):
-		rocks.util.system('rocks-dist %s --dist=%s --notorrent dist' % 
-			(flags, self.name))
+		rocks.util.system('/opt/rocks/bin/rocks create distro')
+		#rocks.util.system('rocks-dist %s --dist=%s --notorrent dist' % 
+			#(flags, self.name))
 		self.tree = rocks.file.Tree(os.path.join(os.getcwd(), 
 			self.getPath()))
 		

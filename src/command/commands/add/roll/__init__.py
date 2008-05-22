@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.31 2008/05/21 18:05:06 anoop Exp $
+# $Id: __init__.py,v 1.32 2008/05/22 21:02:06 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,12 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.32  2008/05/22 21:02:06  bruno
+# rocks-dist is dead!
+#
+# moved default location of distro from /export/home/install to
+# /export/rocks/install
+#
 # Revision 1.31  2008/05/21 18:05:06  anoop
 # Bug fix
 #
@@ -312,7 +318,12 @@ class RollHandler:
 		roll_vers = roll_info.getRollVersion()
 		roll_arch = roll_info.getRollArch()
 		roll_os   = roll_info.getRollOS()
-		self.rolls_dir = '/export/home/install/rolls'
+
+		cmd = '/opt/rocks/bin/rocks report distro'
+		for line in os.popen(cmd).readlines():
+			distro = line[:-1]
+
+		self.rolls_dir = '%s/rolls' % (distro)
 		# Get the destination, ie. where should the roll be put.
 		# This is always rolls_directory/roll_name/
 		roll_dir = os.path.join(self.rolls_dir, roll_name)

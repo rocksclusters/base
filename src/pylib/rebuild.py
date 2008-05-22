@@ -54,6 +54,12 @@
 # @Copyright@
 #
 # $Log: rebuild.py,v $
+# Revision 1.15  2008/05/22 21:02:07  bruno
+# rocks-dist is dead!
+#
+# moved default location of distro from /export/home/install to
+# /export/rocks/install
+#
 # Revision 1.14  2008/03/06 23:41:44  mjk
 # copyright storm on
 #
@@ -129,7 +135,7 @@ class Rebuild:
 		# where the build state files go (e.g., 'kernel*.src.rpm.done')
 		#
 		self.donedir = os.path.join(self.getRebuildPath(), 'spool',
-			'lan', self.dist.getProductRelease(),
+			self.dist.getProductRelease(),
 			self.dist.getLang(), 'os', self.dist.getArch())
 		if not os.path.exists(self.donedir):
 			os.makedirs(self.donedir)
@@ -143,7 +149,7 @@ class Rebuild:
 		# where all the built binary RPMS will go
 		#
 		self.completedir = os.path.join(self.getRebuildPath(),
-			'lan', self.dist.getProductRelease(),
+			self.dist.getProductRelease(),
 			self.dist.getLang(), 'os', self.dist.getArch(),
 				'RedHat')
 		if not os.path.exists(self.completedir):

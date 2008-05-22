@@ -58,6 +58,12 @@
 # @Copyright@
 #
 # $Log: insert-ethers.py,v $
+# Revision 1.35  2008/05/22 21:02:07  bruno
+# rocks-dist is dead!
+#
+# moved default location of distro from /export/home/install to
+# /export/rocks/install
+#
 # Revision 1.34  2008/04/15 22:14:45  bruno
 # call rocks command line to remove a host
 #
@@ -1327,7 +1333,7 @@ class InsertEthers(GUI):
 	def distDone(self):
 		if os.path.exists(self.rocksdist_lockFile):
 			self.warningGUI(_("Rocks distribution is not ready\n\n")
-				+ _("Please wait for rocks-dist to complete\n"))
+				+ _("Please wait for 'rocks create distro' to complete\n"))
 			return 0
 		return 1
 
@@ -1353,10 +1359,9 @@ class InsertEthers(GUI):
 			return
 
 		self.startGUI()
-		self.sql.findDist()
 
 		#
-		# make sure rocks-dist is not still building the distro
+		# make sure 'rocks create distro' is not still building the distro
 		#
 		if self.distDone() == 0:
 			self.endGUI()
@@ -1506,7 +1511,6 @@ class App(rocks.sql.Application):
 		rocks.sql.Application.__init__(self, argv)
 		self.rcfileHandler	= RCFileHandler
 		self.insertor		= InsertEthers(self)
-		self.distMaker		= CreateDist(self)
 		self.dist		= None
 		self.controller		= ServiceController()
 		self.security		= rocks.security.Modes()
@@ -1613,19 +1617,6 @@ class App(rocks.sql.Application):
 			mask = '255.0.0.0'
 		
 		return "%s/%s" % (net, mask)
-
-	def findDist(self):
-		"Verify we have a valid rocks distribution"
-
-		# Parse the rocks-distrc. Strip all cmd line args.
-		ks = rocks.kickstart.Application(sys.argv[:1])
-		ks.parseArgs()
-		self.dist = ks.dist
-
-		if not os.path.exists(self.dist.getHomePath()):
-			self.distMaker.run()
-			os.unlink(self.lockFile)
-			sys.exit(0)
 
 
 	def cleanup(self):
