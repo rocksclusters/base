@@ -1,6 +1,6 @@
 #!/opt/rocks/usr/bin/python
 #
-# $Id: build-updates-img.py,v 1.5 2008/05/22 21:02:07 bruno Exp $
+# $Id: build-updates-img.py,v 1.6 2008/05/23 18:59:31 anoop Exp $
 #
 # @Copyright@
 # 
@@ -56,6 +56,9 @@
 # @Copyright@
 #
 # $Log: build-updates-img.py,v $
+# Revision 1.6  2008/05/23 18:59:31  anoop
+# Small changes to the base roll to make a cleaner build
+#
 # Revision 1.5  2008/05/22 21:02:07  bruno
 # rocks-dist is dead!
 #
@@ -231,7 +234,7 @@ class App(rocks.app.Application):
 			'rocks-bittorrent',
 			'rocks-command',
 			'rocks-dbreport',
-			'rocks-dist',
+			#'rocks-dist',
 			'rocks-ekv',
 			'rocks-kickstart', 
 			'rocks-kpp',            

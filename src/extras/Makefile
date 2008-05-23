@@ -1,5 +1,5 @@
 #
-# $Id: Makefile,v 1.4 2008/03/06 23:41:41 mjk Exp $
+# $Id: Makefile,v 1.5 2008/05/23 18:59:31 anoop Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.5  2008/05/23 18:59:31  anoop
+# Small changes to the base roll to make a cleaner build
+#
 # Revision 1.4  2008/03/06 23:41:41  mjk
 # copyright storm on
 #
@@ -89,11 +92,12 @@ include Rules.mk
 
 
 rpm::
-	-rocks-dist --notorrent --with-roll=os,$(OS_VERSION) dist
+	rocks create distro 
 	cp $(DISTPATH)/caching-nameserver*rpm $(REDHAT.RPMS)/$(ARCH)
 	touch -t 197012310000 $(REDHAT.RPMS)/$(ARCH)/caching-nameserver*rpm
 
 
 clean::
 	rm -rf rocks-dist
+	rm -rf cachedir
 

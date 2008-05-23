@@ -1,4 +1,4 @@
-# $Id: linux.mk,v 1.14 2008/05/20 01:01:21 anoop Exp $
+# $Id: linux.mk,v 1.15 2008/05/23 18:59:31 anoop Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: linux.mk,v $
+# Revision 1.15  2008/05/23 18:59:31  anoop
+# Small changes to the base roll to make a cleaner build
+#
 # Revision 1.14  2008/05/20 01:01:21  anoop
 # Added new packages to the base roll. Linux.mk excludes those new packages
 # when building the roll on Linux
@@ -125,6 +128,7 @@ SRCDIRS = `find . -type d -maxdepth 1 \
 	-not -name rocks-pxe \
 	-not -name updates.img \
 	-not -name anaconda	\
+	-not -name devel-env	\
 	-not -name pcre		\
 	-not -name php		\
 	-not -name postfix`
