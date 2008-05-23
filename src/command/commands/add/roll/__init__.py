@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.32 2008/05/22 21:02:06 bruno Exp $
+# $Id: __init__.py,v 1.33 2008/05/23 17:55:16 anoop Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.33  2008/05/23 17:55:16  anoop
+# Modifications to use /export/rocks/install instead of /export/home/install
+# for solaris
+#
 # Revision 1.32  2008/05/22 21:02:06  bruno
 # rocks-dist is dead!
 #
@@ -370,7 +374,7 @@ class RollHandler:
 		roll_arch = roll_info.getRollArch()
 		roll_os = roll_info.getRollOS()
 
-		roll_dir = os.path.join('/export/home/install',
+		roll_dir = os.path.join('/export/rocks/install',
 					'jumpstart/rolls/',
 					roll_name)
 		
@@ -444,7 +448,7 @@ class RollHandler:
 	def copy_foreign_cd_sunos(self, clean):
 		"""Copy a standard Solaris CD"""
 		
-		js_dir = '/export/home/install/jumpstart/'
+		js_dir = '/export/rocks/install/jumpstart/'
 		# For now, hardcode the architecture, because we only support
 		# one architecture. No others. This should really be obtained
 		# from the database.
@@ -527,12 +531,12 @@ class RollHandler:
 class Command(rocks.commands.add.command):
 	"""
 	Add Roll ISO images to this machine's roll directory. This command
-	copies all files in the ISOs to a directory under /home/install/rolls.
+	copies all files in the ISOs to a directory under /export/rocks/install/rolls.
 
 	<arg optional='1' type='string' name='roll' repeat='1'>
-	A list of Roll ISO images to add to /home/install/rolls. If no list is
+	A list of Roll ISO images to add to /export/rocks/install/rolls. If no list is
 	supplied, then if a roll is mounted on /mnt/cdrom, it will be copied
-	into /home/install/rolls.
+	into /export/rocks/install/rolls.
 	</arg>
 		
 	<param type='bool' name='clean'>
