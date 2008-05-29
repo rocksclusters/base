@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: build.py,v $
+# Revision 1.34  2008/05/29 18:06:45  bruno
+# add full path to mksquashfs
+#
 # Revision 1.33  2008/03/06 23:41:44  mjk
 # copyright storm on
 #
@@ -1329,7 +1332,7 @@ class DistributionBuilder(Builder):
 		os.makedirs('../../images')
 
 	os.system('rm -f %s' % (product))
-	cmd = 'mksquashfs installclass/*py installclasses %s ' % (product)
+	cmd = '/sbin/mksquashfs installclass/*py installclasses %s ' % (product)
 	cmd += '-keep-as-directory > /dev/null 2>&1'
 	os.system(cmd)
 
