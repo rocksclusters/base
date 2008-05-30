@@ -20,6 +20,10 @@
 
   <changelog>
   $Log: base.xml,v $
+  Revision 1.33  2008/05/30 22:15:16  bruno
+  can now install a frontend off CD with the distro moved to
+  /export/rocks/install
+
   Revision 1.32  2008/05/22 21:02:06  bruno
   rocks-dist is dead!
 
@@ -346,7 +350,7 @@
 <timezone>--utc <var name="Kickstart_Timezone"/></timezone>
 <bootloader>--location=mbr</bootloader>
 
-<url> --url http://<var name="Kickstart_PrivateKickstartHost"/>/install/<var name="Node_Distribution"/> </url>
+<url> --url http://<var name="Kickstart_PrivateKickstartHost"/>/<var name="Kickstart_PrivateKickstartBasedir"/>/<var name="Node_Distribution"/> </url>
 <interactive/>
 
 </main>

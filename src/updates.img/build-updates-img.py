@@ -1,6 +1,6 @@
 #!/opt/rocks/usr/bin/python
 #
-# $Id: build-updates-img.py,v 1.6 2008/05/23 18:59:31 anoop Exp $
+# $Id: build-updates-img.py,v 1.7 2008/05/30 22:15:16 bruno Exp $
 #
 # @Copyright@
 # 
@@ -56,6 +56,10 @@
 # @Copyright@
 #
 # $Log: build-updates-img.py,v $
+# Revision 1.7  2008/05/30 22:15:16  bruno
+# can now install a frontend off CD with the distro moved to
+# /export/rocks/install
+#
 # Revision 1.6  2008/05/23 18:59:31  anoop
 # Small changes to the base roll to make a cleaner build
 #
@@ -157,8 +161,6 @@ class Distribution:
 		
 	def generate(self, flags=""):
 		rocks.util.system('/opt/rocks/bin/rocks create distro')
-		#rocks.util.system('rocks-dist %s --dist=%s --notorrent dist' % 
-			#(flags, self.name))
 		self.tree = rocks.file.Tree(os.path.join(os.getcwd(), 
 			self.getPath()))
 		
@@ -234,7 +236,6 @@ class App(rocks.app.Application):
 			'rocks-bittorrent',
 			'rocks-command',
 			'rocks-dbreport',
-			#'rocks-dist',
 			'rocks-ekv',
 			'rocks-kickstart', 
 			'rocks-kpp',            

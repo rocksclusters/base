@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.2 2008/05/22 21:02:06 bruno Exp $
+# $Id: __init__.py,v 1.3 2008/05/30 22:15:16 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.3  2008/05/30 22:15:16  bruno
+# can now install a frontend off CD with the distro moved to
+# /export/rocks/install
+#
 # Revision 1.2  2008/05/22 21:02:06  bruno
 # rocks-dist is dead!
 #
@@ -153,18 +157,23 @@ class Command(rocks.commands.create.command):
 		#
 		# args = arch
 		#
-		(arch, version, rolls, root, dist) = self.fillParams(
+		(arch, version, withrolls, root, dist) = self.fillParams(
 			[ ('arch', self.arch),
 			('version', rocks.version),
-			('rolls', []),
+			('rolls', None),
 			('root', '/export/rocks/install'),
 			('dist', 'rocks-dist') ])
 
 		lockFile = '/var/lock/rocks-dist'
 		os.system('touch %s' % (lockFile))
 
-		if self.db:
-			rolls = self.getRolls(arch)
+		rolls = []
+		if withrolls == None:
+			if self.db:
+				rolls = self.getRolls(arch)
+		else:
+			for i in withrolls.split(' '):
+				rolls.append(i.split(','))
 
 		mirror = rocks.dist.Mirror()
 		mirror.setHost('rolls')
@@ -175,12 +184,12 @@ class Command(rocks.commands.create.command):
 		mirrors = []
 		mirrors.append(mirror)
 
-		distro = rocks.dist.Distribution(mirrors, rocks.version)
+		distro = rocks.dist.Distribution(mirrors, version)
 		distro.setRoot(os.getcwd())
 		distro.setDist(dist)
 		distro.setLocal('/usr/src/redhat')
 		distro.setContrib(os.path.join(mirror.getRootPath(), 'contrib',
-			rocks.version))
+			version))
 
 		builder = self.commandDist(distro, rolls)
 		base = distro.getBasePath()

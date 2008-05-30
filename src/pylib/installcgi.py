@@ -1,6 +1,6 @@
 #! /opt/rocks/bin/python
 #
-# $Id: installcgi.py,v 1.11 2008/05/22 21:02:07 bruno Exp $
+# $Id: installcgi.py,v 1.12 2008/05/30 22:15:16 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -56,6 +56,10 @@
 # @Copyright@
 #
 # $Log: installcgi.py,v $
+# Revision 1.12  2008/05/30 22:15:16  bruno
+# can now install a frontend off CD with the distro moved to
+# /export/rocks/install
+#
 # Revision 1.11  2008/05/22 21:02:07  bruno
 # rocks-dist is dead!
 #
@@ -87,7 +91,7 @@ import os.path
 import string
 import shutil
 import rocks.file
-
+import rocks.util
 
 class InstallCGI:
 
@@ -99,6 +103,12 @@ class InstallCGI:
 			self.rootdir = distrodir
 		else:
 			self.rootdir = rootdir
+
+		cmd = '/opt/rocks/bin/rocks report version'
+		for line in os.popen(cmd).readlines():
+			self.version = line[:-1]
+
+		self.arch = rocks.util.getNativeArch()
 
 		return
 
@@ -125,26 +135,11 @@ class InstallCGI:
 		#
 		# look in the newly built distro for site.xml
 		#
-		cwd = os.getcwd()
-		os.chdir(self.rootdir)
+		site_xml = os.path.join(self.rootdir, 'rocks-dist', self.arch,
+			'build', 'nodes', 'site.xml')
 
-		pythonpath = os.environ['PYTHONPATH']
-		os.environ['PYTHONPATH'] = ''
-
-		cmd = 'HOME=%s ' % (self.rootdir)
-		cmd += '/opt/rocks/bin/rocks-dist --root=%s ' % (self.rootdir)
-		cmd += '--path=dist.getBuildPath paths '
-
-		r = os.popen(cmd)
-		builddir = string.strip(r.readline())
-
-		site_xml = os.path.join(builddir, 'nodes', 'site.xml')
 		if os.path.exists(site_xml):
 			shutil.copy(site_xml, '/tmp/site.xml')
-
-		os.environ['PYTHONPATH'] = pythonpath
-
-		os.chdir(cwd)
 
 		return
 
@@ -196,68 +191,22 @@ class InstallCGI:
 		return
 
 
-	def getSiteDotXML(self):
-		#
-		# look in the newly built distro for site.xml and rolls.xml
-		#
-		cwd = os.getcwd()
-		os.chdir(self.rootdir)
-
-		#
-		# then, to build the distro
-		#
-		pythonpath = os.environ['PYTHONPATH']
-		os.environ['PYTHONPATH'] = ''
-
-		cmd = 'HOME=%s ' % (self.rootdir)
-		cmd += '/opt/rocks/bin/rocks-dist --root=%s ' % (self.rootdir)
-		cmd += '--path=dist.getBuildPath paths '
-
-		r = os.popen(cmd)
-		builddir = string.strip(r.readline())
-
-		site_xml = os.path.join(builddir, 'nodes', 'site.xml')
-		if os.path.exists(site_xml):
-			shutil.copy(site_xml, '/tmp/site.xml')
-
-		os.environ['PYTHONPATH'] = pythonpath
-
-		os.chdir(cwd)
-
-		return
-
-
 	def getKickstartFiles(self, roll):
 		#
 		# for every selected roll, find the roll-{name}-kickstart*rpm
 		# file
 		#
-		(rollname, rollver, rollarch, rollurl, diskid) = roll
-
 		cwd = os.getcwd()
 
-		#
-		# use rocks-dist to find the location of the 'contrib'
-		# directory
-		#
-		cmd = '/opt/rocks/bin/rocks report distro'
-		for line in os.popen(cmd).readlines():
-			distrodir = line[:-1]
-		rootdir = distrodir
-		self.createPopt(rootdir)
+		self.createPopt(self.rootdir)
 
-		cmd = 'HOME=%s && /opt/rocks/bin/rocks-dist ' % (rootdir) + \
-			'--path=dist.getContribRPMSPath ' + \
-			'--root=%s paths' % (rootdir)
+		contribdir = os.path.join(self.rootdir, 'contrib', self.version,
+			self.arch, 'RPMS')
 
-		line = os.popen(cmd).readlines()
-		if len(line) > 0:
-			contribdir = string.strip(line[0])
-
-		cmd = 'mkdir -p %s' % (contribdir)
-		os.system(cmd)
+		os.system('mkdir -p %s' % (contribdir))
 		os.chdir(contribdir)
 
+		(rollname, rollver, rollarch, rollurl, diskid) = roll
 		url = rollurl + '%s/%s/%s/' % (rollname, rollver, rollarch)
 		url += 'RedHat/RPMS/'
 
@@ -314,24 +263,24 @@ class InstallCGI:
 		#
 		# get a list of the rolls
 		#
-		rolls = ''
+		rolls = []
 		for r in rollslist:
 			(rollname, rollversion, rollarch, rollurl, diskid) = r
-
-			rolls += ' --with-roll=%s,%s ' % (rollname, rollversion)
+			rolls.append('%s,%s' % (rollname, rollversion))
 
 		#
-		# then, to build the distro
+		# build the distro
 		#
 		pythonpath = os.environ['PYTHONPATH']
 		os.environ['PYTHONPATH'] = ''
 
 		cmd = 'HOME=%s ' % (self.rootdir)
-		cmd += '/opt/rocks/bin/rocks-dist --root=%s --notorrent' \
-			% (self.rootdir)
-		cmd += '%s dist ' % (rolls)
-		cmd += '> /tmp/rocks-dist.debug 2>&1'
-		os.system(cmd)
+		cmd += '/opt/rocks/bin/rocks create distro '
+		if len(rolls) > 0:
+			cmd += 'rolls="%s" ' % ' '.join(rolls)
+		cmd += 'root=%s ' % (self.rootdir)
+		os.system('echo %s > /tmp/rocks-create-distro.debug' % cmd)
+		os.system(cmd + ' >> /tmp/rocks-create-distro.debug 2>&1')
 
 		os.environ['PYTHONPATH'] = pythonpath
 
