@@ -171,7 +171,7 @@ device drivers:
 
 <screen>
 # cd /home/install
-# rpm -Uvh --force rocks-dist/lan/x86_64/RedHat/RPMS/rocks-boot-4*.rpm
+# rpm -Uvh --force rocks-dist/lan/x86_64/RedHat/RPMS/rocks-boot-5*.rpm
 # cp /boot/kickstart/default/initrd.img /tftpboot/pxelinux/
 # cp /boot/kickstart/default/vmlinuz /tftpboot/pxelinux/
 </screen>
