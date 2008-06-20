@@ -1,11 +1,22 @@
 #!/opt/rocks/bin/python
 #
-# $Id: rocks-bt.py,v 1.12 2007/12/10 21:28:34 bruno Exp $
+# $Id: rocks-bt.py,v 1.13 2008/06/20 20:42:43 bruno Exp $
 #
 # @COPYRIGHT@
 # @COPYRIGHT@
 #
 # $Log: rocks-bt.py,v $
+# Revision 1.13  2008/06/20 20:42:43  bruno
+# reworked to handle:
+#
+#  1) http 'range' requests when an RPM is partially downloaded and lighttpd
+#    asks for the last part of the file (the http_range starts at a non-zero
+#    offset)
+#
+#  2) try to get the requested file from the local disk
+#
+# #1 fixes an error and #2 speeds up installs.
+#
 # Revision 1.12  2007/12/10 21:28:34  bruno
 # the base roll now contains several elements from the HPC roll, thus
 # making the HPC roll optional.
@@ -147,98 +158,129 @@ else:
 	peers = BitTorrent.rocks.getPeers(torrentinfo, mypeerid)
 
 #
-# append the kickstart host ip to the end of the list
+# optimization -- if mypeerid is in the list of peers, that means we already
+# have the RPM, just serve it from the local copy
 #
-for peer in peers + [ {'ip' : host} ]:
-	#
-	# get the RPM
-	#
-	tempfile = '/install/' + os.path.basename(savefile)
+file.write('filename: %s\n' % filename)
+havefile = 0
+for peer in peers:
+	if peer.has_key('peer id') and peer['peer id'] == mypeerid:
+		havefile = 1
+		file.write('havefile: %s\n' % filename)
+		status = 0
+		break
 
-	cmd = '%s http://%s/%s -O %s' % (wget, peer['ip'], filename, tempfile)
-	status = os.system(cmd)
+if havefile == 0:
+	#
+	# append the kickstart host ip to the end of the list
+	#
+	for peer in peers + [ {'ip' : host} ]:
+		#
+		# get the RPM
+		#
+		tempfile = '/install/' + os.path.basename(savefile)
 
-	#
-	# output the request -- this can be redirected to a log file
-	#
-	file.write('http://%s/%s : status %d\n' %
+		cmd = '%s http://%s/%s -O %s' % (wget, peer['ip'], filename,
+			tempfile)
+		status = os.system(cmd)
+
+		#
+		# output the request to a log file
+		#
+		file.write('http://%s/%s : status %d\n' %
 						(peer['ip'], filename, status))
 
-	if status == 0:
-		#
-		# save the file so another installing node can download it
-		# from us
-		#
-		cmd = 'mv %s %s' % (tempfile, savefile)
-		os.system(cmd)
-
-		#
-		# if this is a 'byte range' request, then only output
-		# the requested bytes
-		#
-		if os.environ.has_key('HTTP_RANGE'):
-			bytes = string.split(os.environ['HTTP_RANGE'], '=')
-			if len(bytes) > 1:
-				range = string.split(bytes[1], '-')
-				if len(range) > 1:	
-					offset = int(range[0])
-					filesize = (int(range[1]) - offset) + 1
-		else:
-			filesize = os.stat(savefile)[stat.ST_SIZE]
-
-		#
-		# output the file to the requesting local web server
-		#
-		# send an HTTP header
-		#
-		print 'Content-type: application/octet-stream'
-		print 'Content-length: %d' % (filesize)
-		print ''
-		
-		fd = os.open(savefile, os.O_RDONLY)
-
-		if os.environ.has_key('HTTP_RANGE'):
-			os.lseek(fd, offset, 0)
-			buf = os.read(fd, filesize)
-			sys.stdout.write(buf)
+		if status == 0:
+			#
+			# save the file so another installing node can
+			# download it from us
+			#
+			cmd = 'mv %s %s' % (tempfile, savefile)
+			os.system(cmd)
+			break
 		else:
 			#
-			# output the entire file
+			# if the download fails, then tell the tracker that
+			# this 'peer' is bad
 			#
-			buf = os.read(fd, 131072)
-			while len(buf) > 0:
-				sys.stdout.write(buf)
-				buf = os.read(fd, 131072)
+			#if peer.has_key('peer id'):
+				#BitTorrent.rocks.sendToTracker(torrentinfo,
+					#peer['peer id'], 'done')
 
-		os.close(fd)
-		
-		break
-	else:
-		#
-		# if the download fails, then tell the tracker that this 'peer'
-		# is bad
-		#
-		if peer.has_key('peer id'):
-			BitTorrent.rocks.sendToTracker(torrentinfo,
-				peer['peer id'], 'done')
-
-		#
-		# wget has a bad side effect -- if the file doesn't exist and if
-		# you use the '-O' flag, it will create a zero-length file.
-		#
-		# in this case, remove the zero-length file
-		#
-		cmd = 'rm -f %s' % (tempfile)
-		os.system(cmd)
+			#
+			# wget has a bad side effect -- if the file doesn't
+			# exist and if you use the '-O' flag, it will create a
+			# zero-length file.
+			#
+			# in this case, remove the zero-length file
+			#
+			cmd = 'rm -f %s' % (tempfile)
+			os.system(cmd)
 
 if status == 0:
 	#
-	# after downloading, tell the tracker that we have the file
+	# after downloading, output the file to the requesting server
 	#
-	cmd = 'mv /tmp/torrent %s.torrent' % (savefile)
-	os.system(cmd)
+	# if this is a 'byte range' request, then only output the requested
+	# bytes
+	#
+	if os.environ.has_key('HTTP_RANGE'):
+		bytes = string.split(os.environ['HTTP_RANGE'], '=')
+		if len(bytes) > 1:
+			range = string.split(bytes[1], '-')
+			if len(range) > 1:	
+				if len(range[0]) > 0:
+					offset = int(range[0])
+				else:
+					offset = 0
 
-	BitTorrent.rocks.sendToTracker(torrentinfo, mypeerid, 'started')
+				if len(range[1]) > 0:
+					last = int(range[1])
+				else:
+					last = os.stat(savefile)[stat.ST_SIZE]
+
+				filesize = last - offset + 1
+
+	else:
+		filesize = os.stat(savefile)[stat.ST_SIZE]
+
+	#
+	# output the file to the requesting local web server
+	#
+	# send an HTTP header
+	#
+	print 'Content-type: application/octet-stream'
+	print 'Content-length: %d' % (filesize)
+	print ''
+	
+	fd = os.open(savefile, os.O_RDONLY)
+
+	if os.environ.has_key('HTTP_RANGE'):
+		os.lseek(fd, offset, 0)
+		buf = os.read(fd, filesize)
+		sys.stdout.write(buf)
+	else:
+		#
+		# output the entire file
+		#
+		buf = os.read(fd, 131072)
+		while len(buf) > 0:
+			sys.stdout.write(buf)
+			buf = os.read(fd, 131072)
+
+	os.close(fd)
+
+	if havefile == 0:
+		#
+		# now tell the tracker that we have the file
+		#
+		cmd = 'mv /tmp/torrent %s.torrent' % (savefile)
+		os.system(cmd)
+
+		BitTorrent.rocks.sendToTracker(torrentinfo, mypeerid, 'started')
+	else:
+		cmd = 'rm -f /tmp/torrent'
+		os.system(cmd)
 
 file.close()
 
