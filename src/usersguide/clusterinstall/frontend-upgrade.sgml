@@ -138,11 +138,11 @@ If you'd like to add your own post sections, you can add the name of the script 
 directive of the <computeroutput>/export/site-roll/rocks/src/roll/restore/version.mk</computeroutput> file.
 </para>
 <screen>
-SCRIPTS += /export/apps/myscript.sh /export/apps/myscript2.py
+SCRIPTS += /share/apps/myscript.sh /share/apps/myscript2.py
 </screen>
 <para>
-This will add the shell script <computeroutput>/export/apps/myscript.sh</computeroutput>, and the python
-script <computeroutput>/export/apps/myscript2.py</computeroutput> in the post section of the restore-user-files.xml file.
+This will add the shell script <computeroutput>/share/apps/myscript.sh</computeroutput>, and the python
+script <computeroutput>/share/apps/myscript2.py</computeroutput> in the post section of the restore-user-files.xml file.
 <note><para>If you'd like to run the script in "nochroot" mode, add
 <screen># nochroot</screen>
 as the first comment in your script file after the interpreter line, if one is present.</para>

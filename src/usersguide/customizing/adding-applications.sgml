@@ -11,11 +11,11 @@ you can share it with NFS.
 
 <para>
 On the frontend, go to the directory
-<computeroutput>/export/apps</computeroutput>.
+<computeroutput>/share/apps</computeroutput>.
 </para>
 
 <screen>
-# cd /export/apps
+# cd /share/apps
 </screen>
 
 <para>
@@ -23,13 +23,13 @@ Then add the files you'd like to share within this directory.
 </para>
 
 <para>
-All files will be available on the compute nodes under:
+All files will also be available on the compute nodes under:
 <computeroutput>/share/apps</computeroutput>.
 For example:
 </para>
 
 <screen>
-# cd /export/apps
+# cd /share/apps
 # touch myapp
 # ssh compute-0-0
 # cd /share/apps
