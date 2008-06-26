@@ -1,4 +1,5 @@
 <!ENTITY central SYSTEM "central.sgml">
 <!ENTITY cross SYSTEM "cross.sgml">
 <!ENTITY pxeflash SYSTEM "pxeflash.sgml">
+<!ENTITY bootflags SYSTEM "bootflags.sgml">
 

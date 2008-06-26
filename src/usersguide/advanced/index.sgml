@@ -4,6 +4,7 @@
 &pxeflash;
 &central;
 &cross;
+&bootflags;
 
 </chapter>
 

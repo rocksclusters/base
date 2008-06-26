@@ -1,0 +1,175 @@
+<section id="bootflags" xreflabel="Adding Kernel Boot Parameters">
+<title> Adding Kernel Boot Parameters </title>
+
+<para>
+There are two scenarios in which you need to add extra kernel boot parameters:
+1) during installation, and 2) during normal boot.
+For both scenarios, will use the example of adding the kernel boot
+parameter: "ucsd=rocks".
+</para>
+
+
+<section>
+<title> Adding Kernel Boot Parameters to the Installation Kernel </title>
+
+<para>
+The boot <emphasis>action</emphasis> of a node is controlled by the Rocks
+command line.
+For example, the following lists what the nodes will do on their next
+PXE boot:
+</para>
+
+<screen>
+# rocks list host pxeboot
+HOST         ACTION
+olympic:     ------
+compute-0-0: os
+</screen>
+
+<para>
+We see that <computeroutput>compute-0-0</computeroutput> will boot the "os",
+that is, it will boot off its local disk.
+Another common action is "install" which means the node will boot the
+installation kernel and install itself on the node's next PXE boot.
+</para>
+
+<para>
+To list all the possible boot actions for a compute node, execute:
+</para>
+
+<screen>
+# rocks list host pxeaction compute-0-0
+ACTION           COMMAND               ARGS
+install          kernel vmlinuz        append ks initrd=initrd.img ramdisk_size=150000 lang= devfs=nomount pxe kssendmac selinux=0 noipv6
+install headless kernel vmlinuz        append ks initrd=initrd.img ramdisk_size=150000 lang= devfs=nomount pxe kssendmac selinux=0 noipv6 headless vnc
+memtest          kernel memtest        ----------------------------------------------------------------------
+os               localboot 0           ----------------------------------------------------------------------
+pxeflash         kernel memdisk bigraw append initrd=pxeflash.img keeppxe
+rescue           kernel vmlinuz        append ks initrd=initrd.img ramdisk_size=150000 lang= devfs=nomount pxe kssendmac selinux=0 noipv6 rescue
+</screen>
+
+<para>
+To change a node's boot action to "install", execute:
+</para>
+
+<screen>
+# rocks set host pxeboot compute-0-0 action="install"
+</screen>
+
+<para>
+Then we see that correct boot action has been applied:
+</para>
+
+<screen>
+# rocks list host pxeboot            
+HOST         ACTION 
+olympic:     -------
+compute-0-0: install
+</screen>
+
+<para>
+Now to add or change the kernel boot parameters for the installing kernel,
+we'll need to add or modify an action.
+We'll create a new action called "install ucsd" and add our boot flag
+"ucsd=rocks" to the end of the kernel boot parameters:
+</para>
+
+<screen>
+# rocks add host pxeaction action="install ucsd" command="kernel vmlinuz \
+  args="append ks initrd=initrd.img ramdisk_size=150000 lang= devfs=nomount \
+  pxe kssendmac selinux=0 noipv6 ucsd=rocks"
+</screen>
+
+<para>
+We now see that "install ucsd" is an available action:
+</para>
+
+<screen>
+# rocks list host pxeaction compute-0-0
+ACTION           COMMAND               ARGS
+install          kernel vmlinuz        append ks initrd=initrd.img ramdisk_size=150000 lang= devfs=nomount pxe kssendmac selinux=0 noipv6
+install headless kernel vmlinuz        append ks initrd=initrd.img ramdisk_size=150000 lang= devfs=nomount pxe kssendmac selinux=0 noipv6 headless vnc
+install ucsd     kernel vmlinuz        append ks initrd=initrd.img ramdisk_size=150000 lang= devfs=nomount pxe kssendmac selinux=0 noipv6 ucsd=rocks
+memtest          kernel memtest        ---------------------------------------------------------------
+os               localboot 0           ---------------------------------------------------------------
+pxeflash         kernel memdisk bigraw append initrd=pxeflash.img keeppxe
+rescue           kernel vmlinuz        append ks initrd=initrd.img ramdisk_size=150000 lang= devfs=nomount pxe kssendmac selinux=0 noipv6 rescue
+</screen>
+
+<para>
+We can add an action to only one node by including the node name in the
+"rocks add host pxeaction" command line.
+For example, here's how to apply the "install ucsd" action only to compute-0-0:
+</para>
+
+<screen>
+# rocks add host pxeaction compute-0-0 action="install ucsd" \
+  command="kernel vmlinuz \
+  args="append ks initrd=initrd.img ramdisk_size=150000 lang= devfs=nomount \
+  pxe kssendmac selinux=0 noipv6 ucsd=rocks"
+</screen>
+
+<para>
+Also, you can override a global action by simply replacing the "args".
+For example, here's how to override the global "install" action:
+</para>
+
+<screen>
+# rocks add host pxeaction compute-0-0 action="install" \
+  command="kernel vmlinuz \
+  args="append ks initrd=initrd.img ramdisk_size=150000 lang= devfs=nomount \
+  pxe kssendmac selinux=0 noipv6 ucsd=rocks"
+</screen>
+
+</section>
+
+
+<section>
+<title> Adding Kernel Boot Parameters to the Running Kernel </title>
+
+<para>
+To get the current parameters that will be appended to the default kernel
+boot parameters, execute:
+</para>
+
+<screen>
+# rocks report host bootflags
+rocks-168: dom0_mem=1024M
+compute-0-0: dom0_mem=1024M
+</screen>
+
+<para>
+Then, to add our boot flag of "ucsd=rocks", execute:
+</para>
+
+<screen>
+# rocks set host bootflags compute-0-0 flags="dom0_mem=1024M ucsd=rocks"
+</screen>
+
+<para>
+To check to make sure the flag has been added to the database, execute:
+</para>
+
+<screen>
+# rocks report host bootflags
+rocks-168: dom0_mem=1024M
+compute-0-0: dom0_mem=1024M ucsd=rocks
+</screen>
+
+<para>
+To apply the flags to the running kernel, you'll need to reinstall the
+compute nodes.
+For example, you'll need to reinstall compute-0-0 in order to apply
+"ucsd=rocks" to its kernel boot parameters.
+After compute-0-0 is reinstalled, you can check that the new kernel boot
+parameters have been applied by logging into compute-0-0 and executing:
+</para>
+
+<screen>
+# cat /proc/cmdline 
+ro root=LABEL=/ dom0_mem=1024M ucsd=rocks
+</screen>
+
+</section>
+
+</section>
