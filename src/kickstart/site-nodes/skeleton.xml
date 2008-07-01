@@ -43,6 +43,15 @@
 	packages have been installed. Typically configuration files
 	are built and services setup in this section. -->
 
+	<!-- WARNING: Watch out for special XML chars like ampersand,
+	greater/less than and quotes. A stray ampersand will cause the
+	kickstart file building process to fail, thus, you won't be able
+	to reinstall any nodes. It is recommended that after you create an
+	XML node file, that you run:
+
+		xmllint -noout file.xml
+	-->
+
 	<eval shell="python">
 
 		<!-- This is python code that will be executed on the
