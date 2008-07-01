@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.1 2008/07/01 21:23:57 bruno Exp $
+# $Id: __init__.py,v 1.2 2008/07/01 22:01:01 anoop Exp $
 #
 # This file was authored by Brandon Davidson from the University of Oregon.
 # The Rocks Developers thank Brandon for his contribution.
@@ -57,6 +57,11 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.2  2008/07/01 22:01:01  anoop
+# self.os returns "sunos" and not "solaris". So
+# function name needs to be clean_roll_sunos and not
+# clean_roll_solaris
+#
 # Revision 1.1  2008/07/01 21:23:57  bruno
 # added the command 'rocks remove roll' and tweaked the other roll commands
 # to handle 'arch' flag.
@@ -152,7 +157,7 @@ class Command(rocks.commands.RollArgumentProcessor,
 		rolls_dir = '/export/rocks/install/rolls'
 		self.clean_dir(os.path.join(rolls_dir, roll, version, arch))
 
-	def clean_rolldir_solaris(self, roll, version, arch):
+	def clean_rolldir_sunos(self, roll, version, arch):
 		""" Clean out the roll's filesystem presence on Solaris. """
 		rolls_dir = '/export/rocks/install/jumpstart/rolls'
 		self.clean_dir(os.path.join(rolls_dir, roll, version, arch))
