@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.10 2008/03/06 23:41:36 mjk Exp $
+# $Id: __init__.py,v 1.11 2008/07/01 21:23:57 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,12 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.11  2008/07/01 21:23:57  bruno
+# added the command 'rocks remove roll' and tweaked the other roll commands
+# to handle 'arch' flag.
+#
+# thank to Brandon Davidson from the University of Oregon for these changes.
+#
 # Revision 1.10  2008/03/06 23:41:36  mjk
 # copyright storm on
 #
@@ -115,33 +121,44 @@ class Command(rocks.commands.RollArgumentProcessor,
 	Enable an available roll. The roll must already be copied on the system
 	using the command "rocks add roll".
 
-	<arg type='string' optional='1' name='roll' repeat='1'>
-	List of rolls. This should be the roll base name (e.g., base, hpc,
-	kernel). If no rolls are listed, then all the available rolls are
-	enabled.
+	<arg type='string' name='roll' repeat='1'>
+	List of rolls to enable. This should be the roll base name (e.g.,
+	base, hpc, kernel).
 	</arg>
 	
-	<para type='string' name='version'>
+	<param type='string' name='version'>
 	The version number of the roll to be enabled. If no version number is
 	supplied, then all versions of a roll will be enabled.
-	</para>
+	</param>
+
+	<param type='string' name='arch'>
+	The architecture to enable this roll for. If no architecture is
+	supplied, then the roll will be enabled for all architectures.
+	</param>
 	
 	<example cmd='enable roll kernel'>
 	Enable the kernel roll
 	</example>
-	
-	<example cmd='enable roll'>
-	Enable all the available rolls
+
+	<example cmd='enable roll ganglia version=5.0 arch=i386'>
+	Enable version 5.0 the Ganglia roll for i386 nodes
 	</example>
 
 	<related>add roll</related>
+	<related>remove roll</related>
 	<related>disable roll</related>
 	<related>list roll</related>
 	<related>create roll</related>
 	"""		
 
 	def run(self, params, args):
+                (arch, ) = self.fillParams([('arch', '%')])
+
+                if len(args) < 1:
+                        self.abort('must supply one or more rolls')
+
 		for (roll, version) in self.getRollNames(args, params):
 			self.db.execute("""update rolls set enabled='yes' where
-				name='%s' and version='%s'""" % (roll, version))
+				name='%s' and version='%s' and
+				arch like '%s'""" % (roll, version, arch))
 

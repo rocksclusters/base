@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.23 2008/04/02 22:10:02 bruno Exp $
+# $Id: __init__.py,v 1.24 2008/07/01 21:23:57 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,12 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.24  2008/07/01 21:23:57  bruno
+# added the command 'rocks remove roll' and tweaked the other roll commands
+# to handle 'arch' flag.
+#
+# thank to Brandon Davidson from the University of Oregon for these changes.
+#
 # Revision 1.23  2008/04/02 22:10:02  bruno
 # also include the '@core' group when building the OS rolls
 #
@@ -869,6 +875,12 @@ class Command(rocks.commands.create.command):
 	<example cmd='create roll base*iso kernel*iso'>
 	Create a composite Roll from a list of Roll ISOs.
 	</example>
+
+	<related>add roll</related>
+	<related>remove roll</related>
+	<related>enable roll</related>
+	<related>disable roll</related>
+	<related>list roll</related>
 	"""
 
 	def run(self, params, args):

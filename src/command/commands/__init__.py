@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.55 2008/03/06 23:41:33 mjk Exp $
+# $Id: __init__.py,v 1.56 2008/07/01 21:23:56 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,12 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.56  2008/07/01 21:23:56  bruno
+# added the command 'rocks remove roll' and tweaked the other roll commands
+# to handle 'arch' flag.
+#
+# thank to Brandon Davidson from the University of Oregon for these changes.
+#
 # Revision 1.55  2008/03/06 23:41:33  mjk
 # copyright storm on
 #
@@ -435,8 +441,8 @@ class RollArgumentProcessor:
 		if not args:
 			args = [ '%' ] # find all roll names
 		for arg in args:
-			rows = self.db.execute("""select distinct name,version from rolls
-				where name like '%s' and 
+			rows = self.db.execute("""select distinct name,version
+				from rolls where name like '%s' and 
 				version like '%s'""" % (arg, version))
 			if rows == 0 and arg == '%': # empty table is OK
 				continue

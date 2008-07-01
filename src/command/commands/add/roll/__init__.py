@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.33 2008/05/23 17:55:16 anoop Exp $
+# $Id: __init__.py,v 1.34 2008/07/01 21:23:57 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,12 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.34  2008/07/01 21:23:57  bruno
+# added the command 'rocks remove roll' and tweaked the other roll commands
+# to handle 'arch' flag.
+#
+# thank to Brandon Davidson from the University of Oregon for these changes.
+#
 # Revision 1.33  2008/05/23 17:55:16  anoop
 # Modifications to use /export/rocks/install instead of /export/home/install
 # for solaris
@@ -331,13 +337,19 @@ class RollHandler:
 		# Get the destination, ie. where should the roll be put.
 		# This is always rolls_directory/roll_name/
 		roll_dir = os.path.join(self.rolls_dir, roll_name)
+		specific_roll_dir = os.path.join(roll_dir, roll_vers, roll_arch)
 		# Clean out the existing roll directory if asked
 		
 		if clean:
-			if os.path.exists(roll_dir):
-				print 'Cleaning %s from the Rolls Directory' % roll_name
-				self.clean_dir(roll_dir)
-			os.makedirs(roll_dir)
+			if os.path.exists(specific_roll_dir):
+				str = 'Cleaning %s version %s ' % \
+					(roll_name, roll_vers)
+				str += 'for %s from the Rolls directory' % \
+					(roll_arch)
+				print str
+				self.clean_dir(specific_roll_dir)
+			os.makedirs(specific_roll_dir)
+
 		# Finally copy the roll to the HD
 		sys.stdout.write('Copying %s to Rolls.....' % roll_name)
 		sys.stdout.flush()
@@ -378,10 +390,17 @@ class RollHandler:
 					'jumpstart/rolls/',
 					roll_name)
 		
+		specific_roll_dir = os.path.join(roll_dir, roll_vers, roll_arch)
 		if clean:
-			if os.path.exists(roll_dir):
-				print 'Cleaning %s from the Rolls Directory' % roll_name
-				self.clean_dir(roll_dir)
+			if os.path.exists(specific_roll_dir):
+				str = 'Cleaning %s version %s ' % \
+					(roll_name, roll_vers)
+				str += 'for %s from the Rolls directory' % \
+					(roll_arch)
+				print str
+				self.clean_dir(specific_roll_dir)
+			os.makedirs(specific_roll_dir)
+
 		if not os.path.exists(roll_dir):
 			os.makedirs(roll_dir)
 
@@ -482,8 +501,12 @@ class RollHandler:
 		# If clean flag is specified, remove the roll directory
 		if clean:
 			if os.path.exists(roll_dir):
-				print "Cleaning %s from Rolls directory"
+				str = 'Cleaning %s version %s ' % \
+					(prod_name, prod_vers)
+				str += 'for %s from Rolls directory' % arch
+				print str
 				self.clean_dir(roll_dir)
+
 			os.makedirs(roll_dir)
 
 		# If it's the companion DVD, the filesystem layout is a 
@@ -556,6 +579,12 @@ class Command(rocks.commands.add.command):
 	Added the Kernel, PVFS, and Ganglia Rolls to the local Roll
 	directory.
 	</example>
+
+	<related>remove roll</related>
+	<related>enable roll</related>
+	<related>disable roll</related>
+	<related>list roll</related>
+	<related>create roll</related>
 	"""
 
 	def run(self, params, args):

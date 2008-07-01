@@ -1,4 +1,7 @@
-# $Id: __init__.py,v 1.8 2008/07/01 21:23:57 bruno Exp $
+# $Id: __init__.py,v 1.1 2008/07/01 21:23:57 bruno Exp $
+#
+# This file was authored by Brandon Davidson from the University of Oregon.
+# The Rocks Developers thank Brandon for his contribution.
 #
 # @Copyright@
 # 
@@ -54,46 +57,13 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
-# Revision 1.8  2008/07/01 21:23:57  bruno
+# Revision 1.1  2008/07/01 21:23:57  bruno
 # added the command 'rocks remove roll' and tweaked the other roll commands
 # to handle 'arch' flag.
 #
 # thank to Brandon Davidson from the University of Oregon for these changes.
 #
-# Revision 1.7  2008/03/06 23:41:38  mjk
-# copyright storm on
 #
-# Revision 1.6  2007/06/23 03:54:52  mjk
-# - first pass at consistency
-# - still needs some docstrings
-# - argument processors take SQL wildcards
-# - add cannot run twice (must use set)
-# - dump does sets not just adds
-#
-# Revision 1.5  2007/06/19 16:42:42  mjk
-# - fix add host interface docstring xml
-# - update copyright
-#
-# Revision 1.4  2007/06/07 21:23:05  mjk
-# - command derive from verb.command class
-# - default is MustBeRoot
-# - list.command / dump.command set MustBeRoot = 0
-# - removed plugin non-bugfix
-#
-# Revision 1.3  2007/06/07 17:21:51  mjk
-# - added RollArgumentProcessor
-# - added trimOwner option to the endOutput method
-# - roll based commands are uniform
-#
-# Revision 1.2  2007/06/01 17:44:10  bruno
-# more than one version of a roll in the rolls database caused redundant
-# info to be listed -- the 'distinct' keyword only prints unique values
-#
-# Revision 1.1  2007/05/31 21:25:55  bruno
-# rocks enable/disable/list roll
-#
-#
-
 
 import os
 import stat
@@ -104,41 +74,97 @@ import rocks.commands
 
 
 class Command(rocks.commands.RollArgumentProcessor,
-	rocks.commands.list.command):
+	rocks.commands.remove.command):
 	"""
-	List the status of available rolls.
-	
-	<arg optional='1' type='string' name='roll' repeat='1'>
+	Remove a roll from both the database and filesystem.	
+
+	<arg type='string' name='roll' repeat='1'>
 	List of rolls. This should be the roll base name (e.g., base, hpc,
-	kernel). If no rolls are listed, then status for all the rolls are
-	listed.
+	kernel).
 	</arg>
+	
+	<param type='string' name='version'>
+	The version number of the roll to be removed. If no version number is
+	supplied, then all versions of a roll will be removed.
+	</param>
+	
+	<param type='string' name='arch'>
+	The architecture of the roll to be removed. If no architecture is
+	supplied, then all architectures will be removed.
+	</param>
 
-	<example cmd='list roll kernel'>		
-	List the status of the kernel roll
+	<example cmd='remove roll kernel'>
+	Remove all versions and architectures of the kernel roll
 	</example>
 	
-	<example cmd='list roll'>
-	List the status of all the available rolls
+	<example cmd='remove roll ganglia version=5.0 arch=i386'>
+	Remove version 5.0 of the Ganglia roll for i386 nodes
 	</example>
-
+	
 	<related>add roll</related>
-	<related>remove roll</related>
 	<related>enable roll</related>
 	<related>disable roll</related>
+	<related>list roll</related>
 	<related>create roll</related>
 	"""		
 
 	def run(self, params, args):
-
 		self.beginOutput()
-		for (roll, version) in self.getRollNames(args, params):
-			self.db.execute("""select version, arch, enabled from
-				rolls where name='%s' and version='%s'""" %
-				(roll, version))
-			for row in self.db.fetchall():
-				self.addOutput(roll, row)
 
-		self.endOutput(header=['name', 'version', 'arch', 'enabled'],
-			trimOwner=0)
+                (arch, ) = self.fillParams([('arch', '%')])
+
+                if len(args) < 1:
+                        self.abort('must supply one or more rolls')
+
+		for (roll, version) in self.getRollNames(args, params):
+			rows = self.db.execute("""select arch from rolls
+				where name like '%s' and 
+				version like '%s' and
+				arch like '%s'""" % (roll, version, arch))
+			if rows == 0: # empty table is OK
+				continue
+			# Remove each arch's instance of this roll version
+			for (thisarch,) in self.db.fetchall():
+				self.clean_roll(roll, version, thisarch)
+
+		self.endOutput(padChar='')
+
+	def clean_roll(self, roll, version, arch):
+		""" Remove roll files and database entry for this arch. Calls 
+		the Host OS specific function for proper filesystem cleanup. """
+
+		self.addOutput('', 'Removing "%s" (%s,%s) roll...' %
+			(roll, version, arch))
+
+		# Like add, call through to OS-specific function due to 
+		# path differences. Proper DB use should fix this.
+		clean_rolldir = getattr(self, 'clean_rolldir_%s' % self.os)
+		clean_rolldir(roll, version, arch)
 		
+		# Remove roll from database as well
+		self.db.execute("""delete from rolls
+			where name = '%s' and
+			version = '%s' and
+			arch = '%s'""" % (roll, version, arch))
+
+	def clean_rolldir_linux(self, roll, version, arch):
+		""" Clean out the roll's filesystem presence on Linux. """
+		rolls_dir = '/export/rocks/install/rolls'
+		self.clean_dir(os.path.join(rolls_dir, roll, version, arch))
+
+	def clean_rolldir_solaris(self, roll, version, arch):
+		""" Clean out the roll's filesystem presence on Solaris. """
+		rolls_dir = '/export/rocks/install/jumpstart/rolls'
+		self.clean_dir(os.path.join(rolls_dir, roll, version, arch))
+
+	def clean_dir(self, dir):
+		# This function cleans up a given directory and
+		# removes it from the face of the harddisk
+		if os.path.exists(dir):
+			for root, dirs, files in os.walk(dir, topdown=False):
+				for name in files:
+					os.remove(os.path.join(root, name))
+				for name in dirs:
+					os.rmdir(os.path.join(root, name))
+			os.removedirs(dir)
+
