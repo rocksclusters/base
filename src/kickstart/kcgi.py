@@ -1,6 +1,6 @@
 #! /opt/rocks/bin/python
 #
-# $Id: kcgi.py,v 1.25 2008/03/06 23:41:43 mjk Exp $
+# $Id: kcgi.py,v 1.26 2008/07/02 17:34:08 bruno Exp $
 #
 # @Copyright@
 # 
@@ -56,6 +56,9 @@
 # @Copyright@
 #
 # $Log: kcgi.py,v $
+# Revision 1.26  2008/07/02 17:34:08  bruno
+# fix for central installs
+#
 # Revision 1.25  2008/03/06 23:41:43  mjk
 # copyright storm on
 #
@@ -829,7 +832,6 @@ class App(rocks.kickstart.Application):
 
 	def wanKickstart(self):
 		"""Sends a minimal kickstart file for wide-area installs."""
-
 		# Default distribution name.
 		dist = 'rocks-dist'
 
@@ -840,7 +842,7 @@ class App(rocks.kickstart.Application):
 		if self.form.has_key('restore'):
 			self.doRestore = 1
 			
-		dist = os.path.join(dist, 'wan')
+		dist = os.path.join(dist, 'lan')
 
 		if self.distname:
 			dist = self.distname
@@ -852,19 +854,7 @@ class App(rocks.kickstart.Application):
 		urlroot = self.dist.getHomePath()
 		self.dist.setRoot('')
 
-		# We key the client access off its name, not IP addr.
-		# This allows us to change our .htaccess files as little as
-		# possible, even if client IP changes..
-
-		if self.allAccess:
-			client = 'all'
-			self.insertAccess(urlroot, client)
-		else:
-			client = self.clientList[0]
-			ip = self.clientList[-1]
-			self.insertAccess(urlroot, client, ip)
-
-		wandist = self.dist.getWANReleasePath(client)
+		wandist = self.dist.getReleasePath()
 
 		if self.doRestore:
 			node = 'server-restore'
@@ -1109,8 +1099,6 @@ class App(rocks.kickstart.Application):
 
 			# If request comes from internal network, it is
 			# internal. Otherwise, this is a WAN request.
-
-			self.isInternal()
 
 			if not self.clientList[0] or self.isInternal():
 				self.localKickstart()
