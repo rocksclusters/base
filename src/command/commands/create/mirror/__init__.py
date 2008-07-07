@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.15 2008/05/30 18:19:49 mjk Exp $
+# $Id: __init__.py,v 1.16 2008/07/07 22:45:18 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,11 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.16  2008/07/07 22:45:18  bruno
+# if mason wrote science fiction, he would have named the novel:
+#
+#       I, Rebot
+#
 # Revision 1.15  2008/05/30 18:19:49  mjk
 # CentOS mirrors now use robots.txt to break RPM fetching.
 # Disable the robots.txt processing in wget
@@ -160,7 +165,7 @@ class Command(rocks.commands.create.command):
 
 
 	def mirror(self, mirror_path):
-		cmd = 'wget -erebots=off -m -nv -np %s' % (mirror_path)
+		cmd = 'wget -erobots=off -m -nv -np %s' % (mirror_path)
 		os.system(cmd)
 
 		if len(mirror_path) > 6:
