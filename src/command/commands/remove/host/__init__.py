@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.4 2008/03/06 23:41:38 mjk Exp $
+# $Id: __init__.py,v 1.5 2008/07/08 21:45:40 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.5  2008/07/08 21:45:40  bruno
+# sync the config after hosts are removed
+#
 # Revision 1.4  2008/03/06 23:41:38  mjk
 # copyright storm on
 #
@@ -92,4 +95,9 @@ class Command(command):
 
 		for host in self.getHostnames(args):
 			self.runPlugins(host)
+
+		#	
+		# sync the config when done
+		#	
+		self.command('sync.config')
 
