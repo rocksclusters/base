@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.8 2008/03/06 23:41:37 mjk Exp $
+# $Id: __init__.py,v 1.9 2008/07/10 17:26:09 anoop Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.9  2008/07/10 17:26:09  anoop
+# Bug fix to support new distribution directory
+#
 # Revision 1.8  2008/03/06 23:41:37  mjk
 # copyright storm on
 #
@@ -189,16 +192,16 @@ class Command(rocks.commands.list.host.command):
 				m.distribution=d.id and n.name='%s'""" % host)
 			(dist, graph) = self.db.fetchone()
 			
-			if not basedir:
-				basedir = os.path.join(os.sep, 'home', 
-					self.db.getGlobalVar('Kickstart',
-					'PrivateKickstartBasedir', host),
-					dist, 'lan', arch, 'build')
+			self.basedir  = os.path.join(
+					self.db.getGlobalVar('Kickstart','DistroDir'),
+					dist, arch, 'build')
+			if basedir:
+				if not os.path.exists(basedir):
+					self.abort('cannot read directory "%s"' %
+						basedir)
+				self.basedir = basedir
 
-			graphdir = os.path.join(basedir, 'graphs', graph)
-			if not os.path.exists(basedir):
-				self.abort('cannot read directory "%s"' %
-					basedir)
+			graphdir = os.path.join(self.basedir, 'graphs', graph)
 			if not os.path.exists(graphdir):
 				self.abort('cannot read directory "%s"' %
 					graphdir)
@@ -217,8 +220,11 @@ class Command(rocks.commands.list.host.command):
 					parser.parse(fin)
 					fin.close()
 			
+			cwd = os.getcwd()
+			os.chdir(self.basedir)
 			dot = self.createDotGraph(handler,
 				self.readDotGraphStyles())
+			os.chdir(cwd)
 			for line in dot:
 				self.addOutput(host, line)
 
