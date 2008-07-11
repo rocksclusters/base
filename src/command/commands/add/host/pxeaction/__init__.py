@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.11 2008/03/06 23:41:35 mjk Exp $
+# $Id: __init__.py,v 1.12 2008/07/11 19:59:41 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.12  2008/07/11 19:59:41  bruno
+# fix 'examples' in help section
+#
 # Revision 1.11  2008/03/06 23:41:35  mjk
 # copyright storm on
 #
@@ -147,11 +150,11 @@ class Command(rocks.commands.HostArgumentProcessor,
 	kssendmac selinux=0)
 	</param>
 	
-	<example cmd='add pxeaction action=os command="localboot 0"'>
+	<example cmd='add host pxeaction action=os command="localboot 0"'>
 	Add the global 'os' pxeaction
 	</example>
 	
-	<example cmd='add pxeaction compute-0-0 action=memtest command="kernel memtest"'>
+	<example cmd='add host pxeaction compute-0-0 action=memtest command="kernel memtest"'>
 	Add the 'memtest' pxeaction for compute-0-0
 	</example>
 	"""
