@@ -119,11 +119,16 @@ file:
 
 <para>
 Inside <computeroutput>replace-partition.xml</computeroutput>,
-add the following section right after the &lt;main&gt; section:
+add the following section right after the
+&lt;main&gt; &lt;/main&gt; section:
 </para>
 
 <screen>
 <![CDATA[
+<main>
+	<!-- kickstart 'main' commands go here -->
+</main>
+
 <pre>
 echo "clearpart --all --initlabel --drives=hda
 part / --size 8000 --ondisk hda
