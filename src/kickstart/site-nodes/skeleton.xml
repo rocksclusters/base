@@ -27,6 +27,10 @@
 	<!-- kickstart 'main' commands go here -->
 </main>
 
+<pre>
+	<!-- partitioning commands go here -->
+</pre>
+
 
 <!-- There may be as many packages as needed here. Just make sure you only
      uncomment as many package lines as you need. Any empty <package></package>
