@@ -59,6 +59,13 @@
 # @Copyright@
 #
 # $Log: listen411.py,v $
+# Revision 1.3  2008/07/16 22:33:59  bruno
+# don't republish 411 alerts.
+#
+# this causes a traffic storm on large clusters and all other 411 listeners
+# will toss the message any way (411 listeners only accept messages from the
+# frontend).
+#
 # Revision 1.2  2008/03/06 23:41:32  mjk
 # copyright storm on
 #
@@ -385,8 +392,6 @@ class Listen411(gmon.events.Listener, rocks.service411.Service411):
 			# Success
 			if self.debug:
 				print "Wrote: %s" % meta['Name']
-			self.tx.publish(url, seqnum,
-				tmax=1, dmax=1200, type='timestamp')
 
 			# If we failed on the GET, retry at the next
 			# repeated alert.
