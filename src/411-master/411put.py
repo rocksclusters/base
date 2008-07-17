@@ -6,7 +6,7 @@
 #
 # Requires Python 2.1 or better
 #
-# $Id: 411put.py,v 1.3 2008/03/06 23:41:32 mjk Exp $
+# $Id: 411put.py,v 1.4 2008/07/17 01:29:40 anoop Exp $
 #
 # @Copyright@
 # 
@@ -62,6 +62,11 @@
 # @Copyright@
 #
 # $Log: 411put.py,v $
+# Revision 1.4  2008/07/17 01:29:40  anoop
+# Changed 411put to use XML as transport rather than http style headers. This
+# makes it significantly more flexible, to use and abuse. Adds python code
+# that will filter the content of the file.
+#
 # Revision 1.3  2008/03/06 23:41:32  mjk
 # copyright storm on
 #
@@ -337,27 +342,61 @@ absolute path (after any chroots) will be maintained on clients."""
 			fullpath = fullpath.replace(self.chroot, '')
 		filename411 = self.path411(fullpath)
 
+
+		#####MODIFICATIONS TO SUPPORT FILTERING######
+		# Look for filters in /opt/rocks/var/plugins/411
+		plugin411_path = '/opt/rocks/var/plugins/411/'
+		sys.path.append(plugin411_path)
+		mod_file = None
+		# Iterate through all the plugins to find the one
+		# that will filter the file.
+		for plugin_file in os.listdir(plugin411_path):
+			if not plugin_file.endswith('.py'):
+				continue
+			mod_name = plugin_file.split('.py')[0]
+			# Import the plugin
+			mod = __import__(mod_name)
+			# Get the filename that the plugin will
+			# process
+			if mod.Plugin().filename == fullpath:
+				mod_file = plugin_file
+				break
+		if mod_file == None:
+			filter = None
+		else:
+			f = open(os.path.join(plugin411_path,mod_file), 'r')
+			filter = f.read()
+			f.close()
+		#####END MODIFICATIONS TO SUPPORT FILTERING######
+
+
 		# 411 file meta data encoded in file. HTTP header style.
-		header = "Name: %s\n" % fullpath
-		header += "Owner: %s\n" % owner
-		header += "Mode: %s\n" % mode_oct
-		header += "\n"
+		header = "<?xml version='1.0' standalone='yes'?>\n"
+		header = "<service411>\n"
+		header += "<name>%s</name>\n" 	% fullpath
+		header += "<mode>%s</mode>\n" 	% mode_oct
+		header += "<owner>%s</owner>\n"	% owner
 
 		plaintext = header
 
 		if stat.S_ISREG(mode):
-			if (not self.nocomment) and self.comment:
-				# Add $411id$ keyword to the head of the file.
-				plaintext += self.comment + " $411id$"
 			file = open(filename, 'r')
+			plaintext += "<content>\n<![CDATA[\n"
 			plaintext += file.read()
+			plaintext += "]]>\n</content>\n"
 			file.close()
 
 		elif stat.S_ISDIR(mode):
-			plaintext += "411 directory: %s" % filename411
+			plaintext += "<directory>%s</directory>\n" % filename411
 
 		else:
 			raise Error411, "I can only publish a regular file or a directory."
+
+		if filter is not None:
+			plaintext += "<filter>\n<![CDATA[\n"
+			plaintext += filter
+			plaintext += "]]>\n</filter>\n"
+		plaintext += "</service411>"
 
 		# Call the cryptography engine.
 		msg = self.encrypt(plaintext)
