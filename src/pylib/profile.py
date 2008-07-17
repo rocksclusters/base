@@ -1,6 +1,6 @@
 #! /opt/rocks/bin/python
 #
-# $Id: profile.py,v 1.14 2008/03/06 23:41:44 mjk Exp $
+# $Id: profile.py,v 1.15 2008/07/17 01:22:39 anoop Exp $
 #
 # @Copyright@
 # 
@@ -56,6 +56,10 @@
 # @Copyright@
 #
 # $Log: profile.py,v $
+# Revision 1.15  2008/07/17 01:22:39  anoop
+# Small modifications to add the OS parameter correctly when generating
+# graphs
+#
 # Revision 1.14  2008/03/06 23:41:44  mjk
 # copyright storm on
 #
@@ -959,10 +963,10 @@ class FrameworkEdge(Edge):
 	def getRelease(self):
 		return self.release
 
-	def setOS(self, os):
-		if os:
+	def setOS(self, OS):
+		if OS:
 			self.os = []
-			for e in string.split(os, ','):
+			for e in string.split(OS, ','):
 				self.os.append(string.strip(e))
 	
 	def getOS(self):
@@ -974,9 +978,13 @@ class FrameworkEdge(Edge):
 		attrs = attrs + 'style=%s ' % self.style
 		attrs = attrs + 'color=%s ' % self.color
 		attrs = attrs + 'arrowsize=1.5 '
+		label = []
 		if self.arch:
-			arch = string.join(self.arch, '\\n')
-			attrs = attrs + 'label="%s"' % arch
+			label.append(string.join(self.arch, '\\n'))
+		if self.os:
+			label.append(string.join(self.os, '\\n'))
+		if label:
+			attrs = attrs + 'label="%s"' % '\\n'.join(label)
 
 		return '%s"%s" -> "%s" [%s];' % (prefix, self.parent.name,
 						self.child.name,
