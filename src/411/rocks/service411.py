@@ -66,6 +66,11 @@
 # @Copyright@
 #
 # $Log: service411.py,v $
+# Revision 1.4  2008/07/17 01:35:29  anoop
+# Some pruning.
+# Removed the present() function as it doesn't have any purpose,
+# anymore
+#
 # Revision 1.3  2008/07/17 01:27:21  anoop
 # Major changes to the 411 system
 # - 411 now uses XML as transport
@@ -748,45 +753,6 @@ class Service411:
 			raise Error411, \
 				"Could not write %s: %s" % (filename, msg)
 				
-
-	def present(self, contents, meta411, httpmeta=None):
-		"""Expands the $411id$ keyword if present in the first few
-		(1000) lines of a file Uses the same expansion strategy as CVS
-		and others. Only works for files using \n endline characters.
-		Not high performance for large files."""
-
-		return contents
-		header = contents[:1000]
-		i = header.find("$411id$")
-		if i<0:
-			return contents
-
-		m = self.header_pattern.search(header)
-		if not m:
-			return contents
-		c = m.group('comment')
-
-		now = time.strftime("%d-%b-%Y %H:%M")
-
-		hdr = c + "$411id: %s$\n" % self.four11Path(meta411['Name'])
-		hdr += c + "Retrieved: %s\n" % now
-		if self.master:
-			hdr += c + "Master server: %s\n" % (self.master.getAddress())
-
-		if httpmeta:
-			hdr += c + "Last modified on master: %s\n" % \
-				(httpmeta['Modified'])
-			hdr += c + "Encrypted file size: %s bytes\n" % \
-				(httpmeta['Size'])
-		hdr += c + "\n"
-
-		# Allow for extension 411 headers.
-		for key, value in meta411.items():
-			hdr += "%s%s: %s\n" % (c, key, value)
-
-		return contents.replace(c + "$411id$", hdr, 1)
-
-
 	def addMaster(self, arg):
 		"""Adds a new master to the appropriate place in the
 		self.masters structure. Can take either a URL or a master
