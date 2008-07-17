@@ -137,7 +137,10 @@ If no filename is given, a list of 411 files is returned."""
 					contents, meta = self.decrypt(cyphertxt)
 				else:
 					contents, meta = self.get(file)
-				print self.present(contents, meta),
+				print contents
+				print "### METADATA ###"
+				print 'Name: %s\tMode:%s\tOwner=%s' % \
+				(meta['name'], meta['mode'], meta['owner'])
 			else:
 				files = self.find()
 				for file in files.keys():
@@ -146,7 +149,7 @@ If no filename is given, a list of 411 files is returned."""
 						continue
 					contents, meta = self.get(file)
 					self.write(contents, meta, files[file])
-					print "Wrote:", meta['Name']
+					print "Wrote:", meta['name']
 
 		except ValueError:
 			raise

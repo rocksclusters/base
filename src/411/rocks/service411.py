@@ -66,6 +66,18 @@
 # @Copyright@
 #
 # $Log: service411.py,v $
+# Revision 1.3  2008/07/17 01:27:21  anoop
+# Major changes to the 411 system
+# - 411 now uses XML as transport
+# - Has support for plugins, which work like "Active Messages"
+#   Basically, the plugins are nothing more than python code
+#   which reside on the frontend in /opt/rocks/var/plugin/411/
+#   which act as filters for the files that we are trying to
+#   send over the wire. The new system will encode the plugin
+#   along with the content of the file, and send it over the
+#   wire, so that the plugin can be used to filter the content
+#   on the client side
+#
 # Revision 1.2  2008/03/06 23:41:32  mjk
 # copyright storm on
 #
@@ -246,6 +258,9 @@ import rocks.app
 import re
 import time
 import string
+import cStringIO
+import tempfile
+import types
 # Python OpenSSL Wrappers, available at http://sourceforge.net/projects/pow
 import POW
 # A cryptography-grade random number generator taken from PyCrypt 1.96a6.
@@ -255,9 +270,13 @@ import rocks.util
 from rocks.util import mkdir
 import base64
 import xml.sax
+import xml.dom.NodeFilter
+import xml.dom.ext.reader.Sax2
 import stat
 import random
 import urllib
+import urlparse
+import cgi
 # No memory leaks in this version, unlike the standard httplib.
 from rocks.simplehttp import HTTPConnection
 
@@ -646,24 +665,12 @@ class Service411:
 		else:
 			return (text, ciphersig_base64)
 
-
 	def decode(self, plaintext):
-		"""Interprets the 411 headers from freshly decrypted ciphertext.
-		Returns the tuple (contents, meta) like decrypt."""
-
 		meta = {}
-		try:
-			headers, text = plaintext.split("\n\n", 1)
-			header_list = headers.split("\n")
-
-			for header in header_list:
-				key, value = header.split(": ")
-				meta[key] = value
-		except ValueError:
-			raise Error411, "File has malformed 411 headers."
-
-		return text, meta
-
+		p = Parser(plaintext)
+		meta = p.get_filtered_content()
+		return meta['content'], meta
+		
 		
 	def verify(self, msg, sig_base64):
 		"""Verifies that the plaintext message was signed with the
@@ -705,10 +712,10 @@ class Service411:
 		try:
 			# Get standard 411 headers - safe because they were
 			# encrypted.
-			filename = meta["Name"]
-			owner = meta["Owner"]
+			filename = meta["name"]
+			owner = meta["owner"]
 			uid, gid = map(int, owner.split("."))
-			mode_oct = meta["Mode"]
+			mode_oct = meta["mode"]
 		except ValueError:
 			raise Error411, "File has malformed 411 headers."
 
@@ -725,7 +732,7 @@ class Service411:
 				f = open(filenameTmp, "w")
 				os.chown(filenameTmp, uid, gid)
 				os.chmod(filenameTmp, stat.S_IMODE(mode))
-				f.write(self.present(contents, meta, httpmeta))
+				f.write(contents)
 				f.close()
 				# mv temp file
 				shutil.move(filenameTmp,filename)
@@ -748,6 +755,7 @@ class Service411:
 		and others. Only works for files using \n endline characters.
 		Not high performance for large files."""
 
+		return contents
 		header = contents[:1000]
 		i = header.find("$411id$")
 		if i<0:
@@ -798,7 +806,137 @@ class Service411:
 		self.masters.sort(byScore)
 		return self.masters
 
+class Plugin:
+	def __init__(self):
+		pass
+	
+class NodeFilter(xml.dom.NodeFilter.NodeFilter):
+	def acceptNode(self, node):
+		if node.nodeName == "service411":
+			return self.FILTER_ACCEPT
 
+		if node.nodeName in [
+			'name',
+			'mode',
+			'owner',
+			'content',
+			'filter',
+			]:
+			return self.FILTER_ACCEPT
+		else:
+			return self.FILTER_SKIP
+
+class Parser:
+	"""
+	This class acts as the parser for the 411 xml file.
+	"""
+	def __init__(self, content, osname="linux"):
+		
+		# Dictionary of the Entire 411 file. This contains
+		# everything, name, content, filter, mode, blah,
+		# and any other XML tag that's made up
+		self.dict411 = {}
+
+		# Contains the output of the filtering process.
+		self.filtered = {}
+		
+		# The 411 XML file
+		self.xml_string = content
+
+		# Parse the 411 file to populate the self.dict411
+		# dictionary
+		self.parse()
+
+		# Apply the filter to the dictionary and populate
+		# the self.filtered dictionary
+		self.apply_filter()
+
+	def parse(self):
+		"""
+		Function to parse the 411 XML file
+		"""
+		# Convert the XML string to an IO Buffer
+		xml_buf = cStringIO.StringIO(self.xml_string.strip())
+		doc = xml.dom.ext.reader.Sax2.FromXmlStream(xml_buf)
+		filter = NodeFilter()
+		iter = doc.createTreeWalker(doc, filter.SHOW_ELEMENT,
+			filter, 0)
+		node = iter.nextNode()
+		while node:
+			if node.nodeName == 'service411':
+				child = iter.firstChild()
+				while child:
+					self.dict411[child.nodeName] = self.get_text(child)
+					child = iter.nextSibling()
+			node = iter.nextNode()
+
+
+	def apply_filter(self):
+		"""
+		Function to filter the 411 content. The way this
+		works is. The XML file contains the contents of
+		the file, and a filter. The file contents are passed
+		through the filter to obtain new content. This new
+		content is then fed back up to the requesting process
+		"""
+
+		# If there's no filter, set content to
+		# the original content, and return
+		if not self.dict411.has_key('filter') \
+			or not self.dict411['filter']:
+			for i in self.dict411:
+				self.filtered[i] = self.dict411[i]
+			return
+
+		# If not, then create a temporary directory
+		# for the filter script. The filter script
+		# always has to be a python script with 
+		# a class called Plugin, whose superclass
+		# and description are present in this file
+		# below.
+		dir = tempfile.mkdtemp()
+
+		# Once the temp directory is created, copy
+		# the contents of the filter into __init__.py
+		# script.
+		f = open('%s/__init__.py' % dir, 'w')
+		f.write(self.dict411['filter'])
+		f.close()
+		
+		# Import the module, and pass the original
+		# content to the filter function in th Plugin class.
+		base_dir = os.path.dirname(dir)
+		mod_name = os.path.basename(dir)
+		sys.path.append(base_dir)
+		m = __import__(mod_name)
+		plugin = m.Plugin()
+
+		# Filter the original content, and set
+		# the new content.
+		for i in self.dict411:
+			try:
+				self.filtered[i] = eval('plugin.filter_%s(self.dict411[i])' % i)
+			except AttributeError:
+				self.filtered[i] = self.dict411[i]
+
+		# Remove the plugin, and the temporary
+		# directory
+		os.unlink('%s/__init__.py' % dir)
+		os.unlink('%s/__init__.pyc' % dir)
+		os.rmdir(dir)
+		
+	def get_text(self, node):
+		# This function returns the text present
+		# inside an xml tag.
+		text = ''
+		for child in node.childNodes:
+			if child.nodeType == child.TEXT_NODE or \
+			   child.nodeType == child.CDATA_SECTION_NODE:
+				text += child.nodeValue
+		return text.strip()
+
+	def get_filtered_content(self):
+		return self.filtered
 
 def byScore(a, b):
 	"""A comparison function that will sort masters by score
@@ -807,8 +945,6 @@ def byScore(a, b):
 
 
 
-import urlparse
-import cgi
 
 class Master:
 	"""A Master server in the 411 system. Each server has a score made by
