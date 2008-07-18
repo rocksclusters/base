@@ -74,7 +74,7 @@ file = open('/proc/cmdline', 'r')
 args = string.split(file.readline())
 file.close()
 
-if 'frontend' not in args:
+if 'build' not in args:
 	for disk in nodedisks.keys():
 		if p.isRocksDisk(nodedisks[disk]):
 			parts += p.addPartitions(nodedisks[disk], format = 0)

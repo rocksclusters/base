@@ -1,5 +1,5 @@
 <?php
-/* $Id: dot-graph.php,v 1.2 2008/03/06 23:41:41 mjk Exp $ */
+/* $Id: dot-graph.php,v 1.3 2008/07/18 20:49:07 bruno Exp $ */
 #
 # Dynamically creates an image of the Rocks Cluster Appliance
 # graph.
@@ -75,7 +75,7 @@ if (!$size) {
 
 $format = "jpeg";
 
-$command = "cd /home/install/; /opt/rocks/bin/rocks-dist ";
+$command = "cd /export/rocks/install/; /opt/rocks/bin/rocks-dist ";
 $command .= "--graph-draw-format $format --graph-draw-size $size --graph-draw-key ";
 if ($landscape)
 	$command .= "--graph-draw-landscape ";

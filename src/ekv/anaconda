@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# $Id: anaconda,v 1.28 2008/03/06 23:41:41 mjk Exp $
+# $Id: anaconda,v 1.29 2008/07/18 20:49:07 bruno Exp $
 #
 # @Copyright@
 # 
@@ -56,6 +56,13 @@
 # @Copyright@
 #
 # $Log: anaconda,v $
+# Revision 1.29  2008/07/18 20:49:07  bruno
+# now have ability to build any appliance from rocks 'boot:' prompt. just
+# type 'bulid appliance=xml-node-name', for example:
+# 'build appliance=vm-container-sever'
+#
+# change 'boot:' directive of 'frontend' to 'build'
+#
 # Revision 1.28  2008/03/06 23:41:41  mjk
 # copyright storm on
 #
@@ -540,7 +547,7 @@ client()
 
 MODE=""
 
-grep -q "frontend" /proc/cmdline
+grep -q "build" /proc/cmdline
 if [ $? -eq 0 ]; then
 	MODE="server"
 fi

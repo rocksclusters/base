@@ -52,7 +52,7 @@ file = open('/proc/cmdline', 'r')
 args = string.split(file.readline())
 file.close()
 
-if 'frontend' not in args:
+if 'build' not in args:
 	random.seed(int(time.time()))
 
 	for i in range(0, 5):

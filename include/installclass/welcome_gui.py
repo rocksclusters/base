@@ -1,5 +1,5 @@
 #
-# $Id: welcome_gui.py,v 1.7 2008/05/22 21:02:06 bruno Exp $
+# $Id: welcome_gui.py,v 1.8 2008/07/18 20:49:07 bruno Exp $
 #
 # Our patch to redhat's installer
 #
@@ -57,6 +57,13 @@
 # @Copyright@
 #
 # $Log: welcome_gui.py,v $
+# Revision 1.8  2008/07/18 20:49:07  bruno
+# now have ability to build any appliance from rocks 'boot:' prompt. just
+# type 'bulid appliance=xml-node-name', for example:
+# 'build appliance=vm-container-sever'
+#
+# change 'boot:' directive of 'frontend' to 'build'
+#
 # Revision 1.7  2008/05/22 21:02:06  bruno
 # rocks-dist is dead!
 #
@@ -197,9 +204,24 @@ class WelcomeWindow(InstallWindow):
 
 		os.chdir('%s/rocks-dist/%s/build' % (distrodir, nativearch))
 
+		#
+		# root of the tree
+		#
+		file = open('/proc/cmdline', 'r')
+		args = string.split(file.readline())
+		file.close()
+
+		rootnode = 'root'
+		if 'build' in args:
+			for arg in args:
+				a = arg.split('=')
+				if len(a) > 1 and a[0] == 'appliance':
+					rootnode = a[1]
+					break
+			
 		os.environ['PYTHONPATH'] = ''
 
-		cmd = '/opt/rocks/sbin/kpp root '
+		cmd = '/opt/rocks/sbin/kpp %s ' % (rootnode)
 		cmd += '| /opt/rocks/sbin/kgen > '
 		cmd += '/tmp/ks.cfg 2> /tmp/ks.cfg.debug'
 		os.system(cmd)
