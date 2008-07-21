@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: gen.py,v $
+# Revision 1.32  2008/07/21 17:46:38  anoop
+# Stupid bug fixed. Now sunos actually honor's the os attribute in
+# the package and post tags
+#
 # Revision 1.31  2008/05/20 21:08:07  anoop
 # Added '' to heredoc so that shell special chars don't get expanded
 # before their time
@@ -865,9 +869,12 @@ class MainNodeFilter_sunos(NodeFilter):
 	class.
 	"""
 	def acceptNode(self, node):
-		return self.FILTER_ACCEPT
 		if node.nodeName == 'jumpstart':
 			return self.FILTER_ACCEPT
+
+		if not self.isCorrectOS(node):
+			return self.FILTER_SKIP
+	
 		if node.nodeName in [
 			'main', 	# <main><*></main>
 			'clearpart', 	# Clears the disk partitions
@@ -911,6 +918,10 @@ class OtherNodeFilter_sunos(NodeFilter):
 	def acceptNode(self, node):
 		if node.nodeName == 'jumpstart':
 			return self.FILTER_ACCEPT
+
+		if not self.isCorrectOS(node):
+			return self.FILTER_SKIP
+	
 		if node.nodeName in [
 			'cluster',
 			'package',
