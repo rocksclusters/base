@@ -1,4 +1,4 @@
-# $Id: sunos.mk,v 1.4 2008/05/20 21:52:40 anoop Exp $
+# $Id: sunos.mk,v 1.5 2008/07/22 00:49:50 anoop Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: sunos.mk,v $
+# Revision 1.5  2008/07/22 00:49:50  anoop
+# Minor changes to build solaris packages correctly
+#
 # Revision 1.4  2008/05/20 21:52:40  anoop
 # More packages on Solaris
 #
@@ -119,7 +122,7 @@ SRCDIRS = foundation-coreutils foundation-gawk	\
 	  foundation-perl foundation-libxml2	\
 	  foundation-python-extras php postfix	\
 	  foundation-perl-tk foundation-ant	\
-	  foundation-cvs			\
+	  foundation-cvs phpMyAdmin		\
 	  foundation-graphviz foundation-rcs	\
 	  pcre pylib command dbreport 411	\
 	  411-master bittorrent tentakel	\

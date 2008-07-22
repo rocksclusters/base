@@ -1,5 +1,5 @@
 # --------------------------------------------------- -*- Makefile -*- --
-# $Id: Makefile,v 1.11 2008/03/06 23:41:44 mjk Exp $
+# $Id: Makefile,v 1.12 2008/07/22 00:49:50 anoop Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.12  2008/07/22 00:49:50  anoop
+# Minor changes to build solaris packages correctly
+#
 # Revision 1.11  2008/03/06 23:41:44  mjk
 # copyright storm on
 #
@@ -143,12 +146,13 @@ build::
 	gunzip -c $(NAME)-$(VERSION)-$(RELEASE).tar.gz | $(TAR) -xf -
 
 install::
-	mkdir -p $(ROOT)/var/www/html/admin/phpMyAdmin
+	mkdir -p $(ROOT)/$(WEBSERVER_ROOT)/admin/phpMyAdmin
 	( \
 		cd $(NAME)-$(VERSION)-$(RELEASE) ; \
-		find . | cpio -pduv $(ROOT)/var/www/html/admin/phpMyAdmin ; \
+		find . | cpio -pduv -R root $(ROOT)/$(WEBSERVER_ROOT)/admin/phpMyAdmin ; \
 	)
 
 clean::
 	rm -f phpMyAdmin.spec.in
+	rm -rf $(NAME)-$(VERSION)-$(RELEASE)
 

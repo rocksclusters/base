@@ -53,6 +53,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.4  2008/07/22 00:49:50  anoop
+# Minor changes to build solaris packages correctly
+#
 # Revision 1.3  2008/05/20 01:04:29  anoop
 # Made Makefiles more Solaris friendly
 #
@@ -115,16 +118,13 @@ install:: build
 	mkdir -p $(ROOT)/etc/411.d
 	chmod 0755 $(ROOT)/etc/411.d
 	mkdir -p $(ROOT)/var/411/groups/Compute
-	mkdir -p $(ROOT)/etc/rc.d/init.d
+	mkdir -p $(ROOT)/$(INIT_SCRIPTS_DIR)
 	$(INSTALL) -m555 $(SCRIPTS)  $(ROOT)/$(PKGROOT)/sbin/
-	$(INSTALL) -m700 init.d/411 $(ROOT)/etc/rc.d/init.d
+	$(INSTALL) -m700 init.d/411 $(ROOT)/$(INIT_SCRIPTS_DIR)
 	$(INSTALL) -m444 var/Makefile $(ROOT)/var/411
 	$(INSTALL) -m644 var/Files.mk $(ROOT)/var/411
 	$(INSTALL) -m644 var/Group.mk $(ROOT)/var/411
 
-
 clean::
 	rm -f $(SCRIPTS)
 	rm -f *.pyc
-
-

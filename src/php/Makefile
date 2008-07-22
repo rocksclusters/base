@@ -1,9 +1,12 @@
-# $Id: Makefile,v 1.1 2008/05/20 01:03:07 anoop Exp $
+# $Id: Makefile,v 1.2 2008/07/22 00:49:50 anoop Exp $
 #
 # @Copyright@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.2  2008/07/22 00:49:50  anoop
+# Minor changes to build solaris packages correctly
+#
 # Revision 1.1  2008/05/20 01:03:07  anoop
 # Added pcre postfix and php for solaris
 #
@@ -31,6 +34,7 @@ build:
 			--with-config-file-path=/etc \
 			--with-apxs2=/usr/apache2/bin/apxs \
 			--with-mysql=/opt/rocks/ \
+			--with-pdo-mysql=/opt/rocks/ \
 			--with-mysql-sock=/var/opt/rocks/mysql/;\
 		$(MAKE); \
 	)
