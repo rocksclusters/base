@@ -12,6 +12,9 @@
 
 <changelog>
 $Log: screen-clusterinfo.xml,v $
+Revision 1.13  2008/07/22 00:34:40  bruno
+first whack at vlan support
+
 Revision 1.12  2008/05/22 21:02:06  bruno
 rocks-dist is dead!
 
@@ -195,8 +198,17 @@ first pass at new screens
 		<name>Kickstart_DistroDir</name>
 		<type>hidden</type>
 		<size>50</size>
-		<default>/export/rocks/install</default>
+		<default>/export/rocks</default>
 		<value><var name="Kickstart_DistroDir"/></value>
+	</variable>
+
+	<variable>
+		<label>Kickstart Base Dir</label>
+		<name>Kickstart_PrivateKickstartBasedir</name>
+		<type>hidden</type>
+		<size>50</size>
+		<default>install</default>
+		<value><var name="Kickstart_PrivateKickstartBasedir"/></value>
 	</variable>
 
 	<variable>

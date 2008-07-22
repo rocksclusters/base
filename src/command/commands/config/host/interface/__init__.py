@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.2 2008/03/06 23:41:36 mjk Exp $
+# $Id: __init__.py,v 1.3 2008/07/22 00:34:40 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.3  2008/07/22 00:34:40  bruno
+# first whack at vlan support
+#
 # Revision 1.2  2008/03/06 23:41:36  mjk
 # copyright storm on
 #
@@ -87,9 +90,32 @@ class Command(rocks.commands.config.host.command):
 	</example>
 	"""
 
-	def writeConfig(self, mac, ip, device, gateway, netmask):
+	def isPhysicalHost(self, host):
+		#
+		# determine if this is 'physical' machine, that is, not a VM.
+		#
+		rows = self.db.execute("""select vn.id from vm_nodes vn, nodes n
+			where n.name = '%s' and vn.node = n.id""" % (host))
+
+		if rows == 0:
+			#
+			# this host is *not* in the VM nodes table, so it is
+			# a physical host
+			#
+			retval = 1
+		else:
+			retval = 0
+
+		return retval
+
+
+	def writeConfig(self, mac, ip, device, gateway, netmask, vlanid, host):
+		configured = 0
+
 		self.addOutput('', 'DEVICE=%s' % device)
-		self.addOutput('', 'HWADDR=%s' % mac)
+
+		if mac:
+			self.addOutput('', 'HWADDR=%s' % mac)
 
 		if ip and netmask:
 			self.addOutput('', 'IPADDR=%s' % ip)
@@ -98,10 +124,17 @@ class Command(rocks.commands.config.host.command):
 			if gateway:
 				self.addOutput('', 'GATEWAY=%s' % gateway)
 			self.addOutput('', 'ONBOOT=yes')
-		else:
+			configured = 1
+
+		if vlanid and self.isPhysicalHost(host):
+			self.addOutput('', 'VLAN=yes')
+			self.addOutput('', 'ONBOOT=yes')
+			configured = 1
+
+		if not configured:
 			self.addOutput('', 'BOOTPROTO=none')
 			self.addOutput('', 'ONBOOT=no')
-
+		
 
 	def run(self, params, args):
 		iface, = self.fillParams([('iface', ), ])
@@ -124,18 +157,37 @@ class Command(rocks.commands.config.host.command):
 
 		self.db.execute("""select distinctrow net.mac, net.ip,
 			net.device, net.gateway,
-			if(net.subnet, s.netmask, NULL) from networks net,
-			nodes n, subnets s where net.node = n.id and
-			if(net.subnet, net.subnet = s.id, true) and
-			n.name = "%s" """ % (host))
+			if(net.subnet, s.netmask, NULL), net.vlanid, net.subnet
+			from
+			networks net, nodes n, subnets s where net.node = n.id
+			and if(net.subnet, net.subnet = s.id, true) and
+			n.name = "%s" order by net.id""" % (host))
 
 		self.beginOutput()
 
-		for (mac, ip, device, gateway, netmask) in self.db.fetchall():
+		for row in self.db.fetchall():
+			mac,ip,device,gateway,netmask,vlanid,subnetid = row
+
+			if vlanid and self.isPhysicalHost(host):
+				#
+				# look up the name of the interface that
+				# maps to this VLAN spec
+				#
+				rows = self.db.execute("""select net.device from
+					networks net, nodes n where
+					n.id = net.node and n.name = '%s'
+					and net.subnet = %d and
+					net.device not like 'vlan%%' """ %
+					(host, subnetid))
+
+				if rows:
+					dev, = self.db.fetchone()
+					device = '%s.%d' % (dev, vlanid)
+
 			if iface:
 				if iface == device:
 					self.writeConfig(mac, ip, device,
-						gateway, netmask)
+						gateway, netmask, vlanid, host)
 			else:
 				s = '<file name="'
 				s += '/etc/sysconfig/network-scripts/ifcfg-'
@@ -143,7 +195,7 @@ class Command(rocks.commands.config.host.command):
 
 				self.addOutput('', s)
 				self.writeConfig(mac, ip, device, gateway,
-					netmask)
+					netmask, vlanid, host)
 				self.addOutput('', '</file>')
 
 		self.endOutput()

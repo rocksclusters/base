@@ -57,6 +57,9 @@
 # @Copyright@
 #
 # $Log: sql.py,v $
+# Revision 1.23  2008/07/22 00:34:41  bruno
+# first whack at vlan support
+#
 # Revision 1.22  2008/03/06 23:41:44  mjk
 # copyright storm on
 #
@@ -438,9 +441,10 @@ class Application(rocks.app.Application):
 
 	# Try by name
 
-	self.execute('select networks.node from nodes,networks where '
-		'networks.node=nodes.id and networks.name="%s" ' 
-		'and nodes.site=%d' % (host,site))
+	self.execute("""select networks.node from nodes,networks where
+		networks.node = nodes.id and networks.name = "%s" and
+		nodes.site = %d and (networks.device is NULL or
+		networks.device not like 'vlan%%') """ % (host,site))
 	try:
 		nodeid, = self.fetchone()
 		return nodeid
@@ -449,9 +453,10 @@ class Application(rocks.app.Application):
 
 	# Try by IP
 	
-	self.execute('select networks.node from nodes,networks where '
-		'networks.node=nodes.id and networks.ip="%s" '
-		'and nodes.site=%d' % (host,site))
+	self.execute("""select networks.node from nodes,networks where
+		networks.node = nodes.id and networks.ip ="%s" and
+		nodes.site = %d and (networks.device is NULL or
+		networks.device not like 'vlan%%') """ % (host,site))
 	try:
 		nodeid, = self.fetchone()
 		return nodeid

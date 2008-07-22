@@ -1,5 +1,5 @@
 #
-# $Id: ConfigNetworks.py,v 1.11 2008/03/06 23:41:44 mjk Exp $
+# $Id: ConfigNetworks.py,v 1.12 2008/07/22 00:34:41 bruno Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: ConfigNetworks.py,v $
+# Revision 1.12  2008/07/22 00:34:41  bruno
+# first whack at vlan support
+#
 # Revision 1.11  2008/03/06 23:41:44  mjk
 # copyright storm on
 #
@@ -280,9 +283,12 @@ class App(rocks.sql.Application):
 		if not self.install_nic:
 			return
 
-		self.execute('select n.id, n.mac from networks n, subnets s '
-			' where n.node=%s and s.name="private" and n.subnet=s.id' 
+		self.execute("""select n.id, n.mac from networks n, subnets s
+			where n.node = %s and s.name = 'private' and
+			n.subnet = s.id and (n.device is NULL or 
+			n.device not like 'vlan%%') """
 			% self.node_id)
+
 		id, mac = self.fetchone()
 		if mac == self.install_nic:
 			return
@@ -345,9 +351,12 @@ class App(rocks.sql.Application):
 		# using the networks table, get the ID that points to the
 		# entry in the nodes table for this installing client
 		# 
-		self.execute('select networks.id, networks.mac from networks,subnets '
-			'where networks.node=%d and subnets.name="private" '
-			'and IFNULL(networks.subnet,0)!=subnets.id' % (self.node_id))
+		self.execute("""select networks.id, networks.mac from
+			networks, subnets where networks.node = %d and
+			subnets.name = "private" and
+			IFNULL(networks.subnet,0) != subnets.id and
+			(networks.device is NULL or
+			networks.device not like 'vlan%%') """ % (self.node_id))
 
 		for row in self.fetchall():
 			id, mac = row
@@ -391,89 +400,6 @@ class App(rocks.sql.Application):
 			
 				self.execute(update)
 
-
-	def build_ifcfg(self):
-		#
-		# build the ethernet 'ifcfg' files
-		#
-		for (mac, module) in self.discovered_macs:
-			self.execute("""select
-				device,ip,subnets.netmask,gateway from
-				networks,subnets where mac="%s"
-				and subnets.id=networks.subnet""" % (mac))
-			row = self.fetchone()
-			if row == None:
-				continue
-			else:
-				device, ip, netmask, gateway = row
-
-			print '<file name="%s-%s">' % (self.ifcfg, device)
-			print 'DEVICE=%s' % (device)
-			print 'HWADDR=%s' % (mac)
-			
-			if ip and netmask:
-				print 'IPADDR=%s' % (ip)
-				print 'NETMASK=%s' % (netmask)
-				print 'BOOTPROTO=none'
-				if gateway:
-					print 'GATEWAY=%s' % (gateway)
-				print 'ONBOOT=yes'
-			else:
-				print 'BOOTPROTO=none'
-				print 'ONBOOT=no'
-
-			print '</file>'
-
-		#
-		# build the non-ethernet ifcfg files
-		#
-		self.execute("""select
-			device,ip,subnets.netmask,gateway from
-			networks,subnets where node=%d and
-			subnets.id=networks.subnet and
-			device not regexp 'eth*'""" % (self.node_id))
-
-		for (device,ip,netmask,gateway) in self.fetchall():
-			print '<file name="%s-%s">' % (self.ifcfg, device)
-			print 'DEVICE=%s' % (device)
-			
-			if ip and netmask:
-				print 'IPADDR=%s' % (ip)
-				print 'NETMASK=%s' % (netmask)
-				print 'BOOTPROTO=static'
-				if gateway:
-					print 'GATEWAY=%s' % (gateway)
-
-			print 'ONBOOT=yes'
-			print '</file>'
-
-		#
-		# Signal to restart rocks services.
-		#
-		if self.restart_rocks_services:
-			syslog.syslog('ConfigNetworks: net info for %s changed'
-				% os.environ['Node_Hostname'])
-			os.system('touch /var/cluster/new-nodes/%s 2> /dev/null'
-				% os.environ['Node_Hostname'])
-
-		#
-		# now build the alias portion of the modprobe.conf file
-		#
-		print '<file name="%s" mode="append">' % (self.modules)
-		for (mac, module) in self.discovered_macs:
-			self.execute('select device ' +
-				'from networks where mac="%s"' % (mac))
-			row = self.fetchone()
-			if row == None:
-				continue
-			else:
-				device = row[0]
-
-			print 'alias %s %s' % (device, module)
-
-		print '</file>'
-
-
 	def addRoute(self, net, mask, gw, dev):
 		if gw:
 			print('<file name="%s" mode="append">' % (self.route))
@@ -487,28 +413,6 @@ class App(rocks.sql.Application):
 			print('# ConfigNetworks: error no gw or dev for %s' % net)
 
 
-	def build_routes(self):
-		self.execute('select routes.network,'
-                             'routes.netmask,routes.gateway,routes.device '
-                             'from routes,nodes '
-                             'where routes.owner="node" and '
-                             'routes.id=nodes.id and nodes.name="%s"'
-                             % os.environ['Node_Hostname'])
-
-		for net,mask,gw,dev in self.fetchall():
-			self.addRoute(net, mask, gw, dev)
-
-		self.execute('select routes.network,'
-                             'routes.netmask,routes.gateway,routes.device '
-                             'from routes,nodes '
-                             'where routes.owner="membership" and '
-                             'routes.id=nodes.membership and nodes.name="%s"'
-                             % os.environ['Node_Hostname'])
-
-		for net,mask,gw,dev in self.fetchall():
-			self.addRoute(net, mask, gw, dev)
-
-
         def run(self):
 		self.connect()
 		try:
@@ -519,7 +423,5 @@ class App(rocks.sql.Application):
 		self.updateModules()
 		self.adjustPrivateDevice()
 		self.assignDeviceNames()
-		self.build_ifcfg()
-		# self.build_routes()
 		self.close()
 

@@ -15,6 +15,9 @@
 
   <changelog>
   $Log: server-wan.xml,v $
+  Revision 1.6  2008/07/22 00:34:40  bruno
+  first whack at vlan support
+
   Revision 1.5  2008/03/06 23:41:30  mjk
   copyright storm on
 
@@ -77,19 +80,8 @@
 
   </changelog>
 
-  <!-- Set variables to reasonable defaults. -->
-  <var name="Kickstart_ZeroMBR" val="yes"/>
-  <var name="Kickstart_Grub" val="--location=mbr"/>
-  <var name="Kickstart_PrivateNISDomain" val="rocks"/>
-  <var name="Kickstart_Keyboard" val="us"/>
-  <var name="Kickstart_Mouse" val="genericps/2"/>
-
-  <main>
-
-    <!-- A hint to tell frontend where to find rolls. -->
-    <interactive>--dist <var name="Node_DistName"/></interactive>
-
-  </main>
+  <var name="Kickstart_PrivateKickstartHost"
+	ref="Kickstart_PublicHostname"/>
 
 </kickstart> 
 

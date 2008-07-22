@@ -18,6 +18,9 @@
 
   <changelog>
   $Log: install.xml,v $
+  Revision 1.19  2008/07/22 00:34:40  bruno
+  first whack at vlan support
+
   Revision 1.18  2008/05/22 21:02:06  bruno
   rocks-dist is dead!
 
@@ -235,7 +238,7 @@ fi
 <!-- set up the install directory so it can be served by the web -->
 (
 	cd /var/www/html;
-	ln -s <var name="Kickstart_DistroDir"/> install;
+	ln -s <var name="Kickstart_DistroDir"/>/<var name="Kickstart_PrivateKickstartBasedir"/> install;
 ) 
 
 <!-- now add an entry in the cluster homepage -->

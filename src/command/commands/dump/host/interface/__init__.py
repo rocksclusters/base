@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.11 2008/03/06 23:41:36 mjk Exp $
+# $Id: __init__.py,v 1.12 2008/07/22 00:34:40 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.12  2008/07/22 00:34:40  bruno
+# first whack at vlan support
+#
 # Revision 1.11  2008/03/06 23:41:36  mjk
 # copyright storm on
 #
@@ -184,16 +187,15 @@ class Command(rocks.commands.dump.host.command):
 				IF(net.subnet, sub.name, NULL),
 				net.device, net.mac, net.ip,
 				IF(net.subnet, sub.netmask, NULL),
-				net.gateway, net.module, net.name from
-				nodes n, networks net, subnets sub
-				where
+				net.gateway, net.module, net.name, net.vlanid
+				from nodes n, networks net, subnets sub where
 				n.name='%s' and net.node=n.id and
 				(net.subnet=sub.id or net.subnet is NULL)
 				order by net.device""" % host )
 			if rows < 1:
 				continue
 			for (subnet, iface, mac, ip, netmask, gateway,
-				module, name) in self.db.fetchall():
+				module, name, vlan) in self.db.fetchall():
 				
 				if not iface:
 					continue # nothing to dump
@@ -215,6 +217,8 @@ class Command(rocks.commands.dump.host.command):
 					self.dump(set % ('module', module))
 				if subnet:
 					self.dump(set % ('subnet', subnet))
+				if vlan:
+					self.dump(set % ('vlan', vlan))
 
 
 	def run(self, params, args):

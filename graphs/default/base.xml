@@ -4,6 +4,9 @@
 
 	<changelog>
 	$Log: base.xml,v $
+	Revision 1.39  2008/07/22 00:34:40  bruno
+	first whack at vlan support
+	
 	Revision 1.38  2008/04/25 22:22:57  bruno
 	fixes for V
 	
@@ -215,6 +218,10 @@
 
 	<order head="nas-partition">
 		<tail>do-partition</tail>
+	</order>
+
+	<order head="server-wan">
+		<tail>base</tail>
 	</order>
 
 	<!-- order the screens -->

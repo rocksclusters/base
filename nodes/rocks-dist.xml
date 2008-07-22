@@ -17,6 +17,9 @@
 
   <changelog>
   $Log: rocks-dist.xml,v $
+  Revision 1.19  2008/07/22 00:34:40  bruno
+  first whack at vlan support
+
   Revision 1.18  2008/05/22 21:02:06  bruno
   rocks-dist is dead!
 
@@ -119,7 +122,7 @@ fi
 export PATH=$PATH:/opt/rocks/bin
 rocks sync config
 
-cd <var name="Kickstart_DistroDir"/>
+cd <var name="Kickstart_DistroDir"/>/<var name="Kickstart_PrivateKickstartBasedir"/>
 rm -rf rocks-dist
 rocks create distro
 

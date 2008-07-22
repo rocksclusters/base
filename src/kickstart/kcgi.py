@@ -1,6 +1,6 @@
 #! /opt/rocks/bin/python
 #
-# $Id: kcgi.py,v 1.26 2008/07/02 17:34:08 bruno Exp $
+# $Id: kcgi.py,v 1.27 2008/07/22 00:34:41 bruno Exp $
 #
 # @Copyright@
 # 
@@ -56,6 +56,9 @@
 # @Copyright@
 #
 # $Log: kcgi.py,v $
+# Revision 1.27  2008/07/22 00:34:41  bruno
+# first whack at vlan support
+#
 # Revision 1.26  2008/07/02 17:34:08  bruno
 # fix for central installs
 #
@@ -592,9 +595,11 @@ class App(rocks.kickstart.Application):
 
 
 	def getNodeName(self, id):
-		self.execute('select networks.name from networks,subnets '
-			'where node=%d and subnets.name="private" '
-			'and networks.subnet=subnets.id' % id)
+		self.execute("""select networks.name from networks,subnets
+			where node = %d and subnets.name = 'private' and
+			networks.subnet = subnets.id and
+			(networks.device is NULL or
+			networks.device not like 'vlan%%') """ % id)
 		try:
 			name, = self.fetchone()
 		except TypeError:
@@ -833,60 +838,18 @@ class App(rocks.kickstart.Application):
 	def wanKickstart(self):
 		"""Sends a minimal kickstart file for wide-area installs."""
 		# Default distribution name.
-		dist = 'rocks-dist'
+		file = open('/tmp/ks.wan.debug', 'a')
 
 		if self.form.has_key('arch'):
 			self.arch = self.form['arch'].value
-		if self.form.has_key('dist'):
-			dist = self.form['dist'].value
-		if self.form.has_key('restore'):
-			self.doRestore = 1
 			
-		dist = os.path.join(dist, 'lan')
-
-		if self.distname:
-			dist = self.distname
-
-		self.dist.setDist(dist)
-		self.dist.setArch(self.arch)
-		distroot = self.dist.getReleasePath()
-		buildroot = os.path.join(distroot, 'build')
-		urlroot = self.dist.getHomePath()
-		self.dist.setRoot('')
-
-		wandist = self.dist.getReleasePath()
-
-		if self.doRestore:
-			node = 'server-restore'
-		else:
-			node = 'server-wan'
-
-		kpp = 'kpp --client=%s ' \
-		      '--client-ip=%s ' \
-		      '--arch=%s ' \
-		      '--distribution=%s ' \
-		      '%s' % (
-			self.clientList[-1],
-			self.clientList[-1],
-			self.arch,
-			wandist, node)
-
-		# Need the main, pre, and installclass parts only.
-
-		gen = '%s --arch=%s --section="main pre"' \
-			% (self.generator, self.arch)
-
-		cmd  = '%s|%s' % (os.path.join(self.helperpath, kpp),
-				  os.path.join(self.helperpath, gen))
-
-		try:
-			os.chdir(buildroot)
-		except:
-			raise KickstartError, \
-			"Client is external but I dont see %s" % buildroot
+		cmd = '/opt/rocks/bin/rocks list node xml server-wan arch=%s' \
+			% (self.arch)
 
 		for line in os.popen(cmd).readlines():
 			self.report.append(line[:-1])
+
+		file.close()
 
 
 	def proxyKickstart(self):

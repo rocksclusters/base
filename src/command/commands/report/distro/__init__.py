@@ -1,5 +1,5 @@
 #
-# $Id: __init__.py,v 1.1 2008/05/15 23:52:03 bruno Exp $
+# $Id: __init__.py,v 1.2 2008/07/22 00:34:40 bruno Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.2  2008/07/22 00:34:40  bruno
+# first whack at vlan support
+#
 # Revision 1.1  2008/05/15 23:52:03  bruno
 # get the name of the current distro
 #
@@ -77,7 +80,14 @@ class Command(rocks.commands.report.command):
 			self.db.execute("""select value from app_globals where
 				service='Kickstart' and
 				component='DistroDir'""")
-			distrodir, = self.db.fetchone()
+			d, = self.db.fetchone()
+
+			self.db.execute("""select value from app_globals where
+				service='Kickstart' and
+				component='PrivateKickstartBasedir'""")
+			k, = self.db.fetchone()
+
+			distrodir = os.path.join(d, k)
 		except:
 			distrodir = '/export/rocks/install'
 

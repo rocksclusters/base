@@ -1,5 +1,5 @@
-# $Id: plugin_host_interface.py,v 1.5 2008/07/22 00:34:40 bruno Exp $
-# 
+# $Id: __init__.py,v 1.1 2008/07/22 00:34:41 bruno Exp $
+#
 # @Copyright@
 # 
 # 				Rocks(r)
@@ -53,37 +53,77 @@
 # 
 # @Copyright@
 #
-# $Log: plugin_host_interface.py,v $
-# Revision 1.5  2008/07/22 00:34:40  bruno
+# $Log: __init__.py,v $
+# Revision 1.1  2008/07/22 00:34:41  bruno
 # first whack at vlan support
 #
-# Revision 1.4  2008/04/29 21:28:38  bruno
-# dump the network info
 #
-# Revision 1.3  2008/03/06 23:41:36  mjk
-# copyright storm on
-#
-# Revision 1.2  2007/06/19 16:42:41  mjk
-# - fix add host interface docstring xml
-# - update copyright
-#
-# Revision 1.1  2007/06/12 19:56:18  mjk
-# added lost plugins
 #
 
-import os
 import rocks.commands
 
-class Plugin(rocks.commands.Plugin):
+class Command(rocks.commands.set.host.command):
+	"""
+	Sets the VLAN ID for an interface on one of more hosts. 
 
-	def provides(self):
-		return 'interface'
-		
-	def requires(self):
-		return [ 'host', 'network', 'vlan' ]
-		
-	def run(self, args):
-		self.owner.addText(self.owner.command('dump.host.interface',
-			[]))
-		
+	<arg type='string' name='host' repeat='1'>
+	One or more named hosts.
+	</arg>
+	
+	<arg type='string' name='iface'>
+ 	Interface that should be updated. This may be a logical interface or 
+ 	the mac address of the interface.
+ 	</arg>
+
+	<arg type='string' name='vlanid'>
+	The VLAN ID that should be updated. This must be an integer and the
+	pair 'subnet/vlanid' must be defined in the VLANs table.
+ 	</arg>
+ 	
+	<param type='string' name='iface'>
+	Can be used in place of the iface argument.
+	</param>
+
+	<param type='string' name='vlanid'>
+	Can be used in place of the vlanid argument.
+	</param>
+
+	<example cmd='set host interface vlan compute-0-0-0 eth0 2'>
+	Sets compute-0-0-0's private interface to VLAN ID 2.
+	</example>
+
+	<example cmd='set host interface vlan compute-0-0-0 subnet=eth0 vlanid=2
+'>
+	Same as above.
+	</example>
+	
+	<related>add host</related>
+	"""
+	
+	def run(self, params, args):
+
+		(args, iface, vid) = self.fillPositionalArgs(
+			('iface', 'vlanid'))
+
+		if not len(args):
+			self.abort('must supply host')
+
+		if not iface:
+			self.abort('must supply iface')
+
+		if not vid:
+			self.abort('must supply vlanid')
+		else:
+			try:
+				vlanid = int(vid)
+			except:
+				self.abort('vlanid "%s" must be an integer' %
+					(vid))
+
+		for host in self.getHostnames(args):
+			self.db.execute("""update networks net, nodes n
+				set net.vlanid = IF(%d = 0, NULL, %d)
+				where net.device = '%s' and
+				n.name = '%s' and net.node = n.id""" %
+				(vlanid, vlanid, iface, host))
 

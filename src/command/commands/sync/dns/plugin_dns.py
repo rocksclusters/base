@@ -1,4 +1,4 @@
-# $Id: plugin_dns.py,v 1.5 2008/03/06 23:41:40 mjk Exp $
+# $Id: plugin_dns.py,v 1.6 2008/07/22 00:34:41 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: plugin_dns.py,v $
+# Revision 1.6  2008/07/22 00:34:41  bruno
+# first whack at vlan support
+#
 # Revision 1.5  2008/03/06 23:41:40  mjk
 # copyright storm on
 #
@@ -221,9 +224,11 @@ class Plugin(rocks.commands.Plugin):
 		for row in self.db.fetchall():
 			nodeid, name = row
 			self.db.execute("""select networks.ip from
-				networks,subnets where networks.node=%d
-				and subnets.name="private" and
-				networks.subnet=subnets.id """ % nodeid)
+				networks,subnets where networks.node = %d and
+				subnets.name = "private" and
+				networks.subnet = subnets.id and
+				(networks.device is NULL or 
+				networks.device not like 'vlan%%') """ % nodeid)
 			t_address = self.db.fetchone()
 			if t_address is None:
 				continue

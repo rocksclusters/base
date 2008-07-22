@@ -17,6 +17,9 @@
 
   <changelog>
   $Log: database-schema.xml,v $
+  Revision 1.19  2008/07/22 00:34:40  bruno
+  first whack at vlan support
+
   Revision 1.18  2008/03/06 23:41:30  mjk
   copyright storm on
 
@@ -285,6 +288,7 @@ CREATE TABLE networks (
   Device	varchar(32) default NULL,
   Subnet	int(11)	default NULL references subnets,
   Module	varchar(128) default NULL,
+  VlanID	int(11) default NULL,
   Options	varchar(128) default NULL,
   Comment	varchar(128) default NULL,
   PRIMARY KEY(ID)

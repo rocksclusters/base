@@ -56,6 +56,9 @@
 # @Copyright@
 #
 # $Log: hosts.py,v $
+# Revision 1.16  2008/07/22 00:34:41  bruno
+# first whack at vlan support
+#
 # Revision 1.15  2008/03/06 23:41:41  mjk
 # copyright storm on
 #
@@ -205,11 +208,10 @@ class Report(rocks.reports.base.ReportBase):
 
 
 	def extranics(self):
-		self.execute('select networks.IP, networks.Name '
-			     'from networks,subnets where subnets.name!="private" '
-			     'and networks.subnet=subnets.id '
-			     'and networks.ip is not NULL '
-			     'order by networks.IP')
+		self.execute("""select networks.IP, networks.Name from
+			networks,subnets where subnets.name != "private" and
+			networks.subnet = subnets.id and
+			networks.ip is not NULL order by networks.IP""")
 
 		nodes=[]
 		for row in self.fetchall():
@@ -250,7 +252,9 @@ class Report(rocks.reports.base.ReportBase):
 			self.execute("""select networks.name, networks.ip from
 				networks, subnets where networks.node = %d and
 				subnets.name = "private" and
-				networks.subnet = subnets.id""" % (node.id))
+				networks.subnet = subnets.id and
+				networks.device not like 'vlan%%' """ %
+				(node.id))
 
 			row = self.fetchone()
 			if row == None:

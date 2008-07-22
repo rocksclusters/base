@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.9 2008/07/10 17:26:09 anoop Exp $
+# $Id: __init__.py,v 1.10 2008/07/22 00:34:40 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.10  2008/07/22 00:34:40  bruno
+# first whack at vlan support
+#
 # Revision 1.9  2008/07/10 17:26:09  anoop
 # Bug fix to support new distribution directory
 #
@@ -191,14 +194,15 @@ class Command(rocks.commands.list.host.command):
 				n.membership=m.id and m.appliance=a.id and
 				m.distribution=d.id and n.name='%s'""" % host)
 			(dist, graph) = self.db.fetchone()
+
+			distrodir = self.command('report.distro')
 			
-			self.basedir  = os.path.join(
-					self.db.getGlobalVar('Kickstart','DistroDir'),
-					dist, arch, 'build')
+			self.basedir  = os.path.join(distrodir, dist, arch,
+				'build')
 			if basedir:
 				if not os.path.exists(basedir):
-					self.abort('cannot read directory "%s"' %
-						basedir)
+					self.abort('cannot read directory "%s"'
+						% basedir)
 				self.basedir = basedir
 
 			graphdir = os.path.join(self.basedir, 'graphs', graph)
