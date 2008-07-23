@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.18 2008/07/22 00:34:41 bruno Exp $
+# $Id: __init__.py,v 1.19 2008/07/23 00:29:55 anoop Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,13 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.19  2008/07/23 00:29:55  anoop
+# Modified the database to support per-node OS field. This will help
+# determine the kind of provisioning for each node
+#
+# Modification to insert-ethers, rocks command line, and pylib to
+# support the same.
+#
 # Revision 1.18  2008/07/22 00:34:41  bruno
 # first whack at vlan support
 #
@@ -366,18 +373,16 @@ class Command(rocks.commands.set.host.command):
 				# get the nodeid from the nodes table
 				#
 				self.db.execute("""select nodes.id,
-					appliances.name from nodes, appliances,
-					memberships where nodes.name = '%s'
-					and nodes.membership = memberships.id
-					and memberships.appliance =
-					appliances.id""" % host)
+					nodes.os from nodes, memberships 
+					where nodes.name = '%s' and
+					nodes.membership = memberships.id""" % host)
 
-				(nodeid, appliance) = self.db.fetchone()
+				(nodeid, node_os) = self.db.fetchone()
 			
 				if action:
 					self.updatePxeboot(nodeid, host, action)
 			
-				if appliance == 'solaris':
+				if node_os == 'sunos':
 					self.writePxegrub(host, nodeid)
 				else:
 					self.writePxebootCfg(host, nodeid)

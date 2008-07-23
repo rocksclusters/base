@@ -58,6 +58,13 @@
 # @Copyright@
 #
 # $Log: insert-ethers.py,v $
+# Revision 1.36  2008/07/23 00:29:55  anoop
+# Modified the database to support per-node OS field. This will help
+# determine the kind of provisioning for each node
+#
+# Modification to insert-ethers, rocks command line, and pylib to
+# support the same.
+#
 # Revision 1.35  2008/05/22 21:02:07  bruno
 # rocks-dist is dead!
 #
@@ -688,6 +695,7 @@ class InsertEthers(GUI):
 		self.lastmsg		= ''
 		self.client		= ''
 		self.rocksdist_lockFile	= '/var/lock/rocks-dist'
+		self.osname		= 'linux'
 
 
 		## Things for Dumping/Restoring 
@@ -768,6 +776,8 @@ class InsertEthers(GUI):
 		"Set the site client IP. Later we find the ID"
 		self.client = client
 		
+	def setOSName(self, osname):
+		self.osname = osname
 
 	def startGUI(self):
 
@@ -810,8 +820,12 @@ class InsertEthers(GUI):
 			# display all memberships to the user -- let them choose
 			# which type of machine they want to integrate
 			#
-			query = 'select name from memberships where '\
-				'public = "yes" order by name'
+			query = 'select memberships.name from memberships, appliances '\
+				'where memberships.appliance=appliances.id and '\
+				'appliances.OS="%s" and ' \
+				'memberships.public = "yes" ' \
+				'order by memberships.name' \
+				 % (self.osname) 
 
 			if self.sql.execute(query) == 0:
 				self.errorGUI(_("No appliance names in database"))
@@ -886,7 +900,7 @@ class InsertEthers(GUI):
 		siteid = self.sql.getSiteId(self.client)
 		self.clusterdb.insert(nodename, self.membership, 
 			self.cabinet, self.rank, self.mac, self.ipaddr, 
-			self.netmask, self.subnet, siteid)
+			self.netmask, self.subnet, siteid, self.osname)
 
 		# Execute any plugins when adding hosts via
 		# command-line parameters
@@ -1145,7 +1159,7 @@ class InsertEthers(GUI):
 	def addit(self, mac, nodename, ip, netmask):
 
 		self.clusterdb.insert(nodename, self.membership, 
-			self.cabinet, self.rank, mac, ip, netmask, self.subnet)
+			self.cabinet, self.rank, mac, ip, netmask, self.subnet, self.osname)
 
 		self.controller.added(nodename, self.clusterdb.getNodeId())
 		self.restart_services = 1
@@ -1543,6 +1557,7 @@ class App(rocks.sql.Application):
 			('public-mode', 'dont listen'),
 			('max-new=', 'exit after N nodes'),
 			('site=', 'client ip or site id'),
+			('os=', 'the OS to install on the machines')
 			('dump'),
 			('batch'),
 			('update'),
@@ -1581,6 +1596,8 @@ class App(rocks.sql.Application):
 			self.insertor.setApplianceName(c[1])
 		elif c[0] in ('--cabinet','--rack'):
 			self.insertor.setCabinet(int(c[1]))
+		elif c[0] == '--os':
+			self.insertor.setOSName(c[1])
 		elif c[0] == '--inc':
 			self.ipIncrement = int(c[1])
 		elif c[0] == '--public-mode':

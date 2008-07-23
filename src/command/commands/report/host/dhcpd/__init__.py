@@ -1,5 +1,5 @@
 #
-# $Id: __init__.py,v 1.1 2008/05/22 21:02:06 bruno Exp $
+# $Id: __init__.py,v 1.2 2008/07/23 00:29:54 anoop Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,13 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.2  2008/07/23 00:29:54  anoop
+# Modified the database to support per-node OS field. This will help
+# determine the kind of provisioning for each node
+#
+# Modification to insert-ethers, rocks command line, and pylib to
+# support the same.
+#
 # Revision 1.1  2008/05/22 21:02:06  bruno
 # rocks-dist is dead!
 #
@@ -140,7 +147,7 @@ class Command(rocks.commands.report.host.command):
 			self.addOutput('', prefix + '}\n')
 
 
-	def printHost(self, name, hostname, mac, ip, opt, defopt, appliance):
+	def printHost(self, name, hostname, mac, ip, opt, defopt, appliance, osname='linux'):
 		self.addOutput('', '\t\thost %s {' % name)
 		if mac:
 			self.addOutput('', '\t\t\thardware ethernet %s;' % mac)
@@ -148,7 +155,7 @@ class Command(rocks.commands.report.host.command):
 		self.addOutput('', '\t\t\toption host-name "%s";' % hostname)
 		self.addOutput('', '\t\t\tfixed-address %s;' % ip)
 		self.printOptions('\t\t\t', opt, defopt)
-		if appliance == 'solaris':
+		if osname=='sunos':
 			self.addOutput('', '\t\t\tfilename "pxegrub";')
 		self.addOutput('', '\t\t}')
 
@@ -189,7 +196,7 @@ class Command(rocks.commands.report.host.command):
 			defopt['PrivateNetmask'])
 		
 		self.db.execute("""select nodes.id,nodes.name,nodes.rack,
-			nodes.rank,appliances.name,memberships.id from
+			nodes.rank,nodes.os,appliances.name,memberships.id from
 			nodes,appliances,memberships where
 			nodes.membership=memberships.id and 
 			memberships.appliance=appliances.id and nodes.site=0
@@ -201,8 +208,9 @@ class Command(rocks.commands.report.host.command):
 			node.name	= row[1]
 			node.rack	= row[2]
 			node.rank	= row[3]
-			node.appname	= row[4]
-			node.membership = row[5]
+			node.osname	= row[4]
+			node.appname	= row[5]
+			node.membership = row[6]
 
 			self.db.execute("""select component,value from
 				app_globals where site=0 and membership=%d and
@@ -239,7 +247,7 @@ class Command(rocks.commands.report.host.command):
 			node.name = node.name + "." + dn
 
 			self.printHost(node.name, node.name, node.mac,
-				node.ip, opt, defopt, node.appname)
+				node.ip, opt, defopt, node.appname, node.osname)
 
 			#
 			# associate all unassigned macs to this node
@@ -255,7 +263,7 @@ class Command(rocks.commands.report.host.command):
 					continue
 				self.printHost(node.name + '-%d' % (i),
 					node.name, extramac,
-					node.ip, opt, defopt, node.appname)
+					node.ip, opt, defopt, node.appname, node.osname)
 				i = i + 1
 
 		self.addOutput('', '\t}')

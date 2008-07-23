@@ -17,6 +17,13 @@
 
   <changelog>
   $Log: database-schema.xml,v $
+  Revision 1.20  2008/07/23 00:29:54  anoop
+  Modified the database to support per-node OS field. This will help
+  determine the kind of provisioning for each node
+
+  Modification to insert-ethers, rocks command line, and pylib to
+  support the same.
+
   Revision 1.19  2008/07/22 00:34:40  bruno
   first whack at vlan support
 
@@ -225,6 +232,7 @@ CREATE TABLE appliances (
   ShortName	varchar(32) default NULL,
   Graph		varchar(64) NOT NULL default 'default',
   Node		varchar(64) NOT NULL default '',
+  OS		varchar(32) default 'linux',
   PRIMARY KEY (ID)
 ) TYPE=MyISAM;
 
@@ -270,6 +278,8 @@ CREATE TABLE nodes (
   Rack		int(11) default NULL,
   Rank		int(11) default NULL,
   Comment	varchar(128) default NULL,
+  Arch		varchar(32) default NULL,
+  OS		varchar(32) default 'linux',
   PRIMARY KEY  (ID)
 ) TYPE=MyISAM;
 

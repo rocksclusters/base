@@ -54,6 +54,13 @@
 # @Copyright@
 #
 # $Log: clusterdb.py,v $
+# Revision 1.16  2008/07/23 00:29:55  anoop
+# Modified the database to support per-node OS field. This will help
+# determine the kind of provisioning for each node
+#
+# Modification to insert-ethers, rocks command line, and pylib to
+# support the same.
+#
 # Revision 1.15  2008/03/06 23:41:44  mjk
 # copyright storm on
 #
@@ -120,7 +127,7 @@ class Nodes:
 		return self.nodeid
 		
 	def insert(self, name, mid, rack, rank, mac=None, ip=None,
-			netmask=None, subnet='private', site=0):
+			netmask=None, subnet='private', osname='linux', site=0):
 
 		"""Inserts a new node into the database. Optionally inserts
 		networking information as well."""
@@ -134,9 +141,9 @@ class Nodes:
 		#
 		# create a new row in nodes table
 		#
-		insert = ('insert into nodes (name,membership,site,rack,rank) '
-			'values ("%s", %d, %d, %d, %d) ' %
-			(name, mid, site, rack, rank))
+		insert = ('insert into nodes (name,membership,site,rack,rank,os) '
+			'values ("%s", %d, %d, %d, %d, "%s") ' %
+			(name, mid, site, rack, rank, osname))
 
 		self.sql.execute(insert)
 
