@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.13 2008/03/06 23:41:34 mjk Exp $
+# $Id: __init__.py,v 1.14 2008/07/23 00:51:49 anoop Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.14  2008/07/23 00:51:49  anoop
+# Modifications to rocks add appliance to support OS field in the database
+#
 # Revision 1.13  2008/03/06 23:41:34  mjk
 # copyright storm on
 #
@@ -161,6 +164,12 @@ class Command(rocks.commands.ApplianceArgumentProcessor,
 	the Appliance menu. The default is 'yes'.
 	</param>
 
+	<param type='string' name='os'>
+	The OS that the appliance type can support. Some appliances can support
+	both linux and solaris, where as others can support only one of the two.
+	Acceptable values are 'linux' or 'sunos'. Defaults to 'linux'
+	</param>
+
 	<example cmd='add appliance nas membership="NAS Appliance" node=nas graph=default compute=no public=yes'>
 	</example>
 	
@@ -177,22 +186,23 @@ class Command(rocks.commands.ApplianceArgumentProcessor,
 		if app_name in self.getApplianceNames():
 			self.abort('appliance "%s" exists' % app_name)
 
-		(mem_name, root, graph,	shortname, compute, public) = \
+		(mem_name, root, graph,	shortname, compute, public, osname) = \
 			self.fillParams(
 				[('membership', ), 
 				('node', ''),
 				('graph', 'default'), 
 				('short-name', 'NULL'), 
 				('compute', 'y'), 
-				('public', 'y')])
+				('public', 'y'),
+				('os','linux')])
 
 		compute = self.bool2str(self.str2bool(compute))
 		public  = self.bool2str(self.str2bool(public))
 		
 		self.db.execute("""insert into appliances 
-			(name, shortname, graph, node) values
-			('%s', '%s', '%s', '%s')""" % 
-			(app_name, shortname, graph, root))
+			(name, shortname, graph, node, os) values
+			('%s', '%s', '%s', '%s', '%s')""" % 
+			(app_name, shortname, graph, root, osname))
 
 		# add a row to the memberships table
 
