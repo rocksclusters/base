@@ -1,5 +1,5 @@
 #
-# $Id: ConfigNetworks.py,v 1.12 2008/07/22 00:34:41 bruno Exp $
+# $Id: ConfigNetworks.py,v 1.13 2008/07/23 00:01:07 bruno Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: ConfigNetworks.py,v $
+# Revision 1.13  2008/07/23 00:01:07  bruno
+# tweaks
+#
 # Revision 1.12  2008/07/22 00:34:41  bruno
 # first whack at vlan support
 #
@@ -222,7 +225,6 @@ class App(rocks.sql.Application):
 		rocks.sql.Application.__init__(self)
 		self.ifcfg = '/etc/sysconfig/network-scripts/ifcfg'
 		self.route = '/etc/sysconfig/static-routes'
-		self.modules = '/tmp/modprobe.conf.rocks'
 
 		self.install_nic = ''
 		self.node_id = 0

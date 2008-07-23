@@ -15,6 +15,9 @@ All rights reserved. Rocks(tm) v4.3 www.rocksclusters.org
 
 <changelog>
 $Log: networking-server.xml,v $
+Revision 1.2  2008/07/23 00:01:06  bruno
+tweaks
+
 Revision 1.1  2007/12/10 21:28:33  bruno
 the base roll now contains several elements from the HPC roll, thus
 making the HPC roll optional.
@@ -28,41 +31,12 @@ this also includes changes to help build and configure VMs for V.
 
 MYHOST=<var name="Kickstart_PrivateHostname"/>
 
-<file name="/etc/sysconfig/network"
-	expr="/opt/rocks/bin/rocks config host network $MYHOST"/>
+/opt/rocks/bin/rocks config host network $MYHOST > /tmp/do-networking.post
+%include /tmp/do-networking.post
 
-/opt/rocks/bin/rocks config host interface $MYHOST iface=eth0 > \
-	/etc/sysconfig/network-scripts/ifcfg-eth0
+/opt/rocks/bin/rocks config host interface $MYHOST > /tmp/do-interfaces.post
+%include /tmp/do-interfaces.post
 
-/opt/rocks/bin/rocks config host interface $MYHOST iface=eth1 > \
-	/etc/sysconfig/network-scripts/ifcfg-eth1
-
-</post>
-
-
-<post arg="--interpreter /usr/bin/python">
-import string
-
-file = open('/etc/modprobe.conf')
-newfile = open('/tmp/modules.orig', 'w')
-
-for line in file.readlines():
-	tokens = string.split(line)
-	if tokens[0] != 'alias' or tokens[1][0:3] != 'eth':
-		newfile.write(line)
-
-newfile.close()
-file.close()
-</post>
-
-<post>
-<file name="/etc/modprobe.conf" vars="expanded">
-`cat /tmp/modprobe.conf.rocks`
-</file>
-
-<file name="/etc/modprobe.conf" mode="append" vars="expanded">
-`cat /tmp/modules.orig`
-</file>
 </post>
 
 

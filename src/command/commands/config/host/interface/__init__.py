@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.3 2008/07/22 00:34:40 bruno Exp $
+# $Id: __init__.py,v 1.4 2008/07/23 00:01:06 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.4  2008/07/23 00:01:06  bruno
+# tweaks
+#
 # Revision 1.3  2008/07/22 00:34:40  bruno
 # first whack at vlan support
 #
@@ -136,6 +139,15 @@ class Command(rocks.commands.config.host.command):
 			self.addOutput('', 'ONBOOT=no')
 		
 
+	def writeModprobe(self, device, module):
+		self.addOutput('', '<![CDATA[')
+		self.addOutput('', 'grep -v "\<%s\>" /etc/modprobe.conf > /tmp/modprobe.conf' % (device))
+		self.addOutput('', "echo 'alias %s %s' >> /tmp/modprobe.conf" % (device, module))
+		self.addOutput('', 'mv /tmp/modprobe.conf /etc/modprobe.conf')
+		self.addOutput('', 'chmod 444 /etc/modprobe.conf')
+		self.addOutput('', ']]>')
+
+
 	def run(self, params, args):
 		iface, = self.fillParams([('iface', ), ])
 
@@ -157,8 +169,8 @@ class Command(rocks.commands.config.host.command):
 
 		self.db.execute("""select distinctrow net.mac, net.ip,
 			net.device, net.gateway,
-			if(net.subnet, s.netmask, NULL), net.vlanid, net.subnet
-			from
+			if(net.subnet, s.netmask, NULL), net.vlanid,
+			net.subnet, net.module from
 			networks net, nodes n, subnets s where net.node = n.id
 			and if(net.subnet, net.subnet = s.id, true) and
 			n.name = "%s" order by net.id""" % (host))
@@ -166,7 +178,14 @@ class Command(rocks.commands.config.host.command):
 		self.beginOutput()
 
 		for row in self.db.fetchall():
-			mac,ip,device,gateway,netmask,vlanid,subnetid = row
+			mac,ip,device,gateway,netmask,vlanid,subnetid,module \
+				= row
+
+			if device and device[0:4] != 'vlan':
+				#
+				# output a script to update modprobe.conf
+				#
+				self.writeModprobe(device, module)
 
 			if vlanid and self.isPhysicalHost(host):
 				#

@@ -1,5 +1,6 @@
-# $Id: __init__.py,v 1.4 2008/07/23 00:01:06 bruno Exp $
-# 
+#
+# $Id: __init__.py,v 1.1 2008/07/23 00:01:06 bruno Exp $
+#
 # @Copyright@
 # 
 # 				Rocks(r)
@@ -54,102 +55,84 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
-# Revision 1.4  2008/07/23 00:01:06  bruno
+# Revision 1.1  2008/07/23 00:01:06  bruno
 # tweaks
 #
-# Revision 1.3  2008/03/06 23:41:36  mjk
-# copyright storm on
-#
-# Revision 1.2  2008/01/16 22:41:36  bruno
-# correctly get the membership of a given host
-#
-# Revision 1.1  2007/12/10 21:28:34  bruno
-# the base roll now contains several elements from the HPC roll, thus
-# making the HPC roll optional.
-#
-# this also includes changes to help build and configure VMs for V.
 #
 #
 
+import sys
+import tempfile
+import os.path
 import rocks.commands
+import rocks.gen
 
-class Command(rocks.commands.config.host.command):
+class Command(rocks.commands.report.command):
 	"""
-	Outputs the network configuration file for a host (on RHEL-based
-	machines, this is the contents of the file /etc/sysconfig/network).
+	Take STDIN XML input and create a shell script that can be executed
+	on a host.
 
-	<arg type='string' name='host'>
-	One host name.
-	</arg>
-
-	<example cmd='config host network compute-0-0'>
-	Output the network configuration for compute-0-0.
+	<example cmd='config host interface compute-0-0 | rocks report script'>
+	Take the network interface XML output from 'rocks config host interface'
+	and create a shell script.
 	</example>
 	"""
 
+	def scrub(self, xml):
+		filename = tempfile.mktemp()
+
+		file = open(filename, 'w')
+		file.write(xml)
+		file.close()
+
+		scrubed = ''
+		cmd = 'xmllint --nocdata %s' % (filename)
+		for line in os.popen(cmd).readlines():
+			scrubed += line
+		
+		os.remove(filename)
+
+		return scrubed
+		
+
+	def runXML(self, xml):
+		list = []
+
+		self.generator.parse(xml)
+		list += self.generator.generate('post')
+			
+		for line in list:
+			if line[0:5] == '%post':
+				continue
+
+			self.addOutput('', line.rstrip())
+
+
 	def run(self, params, args):
-                hosts = self.getHostnames(args)
+		self.os, self.arch = self.fillParams([
+			('os', self.os),
+			('arch', self.arch)
+			])
 
-		#
-		# only takes one host
-		#
-		if len(hosts) != 1:
-			return
-
-		host = hosts[0]
-
-		#
-		# get the appliance type
-		#
-		rows = self.db.execute("""select app.name from
-			appliances app, memberships mem, nodes n where
-			app.id = mem.appliance and
-			n.membership = mem.id and n.name = '%s'""" % (host))
-
-		if rows != 1:
-			return
-
-		appliance, = self.db.fetchone()
+		c_gen = getattr(rocks.gen,'Generator_%s' % self.os)
+		self.generator = c_gen()
+		self.generator.setArch(self.arch)
+		self.generator.setOS(self.os)
+		self.generator.setRCSComment('rocks report script')
 
 		self.beginOutput()
-		self.addOutput('', '<file name="/etc/sysconfig/network">')
 
-		self.addOutput('', 'NETWORKING=yes')
+		xml = '<?xml version="1.0" standalone="no"?>\n'
+		xml += '<kickstart>\n'
+		xml += '<post>\n'
 
-		hostname = ''
-		gateway = ''
+		for line in sys.stdin.readlines():
+			xml += line
 
-		if appliance == 'frontend':
-			rows = self.db.execute("""select net.name, net.gateway
-				from networks net, nodes n, subnets s where
-				n.id = net.node and net.subnet = s.id and
-				s.name = 'public' and n.name = '%s'""" % (host))
-		
-			if rows == 1:
-				hostname, gateway = self.db.fetchone()
+		xml += '</post>\n'
+		xml += '</kickstart>\n'
 
-		else:
-			rows = self.db.execute("""select net.gateway
-				from networks net, nodes n, subnets s where
-				n.id = net.node and net.subnet = s.id and
-				s.name = 'private' and n.name = '%s'""" %
-				(host))
+		self.runXML(self.scrub(xml))
 
-			if rows == 1:
-				gateway, = self.db.fetchone()
-
-			if not gateway:
-				gateway = self.db.getGlobalVar('Kickstart',
-					'PrivateGateway')
-
-			domain = self.db.getGlobalVar('Kickstart',
-				'PrivateDNSDomain')
-
-			hostname = '%s.%s' % (host, domain)
-
-		self.addOutput('', 'HOSTNAME=%s' % hostname)
-		self.addOutput('', 'GATEWAY=%s' % gateway)
-
-		self.addOutput('', '</file>')
-		self.endOutput()
+		self.endOutput(padChar='')
 
