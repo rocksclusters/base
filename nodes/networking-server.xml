@@ -15,6 +15,9 @@ All rights reserved. Rocks(tm) v4.3 www.rocksclusters.org
 
 <changelog>
 $Log: networking-server.xml,v $
+Revision 1.3  2008/07/24 21:10:32  bruno
+fix
+
 Revision 1.2  2008/07/23 00:01:06  bruno
 tweaks
 
@@ -31,11 +34,17 @@ this also includes changes to help build and configure VMs for V.
 
 MYHOST=<var name="Kickstart_PrivateHostname"/>
 
-/opt/rocks/bin/rocks config host network $MYHOST > /tmp/do-networking.post
-%include /tmp/do-networking.post
+/opt/rocks/bin/rocks config host network $MYHOST | \
+	/opt/rocks/bin/rocks report script > /tmp/do-network.sh
 
-/opt/rocks/bin/rocks config host interface $MYHOST > /tmp/do-interfaces.post
-%include /tmp/do-interfaces.post
+chmod a+x /tmp/do-network.sh
+/tmp/do-network.sh
+
+/opt/rocks/bin/rocks config host interface $MYHOST | \
+	/opt/rocks/bin/rocks report script > /tmp/do-interface.sh
+
+chmod a+x /tmp/do-interface.sh
+/tmp/do-interface.sh
 
 </post>
 
