@@ -5,6 +5,7 @@ import string
 import os
 import re
 import tempfile
+import isys
 
 class RocksPartition:
 	saved_fstab = []
@@ -17,7 +18,16 @@ class RocksPartition:
 		for line in file.readlines():
 			l = string.split(line)
 			if len(l) > 0 and l[0] == 'disks:':
-				disks = l[1:]
+				for d in l[1:]:
+					#
+					# only include disks that have their
+					# 'media present' -- this is one way
+					# to filter out Dell Virtual Floppy
+					# devices
+					#
+					if isys.mediaPresent(d):
+						disks.append(d)
+
 		file.close()
 
 		return disks
