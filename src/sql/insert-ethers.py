@@ -58,6 +58,9 @@
 # @Copyright@
 #
 # $Log: insert-ethers.py,v $
+# Revision 1.37  2008/07/24 22:39:12  anoop
+# Don't forget the comma, don't forget the comma, don't forget the comma
+#
 # Revision 1.36  2008/07/23 00:29:55  anoop
 # Modified the database to support per-node OS field. This will help
 # determine the kind of provisioning for each node
@@ -1557,7 +1560,7 @@ class App(rocks.sql.Application):
 			('public-mode', 'dont listen'),
 			('max-new=', 'exit after N nodes'),
 			('site=', 'client ip or site id'),
-			('os=', 'the OS to install on the machines')
+			('os=', 'the OS to install on the machines'),
 			('dump'),
 			('batch'),
 			('update'),
