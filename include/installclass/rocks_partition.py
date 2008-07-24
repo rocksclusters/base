@@ -5,6 +5,9 @@ import string
 import os
 import re
 import tempfile
+import sys
+sys.path.append('/usr/lib/anaconda')
+sys.path.append('/usr/lib/python2.4/site-packages')
 import isys
 
 class RocksPartition:
