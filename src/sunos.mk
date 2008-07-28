@@ -1,4 +1,4 @@
-# $Id: sunos.mk,v 1.5 2008/07/22 00:49:50 anoop Exp $
+# $Id: sunos.mk,v 1.6 2008/07/28 18:38:16 anoop Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: sunos.mk,v $
+# Revision 1.6  2008/07/28 18:38:16  anoop
+# Added mercurial to base devel appliance build
+#
 # Revision 1.5  2008/07/22 00:49:50  anoop
 # Minor changes to build solaris packages correctly
 #
@@ -124,6 +127,7 @@ SRCDIRS = foundation-coreutils foundation-gawk	\
 	  foundation-perl-tk foundation-ant	\
 	  foundation-cvs phpMyAdmin		\
 	  foundation-graphviz foundation-rcs	\
+	  foundation-mercurial			\
 	  pcre pylib command dbreport 411	\
 	  411-master bittorrent tentakel	\
 	  ganglia-pylib receptor ssl
