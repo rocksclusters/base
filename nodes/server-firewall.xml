@@ -9,6 +9,9 @@ Server node firewall rules
 
 <changelog>
 $Log: server-firewall.xml,v $
+Revision 1.2  2008/07/29 17:13:41  bruno
+open the web to the nodes on the public subnet
+
 Revision 1.1  2007/12/10 21:28:33  bruno
 the base roll now contains several elements from the HPC roll, thus
 making the HPC roll optional.
@@ -37,9 +40,9 @@ COMMIT
 
 # Allow these ports
 -A INPUT -m state --state NEW -p tcp --dport ssh -j ACCEPT
-# Uncomment the lines below to activate web access to the cluster.
-#-A INPUT -m state --state NEW -p tcp --dport https -j ACCEPT
-#-A INPUT -m state --state NEW -p tcp --dport www -j ACCEPT
+# http and https is allowed for all nodes on the public subnet
+-A INPUT -m state --state NEW -p tcp --dport https --source <var name="Kickstart_PublicNetwork"/>/<var name="Kickstart_PublicNetmask"/> -j ACCEPT
+-A INPUT -m state --state NEW -p tcp --dport www --source <var name="Kickstart_PublicNetwork"/>/<var name="Kickstart_PublicNetmask"/> -j ACCEPT
 
 # Standard rules
 -A INPUT -p icmp --icmp-type any -j ACCEPT
