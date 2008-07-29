@@ -18,6 +18,9 @@
 
   <changelog>
   $Log: central.xml,v $
+  Revision 1.9  2008/07/29 17:19:34  bruno
+  simplify the http configuration
+
   Revision 1.8  2008/05/22 21:02:06  bruno
   rocks-dist is dead!
 
@@ -86,14 +89,7 @@
 <Directory /var/www/html/install>
 	Options FollowSymLinks Indexes ExecCGI
 	AllowOverride None
-	Deny from all
-</Directory>
-
-<Directory /var/www/html/install/rocks-dist>
-	AllowOverride Limit
-	Allow from 10.0.0.0/255.0.0.0
-	Allow from 127.0.0.1
-	Deny from all
+	Allow from all
 </Directory>
 
 # HTTPS access for serving kickstart files
@@ -101,10 +97,7 @@
 <Directory /var/www/html/install/sbin>
 	AllowOverride None
 	SSLRequireSSL
-
-	# Clients need a cert signed by a trusted CA
-	SSLVerifyClient require
-	SSLVerifyDepth 1
+	SSLVerifyClient None
 	Allow from all
 </Directory>
 
@@ -112,14 +105,6 @@
 <Directory /var/www/html/install/rolls>
 	DirectoryIndex /install/rolls/index.cgi
 	Allow from all
-</Directory>
-
-# HTTPS access for kickstart files (IP-based security).
-
-<Directory /var/www/html/install/sbin/public>
-	AllowOverride Limit
-	SSLVerifyClient None
-	Deny from all
 </Directory>
 
 SSLCACertificateFile /etc/httpd/conf/ssl.ca/ca-bundle
