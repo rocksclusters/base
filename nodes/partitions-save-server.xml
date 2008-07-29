@@ -1,0 +1,38 @@
+<?xml version="1.0" standalone="no"?>
+
+
+<kickstart>
+
+<description>
+Save the partition info for a server node by sending a message to the local
+host. This will store the partition info in the database.
+
+This file is a copy of 'partitions-save' which is connected to the
+'client' graph. We need two files because of ordering: we want to save
+the partitions as early as possible on client nodes so we order
+'partitions-save' off 'HEAD', but for server nodes, we need to wait for
+the database to be configured, so we order 'partitions-save-server' off 'TAIL'.
+</description>
+
+        <copyright>
+        Copyright (c) 2000 - 2008 The Regents of the University of California.
+        All rights reserved. Rocks(r) v5.0 www.rocksclusters.org
+        </copyright>
+
+
+<changelog>
+$Log: partitions-save-server.xml,v $
+Revision 1.1  2008/07/29 16:48:05  bruno
+save the frontend's partitions in the database.
+
+</changelog>
+
+
+<post arg="--nochroot">
+chmod a+x /tmp/product/record_partitions.py
+/tmp/product/record_partitions.py
+</post>
+
+
+</kickstart> 
+

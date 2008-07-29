@@ -4,6 +4,9 @@
 
 	<changelog>
 	$Log: base.xml,v $
+	Revision 1.40  2008/07/29 16:48:04  bruno
+	save the frontend's partitions in the database.
+	
 	Revision 1.39  2008/07/22 00:34:40  bruno
 	first whack at vlan support
 	
@@ -156,6 +159,7 @@
 		<tail>pxeboot</tail>
 		<tail>nas</tail>
 		<tail>compute</tail>
+		<tail>partitions-save-server</tail>
 	</order>
 
 	<order head="postshell">
@@ -318,6 +322,7 @@
 		<to>rocks-devel</to>
 		<to>syslog-server</to>
 		<to>server-firewall</to>
+		<to>partitions-save-server</to>
 	</edge>
 
 	<edge from="server">
@@ -398,6 +403,8 @@
 		<to>database-data</to>
 		<to>database-security</to>
 	</edge>
+
+	<edge from="wan" to="null"/>
 
 	<edge from="postshell"   to="ethers-server-postshell"/>
 

@@ -1,0 +1,22 @@
+<?xml version="1.0" standalone="no"?>
+
+<kickstart>
+
+<description>
+An empty XML file.
+</description>
+
+<copyright>
+Copyright (c) 2000 - 2008 The Regents of the University of California.
+All rights reserved. Rocks(r) v5.0 www.rocksclusters.org
+</copyright>
+
+<changelog>
+$Log: null.xml,v $
+Revision 1.1  2008/07/29 16:48:05  bruno
+save the frontend's partitions in the database.
+
+</changelog>
+
+</kickstart> 
+

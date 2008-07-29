@@ -1,6 +1,6 @@
 <?xml version="1.0" standalone="no"?>
 
-<kickstart interface="public">
+<kickstart>
 
   <description>
 
@@ -20,6 +20,9 @@
 
   <changelog>
   $Log: base.xml,v $
+  Revision 1.34  2008/07/29 16:48:05  bruno
+  save the frontend's partitions in the database.
+
   Revision 1.33  2008/05/30 22:15:16  bruno
   can now install a frontend off CD with the distro moved to
   /export/rocks/install

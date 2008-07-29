@@ -52,9 +52,8 @@ class RocksPartition:
 		#
 		retval = 0
 
-		cmd = '/mnt/runtime/usr/sbin/parted' \
-			+ ' /dev/%s' % (devname) \
-			+ ' print -s 2> /dev/null'
+		cmd = '%s /dev/%s print -s 2> /dev/null' % \
+			(self.parted, devname)
 
 		label = 'Disk label type:'
 		for line in os.popen(cmd).readlines():
@@ -133,8 +132,8 @@ class RocksPartition:
 			mntpoint = self.getRaidName(devicename)
 
 		if mntpoint == '':
-			cmd = '/mnt/runtime/usr/sbin/e2label ' + \
-				'/dev/%s 2> /dev/null' % (devicename)
+			cmd = '%s /dev/%s 2> /dev/null' % \
+				(self.e2label, devicename)
 			label = os.popen(cmd).readlines()
 
 			label = string.join(label)
@@ -264,8 +263,7 @@ class RocksPartition:
 	def getDiskInfo(self, disk):
 		syslog.syslog('getDiskInfo: disk:%s' % (disk))
 
-		cmd = '/mnt/runtime/usr/sbin/parted' \
-			+ ' /dev/%s print -s 2> /dev/null' % (disk)
+		cmd = '%s /dev/%s print -s 2> /dev/null' % (self.parted, disk)
 		diskinfo = os.popen(cmd).readlines()
 
 		syslog.syslog('getNodePartInfo: diskinfo:%s' % (diskinfo))
@@ -276,7 +274,7 @@ class RocksPartition:
 	def getRaidLevel(self, device):
 		level = None
 
-		cmd = '/mnt/runtime/usr/sbin/mdadm --query --detail '
+		cmd = '%s --query --detail ' % (self.mdadm)
 		cmd += '/dev/%s' % (device)
 		for line in os.popen(cmd).readlines():
 			l = line.split()
@@ -292,7 +290,7 @@ class RocksPartition:
 		parts = []
 
 		foundparts = 0
-		cmd = '/mnt/runtime/usr/sbin/mdadm --query --detail '
+		cmd = '%s --query --detail ' % (self.mdadm)
 		cmd += '/dev/%s' % (device)
 		for line in os.popen(cmd).readlines():
 			l = line.split()
@@ -685,5 +683,24 @@ class RocksPartition:
 		# setup logging
 		#
 		syslog.openlog('ROCKS')
+
+		#
+		# setup path to commands
+		#
+		if os.path.exists('/mnt/runtime/usr/sbin/parted'):
+			self.parted = '/mnt/runtime/usr/sbin/parted'
+		else:
+			self.parted = '/sbin/parted'
+
+		if os.path.exists('/mnt/runtime/usr/sbin/e2label'):
+			self.e2label = '/mnt/runtime/usr/sbin/e2label'
+		else:
+			self.e2label = '/sbin/e2label'
+
+		if os.path.exists('/mnt/runtime/usr/sbin/mdadm'):
+			self.mdadm = '/mnt/runtime/usr/sbin/mdadm'
+		else:
+			self.mdadm = '/sbin/mdadm'
+
 		return
 
