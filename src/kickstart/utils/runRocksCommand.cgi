@@ -1,5 +1,6 @@
+#!/opt/rocks/bin/python
 #
-# $Id: Makefile,v 1.21 2008/07/29 20:50:07 bruno Exp $
+# $Id: runRocksCommand.cgi,v 1.1 2008/07/29 20:50:07 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,67 +55,68 @@
 # 
 # @Copyright@
 #
-# $Log: Makefile,v $
-# Revision 1.21  2008/07/29 20:50:07  bruno
+# $Log: runRocksCommand.cgi,v $
+# Revision 1.1  2008/07/29 20:50:07  bruno
 # first rev at a rocks command cgi
 #
-# Revision 1.20  2008/05/22 21:02:07  bruno
-# rocks-dist is dead!
-#
-# moved default location of distro from /export/home/install to
-# /export/rocks/install
-#
-# Revision 1.19  2008/03/06 23:41:43  mjk
-# copyright storm on
-#
-# Revision 1.18  2007/08/14 20:25:25  anoop
-# Minor cleanup
-#
-# Revision 1.17  2007/08/13 20:52:25  bruno
-# - removed the SPEC file
-# - moved the rocks-kickstart-external package into the post section of
-#   central.xml
-#
 #
 
-PKGROOT		= /opt/rocks
-REDHAT.ROOT     = $(CURDIR)/../../
-ROCKSROOT       = ../../../../..
--include $(ROCKSROOT)/etc/Rules.mk
-include Rules.mk
+import os
+import string
+import re
+import sys
+import syslog
+import rocks.sql
+import cgi
 
-RCFILES	= kcgirc
-SCRIPTS	= kgen kdoc kcgi cfgen kroll screengen
+class App(rocks.sql.Application):
 
-
-build:	$(SCRIPTS) $(RCFILES)
-	$(MAKE) -C utils
-
-install::
-	mkdir -p $(ROOT)/$(PKGROOT)/sbin
-	$(INSTALL) -m 4555 utils/read-ssh-private-key $(ROOT)/$(PKGROOT)/sbin/
-	$(INSTALL) -m 4555 utils/read-411-shared-key $(ROOT)/$(PKGROOT)/sbin/
-	$(INSTALL) -m 0755 kdoc kgen cfgen kroll screengen \
-		$(ROOT)/$(PKGROOT)/sbin/
-
-	mkdir -p $(ROOT)/etc/rc.d/init.d
-	cp init.d/rocks-kickstart $(ROOT)/etc/rc.d/init.d
-
-	mkdir -p $(ROOT)/$(PKGROOT)/etc
-	$(INSTALL) -m 0644 $(RCFILES) $(ROOT)/$(PKGROOT)/etc/
-
-	mkdir -p $(ROOT)/export/rocks/install/sbin
-	$(INSTALL) -m 0755 kcgi $(ROOT)/export/rocks/install/sbin/kickstart.cgi
-	$(INSTALL) -m 0755 utils/*.cgi $(ROOT)/export/rocks/install/sbin/
-
-	mkdir -p $(ROOT)/export/rocks/install/site-profiles/$(VERSION)/nodes
-	$(INSTALL) -m 0644 $(wildcard site-nodes/*.xml) \
-		$(ROOT)/export/rocks/install/site-profiles/$(VERSION)/nodes/
+	def __init__(self):
+		rocks.sql.Application.__init__(self)
 
 
+	def runCommand(self, host, command):
+		cmd = '/opt/rocks/bin/rocks %s' % command
 
-clean::
-	$(MAKE) -C utils clean
-	rm -f $(RCFILES) $(SCRIPTS)
-	rm -f $(SPECFILE).in
+		output = ""
+		for line in os.popen(cmd).readlines():
+			output += line
+
+		return output
+
+
+        def run(self):
+		self.connect()
+
+		host = ''
+		if os.environ.has_key('REMOTE_ADDR'):
+                	host = os.environ['REMOTE_ADDR']
+
+		#
+		# check if the requester has access to run a command
+		#
+		nodeid = self.getNodeId(host)
+
+		#
+		# get the command
+		#
+		command = None
+		form = cgi.FieldStorage()
+		if form.has_key('command'):
+			command = form['command'].value
+
+		output = ''
+		if nodeid != None and command != None:
+			output = self.runCommand(host, command)
+
+		print 'Content-type: application/octet-stream'
+		print 'Content-length: %d' % (len(output))
+		print ''
+		print '%s' % output
+
+		self.close()
+		return
+
+app = App()
+app.run()
 
