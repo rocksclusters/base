@@ -1,5 +1,5 @@
 #
-# $Id: Makefile,v 1.5 2008/05/23 18:59:31 anoop Exp $
+# $Id: Makefile,v 1.6 2008/07/29 20:46:44 bruno Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.6  2008/07/29 20:46:44  bruno
+# build fix
+#
 # Revision 1.5  2008/05/23 18:59:31  anoop
 # Small changes to the base roll to make a cleaner build
 #
@@ -93,6 +96,7 @@ include Rules.mk
 
 rpm::
 	rocks create distro 
+	mkdir -p $(REDHAT.RPMS)/$(ARCH)
 	cp $(DISTPATH)/caching-nameserver*rpm $(REDHAT.RPMS)/$(ARCH)
 	touch -t 197012310000 $(REDHAT.RPMS)/$(ARCH)/caching-nameserver*rpm
 
