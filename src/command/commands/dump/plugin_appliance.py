@@ -1,4 +1,4 @@
-# $Id: plugin_host.py,v 1.4 2008/07/31 22:06:29 bruno Exp $
+# $Id: plugin_appliance.py,v 1.1 2008/07/31 22:06:29 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -53,19 +53,10 @@
 # 
 # @Copyright@
 #
-# $Log: plugin_host.py,v $
-# Revision 1.4  2008/07/31 22:06:29  bruno
+# $Log: plugin_appliance.py,v $
+# Revision 1.1  2008/07/31 22:06:29  bruno
 # added 'rocks dump appliance'
 #
-# Revision 1.3  2008/03/06 23:41:36  mjk
-# copyright storm on
-#
-# Revision 1.2  2007/06/19 16:42:41  mjk
-# - fix add host interface docstring xml
-# - update copyright
-#
-# Revision 1.1  2007/06/12 19:56:18  mjk
-# added lost plugins
 #
 
 import os
@@ -74,12 +65,9 @@ import rocks.commands
 class Plugin(rocks.commands.Plugin):
 
 	def provides(self):
-		return 'host'
+		return 'appliance'
 
-	def requires(self):
-		return [ 'appliance' ]
-		
 	def run(self, args):
-		self.owner.addText(self.owner.command('dump.host', []))
+		self.owner.addText(self.owner.command('dump.appliance', []))
 		
 

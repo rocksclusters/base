@@ -1,5 +1,5 @@
-# $Id: plugin_host.py,v 1.4 2008/07/31 22:06:29 bruno Exp $
-# 
+# $Id: __init__.py,v 1.1 2008/07/31 22:06:29 bruno Exp $
+#
 # @Copyright@
 # 
 # 				Rocks(r)
@@ -53,33 +53,61 @@
 # 
 # @Copyright@
 #
-# $Log: plugin_host.py,v $
-# Revision 1.4  2008/07/31 22:06:29  bruno
+# $Log: __init__.py,v $
+# Revision 1.1  2008/07/31 22:06:29  bruno
 # added 'rocks dump appliance'
 #
-# Revision 1.3  2008/03/06 23:41:36  mjk
-# copyright storm on
-#
-# Revision 1.2  2007/06/19 16:42:41  mjk
-# - fix add host interface docstring xml
-# - update copyright
-#
-# Revision 1.1  2007/06/12 19:56:18  mjk
-# added lost plugins
 #
 
 import os
+import sys
+import string
 import rocks.commands
 
-class Plugin(rocks.commands.Plugin):
-
-	def provides(self):
-		return 'host'
-
-	def requires(self):
-		return [ 'appliance' ]
+class Command(rocks.commands.ApplianceArgumentProcessor,
+	rocks.commands.dump.command):
+	"""
+	Outputs info (as rocks commands) about the appliances defined in the
+	cluster database.
+	
+	<arg optional='1' type='string' name='appliance' repeat='1'>
+	Optional list of appliance names. If no appliance names are supplied,
+	then info about all appliances is output.
+	</arg>
 		
-	def run(self, args):
-		self.owner.addText(self.owner.command('dump.host', []))
-		
+	<example cmd='dump appliance'>
+	Dump all known appliances.
+	</example>
+	"""
+
+	def run(self, params, args):
+		for app in self.getApplianceNames(args):
+			self.db.execute("""select 
+				shortname, graph, node from appliances
+				where name='%s'""" % app)
+
+			(shortname, graph, node) = self.db.fetchone()
+
+			self.db.execute("""select m.name, m.compute, m.public
+				from memberships m, appliances a where
+				m.appliance = a.id and a.name = '%s'""" % (app))
+
+			(mem, compute, pub) = self.db.fetchone()
+
+			str = "add appliance %s " % app
+
+			if shortname and shortname != 'NULL':
+				str += "short-name='%s' " % shortname
+			if graph and graph != 'NULL':
+				str += "graph='%s' " % graph
+			if node and node != 'NULL':
+				str += "node='%s' " % node
+			if mem:
+				str += "membership='%s' " % mem
+			if compute:
+				str += "compute='%s' " % compute
+			if pub:
+				str += "public='%s' " % pub
+				
+			self.dump(str)
 
