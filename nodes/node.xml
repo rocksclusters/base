@@ -17,6 +17,9 @@
 
   <changelog>
   $Log: node.xml,v $
+  Revision 1.14  2008/07/31 19:59:33  bruno
+  vm.oom-kill no longer exists in RHEL 5
+
   Revision 1.13  2008/04/02 17:32:29  bruno
   turn off unneeded services
 
@@ -313,11 +316,6 @@ gawk '/net\.ipv4\.ip_forward/ { \
 } \
 { print $0 }' /etc/sysctl.conf &gt; /tmp/sysctl.conf
 mv /tmp/sysctl.conf /etc/sysctl.conf
-
-<file name="/etc/sysctl.conf" mode="append">
-# turn off oom-killer, the node will now panic when its out of memory
-vm.oom-kill = 0
-</file>
 
 <file name="/etc/man.config" mode="append">
 MANPATH /opt/rocks/man
