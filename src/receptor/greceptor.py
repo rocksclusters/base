@@ -59,6 +59,9 @@
 # @Copyright@
 #
 # $Log: greceptor.py,v $
+# Revision 1.3  2008/07/31 20:19:34  bruno
+# really daemonize greceptor
+#
 # Revision 1.2  2008/03/06 23:41:45  mjk
 # copyright storm on
 #
@@ -325,23 +328,41 @@ if app.stayForeground():
 #
 # The python Daemon dance. From Steven's "Advanced Programming in the UNIX env".
 #
-pid=os.fork()
-if pid==0:
-	os.chdir("/")# So we can remove/unmount the dir the daemon started in.
-	os.setsid()  # Create a new session and set the process group.
-	os.umask(0)
-	# Redirect standard file descriptors.
-	sys.stdin = open('/dev/null', 'r')
-	sys.stdout = open('/dev/null', 'w')
-	sys.stderr = open('/dev/null', 'w')
+pid = os.fork()
+if pid > 0:
+	sys.exit(0)
 
-	# Start our daemon.
-	try:
-		app.run()
-	except:
-		oops = "daemon threw exception '%s %s'" \
-				% (sys.exc_type, sys.exc_value)
-		app.warning(oops)
+#
+# now decouple from parent environment
+#
+os.chdir("/")# So we can remove/unmount the dir the daemon started in.
+os.setsid()  # Create a new session and set the process group.
+os.umask(0)
 
+#
+# do a second fork
+#
+pid = os.fork()
+if pid > 0:
+	#
+	# exit from second parent
+	#
+	sys.exit(0)
 
-	
+# redirect standard file descriptors
+sys.stdout.flush()
+sys.stderr.flush()
+si = file('/dev/null', 'r')
+so = file('/dev/null', 'a+')
+se = file('/dev/null', 'a+', 0)
+os.dup2(si.fileno(), sys.stdin.fileno())
+os.dup2(so.fileno(), sys.stdout.fileno())
+os.dup2(se.fileno(), sys.stderr.fileno())
+
+# Start our daemon.
+try:
+	app.run()
+except:
+	oops = "daemon threw exception '%s %s'" % (sys.exc_type, sys.exc_value)
+	app.warning(oops)
+
