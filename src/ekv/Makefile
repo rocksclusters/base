@@ -1,5 +1,5 @@
 #
-# $Id: Makefile,v 1.22 2008/03/26 18:24:55 bruno Exp $
+# $Id: Makefile,v 1.23 2008/08/01 18:47:16 bruno Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.23  2008/08/01 18:47:16  bruno
+# nuke 'patch' code
+#
 # Revision 1.22  2008/03/26 18:24:55  bruno
 # another whack at ejecting the CD early
 #
@@ -383,28 +386,6 @@ install::
 	mkdir -p $(ROOT)/$(PKGROOT)/usr/bin
 	$(INSTALL) -m755 anaconda $(ROOT)/$(PKGROOT)/usr/bin/
 
-	#
-	# extra anaconda patch files
-	#
-	#mkdir -p $(ROOT)/$(PKGROOT)/usr/lib/anaconda
-	#cp patch-anaconda/$(PATCH_ANACONDA)/isys.py \
-					#$(ROOT)/$(PKGROOT)/usr/lib/anaconda
-	#cp patch-anaconda/$(PATCH_ANACONDA)/autopart.py \
-					#$(ROOT)/$(PKGROOT)/usr/lib/anaconda
-	#cp patch-anaconda/$(PATCH_ANACONDA)/packages.py \
-					#$(ROOT)/$(PKGROOT)/usr/lib/anaconda
-	#cp patch-anaconda/$(PATCH_ANACONDA)/partitions.py \
-					#$(ROOT)/$(PKGROOT)/usr/lib/anaconda
-	#cp patch-anaconda/$(PATCH_ANACONDA)/progress_gui.py \
-					#$(ROOT)/$(PKGROOT)/usr/lib/anaconda
-
-	#
-	# automatically configure vnc on an installing node
-	#
-	#cp patch-anaconda/$(PATCH_ANACONDA)/xf86config.py \
-					#$(ROOT)/$(PKGROOT)/
-
-	
 	#
 	# library for 'parted'
 	#
