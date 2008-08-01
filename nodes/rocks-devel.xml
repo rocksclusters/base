@@ -10,6 +10,9 @@
 
   <changelog>
   $Log: rocks-devel.xml,v $
+  Revision 1.5  2008/08/01 23:09:00  bruno
+  more changes for new anaconda
+
   Revision 1.4  2008/03/14 21:26:41  bruno
   extra package needed to build foundation-graphviz
 
@@ -149,6 +152,8 @@
   <package>binutils-devel</package>
   <package>libglade2-devel</package>
   <package>libtool-ltdl</package>
+  <package>libdhcp-devel</package>
+  <package>libnl-devel</package>
 
 
 <post>

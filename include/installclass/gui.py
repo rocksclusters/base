@@ -216,7 +216,7 @@ def partedExceptionWindow(exc):
     if exc.options == parted.EXCEPTION_CANCEL:
         return parted.EXCEPTION_UNHANDLED
     log.critical("parted exception: %s: %s" %(exc.type_string,exc.message))
-    
+
     # ROCKS
     # log the message then return. don't popup a window, just ignore the
     # exception
@@ -930,7 +930,7 @@ class InstallInterface:
     def getInstallKey(self, anaconda, key = ""):
         d = InstallKeyWindow(anaconda, key)
         rc = d.run()
-        if rc == gtk.RESPONSE_CANCEL:
+        if rc == 0:
             ret = None
         else:
             ret = d.get_key()

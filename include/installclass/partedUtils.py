@@ -276,7 +276,7 @@ archLabels = {'i386': ['msdos', 'gpt'],
               'alpha': ['bsd', 'msdos'],
               'sparc': ['sun'],
               'ia64': ['msdos', 'gpt'],
-              'ppc': ['msdos', 'mac', 'amiga'],
+              'ppc': ['msdos', 'mac', 'amiga', 'gpt'],
               'x86_64': ['msdos', 'gpt']}
 
 def labelDisk(deviceFile, forceLabelType=None):
@@ -586,6 +586,7 @@ class DiskSet:
     mdList = []
     dmList = None
     mpList = None
+    clearedDisks = []
 
     def __init__ (self, anaconda = None):
         self.disks = {}
@@ -603,7 +604,7 @@ class DiskSet:
     def startMPath(self):
         """Start all of the dm multipath devices associated with the DiskSet."""
 
-        if not DiskSet.mpList is None:
+        if not DiskSet.mpList is None and DiskSet.mpList.__len__() > 0:
             return
 
         log.debug("starting mpaths")
@@ -668,28 +669,20 @@ class DiskSet:
         testList = []
         testList.extend(DiskSet.skippedDisks)
 
-        log.debug("ROCKS: mpList %s" % (DiskSet.mpList))
         for mp in DiskSet.mpList or []:
             for m in mp.members:
-                log.debug("ROCKS: m: %s" % (m))
                 disk = m.split('/')[-1]
                 testList.append(disk)
 
         if not rhpl.getArch() in ('s390','s390x'):
-            log.debug("ROCKS: dmList: %s" % (DiskSet.dmList))
             for rs in DiskSet.dmList or []:
                 for m in rs.members:
                     if isinstance(m, block.RaidDev):
-                        log.debug("ROCKS: m.rd.device.path: %s" % (m.rd.device.path))
                         disk = m.rd.device.path.split('/')[-1]
                         testList.append(disk)
 
         driveList = filter(lambda x: x not in testList, self.driveList())
-        log.debug("ROCKS: driveList: %s" % (driveList))
-        d = raid.startAllRaid(driveList)
-        log.debug("ROCKS: d: %s" % (d))
-        DiskSet.mdList.extend(d)
-        log.debug("ROCKS: done")
+        DiskSet.mdList.extend(raid.startAllRaid(driveList))
 
     def stopMdRaid(self):
         """Stop all of the md raid devices associated with the DiskSet."""
@@ -707,6 +700,8 @@ class DiskSet:
         drives.sort()
 
         for drive in drives:
+            if drive in DiskSet.clearedDisks:
+                continue
             disk = self.disks[drive]
             func = lambda part: (part.is_active() and
                                  not (part.get_flag(parted.PARTITION_RAID)
@@ -1151,6 +1146,7 @@ class DiskSet:
                        or (drive in clearDevs)) and not flags.test \
                        and not hasProtectedPartitions(drive, self.anaconda):
                 try:
+                    DiskSet.clearedDisks.append(drive)
                     disk, dev = self._labelDevice(drive)
                 except:
                     continue
@@ -1189,6 +1185,7 @@ class DiskSet:
 
                 if recreate == 1 and not flags.test:
                     try:
+                        DiskSet.clearedDisks.append(drive)
                         disk, dev = self._labelDevice(drive)
                     except:
                         continue
@@ -1220,6 +1217,7 @@ class DiskSet:
                 self._removeDisk(drive)
             elif ret == -1:
                 try:
+                    DiskSet.clearedDisks.append(drive)
                     disk, dev = self._labelDevice(drive)
                 except:
                     pass

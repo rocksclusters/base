@@ -743,7 +743,7 @@ class AnacondaYum(YumSorter):
                           rpm.RPMPROB_BADOS: _('package for incorrect os'),
             }
             uniqueProbs = {}
-            for (descr, (type, mount, need)) in probs:
+            for (descr, (type, mount, need)) in probs.value:
                 log.error("%s: %s" %(probTypes[type], descr))
                 if not uniqueProbs.has_key(type) and probTypes.has_key(type):
                     uniqueProbs[type] = probTypes[type]
@@ -768,10 +768,6 @@ class AnacondaYum(YumSorter):
                     spaceprob = spaceprob + "%d M on %s\n" % (need / (1024*1024), mount)
             else:
                 spaceprob = ""
-
-            # ROCKS
-            log.info('AnacondaYum:_run:probs (%s)' % (probs))
-            # ROCKS
 
             probString = ', '.join(uniqueProbs.values()) + "\n\n" + spaceprob
             intf.messageWindow(_("Error running transaction"),
@@ -903,8 +899,6 @@ class YumBackend(AnacondaBackend):
             iutil.mkdirChain("/tmp/cache/headers")
 
         self.ayum.doMacros()
-        self.ayum.doTsSetup()
-        self.ayum.doRpmDBSetup()
 
         longtasks = ( (self.ayum.doRepoSetup, 4),
                       (self.ayum.doSackSetup, 6) )
@@ -1745,7 +1739,7 @@ class YumBackend(AnacondaBackend):
         # If we installed modules from packages using the new driver disk
         # method, we still need to remake the initrd.  Otherwise, drop back
         # to the old method.
-        if len(self._installedDriverModules) == len(anaconda.id.extraModules):
+        if len(self._installedDriverModules) > 0 and len(self._installedDriverModules) == len(anaconda.id.extraModules):
             for (n, arch, tag) in self.kernelVersionList():
                 recreateInitrd(n, anaconda.rootPath)
         else:
@@ -1884,43 +1878,48 @@ class YumBackend(AnacondaBackend):
 
             f.write(line)
 
-    def writePackagesKS(self, f):
-        groups = []
-        installed = []
-        removed = []
+    def writePackagesKS(self, f, anaconda):
+        if anaconda.isKickstart:
+            groups = anaconda.id.ksdata.groupList
+            installed = anaconda.id.ksdata.packageList
+            removed = anaconda.id.ksdata.excludedList
+        else:
+            groups = []
+            installed = []
+            removed = []
 
-        # Faster to grab all the package names up front rather than call
-        # searchNevra in the loop below.
-        allPkgNames = map(lambda pkg: pkg.name, self.ayum.pkgSack.returnPackages())
-        allPkgNames.sort()
+            # Faster to grab all the package names up front rather than call
+            # searchNevra in the loop below.
+            allPkgNames = map(lambda pkg: pkg.name, self.ayum.pkgSack.returnPackages())
+            allPkgNames.sort()
 
-        # On CD/DVD installs, we have one transaction per CD and will end up
-        # checking allPkgNames against a very short list of packages.  So we
-        # have to reset to media #0, which is an all packages transaction.
-        old = self.ayum.tsInfo.curmedia
-        self.ayum.tsInfo.curmedia = 0
+            # On CD/DVD installs, we have one transaction per CD and will end up
+            # checking allPkgNames against a very short list of packages.  So we
+            # have to reset to media #0, which is an all packages transaction.
+            old = self.ayum.tsInfo.curmedia
+            self.ayum.tsInfo.curmedia = 0
 
-        self.ayum.tsInfo.makelists()
-        txmbrNames = map (lambda x: x.name, self.ayum.tsInfo.getMembers())
+            self.ayum.tsInfo.makelists()
+            txmbrNames = map (lambda x: x.name, self.ayum.tsInfo.getMembers())
 
-        self.ayum.tsInfo.curmedia = old
+            self.ayum.tsInfo.curmedia = old
 
-        if len(self.ayum.tsInfo.instgroups) == 0 and len(txmbrNames) == 0:
-            return
+            if len(self.ayum.tsInfo.instgroups) == 0 and len(txmbrNames) == 0:
+                return
+
+            for grp in filter(lambda x: x.selected, self.ayum.comps.groups):
+                groups.append(grp.groupid)
+
+                defaults = grp.default_packages.keys() + grp.mandatory_packages.keys()
+                optionals = grp.optional_packages.keys()
+
+                for pkg in filter(lambda x: x in defaults and (not x in txmbrNames and x in allPkgNames), grp.packages):
+                    removed.append(pkg)
+
+                for pkg in filter(lambda x: x in txmbrNames, optionals):
+                    installed.append(pkg)
 
         f.write("\n%packages\n")
-
-        for grp in filter(lambda x: x.selected, self.ayum.comps.groups):
-            groups.append(grp.groupid)
-
-            defaults = grp.default_packages.keys() + grp.mandatory_packages.keys()
-            optionals = grp.optional_packages.keys()
-
-            for pkg in filter(lambda x: x in defaults and (not x in txmbrNames and x in allPkgNames), grp.packages):
-                removed.append(pkg)
-
-            for pkg in filter(lambda x: x in txmbrNames, optionals):
-                installed.append(pkg)
 
         for grp in groups:
             f.write("@%s\n" % grp)

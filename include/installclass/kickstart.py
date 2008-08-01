@@ -552,7 +552,7 @@ class AnacondaKSHandlers(KickstartHandlers):
 
         self.id.rootPassword["password"] = dict["password"]
         self.id.rootPassword["isCrypted"] = dict["isCrypted"]
-	self.skipSteps.append("accounts")
+        self.skipSteps.append("accounts")
 
     def doSELinux(self, args):
         KickstartHandlers.doSELinux(self, args)
@@ -921,7 +921,11 @@ class Kickstart(cobject):
         dispatch.skipStep("betanag")
         dispatch.skipStep("installtype")
         dispatch.skipStep("tasksel")            
-        dispatch.skipStep("network")
+
+        # Only skip the network screen if there are no devices that used
+        # network --bootproto=query.
+        if len(filter(lambda nd: nd.bootProto == "query", self.ksdata.network)) == 0:
+            dispatch.skipStep("network")
 
         # Don't show confirmation screens on non-interactive installs.
         if not self.ksdata.interactive:
