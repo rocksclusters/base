@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.12 2008/03/06 23:41:35 mjk Exp $
+# $Id: __init__.py,v 1.13 2008/08/05 19:01:44 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.13  2008/08/05 19:01:44  bruno
+# add 'vlan' parameter
+#
 # Revision 1.12  2008/03/06 23:41:35  mjk
 # copyright storm on
 #
@@ -173,6 +176,10 @@ class Command(rocks.commands.HostArgumentProcessor, rocks.commands.add.command):
 	The device driver name (or module) of the interface (e.g., 'e1000')
 	</param>
 
+	<param type='string' name='vlan'>
+	The VLAN ID to assign the interface
+	</param>
+
 	<example cmd='add host interface compute-0-0 eth1 ip=192.168.1.2 subnet=private gateway=192.168.1.1 name=fast-0-0'>
 	</example>
 	
@@ -214,7 +221,8 @@ class Command(rocks.commands.HostArgumentProcessor, rocks.commands.add.command):
 			values ((select id from nodes where name='%s'), '%s')"""
 			% (host, iface)) 
 
-		for key in ['gateway', 'ip', 'mac', 'module', 'name', 'subnet']:
+		for key in ['gateway', 'ip', 'mac', 'module', 'name', \
+				'subnet', 'vlan']:
 			if params.has_key(key):
 				self.command('set.host.interface.%s' % key,
 					(host, iface, params[key]))
