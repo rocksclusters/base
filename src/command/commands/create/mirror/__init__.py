@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.16 2008/07/07 22:45:18 bruno Exp $
+# $Id: __init__.py,v 1.17 2008/08/05 19:47:58 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.17  2008/08/05 19:47:58  bruno
+# filter out anaconda packages when mirroring
+#
 # Revision 1.16  2008/07/07 22:45:18  bruno
 # if mason wrote science fiction, he would have named the novel:
 #
@@ -165,7 +168,7 @@ class Command(rocks.commands.create.command):
 
 
 	def mirror(self, mirror_path):
-		cmd = 'wget -erobots=off -m -nv -np %s' % (mirror_path)
+		cmd = 'wget -erobots=off --reject "anaconda*rpm" -m -nv -np %s' % (mirror_path)
 		os.system(cmd)
 
 		if len(mirror_path) > 6:
