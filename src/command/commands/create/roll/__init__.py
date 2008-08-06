@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.24 2008/07/01 21:23:57 bruno Exp $
+# $Id: __init__.py,v 1.25 2008/08/06 21:06:57 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.25  2008/08/06 21:06:57  bruno
+# fixes to build OS roll
+#
 # Revision 1.24  2008/07/01 21:23:57  bruno
 # added the command 'rocks remove roll' and tweaked the other roll commands
 # to handle 'arch' flag.
@@ -609,7 +612,15 @@ class RollBuilder_linux(Builder, rocks.dist.Arch):
 			# Symlink in all the RPMS and SRPMS
 			
 			for file in files:
-				arch = file.getPackageArch()
+				try:
+					#
+					# not RPM files will throw an exception
+					# in getPackageArch()
+					#
+					arch = file.getPackageArch()
+				except:
+					continue
+
 				if arch == 'src':
 					file.symlink(os.path.join(root,
 						'SRPMS', file.getName()))
