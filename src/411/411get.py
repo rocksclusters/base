@@ -2,6 +2,8 @@
 #
 # Retrives a file using HTTPS for the 411 service. Assumes
 # the master servers are running Apache with mod_ssl.
+# 
+# $Id: 411get.py,v 1.4 2008/08/07 20:48:44 anoop Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +57,10 @@
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # 
 # @Copyright@
+#
+# $Log: 411get.py,v $
+# Revision 1.4  2008/08/07 20:48:44  anoop
+# Add ID and logging info
 #
 
 import os
