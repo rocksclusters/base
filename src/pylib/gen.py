@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: gen.py,v $
+# Revision 1.33  2008/08/07 18:53:49  bruno
+# simplified the RCS code for the file tag.
+#
 # Revision 1.32  2008/07/21 17:46:38  anoop
 # Stupid bug fixed. Now sunos actually honor's the os attribute in
 # the package and post tags
@@ -336,6 +339,10 @@ class Generator:
 		l = []
 		rcsdir  = os.path.join(os.path.dirname(file), 'RCS')
 		rcsfile = os.path.join(rcsdir, os.path.basename(file))
+		
+		#
+		# do the initial checkin, if necessary
+		#
 		l.append('touch %s' % file)
 		l.append('if [ ! -d %s ]; then' % rcsdir)
 		l.append('	mkdir %s' % rcsdir)
@@ -343,28 +350,20 @@ class Generator:
 		l.append('if [ ! -f %s,v ]; then' % rcsfile)
 		l.append('	echo "initial checkin" | ci %s' % file)
 		l.append('fi')
-		l.append('co -f %s' % file)
-		l.append('t=TAG_`rpm -qf %s | sort | md5sum | tr -cd [:alnum:]`'
-			% file)
-		l.append('if ! co -f -p$t %s > /dev/null 2>&1; then' % file)
-		l.append('	rcs -n$t: %s' % file)
-		l.append('fi')
-		l.append('if ! co -f -p%s_%s %s > /dev/null 2>&1; then' % 
-			(self.rcsTag, self.rcsEpoch, file))
-		l.append('	rcs -n%s_%s: %s' % (self.rcsTag, self.rcsEpoch,
-			file))
-		l.append('	co -f -l -r$t %s' % file)
-		l.append('else')
-		l.append('	co -f -l %s' % file)
-		l.append('fi')
+		l.append('')
+		l.append('rcs -l %s' % file)
+		l.append('')
+
 		return '%s\n' % string.join(l, '\n')
 		
 	def rcsEnd(self, file):
 		l = []
+		l.append('')
+
 		rcsdir  = os.path.join(os.path.dirname(file), 'RCS')
 		rcsfile = os.path.join(rcsdir, os.path.basename(file))
 
-		# If NTP changes the clock on us this can break RCS.which
+		# If NTP changes the clock on us this can break RCS which
 		# has a bunch of timestamp optimizations...
 		# This code will replace the timestamp of the last
 		# revision with the current clock and then touch the
@@ -373,8 +372,13 @@ class Generator:
 		l.append('cat %s,v | '
 			'awk -v date=`date -u +%%Y.%%m.%%d.%%H.%%M.%%S` '
 			'\'/^date/ { '
-				'printf "date\\t%%s;\\tauthor %%s\\tstate Exp;", '
-				'date, $4; '
+				'if (found == 0) { '
+					'printf "date\\t%%s;\\tauthor %%s\\tstate Exp;", '
+					'date, $4; '
+					'found = 1; '
+				'} else { '
+					'print $0; '
+				'} '
 				'next; '
 			'} '
 			'{ print; }'
