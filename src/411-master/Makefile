@@ -53,6 +53,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.5  2008/08/07 20:49:21  anoop
+# Create plugin directory, so that 411put doesn't fail
+#
 # Revision 1.4  2008/07/22 00:49:50  anoop
 # Minor changes to build solaris packages correctly
 #
@@ -119,6 +122,7 @@ install:: build
 	chmod 0755 $(ROOT)/etc/411.d
 	mkdir -p $(ROOT)/var/411/groups/Compute
 	mkdir -p $(ROOT)/$(INIT_SCRIPTS_DIR)
+	mkdir -p $(ROOT)/opt/rocks/var/plugins/411/
 	$(INSTALL) -m555 $(SCRIPTS)  $(ROOT)/$(PKGROOT)/sbin/
 	$(INSTALL) -m700 init.d/411 $(ROOT)/$(INIT_SCRIPTS_DIR)
 	$(INSTALL) -m444 var/Makefile $(ROOT)/var/411
