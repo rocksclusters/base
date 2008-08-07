@@ -22,6 +22,9 @@ the database to be configured, so we order 'partitions-save-server' off 'TAIL'.
 
 <changelog>
 $Log: partitions-save-server.xml,v $
+Revision 1.2  2008/08/07 20:43:14  bruno
+store the partitions of the frontend in the database
+
 Revision 1.1  2008/07/29 16:48:05  bruno
 save the frontend's partitions in the database.
 
@@ -29,8 +32,24 @@ save the frontend's partitions in the database.
 
 
 <post arg="--nochroot">
-chmod a+x /tmp/product/record_partitions.py
-/tmp/product/record_partitions.py
+cp /tmp/product/record_partitions.py /mnt/sysimage/tmp
+chmod a+x /mnt/sysimage/tmp/record_partitions.py
+
+cp /tmp/discovered.disks /mnt/sysimage/tmp
+cp /tmp/db_partition_info.py /mnt/sysimage/tmp
+</post>
+
+
+<post>
+
+<file name="/etc/rc.d/rocksconfig.d/post-05-record-partitions" perms="755">
+#!/bin/bash
+
+/tmp/record_partitions.py
+
+rm -f /etc/rc.d/rocksconfig.d/post-05-record-partitions
+</file>
+
 </post>
 
 

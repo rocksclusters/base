@@ -4,6 +4,9 @@
 
 	<changelog>
 	$Log: base.xml,v $
+	Revision 1.41  2008/08/07 20:43:14  bruno
+	store the partitions of the frontend in the database
+	
 	Revision 1.40  2008/07/29 16:48:04  bruno
 	save the frontend's partitions in the database.
 	
@@ -292,7 +295,6 @@
 		<to>greceptor</to>
 		<to>mail</to>
 		<to>partition</to>
-		<to>partitions-save</to>
 	</edge>
 
 	<edge from="server">
@@ -353,6 +355,7 @@
 		<to>resolv</to>
 		<to>shared-memory</to>
 		<to>client-firewall</to>
+		<to>partitions-save</to>
 	</edge>
 
 	<edge from="security-client">
