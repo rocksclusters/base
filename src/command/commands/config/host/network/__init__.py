@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.5 2008/08/07 00:55:27 anoop Exp $
+# $Id: __init__.py,v 1.6 2008/08/07 00:57:26 anoop Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.6  2008/08/07 00:57:26  anoop
+# Removed unnecessary line
+#
 # Revision 1.5  2008/08/07 00:55:27  anoop
 # Solaris networking and interface information now generated through
 # the database, rather than left to default
@@ -195,6 +198,3 @@ class Command(rocks.commands.config.host.command):
 		self.addOutput('', 'GATEWAY=%s' % gateway)
 
 		self.addOutput('', '</file>')
-
-
-RollName = "base"
