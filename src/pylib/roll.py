@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: roll.py,v $
+# Revision 1.16  2008/08/07 21:19:23  bruno
+# OS roll building fix
+#
 # Revision 1.15  2008/05/22 21:02:07  bruno
 # rocks-dist is dead!
 #
@@ -163,10 +166,8 @@ class Distribution:
 		return os.path.join(self.name, self.arch)
 		
 	def generate(self, flags=""):
-		#rocks.util.system('rocks-dist %s --dist=%s dist' % 
-			#(flags, self.name))
-		rocks.util.system('/opt/rocks/bin/rocks create distro dist=%s'
-			% (self.name))
+		rocks.util.system('/opt/rocks/bin/rocks create distro ' + \
+			'dist=%s %s' % (self.name, flags))
 		self.tree = rocks.file.Tree(os.path.join(os.getcwd(), 
 			self.getPath()))
 		

@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.25 2008/08/06 21:06:57 bruno Exp $
+# $Id: __init__.py,v 1.26 2008/08/07 21:19:23 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.26  2008/08/07 21:19:23  bruno
+# OS roll building fix
+#
 # Revision 1.25  2008/08/06 21:06:57  bruno
 # fixes to build OS roll
 #
@@ -381,7 +384,7 @@ class RollBuilder_linux(Builder, rocks.dist.Arch):
 		os.environ['RPMHOME'] = os.getcwd()
 		distAll = rocks.roll.Distribution(self.getDistArch(), 
 			'rocks-dist-all')
-		distAll.generate('--notorrent')
+		distAll.generate()
 
 		#
 		# copy the 'everything' node and graph file into the distro
@@ -425,12 +428,7 @@ class RollBuilder_linux(Builder, rocks.dist.Arch):
 
 		distOS = rocks.roll.Distribution(self.getDistArch(), 
 			'rocks-dist-os')
-
-		cmd = '%s --notorrent --with-rolls-only' \
-			% (self.config.getRollRolls())
-		print cmd
-
-		distOS.generate(cmd)
+		distOS.generate('rolls="%s"' % self.config.getRollRolls())
 
 		#
 		# make sure a comps.xml file is present
