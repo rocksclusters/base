@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.4 2008/07/23 00:01:06 bruno Exp $
+# $Id: __init__.py,v 1.5 2008/08/07 00:55:27 anoop Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.5  2008/08/07 00:55:27  anoop
+# Solaris networking and interface information now generated through
+# the database, rather than left to default
+#
 # Revision 1.4  2008/07/23 00:01:06  bruno
 # tweaks
 #
@@ -149,7 +153,7 @@ class Command(rocks.commands.config.host.command):
 
 
 	def run(self, params, args):
-		iface, = self.fillParams([('iface', ), ])
+		self.iface, = self.fillParams([('iface', ), ])
 
                 hosts = self.getHostnames(args)
 
@@ -167,6 +171,32 @@ class Command(rocks.commands.config.host.command):
 		bootproto = None
 		gateway = None
 
+		self.db.execute("select os from nodes where " +\
+				"name='%s'" % (host))
+		osname = self.db.fetchone()[0].strip()
+		f = getattr(self, 'run_%s' % (osname))
+		self.beginOutput()
+		f(host)
+		self.endOutput()
+
+	def run_sunos(self, host):
+		self.db.execute("select networks.ip, networks.device " +\
+				"from networks, nodes where "	+\
+				"nodes.name='%s' " % (host)	+\
+				"and networks.node=nodes.id")
+
+		for row in self.db.fetchall():
+			(ip, device) = row
+			if ip is not None:
+				self.write_host_file_sunos(ip, device)
+		
+	def write_host_file_sunos(self, ip, device):
+		s = '<file name="/etc/hostname.%s">\n' % device
+		s += "%s\n" % ip
+		s += '</file>\n'
+		self.addText(s)
+		
+	def run_linux(self, host):
 		self.db.execute("""select distinctrow net.mac, net.ip,
 			net.device, net.gateway,
 			if(net.subnet, s.netmask, NULL), net.vlanid,
@@ -175,7 +205,6 @@ class Command(rocks.commands.config.host.command):
 			and if(net.subnet, net.subnet = s.id, true) and
 			n.name = "%s" order by net.id""" % (host))
 
-		self.beginOutput()
 
 		for row in self.db.fetchall():
 			mac,ip,device,gateway,netmask,vlanid,subnetid,module \
@@ -203,8 +232,8 @@ class Command(rocks.commands.config.host.command):
 					dev, = self.db.fetchone()
 					device = '%s.%d' % (dev, vlanid)
 
-			if iface:
-				if iface == device:
+			if self.iface:
+				if self.iface == device:
 					self.writeConfig(mac, ip, device,
 						gateway, netmask, vlanid, host)
 			else:
@@ -216,6 +245,4 @@ class Command(rocks.commands.config.host.command):
 				self.writeConfig(mac, ip, device, gateway,
 					netmask, vlanid, host)
 				self.addOutput('', '</file>')
-
-		self.endOutput()
 

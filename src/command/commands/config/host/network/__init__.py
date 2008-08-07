@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.4 2008/07/23 00:01:06 bruno Exp $
+# $Id: __init__.py,v 1.5 2008/08/07 00:55:27 anoop Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.5  2008/08/07 00:55:27  anoop
+# Solaris networking and interface information now generated through
+# the database, rather than left to default
+#
 # Revision 1.4  2008/07/23 00:01:06  bruno
 # tweaks
 #
@@ -98,6 +102,46 @@ class Command(rocks.commands.config.host.command):
 
 		host = hosts[0]
 
+		self.db.execute("select os from nodes where " +\
+				"name='%s'" % host)
+		osname, = self.db.fetchone()
+
+		f = getattr(self, 'run_%s' % osname)
+
+		self.beginOutput()
+		f(host)
+		self.endOutput()
+
+	def run_sunos(self, host):
+ 
+		# Get the default domain for the host
+		domain = self.db.getGlobalVar('Kickstart', 
+				'PrivateDNSDomain')
+
+ 		# Print the /etc/nodename file
+		self.addText('<file name="/etc/nodename">\n')
+		self.addText('%s\n' % host)
+		self.addText('</file>\n')
+
+		# Print out the /etc/defaultdomain file
+		self.addText('<file name="/etc/defaultdomain">\n')
+		self.addText('%s\n' % domain)
+		self.addText('</file>\n')
+
+		# Get all the subnets that this node is associated with
+		self.db.execute("select distinctrow subnets.subnet, "	+\
+				" subnets.netmask from subnets, "	+\
+				"networks, nodes "	+\
+				"where nodes.name='%s' and " % (host) 	+\
+				"networks.node=nodes.id and "		+\
+				"subnets.id=networks.subnet;")
+
+		self.addText('<file name="/etc/netmasks">\n')
+		for row in self.db.fetchall():
+			self.addText('%s\t%s\n' % row)
+		self.addText('</file>\n')
+
+	def run_linux(self, host):
 		#
 		# get the appliance type
 		#
@@ -151,5 +195,6 @@ class Command(rocks.commands.config.host.command):
 		self.addOutput('', 'GATEWAY=%s' % gateway)
 
 		self.addOutput('', '</file>')
-		self.endOutput()
 
+
+RollName = "base"
