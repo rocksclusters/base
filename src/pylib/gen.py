@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: gen.py,v $
+# Revision 1.34  2008/08/07 19:35:28  bruno
+# need to checkout the file and lock it, not just lock it
+#
 # Revision 1.33  2008/08/07 18:53:49  bruno
 # simplified the RCS code for the file tag.
 #
@@ -351,7 +354,7 @@ class Generator:
 		l.append('	echo "initial checkin" | ci %s' % file)
 		l.append('fi')
 		l.append('')
-		l.append('rcs -l %s' % file)
+		l.append('co -f -l %s' % file)
 		l.append('')
 
 		return '%s\n' % string.join(l, '\n')
