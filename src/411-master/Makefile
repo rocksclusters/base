@@ -53,6 +53,10 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.6  2008/08/09 19:27:51  anoop
+# beginning of actual usable 411 plugins. For now password and group file
+# plugins
+#
 # Revision 1.5  2008/08/07 20:49:21  anoop
 # Create plugin directory, so that 411put doesn't fail
 #
@@ -114,6 +118,8 @@ ROCKSROOT       = ../../../../..
 -include $(ROCKSROOT)/etc/Rules.mk
 include Rules.mk
 
+PLUGIN_DIR = /opt/rocks/var/plugins/411
+
 build: $(SCRIPTS)
 
 install:: build
@@ -122,12 +128,13 @@ install:: build
 	chmod 0755 $(ROOT)/etc/411.d
 	mkdir -p $(ROOT)/var/411/groups/Compute
 	mkdir -p $(ROOT)/$(INIT_SCRIPTS_DIR)
-	mkdir -p $(ROOT)/opt/rocks/var/plugins/411/
+	mkdir -p $(ROOT)/$(PLUGIN_DIR)
 	$(INSTALL) -m555 $(SCRIPTS)  $(ROOT)/$(PKGROOT)/sbin/
 	$(INSTALL) -m700 init.d/411 $(ROOT)/$(INIT_SCRIPTS_DIR)
 	$(INSTALL) -m444 var/Makefile $(ROOT)/var/411
 	$(INSTALL) -m644 var/Files.mk $(ROOT)/var/411
 	$(INSTALL) -m644 var/Group.mk $(ROOT)/var/411
+	$(INSTALL) -m400 plugins/* $(ROOT)/$(PLUGIN_DIR)
 
 clean::
 	rm -f $(SCRIPTS)

@@ -66,6 +66,10 @@
 # @Copyright@
 #
 # $Log: service411.py,v $
+# Revision 1.5  2008/08/09 19:27:51  anoop
+# beginning of actual usable 411 plugins. For now password and group file
+# plugins
+#
 # Revision 1.4  2008/07/17 01:35:29  anoop
 # Some pruning.
 # Removed the present() function as it doesn't have any purpose,
@@ -263,6 +267,7 @@ import rocks.app
 import re
 import time
 import string
+import platform
 import cStringIO
 import tempfile
 import types
@@ -774,6 +779,7 @@ class Service411:
 
 class Plugin:
 	def __init__(self):
+		self.os = platform.system().lower()
 		pass
 	
 class NodeFilter(xml.dom.NodeFilter.NodeFilter):
