@@ -66,6 +66,17 @@
 # @Copyright@
 #
 # $Log: service411.py,v $
+# Revision 1.6  2008/08/12 23:20:13  anoop
+# Added filter for auto.master
+#
+# Modified 411 transport to encode content of the file
+# and filter before encrypting them. This helps with the
+# problem of stripping whitespaces, and returns the content
+# of the files exactly as they should be.
+#
+# Also modified the password and group filters just a little
+# to make them return the correct whitespaces
+#
 # Revision 1.5  2008/08/09 19:27:51  anoop
 # beginning of actual usable 411 plugins. For now password and group file
 # plugins
@@ -898,14 +909,17 @@ class Parser:
 		os.rmdir(dir)
 		
 	def get_text(self, node):
-		# This function returns the text present
-		# inside an xml tag.
+		# This function returns the base64 unencoded
+		# text present inside an xml tag.
 		text = ''
 		for child in node.childNodes:
 			if child.nodeType == child.TEXT_NODE or \
 			   child.nodeType == child.CDATA_SECTION_NODE:
 				text += child.nodeValue
-		return text.strip()
+		text = text.strip()
+		if node.nodeName == 'content' or node.nodeName == 'filter':
+			return base64.b64decode(text)	
+		return text
 
 	def get_filtered_content(self):
 		return self.filtered

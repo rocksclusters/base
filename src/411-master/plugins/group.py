@@ -1,9 +1,20 @@
-# $Id: group.py,v 1.1 2008/08/09 19:27:51 anoop Exp $
+# $Id: group.py,v 1.2 2008/08/12 23:20:13 anoop Exp $
 
 # @Copyright@
 # @Copyright@
 
 # $Log: group.py,v $
+# Revision 1.2  2008/08/12 23:20:13  anoop
+# Added filter for auto.master
+#
+# Modified 411 transport to encode content of the file
+# and filter before encrypting them. This helps with the
+# problem of stripping whitespaces, and returns the content
+# of the files exactly as they should be.
+#
+# Also modified the password and group filters just a little
+# to make them return the correct whitespaces
+#
 # Revision 1.1  2008/08/09 19:27:51  anoop
 # beginning of actual usable 411 plugins. For now password and group file
 # plugins
@@ -39,6 +50,7 @@ class Plugin(rocks.service411.Plugin):
 			return content
 
 		# If not, then start filtering
+		content = content.rstrip('\n')
 		content_lines = content.split('\n')
 
 		# Get all groups greater than 500
@@ -53,9 +65,7 @@ class Plugin(rocks.service411.Plugin):
 				groupname not in avoid_gname:
 				group_list = group_list + line + '\n'
 
-		group_list = group_list.strip()
-
-		# Open the password file. and read 
+		# Open the group file. and read 
 		# it's contents, so that we can
 		# maintain the UID's less than 500
 		# Also maintain all groupnames like
@@ -74,7 +84,7 @@ class Plugin(rocks.service411.Plugin):
 
 		group_lines = group_lines + group_list
 
-		return group_lines.strip()
+		return group_lines
 
 	def filter_owner(self, oid):
 		if self.os == 'linux':

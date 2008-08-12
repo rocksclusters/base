@@ -6,7 +6,7 @@
 #
 # Requires Python 2.1 or better
 #
-# $Id: 411put.py,v 1.4 2008/07/17 01:29:40 anoop Exp $
+# $Id: 411put.py,v 1.5 2008/08/12 23:20:13 anoop Exp $
 #
 # @Copyright@
 # 
@@ -62,6 +62,17 @@
 # @Copyright@
 #
 # $Log: 411put.py,v $
+# Revision 1.5  2008/08/12 23:20:13  anoop
+# Added filter for auto.master
+#
+# Modified 411 transport to encode content of the file
+# and filter before encrypting them. This helps with the
+# problem of stripping whitespaces, and returns the content
+# of the files exactly as they should be.
+#
+# Also modified the password and group filters just a little
+# to make them return the correct whitespaces
+#
 # Revision 1.4  2008/07/17 01:29:40  anoop
 # Changed 411put to use XML as transport rather than http style headers. This
 # makes it significantly more flexible, to use and abuse. Adds python code
@@ -198,6 +209,7 @@ import os.path
 import sys
 import stat
 import time
+import base64
 import rocks.net
 import rocks.service411
 from rocks.service411 import Error411
@@ -382,7 +394,7 @@ absolute path (after any chroots) will be maintained on clients."""
 		if stat.S_ISREG(mode):
 			file = open(filename, 'r')
 			plaintext += "<content>\n<![CDATA[\n"
-			plaintext += file.read()
+			plaintext += base64.b64encode(file.read())
 			plaintext += "]]>\n</content>\n"
 			file.close()
 
@@ -394,7 +406,7 @@ absolute path (after any chroots) will be maintained on clients."""
 
 		if filter is not None:
 			plaintext += "<filter>\n<![CDATA[\n"
-			plaintext += filter
+			plaintext += base64.b64encode(filter)
 			plaintext += "]]>\n</filter>\n"
 		plaintext += "</service411>"
 

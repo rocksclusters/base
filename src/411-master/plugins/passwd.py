@@ -1,9 +1,20 @@
-# $Id: passwd.py,v 1.1 2008/08/09 19:27:51 anoop Exp $
+# $Id: passwd.py,v 1.2 2008/08/12 23:20:13 anoop Exp $
 
 # @Copyright@
 # @Copyright@
 
 # $Log: passwd.py,v $
+# Revision 1.2  2008/08/12 23:20:13  anoop
+# Added filter for auto.master
+#
+# Modified 411 transport to encode content of the file
+# and filter before encrypting them. This helps with the
+# problem of stripping whitespaces, and returns the content
+# of the files exactly as they should be.
+#
+# Also modified the password and group filters just a little
+# to make them return the correct whitespaces
+#
 # Revision 1.1  2008/08/09 19:27:51  anoop
 # beginning of actual usable 411 plugins. For now password and group file
 # plugins
@@ -38,6 +49,7 @@ class Plugin(rocks.service411.Plugin):
 			return content
 
 		# If not, then start filtering
+		content = content.rstrip('\n')
 		content_lines = content.split('\n')
 
 		# Get all users greater than 500
@@ -51,8 +63,6 @@ class Plugin(rocks.service411.Plugin):
 			if uid >= 500 and \
 				username not in avoid_uname:
 				user_list = user_list + line + '\n'
-
-		user_list = user_list.strip()
 
 		# Open the password file. and read 
 		# it's contents, so that we can
@@ -73,7 +83,7 @@ class Plugin(rocks.service411.Plugin):
 
 		passwd_lines = passwd_lines + user_list
 
-		return passwd_lines.strip()
+		return passwd_lines
 
 	def filter_owner(self, oid):
 		if self.os == 'linux':
