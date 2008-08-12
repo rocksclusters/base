@@ -53,6 +53,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.7  2008/08/12 19:14:33  anoop
+# Bug fix
+#
 # Revision 1.6  2008/08/09 19:27:51  anoop
 # beginning of actual usable 411 plugins. For now password and group file
 # plugins
@@ -134,7 +137,7 @@ install:: build
 	$(INSTALL) -m444 var/Makefile $(ROOT)/var/411
 	$(INSTALL) -m644 var/Files.mk $(ROOT)/var/411
 	$(INSTALL) -m644 var/Group.mk $(ROOT)/var/411
-	$(INSTALL) -m400 plugins/* $(ROOT)/$(PLUGIN_DIR)
+	$(INSTALL) -m400 plugins/*.py $(ROOT)/$(PLUGIN_DIR)
 
 clean::
 	rm -f $(SCRIPTS)
