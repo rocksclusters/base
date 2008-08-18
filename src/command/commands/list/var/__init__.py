@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.9 2008/03/06 23:41:38 mjk Exp $
+# $Id: __init__.py,v 1.10 2008/08/18 22:16:50 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.10  2008/08/18 22:16:50  bruno
+# fix for 'output-col' and 'rocks list var'
+#
 # Revision 1.9  2008/03/06 23:41:38  mjk
 # copyright storm on
 #
@@ -175,6 +178,9 @@ class Command(rocks.commands.list.command):
 				self.addOutput(l[0],l[1:])
 
 		# Print the output
-		self.endOutput(header=['Appliance', 'Service', 'Component', 
-			'Value'])	
+		if appliance and appliance != "global":
+			self.endOutput(header=['Appliance', 'Service',
+				'Component', 'Value'])	
+		else:
+			self.endOutput(header=['Service', 'Component', 'Value'])	
 

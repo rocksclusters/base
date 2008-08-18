@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.10 2008/03/14 20:54:34 bruno Exp $
+# $Id: __init__.py,v 1.11 2008/08/18 22:16:50 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.11  2008/08/18 22:16:50  bruno
+# fix for 'output-col' and 'rocks list var'
+#
 # Revision 1.10  2008/03/14 20:54:34  bruno
 # make sure all header/column comparisons are based on lowercase names
 #
@@ -129,7 +132,6 @@ class command(rocks.commands.Command):
 			if key == 'output-header':
 				showHeader = self.str2bool(self._params[key])
 			elif key == 'output-col':
-				tokens = self._params[key].split(',')
 				showCols = []
 				for col in self._params[key].split(','):
 					showCols.append(col.lower())
