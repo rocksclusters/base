@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.10 2008/03/06 23:41:37 mjk Exp $
+# $Id: __init__.py,v 1.11 2008/08/18 21:16:06 mjk Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.11  2008/08/18 21:16:06  mjk
+# - Added cols arg to list help (cols=0 means no line wrapping)
+# - Added help verb as a rocks help | grep XXX shortcut
+#
 # Revision 1.10  2008/03/06 23:41:37  mjk
 # copyright storm on
 #
@@ -139,7 +143,9 @@ class Command(rocks.commands.list.command):
 		# code we need to provide the params argument.  This is the
 		# only command where we need to include this argument.
 		
-		(subdir, ) = self.fillParams([('subdir', )], params)
+		(subdir, cols) = self.fillParams([('subdir', ),
+						  ('cols', 80) ],
+						 params)
 		
 		if subdir:
 			filepath = os.path.join(rocks.commands.__path__[0],
@@ -156,8 +162,6 @@ class Command(rocks.commands.list.command):
 
 		if os.environ.has_key('COLUMNS'):
 			cols = os.environ['COLUMNS']
-		else:
-			cols = 80
 			
 		for dir in dirs:
 			if not dir:
@@ -183,7 +187,7 @@ class Command(rocks.commands.list.command):
 			l   = len(cmd) + 1
 			s   = ''
 			for arg in o.usage().split():
-				if l + len(arg) < cols:
+				if l + len(arg) < cols or cols == 0:
 					s += '%s ' % arg
 					l += len(arg) + 1 # space
 				else:
