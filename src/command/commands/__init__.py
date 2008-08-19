@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.56 2008/07/01 21:23:56 bruno Exp $
+# $Id: __init__.py,v 1.57 2008/08/19 19:33:33 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,11 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.57  2008/08/19 19:33:33  bruno
+# a MAC address is now a valid key to look up a host.
+#
+# also, one more tweak to get the 'output-col' flag working
+#
 # Revision 1.56  2008/07/01 21:23:56  bruno
 # added the command 'rocks remove roll' and tweaked the other roll commands
 # to handle 'arch' flag.
@@ -460,7 +465,8 @@ class HostArgumentProcessor:
 	def getHostnames(self, names=None):
 		"""Expands the given list of names to valid cluster 
 		hostnames.  A name can be a hostname, IP address, our
-		group (membership name).  Any combination of these is valid.
+		group (membership name), or a MAC address. Any combination of
+		these is valid.
 		If the names list is empty a list of all hosts in the cluster
 		is returned.
 		
@@ -950,7 +956,7 @@ class DatabaseConnection:
 				name='%s'""" % hostname)
 			if rows:
 				return hostname
-		
+
 		if not hostname:					
 			hostname = socket.gethostname()
 		try:
@@ -964,7 +970,20 @@ class DatabaseConnection:
 					where name="%s" """ % hostname)
 				if self.link.fetchone():
 					return hostname
-			Abort('cannot resolve host "%s"' % hostname)
+
+				#
+				# see if this is a MAC address
+				#
+				self.link.execute("""select nodes.name from
+					networks,nodes where
+					nodes.id = networks.node and
+					mac = '%s' """ % (hostname))
+				try:
+					hostname, = self.link.fetchone()
+					return hostname
+				except:
+					Abort('cannot resolve host "%s"' %
+						hostname)
 		
 		if addr == '127.0.0.1': # allow localhost to be valid
 			return self.getHostname()
@@ -977,6 +996,7 @@ class DatabaseConnection:
 				hostname, = self.link.fetchone()
 			except TypeError:
 				pass
+
 
 		return hostname
 
@@ -1315,14 +1335,14 @@ class Command:
 
 		if trimOwner:
 			owner = ''
-			startOfLine = 1
+			self.startOfLine = 1
 			for line in self.output:
 				if not owner:
 					owner = line[0]
 				if not owner == line[0]:
-					startOfLine = 0
+					self.startOfLine = 0
 		else:
-			startOfLine = 0
+			self.startOfLine = 0
 				
 		# Add the header to the output and start formatting.  We
 		# keep the header optional and separate from the output
@@ -1356,7 +1376,7 @@ class Command:
 		o = ''
 		for line in output:
 			list = []
-			for i in range(startOfLine, len(line)):
+			for i in range(self.startOfLine, len(line)):
 				if line[i] == None:
 					s = ''
 				else:

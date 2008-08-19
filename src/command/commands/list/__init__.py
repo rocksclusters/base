@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.11 2008/08/18 22:16:50 bruno Exp $
+# $Id: __init__.py,v 1.12 2008/08/19 19:33:33 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,11 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.12  2008/08/19 19:33:33  bruno
+# a MAC address is now a valid key to look up a host.
+#
+# also, one more tweak to get the 'output-col' flag working
+#
 # Revision 1.11  2008/08/18 22:16:50  bruno
 # fix for 'output-col' and 'rocks list var'
 #
@@ -113,7 +118,7 @@ class command(rocks.commands.Command):
 		if len(self.outputCols) > 0:
 			l = []
 			for i in range(0, len(list)):
-				if self.outputCols[i]:
+				if self.outputCols[i + self.startOfLine]:
 					l.append(list[i])
 		else:
 			l = list
