@@ -1,5 +1,5 @@
 # --------------------------------------------------- -*- Makefile -*- --
-# $Id: Makefile,v 1.1 2008/06/10 22:44:01 mjk Exp $
+# $Id: Makefile,v 1.2 2008/08/19 19:02:37 mjk Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.2  2008/08/19 19:02:37  mjk
+# added create-package.mk
+#
 # Revision 1.1  2008/06/10 22:44:01  mjk
 # added rocks-devel
 #
@@ -83,6 +86,7 @@ install::
 		cd devel;						\
 		find . | cpio -pduv $(ROOT)/$(PKGROOT)/;		\
 	)
+	$(INSTALL) -m0644 create-package.mk $(ROOT)/$(PKGROOT)/etc/
 
 clean::
 	rm -rf devel
