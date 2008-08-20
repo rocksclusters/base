@@ -1,6 +1,6 @@
 #!/opt/rocks/bin/python
 #
-# $Id: setPxeboot.cgi,v 1.5 2008/03/06 23:41:44 mjk Exp $
+# $Id: setPxeboot.cgi,v 1.6 2008/08/20 22:52:58 bruno Exp $
 #
 # @Copyright@
 # 
@@ -56,6 +56,9 @@
 # @Copyright@
 #
 # $Log: setPxeboot.cgi,v $
+# Revision 1.6  2008/08/20 22:52:58  bruno
+# install a virtual cluster of any size in 6 simple steps!
+#
 # Revision 1.5  2008/03/06 23:41:44  mjk
 # copyright storm on
 #
@@ -114,4 +117,45 @@ print 'Content-type: application/octet-stream'
 print 'Content-length: %d' % (len(''))
 print ''
 print ''
+
+#
+# check if this frontend is a VM hosted on a physical node.
+# if so, then send a command to the host to also set the pxeaction. this keeps
+# the virtual frontend and the host in sync
+#
+vm_hosting = None
+
+cmd = '/opt/rocks/bin/rocks list var VM HostingAddress output-col=value '
+cmd += 'output-header=no'
+
+for line in os.popen(cmd).readlines():
+	vm_hosting = line[:-1]
+	break
+
+if vm_hosting != None and len(vm_hosting) > 0:
+	#
+	# also send the action back to hosting server. the hosting server
+	# is the physical machine that is controlling this VM
+	#
+
+	#
+	# look up the MAC address of the requester. the MAC address is the
+	# only unique id that is shared between the virtual frontend and the
+	# hosting server
+	#
+	cmd = '/opt/rocks/bin/rocks list host interface %s ' % (ipaddr)
+	cmd += 'output-col=mac output-header=no'
+
+	mac = None
+	for line in os.popen(cmd).readlines():
+		mac = line[:-1]
+		break
+	
+	cmd = '/usr/bin/wget --quiet --no-check-certificate -O /dev/null '
+	cmd += 'https://%s/install/sbin/runRocksCommand.cgi' % (vm_hosting)
+	cmd += '?command="set host pxeboot %s ' % (mac)
+	cmd += "action='%s'" % (action)
+	cmd += '"'
+
+	os.system(cmd)
 

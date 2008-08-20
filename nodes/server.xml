@@ -33,5 +33,47 @@
 
 </post>
 
+
+<!--
+	if this is a VM-based cluster, setup a variable that points back to
+	server that is controlling this VM
+-->
+
+<pre>
+
+VHA=<var name="VM_HostingAddress"/>
+
+if [ ! -f /tmp/vm-hosting.sh ] &amp;&amp; [ "${VHA}" != "" ]
+then
+	echo '/opt/rocks/bin/rocks add var VM HostingAddress \
+		<var name="VM_HostingAddress"/>' > /tmp/vm-hosting.sh 
+fi
+
+</pre>
+
+
+<post arg="--nochroot">
+cp /tmp/vm-hosting.sh /mnt/sysimage/tmp
+</post>
+
+<post>
+sh /tmp/vm-hosting.sh
+</post>
+
+<post>
+<!--
+	send a message back to the hosting server to set the pxeboot action
+	to boot off the local disk
+-->
+VHA=`/opt/rocks/bin/rocks list var VM HostingAddress output-col=value output-header=no`
+
+if [ "${VHA}" != "" ]
+then
+	/usr/bin/wget --no-check-certificate -O /dev/null \
+		https://${VHA}/install/sbin/setPxeboot.cgi?action="os"
+fi
+</post>
+
+
 </kickstart> 
 

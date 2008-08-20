@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.10 2008/08/18 22:16:50 bruno Exp $
+# $Id: __init__.py,v 1.11 2008/08/20 22:52:58 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.11  2008/08/20 22:52:58  bruno
+# install a virtual cluster of any size in 6 simple steps!
+#
 # Revision 1.10  2008/08/18 22:16:50  bruno
 # fix for 'output-col' and 'rocks list var'
 #
@@ -178,9 +181,6 @@ class Command(rocks.commands.list.command):
 				self.addOutput(l[0],l[1:])
 
 		# Print the output
-		if appliance and appliance != "global":
-			self.endOutput(header=['Appliance', 'Service',
-				'Component', 'Value'])	
-		else:
-			self.endOutput(header=['Service', 'Component', 'Value'])	
+		self.endOutput(header=['Appliance', 'Service', 'Component',
+			'Value'])	
 
