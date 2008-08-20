@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.1 2008/08/20 22:15:16 mjk Exp $
+# $Id: __init__.py,v 1.2 2008/08/20 23:22:46 mjk Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.2  2008/08/20 23:22:46  mjk
+# docstring
+#
 # Revision 1.1  2008/08/20 22:15:16  mjk
 # works / needs docstring
 #
@@ -66,16 +69,39 @@ import rocks.commands
 		
 class Command(rocks.commands.create.command):
 	"""
-	Create a RedHat or Solaris package from a given directory.
+	Create a RedHat or Solaris package from a given directory.  The
+	package will install files in either the same location as the given
+	directory, or a combination of the directory basename and the
+	provided prefix.
 
 	<arg type='string' name='directory'>
 	The source directory of the files used to create the OS-specific
 	package.
 	</arg>
 
-	<example cmd='create package myapp prefix=/opt'>
-	Create a package to be installed at /opt using the contents of
-	the myapp directory.
+	<param type='string' name='prefix'>
+	The prefix pathname prepended to the base name of the source
+	directory.
+	</param>
+
+	<param type='string' name='version'>
+	Version number of the created package (default is '1.0')
+	</param>
+
+	<param type='string' name='release'>
+	Release number of the created package (default is '1')
+	</param>
+
+	<example cmd='create package /opt/stream stream'>
+	Create a package named stream in the current directory using the
+	contents of the /opt/stream directory.  The resulting package will
+	install its files at /opt/stream.
+	</example>
+
+	<example cmd='create package /opt/stream localstream prefix=/usr/local'>
+	Create a package named localstream in the current directory using the
+	contents of the /opt/stream directory.  The resulting package will
+	install its files at /usr/local/stream.
 	</example>
 	
 	"""
