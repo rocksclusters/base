@@ -1,6 +1,6 @@
 #! @PYTHON@
 #
-# $Id: kroll.py,v 1.13 2008/03/06 23:41:43 mjk Exp $
+# $Id: kroll.py,v 1.14 2008/08/20 23:41:22 bruno Exp $
 #
 # @Copyright@
 # 
@@ -56,6 +56,9 @@
 # @Copyright@
 #
 # $Log: kroll.py,v $
+# Revision 1.14  2008/08/20 23:41:22  bruno
+# 'lan' is no longer part of the distro path
+#
 # Revision 1.13  2008/03/06 23:41:43  mjk
 # copyright storm on
 #
@@ -339,7 +342,7 @@ class App(rocks.kickstart.Application):
 			print 'error = cannot find host in database'
 			sys.exit(-1)
 		
-		self.dist.setDist(os.path.join(dist, 'lan'))
+		self.dist.setDist(os.path.join(dist))
 		self.dist.setArch(self.arch)
 		self.dist.build()
 		distroot = self.dist.getReleasePath()
