@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.3 2008/08/22 23:26:38 bruno Exp $
+# $Id: __init__.py,v 1.1 2008/08/22 23:26:38 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,22 +54,42 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
-# Revision 1.3  2008/08/22 23:26:38  bruno
+# Revision 1.1  2008/08/22 23:26:38  bruno
 # closer
 #
-# Revision 1.2  2008/03/06 23:41:36  mjk
-# copyright storm on
-#
-# Revision 1.1  2007/12/10 21:28:34  bruno
-# the base roll now contains several elements from the HPC roll, thus
-# making the HPC roll optional.
-#
-# this also includes changes to help build and configure VMs for V.
 #
 #
 
+import os
 import rocks.commands
 
-class command(rocks.commands.Command):
-	pass
+class Command(rocks.commands.sync.host.command):
+	"""
+	Reconfigure and restart the network for the named hosts.
+
+	<example cmd='sync host network compute-0-0'>
+	Reconfigure and restart the network on compute-0-0.
+	</example>
+	"""
+
+	def run(self, params, args):
+		hosts = self.getHostnames(args)
+		for host in hosts:
+			cmd = '/opt/rocks/bin/rocks config host interface '
+			cmd += '%s | ' % host
+			cmd += '/opt/rocks/bin/rocks report script | '
+			cmd += 'ssh %s bash > /dev/null 2>&1' % host
+			os.system(cmd)
+
+			cmd = 'ssh -f %s "service network restart" ' % host
+			cmd += '> /dev/null 2>&1'
+			os.system(cmd)
+
+		self.runPlugins(hosts)
+
+		#
+		# if IP addresses change, we'll need to sync the config (e.g.,
+		# update /etc/hosts, /etc/dhcpd.conf, etc.).
+		#
+		self.command('sync.config')
 

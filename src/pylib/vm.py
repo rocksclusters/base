@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: vm.py,v $
+# Revision 1.6  2008/08/22 23:26:38  bruno
+# closer
+#
 # Revision 1.5  2008/04/16 19:11:31  bruno
 # only get partition info for partitions that are mountable (i.e., they
 # have a leading '/' in the mountpoint field).
@@ -173,4 +176,18 @@ class VM:
 				host, = self.db.fetchone()
 
 		return host
+
+
+	def isVM(self, host):
+		#
+		# a node is a VM if it is in the vm_nodes table
+		#
+		try:
+			rows = self.db.execute("""select n.name from
+				nodes n, vm_nodes vn where
+				n.name = '%s' and n.id = vn.node""" % host)
+		except:
+			rows = 0
+
+		return rows
 

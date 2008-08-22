@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.3 2008/08/22 23:26:38 bruno Exp $
+# $Id: __init__.py,v 1.1 2008/08/22 23:26:38 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,22 +54,15 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
-# Revision 1.3  2008/08/22 23:26:38  bruno
+# Revision 1.1  2008/08/22 23:26:38  bruno
 # closer
 #
-# Revision 1.2  2008/03/06 23:41:36  mjk
-# copyright storm on
-#
-# Revision 1.1  2007/12/10 21:28:34  bruno
-# the base roll now contains several elements from the HPC roll, thus
-# making the HPC roll optional.
-#
-# this also includes changes to help build and configure VMs for V.
 #
 #
 
 import rocks.commands
 
-class command(rocks.commands.Command):
+class command(rocks.commands.HostArgumentProcessor,
+        rocks.commands.sync.command):
 	pass
 
