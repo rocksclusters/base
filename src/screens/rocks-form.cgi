@@ -15,7 +15,7 @@ class App(rocks.sql.Application):
 		rocks.sql.Application.__init__(self)
 		return
 
-	
+
 	def buildSiteXML(self):
 		file = open('/tmp/site.xml', 'w')
 		file.write('<kickstart>\n')
@@ -35,6 +35,7 @@ class App(rocks.sql.Application):
 				import crypt
 				import md5
 				import sha
+				import rocks.password
 
 				m = md5.new(xmlvalue)
 				crypted = crypt.crypt(xmlvalue,
@@ -66,6 +67,14 @@ class App(rocks.sql.Application):
 				str += 'name='
 				str += '"Kickstart_PrivateSHARootPassword" '
 				str += 'val="%s"/>' % (sha_sha.hexdigest())
+				file.write('%s\n' % (str))
+
+				pw = rocks.password.Password()
+				str = '<var '
+				str += 'name='
+				str += '"Kickstart_PrivatePortablePassword" '
+				str += 'val="%s"/>' % \
+					(pw.create_password(xmlvalue)
 				file.write('%s\n' % (str))
 
 				continue
