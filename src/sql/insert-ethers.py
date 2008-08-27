@@ -58,6 +58,11 @@
 # @Copyright@
 #
 # $Log: insert-ethers.py,v $
+# Revision 1.38  2008/08/27 02:41:08  anoop
+# Very minor changes to the database schema to store os type along
+# with appliance. This is mainly to include solaris support for
+# a compute appliance
+#
 # Revision 1.37  2008/07/24 22:39:12  anoop
 # Don't forget the comma, don't forget the comma, don't forget the comma
 #
@@ -825,7 +830,7 @@ class InsertEthers(GUI):
 			#
 			query = 'select memberships.name from memberships, appliances '\
 				'where memberships.appliance=appliances.id and '\
-				'appliances.OS="%s" and ' \
+				'find_in_set("%s",appliances.OS) and ' \
 				'memberships.public = "yes" ' \
 				'order by memberships.name' \
 				 % (self.osname) 
