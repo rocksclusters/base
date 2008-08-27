@@ -1,6 +1,7 @@
 #!/opt/rocks/bin/python
 #
 # $RCSfile: tentakel.py,v $
+# $Id: tentakel.py,v 1.4 2008/08/27 02:38:58 anoop Exp $
 #
 # @Copyright@
 # 
@@ -56,6 +57,11 @@
 # @Copyright@
 #
 # $Log: tentakel.py,v $
+# Revision 1.4  2008/08/27 02:38:58  anoop
+# Complete overhaul to the process of generation of the tentakel
+# configuration. Now, the tentakel configuration is OS aware,
+# and nodes are grouped by OS, rack, and appliance type
+#
 # Revision 1.3  2008/03/06 23:41:46  mjk
 # copyright storm on
 #
@@ -98,75 +104,103 @@ import rocks.reports.base
 class Report(rocks.reports.base.ReportBase):
 
 	def run(self):
+		# print the dbreport header
 		print self.getHeader()
+		print 
 		print 'set method="rocks"'
-		print
+		print 
 
-                # build a list of group and their node members.
-		# tentakel uses a lex parses and need all group names
-		# to be standard c-tokens so need to change the names a bit
-
-		self.execute("""select n.name, a.name from
-			nodes n, appliances a, memberships m where
-			(a.node IS NOT NULL and length(a.node) > 0) and
-			n.membership = m.id and m.appliance = a.id""")
-
+		# The groups dictionary that is used to form
+		# the entire tree of groups
 		groups = {}
-		for node,group in self.fetchall():
-			grouptoken = group.replace('-', '_')
-			if not groups.has_key(grouptoken):
-				groups[grouptoken] = []
-			groups[grouptoken].append(node)
 
-		# determine the group name for the frontend machine
+		# A default group
+		groups['default'] = []
 
-		self.execute("""select n.name, a.name from
-			nodes n, appliances a, memberships m where 
-			n.membership = m.id and m.name = 'Frontend' and
-			m.appliance = a.id""")
+		# Select all nodes that Rocks knows about, except 
+		# for the frontend, along with their rack, 
+		# appliance_type and OS with which they've
+		# been provisioned. This information is used to
+		# classify the nodes.
+		sql_cmd = "select n.name, n.os, n.rack, a.name " +\
+			"from nodes n, appliances a, memberships m "+\
+			"where n.membership = m.id and "	 +\
+			"m.appliance = a.id and a.name != 'frontend'"
 
-		frontendName, frontendGroup = self.fetchone()
+		self.execute(sql_cmd)
 
-		# build a list of racks to create rack groups in the form
-		# racksN where the group contains all non-frontend 
-		# machines
+		# The classification of nodes is done as follows.
+		# The groups are 
+		# 1. Default group, which is a metagroup containing OS metagroups
+		# 2. OS metagroups containing groups classified as (appliance & os)
+		# 3. appliance metagroup containing groups of (appliance & os)
+		# 4. rack metagroup containing groups of rack & os
+		# 5. appliance & os group containing nodes which belong 
+		#    to a particular appliance type and OS type
+		# 6. rack & os group containing nodes which belong to
+		#    a particular rack and OS type
+		# Logically, the OS metagroup and the appliance metagroup
+		# are the same
 
-		self.execute("""select n.name, n.rack from
-			nodes n, appliances a, memberships m where
-			(a.node IS NOT NULL and length(a.node) > 0) and
-			n.membership = m.id and m.appliance = a.id""")
+		for (node, osname, rack, appliance) in self.fetchall():
+			if not groups.has_key(osname):
+				groups[osname] = []
+			if '@' + osname not in groups['default']:
+				groups['default'].append('@' + osname)
 
-		racks = {}
-		for node,rack in self.fetchall():
-			racktoken = 'rack%d' % int(rack)
-			if not racks.has_key(racktoken):
-				racks[racktoken] = []
-			if not node == frontendName:
-				racks[racktoken].append(node)
+			app_metagroup = appliance.replace('-','_')
+			app_group = app_metagroup + '_' + osname
+			if not groups.has_key(app_metagroup):
+				groups[app_metagroup] = []
+			if '@' + app_group not in groups[app_metagroup]:
+				groups[app_metagroup].append('@' + app_group)
+			if not groups.has_key(app_group):
+				groups[app_group] = []
+			groups[app_group].append(node)
 			
+			rack_metagroup = "rack%d" % int(rack)
+			rack_group = rack_metagroup + '_' + osname
+			if not groups.has_key(rack_metagroup):
+				groups[rack_metagroup] = []
+			if '@' + rack_group not in groups[rack_metagroup]:
+				groups[rack_metagroup].append('@' + rack_group)
+			if not groups.has_key(rack_group):
+				groups[rack_group] = []
+			groups[rack_group].append(node)
 
-		# the default group includes all other groups except the
-		# frontend machine
+			if '@' + app_group not in groups[osname]:
+				groups[osname].append('@' + app_group)
 
-		print 'group default ()'
-		for key in groups.keys():
-			if key != frontendGroup:
-				print '\t@%s' % key
-		print
+		# Create a frontend group, containing only the frontend
+		# This will not be a part of the default group
+		sql_cmd = "select n.name, a.name from nodes n, " +\
+			"appliances a, memberships m where "	 +\
+			"n.membership = m.id and "	+\
+			"m.appliance = a.id and a.name = 'frontend'"
 
-		# print appliance groups
+		self.execute(sql_cmd)
+		frontend_name, frontend_group = self.fetchone()
+		groups[frontend_group] = []
+		groups[frontend_group].append(frontend_name)
 
-		for key in groups.keys():
-			print 'group %s ()' % key
-			for node in groups[key]:
-				print '\t+%s' % node
-			print
 
-		# print rack groups
+		# Start creating the output. First the default group
+		print "group default ()"
+		for group in groups.pop('default'):
+			print "\t%s" % group
+		print '\n'
 
-		for key in racks.keys():
-			print 'group %s ()' % key
-			for node in racks[key]:
-				print '\t+%s' % node
-			print
-
+		# Get a list of all the remaining groups and 
+		# print them out in the format that tentakel will
+		# understand. 
+		# A note by previous developer - 
+		# tentakel uses a lex parses and need all group names
+		# to be standard c-tokens 
+		for group in groups:
+			print "group %s ()" % group
+			for i in groups[group]:
+				if i.startswith('@'):
+					print '\t%s' % i
+				else:
+					print '\t+%s' % i
+			print '\n'
