@@ -57,6 +57,9 @@
 # @Copyright@
 #
 # $Log: grub.py,v $
+# Revision 1.12  2008/08/28 04:39:02  phil
+# Hooks to write a xen vs. non-xen rocks.conf file.
+#
 # Revision 1.11  2008/03/06 23:41:44  mjk
 # copyright storm on
 #
@@ -113,6 +116,8 @@ class App:
 		self.defaultargs = 'ramdisk_size=150000 kssendmac '
 		self.setFilename('rocks.conf')
 		self.title = 'Rocks Reinstall'
+		self.installKernel = 'kickstart/default/vmlinuz'  
+		self.installRamdisk = 'kickstart/default/initrd.img'
 
 	def getFilename(self, name):
 		return self.filename
@@ -125,6 +130,18 @@ class App:
 
 	def setBootTitle(self, name):
 		self.title = name
+
+	def getInstallKernel(self, name):
+		return self.installKernel
+
+	def setInstallKernel(self, name):
+		self.installKernel = name
+
+	def getInstallRamdisk(self, name):
+		return self.installRamdisk
+
+	def setInstallRamdisk(self, name):
+		self.installRamdisk = name
 
 	def run(self, args=''):
 		"""Write the /boot/grub/rocks.conf file. Extra arguments
@@ -147,7 +164,7 @@ class App:
 				kernelflags = string.join(tokens[2:])
 			elif tokens[0] == 'root':
 				root = line
-			elif tokens[0] != 'title' and tokens[0] != 'initrd':
+			elif tokens[0] != 'title' and tokens[0] != 'initrd' and tokens[0] != 'module':
 				# Write the header
 				outfile.write(line)
 
@@ -164,14 +181,14 @@ class App:
 		#
 		outfile.write('title %s\n' % self.title)
 		outfile.write(root)
-		outfile.write('\tkernel %s/kickstart/default/vmlinuz %s ' \
-			% (kernelpath, kernelflags))
+		outfile.write('\tkernel %s/%s %s ' \
+			% (kernelpath, self.installKernel, kernelflags))
 		outfile.write(self.defaultargs)
 		if args:
 			outfile.write(args)
 		outfile.write('\n')
-		outfile.write('\tinitrd %s/kickstart/default/initrd.img\n' \
-			% (kernelpath))
+		outfile.write('\tinitrd %s/%s\n' \
+			% (kernelpath, self.installRamdisk))
 
 		for line in orig_kernels:
 			outfile.write(line)
