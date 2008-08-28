@@ -58,6 +58,10 @@
 # @Copyright@
 #
 # $Log: insert-ethers.py,v $
+# Revision 1.39  2008/08/28 18:11:21  anoop
+# Remove duplicate database connect lines. This is, most likely,
+# the cause of the problem where plugins couldn't access the database
+#
 # Revision 1.38  2008/08/27 02:41:08  anoop
 # Very minor changes to the database schema to store os type along
 # with appliance. This is mainly to include solaris support for
@@ -1665,9 +1669,6 @@ class App(rocks.sql.Application):
 		else:
 			os.system('touch %s' % self.lockFile)
 			
-		# Need to connect to the DB before running the plugins
-		self.connect()
-
 		if self.doUpdate:
 			self.controller.loadPlugins(self)
 			self.controller.update()
