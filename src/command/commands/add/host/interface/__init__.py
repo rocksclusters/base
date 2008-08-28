@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.13 2008/08/05 19:01:44 bruno Exp $
+# $Id: __init__.py,v 1.14 2008/08/28 22:04:49 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,13 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.14  2008/08/28 22:04:49  bruno
+# can now add entries to the networks table based on MAC. previously, we could
+# only add entries with interface device name.
+#
+# 'rocks dump' now dumps info about nodes that have a MAC address but not an
+# interface device name (e.g., 'remote management' and 'power units' nodes).
+#
 # Revision 1.13  2008/08/05 19:01:44  bruno
 # add 'vlan' parameter
 #
@@ -208,18 +215,32 @@ class Command(rocks.commands.HostArgumentProcessor, rocks.commands.add.command):
 			self.abort('must supply one host')
 		host = hosts[0]
 
+		#
+		# determine if this is an interface name or a MAC address
+		#
+		isMac = 0
+		m = iface.split(':')
+		if len(m) >= 6:
+			isMac = 1
+
 		rows = self.db.execute("""select * from networks,nodes where 
-			nodes.name='%s' and networks.device='%s' and
-			networks.node=nodes.id""" % (host, iface))
+			nodes.name='%s' and
+			(networks.device='%s' or networks.mac='%s') and
+			networks.node=nodes.id""" % (host, iface, iface))
 		if rows:
 			self.abort('interface "%s" exists' % iface)
 
 		# Add the interface and then call the set commands for
 		# all the provided parameters
 		
-		self.db.execute("""insert into networks(node,device)
-			values ((select id from nodes where name='%s'), '%s')"""
-			% (host, iface)) 
+		if isMac:
+			self.db.execute("""insert into networks(node,mac)
+				values ((select id from nodes where name='%s'),
+				'%s')""" % (host, iface)) 
+		else:
+			self.db.execute("""insert into networks(node,device)
+				values ((select id from nodes where name='%s'),
+				'%s')""" % (host, iface)) 
 
 		for key in ['gateway', 'ip', 'mac', 'module', 'name', \
 				'subnet', 'vlan']:

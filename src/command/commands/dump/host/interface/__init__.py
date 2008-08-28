@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.12 2008/07/22 00:34:40 bruno Exp $
+# $Id: __init__.py,v 1.13 2008/08/28 22:04:49 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,13 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.13  2008/08/28 22:04:49  bruno
+# can now add entries to the networks table based on MAC. previously, we could
+# only add entries with interface device name.
+#
+# 'rocks dump' now dumps info about nodes that have a MAC address but not an
+# interface device name (e.g., 'remote management' and 'power units' nodes).
+#
 # Revision 1.12  2008/07/22 00:34:40  bruno
 # first whack at vlan support
 #
@@ -198,7 +205,10 @@ class Command(rocks.commands.dump.host.command):
 				module, name, vlan) in self.db.fetchall():
 				
 				if not iface:
-					continue # nothing to dump
+					if mac:
+						iface = mac
+					else:
+						continue # nothing to dump
 		
 				self.dump('add host interface %s %s' % 
 					(host, iface))
