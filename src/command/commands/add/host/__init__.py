@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.10 2008/03/06 23:41:35 mjk Exp $
+# $Id: __init__.py,v 1.11 2008/08/28 20:41:16 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.11  2008/08/28 20:41:16  bruno
+# spelling in help fix
+#
 # Revision 1.10  2008/03/06 23:41:35  mjk
 # copyright storm on
 #
@@ -154,7 +157,7 @@ class Command(rocks.commands.HostArgumentProcessor,
 	</example>
 
 	<example cmd='add host frontend rack=0 rank=0 membership=Frontend'>
-	Adds the host "frontend" to the database whit 1 CPU, a membership name
+	Adds the host "frontend" to the database with 1 CPU, a membership name
 	of "Frontend", a rack number of 0, and rank of 1.
 	</example>
 
