@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.19 2008/07/23 00:29:55 anoop Exp $
+# $Id: __init__.py,v 1.20 2008/08/28 18:12:45 anoop Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,12 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.20  2008/08/28 18:12:45  anoop
+# Now solaris installations use pxelinux to chainload pxegrub. This
+# way we can keep generation of pxelinux files controlled through
+# "rocks add host pxeaction" and thus keep the content of
+# pxelinux files consistent and managed.
+#
 # Revision 1.19  2008/07/23 00:29:55  anoop
 # Modified the database to support per-node OS field. This will help
 # determine the kind of provisioning for each node
@@ -384,6 +390,6 @@ class Command(rocks.commands.set.host.command):
 			
 				if node_os == 'sunos':
 					self.writePxegrub(host, nodeid)
-				else:
-					self.writePxebootCfg(host, nodeid)
+
+				self.writePxebootCfg(host, nodeid)
 
