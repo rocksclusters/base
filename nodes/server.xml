@@ -75,6 +75,27 @@ then
 fi
 </post>
 
+<!-- default configuration for firefox -->
+<post>
+
+<file name="/tmp/all-rocks.js" perms="0444">
+pref("app.update.auto", false);
+pref("app.update.enabled", false);
+pref("app.update.autoInstallEnabled", false);
+pref("browser.backspace_action",            2);
+pref("browser.display.use_system_colors",   true);
+pref("browser.link.open_external",          3);
+pref("browser.shell.checkDefaultBrowser",   false);
+pref("general.smoothScroll",                true);
+pref("intl.locale.matchOS", true);
+pref("browser.startup.homepage", "http://127.0.0.1/");
+</file>
+
+rm -f /usr/lib/firefox-*/defaults/preferences/all-redhat.js
+mv /tmp/all-rocks.js /usr/lib/firefox-*/defaults/preferences/
+
+</post>
+
 
 </kickstart> 
 
