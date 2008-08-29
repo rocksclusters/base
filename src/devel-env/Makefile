@@ -1,10 +1,14 @@
 #
-# $Id: Makefile,v 1.6 2007/06/14 17:28:42 bruno Exp $
+# $Id: Makefile,v 1.7 2008/08/29 20:01:55 mjk Exp $
 #
-# @COPYRIGHT@
-# @COPYRIGHT@
+# @Copyright@
+# @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.7  2008/08/29 20:01:55  mjk
+# - Allow not just bruno to build the package
+# - Use the /opt/rocks/share build env for restore roll
+#
 # Revision 1.6  2007/06/14 17:28:42  bruno
 # cvs.rocksclusters.org doesn't hold the head of the tree
 #
@@ -55,14 +59,13 @@ include Rules.mk
 -include $(ROCKSROOT)/etc/python.mk
 include python.mk
 
-CVSROOT = -d bruno@fyp.rocksclusters.org:/home/cvs/CVSROOT
+CVSROOT = -d $(USER)@fyp.rocksclusters.org:/home/cvs/CVSROOT
 TAG =
 # uncomment/change for Release
 # TAG = -r ROCKS_4_2
 
 
 build:
-	$(CVS) $(CVSROOT) checkout -P $(TAG) rocks-devel; 
 	$(CVS) $(CVSROOT) checkout -P $(TAG) rocks/src/roll/restore
 	for i in `find . -type d -name CVS` ; do \
 		rm -rf $$i ; \
@@ -71,7 +74,4 @@ build:
 install::
 	mkdir -p $(ROOT)/export/site-roll/
 	cp -R rocks $(ROOT)/export/site-roll/
-
-clean::
-	rm -f $(NAME).spec.in
 
