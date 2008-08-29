@@ -1,4 +1,4 @@
-# $Id: plugin_dns.py,v 1.6 2008/07/22 00:34:41 bruno Exp $
+# $Id: plugin_dns.py,v 1.7 2008/08/29 22:12:35 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: plugin_dns.py,v $
+# Revision 1.7  2008/08/29 22:12:35  bruno
+# fix for reverse.rocks.domain.*.local
+#
 # Revision 1.6  2008/07/22 00:34:41  bruno
 # first whack at vlan support
 #
@@ -265,9 +268,25 @@ class Plugin(rocks.commands.Plugin):
 				serial, self.dn, self.dn))
 
 			self.reversehostlines(file, forward_sn)
-			filename = '/var/named/reverse.rocks.domain.%s.local'\
+
+			#
+			# handle reverse local additions
+			#
+			# first check if there is a local file present, if not
+			# then create a stub file
+			#
+			filename = '/var/named/reverse.rocks.domain.%s.local' \
 				% (reverse_sn)
+
+			if not os.path.exists(filename):
+				f = open(filename, 'w')
+				f.write('; Extra reverse host mappings here. ')
+				f.write('Like:\n')
+				f.write(';2.2.2 PTR myhost.local.\n')
+				f.close()
+
 			self.hostlocal(file, filename)
+
 			file.close()
 			
 

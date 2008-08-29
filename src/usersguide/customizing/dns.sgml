@@ -29,7 +29,19 @@ And reverse mappings (IP to name) in:
 
 <para>
 <literal>
-/var/named/reverse.rocks.domain.local
+/var/named/reverse.rocks.domain.local-network-prefix.local
+</literal>
+</para>
+
+<para>
+Where <emphasis>local-network-prefix</emphasis> for a default rocks is
+<emphasis>10</emphasis>.
+That is, the above file name would be:
+</para>
+
+<para>
+<literal>
+/var/named/reverse.rocks.domain.10.local
 </literal>
 </para>
 
