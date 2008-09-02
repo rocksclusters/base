@@ -17,6 +17,9 @@
 
   <changelog>
   $Log: rocks-dist.xml,v $
+  Revision 1.20  2008/09/02 22:09:05  bruno
+  add helper directories
+
   Revision 1.19  2008/07/22 00:34:40  bruno
   first whack at vlan support
 
@@ -129,6 +132,17 @@ rocks create distro
 rm -f /etc/rc.d/rocksconfig.d/post-01-rocks-dist
 </file>
 
+</post>
+
+<post>
+DISTRO=`/opt/rocks/bin/rocks report distro`
+VERSION=`/opt/rocks/bin/rocks report version`
+ARCH=`uname -i`
+
+mkdir -p $DISTRO/contrib/$VERSION/$ARCH/RPMS
+mkdir -p $DISTRO/contrib/$VERSION/$ARCH/SRPMS
+
+mkdir -p $DISTRO/site-profiles/$VERSION/graphs/default
 </post>
 
 </kickstart> 
