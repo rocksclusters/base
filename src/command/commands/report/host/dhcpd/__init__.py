@@ -1,5 +1,5 @@
 #
-# $Id: __init__.py,v 1.3 2008/08/28 18:12:45 anoop Exp $
+# $Id: __init__.py,v 1.4 2008/09/04 20:57:14 bruno Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.4  2008/09/04 20:57:14  bruno
+# ignore hosts that don't have IP addresses (like hosted VMs).
+#
 # Revision 1.3  2008/08/28 18:12:45  anoop
 # Now solaris installations use pxelinux to chainload pxegrub. This
 # way we can keep generation of pxelinux files controlled through
@@ -237,7 +240,11 @@ class Command(rocks.commands.report.host.command):
 				(node.mac, node.ip) = t_info
 
 			if not node.ip:
-				node.ip = ip.dec()
+				#
+				# if the machine doesn't have an IP address,
+				# there is nothing for our DHCP server to do
+				#
+				continue
 
 			if not node.name:
 				name  = node.modelname
