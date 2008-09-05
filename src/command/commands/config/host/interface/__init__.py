@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.5 2008/08/07 00:55:27 anoop Exp $
+# $Id: __init__.py,v 1.6 2008/09/05 22:51:37 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.6  2008/09/05 22:51:37  bruno
+# phil's vlan fixes
+#
 # Revision 1.5  2008/08/07 00:55:27  anoop
 # Solaris networking and interface information now generated through
 # the database, rather than left to default
@@ -144,6 +147,9 @@ class Command(rocks.commands.config.host.command):
 		
 
 	def writeModprobe(self, device, module):
+		if not module:
+			return
+
 		self.addOutput('', '<![CDATA[')
 		self.addOutput('', 'grep -v "\<%s\>" /etc/modprobe.conf > /tmp/modprobe.conf' % (device))
 		self.addOutput('', "echo 'alias %s %s' >> /tmp/modprobe.conf" % (device, module))
@@ -230,7 +236,12 @@ class Command(rocks.commands.config.host.command):
 
 				if rows:
 					dev, = self.db.fetchone()
-					device = '%s.%d' % (dev, vlanid)
+					#
+					# check if already referencing 
+					# a physical device
+					#
+					if dev != device:
+						device = '%s.%d' % (dev, vlanid)
 
 			if self.iface:
 				if self.iface == device:
