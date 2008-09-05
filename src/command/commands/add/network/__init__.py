@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.7 2008/03/06 23:41:35 mjk Exp $
+# $Id: __init__.py,v 1.8 2008/09/05 20:11:58 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.8  2008/09/05 20:11:58  bruno
+# get rid of sql warning messages when adding a network
+#
 # Revision 1.7  2008/03/06 23:41:35  mjk
 # copyright storm on
 #
@@ -153,15 +156,9 @@ class Command(rocks.commands.add.command):
 			
 		rows = self.db.execute("""select * from subnets where 
 			name='%s'""" % name)
-		if rows < 1:
-			self.db.execute("""insert into subnets (name) values
-				('%s')""" % name)
-		else:
+		if rows > 0:
 			self.abort('network "%s" exists' % name)
 		
-		# Use the set commands to fill in the rest of the
-		# information.
-		
-		self.command('set.network.subnet',  [ name, subnet ])
-		self.command('set.network.netmask', [ name, netmask ])
+		self.db.execute("""insert into subnets (name, subnet, netmask)
+			values ('%s', '%s', '%s')""" % (name, subnet, netmask))
 
