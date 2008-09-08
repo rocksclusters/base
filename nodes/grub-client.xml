@@ -15,6 +15,10 @@
 
   <changelog>
   $Log: grub-client.xml,v $
+  Revision 1.8  2008/09/08 19:13:23  bruno
+  move xen detection and xen grub.conf configuration from the xen roll to
+  the base roll
+
   Revision 1.7  2008/03/06 23:41:30  mjk
   copyright storm on
 
@@ -67,7 +71,7 @@ import os
 import rocks.grub
 
 args = "ks selinux=0"
-makegrub=rocks.grub.App()
+makegrub = rocks.grub.App()
 makegrub.run(args)
 
 </post>
@@ -78,18 +82,41 @@ makegrub.run(args)
 import os
 import rocks.grub
 
-<eval mode="xml">
-BOOTFLAGS=`/opt/rocks/bin/rocks report host bootflags $Node_Hostname`
-echo "args = \"$BOOTFLAGS\""
-</eval>
+isXen = False
+detectXen1 = '/sbin/lsmod | /bin/grep xen'
+detectXen2 = '/sbin/lspci'
+
+for mods in os.popen(detectXen1).readlines():
+	isXen = True
+
+for devs in os.popen(detectXen2).readlines():
+	isXen = False
 
 makegrub = rocks.grub.App()
 
-makegrub.setFilename('grub.conf')
-makegrub.setBootTitle('title')
-makegrub.append(args)
-</post>
+if isXen:
+	#
+	# reinstall a virtual machine
+	#
+	args = "ks initrd=initrd.img pxe selinux=0 noipv6 lang= devfs=nomount"
+	makegrub = rocks.grub.App()
+	makegrub.setBootTitle('Rocks Reinstall Xen')
+	makegrub.setInstallKernel('kickstart/xen/vmlinuz')
+	makegrub.setInstallRamdisk('kickstart/xen/initrd-xen.iso.gz')
+	makegrub.run(args)
+else:
+	#
+	# reinstall a physical machine
+	#
+	<eval mode="xml">
+	BOOTFLAGS=`/opt/rocks/bin/rocks report host bootflags $Node_Hostname`
+	echo "args = \"$BOOTFLAGS\""
+	</eval>
 
+	makegrub.setFilename('grub.conf')
+	makegrub.setBootTitle('title')
+	makegrub.append(args)
+</post>
 
 </kickstart> 
 
