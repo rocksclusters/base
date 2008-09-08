@@ -56,6 +56,9 @@
 # @Copyright@
 #
 # $Log: hosts.py,v $
+# Revision 1.17  2008/09/08 23:10:50  bruno
+# nuke short names from host file
+#
 # Revision 1.16  2008/07/22 00:34:41  bruno
 # first whack at vlan support
 #
@@ -232,8 +235,7 @@ class Report(rocks.reports.base.ReportBase):
 
 		domain = self.getGlobalVar('Kickstart', 'PrivateDNSDomain')
 
-		self.execute('select n.id, n.rack, n.rank,'
-			     'a.name, a.shortname '
+		self.execute('select n.id, n.rack, n.rank, a.name '
 			     'from nodes n, appliances a, memberships m '
 			     'where n.membership=m.id and '
 			     'm.appliance=a.id and n.site=0 '
@@ -246,7 +248,6 @@ class Report(rocks.reports.base.ReportBase):
 			node.rack	= row[1]
 			node.rank	= row[2]
 			node.appname	= row[3]
-			node.appalias	= row[4]
 			node.warning    = None
 
 			self.execute("""select networks.name, networks.ip from
@@ -267,34 +268,17 @@ class Report(rocks.reports.base.ReportBase):
 			if not node.address:
 				node.address = ip.dec()
 
-			name  = node.appname
-			alias = node.appalias
-
-			if alias == "NULL":
-				alias = None
-
-			if None in (node.rack, node.rank):
-				# Alias require a rank otherwise they
-				# may not be unique
-				alias = None
-			else:
-				name = name + '-%d-%d' % (node.rack, node.rank)
-				if alias:
-					alias = alias + '%d-%d' \
-						% (node.rack, node.rank)
+			name  = '%s-%d-%d' % (node.appname, node.rack,
+				node.rank)
 
 			# If there is no name in the database, use the
-			# generated one.  Otherwise if the generated
-			# name does not match the one in the database,
-			# don't create an alias, and remark about it.
+			# generated one.
 
 			if not node.name[0]:
 				node.name = [name,]
 			
 			if node.name[0] != name:
 				node.warning = 'originally %s' % name
-			elif alias:
-				node.name.append(alias)
 
 		# Append names from the Aliases table.
 		
