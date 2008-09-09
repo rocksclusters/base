@@ -58,6 +58,9 @@
 # @Copyright@
 #
 # $Log: insert-ethers.py,v $
+# Revision 1.40  2008/09/09 23:10:45  bruno
+# added some solaris/sunos changes for anoop
+#
 # Revision 1.39  2008/08/28 18:11:21  anoop
 # Remove duplicate database connect lines. This is, most likely,
 # the cause of the problem where plugins couldn't access the database
@@ -1276,7 +1279,8 @@ class InsertEthers(GUI):
 		
 		# Track accesses both with and without local certs.
 		interesting = line.count('install/sbin/public/kickstart.cgi') \
-			or line.count('install/sbin/kickstart.cgi')
+			or line.count('install/sbin/kickstart.cgi') \
+			or line.count('install/sbin/public/jumpstart.cgi')
 		if not interesting:
 			return 
 
