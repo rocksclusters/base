@@ -72,7 +72,7 @@ class App(rocks.sql.Application):
 				pw = rocks.password.Password()
 				str = '<var '
 				str += 'name='
-				str += '"Kickstart_PrivatePortablePassword" '
+				str += '"Kickstart_PrivatePortableRootPassword" '
 				str += 'val="%s"/>' % \
 					(pw.create_password(xmlvalue))
 				file.write('%s\n' % (str))
