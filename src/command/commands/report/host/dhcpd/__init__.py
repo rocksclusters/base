@@ -1,5 +1,5 @@
 #
-# $Id: __init__.py,v 1.4 2008/09/04 20:57:14 bruno Exp $
+# $Id: __init__.py,v 1.5 2008/09/11 18:45:15 bruno Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.5  2008/09/11 18:45:15  bruno
+# put nodes that have an IP address assigned to their physical interface
+# into /etc/dhcpd.conf
+#
 # Revision 1.4  2008/09/04 20:57:14  bruno
 # ignore hosts that don't have IP addresses (like hosted VMs).
 #
@@ -226,10 +230,17 @@ class Command(rocks.commands.report.host.command):
 			for key,value in self.db.fetchall():
 				opt[key] = value
 			
+			#
+			# look for a physical private interface that has an
+			# IP address assigned to it.
+			#
 			self.db.execute("""select mac,ip from networks,subnets
 				where networks.node = %d and
-				subnets.name="private" and
-				networks.subnet=subnets.id""" % (node.id))
+				subnets.name = "private" and
+				networks.subnet = subnets.id and
+				networks.ip is not NULL and
+				(networks.vlanid is NULL or
+				networks.vlanid = 0)""" % (node.id))
 
 			t_info = self.db.fetchone()
 			if t_info == None:
