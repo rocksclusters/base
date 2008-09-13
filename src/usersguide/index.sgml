@@ -1,10 +1,13 @@
 <!-- 
-$Id: index.sgml,v 1.6 2008/05/09 20:08:55 bruno Exp $
+$Id: index.sgml,v 1.7 2008/09/13 00:41:43 phil Exp $
 
 @Copyright@
 @Copyright@
 
 $Log: index.sgml,v $
+Revision 1.7  2008/09/13 00:41:43  phil
+First crack at networking section (incomplete).
+
 Revision 1.6  2008/05/09 20:08:55  bruno
 added 'advanced tasks' section to the users guide
 
@@ -34,6 +37,9 @@ builds with command reference
 <!ENTITY advanced SYSTEM "advanced/index.sgml">
 <!ENTITY % advanced-entities SYSTEM "advanced/entities.sgml">
 
+<!ENTITY networking SYSTEM "networking/index.sgml">
+<!ENTITY % networking-entities SYSTEM "networking/entities.sgml">
+
 <!ENTITY community SYSTEM "community/index.sgml">
 <!ENTITY % community-entities SYSTEM "community/entities.sgml">
 
@@ -48,6 +54,7 @@ builds with command reference
 %clusterinstall-entities;
 %customizing-entities;
 %advanced-entities;
+%networking-entities;
 %community-entities;
 %appendix-entities;
 %appendix-faq-entities;
@@ -91,6 +98,7 @@ builds with command reference
 &source_preface;
 &source_roll-overview;
 &clusterinstall;
+&networking;
 &customizing;
 &community;
 &source_admin-examples;

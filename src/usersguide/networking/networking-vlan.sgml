@@ -1,0 +1,108 @@
+<!-- 
+$Id: networking-vlan.sgml,v 1.1 2008/09/13 00:41:43 phil Exp $
+
+Administration guide
+
+@Copyright@
+@Copyright@
+
+$Log: networking-vlan.sgml,v $
+Revision 1.1  2008/09/13 00:41:43  phil
+First crack at networking section (incomplete).
+
+-->
+
+<section><title>Virtual LANs (VLANs) and VLAN Bridges</title>
+<para>
+Linux supports VLAN tagging on virtual interfaces (i.e. IEEE 802.1Q).  For example, if a host  has
+physical interface eth0 (untagged), then the kernel can send and receive a tagged packets if a properly 
+defined interface named eth0.<vlanid> has been created and properly configured. Tagging allows the same 
+physical network to be partitioned into many different networks. A key feature of VLAN tagging is that
+a broadcast packet (e.g. a DHCPDISCOVER Packet) only broadcasts on the tagged VLAN in which is was initially 
+sent.
+</para>
+<para>
+Rocks supports two types of VLAN interfaces - the first is an explicit device name like eth0.10 that is defined
+on a particular physical interface. The second is a logical device name of the form "vlan*".  In rocks, the physical VLAN device can also have an IP address associated with it, however a logical VLAN device cannot.  
+We use the logical VLAN to construct bridges suitable that are suitable for virtual machines. 
+</para>
+</section>
+<!-- ####################################### -->
+
+<section><title>Named Networks/Subnets</title>
+<para>
+Rocks clusters are required to have two subnets defined: "public" and "private", but a cluster owner
+can define more subnets.  The commmand <computeroutput>rocks list network</computeroutput> lists the defined 
+networks
+</para>
+<screen>
+[root@rocks ~]# rocks list network
+NETWORK    SUBNET       NETMASK      
+private:   172.16.254.0 255.255.255.0
+public:    132.239.8.0  255.255.255.0
+optiputer: 67.58.32.0   255.255.224.0
+</screen>
+
+<para>
+In the screen above, the additional network called "optiputer" is defined with netmask 255.255.224.0(/19).
+To add a network called "fast" as 192.168.1.0 and netmask 255.255.255.0(/24) do the following 
+</para>
+
+<screen>
+[root@rocks ~]# rocks add network fast subnet=192.168.1.0 netmask=255.255.255.0
+[root@rocks ~]# rocks list network
+NETWORK    SUBNET       NETMASK      
+private:   172.16.254.0 255.255.255.0
+public:    132.239.8.0  255.255.255.0
+optiputer: 67.58.32.0   255.255.224.0
+fast:      192.168.1.0  255.255.255.0
+</screen>
+<para>
+The subnet and netmask of an existing network can be changed using 
+<computeroutput>rocks set network subnet</computeroutput> and 
+<computeroutput>rocks set network netmask</computeroutput> commands.  
+</para>
+
+</section> 
+<section><title>Host Interfaces</title>
+<para>There are three types of interfaces that a cluster owner may need to be concerned about: physical, logical, and
+VLAN (virtual LAN) bridges. Linux (and other OSes like Solaris) support logical interfaces that share a 
+particular physical network port.  The following shows physical network devices and associations of those 
+devices to a named network (or subnet, used interchangably in this discussion). 
+        <mediaobject>
+                <imageobject>
+                <imagedata fileref="images/PhysicalNetworks.png" scale=50>
+                </imageobject>
+		<caption>
+			<para> FIGURE: Hosts can have any number of physical networking devices. Every Rocks Node must
+ 				eth0 defined (the private network). Frontends also must have eth1
+				(the public network).  Other devices could be myri0 (for Myrinet) or ib0 
+				(for Infiniband).
+			</para>
+		</caption>
+        </mediaobject>
+</para>
+<para>
+Adding a new network interface to a host can be done from the command line. For example, to add an interface
+named "myri0" with IP address 192.168.1.10 on logical subnet "fast", then 
+</para>
+<screen>
+[root@rocks ~]# rocks add host interface compute-0-0-1 iface=myri0 subnet=fast ip=192.168.1.10
+[root@rocks ~]# rocks list host interface compute-0-0-1
+SUBNET  IFACE MAC               IP             NETMASK       GATEWAY MODULE NAME          VLANID
+private eth0  00:16:3e:00:00:11 172.16.254.192 255.255.255.0 ------- xennet compute-0-0-1 ------
+fast    myri0 ----------------- 192.168.1.10   255.255.255.0 ------- ------ ------------- ------
+</screen>
+<para>
+You can also set other fields for a host interface when field is one of [mac, ip, gateway, module, name, vlanid]
+the command <computeroutput>rocks set host interface &lt;field&gt; &lt;host&gt; iface=&lt;iface&gt; value</computeroutput>. So set the name of host of compute-0-0-1 on myri0 interface execute the command
+</para>
+<screen>
+[root@rocks ~]# rocks set host interface name compute-0-0-1 iface=myri0 compute-myri-0-0-1
+[root@rocks ~]# rocks list host interface compute-0-0-1
+SUBNET  IFACE MAC               IP             NETMASK       GATEWAY MODULE NAME               VLANID
+private eth0  00:16:3e:00:00:11 172.16.254.192 255.255.255.0 ------- xennet compute-0-0-1      ------
+fast    myri0 ----------------- 192.168.1.10   255.255.255.0 ------- ------ compute-myri-0-0-1 ------
+</screen>
+</para>
+</section>
