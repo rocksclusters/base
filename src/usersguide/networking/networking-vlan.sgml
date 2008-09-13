@@ -1,5 +1,5 @@
 <!-- 
-$Id: networking-vlan.sgml,v 1.1 2008/09/13 00:41:43 phil Exp $
+$Id: networking-vlan.sgml,v 1.2 2008/09/13 04:38:20 phil Exp $
 
 Administration guide
 
@@ -7,16 +7,19 @@ Administration guide
 @Copyright@
 
 $Log: networking-vlan.sgml,v $
+Revision 1.2  2008/09/13 04:38:20  phil
+VLAN interfaces, Logical and Physical.
+
 Revision 1.1  2008/09/13 00:41:43  phil
 First crack at networking section (incomplete).
 
 -->
 
-<section><title>Virtual LANs (VLANs) and VLAN Bridges</title>
+<section><title>Virtual LANs (VLANs) and Logical VLAN Bridges</title>
 <para>
 Linux supports VLAN tagging on virtual interfaces (i.e. IEEE 802.1Q).  For example, if a host  has
 physical interface eth0 (untagged), then the kernel can send and receive a tagged packets if a properly 
-defined interface named eth0.<vlanid> has been created and properly configured. Tagging allows the same 
+defined interface named eth0.&lt;vlanid&gt; has been created and properly configured. Tagging allows the same 
 physical network to be partitioned into many different networks. A key feature of VLAN tagging is that
 a broadcast packet (e.g. a DHCPDISCOVER Packet) only broadcasts on the tagged VLAN in which is was initially 
 sent.
@@ -26,83 +29,110 @@ Rocks supports two types of VLAN interfaces - the first is an explicit device na
 on a particular physical interface. The second is a logical device name of the form "vlan*".  In rocks, the physical VLAN device can also have an IP address associated with it, however a logical VLAN device cannot.  
 We use the logical VLAN to construct bridges suitable that are suitable for virtual machines. 
 </para>
-</section>
-<!-- ####################################### -->
-
-<section><title>Named Networks/Subnets</title>
+<note>
+	<orderedlist>
+		<listitem><para>
+			Explicit VLAN Devices of the form &lt;interface&gt;.&lt;vlanid&gt; 
+			can have IP addresses assigned
+		</para></listitem>
+		<listitem><para>
+			Rocks-Specific: Logical VLAN Devices of the form "vlan*" 
+			CANNOT have IP address assigned
+		</para></listitem>
+	</orderedlist>
+</note>
+<section id="networking-physical-vlan">
+<title>Physical VLAN Devices</title>
 <para>
-Rocks clusters are required to have two subnets defined: "public" and "private", but a cluster owner
-can define more subnets.  The commmand <computeroutput>rocks list network</computeroutput> lists the defined 
-networks
+Physical VLAN devices are interfaces associated with a specific physical interfaces. While eth0 is used as
+and example, any physical IP interface can have a VLAN associated with it.
 </para>
-<screen>
-[root@rocks ~]# rocks list network
-NETWORK    SUBNET       NETMASK      
-private:   172.16.254.0 255.255.255.0
-public:    132.239.8.0  255.255.255.0
-optiputer: 67.58.32.0   255.255.224.0
-</screen>
-
 <para>
-In the screen above, the additional network called "optiputer" is defined with netmask 255.255.224.0(/19).
-To add a network called "fast" as 192.168.1.0 and netmask 255.255.255.0(/24) do the following 
-</para>
-
-<screen>
-[root@rocks ~]# rocks add network fast subnet=192.168.1.0 netmask=255.255.255.0
-[root@rocks ~]# rocks list network
-NETWORK    SUBNET       NETMASK      
-private:   172.16.254.0 255.255.255.0
-public:    132.239.8.0  255.255.255.0
-optiputer: 67.58.32.0   255.255.224.0
-fast:      192.168.1.0  255.255.255.0
-</screen>
-<para>
-The subnet and netmask of an existing network can be changed using 
-<computeroutput>rocks set network subnet</computeroutput> and 
-<computeroutput>rocks set network netmask</computeroutput> commands.  
-</para>
-
-</section> 
-<section><title>Host Interfaces</title>
-<para>There are three types of interfaces that a cluster owner may need to be concerned about: physical, logical, and
-VLAN (virtual LAN) bridges. Linux (and other OSes like Solaris) support logical interfaces that share a 
-particular physical network port.  The following shows physical network devices and associations of those 
-devices to a named network (or subnet, used interchangably in this discussion). 
         <mediaobject>
                 <imageobject>
-                <imagedata fileref="images/PhysicalNetworks.png" scale=50>
+                <imagedata fileref="images/PhysicalVlans.png" scale=50>
                 </imageobject>
 		<caption>
-			<para> FIGURE: Hosts can have any number of physical networking devices. Every Rocks Node must
- 				eth0 defined (the private network). Frontends also must have eth1
-				(the public network).  Other devices could be myri0 (for Myrinet) or ib0 
-				(for Infiniband).
+			<para> FIGURE: Physical VLAN device called eth0.2. This device may be assigned an
+			IP and a network name (e.g. "net") that is unrelated to the network name of the 
+			physical device (eth0).  All packets sent on this interface will be tagged
+			with VLANID=2. Multiple Physical VLAN devices can be defined. 
 			</para>
 		</caption>
         </mediaobject>
 </para>
 <para>
-Adding a new network interface to a host can be done from the command line. For example, to add an interface
-named "myri0" with IP address 192.168.1.10 on logical subnet "fast", then 
+Use the following example to add a physical VLAN device, Assign a tag, and an IP address
 </para>
 <screen>
-[root@rocks ~]# rocks add host interface compute-0-0-1 iface=myri0 subnet=fast ip=192.168.1.10
+[root@rocks ~]# rocks add host interface compute-0-0-1 iface=eth0.2 subnet=net2 ip=10.2.1.10
+[root@rocks ~]# rocks set host interface vlan compute-0-0-1 iface=eth0.2 vlanid=2 
+[root@rocks ~]# rocks list host interface compute-0-0-1
+SUBNET  IFACE  MAC               IP             NETMASK       GATEWAY MODULE NAME          VLANID
+private eth0   00:16:3e:00:00:11 172.16.254.192 255.255.255.0 ------- xennet compute-0-0-1 ------
+net2    eth0.2 ----------------- 10.2.1.10      255.255.255.0 ------- ------ ------------- 2   
+</screen>
+</section>
+
+<section id="networking-logical-vlan">
+<title>Logical VLAN Devices</title>
+<para>
+The second kind of VLAN interface that Rocks supports is a what we term as Logical VLAN device. The Virtual
+VLAN gives the ability of having a raw interface with no IP address assigned that is generally used as a bridge
+for virtual machine guests. Virtual VLAN devices have their subnet=&lt;subnet of physical&gt;
+</para>
+
+<para>
+        <mediaobject>
+                <imageobject>
+                <imagedata fileref="images/LogicalVlans.png" scale=50>
+                </imageobject>
+		<caption>
+			<para> FIGURE: Virtual VLAN devices called vlan2 and vlan3. These types of  devices 
+			may be NOT have an IP address (This is a Rocks-specific construction). 
+			</para>
+		</caption>
+        </mediaobject>
+</para>
+<screen>
+[root@rocks ~]# rocks add host interface compute-0-0-1 vlan2
+[root@rocks ~]# rocks add host interface compute-0-0-1 vlan3
+[root@rocks ~]# rocks set host interface vlan compute-0-0-1 vlan2 2
+[root@rocks ~]# rocks set host interface vlan compute-0-0-1 vlan3 3
 [root@rocks ~]# rocks list host interface compute-0-0-1
 SUBNET  IFACE MAC               IP             NETMASK       GATEWAY MODULE NAME          VLANID
 private eth0  00:16:3e:00:00:11 172.16.254.192 255.255.255.0 ------- xennet compute-0-0-1 ------
-fast    myri0 ----------------- 192.168.1.10   255.255.255.0 ------- ------ ------------- ------
+------- vlan2 ----------------- -------------- ------------- ------- ------ ------------- 2     
+------- vlan3 ----------------- -------------- ------------- ------- ------ ------------- 3     
 </screen>
-<para>
-You can also set other fields for a host interface when field is one of [mac, ip, gateway, module, name, vlanid]
-the command <computeroutput>rocks set host interface &lt;field&gt; &lt;host&gt; iface=&lt;iface&gt; value</computeroutput>. So set the name of host of compute-0-0-1 on myri0 interface execute the command
-</para>
+<para> 
+At this stage, the vlan interfaces are not currently associated with any physical network device.  Linux
+will not configure these devices on the node without the association. We overload the meaning of subnet in
+this case to mean: "associate the logical vlan device with the physical device that is in subnet 'x'". As an 
+example, we can associate both vlan2 and vlan3 to be tagged packet interfaces on the the subnet named private.
 <screen>
-[root@rocks ~]# rocks set host interface name compute-0-0-1 iface=myri0 compute-myri-0-0-1
-[root@rocks ~]# rocks list host interface compute-0-0-1
-SUBNET  IFACE MAC               IP             NETMASK       GATEWAY MODULE NAME               VLANID
-private eth0  00:16:3e:00:00:11 172.16.254.192 255.255.255.0 ------- xennet compute-0-0-1      ------
-fast    myri0 ----------------- 192.168.1.10   255.255.255.0 ------- ------ compute-myri-0-0-1 ------
+[root@tranquil ~]# rocks set host interface subnet compute-0-0-1 vlan2 subnet=private
+[root@tranquil ~]# rocks set host interface subnet compute-0-0-1 vlan3 subnet=private
+[root@tranquil ~]# rocks list host interface compute-0-0-1 
+SUBNET  IFACE MAC               IP             NETMASK       GATEWAY MODULE NAME          VLANID
+private eth0  00:16:3e:00:00:11 172.16.254.192 255.255.255.0 ------- xennet compute-0-0-1 ------
+private vlan2 ----------------- -------------- ------------- ------- ------ ------------- 2     
+private vlan3 ----------------- -------------- ------------- ------- ------ ------------- 3     
 </screen>
 </para>
+
+        <mediaobject>
+                <imageobject>
+                <imagedata fileref="images/LogicalVlansAssociated.png" scale=50>
+                </imageobject>
+		<caption>
+			<para> FIGURE: Virtual VLAN devices called vlan2 and vlan3 are associated
+			with the physical device that is desigated as subnet private.  Notice, that 
+			no netmask is associated with the vlan2 and vlan3 devices. These are raw, tagged
+			packet interfaces and are of most use for bridges when hosting VMs.  
+			</para>
+		</caption>
+        </mediaobject>
+</section>
+
 </section>

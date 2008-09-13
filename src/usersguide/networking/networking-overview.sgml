@@ -1,5 +1,5 @@
 <!-- 
-$Id: networking-overview.sgml,v 1.1 2008/09/13 00:41:43 phil Exp $
+$Id: networking-overview.sgml,v 1.2 2008/09/13 04:38:20 phil Exp $
 
 Administration guide
 
@@ -7,6 +7,9 @@ Administration guide
 @Copyright@
 
 $Log: networking-overview.sgml,v $
+Revision 1.2  2008/09/13 04:38:20  phil
+VLAN interfaces, Logical and Physical.
+
 Revision 1.1  2008/09/13 00:41:43  phil
 First crack at networking section (incomplete).
 
@@ -64,7 +67,7 @@ The subnet and netmask of an existing network can be changed using
 <para>There are three types of interfaces that a cluster owner may need to be concerned about: physical, logical, and
 VLAN (virtual LAN) bridges. Linux (and other OSes like Solaris) support logical interfaces that share a 
 particular physical network port.  The following shows physical network devices and associations of those 
-devices to a named network (or subnet, used interchangably in this discussion). 
+devices to a named network (or subnet, used interchangably in this discussion).  In figures, the /&lt;nn&gt; notation is standard method of specify the number of bits in the netmask. Examples include: /24=255.255.255.0 (Class C subnet), /16=255.255.0.0 (Class B subnet), /8=255.0.0.0 (Class A subnet) and /25=255.255.255.128
         <mediaobject>
                 <imageobject>
                 <imagedata fileref="images/PhysicalNetworks.png" scale=50>
@@ -93,6 +96,7 @@ fast    myri0 ----------------- 192.168.1.10   255.255.255.0 ------- ------ ----
 You can also set other fields for a host interface when field is one of [mac, ip, gateway, module, name, vlanid]
 the command <computeroutput>rocks set host interface &lt;field&gt; &lt;host&gt; iface=&lt;iface&gt; value</computeroutput>. So set the name of host of compute-0-0-1 on myri0 interface execute the command
 </para>
+<para>
 <screen>
 [root@rocks ~]# rocks set host interface name compute-0-0-1 iface=myri0 compute-myri-0-0-1
 [root@rocks ~]# rocks list host interface compute-0-0-1
