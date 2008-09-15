@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.11 2008/08/28 20:41:16 bruno Exp $
+# $Id: __init__.py,v 1.12 2008/09/15 20:08:46 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.12  2008/09/15 20:08:46  bruno
+# associate an operating system with a hostname.
+#
 # Revision 1.11  2008/08/28 20:41:16  bruno
 # spelling in help fix
 #
@@ -151,6 +154,10 @@ class Command(rocks.commands.HostArgumentProcessor,
 	number is taken from the host name.
 	</param>
 
+	<param type='string' name='os'>
+	The operating system name. The default is: linux.
+	</param>
+
 	<example cmd='add host compute-0-1'>
 	Adds the host "compute-0-0" to the database with 1 CPU, a membership
 	name of "compute", a rack number of 0, and rank of 1.
@@ -196,11 +203,12 @@ class Command(rocks.commands.HostArgumentProcessor,
 			
 		# fillParams with the above default values
 		
-		(membership, numCPUs, rack, rank) = self.fillParams(
+		(membership, numCPUs, rack, rank, osname) = self.fillParams(
 			[('membership', membership),
 			('cpus', 1),
 			('rack', rack),
-			('rank', rank)])
+			('rank', rank),
+			('os', None) ])
 
 		if not membership:
 			self.abort('membership not specified')
@@ -209,15 +217,26 @@ class Command(rocks.commands.HostArgumentProcessor,
 		if rank == None:
 			self.abort('rank not specified')
 
+		self.db.execute("""select a.os from appliances a,
+			memberships m where m.appliance = a.id and
+			m.name='%s'""" % (membership))
+		supported_os = list(self.db.fetchone()[0])
+
+		if osname is not None and osname not in supported_os:
+			self.abort("%s does not support %s" % (membership,
+				osname))
+
+		if osname is None:
+			if len(supported_os) == 1:
+				osname = supported_os[0]
+			else:
+				osname = 'linux'
+
 		self.db.execute("""insert into nodes
-			(site, name, membership, cpus, rack, rank)
-			values
-			(0, 
-			'%s',
+			(site, name, membership, cpus, rack, rank, os)
+			values (0, '%s',
 			(select id from memberships where name='%s'),
-			'%d',
-			'%d',
-			'%d')""" %
-			(host, membership, int(numCPUs), int(rack), int(rank)))
+			'%d', '%d', '%d', '%s')""" % (host, membership,
+			int(numCPUs), int(rack), int(rank), osname))
 
 
