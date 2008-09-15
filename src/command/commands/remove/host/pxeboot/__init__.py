@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.7 2008/03/06 23:41:39 mjk Exp $
+# $Id: __init__.py,v 1.8 2008/09/15 19:52:57 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.8  2008/09/15 19:52:57  bruno
+# fix for removing a node that has vlans defined
+#
 # Revision 1.7  2008/03/06 23:41:39  mjk
 # copyright storm on
 #
@@ -131,8 +134,9 @@ class Command(rocks.commands.remove.host.command):
 				networks.subnet=subnets.id and
 				nodes.name='%s'""" % host)
 
-			if rows > 0:
-				(ipaddr,) = self.db.fetchone()
+			for ipaddr, in self.db.fetchall():
+				if not ipaddr:
+					return
 
 				filename = '/tftpboot/pxelinux/pxelinux.cfg/'
 				for i in string.split(ipaddr, '.'):
