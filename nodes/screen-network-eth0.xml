@@ -12,6 +12,9 @@
 
 <changelog>
 $Log: screen-network-eth0.xml,v $
+Revision 1.11  2008/09/16 19:40:44  bruno
+private netmask is now 255.255.0.0
+
 Revision 1.10  2008/03/06 23:41:30  mjk
 copyright storm on
 
@@ -71,7 +74,7 @@ first pass at new screens
 		<name>Kickstart_PrivateNetmask</name>
 		<type>ipv4-address</type>
 		<size>20</size>
-		<default>255.0.0.0</default>
+		<default>255.255.0.0</default>
 		<value><var name="Kickstart_PrivateNetmask"/></value>
 		<validate>process_eth0</validate>
 		<help>Enter the netmask for eth0.</help>
