@@ -1,12 +1,15 @@
 #
 # insert-ethers plugin module for generating pxelinux cfg files
 
-# $Id: 00-pxecfg.py,v 1.2 2008/09/09 23:10:46 bruno Exp $
+# $Id: 00-pxecfg.py,v 1.3 2008/09/18 17:44:13 bruno Exp $
 # 
 # @Copyright@
 # @Copyright@
 #
 # $Log: 00-pxecfg.py,v $
+# Revision 1.3  2008/09/18 17:44:13  bruno
+# fix bruno bug
+#
 # Revision 1.2  2008/09/09 23:10:46  bruno
 # added some solaris/sunos changes for anoop
 #
@@ -35,7 +38,7 @@ class Plugin(rocks.sql.InsertEthersPlugin):
 				'rescue' ]:
 
 				cmd = "/opt/rocks/bin/rocks add host "
-				cmd += "pxeaction "%s action='%s' " % \
+				cmd += "pxeaction %s action='%s' " % \
 					(nodename, action)
 				cmd += "command='kernel pxegrub.0' args=''"
 
