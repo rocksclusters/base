@@ -1,4 +1,4 @@
-# $Id: plugin_dns.py,v 1.7 2008/08/29 22:12:35 bruno Exp $
+# $Id: plugin_dns.py,v 1.8 2008/09/22 18:34:31 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: plugin_dns.py,v $
+# Revision 1.8  2008/09/22 18:34:31  bruno
+# vlan fix for the case where a vlan interface is configured with and IP
+# but with no hostname
+#
 # Revision 1.7  2008/08/29 22:12:35  bruno
 # fix for reverse.rocks.domain.*.local
 #
@@ -138,7 +142,7 @@ class Plugin(rocks.commands.Plugin):
 				and n.subnet=s.id""" % (node.id))
 
 			for ip, subnet, hostname in self.db.fetchall():
-				if not ip:
+				if not ip or not hostname:
 					continue
 
 				# Do nothing with FQDN names.
