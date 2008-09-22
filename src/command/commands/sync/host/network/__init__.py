@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.2 2008/09/16 23:46:14 bruno Exp $
+# $Id: __init__.py,v 1.3 2008/09/22 20:20:42 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.3  2008/09/22 20:20:42  bruno
+# change 'rocks config host interface|network' to
+# change 'rocks report host interface|network'
+#
 # Revision 1.2  2008/09/16 23:46:14  bruno
 # wait for the network service to restart
 #
@@ -78,7 +82,7 @@ class Command(rocks.commands.sync.host.command):
 	def run(self, params, args):
 		hosts = self.getHostnames(args)
 		for host in hosts:
-			cmd = '/opt/rocks/bin/rocks config host interface '
+			cmd = '/opt/rocks/bin/rocks report host interface '
 			cmd += '%s | ' % host
 			cmd += '/opt/rocks/bin/rocks report script | '
 			cmd += 'ssh %s bash > /dev/null 2>&1' % host

@@ -1,5 +1,5 @@
 #
-# $Id: __init__.py,v 1.1 2008/07/23 00:01:06 bruno Exp $
+# $Id: __init__.py,v 1.2 2008/09/22 20:20:42 bruno Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.2  2008/09/22 20:20:42  bruno
+# change 'rocks config host interface|network' to
+# change 'rocks report host interface|network'
+#
 # Revision 1.1  2008/07/23 00:01:06  bruno
 # tweaks
 #
@@ -72,8 +76,8 @@ class Command(rocks.commands.report.command):
 	Take STDIN XML input and create a shell script that can be executed
 	on a host.
 
-	<example cmd='config host interface compute-0-0 | rocks report script'>
-	Take the network interface XML output from 'rocks config host interface'
+	<example cmd='report host interface compute-0-0 | rocks report script'>
+	Take the network interface XML output from 'rocks report host interface'
 	and create a shell script.
 	</example>
 	"""
