@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.6 2008/08/07 00:57:26 anoop Exp $
+# $Id: __init__.py,v 1.1 2008/09/23 01:10:18 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.1  2008/09/23 01:10:18  bruno
+# moved 'rocks.config.host.interface|network' to
+# moved 'rocks.report.host.interface|network'
+#
 # Revision 1.6  2008/08/07 00:57:26  anoop
 # Removed unnecessary line
 #
@@ -80,7 +84,7 @@
 
 import rocks.commands
 
-class Command(rocks.commands.config.host.command):
+class Command(rocks.commands.report.host.command):
 	"""
 	Outputs the network configuration file for a host (on RHEL-based
 	machines, this is the contents of the file /etc/sysconfig/network).
@@ -89,7 +93,7 @@ class Command(rocks.commands.config.host.command):
 	One host name.
 	</arg>
 
-	<example cmd='config host network compute-0-0'>
+	<example cmd='report host network compute-0-0'>
 	Output the network configuration for compute-0-0.
 	</example>
 	"""

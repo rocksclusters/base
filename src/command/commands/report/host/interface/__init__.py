@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.6 2008/09/05 22:51:37 bruno Exp $
+# $Id: __init__.py,v 1.1 2008/09/23 01:10:18 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,33 +54,15 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
-# Revision 1.6  2008/09/05 22:51:37  bruno
-# phil's vlan fixes
-#
-# Revision 1.5  2008/08/07 00:55:27  anoop
-# Solaris networking and interface information now generated through
-# the database, rather than left to default
-#
-# Revision 1.4  2008/07/23 00:01:06  bruno
-# tweaks
-#
-# Revision 1.3  2008/07/22 00:34:40  bruno
-# first whack at vlan support
-#
-# Revision 1.2  2008/03/06 23:41:36  mjk
-# copyright storm on
-#
-# Revision 1.1  2007/12/10 21:28:34  bruno
-# the base roll now contains several elements from the HPC roll, thus
-# making the HPC roll optional.
-#
-# this also includes changes to help build and configure VMs for V.
+# Revision 1.1  2008/09/23 01:10:18  bruno
+# moved 'rocks.config.host.interface|network' to
+# moved 'rocks.report.host.interface|network'
 #
 #
 
 import rocks.commands
 
-class Command(rocks.commands.config.host.command):
+class Command(rocks.commands.report.host.command):
 	"""
 	Output the network configuration file for a host's interface.
 
@@ -95,7 +77,7 @@ class Command(rocks.commands.config.host.command):
 	file will be delineated by &lt;file&gt; and &lt;/file&gt; tags).
 	</param>
 
-	<example cmd='config host interface compute-0-0 iface=eth0'>
+	<example cmd='report host interface compute-0-0 iface=eth0'>
 	Output a network configuration file for compute-0-0's eth0 interface.
 	</example>
 	"""
