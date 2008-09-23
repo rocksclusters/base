@@ -75,7 +75,7 @@ usually is 6 or 7 CDs).
 	</para>
 
 <screen>
-frontend
+build
 </screen>
 
 	<warning>
