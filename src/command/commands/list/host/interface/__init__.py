@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.12 2008/07/22 00:34:40 bruno Exp $
+# $Id: __init__.py,v 1.13 2008/09/25 17:39:55 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.13  2008/09/25 17:39:55  bruno
+# phil's command tweaks
+#
 # Revision 1.12  2008/07/22 00:34:40  bruno
 # first whack at vlan support
 #
@@ -126,6 +129,7 @@
 #
 
 import rocks.commands
+import re
 
 class Command(rocks.commands.list.host.command):
 	"""
@@ -148,6 +152,7 @@ class Command(rocks.commands.list.host.command):
 	"""
 
 	def run(self, params, args):
+                reg = re.compile('vlan.*')
 		self.beginOutput()
 
                 for host in self.getHostnames(args):
@@ -160,8 +165,18 @@ class Command(rocks.commands.list.host.command):
 				where n.name='%s' and net.node=n.id
 				and (net.subnet=sub.id or net.subnet is NULL)
 				order by net.device""" % host )
+
 			for row in self.db.fetchall():
-				self.addOutput(host, row)
+				#
+				# if device name matches vlan* then clear
+				# fields for printing
+				#
+                		if row[1] and reg.match(row[1]):  
+					self.addOutput(host, (row[0], row[1],
+						None, None, None, None, None,
+						None, row[8]) )
+				else:
+					self.addOutput(host, row )
 
 		self.endOutput(header=['host', 'subnet', 'iface', 'mac', 
 			'ip', 'netmask', 'gateway', 'module', 'name', 'vlanid'])
