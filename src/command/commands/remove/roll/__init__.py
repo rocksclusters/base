@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.2 2008/07/01 22:01:01 anoop Exp $
+# $Id: __init__.py,v 1.3 2008/09/25 19:27:46 bruno Exp $
 #
 # This file was authored by Brandon Davidson from the University of Oregon.
 # The Rocks Developers thank Brandon for his contribution.
@@ -57,6 +57,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.3  2008/09/25 19:27:46  bruno
+# anoop's fix.
+#
 # Revision 1.2  2008/07/01 22:01:01  anoop
 # self.os returns "sunos" and not "solaris". So
 # function name needs to be clean_roll_sunos and not
@@ -170,6 +173,13 @@ class Command(rocks.commands.RollArgumentProcessor,
 				for name in files:
 					os.remove(os.path.join(root, name))
 				for name in dirs:
-					os.rmdir(os.path.join(root, name))
+					if os.path.islink(os.path.join(root,
+						name)):
+						os.remove(os.path.join(root,
+							name))
+					else:
+						os.rmdir(os.path.join(root,
+							name))
+
 			os.removedirs(dir)
 
