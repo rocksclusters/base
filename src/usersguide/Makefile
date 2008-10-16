@@ -1,5 +1,5 @@
 # 
-# $Id: Makefile,v 1.6 2008/04/07 21:52:28 bruno Exp $
+# $Id: Makefile,v 1.7 2008/10/16 20:35:43 bruno Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.7  2008/10/16 20:35:43  bruno
+# only call predoc once
+#
 # Revision 1.6  2008/04/07 21:52:28  bruno
 # today's installment of docs
 #
@@ -123,7 +126,7 @@ include Rules.mk
 
 default: $(NAME).spec ../$(NAME)-$(VERSION).tar.gz
 
-build: predoc
+build:
 	jw --backend html --dsl $(PWD)/rocks.dsl#html index.sgml
 	jw --backend pdf --dsl $(PWD)/rocks.dsl#print index.sgml
 
