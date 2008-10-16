@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.6 2008/03/06 23:41:38 mjk Exp $
+# $Id: __init__.py,v 1.7 2008/10/16 20:35:20 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.7  2008/10/16 20:35:20  bruno
+# when printing a roll's commands, only process one version of the roll,
+# otherwise, every command will be listed multiple times.
+#
 # Revision 1.6  2008/03/06 23:41:38  mjk
 # copyright storm on
 #
@@ -150,9 +154,14 @@ class Command(rocks.commands.RollArgumentProcessor,
 			dict[o].append(string.join(dir.split(os.sep), ' '))
 
 		rolls = self.getRollNames(args, params)
+		seenrolls = []
 			
 		self.beginOutput()
 		for (roll, version) in rolls:
+			if roll in seenrolls:
+				continue
+			seenrolls.append(roll)
+		
 			if dict.has_key(roll):
 				for command in dict[roll]:
 					self.addOutput(roll, command)
