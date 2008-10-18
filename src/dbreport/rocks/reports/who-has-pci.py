@@ -1,12 +1,12 @@
 #! /opt/rocks/bin/python
 #
-# $Id: who-has-pci.py,v 1.12 2008/03/06 23:41:41 mjk Exp $
+# $Id: who-has-pci.py,v 1.13 2008/10/18 00:55:59 mjk Exp $
 #
 # @Copyright@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		            version 5.0 (V)
+# 		           version 5.1  (VI)
 # 
 # Copyright (c) 2000 - 2008 The Regents of the University of California.
 # All rights reserved.	
@@ -56,6 +56,9 @@
 # @Copyright@
 #
 # $Log: who-has-pci.py,v $
+# Revision 1.13  2008/10/18 00:55:59  mjk
+# copyright 5.1
+#
 # Revision 1.12  2008/03/06 23:41:41  mjk
 # copyright storm on
 #

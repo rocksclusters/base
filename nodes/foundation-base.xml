@@ -10,12 +10,15 @@
 
         <copyright>
         Copyright (c) 2000 - 2008 The Regents of the University of California.
-        All rights reserved. Rocks(r) v5.0 www.rocksclusters.org
+        All rights reserved. Rocks(r) v5.1 www.rocksclusters.org
         </copyright>
 
 
 	<changelog>
 	$Log: foundation-base.xml,v $
+	Revision 1.14  2008/10/18 00:55:45  mjk
+	copyright 5.1
+	
 	Revision 1.13  2008/03/07 18:29:48  mjk
 	foundation-mecurial is on the frontend now
 	

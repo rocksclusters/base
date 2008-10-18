@@ -6,13 +6,13 @@
 #
 # Requires Python 2.1 or better
 #
-# $Id: 411put.py,v 1.5 2008/08/12 23:20:13 anoop Exp $
+# $Id: 411put.py,v 1.6 2008/10/18 00:55:47 mjk Exp $
 #
 # @Copyright@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		            version 5.0 (V)
+# 		           version 5.1  (VI)
 # 
 # Copyright (c) 2000 - 2008 The Regents of the University of California.
 # All rights reserved.	
@@ -62,6 +62,9 @@
 # @Copyright@
 #
 # $Log: 411put.py,v $
+# Revision 1.6  2008/10/18 00:55:47  mjk
+# copyright 5.1
+#
 # Revision 1.5  2008/08/12 23:20:13  anoop
 # Added filter for auto.master
 #

@@ -1,11 +1,11 @@
 #
-# $Id: __init__.py,v 1.2 2008/07/22 00:34:40 bruno Exp $
+# $Id: __init__.py,v 1.3 2008/10/18 00:55:56 mjk Exp $
 #
 # @Copyright@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		            version 5.0 (V)
+# 		           version 5.1  (VI)
 # 
 # Copyright (c) 2000 - 2008 The Regents of the University of California.
 # All rights reserved.	
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.3  2008/10/18 00:55:56  mjk
+# copyright 5.1
+#
 # Revision 1.2  2008/07/22 00:34:40  bruno
 # first whack at vlan support
 #

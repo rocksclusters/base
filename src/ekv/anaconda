@@ -1,12 +1,12 @@
 #!/bin/sh
 #
-# $Id: anaconda,v 1.29 2008/07/18 20:49:07 bruno Exp $
+# $Id: anaconda,v 1.30 2008/10/18 00:55:59 mjk Exp $
 #
 # @Copyright@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		            version 5.0 (V)
+# 		           version 5.1  (VI)
 # 
 # Copyright (c) 2000 - 2008 The Regents of the University of California.
 # All rights reserved.	
@@ -56,6 +56,9 @@
 # @Copyright@
 #
 # $Log: anaconda,v $
+# Revision 1.30  2008/10/18 00:55:59  mjk
+# copyright 5.1
+#
 # Revision 1.29  2008/07/18 20:49:07  bruno
 # now have ability to build any appliance from rocks 'boot:' prompt. just
 # type 'bulid appliance=xml-node-name', for example:

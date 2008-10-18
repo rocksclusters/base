@@ -1,12 +1,12 @@
 #! @PYTHON@
 #
-# $Id: screengen.py,v 1.16 2008/03/06 23:41:43 mjk Exp $
+# $Id: screengen.py,v 1.17 2008/10/18 00:56:01 mjk Exp $
 #
 # @Copyright@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		            version 5.0 (V)
+# 		           version 5.1  (VI)
 # 
 # Copyright (c) 2000 - 2008 The Regents of the University of California.
 # All rights reserved.	
@@ -56,6 +56,9 @@
 # @Copyright@
 #
 # $Log: screengen.py,v $
+# Revision 1.17  2008/10/18 00:56:01  mjk
+# copyright 5.1
+#
 # Revision 1.16  2008/03/06 23:41:43  mjk
 # copyright storm on
 #

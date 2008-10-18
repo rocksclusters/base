@@ -1,10 +1,10 @@
-# $Id: __init__.py,v 1.13 2008/09/25 17:39:55 bruno Exp $
+# $Id: __init__.py,v 1.14 2008/10/18 00:55:50 mjk Exp $
 # 
 # @Copyright@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		            version 5.0 (V)
+# 		           version 5.1  (VI)
 # 
 # Copyright (c) 2000 - 2008 The Regents of the University of California.
 # All rights reserved.	
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.14  2008/10/18 00:55:50  mjk
+# copyright 5.1
+#
 # Revision 1.13  2008/09/25 17:39:55  bruno
 # phil's command tweaks
 #

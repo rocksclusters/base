@@ -1,11 +1,11 @@
 #
-# $Id: rocks-binaries.csh,v 1.8 2008/03/06 23:41:40 mjk Exp $
+# $Id: rocks-binaries.csh,v 1.9 2008/10/18 00:55:58 mjk Exp $
 #
 # @Copyright@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		            version 5.0 (V)
+# 		           version 5.1  (VI)
 # 
 # Copyright (c) 2000 - 2008 The Regents of the University of California.
 # All rights reserved.	
@@ -56,6 +56,9 @@
 #
 #
 # $Log: rocks-binaries.csh,v $
+# Revision 1.9  2008/10/18 00:55:58  mjk
+# copyright 5.1
+#
 # Revision 1.8  2008/03/06 23:41:40  mjk
 # copyright storm on
 #

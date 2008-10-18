@@ -6,7 +6,7 @@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		            version 5.0 (V)
+# 		           version 5.1  (VI)
 # 
 # Copyright (c) 2000 - 2008 The Regents of the University of California.
 # All rights reserved.	
@@ -56,6 +56,9 @@
 # @Copyright@
 #
 # $Log: hosts.py,v $
+# Revision 1.18  2008/10/18 00:55:59  mjk
+# copyright 5.1
+#
 # Revision 1.17  2008/09/08 23:10:50  bruno
 # nuke short names from host file
 #

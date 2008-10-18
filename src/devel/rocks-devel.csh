@@ -1,13 +1,13 @@
 #
-# $Id: rocks-devel.csh,v 1.1 2008/06/10 22:44:01 mjk Exp $
+# $Id: rocks-devel.csh,v 1.2 2008/10/18 00:55:59 mjk Exp $
 #
 # @Copyright@
 # 
-# 				Rocks(tm)
+# 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		        version 4.3 (Mars Hill)
+# 		           version 5.1  (VI)
 # 
-# Copyright (c) 2000 - 2007 The Regents of the University of California.
+# Copyright (c) 2000 - 2008 The Regents of the University of California.
 # All rights reserved.	
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -25,7 +25,7 @@
 # 3. All advertising and press materials, printed or electronic, mentioning
 # features or use of this software must display the following acknowledgement: 
 # 
-# 	"This product includes software developed by the Rocks(tm)
+# 	"This product includes software developed by the Rocks(r)
 # 	Cluster Group at the San Diego Supercomputer Center at the
 # 	University of California, San Diego and its contributors."
 # 
@@ -56,6 +56,9 @@
 #
 #
 # $Log: rocks-devel.csh,v $
+# Revision 1.2  2008/10/18 00:55:59  mjk
+# copyright 5.1
+#
 # Revision 1.1  2008/06/10 22:44:01  mjk
 # added rocks-devel
 #

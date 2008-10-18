@@ -1,11 +1,11 @@
 #
-# $Id: ConfigNetworks.py,v 1.13 2008/07/23 00:01:07 bruno Exp $
+# $Id: ConfigNetworks.py,v 1.14 2008/10/18 00:56:02 mjk Exp $
 #
 # @Copyright@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		            version 5.0 (V)
+# 		           version 5.1  (VI)
 # 
 # Copyright (c) 2000 - 2008 The Regents of the University of California.
 # All rights reserved.	
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: ConfigNetworks.py,v $
+# Revision 1.14  2008/10/18 00:56:02  mjk
+# copyright 5.1
+#
 # Revision 1.13  2008/07/23 00:01:07  bruno
 # tweaks
 #

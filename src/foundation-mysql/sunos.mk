@@ -1,10 +1,10 @@
-# $Id: sunos.mk,v 1.4 2008/05/20 01:05:49 anoop Exp $
+# $Id: sunos.mk,v 1.5 2008/10/18 00:55:59 mjk Exp $
 #
 # @Copyright@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		            version 5.0 (V)
+# 		           version 5.1  (VI)
 # 
 # Copyright (c) 2000 - 2008 The Regents of the University of California.
 # All rights reserved.	
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: sunos.mk,v $
+# Revision 1.5  2008/10/18 00:55:59  mjk
+# copyright 5.1
+#
 # Revision 1.4  2008/05/20 01:05:49  anoop
 # refreshed mysql for solaris only
 #

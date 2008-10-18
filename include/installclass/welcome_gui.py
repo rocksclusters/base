@@ -1,5 +1,5 @@
 #
-# $Id: welcome_gui.py,v 1.8 2008/07/18 20:49:07 bruno Exp $
+# $Id: welcome_gui.py,v 1.9 2008/10/18 00:55:45 mjk Exp $
 #
 # Our patch to redhat's installer
 #
@@ -7,7 +7,7 @@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		            version 5.0 (V)
+# 		           version 5.1  (VI)
 # 
 # Copyright (c) 2000 - 2008 The Regents of the University of California.
 # All rights reserved.	
@@ -57,6 +57,9 @@
 # @Copyright@
 #
 # $Log: welcome_gui.py,v $
+# Revision 1.9  2008/10/18 00:55:45  mjk
+# copyright 5.1
+#
 # Revision 1.8  2008/07/18 20:49:07  bruno
 # now have ability to build any appliance from rocks 'boot:' prompt. just
 # type 'bulid appliance=xml-node-name', for example:

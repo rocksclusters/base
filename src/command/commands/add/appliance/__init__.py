@@ -1,10 +1,10 @@
-# $Id: __init__.py,v 1.14 2008/07/23 00:51:49 anoop Exp $
+# $Id: __init__.py,v 1.15 2008/10/18 00:55:48 mjk Exp $
 #
 # @Copyright@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		            version 5.0 (V)
+# 		           version 5.1  (VI)
 # 
 # Copyright (c) 2000 - 2008 The Regents of the University of California.
 # All rights reserved.	
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.15  2008/10/18 00:55:48  mjk
+# copyright 5.1
+#
 # Revision 1.14  2008/07/23 00:51:49  anoop
 # Modifications to rocks add appliance to support OS field in the database
 #

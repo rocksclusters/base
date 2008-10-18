@@ -1,5 +1,5 @@
 <?php
-/* $Id: dot-graph.php,v 1.3 2008/07/18 20:49:07 bruno Exp $ */
+/* $Id: dot-graph.php,v 1.4 2008/10/18 00:55:58 mjk Exp $ */
 #
 # Dynamically creates an image of the Rocks Cluster Appliance
 # graph.
@@ -8,7 +8,7 @@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		            version 5.0 (V)
+# 		           version 5.1  (VI)
 # 
 # Copyright (c) 2000 - 2008 The Regents of the University of California.
 # All rights reserved.	

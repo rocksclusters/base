@@ -2,15 +2,18 @@
 
 <add-new-appliance parent="@PROJECT_NAME@">
 
-	<id>$Id: add-new-appliancerc.xml,v 1.8 2008/03/06 23:41:45 mjk Exp $</id>
+	<id>$Id: add-new-appliancerc.xml,v 1.9 2008/10/18 00:56:03 mjk Exp $</id>
 
 	<copyright>
 	Copyright (c) 2000 - 2008 The Regents of the University of California.
-	All rights reserved. Rocks(r) v5.0 www.rocksclusters.org
+	All rights reserved. Rocks(r) v5.1 www.rocksclusters.org
  	</copyright>
  
   	<changelog>
 	$Log: add-new-appliancerc.xml,v $
+	Revision 1.9  2008/10/18 00:56:03  mjk
+	copyright 5.1
+	
 	Revision 1.8  2008/03/06 23:41:45  mjk
 	copyright storm on
 	

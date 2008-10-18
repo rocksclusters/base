@@ -1,13 +1,13 @@
 #! /opt/rocks/bin/python
 #
 # Creates static-route files from the routes table 
-# $Id: static-routes.py,v 1.14 2008/03/06 23:41:41 mjk Exp $
+# $Id: static-routes.py,v 1.15 2008/10/18 00:55:59 mjk Exp $
 #
 # @Copyright@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		            version 5.0 (V)
+# 		           version 5.1  (VI)
 # 
 # Copyright (c) 2000 - 2008 The Regents of the University of California.
 # All rights reserved.	
@@ -57,6 +57,9 @@
 # @Copyright@
 #
 # $Log: static-routes.py,v $
+# Revision 1.15  2008/10/18 00:55:59  mjk
+# copyright 5.1
+#
 # Revision 1.14  2008/03/06 23:41:41  mjk
 # copyright storm on
 #

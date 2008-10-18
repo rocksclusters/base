@@ -12,11 +12,14 @@
 
         <copyright>
         Copyright (c) 2000 - 2008 The Regents of the University of California.
-        All rights reserved. Rocks(r) v5.0 www.rocksclusters.org
+        All rights reserved. Rocks(r) v5.1 www.rocksclusters.org
         </copyright>
 
   <changelog>
   $Log: database-schema.xml,v $
+  Revision 1.22  2008/10/18 00:55:45  mjk
+  copyright 5.1
+
   Revision 1.21  2008/08/27 02:41:08  anoop
   Very minor changes to the database schema to store os type along
   with appliance. This is mainly to include solaris support for

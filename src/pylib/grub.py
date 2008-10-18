@@ -7,7 +7,7 @@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		            version 5.0 (V)
+# 		           version 5.1  (VI)
 # 
 # Copyright (c) 2000 - 2008 The Regents of the University of California.
 # All rights reserved.	
@@ -57,6 +57,9 @@
 # @Copyright@
 #
 # $Log: grub.py,v $
+# Revision 1.13  2008/10/18 00:56:02  mjk
+# copyright 5.1
+#
 # Revision 1.12  2008/08/28 04:39:02  phil
 # Hooks to write a xen vs. non-xen rocks.conf file.
 #

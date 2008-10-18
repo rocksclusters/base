@@ -1,10 +1,10 @@
-# $Id: plugin_appliance.py,v 1.1 2008/07/31 22:06:29 bruno Exp $
+# $Id: plugin_appliance.py,v 1.2 2008/10/18 00:55:49 mjk Exp $
 # 
 # @Copyright@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		            version 5.0 (V)
+# 		           version 5.1  (VI)
 # 
 # Copyright (c) 2000 - 2008 The Regents of the University of California.
 # All rights reserved.	
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: plugin_appliance.py,v $
+# Revision 1.2  2008/10/18 00:55:49  mjk
+# copyright 5.1
+#
 # Revision 1.1  2008/07/31 22:06:29  bruno
 # added 'rocks dump appliance'
 #

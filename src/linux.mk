@@ -1,10 +1,10 @@
-# $Id: linux.mk,v 1.15 2008/05/23 18:59:31 anoop Exp $
+# $Id: linux.mk,v 1.16 2008/10/18 00:55:47 mjk Exp $
 #
 # @Copyright@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		            version 5.0 (V)
+# 		           version 5.1  (VI)
 # 
 # Copyright (c) 2000 - 2008 The Regents of the University of California.
 # All rights reserved.	
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: linux.mk,v $
+# Revision 1.16  2008/10/18 00:55:47  mjk
+# copyright 5.1
+#
 # Revision 1.15  2008/05/23 18:59:31  anoop
 # Small changes to the base roll to make a cleaner build
 #

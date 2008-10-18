@@ -1,11 +1,11 @@
 #
-# $Id: Makefile,v 1.23 2008/08/01 18:47:16 bruno Exp $
+# $Id: Makefile,v 1.24 2008/10/18 00:55:59 mjk Exp $
 #
 # @Copyright@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		            version 5.0 (V)
+# 		           version 5.1  (VI)
 # 
 # Copyright (c) 2000 - 2008 The Regents of the University of California.
 # All rights reserved.	
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.24  2008/10/18 00:55:59  mjk
+# copyright 5.1
+#
 # Revision 1.23  2008/08/01 18:47:16  bruno
 # nuke 'patch' code
 #

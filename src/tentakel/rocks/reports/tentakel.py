@@ -1,13 +1,13 @@
 #!/opt/rocks/bin/python
 #
 # $RCSfile: tentakel.py,v $
-# $Id: tentakel.py,v 1.4 2008/08/27 02:38:58 anoop Exp $
+# $Id: tentakel.py,v 1.5 2008/10/18 00:56:03 mjk Exp $
 #
 # @Copyright@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		            version 5.0 (V)
+# 		           version 5.1  (VI)
 # 
 # Copyright (c) 2000 - 2008 The Regents of the University of California.
 # All rights reserved.	
@@ -57,6 +57,9 @@
 # @Copyright@
 #
 # $Log: tentakel.py,v $
+# Revision 1.5  2008/10/18 00:56:03  mjk
+# copyright 5.1
+#
 # Revision 1.4  2008/08/27 02:38:58  anoop
 # Complete overhaul to the process of generation of the tentakel
 # configuration. Now, the tentakel configuration is OS aware,

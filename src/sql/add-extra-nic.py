@@ -1,12 +1,12 @@
 #! @PYTHON@
 #
-# $Id: add-extra-nic.py,v 1.13 2008/04/02 16:59:37 bruno Exp $
+# $Id: add-extra-nic.py,v 1.14 2008/10/18 00:56:03 mjk Exp $
 #
 # @Copyright@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		            version 5.0 (V)
+# 		           version 5.1  (VI)
 # 
 # Copyright (c) 2000 - 2008 The Regents of the University of California.
 # All rights reserved.	
@@ -56,6 +56,9 @@
 # @Copyright@
 #
 # $Log: add-extra-nic.py,v $
+# Revision 1.14  2008/10/18 00:56:03  mjk
+# copyright 5.1
+#
 # Revision 1.13  2008/04/02 16:59:37  bruno
 # nuke dead commands
 #

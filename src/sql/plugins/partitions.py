@@ -3,7 +3,7 @@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		            version 5.0 (V)
+# 		           version 5.1  (VI)
 # 
 # Copyright (c) 2000 - 2008 The Regents of the University of California.
 # All rights reserved.	
@@ -53,6 +53,9 @@
 # @Copyright@
 #
 # $Log: partitions.py,v $
+# Revision 1.8  2008/10/18 00:56:03  mjk
+# copyright 5.1
+#
 # Revision 1.7  2008/03/06 23:41:46  mjk
 # copyright storm on
 #
