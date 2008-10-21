@@ -1,4 +1,4 @@
-# $Id: plugin_fixnewusers.py,v 1.7 2008/10/18 00:55:58 mjk Exp $
+# $Id: plugin_fixnewusers.py,v 1.8 2008/10/21 18:14:36 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: plugin_fixnewusers.py,v $
+# Revision 1.8  2008/10/21 18:14:36  bruno
+# add jon forrest's patch to easily incorporate file servers to serve user
+# home directories
+#
 # Revision 1.7  2008/10/18 00:55:58  mjk
 # copyright 5.1
 #
@@ -92,7 +96,7 @@ import string
 import rocks.commands
 
 class Plugin(rocks.commands.Plugin):
-	"""Relocates home directories to /export and fixes autofs.home"""
+	"""Relocates home directories to location on file server and fixes autofs.home"""
 
 	def provides(self):
 		return 'fixnewusers'
@@ -118,14 +122,27 @@ class Plugin(rocks.commands.Plugin):
 				new_users.append(username)
 		file.close()
 
-		hostname = '%s.%s' % \
-			(self.db.getGlobalVar('Kickstart', 'PrivateHostname'),
-			self.db.getGlobalVar('Kickstart', 'PrivateDNSDomain'))
+		# if there is a file server specified in the database
+		# use it. otherwise, use the default.
+		hostname = self.db.getGlobalVar('Info', 'HomeDirSrv')
+		if not hostname:
+			hostname = '%s.%s' % (self.db.getGlobalVar('Kickstart',
+				'PrivateHostname'),
+				self.db.getGlobalVar('Kickstart',
+					'PrivateDNSDomain'))
+
+		# if there is a home directory specified in the database
+		# use it. otherwise, use the default.
+		homedirloc = self.db.getGlobalVar('Info', 'HomeDirLoc')
+		if not homedirloc:
+			homedirloc = '/export/home'
 			
 		for user in new_users:
 
 			# for each new user, change their default directory to
-			# /home/<username>
+			# /home/<username>. this is always done whether or not
+			# there are file server and home directory names in the
+			# database.
 
 			cmd = '/usr/sbin/usermod -d %s %s' % \
 				(os.path.join('/home', user), user)
@@ -134,7 +151,7 @@ class Plugin(rocks.commands.Plugin):
 
 			# then update the auto.home file
 
-			new_user_dir = os.path.join('/export', 'home', user)
+			new_user_dir = os.path.join(homedirloc, user)
 			autofs_entry = '%s\t%s:%s' % \
 				(user, hostname, new_user_dir)
 
