@@ -15,6 +15,9 @@
 
   <changelog>
   $Log: grub-client.xml,v $
+  Revision 1.10  2008/10/22 19:34:57  bruno
+  fix setting bootflags. the bootflags now survive through reboots.
+
   Revision 1.9  2008/10/18 00:55:45  mjk
   copyright 5.1
 
@@ -83,6 +86,7 @@ makegrub.run(args)
 <!-- apply the kernel boot flags for this node -->
 <post arg="--interpreter /opt/rocks/bin/python">
 import os
+import os.path
 import rocks.grub
 
 isXen = False
@@ -116,8 +120,15 @@ else:
 	echo "args = \"$BOOTFLAGS\""
 	</eval>
 
-	makegrub.setFilename('grub.conf')
 	makegrub.setBootTitle('title')
+
+	#
+	# set the bootflags for both the grub.conf and grub-orig.conf files
+	#
+	makegrub.setFilename('grub.conf')
+	makegrub.append(args)
+
+	makegrub.setFilename('grub-orig.conf')
 	makegrub.append(args)
 </post>
 

@@ -57,6 +57,9 @@
 # @Copyright@
 #
 # $Log: grub.py,v $
+# Revision 1.14  2008/10/22 19:34:57  bruno
+# fix setting bootflags. the bootflags now survive through reboots.
+#
 # Revision 1.13  2008/10/18 00:56:02  mjk
 # copyright 5.1
 #
@@ -215,9 +218,7 @@ class App:
 
 			l = line.split()
 
-			if gotTitle and len(l) > 1 and l[0] == 'kernel' and \
-				(l[1].count('xen') or l[1].count('vmlinuz')):
-
+			if gotTitle and len(l) > 1 and l[1].count('vmlinuz'):
 				contents += "%s %s\n" % (line[:-1], args)
 				gotTitle = 0
 				continue
