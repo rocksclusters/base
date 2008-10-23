@@ -430,7 +430,7 @@ class RocksPartition:
 		size = 0
 
 		if mountpoint == 'root':
-			size = 8000
+			size = 16000
 		elif mountpoint == 'var':
 			size = 4000
 		elif mountpoint == 'swap':
