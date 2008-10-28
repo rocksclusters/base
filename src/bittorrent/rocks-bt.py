@@ -1,11 +1,16 @@
 #!/opt/rocks/bin/python
 #
-# $Id: rocks-bt.py,v 1.13 2008/06/20 20:42:43 bruno Exp $
+# $Id: rocks-bt.py,v 1.14 2008/10/28 20:16:42 bruno Exp $
 #
 # @COPYRIGHT@
 # @COPYRIGHT@
 #
 # $Log: rocks-bt.py,v $
+# Revision 1.14  2008/10/28 20:16:42  bruno
+# check if anancoda has asked for a package two times in a row. if so, we
+# assume the package is corrupted and we instruct the node to get the package
+# from the frontend.
+#
 # Revision 1.13  2008/06/20 20:42:43  bruno
 # reworked to handle:
 #
@@ -156,6 +161,32 @@ else:
 	# the tracker
 	#
 	peers = BitTorrent.rocks.getPeers(torrentinfo, mypeerid)
+
+#
+# if the same file is asked for two times in a row, we assume that anaconda
+# found something wrong with the file (e.g., checksum error).
+#
+# we will tell the tracker that we are no longer a peer for the file and
+# we'll ask for the file directly from the frontend -- we'll do that by
+# clearing out the list of peers.
+#
+if os.path.exists('/tmp/rocks-bt-last-request'):
+	f = open('/tmp/rocks-bt-last-request', 'r')
+	last_request = f.readline()
+	f.close()
+else:
+	last_request = ''
+
+if last_request == filename:
+	BitTorrent.rocks.sendToTracker(torrentinfo, mypeerid, 'done')
+	peers = []
+
+#
+# save the name of the current requested file.
+#
+f = open('/tmp/rocks-bt-last-request', 'w')
+f.write('%s' % filename)
+f.close()
 
 #
 # optimization -- if mypeerid is in the list of peers, that means we already
