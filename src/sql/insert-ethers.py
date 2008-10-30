@@ -58,6 +58,9 @@
 # @Copyright@
 #
 # $Log: insert-ethers.py,v $
+# Revision 1.42  2008/10/30 21:44:58  bruno
+# fix -- thanks to thomas hamel for the bug report
+#
 # Revision 1.41  2008/10/18 00:56:03  mjk
 # copyright 5.1
 #
@@ -918,7 +921,7 @@ class InsertEthers(GUI):
 		siteid = self.sql.getSiteId(self.client)
 		self.clusterdb.insert(nodename, self.membership, 
 			self.cabinet, self.rank, self.mac, self.ipaddr, 
-			self.netmask, self.subnet, siteid, self.osname)
+			self.netmask, self.subnet, self.osname, siteid)
 
 		# Execute any plugins when adding hosts via
 		# command-line parameters
