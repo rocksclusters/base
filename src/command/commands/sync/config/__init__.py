@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.3 2008/10/18 00:55:58 mjk Exp $
+# $Id: __init__.py,v 1.4 2008/10/31 23:00:44 mjk Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.4  2008/10/31 23:00:44  mjk
+# fix addText call
+#
 # Revision 1.3  2008/10/18 00:55:58  mjk
 # copyright 5.1
 #
@@ -86,5 +89,5 @@ class Command(rocks.commands.sync.command):
 	def run(self, params, args):
 		cmd = '/opt/rocks/sbin/insert-ethers --update'
                 for line in os.popen(cmd).readlines():
-                        self.owner.addText(line)
+                        self.addText(line)
 
