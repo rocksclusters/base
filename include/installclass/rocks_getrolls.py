@@ -1,5 +1,5 @@
 #
-# $Id: rocks_getrolls.py,v 1.5 2008/10/18 00:55:45 mjk Exp $
+# $Id: rocks_getrolls.py,v 1.6 2008/10/31 20:35:25 bruno Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,10 @@
 # @Copyright@
 #
 # $Log: rocks_getrolls.py,v $
+# Revision 1.6  2008/10/31 20:35:25  bruno
+# resiliency fix -- try harder (and timeout) when trying to get roll directory
+# listings
+#
 # Revision 1.5  2008/10/18 00:55:45  mjk
 # copyright 5.1
 #
@@ -307,8 +311,14 @@ def downloadRoll(anaconda, roll):
 	else:
 		wget = '/usr/bin/wget'
 
-	cmd = '%s -m -nv -np -nH --cut-dirs=%d %s' \
-		% (wget, cutdirs, url)
+	#
+	# add resiliency flags to wget
+	#
+	flags = '--dns-timeout=3 --connect-timeout=3 --read-timeout=10 '
+	flags += '--tries=3'
+
+	cmd = '%s -m -nv -np -nH %s --cut-dirs=%d %s' \
+		% (wget, flags, cutdirs, url)
 	cmd += ' >> /tmp/wget.debug'
 	os.system(cmd)
 
