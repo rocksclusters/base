@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.4 2008/10/31 23:00:44 mjk Exp $
+# $Id: __init__.py,v 1.5 2008/11/03 23:02:52 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.5  2008/11/03 23:02:52  bruno
+# bug fix where insert-ethers --replace causes an exception to be printed.
+#
 # Revision 1.4  2008/10/31 23:00:44  mjk
 # fix addText call
 #
@@ -87,7 +90,13 @@ class Command(rocks.commands.sync.command):
 	"""
 
 	def run(self, params, args):
-		cmd = '/opt/rocks/sbin/insert-ethers --update'
-                for line in os.popen(cmd).readlines():
-                        self.addText(line)
-
+		#
+		# don't call insert-ethers if insert-ethers is already
+		# running. this can occur when one replaces a node
+		# (insert-ethers calls 'rocks remove host' which calls
+		# rocks sync config).
+		#
+		if not os.path.exists('/var/lock/insert-ethers'):
+			cmd = '/opt/rocks/sbin/insert-ethers --update'
+			for line in os.popen(cmd).readlines():
+				self.addText(line)
