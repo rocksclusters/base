@@ -1,5 +1,5 @@
 # 
-# $Id: Makefile,v 1.8 2008/10/18 00:56:03 mjk Exp $
+# $Id: Makefile,v 1.9 2008/11/03 18:56:35 mjk Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.9  2008/11/03 18:56:35  mjk
+# builds again
+#
 # Revision 1.8  2008/10/18 00:56:03  mjk
 # copyright 5.1
 #
@@ -129,8 +132,12 @@ include Rules.mk
 
 default: $(NAME).spec ../$(NAME)-$(VERSION).tar.gz
 
-build:
+build: html pdf
+
+html: predoc
 	jw --backend html --dsl $(PWD)/rocks.dsl#html index.sgml
+
+pdf: predoc
 	jw --backend pdf --dsl $(PWD)/rocks.dsl#print index.sgml
 
 install::
