@@ -140,7 +140,7 @@ and include them:
 
 <screen>
 # cp /export/rocks-&document_version;/rocks/src/roll/kernel/RPMS/x86_64/rocks-boot* \
-	/home/install/contrib/&document_version;/x86_64/RPMS/
+	/export/rocks/install/contrib/&document_version;/x86_64/RPMS/
 </screen>
 
 <note>
@@ -157,8 +157,8 @@ Rebuild the distro:
 </para>
 
 <screen>
-# cd /home/install
-# rocks-dist dist
+# cd /export/rocks/install
+# rocks create distro
 </screen>
 </listitem>
 
@@ -170,8 +170,8 @@ device drivers:
 </para>
 
 <screen>
-# cd /home/install
-# rpm -Uvh --force rocks-dist/lan/x86_64/RedHat/RPMS/rocks-boot-5*.rpm
+# cd /export/rocks/install
+# rpm -Uvh --force rocks-dist/x86_64/RedHat/RPMS/rocks-boot-5*.rpm
 # cp /boot/kickstart/default/initrd.img /tftpboot/pxelinux/
 # cp /boot/kickstart/default/vmlinuz /tftpboot/pxelinux/
 </screen>

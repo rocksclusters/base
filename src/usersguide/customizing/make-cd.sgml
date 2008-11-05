@@ -12,7 +12,7 @@ First, login to your frontend and obtain the entire Rocks cluster distribution:
 </para>
 
 <screen>
-# cd /home/install
+# cd /export/rocks/install
 # rocks-dist mirror
 </screen>
 

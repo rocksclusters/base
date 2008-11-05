@@ -42,9 +42,9 @@ Rebuild your distribution for the new architecture with the following flags.
 </para>
 
 <screen>
-# cd /home/install
-# rocks-dist dist
-# rocks-dist --arch=x86_64 dist
+# cd /export/rocks/install
+# rocks create distro
+# rocks create distro arch=x86_64
 </screen>
 
 <para>
@@ -54,9 +54,9 @@ i386-based nodes with the frontend, you'll execute:
 </para>
 
 <screen>
-# cd /home/install
-# rocks-dist dist
-# rocks-dist --arch=i386 dist
+# cd /export/rocks/install
+# rocks create distro
+# rocks create distro arch=i386
 </screen>
 
 </listitem>

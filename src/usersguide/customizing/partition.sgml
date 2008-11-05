@@ -113,7 +113,7 @@ file:
 </para>
 
 <screen>
-# cd /home/install/site-profiles/&document_version;/nodes/
+# cd /export/rocks/install/site-profiles/&document_version;/nodes/
 # cp skeleton.xml replace-partition.xml
 </screen>
 
@@ -169,8 +169,8 @@ Then apply this configuration to the distribution by executing:
 </para>
 
 <screen>
-# cd /home/install
-# rocks-dist dist
+# cd /export/rocks/install
+# rocks create distro
 </screen>
 
 <para>
@@ -202,12 +202,12 @@ done
 
 <para>
 Save the above script as
-<computeroutput>/home/install/sbin/nukeit.sh</computeroutput>
+<computeroutput>/share/apps/nukeit.sh</computeroutput>
 and then execute:
 </para>
 
 <screen>
-# ssh compute-0-0 'sh /home/install/sbin/nukeit.sh'
+# ssh compute-0-0 'sh /share/apps/nukeit.sh'
 </screen>
 
 <para>
@@ -253,8 +253,8 @@ Then apply this configuration to the distribution by executing:
 </para>
 
 <screen>
-# cd /home/install
-# rocks-dist dist
+# cd /export/rocks/install
+# rocks create distro
 </screen>
 
 <para>
@@ -286,12 +286,12 @@ done
 
 <para>
 Save the above script as
-<computeroutput>/home/install/sbin/nukeit.sh</computeroutput>
+<computeroutput>/share/apps/nukeit.sh</computeroutput>
 and then execute:
 </para>
 
 <screen>
-# ssh compute-0-0 'sh /home/install/sbin/nukeit.sh'
+# ssh compute-0-0 'sh /share/apps/nukeit.sh'
 </screen>
 
 <para>
@@ -640,7 +640,7 @@ file:
 </para>
 
 <screen>
-# cd /home/install/site-profiles/&document_version;/nodes/
+# cd /export/rocks/install/site-profiles/&document_version;/nodes/
 # cp skeleton.xml replace-partition.xml
 </screen>
 
@@ -662,8 +662,8 @@ Then apply this configuration to the distribution by executing:
 </para>
 
 <screen>
-# cd /home/install
-# rocks-dist dist
+# cd /export/rocks/install
+# rocks create distro
 </screen>
 
 <para>
@@ -695,12 +695,12 @@ done
 
 <para>
 Save the above script as
-<computeroutput>/home/install/sbin/nukeit.sh</computeroutput>
+<computeroutput>/share/apps/nukeit.sh</computeroutput>
 and then execute:
 </para>
 
 <screen>
-# ssh compute-0-0 'sh /home/install/sbin/nukeit.sh'
+# ssh compute-0-0 'sh /share/apps/nukeit.sh'
 </screen>
 
 <para>
@@ -719,7 +719,7 @@ allow Rocks to preserve all non-root partition data.
 </para>
 
 <screen>
-# rm /home/install/site-profiles/&document_version;/nodes/replace-partition.xml
+# rm /export/rocks/install/site-profiles/&document_version;/nodes/replace-partition.xml
 </screen>
 
 <para>
@@ -727,8 +727,8 @@ Then apply this update to the distribution by executing:
 </para>
 
 <screen>
-# cd /home/install
-# rocks-dist dist
+# cd /export/rocks/install
+# rocks create distro
 </screen>
 
 </section>
@@ -753,7 +753,7 @@ file:
 </para>
 
 <screen>
-# cd /home/install/site-profiles/&document_version;/nodes/
+# cd /export/rocks/install/site-profiles/&document_version;/nodes/
 # cp skeleton.xml replace-partition.xml
 </screen>
 
@@ -775,8 +775,8 @@ Then apply this configuration to the distribution by executing:
 </para>
 
 <screen>
-# cd /home/install
-# rocks-dist dist
+# cd /export/rocks/install
+# rocks create distro
 </screen>
 
 <para>

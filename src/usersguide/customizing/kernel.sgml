@@ -162,7 +162,7 @@ XEN             = 1
 	</para>
 
 <screen>
-# cp ../../RPMS/&lt;arch&gt;/kernel*rpm /home/install/contrib/&document_version;/&lt;arch&gt;/RPMS/
+# cp ../../RPMS/&lt;arch&gt;/kernel*rpm /export/rocks/install/contrib/&document_version;/&lt;arch&gt;/RPMS/
 </screen>
 
 	<para>
@@ -176,8 +176,8 @@ XEN             = 1
 	</para>
 
 <screen>
-# cd /home/install
-# rocks-dist dist
+# cd /export/rocks/install
+# rocks create distro
 </screen>
 
 </listitem>

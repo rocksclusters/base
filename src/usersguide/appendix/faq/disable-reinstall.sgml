@@ -32,8 +32,8 @@
 		</para>
 
 <screen>
-# cd /home/install
-# cp rocks-dist/lan/<emphasis>arch</emphasis>/build/nodes/auto-kickstart.xml \
+# cd /export/rocks/install
+# cp rocks-dist/<emphasis>arch</emphasis>/build/nodes/auto-kickstart.xml \
 site-profiles/&document_version;/nodes/replace-auto-kickstart.xml
 </screen>
 
@@ -67,8 +67,8 @@ site-profiles/&document_version;/nodes/replace-auto-kickstart.xml
 		</para>
 
 <screen>
-# cd /home/install
-# rocks-dist dist
+# cd /export/rocks/install
+# rocks create distro
 </screen>
 
 	</listitem>

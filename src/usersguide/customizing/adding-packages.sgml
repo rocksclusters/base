@@ -8,7 +8,7 @@ Put the package you want to add in:
 </para>
 
 <screen>
-/home/install/contrib/&document_version;/<emphasis>arch</emphasis>/RPMS
+/export/rocks/install/contrib/&document_version;/<emphasis>arch</emphasis>/RPMS
 </screen>
 
 <para>
@@ -23,7 +23,7 @@ file:
 </para>
 
 <screen>
-# cd /home/install/site-profiles/&document_version;/nodes
+# cd /export/rocks/install/site-profiles/&document_version;/nodes
 # cp skeleton.xml extend-compute.xml
 </screen>
 
@@ -84,12 +84,12 @@ For example, the file should NOT contain any lines such as:
 <para>
 Now build a new Rocks distribution.
 This will bind the new package into a RedHat compatible distribution in
-the directory <emphasis>/home/install/rocks-dist/...</emphasis>.
+the directory <emphasis>/export/rocks/install/rocks-dist/...</emphasis>.
 </para>
 
 <screen>
-# cd /home/install
-# rocks-dist dist
+# cd /export/rocks/install
+# rocks create distro
 </screen>
 
 <para>
@@ -123,8 +123,8 @@ Now build a new Rocks distribution.
 </para>
 
 <screen>
-# cd /home/install
-# rocks-dist dist
+# cd /export/rocks/install
+# rocks create distro
 </screen>
 
 <para>

@@ -25,8 +25,8 @@ the site customization directory:
 </para>
 
 <screen>
-# cp /home/install/rocks-dist/lan/<emphasis>arch</emphasis>/build/graphs/default/base-rsh.xml \
-	/home/install/site-profiles/&document_version;/graphs/default/
+# cp /export/rocks/install/rocks-dist/<emphasis>arch</emphasis>/build/graphs/default/base-rsh.xml \
+	/export/rocks/install/site-profiles/&document_version;/graphs/default/
 </screen>
 
 <para>
@@ -35,7 +35,7 @@ Where <emphasis>arch</emphasis> is your architecture ("i386" or "x86_64").
 
 <para>
 Now edit
-<computeroutput>/home/install/site-profiles/&document_version;/graphs/default/base-rsh.xml</computeroutput>
+<computeroutput>/export/rocks/install/site-profiles/&document_version;/graphs/default/base-rsh.xml</computeroutput>
 and change the following:
 </para>
 
@@ -70,8 +70,8 @@ To apply this configuration to the compute nodes, rebuild the distribution:
 </para>
 
 <screen>
-# cd /home/install
-# rocks-dist dist
+# cd /export/rocks/install
+# rocks create distro
 </screen>
 
 <para>

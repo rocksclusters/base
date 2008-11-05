@@ -6,7 +6,11 @@ A Central Server is a Rocks Frontend node that can kickstart other frontends and
 </para>
 
 <para>
-From Rocks 3.3.0 onwards, the standard distribution in /home/install/rocks-dist contains a distro suitable for WAN kickstart. The only steps you must take is to open "www" and "https" access on your frontend for the purpose of RPM package transfer. See <xref linkend="enable-www">.
+The standard Rocks distribution (located under /export/rocks/install) contains
+a distro suitable for WAN kickstart.
+The only steps you must take is to open "www" and "https" access on your
+frontend for the purpose of RPM package transfer.
+See <xref linkend="enable-www">.
 </para>
 
 <note>
