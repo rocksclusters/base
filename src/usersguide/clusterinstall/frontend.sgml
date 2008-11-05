@@ -459,7 +459,7 @@ build
 			/
 		</entry>
 		<entry>
-			8 GB
+			16 GB
 		</entry>
 	</row>
 
@@ -550,7 +550,7 @@ build
 
 	<warning>
 	<para>
-	If you select manual partitioning, you must specify at least 8 GBs
+	If you select manual partitioning, you must specify at least 16 GBs
 	for the root partition and you must create a separate
 	<computeroutput>/export</computeroutput> partition.
 	</para>
