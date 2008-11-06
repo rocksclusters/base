@@ -6,6 +6,41 @@ This procedure describes how to use a Restore Roll to upgrade or
 reconfigure your existing Rocks cluster.
 </para>
 
+<warning>
+<para>
+If your Rocks frontend is running Rocks version 5.0 and you wish to
+upgrade it to version &document_version;, you first need to install the
+<computeroutput>rocks-command</computeroutput>, 
+<computeroutput>rocks-devel</computeroutput> and
+<computeroutput>rocks-devel-env</computeroutput> packages:
+</para>
+
+<para>
+For i386, execute:
+</para>
+
+<screen>
+# rpm -ivh --force http://www.rocksclusters.org/ftp-site/pub/rocks/rocks-5.0/upgrade/rocks-command-5.1-1.i386.rpm
+# rpm -ivh --force http://www.rocksclusters.org/ftp-site/pub/rocks/rocks-5.0/upgrade/rocks-devel-5.1-1.i386.rpm
+# rpm -ivh --force http://www.rocksclusters.org/ftp-site/pub/rocks/rocks-5.0/upgrade/rocks-devel-env-5.1-1.i386.rpm
+</screen>
+
+<para>
+For x86_64, execute:
+</para>
+
+<screen>
+# rpm -ivh --force http://www.rocksclusters.org/ftp-site/pub/rocks/rocks-5.0/upgrade/rocks-command-5.1-1.x86_64.rpm
+# rpm -ivh --force http://www.rocksclusters.org/ftp-site/pub/rocks/rocks-5.0/upgrade/rocks-devel-5.1-1.x86_64.rpm
+# rpm -ivh --force http://www.rocksclusters.org/ftp-site/pub/rocks/rocks-5.0/upgrade/rocks-devel-env-5.1-1.x86_64.rpm
+</screen>
+
+<para>
+Keep in mind, after you add these packages, your frontend will no longer be
+able to install compute nodes.
+</para>
+</warning>
+
 <para>
 Let's create a Restore Roll for your frontend.
 This roll will contain site-specific info that will be used to quickly
@@ -41,7 +76,7 @@ At the <computeroutput>boot:</computeroutput> prompt, type:
 </para>
 
 <screen>
-frontend
+build
 </screen>
 
 <para>
@@ -96,7 +131,7 @@ all your compute nodes.
 <screen>
 # ssh-agent $SHELL
 # ssh-add
-# tentakel -g compute '/boot/kickstart/cluster-kickstart-pxe'
+# rocks run host compute '/boot/kickstart/cluster-kickstart-pxe'
 </screen>
 
 
