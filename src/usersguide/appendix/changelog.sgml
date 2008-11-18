@@ -2,6 +2,221 @@
 	<title>Release Notes</title>
 
 <section>
+<title>Release 5.1 - changes from 5.0</title>
+
+<section>
+	<title> New Features </title>
+
+<itemizedlist>
+
+<listitem>
+	<para> Support for Virtual Clusters </para>
+
+	<para>
+	Virtual frontends and virtual compute nodes are now supported.
+	The network for a VM frontend its VM compute nodes are contained within
+	its own VLAN.
+	</para>
+
+	<para>
+	A virtual cluster is added with
+	"rocks add cluster fqdn=X ip=Y num-computes=Z".
+	See "rocks add cluster help" for details.
+	</para>
+	
+</listitem>
+
+<listitem>
+	<para> Can build rolls outside of Rocks source tree. </para>
+
+	<para>
+	All roll building support files are under
+	<computeroutput>/opt/rocks/share/devel</computeroutput>.
+	</para>
+</listitem>
+
+<listitem>
+	<para>
+	Can reconfigure a compute node's network without rebooting.
+	</para>
+
+	<para>
+	Rocks commands were added to support this.
+	See the documentation for the procedure.
+	</para>
+</listitem>
+
+<listitem>
+	<para>
+	Distribution moved to
+	<computeroutput>/export/rocks/install</computeroutput>.
+	</para>
+
+	<para>
+	No longer require NFS on the frontend to properly host a Rocks
+	Distribution.
+	This will make moving user accounts to an external NFS server easier.
+	</para>
+</listitem>
+
+<listitem>
+	<para>
+	Fine-grained control over the "boot" and "install" kernel for Xen
+	VMs.
+	</para>
+
+	<para>
+	Rocks commands where added to support this feature.
+	For details, execute: "rocks help installprofile" and
+	"rocks help bootprofile".
+	</para>
+</listitem>
+
+</itemizedlist>
+
+</section>
+
+<section>
+	<title> Enhancements </title>
+
+	<para>
+	OS: Based on CentOS release 5/update 2 and all updates as of
+	November 4, 2008.
+	</para>
+
+	<para>
+	Base: Anaconda installer updated to v11.1.2.113.
+	</para>
+
+	<para>
+	Base: Increased the / partition default size to 16 GB.
+	</para>
+
+	<para>
+	Base: Opened the 'www' and 'https' ports to the local public
+	network.
+	</para>
+
+	<para>
+	Base: In Avalanche Installer, added code to check if a package is
+	requested twice in a row.
+	If it is, we assume the package is corrupted.
+	In this case, we toss the package and retrieve it the package from
+	the frontend.
+	</para>
+
+	<para>
+	Base: Added Rocks commands to manage the "aliases" table.
+	</para>
+
+	<para>
+	Base: Added "rocks remove roll" command.
+	Thanks to Brandon Davidson from the University of Oregon for the code.
+	</para>
+
+	<para>
+	Base: The command "rocks-dist" is replaced with "rocks create distro".
+	</para>
+
+	<para>
+	Base: Disabled the watchdog for frontend installs that boot off a
+	CD/DVD.
+	</para>
+
+	<para>
+	Base: Changed boot command from "frontend" to "build".
+	To build a frontend, when you see the "boot:" prompt, now type:
+	"build".
+	</para>
+
+	<para>
+	Web Server: Wordpress updated to v2.6.1.
+	</para>
+
+	<para>
+	Web Server: Updated Wordpress theme.
+	</para>
+
+	<para>
+	Area51: All commands converted to Rocks command line.
+	</para>
+
+	<para>
+	HPC: Updated OpenMPI to v1.2.7.
+	</para>
+
+	<para>
+	HPC: Updated MPICH2 to v1.0.7.
+	</para>
+
+	<para>
+	Java: Fixed a bug in the graph that Java from properly installing on
+	compute nodes.
+	</para>
+
+	<para>
+	Restore: All files under /export/rocks/install/contrib are now
+	included in the Restore Roll.
+	</para>
+
+	<para>
+	Restore: All files in /var/named/*local are now
+	included in the Restore Roll.
+	</para>
+
+	<para>
+	Restore: The frontend's ssh machine keys are now 
+	included in the Restore Roll.
+	</para>
+
+	<para>
+	SGE: Updated to v6.1 update 5.
+	</para>
+
+	<para>
+	SGE: Added a script to reinstall a cluster by submitting an SGE job.
+	</para>
+
+
+</section>
+
+<section>
+	<title> Bug Fixes </title>
+
+	<para>
+	Base: Reverse domain lookups now work for subnets that don't fall
+	on an octet boundary.
+	</para>
+
+	<para>
+	Base: Bootflags now carry over between reinstallations and reboots.
+	In the previous release, a reboot would "forget" the bootflags set
+	by the user with the Rocks command line.
+	</para>
+
+	<para>
+	Base: Added full path to "mksquashfs".
+	Now can build distribution when using "sudo".
+	</para>
+
+	<para>
+	Restore: Ethernet Switches, Power Units and Remote Management
+	appliances are now properly saved in the Restore Roll.
+	</para>
+
+	<para>
+	Ganglia: Fixed the 'tail +4' bug in the cron job.
+	</para>
+
+	<para>
+	SGE: Fixed the display in the "Job Queue" on the frontend's web site.
+	SGE now reports the correct number of CPUs in use.
+	</para>
+
+</section>
+</section>
+
+<section>
 <title>Release 4.3 - changes from 4.2.1</title>
 
 <section>
