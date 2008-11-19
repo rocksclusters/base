@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.11 2008/10/18 00:55:50 mjk Exp $
+# $Id: __init__.py,v 1.12 2008/11/19 17:42:25 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.12  2008/11/19 17:42:25  bruno
+# fix (from long beach airport!)
+#
 # Revision 1.11  2008/10/18 00:55:50  mjk
 # copyright 5.1
 #
@@ -200,8 +203,8 @@ class Command(rocks.commands.list.host.command):
 
 			distrodir = self.command('report.distro')
 			
-			self.basedir  = os.path.join(distrodir, dist, arch,
-				'build')
+			self.basedir  = os.path.join(distrodir.strip(), dist,
+				arch, 'build')
 			if basedir:
 				if not os.path.exists(basedir):
 					self.abort('cannot read directory "%s"'
