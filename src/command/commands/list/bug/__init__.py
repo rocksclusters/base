@@ -1,4 +1,4 @@
-#! /opt/rocks/bin/python
+# $Id: __init__.py,v 1.1 2008/11/21 01:03:46 bruno Exp $
 #
 # @Copyright@
 # 
@@ -53,70 +53,25 @@
 # 
 # @Copyright@
 #
-# $Log: bug.py,v $
-# Revision 1.15  2008/10/18 00:55:59  mjk
-# copyright 5.1
+# $Log: __init__.py,v $
+# Revision 1.1  2008/11/21 01:03:46  bruno
+# moved 'dbreport bug' to 'rocks list bug'
 #
-# Revision 1.14  2008/03/06 23:41:41  mjk
-# copyright storm on
-#
-# Revision 1.13  2007/06/23 04:03:21  mjk
-# mars hill copyright
-#
-# Revision 1.12  2006/09/18 19:40:22  mjk
-# do not report root password
-#
-# Revision 1.11  2006/09/11 22:47:08  mjk
-# monkey face copyright
-#
-# Revision 1.10  2006/08/10 00:09:30  mjk
-# 4.2 copyright
-#
-# Revision 1.9  2006/06/05 17:57:35  bruno
-# first steps towards 4.2 beta
-#
-# Revision 1.8  2006/01/16 06:48:57  mjk
-# fix python path for source built foundation python
-#
-# Revision 1.7  2005/10/12 18:08:37  mjk
-# final copyright for 4.1
-#
-# Revision 1.6  2005/09/16 01:02:16  mjk
-# updated copyright
-#
-# Revision 1.5  2005/09/15 22:45:09  mjk
-# - copyright updated, but not the final notice for 4.1 (ignore this change)
-# - resolv.conf now uses "search" domains for private, then public
-# - resolv.conf no longer uses "domain" (replaced by "search")
-# - named.conf is now created from dbreport (includes rocks.zone)
-# - dns.py requires an argument ("zone", or "reverse")
-# - dns config removed (now in named)
-# - general dns.py cleanup (simpler logic, tossed dead code)
-# - removed domain name related functions from base.py
-# - added getGlobalVar to base.py (don't have to go through self.sql anymore)
-# - did a diff of the reports vs existing files on rocks-153, looks good
-#
-# Revision 1.4  2005/08/17 16:28:32  mjk
-# fix bug
-#
-# Revision 1.3  2005/08/17 00:31:38  mjk
-# passes xmllint
-#
-# Revision 1.2  2005/08/17 00:26:34  mjk
-# first pass at dbreport bug (no checksum)
-#
-# Revision 1.1  2005/08/16 23:43:49  mjk
-# *** empty log message ***
 #
 
-import os
 import popen2
 from xml.sax import saxutils
-import rocks.reports.base
-import string
+import rocks.commands
 
-
-class Report(rocks.reports.base.ReportBase):
+class Command(rocks.commands.RollArgumentProcessor,
+	rocks.commands.list.command):
+	"""
+	List info about the system to help debug issues.
+	
+	<example cmd='list bug'>		
+	List system info.
+	</example>
+	"""		
 
 	def networkconfig(self):
 		cmd = '/sbin/ifconfig -a'
@@ -125,87 +80,96 @@ class Report(rocks.reports.base.ReportBase):
 
 		interface = ''
 
-		print '\t<networkconfig>'
+		self.addText('\t<networkconfig>\n')
 		for line in r.readlines():
-			l = string.split(line)
+			l = line.split()
 			if len(l) > 1 and l[1] == "Link":
 				if interface != '':
-					print '\t\t</interface>'
+					self.addText('\t\t</interface>\n')
 
 				interface = l[0]
-				print '\t\t<interface>'
-				print '\t\t\t<name>' + interface + '</name>'
+				self.addText('\t\t<interface>\n')
+				self.addText('\t\t\t<name>')
+				self.addText(interface + '</name>\n')
 
 			if len(l) > 2 and l[2][:6] == "encap:":
 				encap = l[2][6:]
-				print '\t\t\t<encap>' + encap + '</encap>'
+				self.addText('\t\t\t<encap>')
+				self.addText(encap + '</encap>\n')
 
 			if len(l) > 4 and l[3] == "HWaddr":
-				print '\t\t\t<hwaddr>' + l[4] + '</hwaddr>'
+				self.addText('\t\t\t<hwaddr>')
+				self.addText(l[4] + '</hwaddr>\n')
 
 			if len(l) > 1 and l[0] == 'inet' \
 					and l[1][:5] == "addr:":
-				print '\t\t\t<ipaddr>' + l[1][5:] + '</ipaddr>'
+				self.addText('\t\t\t<ipaddr>')
+				self.addText(l[1][5:] + '</ipaddr>\n')
 
 			if len(l) > 2 and l[2][:6] == "Bcast:":
-				print '\t\t\t<bcast>' + l[2][6:] + '</bcast>'
+				self.addText('\t\t\t<bcast>')
+				self.addText(l[2][6:] + '</bcast>\n')
 
 			if len(l) > 3 and l[3][:5] == "Mask:":
-				print '\t\t\t<netmask>' + l[3][5:] + \
-					'</netmask>'
+				self.addText('\t\t\t<netmask>')
+				self.addText(l[3][5:] + '</netmask>\n')
 
 		if interface != '':
-			print '\t\t</interface>'
+			self.addText('\t\t</interface>\n')
 
-		print '\t</networkconfig>'
+		self.addText('\t</networkconfig>\n')
 
 		return
 
 
 	def globals(self):
-		self.execute('select membership,service,component,value '
+		self.db.execute('select membership,service,component,value '
 			'from app_globals where site=0 and '
 			'component!="PublicRootPassword" and '
 			'component!="PrivateRootPassword" and '
 			'component!="PrivateMD5RootPassword" and '
+			'component!="PrivatePortableRootPassword" and '
 			'component!="PrivateSHARootPassword"')
-		for col in self.fetchall():
-			print '\t<appglobal',
-			print 'membership="%d"'	% int(col[0]),
-			print 'service="%s"'	% col[1],
-			print 'component="%s"'	% col[2],
-			print 'value="%s"/>'	% saxutils.escape(col[3])
+		for col in self.db.fetchall():
+			self.addText('\t<appglobal ')
+			self.addText('membership="%d" ' % int(col[0]))
+			self.addText('service="%s" ' % col[1])
+			self.addText('component="%s" ' % col[2])
+			self.addText('value="%s"/>\n' % saxutils.escape(col[3]))
 			
 	def graph(self):
-		cwd = os.getcwd()
-		os.chdir(os.path.join(os.sep, 'home', 'install'))
+		self.addText('\t<graph>\n')
 
-		cmd = 'rocks-dist --graph-draw-format=dot graph'
-		
-		r, w, e = popen2.popen3(cmd)
-		print '\t<graph>'
-		for line in r.readlines():
-			print '\t\t<line>%s</line>' % saxutils.escape(line[:-1])
-		print '\t</graph>'
-		
-		os.chdir(cwd)
+		graph = self.command('list.host.graph', [ 'localhost' ])
+
+		for line in graph.split('\n'):
+			self.addText('\t\t<line>%s</line>\n' %
+				saxutils.escape(line))
+
+		self.addText('\t</graph>\n')
 		
 		
 	def rolls(self):
-		self.execute('select name,version,arch,enabled from rolls '
+		self.db.execute('select name,version,arch,enabled from rolls '
 			'where site=0')
-		for col in self.fetchall():
-			print '\t<roll',
-			print 'name="%s"'	% col[0],
-			print 'version="%s"'	% col[1],
-			print 'arch="%s"'	% col[2],
-			print 'enabled="%s"/>'	% col[3]
-				
-	def run(self):
-		print '<rocks-bug>'
+		for col in self.db.fetchall():
+			self.addText('\t<roll ')
+			self.addText('name="%s" '	% col[0])
+			self.addText('version="%s" '	% col[1])
+			self.addText('arch="%s" '	% col[2])
+			self.addText('enabled="%s"/>\n'	% col[3])
+
+
+	def run(self, params, args):
+
+		self.beginOutput()
+
+		self.addText('<rocks-bug>\n')
 		self.networkconfig()
 		self.globals()
 		self.rolls()
 		self.graph()
-		print '</rocks-bug>'
+		self.addText('</rocks-bug>\n')
 
+		self.endOutput(padChar='')
+		
