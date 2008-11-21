@@ -58,6 +58,9 @@
 # @Copyright@
 #
 # $Log: insert-ethers.py,v $
+# Revision 1.43  2008/11/21 19:10:10  bruno
+# restart syslog if we see 'last message repeated' messages from the frontend
+#
 # Revision 1.42  2008/10/30 21:44:58  bruno
 # fix -- thanks to thomas hamel for the bug report
 #
@@ -1328,14 +1331,15 @@ class InsertEthers(GUI):
 
 			interface = tokens[9].replace(':','').strip()
 			
-			# Next get the interface for the specified subnet. This is
-			# done using a database lookup
+			# Next get the interface for the specified subnet.
+			# This is done using a database lookup
 
-			self.sql.execute("select networks.device from networks, subnets, nodes "
-					"where subnets.name='%s' "
-					"and nodes.name='%s' "
-					"and networks.subnet=subnets.id "
-					"and networks.node=nodes.id" % (self.subnet, self.getFrontendName()))
+			self.sql.execute("""select networks.device from
+				networks, subnets, nodes where
+				subnets.name='%s' and nodes.name='%s' 
+				and networks.subnet=subnets.id and
+				networks.node=nodes.id""" % (self.subnet,
+				self.getFrontendName()))
 			
 			subnet_dev = self.sql.fetchone()[0]
 			if interface != subnet_dev:
@@ -1365,6 +1369,27 @@ class InsertEthers(GUI):
 					raise InsertDone, _("Suggest Done")
 
 			self.rank = self.rank + 1
+
+		elif len(tokens) > 6 and tokens[4] == 'last' and \
+			tokens[5] == 'message' and tokens[6] == 'repeated':
+
+			n = os.uname()[1]
+			shortname = n.split('.')[0]
+
+			if tokens[3] == shortname:
+				#
+				# restart syslog (only if the repeated messages
+				# are from the frontend).
+				#
+				# this addresses the case where a node is
+				# PXE booting before insert-ethers is started.
+				# by restarting syslog, the DHCP messages
+				# will now show up (and not be flagged as
+				# repeated).
+				#
+				cmd = '/sbin/service syslog restart '
+				cmd += '> /dev/null 2>&1'
+				os.system(cmd)
 
 	def distDone(self):
 		if os.path.exists(self.rocksdist_lockFile):
