@@ -56,6 +56,9 @@
 # @Copyright@
 #
 # $Log: resolv.py,v $
+# Revision 1.15  2008/11/24 22:20:21  bruno
+# put search line first
+#
 # Revision 1.14  2008/10/18 00:55:59  mjk
 # copyright 5.1
 #
@@ -175,10 +178,10 @@ class Report(rocks.reports.base.ReportBase):
 		self.header.extend([banner,""])
 		print self.getHeader()
 
+		self.searchdomain()
 		print 'nameserver 127.0.0.1'
 		self.nameservers(self.sql.getGlobalVar('Kickstart', 
 			'PublicDNSServers'))
-		self.searchdomain()
     
 
 	def private(self):
@@ -188,10 +191,9 @@ class Report(rocks.reports.base.ReportBase):
 		self.header.extend([banner,""])
 		print self.getHeader()
 
-
+		self.searchdomain()
 		self.nameservers(self.sql.getGlobalVar('Kickstart',
 			'PrivateDNSServers'))
-		self.searchdomain()
 
 
 	def searchdomain(self):
