@@ -1,5 +1,5 @@
 # --------------------------------------------------- -*- Makefile -*- --
-# $Id: Makefile,v 1.3 2008/10/18 00:55:59 mjk Exp $
+# $Id: Makefile,v 1.4 2008/11/30 19:13:29 anoop Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.4  2008/11/30 19:13:29  anoop
+# Added templates directory to the rocks-devel package
+#
 # Revision 1.3  2008/10/18 00:55:59  mjk
 # copyright 5.1
 #
@@ -71,7 +74,7 @@ ROCKSROOT       = ../../../../..
 -include $(ROCKSROOT)/etc/Rules.mk
 include Rules.mk
 
-DEVDIRS = etc bin src/roll/etc src/roll/bin src/roll/doc
+DEVDIRS = etc bin src/roll/etc src/roll/bin src/roll/doc src/roll/template
 	
 build:
 	for d in $(DEVDIRS); do						\
