@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.35 2008/10/18 00:55:48 mjk Exp $
+# $Id: __init__.py,v 1.36 2008/11/30 19:12:45 anoop Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.36  2008/11/30 19:12:45  anoop
+# Bug fixes in "rocks add roll" for solaris
+#
 # Revision 1.35  2008/10/18 00:55:48  mjk
 # copyright 5.1
 #
@@ -389,9 +392,12 @@ class RollHandler:
 		roll_arch = roll_info.getRollArch()
 		roll_os = roll_info.getRollOS()
 
-		roll_dir = os.path.join('/export/rocks/install',
-					'jumpstart/rolls/',
-					roll_name)
+		cmd = '/opt/rocks/bin/rocks report distro'
+		for line in os.popen(cmd).readlines():
+			distro = line[:-1]
+
+		self.rolls_dir = '%s/jumpstart/rolls' % (distro)
+		roll_dir = os.path.join(self.rolls_dir, roll_name)
 		
 		specific_roll_dir = os.path.join(roll_dir, roll_vers, roll_arch)
 		if clean:
@@ -470,7 +476,12 @@ class RollHandler:
 	def copy_foreign_cd_sunos(self, clean):
 		"""Copy a standard Solaris CD"""
 		
-		js_dir = '/export/rocks/install/jumpstart/'
+		cmd = '/opt/rocks/bin/rocks report distro'
+		for line in os.popen(cmd).readlines():
+			 js_dir = line[:-1]
+
+		js_dir = os.path.join(js_dir, 'jumpstart')
+
 		# For now, hardcode the architecture, because we only support
 		# one architecture. No others. This should really be obtained
 		# from the database.
