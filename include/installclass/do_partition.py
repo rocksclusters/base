@@ -122,7 +122,7 @@ else:
 	#
 	installdisks = []
 	if partscheme == 'force-default-root-disk-only':
-		if len(disks) > 0:
+		if '/' not in p.mountpoints and len(disks) > 0:
 			installdisks.append(disks[0])
 	else:
 		installdisks = disks
