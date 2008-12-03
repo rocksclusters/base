@@ -117,14 +117,18 @@ if os.path.exists('/tmp/user_partition_info'):
 			parts.append(line[:-1])
 		file.close()
 else:
-	#
-	# clear the partitions of all unrecognized drives
-	#
 	installdisks = []
 	if partscheme == 'force-default-root-disk-only':
+		#
+		# if we haven't found a root disk yet, then make the first
+		# unrecognized disk the root disk
+		#
 		if '/' not in p.mountpoints and len(disks) > 0:
 			installdisks.append(disks[0])
-	else:
+	elif partscheme == 'force-default':
+		#
+		# partition and format all unrecognized drives
+		#
 		installdisks = disks
 
 	if len(installdisks) > 0:
