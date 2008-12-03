@@ -1,5 +1,5 @@
 <!-- 
-$Id: admin-examples.sgml,v 1.7 2007/11/20 19:51:30 bruno Exp $
+$Id: admin-examples.sgml,v 1.8 2008/12/03 21:57:53 bruno Exp $
 
 Administration guide
 
@@ -7,6 +7,9 @@ Administration guide
 @Copyright@
 
 $Log: admin-examples.sgml,v $
+Revision 1.8  2008/12/03 21:57:53  bruno
+doc tweaks
+
 Revision 1.7  2007/11/20 19:51:30  bruno
 touch up frontend NIC swap procedure
 
@@ -324,8 +327,8 @@ parameter
 
 </orderedlist>
 </section>
-
 </section>
+
 <!-- ####################################### -->
 
 <section><title>Working with and Modifying Network Configuration</title>
@@ -406,4 +409,51 @@ Then, you must shutdown the frontend's network by executing:
 </screen>
 </section>
 </section>
+
+<!-- ####################################### -->
+
+<section id="sge-cluster-reinstall"
+	xreflabel="Reinstall All Compute Nodes with SGE">
+
+<title>Reinstall All Compute Nodes with SGE</title>
+
+<para>
+This section describes how to reinstall all the nodes under the
+control of SGE.
+</para>
+
+<para>
+As root, execute:
+</para>
+
+<screen>
+# /opt/gridengine/examples/jobs/sge-reinstall.sh
+</screen>
+
+<para>
+This will produce output like:
+</para>
+
+<screen>
+Your job 1 ("reboot.qsub") has been submitted
+Set compute-0-0.local for Reinstallation
+Your job 2 ("reboot.qsub") has been submitted
+Set compute-0-1.local for Reinstallation
+Your job 3 ("reboot.qsub") has been submitted
+Set compute-0-2.local for Reinstallation
+</screen>
+
+<para>
+For each compute node, the script submits a high-priority reinstall job.
+The reinstall jobs will move ahead of the currently queued jobs (running
+jobs will not be disturbed).
+When a busy compute node become free, the next job submitted to it will be
+the reinstall job.
+All remaining jobs will remain queued until the node completes its
+installation, after which SGE will recognize the node as up and then submit
+a previously queued job to it.
+</para>
+
+</section>
+
 </chapter>

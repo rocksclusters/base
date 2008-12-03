@@ -103,7 +103,7 @@ build
 	</tip>
 
 	<para>
-	After you type <computeroutput>frontend</computeroutput>,
+	After you type <computeroutput>build</computeroutput>,
 	the installer will start running.
 	</para>
 </listitem>
