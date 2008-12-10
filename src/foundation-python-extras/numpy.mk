@@ -1,5 +1,5 @@
 # --------------------------------------------------- -*- Makefile -*- --
-# $Id: numpy.mk,v 1.7 2008/10/18 00:56:00 mjk Exp $
+# $Id: numpy.mk,v 1.8 2008/12/10 22:37:23 anoop Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: numpy.mk,v $
+# Revision 1.8  2008/12/10 22:37:23  anoop
+# Upgraded numpy - needed for Biopython
+#
 # Revision 1.7  2008/10/18 00:56:00  mjk
 # copyright 5.1
 #
@@ -96,18 +99,18 @@
 #
 
 build::
-	gunzip -c numpy-0.9.2.tar.gz | $(TAR) -xf -
+	gunzip -c numpy-1.2.1.tar.gz | $(TAR) -xf -
 	(								\
-		cd numpy-0.9.2;						\
+		cd numpy-1.2.1;						\
 		$(PY.PATH) setup.py build;				\
 	)
 	
 install::
 	(								\
-		cd numpy-0.9.2;						\
+		cd numpy-1.2.1;						\
 		$(PY.PATH) setup.py install --root=$(ROOT);		\
 	)
 
 
 clean::
-	rm -rf numpy-0.9.2
+	rm -rf numpy-1.2.1

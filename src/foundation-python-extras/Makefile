@@ -1,5 +1,5 @@
 # --------------------------------------------------- -*- Makefile -*- --
-# $Id: Makefile,v 1.11 2008/10/18 00:56:00 mjk Exp $
+# $Id: Makefile,v 1.12 2008/12/10 22:37:23 anoop Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.12  2008/12/10 22:37:23  anoop
+# Upgraded numpy - needed for Biopython
+#
 # Revision 1.11  2008/10/18 00:56:00  mjk
 # copyright 5.1
 #
@@ -121,5 +124,5 @@ install::
 
 include MySQL-python.mk Numeric.mk POW.mk \
 	PyXML.mk egenix-mx-base.mk libxml2dom.mk \
-	numarray.mk pexpect.mk IPy.mk
+	numarray.mk pexpect.mk IPy.mk numpy.mk
 
