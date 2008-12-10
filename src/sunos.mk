@@ -1,4 +1,4 @@
-# $Id: sunos.mk,v 1.8 2008/10/18 00:55:47 mjk Exp $
+# $Id: sunos.mk,v 1.9 2008/12/10 23:19:05 anoop Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: sunos.mk,v $
+# Revision 1.9  2008/12/10 23:19:05  anoop
+# Bug fixes for sun build
+#
 # Revision 1.8  2008/10/18 00:55:47  mjk
 # copyright 5.1
 #
@@ -131,7 +134,8 @@ SRCDIRS = foundation-coreutils foundation-gawk	\
 	  foundation-perl foundation-libxml2	\
 	  foundation-python-extras php postfix	\
 	  foundation-perl-tk foundation-ant	\
-	  foundation-cvs phpMyAdmin		\
+	  foundation-cvs foundation-gd		\
+	  phpMyAdmin				\
 	  foundation-graphviz foundation-rcs	\
 	  foundation-mercurial devel		\
 	  pcre pylib command dbreport 411	\

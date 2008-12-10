@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.2 2008/10/18 00:56:01 mjk Exp $
+# $Id: Makefile,v 1.3 2008/12/10 23:19:05 anoop Exp $
 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 
 # $Log: Makefile,v $
+# Revision 1.3  2008/12/10 23:19:05  anoop
+# Bug fixes for sun build
+#
 # Revision 1.2  2008/10/18 00:56:01  mjk
 # copyright 5.1
 #
@@ -78,7 +81,7 @@ build:
 	gunzip -c $(NAME)-$(VERSION).tar.gz | $(TAR) -xf -
 	(\
 		cd $(NAME)-$(VERSION);	\
-		$(MAKE);		\
+		$(MAKE) LD_LIBRARY_PATH= ;		\
 	)
 install::
 	(\
