@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.21 2008/10/18 00:55:57 mjk Exp $
+# $Id: __init__.py,v 1.1 2008/12/15 22:27:21 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,93 +54,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
-# Revision 1.21  2008/10/18 00:55:57  mjk
-# copyright 5.1
+# Revision 1.1  2008/12/15 22:27:21  bruno
+# convert pxeboot and pxeaction tables to boot and bootaction tables.
 #
-# Revision 1.20  2008/08/28 18:12:45  anoop
-# Now solaris installations use pxelinux to chainload pxegrub. This
-# way we can keep generation of pxelinux files controlled through
-# "rocks add host pxeaction" and thus keep the content of
-# pxelinux files consistent and managed.
-#
-# Revision 1.19  2008/07/23 00:29:55  anoop
-# Modified the database to support per-node OS field. This will help
-# determine the kind of provisioning for each node
-#
-# Modification to insert-ethers, rocks command line, and pylib to
-# support the same.
-#
-# Revision 1.18  2008/07/22 00:34:41  bruno
-# first whack at vlan support
-#
-# Revision 1.17  2008/03/06 23:41:40  mjk
-# copyright storm on
-#
-# Revision 1.16  2008/02/13 01:04:07  anoop
-# Bug fix. Now returns gracefully if the solaris node isn't present
-#
-# Revision 1.15  2007/12/10 21:28:34  bruno
-# the base roll now contains several elements from the HPC roll, thus
-# making the HPC roll optional.
-#
-# this also includes changes to help build and configure VMs for V.
-#
-# Revision 1.14  2007/11/09 02:54:12  anoop
-# dbreport grub_menu now takes options.
-#
-# Revision 1.13  2007/09/10 07:07:05  anoop
-# The grub menu.lst file needs to be removed after installation of the host
-# is complete. So change permissions so that we can delete the file
-#
-# Revision 1.12  2007/09/10 06:01:10  anoop
-# SOLARIS: Now rocks set host pxeboot can set the pxeboot action for Solaris
-# as well. At the moment, pxeaction for solaris not set in database but taken
-# from a dbreport output. This'll change later as the software matures.
-# The changes should not break anything for Linux, as the changes are solaris
-# specific, but YMMV
-#
-# Revision 1.11  2007/07/05 17:46:45  bruno
-# fixes
-#
-# Revision 1.10  2007/07/04 01:47:40  mjk
-# embrace the anger
-#
-# Revision 1.9  2007/06/29 21:22:05  bruno
-# more cleanup
-#
-# Revision 1.8  2007/06/19 16:42:43  mjk
-# - fix add host interface docstring xml
-# - update copyright
-#
-# Revision 1.7  2007/06/09 00:24:45  anoop
-# Moving away from device names.
-# Also adding interfaces should make sure that device names
-# are checked before subnets. This should change in the future
-# but absolutely vital now for things to stay stable
-#
-# Revision 1.6  2007/06/07 16:43:02  mjk
-# - moved host(s) argument processing into a top level class
-# - list/dump/set host commands now use this
-#
-# Revision 1.5  2007/05/31 19:35:43  bruno
-# first pass at getting all the 'help' consistent on all the rocks commands
-#
-# Revision 1.4  2007/05/10 20:37:02  mjk
-# - massive rocks-command changes
-# -- list host is standardized
-# -- usage simpler
-# -- help is the docstring
-# -- host groups and select statements
-# - added viz commands
-#
-# Revision 1.3  2007/05/02 20:20:53  bruno
-# added 'pxeaction' table -- allows for adding and removing pxeboot actions
-#
-# Revision 1.2  2007/05/01 22:48:26  bruno
-# pxeboot works for pxe first and pxe last nodes
-#
-# Revision 1.1  2007/04/30 22:11:11  bruno
-# first pass at pxeboot (pxe first) rocks command line
+# this enables merging the pxeaction and vm_profiles tables
 #
 #
 
@@ -151,61 +68,60 @@ import os
 
 class Command(rocks.commands.set.host.command):
 	"""
-	Set a pxeaction for a host. This action defines what configuration
-	is sent back to a host the next time it PXE boots.
+	Set a bootaction for a host. This action defines what configuration
+	is sent back to a host the next time it boots.
 	
 	<arg type='string' name='host' repeat='1'>
 	One or more host names.
 	</arg>
 
 	<param type='string' name='action'>
-	The label name for the pxeaction. For a list of pxeactions,
-	execute: 'rocks list host pxeaction'.
+	The label name for the bootaction. For a list of bootactions,
+	execute: 'rocks list host bootaction'.
 
 	If no action is supplied, then only the configuration file for the
 	list of hosts will be rewritten.
 	</param>
 		
-	<example cmd='set host pxeboot compute-0-0 action=os'>
-	Set the 'os' pxeaction for compute-0-0.
+	<example cmd='set host boot compute-0-0 action=os'>
+	On the next boot, compute-0-0 will boot from its local disk.
 	</example>
 	"""
 
-	def updatePxeboot(self, nodeid, host, action):
+	def updateBoot(self, nodeid, host, action):
 		#
-		# just make sure there is a command is defined for this host.
+		# just make sure there is a action is defined for this host.
 		# we will not be using the result from the query, we just
-		# want to know if a command exists for this host.
+		# want to know if a action exists for this host.
 		#
-		rows = self.db.execute("""select command from pxeaction where
+		rows = self.db.execute("""select action from bootaction where
 			(node = %s or node = 0) 
-			and pxeaction.action = "%s" """ % (nodeid, action))
+			and bootaction.action = "%s" """ % (nodeid, action))
 
 		if rows < 1:
-			self.abort('PXE command ' + 
+			self.abort('Boot action ' + 
 				'(%s) is not defined ' % (action) +
 				'for host (%s)' % (host))
 
 		#
 		# is there already an entry in the pxeboot table
 		#
-		nrows = self.db.execute("""select id from pxeboot where
+		nrows = self.db.execute("""select id from boot where
 						node = %s """ % (nodeid))
 		if nrows < 1:
 			#
 			# insert a new row
 			#
-			self.db.execute("""insert into pxeboot (node, action)
+			self.db.execute("""insert into boot (node, action)
 				values(%s, "%s") """ % (nodeid, action))
 		else:
 			#
 			# update an existing row
 			#
-			pxebootid, = self.db.fetchone()
+			bootid, = self.db.fetchone()
 
-			self.db.execute("""update pxeboot set
-				action = "%s" where id = %s """ %
-							(action, pxebootid))
+			self.db.execute("""update boot set action = "%s"
+				where id = %s """ % (action, bootid))
 		return
 
 
@@ -235,20 +151,28 @@ class Command(rocks.commands.set.host.command):
 
 
 	def writeDefaultPxebootCfg(self):
-		nrows = self.db.execute("""select command, args from pxeaction
-			where action='install' and node = 0 """)
+		nrows = self.db.execute("""select kernel, ramdisk, args from
+			bootaction where action='install' and node = 0 """)
 
 		if nrows == 1:
-			command, args = self.db.fetchone()
+			kernel, ramdisk, args = self.db.fetchone()
 
 			filename = '/tftpboot/pxelinux/pxelinux.cfg/default'
 			file = open(filename, 'w')	
 			file.write('default rocks\n')
 			file.write('prompt 0\n')
 			file.write('label rocks\n')
-			file.write('\t%s\n' % (command))
-			if args != None and args != '':
-				file.write('\t%s\n' % (args))
+
+			if len(kernel) > 6 and kernel[0:7] == 'vmlinuz':
+				file.write('\tkernel %s\n' % (kernel))
+			if len(ramdisk) > 0:
+				if len(args) > 0:
+					args += ' initrd=%s' % ramdisk
+				else:
+					args = 'initrd=%s' % ramdisk
+			if len(args) > 0:
+				file.write('\tappend %s\n' % (args))
+
 			file.close()
 
 			#
@@ -261,48 +185,46 @@ class Command(rocks.commands.set.host.command):
 	def writePxebootCfg(self, node, nodeid):
 		#
 		# there is a case where the host name may be in the nodes table
-		# but not in the pxeboot table. in this case, remove the current
+		# but not in the boot table. in this case, remove the current
 		# configuration file (if it exists) and return
 		#
 		filename = self.getFilename(nodeid)
 
-		rows = self.db.execute("""select * from pxeboot where
+		rows = self.db.execute("""select * from boot where
 			node = %s """ % (nodeid))
 		if rows < 1:
-			if filename != None and \
-				os.path.exists(filename):
-
+			if filename != None and os.path.exists(filename):
 				os.unlink(filename)
 
 			return
 
 		#
-		# get the PXE boot command (e.g., the kernel) and the
-		# arguments for that command
+		# get the PXE boot kernel, ramdisk and the boot arguments
 		#
 		nrows = self.db.execute("""select
-			pxeaction.command, pxeaction.args from
-			pxeaction, pxeboot where pxeboot.node = %s and
-			pxeaction.action = pxeboot.action and
-			pxeaction.node = %s """ % (nodeid, nodeid))
+			bootaction.kernel, bootaction.ramdisk,
+			bootaction.args from bootaction, boot where
+			boot.node = %s and bootaction.action = boot.action
+			and bootaction.node = %s """ % (nodeid, nodeid))
 
 		if nrows == 1:
-			command, args = self.db.fetchone()
+			kernel, ramdisk, args = self.db.fetchone()
 		else:
 			#
 			# get the global command
 			#
 			nrows = self.db.execute("""select
-				pxeaction.command, pxeaction.args from
-				pxeaction, pxeboot where pxeboot.node = %s and
-				pxeaction.action = pxeboot.action and
-				pxeaction.node = 0 """ % (nodeid))
+				bootaction.kernel, bootaction.ramdisk,
+				bootaction.args from bootaction, boot where
+				boot.node = %s and
+				bootaction.action = boot.action and
+				bootaction.node = 0 """ % (nodeid))
 
 			if nrows == 1:
-				command, args = self.db.fetchone()
+				kernel, ramdisk, args = self.db.fetchone()
 			else:
-				rocks.commands.Abort('PXE command ' +
-					'(%s) does not exist ' % (command) +
+				rocks.commands.Abort('PXE action ' +
+					'does not exist ' +
 					'for host (%s).' % (node))
 
 		if filename != None:
@@ -310,9 +232,22 @@ class Command(rocks.commands.set.host.command):
 			file.write('default rocks\n')
 			file.write('prompt 0\n')
 			file.write('label rocks\n')
-			file.write('\t%s\n' % (command))
-			if args != None and args != '':
-				file.write('\t%s\n' % (args))
+
+			if kernel:
+				if kernel[0:7] == 'vmlinuz':
+					file.write('\tkernel %s\n' % (kernel))
+				else:
+					file.write('\t%s\n' % (kernel))
+
+			if ramdisk and len(ramdisk) > 0:
+				if len(args) > 0:
+					args += ' initrd=%s' % ramdisk
+				else:
+					args = 'initrd=%s' % ramdisk
+
+			if args and len(args) > 0:
+				file.write('\tappend %s\n' % (args))
+
 			file.close()
 
 			#
@@ -324,7 +259,7 @@ class Command(rocks.commands.set.host.command):
 
 	# Solaris Function Only
 	def writePxegrub(self, host, nodeid):
-		rows = self.db.execute("select action from pxeboot"
+		rows = self.db.execute("select action from boot"
 				" where node='%s'" % (nodeid))
 
 		if rows < 1:
@@ -369,7 +304,7 @@ class Command(rocks.commands.set.host.command):
 		frontend_host = self.db.getGlobalVar('Kickstart',
 			'PrivateHostname')
 
-		for host in self.getHostnames(args):
+		for host, in self.getHostnames(args):
 			#
 			# if this host is the frontend, then generate the
 			# default configuration file
@@ -384,15 +319,34 @@ class Command(rocks.commands.set.host.command):
 				self.db.execute("""select nodes.id,
 					nodes.os from nodes, memberships 
 					where nodes.name = '%s' and
-					nodes.membership = memberships.id""" % host)
+					nodes.membership = memberships.id"""
+					% host)
 
 				(nodeid, node_os) = self.db.fetchone()
 			
 				if action:
-					self.updatePxeboot(nodeid, host, action)
-			
-				if node_os == 'sunos':
-					self.writePxegrub(host, nodeid)
+					self.updateBoot(nodeid, host, action)
 
-				self.writePxebootCfg(host, nodeid)
+				#
+				# only write PXE configuration file for 'real'
+				# machines (e.g., not paravirtualized machines)
+				#
+				physnode = 1
+
+				rows = self.db.execute("""show tables like
+					'vm_nodes' """)
+
+				if rows == 1:
+					rows = self.db.execute("""select
+						vn.id from vm_nodes vn, nodes n
+						where vn.node = n.id and
+						n.name = "%s" """ % (host))
+					if rows == 1:
+						physnode = 0
+
+				if physnode:
+					if node_os == 'sunos':
+						self.writePxegrub(host, nodeid)
+
+					self.writePxebootCfg(host, nodeid)
 

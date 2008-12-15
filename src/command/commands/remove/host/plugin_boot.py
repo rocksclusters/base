@@ -1,5 +1,5 @@
-# $Id: __init__.py,v 1.9 2008/10/18 00:55:56 mjk Exp $
-#
+# $Id: plugin_boot.py,v 1.1 2008/12/15 22:27:21 bruno Exp $
+# 
 # @Copyright@
 # 
 # 				Rocks(r)
@@ -53,99 +53,32 @@
 # 
 # @Copyright@
 #
-# $Log: __init__.py,v $
-# Revision 1.9  2008/10/18 00:55:56  mjk
+# $Log: plugin_boot.py,v $
+# Revision 1.1  2008/12/15 22:27:21  bruno
+# convert pxeboot and pxeaction tables to boot and bootaction tables.
+#
+# this enables merging the pxeaction and vm_profiles tables
+#
+# Revision 1.3  2008/10/18 00:55:55  mjk
 # copyright 5.1
 #
-# Revision 1.8  2008/09/15 19:52:57  bruno
-# fix for removing a node that has vlans defined
-#
-# Revision 1.7  2008/03/06 23:41:39  mjk
+# Revision 1.2  2008/03/06 23:41:38  mjk
 # copyright storm on
 #
-# Revision 1.6  2007/07/04 01:47:39  mjk
-# embrace the anger
+# Revision 1.1  2008/02/01 20:52:27  bruno
+# use plugins to support removing all database entries for a host.
 #
-# Revision 1.5  2007/06/28 21:48:38  bruno
-# made a sweep over all the remove commands
-#
-# Revision 1.4  2007/06/27 16:58:54  bruno
-# needs an 's'
-#
-# Revision 1.3  2007/06/27 04:57:14  bruno
-# check for file existence before unlinking it
-#
-# Revision 1.2  2007/06/25 23:45:06  bruno
-# associate with base roll
-#
-# Revision 1.1  2007/06/25 23:24:36  bruno
-# added a command to remove the PXE boot configuration for a node that
-# is removed with insert-ethers
-#
-# Revision 1.3  2007/06/19 16:42:43  mjk
-# - fix add host interface docstring xml
-# - update copyright
-#
-# Revision 1.2  2007/06/18 20:58:02  phil
-# Fix doc in gateway. Added set module command
-#
-# Revision 1.1  2007/06/18 20:44:58  phil
-# Allow setting of gateway
 #
 
 import os
-import os.path
-import string
 import rocks.commands
 
-class Command(rocks.commands.remove.host.command):
-	"""
-	Removes the PXE boot configuration for a host
+class Plugin(rocks.commands.Plugin):
 
-	<arg type='string' name='host' repeat='1'>
-	One or more named hosts.
-	</arg>
-	
-	<example cmd='remove host pxeboot compute-0-0'>
-	Removes the PXE boot configuration for host compute-0-0.
-	</example>
+	def provides(self):
+		return 'pxeboot'
 
-	<example cmd='remove host pxeboot compute-0-0 compute-0-1'>
-	Removes the PXE boot configuration for hosts compute-0-0 and
-	compute-0-1.
-	</example>
-	"""
-	
-	def run(self, params, args):
-		if not len(args):
-			self.abort("must supply host")
-
-		for host in self.getHostnames(args):
-
-			self.db.execute("""delete from pxeboot where
-				pxeboot.node=
-				(select id from nodes where name='%s')""" % 
-				host)
-				
-			#
-			# remove the pxe configuration file
-			#
-			rows = self.db.execute("""select networks.ip from
-				networks, nodes, subnets where
-				networks.node=nodes.id and
-				subnets.name='private' and
-				networks.subnet=subnets.id and
-				nodes.name='%s'""" % host)
-
-			for ipaddr, in self.db.fetchall():
-				if not ipaddr:
-					return
-
-				filename = '/tftpboot/pxelinux/pxelinux.cfg/'
-				for i in string.split(ipaddr, '.'):
-					hexstr = '%02x' % (int(i))
-					filename += '%s' % hexstr.upper()
-
-				if os.path.exists(filename):
-					os.unlink(filename)
-
+	def run(self, args):
+		if len(args) > 0:
+			self.owner.command('remove.host.boot', [ args ])
+		

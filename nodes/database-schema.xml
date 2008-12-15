@@ -17,6 +17,11 @@
 
   <changelog>
   $Log: database-schema.xml,v $
+  Revision 1.23  2008/12/15 22:27:21  bruno
+  convert pxeboot and pxeaction tables to boot and bootaction tables.
+
+  this enables merging the pxeaction and vm_profiles tables
+
   Revision 1.22  2008/10/18 00:55:45  mjk
   copyright 5.1
 
@@ -400,21 +405,22 @@ CREATE TABLE partitions (
 	PRIMARY KEY (ID)
 ) TYPE=MyISAM;
 
-<!-- PXE Boot/Action Tables -->
-DROP TABLE IF EXISTS pxeboot;
-CREATE TABLE pxeboot (
+<!-- Boot/Action Tables -->
+DROP TABLE IF EXISTS boot;
+CREATE TABLE boot (
   ID            int(11) NOT NULL auto_increment,
   Node          int(11) NOT NULL default '0',
   Action        varchar(256) default NULL,
   PRIMARY KEY (ID)
 ) TYPE=MyISAM;
 
-DROP TABLE IF EXISTS pxeaction;
-CREATE TABLE pxeaction (
+DROP TABLE IF EXISTS bootaction;
+CREATE TABLE bootaction (
   ID            int(11) NOT NULL auto_increment,
   Node          int(11) NOT NULL default '0',
   Action        varchar(256) default NULL,
-  Command       varchar(256) default NULL,
+  Kernel        varchar(256) default NULL,
+  Ramdisk       varchar(256) default NULL,
   Args          varchar(1024) default NULL,
   PRIMARY KEY (ID)
 ) TYPE=MyISAM;

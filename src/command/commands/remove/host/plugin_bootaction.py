@@ -1,5 +1,5 @@
-# $Id: __init__.py,v 1.8 2008/10/18 00:55:50 mjk Exp $
-#
+# $Id: plugin_bootaction.py,v 1.1 2008/12/15 22:27:21 bruno Exp $
+# 
 # @Copyright@
 # 
 # 				Rocks(r)
@@ -53,93 +53,32 @@
 # 
 # @Copyright@
 #
-# $Log: __init__.py,v $
-# Revision 1.8  2008/10/18 00:55:50  mjk
+# $Log: plugin_bootaction.py,v $
+# Revision 1.1  2008/12/15 22:27:21  bruno
+# convert pxeboot and pxeaction tables to boot and bootaction tables.
+#
+# this enables merging the pxeaction and vm_profiles tables
+#
+# Revision 1.3  2008/10/18 00:55:55  mjk
 # copyright 5.1
 #
-# Revision 1.7  2008/03/06 23:41:38  mjk
+# Revision 1.2  2008/03/06 23:41:38  mjk
 # copyright storm on
 #
-# Revision 1.6  2007/07/04 01:47:38  mjk
-# embrace the anger
-#
-# Revision 1.5  2007/06/28 19:45:44  bruno
-# all the 'rocks list host' commands now have help
-#
-# Revision 1.4  2007/06/19 16:42:41  mjk
-# - fix add host interface docstring xml
-# - update copyright
-#
-# Revision 1.3  2007/05/31 19:35:42  bruno
-# first pass at getting all the 'help' consistent on all the rocks commands
-#
-# Revision 1.2  2007/05/10 20:37:01  mjk
-# - massive rocks-command changes
-# -- list host is standardized
-# -- usage simpler
-# -- help is the docstring
-# -- host groups and select statements
-# - added viz commands
-#
-# Revision 1.1  2007/05/02 20:20:53  bruno
-# added 'pxeaction' table -- allows for adding and removing pxeboot actions
+# Revision 1.1  2008/02/01 20:52:27  bruno
+# use plugins to support removing all database entries for a host.
 #
 #
 
-import sys
-import socket
+import os
 import rocks.commands
-import string
 
-class Command(rocks.commands.list.host.command):
-	"""
-	Lists the set of PXE actions for hosts. Each PXE action is a label
-	that points to a command string. The command string is placed into
-	a host-specific pxelinux configuration file. Example labels are
-	'install' and 'os' which point to command strings used to install
-	and boot hosts respectively.
+class Plugin(rocks.commands.Plugin):
 
-	<arg optional='1' type='string' name='host' repeat='1'>
-	Zero, one or more host names. If no host names are supplied, info about
-	all the known hosts is listed.
-	</arg>
+	def provides(self):
+		return 'pxeaction'
 
-	<example cmd='list host pxeaction compute-0-0'>
-	List the PXE actions available for compute-0-0.
-	</example>
-
-	<example cmd='list host pxeaction'>
-	List the PXE actions available for all known hosts.
-	</example>
-	"""
-
-	def run(self, params, args):
-
-		self.beginOutput()
-
-		# Using a dictionary read the default values for all nodes
-		# and override the entries with the per-node values.
+	def run(self, args):
+		if len(args) > 0:
+			self.owner.command('remove.host.bootaction', [ args ])
 		
-		for host in self.getHostnames(args):
-			dict = {}
-			self.db.execute("""select
-				p.action, p.command, p.args from
-				nodes n, pxeaction p where
-				p.node=0 and n.name='%s'""" % host)
-
-			for row in self.db.fetchall():
-				dict[row[0]] = row
-
-			self.db.execute("""select
-				p.action, p.command, p.args from
-				nodes n, pxeaction p where
-				p.node=n.id and n.name='%s'""" % host)
-			for row in self.db.fetchall():
-				dict[row[0]] = row
-			keys = dict.keys()
-			keys.sort()
-			for action in keys:
-				self.addOutput(host, dict[action])
-
-		self.endOutput(header=['host', 'action', 'command', 'args'])
-

@@ -18,10 +18,10 @@ all files in the addon subdirectory.
 this will copy your floppy image to /tftpboot/pxelinux/pxeflash
 
 4. Set a node to pxeboot from your flash image
-# rocks set host pxeboot <hostname> action=pxeflash
+# rocks set host boot <hostname> action=pxeflash
 
 You will need to manually reset the node to install or boot mode using
-# rocks set host pxeboot <hostname> action=os 
+# rocks set host boot <hostname> action=os 
 
 
 Important Acknowledgement 

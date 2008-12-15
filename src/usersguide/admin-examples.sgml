@@ -1,5 +1,5 @@
 <!-- 
-$Id: admin-examples.sgml,v 1.8 2008/12/03 21:57:53 bruno Exp $
+$Id: admin-examples.sgml,v 1.9 2008/12/15 22:27:22 bruno Exp $
 
 Administration guide
 
@@ -7,6 +7,11 @@ Administration guide
 @Copyright@
 
 $Log: admin-examples.sgml,v $
+Revision 1.9  2008/12/15 22:27:22  bruno
+convert pxeboot and pxeaction tables to boot and bootaction tables.
+
+this enables merging the pxeaction and vm_profiles tables
+
 Revision 1.8  2008/12/03 21:57:53  bruno
 doc tweaks
 
@@ -172,7 +177,7 @@ the frontend to set its pxe boot to <emphasis>os</emphasis>.  To re-install
 a node using PXE (e.g. compute-0-0), then do the following:
 </para>
 <screen>
-# rocks set host pxeboot compute-0-0 action=install
+# rocks set host boot compute-0-0 action=install
 # ssh compute-0-0 "shutdown -r now" 
 </screen>
 <note>
@@ -195,7 +200,7 @@ override of the default configuration.
 
 <warning>
 <para>
-It is possible to have commands affect all nodes. In this case use '%' as the host wildcard.  For example <computeroutput>rocks set host pxeboot % action=install </computeroutput> will cause ALL nodes to reinstall at next pxeboot. 
+It is possible to have commands affect all nodes. In this case use '%' as the host wildcard.  For example <computeroutput>rocks set host boot % action=install </computeroutput> will cause ALL nodes to reinstall at next pxeboot. 
 </para>
 </warning>
 
@@ -203,7 +208,7 @@ It is possible to have commands affect all nodes. In this case use '%' as the ho
 <para>
 For commands that take lists of hosts, it is possible to use an appliance type
 for the host(s) argument. <computeroutput>rocks list appliance</computeroutput> are the list of valid appliance types. To set the pxeaction of all compute appliances to be install, use
-<computeroutput>rocks set host pxeboot compute action=install </computeroutput>
+<computeroutput>rocks set host boot compute action=install </computeroutput>
 </para>
 </note>
 
@@ -214,7 +219,7 @@ The following illustrates how to inspect the current action of nodes and then th
 </para>
 
 <screen>
-[root@vizzy ~]# rocks list host pxeboot
+[root@vizzy ~]# rocks list host boot
 HOST         ACTION 
 vizzy:       os     
 compute-0-0: os     
@@ -307,7 +312,7 @@ for host compute-1-1)
 
 <listitem>
 <para>
-<computeroutput># rocks set host pxeboot compute-1-1 action=memtest</computeroutput>
+<computeroutput># rocks set host boot compute-1-1 action=memtest</computeroutput>
 </para>
 </listitem>
 
@@ -321,7 +326,7 @@ Boot node compute-1-1 by power cycle or other means.
 <para>
 After compute-1-1 has successfully started the diagnostic, reset the pxeboot
 parameter
-<computeroutput># rocks set host pxeboot compute-1-1 action=os</computeroutput>
+<computeroutput># rocks set host boot compute-1-1 action=os</computeroutput>
 </para>
 </listitem>
 

@@ -1,6 +1,6 @@
 #!/opt/rocks/bin/python
 #
-# $Id: setPxeboot.cgi,v 1.8 2008/10/18 00:56:01 mjk Exp $
+# $Id: setPxeboot.cgi,v 1.9 2008/12/15 22:27:21 bruno Exp $
 #
 # @Copyright@
 # 
@@ -56,6 +56,11 @@
 # @Copyright@
 #
 # $Log: setPxeboot.cgi,v $
+# Revision 1.9  2008/12/15 22:27:21  bruno
+# convert pxeboot and pxeaction tables to boot and bootaction tables.
+#
+# this enables merging the pxeaction and vm_profiles tables
+#
 # Revision 1.8  2008/10/18 00:56:01  mjk
 # copyright 5.1
 #
@@ -113,7 +118,7 @@ host = string.split(name, '.')[0]
 #
 # set the host boot off its local disk
 #
-os.system('/opt/rocks/bin/rocks set host pxeboot %s ' % (host) + \
+os.system('/opt/rocks/bin/rocks set host boot %s ' % (host) + \
 	'action="%s" > /dev/null 2>&1' % (action))
 
 #

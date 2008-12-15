@@ -64,7 +64,7 @@ or viz tile node) by using the Rocks command line and PXE.
 	</para>
 
 <screen>
-# rocks set host pxeboot &lt;hostname&gt; action=pxeflash
+# rocks set host boot &lt;hostname&gt; action=pxeflash
 </screen>
 
 </listitem>
@@ -83,7 +83,7 @@ or viz tile node) by using the Rocks command line and PXE.
 	</para>
 
 <screen>
-# rocks set host pxeboot &lt;hostname&gt; action=os
+# rocks set host boot &lt;hostname&gt; action=os
 </screen>
 
 </listitem>

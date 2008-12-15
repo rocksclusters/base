@@ -1,4 +1,4 @@
-# $Id: plugin_pxeaction.py,v 1.3 2008/10/18 00:55:55 mjk Exp $
+# $Id: __init__.py,v 1.1 2008/12/15 22:27:21 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -53,27 +53,65 @@
 # 
 # @Copyright@
 #
-# $Log: plugin_pxeaction.py,v $
-# Revision 1.3  2008/10/18 00:55:55  mjk
-# copyright 5.1
+# $Log: __init__.py,v $
+# Revision 1.1  2008/12/15 22:27:21  bruno
+# convert pxeboot and pxeaction tables to boot and bootaction tables.
 #
-# Revision 1.2  2008/03/06 23:41:38  mjk
-# copyright storm on
-#
-# Revision 1.1  2008/02/01 20:52:27  bruno
-# use plugins to support removing all database entries for a host.
+# this enables merging the pxeaction and vm_profiles tables
 #
 #
 
-import os
+import sys
+import string
 import rocks.commands
+import os
 
-class Plugin(rocks.commands.Plugin):
+class Command(rocks.commands.remove.host.command):
+	"""
+	Remove a boot action specification for a list of hosts.
 
-	def provides(self):
-		return 'pxeaction'
+	<arg type='string' name='host' repeat='1'>
+	List of hosts to remove boot action definitions. If no hosts are listed,
+	then the global definition that matches the 'action=name' is removed.
+	</arg>
 
-	def run(self, args):
-		if len(args) > 0:
-			self.owner.command('remove.host.pxeaction', [ args ])
+	<param type='string' name='action'>
+	The label name for the boot action. You can see the boot action label
+	names by executing: 'rocks list host bootaction'.
+	</param>
+
+	<example cmd='remove host bootaction compute-0-0 action=os'>
+	Remove the 'os' boot action for compute-0-0.
+	</example>
+	"""
+
+	def run(self, params, args):
+		(action, ) = self.fillParams([('action', '%')])
+
+		# If no host list is provided remove the default action.
+		# Otherwise remove the action for each host.
 		
+		if not len(args):
+			self.db.execute("""delete from bootaction where
+				node = 0 and bootaction.action = '%s' """
+				% action)
+
+			#	
+			# regenerate all the pxe boot configuration files
+			# including the default
+			#
+			self.command('set.host.boot', self.getHostnames())
+		else:
+			for host in self.getHostnames(args):
+				self.db.execute("""delete from bootaction where
+					node =
+					(select id from nodes where name='%s')
+					and bootaction.action like '%s' """ % 
+					(host, action))
+
+				#
+				# regenerate the pxe boot configuration
+				# file for host
+				#
+				self.command('set.host.boot', [ host ])
+

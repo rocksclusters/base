@@ -1,5 +1,5 @@
-# $Id: plugin_pxeboot.py,v 1.3 2008/10/18 00:55:55 mjk Exp $
-# 
+# $Id: __init__.py,v 1.1 2008/12/15 22:27:21 bruno Exp $
+#
 # @Copyright@
 # 
 # 				Rocks(r)
@@ -53,27 +53,71 @@
 # 
 # @Copyright@
 #
-# $Log: plugin_pxeboot.py,v $
-# Revision 1.3  2008/10/18 00:55:55  mjk
-# copyright 5.1
+# $Log: __init__.py,v $
+# Revision 1.1  2008/12/15 22:27:21  bruno
+# convert pxeboot and pxeaction tables to boot and bootaction tables.
 #
-# Revision 1.2  2008/03/06 23:41:38  mjk
-# copyright storm on
-#
-# Revision 1.1  2008/02/01 20:52:27  bruno
-# use plugins to support removing all database entries for a host.
+# this enables merging the pxeaction and vm_profiles tables
 #
 #
 
-import os
+import sys
+import socket
 import rocks.commands
+import string
 
-class Plugin(rocks.commands.Plugin):
+class Command(rocks.commands.list.host.command):
+	"""
+	Lists the set of boot actions for hosts. Each boot action is a label
+	that points to a command string. The command string is placed into
+	a host-specific pxelinux configuration file. Example labels are
+	'install' and 'os' which point to command strings used to install
+	and boot hosts respectively.
 
-	def provides(self):
-		return 'pxeboot'
+	<arg optional='1' type='string' name='host' repeat='1'>
+	Zero, one or more host names. If no host names are supplied, info about
+	all the known hosts is listed.
+	</arg>
 
-	def run(self, args):
-		if len(args) > 0:
-			self.owner.command('remove.host.pxeboot', [ args ])
+	<example cmd='list host bootaction compute-0-0'>
+	List the boot actions available for compute-0-0.
+	</example>
+
+	<example cmd='list host bootaction'>
+	List the boot actions available for all known hosts.
+	</example>
+	"""
+
+	def run(self, params, args):
+
+		self.beginOutput()
+
+		# Using a dictionary read the default values for all nodes
+		# and override the entries with the per-node values.
 		
+		for host in self.getHostnames(args):
+			dict = {}
+			self.db.execute("""select
+				b.action, b.kernel, b.ramdisk, b.args from
+				nodes n, bootaction b where
+				b.node = 0 and n.name = '%s' """ % host)
+
+			for row in self.db.fetchall():
+				dict[row[0]] = row
+
+			self.db.execute("""select
+				b.action, b.kernel, b.ramdisk, b.args from
+				nodes n, bootaction b where
+				b.node = n.id and n.name = '%s'""" % host)
+
+			for row in self.db.fetchall():
+				dict[row[0]] = row
+
+			keys = dict.keys()
+			keys.sort()
+			for action in keys:
+				self.addOutput(host, dict[action])
+
+		self.endOutput(header=['host', 'action', 'kernel', 'ramdisk',
+			'args'])
+

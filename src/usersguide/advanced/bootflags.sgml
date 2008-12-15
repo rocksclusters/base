@@ -20,7 +20,7 @@ PXE boot:
 </para>
 
 <screen>
-# rocks list host pxeboot
+# rocks list host boot
 HOST         ACTION
 olympic:     ------
 compute-0-0: os
@@ -38,7 +38,7 @@ To list all the possible boot actions for a compute node, execute:
 </para>
 
 <screen>
-# rocks list host pxeaction compute-0-0
+# rocks list host bootaction compute-0-0
 ACTION           COMMAND               ARGS
 install          kernel vmlinuz        append ks initrd=initrd.img ramdisk_size=150000 lang= devfs=nomount pxe kssendmac selinux=0 noipv6
 install headless kernel vmlinuz        append ks initrd=initrd.img ramdisk_size=150000 lang= devfs=nomount pxe kssendmac selinux=0 noipv6 headless vnc
@@ -53,7 +53,7 @@ To change a node's boot action to "install", execute:
 </para>
 
 <screen>
-# rocks set host pxeboot compute-0-0 action="install"
+# rocks set host boot compute-0-0 action="install"
 </screen>
 
 <para>
@@ -61,7 +61,7 @@ Then we see that correct boot action has been applied:
 </para>
 
 <screen>
-# rocks list host pxeboot            
+# rocks list host boot            
 HOST         ACTION 
 olympic:     -------
 compute-0-0: install
@@ -75,7 +75,7 @@ We'll create a new action called "install ucsd" and add our boot flag
 </para>
 
 <screen>
-# rocks add host pxeaction action="install ucsd" command="kernel vmlinuz \
+# rocks add host action action="install ucsd" command="kernel vmlinuz \
   args="append ks initrd=initrd.img ramdisk_size=150000 lang= devfs=nomount \
   pxe kssendmac selinux=0 noipv6 ucsd=rocks"
 </screen>

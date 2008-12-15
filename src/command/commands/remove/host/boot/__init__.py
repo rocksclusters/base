@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.10 2008/10/18 00:55:50 mjk Exp $
+# $Id: __init__.py,v 1.1 2008/12/15 22:27:21 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,79 +54,65 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
-# Revision 1.10  2008/10/18 00:55:50  mjk
-# copyright 5.1
+# Revision 1.1  2008/12/15 22:27:21  bruno
+# convert pxeboot and pxeaction tables to boot and bootaction tables.
 #
-# Revision 1.9  2008/03/06 23:41:38  mjk
-# copyright storm on
-#
-# Revision 1.8  2007/07/04 01:47:38  mjk
-# embrace the anger
-#
-# Revision 1.7  2007/06/28 19:45:44  bruno
-# all the 'rocks list host' commands now have help
-#
-# Revision 1.6  2007/06/19 16:42:41  mjk
-# - fix add host interface docstring xml
-# - update copyright
-#
-# Revision 1.5  2007/05/31 19:35:42  bruno
-# first pass at getting all the 'help' consistent on all the rocks commands
-#
-# Revision 1.4  2007/05/10 20:37:01  mjk
-# - massive rocks-command changes
-# -- list host is standardized
-# -- usage simpler
-# -- help is the docstring
-# -- host groups and select statements
-# - added viz commands
-#
-# Revision 1.3  2007/05/02 20:20:53  bruno
-# added 'pxeaction' table -- allows for adding and removing pxeboot actions
-#
-# Revision 1.2  2007/05/01 22:48:26  bruno
-# pxeboot works for pxe first and pxe last nodes
-#
-# Revision 1.1  2007/04/30 22:11:11  bruno
-# first pass at pxeboot (pxe first) rocks command line
+# this enables merging the pxeaction and vm_profiles tables
 #
 #
 
-import sys
-import socket
-import rocks.commands
+import os
+import os.path
 import string
+import rocks.commands
 
-class Command(rocks.commands.list.host.command):
+class Command(rocks.commands.remove.host.command):
 	"""
-	Lists the current PXE action for hosts. For each host supplied on the
-	command line, this command prints the hostname and PXE action for
-	that host. The PXE action describes what the host will do the next
-	time it is PXE booted.
+	Removes the boot configuration for a host
 
-	<arg optional='1' type='string' name='host' repeat='1'>
-	Zero, one or more host names. If no host names are supplied, info about
-	all the known hosts is listed.
+	<arg type='string' name='host' repeat='1'>
+	One or more named hosts.
 	</arg>
-
-	<example cmd='list host pxeboot compute-0-0'>
-	List the current PXE action for compute-0-0.
+	
+	<example cmd='remove host boot compute-0-0'>
+	Removes the boot configuration for host compute-0-0.
 	</example>
 
-	<example cmd='list host pxeboot'>
-	List the current PXE action for all known hosts.
+	<example cmd='remove host boot compute-0-0 compute-0-1'>
+	Removes the boot configuration for hosts compute-0-0 and
+	compute-0-1.
 	</example>
 	"""
-
+	
 	def run(self, params, args):
-
-		self.beginOutput()
+		if not len(args):
+			self.abort("must supply host")
 
 		for host in self.getHostnames(args):
-			self.db.execute("""select p.action from 
-				nodes n, pxeboot p where n.id=p.node and
-				n.name='%s'""" % host)
-			self.addOutput(host, self.db.fetchone())
 
-		self.endOutput(header=['host', 'action'])
+			self.db.execute("""delete from boot where boot.node =
+				(select id from nodes where name='%s')""" % 
+				host)
+				
+			#
+			# remove the pxe configuration file
+			#
+			rows = self.db.execute("""select networks.ip from
+				networks, nodes, subnets where
+				networks.node = nodes.id and
+				subnets.name = 'private' and
+				networks.subnet = subnets.id and
+				nodes.name = '%s' """ % host)
+
+			for ipaddr, in self.db.fetchall():
+				if not ipaddr:
+					return
+
+				filename = '/tftpboot/pxelinux/pxelinux.cfg/'
+				for i in string.split(ipaddr, '.'):
+					hexstr = '%02x' % (int(i))
+					filename += '%s' % hexstr.upper()
+
+				if os.path.exists(filename):
+					os.unlink(filename)
 

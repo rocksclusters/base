@@ -1,7 +1,7 @@
 #
 # insert-ethers plugin module for generating pxelinux cfg files
 
-# $Id: 00-pxecfg.py,v 1.4 2008/10/18 00:56:03 mjk Exp $
+# $Id: 00-pxecfg.py,v 1.5 2008/12/15 22:27:22 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -57,6 +57,11 @@
 # @Copyright@
 #
 # $Log: 00-pxecfg.py,v $
+# Revision 1.5  2008/12/15 22:27:22  bruno
+# convert pxeboot and pxeaction tables to boot and bootaction tables.
+#
+# this enables merging the pxeaction and vm_profiles tables
+#
 # Revision 1.4  2008/10/18 00:56:03  mjk
 # copyright 5.1
 #
@@ -97,7 +102,7 @@ class Plugin(rocks.sql.InsertEthersPlugin):
 
 				os.system(cmd)
 
-		os.system("/opt/rocks/bin/rocks set host pxeboot " + \
+		os.system("/opt/rocks/bin/rocks set host boot " + \
 			"%s action=%s" % (nodename, "install"))
 
 	def removed(self, nodename, id):

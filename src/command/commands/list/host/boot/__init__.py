@@ -1,5 +1,5 @@
-# $Id: __init__.py,v 1.12 2008/10/18 00:55:56 mjk Exp $
-# 
+# $Id: __init__.py,v 1.1 2008/12/15 22:27:21 bruno Exp $
+#
 # @Copyright@
 # 
 # 				Rocks(r)
@@ -54,100 +54,48 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
-# Revision 1.12  2008/10/18 00:55:56  mjk
-# copyright 5.1
+# Revision 1.1  2008/12/15 22:27:21  bruno
+# convert pxeboot and pxeaction tables to boot and bootaction tables.
 #
-# Revision 1.11  2008/03/06 23:41:39  mjk
-# copyright storm on
-#
-# Revision 1.10  2008/02/01 20:51:23  bruno
-# add the ability to remove all pxeactions for host with a wildcard
-#
-# Revision 1.9  2008/01/22 17:27:21  bruno
-# after removing a pxeaction, need to rebuild the pxe configuration files
-#
-# Revision 1.8  2007/07/04 01:47:39  mjk
-# embrace the anger
-#
-# Revision 1.7  2007/06/28 21:48:38  bruno
-# made a sweep over all the remove commands
-#
-# Revision 1.6  2007/06/25 23:45:06  bruno
-# associate with base roll
-#
-# Revision 1.5  2007/06/19 16:42:42  mjk
-# - fix add host interface docstring xml
-# - update copyright
-#
-# Revision 1.4  2007/06/05 22:28:11  mjk
-# require root for all remove commands
-#
-# Revision 1.3  2007/05/31 19:35:43  bruno
-# first pass at getting all the 'help' consistent on all the rocks commands
-#
-# Revision 1.2  2007/05/10 20:37:02  mjk
-# - massive rocks-command changes
-# -- list host is standardized
-# -- usage simpler
-# -- help is the docstring
-# -- host groups and select statements
-# - added viz commands
-#
-# Revision 1.1  2007/05/02 20:20:53  bruno
-# added 'pxeaction' table -- allows for adding and removing pxeboot actions
+# this enables merging the pxeaction and vm_profiles tables
 #
 #
 
 import sys
-import string
+import socket
 import rocks.commands
-import os
+import string
 
-class Command(rocks.commands.remove.host.command):
+class Command(rocks.commands.list.host.command):
 	"""
-	Remove a pxeaction specification for a list of hosts.
+	Lists the current bot action for hosts. For each host supplied on the
+	command line, this command prints the hostname and boot action for
+	that host. The boot action describes what the host will do the next
+	time it is booted.
 
-	<arg type='string' name='host' repeat='1'>
-	List of hosts to remove pxeaction definitions. If no hosts are listed,
-	then the global definition that matches the 'action=name' is removed.
+	<arg optional='1' type='string' name='host' repeat='1'>
+	Zero, one or more host names. If no host names are supplied, info about
+	all the known hosts is listed.
 	</arg>
 
-	<param type='string' name='action'>
-	The label name for the pxeaction. You can see the pxeaction label
-	names by executing: 'rocks list host pxeaction'.
-	</param>
+	<example cmd='list host boot compute-0-0'>
+	List the current boot action for compute-0-0.
+	</example>
 
-	<example cmd='remove host pxeaction compute-0-0 action=os'>
-	Remove the 'os' pxeaction for compute-0-0.
+	<example cmd='list host boot'>
+	List the current boot action for all known hosts.
 	</example>
 	"""
 
 	def run(self, params, args):
-		(action, ) = self.fillParams([('action', '%')])
 
-		# If no host list is provided remove the default action.
-		# Otherwise remove the action for each host.
-		
-		if not len(args):
-			self.db.execute("""delete from pxeaction where
-				node=0 and pxeaction.action='%s'""" % action)
+		self.beginOutput()
 
-			#	
-			# regenerate all the pxe boot configuration files
-			# including the default
-			#
-			self.command('set.host.pxeboot', self.getHostnames())
-		else:
-			for host in self.getHostnames(args):
-				self.db.execute("""delete from pxeaction where
-					node=
-					(select id from nodes where name='%s')
-					and pxeaction.action like '%s' """ % 
-					(host, action))
+		for host in self.getHostnames(args):
+			self.db.execute("""select b.action from 
+				nodes n, boot b where n.id = b.node and
+				n.name = '%s' """ % host)
+			self.addOutput(host, self.db.fetchone())
 
-				#
-				# regenerate the pxe boot configuration
-				# file for host
-				#
-				self.command('set.host.pxeboot', [ host ])
+		self.endOutput(header=['host', 'action'])
 

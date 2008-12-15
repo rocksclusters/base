@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.13 2008/10/18 00:55:48 mjk Exp $
+# $Id: __init__.py,v 1.1 2008/12/15 22:27:21 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,71 +54,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
-# Revision 1.13  2008/10/18 00:55:48  mjk
-# copyright 5.1
+# Revision 1.1  2008/12/15 22:27:21  bruno
+# convert pxeboot and pxeaction tables to boot and bootaction tables.
 #
-# Revision 1.12  2008/07/11 19:59:41  bruno
-# fix 'examples' in help section
-#
-# Revision 1.11  2008/03/06 23:41:35  mjk
-# copyright storm on
-#
-# Revision 1.10  2008/01/22 17:27:21  bruno
-# after removing a pxeaction, need to rebuild the pxe configuration files
-#
-# Revision 1.9  2007/12/10 21:28:34  bruno
-# the base roll now contains several elements from the HPC roll, thus
-# making the HPC roll optional.
-#
-# this also includes changes to help build and configure VMs for V.
-#
-# Revision 1.8  2007/07/05 17:46:45  bruno
-# fixes
-#
-# Revision 1.7  2007/07/04 01:47:37  mjk
-# embrace the anger
-#
-# Revision 1.6  2007/06/29 21:22:05  bruno
-# more cleanup
-#
-# Revision 1.5  2007/06/23 03:54:51  mjk
-# - first pass at consistency
-# - still needs some docstrings
-# - argument processors take SQL wildcards
-# - add cannot run twice (must use set)
-# - dump does sets not just adds
-#
-# Revision 1.4  2007/06/19 16:42:40  mjk
-# - fix add host interface docstring xml
-# - update copyright
-#
-# Revision 1.3  2007/06/08 03:26:24  mjk
-# - plugins call self.owner.addText()
-# - non-existant bug was real, fix plugin graph stuff
-# - add set host cpus|membership|rack|rank
-# - add list host (not /etc/hosts, rather the nodes table)
-# - fix --- padding for only None fields not 0 fields
-# - list host interfaces is cool works for incomplete hosts
-#
-# Revision 1.2  2007/06/07 21:23:03  mjk
-# - command derive from verb.command class
-# - default is MustBeRoot
-# - list.command / dump.command set MustBeRoot = 0
-# - removed plugin non-bugfix
-#
-# Revision 1.1  2007/05/31 20:56:43  bruno
-# moved pxeaction
-#
-# Revision 1.2  2007/05/10 20:37:02  mjk
-# - massive rocks-command changes
-# -- list host is standardized
-# -- usage simpler
-# -- help is the docstring
-# -- host groups and select statements
-# - added viz commands
-#
-# Revision 1.1  2007/05/02 20:20:53  bruno
-# added 'pxeaction' table -- allows for adding and removing pxeboot actions
+# this enables merging the pxeaction and vm_profiles tables
 #
 #
 
@@ -130,44 +69,48 @@ import os
 class Command(rocks.commands.HostArgumentProcessor,
 	rocks.commands.add.command):
 	"""
-	Add a pxeaction specification for a host.
+	Add a bootaction specification for a host.
 	
 	<arg type='string' name='host' repeat='1' optional='1'>
-	List of hosts to add pxeaction definitions. If no hosts are listed,
+	List of hosts to add bootaction definitions. If no hosts are listed,
 	then the global definition for 'action=name' is added.
 	</arg>
 
 	<param type='string' name='action'>
-	Label name for the pxeaction. You can see the pxeaction label names by
-	executing: 'rocks list host pxeaction [host(s)]'.
+	Label name for the bootaction. You can see the bootaction label names by
+	executing: 'rocks list host bootaction [host(s)]'.
 	</param>
 	
-	<param type='string' name='command'>
-	The first line for a pxelinux definition (e.g., 'kernel vmlinuz' or
-	'localboot 0').
+	<param type='string' name='kernel'>
+	The name of the kernel that is associated with this boot action.
+	</param>
+
+	<param type='string' name='ramdisk'>
+	The name of the ramdisk that is associated with this boot action.
 	</param>
 	
 	<param type='string' name='args'>
-	The second line for a pxelinux definition (e.g., append ks
-	initrd=initrd.img ramdisk_size=150000 lang= devfs=nomount pxe
-	kssendmac selinux=0)
+	The second line for a pxelinux definition (e.g., ks ramdisk_size=150000
+	lang= devfs=nomount pxe kssendmac selinux=0)
 	</param>
 	
-	<example cmd='add host pxeaction action=os command="localboot 0"'>
-	Add the global 'os' pxeaction
+	<example cmd='add host bootaction action=os kernel="localboot 0"'>
+	Add the global 'os' bootaction.
 	</example>
 	
-	<example cmd='add host pxeaction compute-0-0 action=memtest command="kernel memtest"'>
-	Add the 'memtest' pxeaction for compute-0-0
+	<example cmd='add host bootaction compute-0-0 action=memtest command="memtest"'>
+	Add the 'memtest' bootaction for compute-0-0
 	</example>
 	"""
 
-	def addPxeaction(self, nodeid, host, action, command, command_args):
+	def addBootAction(self, nodeid, host, action, kernel, ramdisk,
+		bootargs):
+
 		#
 		# is there already an entry in the pxeaction table
 		#
-		rows = self.db.execute("""select id from pxeaction where
-			node=%d and action='%s'""" % (nodeid, action))
+		rows = self.db.execute("""select id from bootaction where
+			node = %d and action = '%s'""" % (nodeid, action))
 		if rows < 1:
 			#
 			# insert a new row
@@ -176,12 +119,14 @@ class Command(rocks.commands.HostArgumentProcessor,
 			cols['node'] = '%s' %  (nodeid)
 			cols['action'] = '"%s"' % (action)
 
-			if command != None:
-				cols['command'] = '"%s"' % (command)
-			if command_args != None:
-				cols['args'] = '"%s"' % (command_args)
+			if kernel != None:
+				cols['kernel'] = '"%s"' % (kernel)
+			if ramdisk != None:
+				cols['ramdisk'] = '"%s"' % (ramdisk)
+			if bootargs != None:
+				cols['args'] = '"%s"' % (bootargs)
 
-			self.db.execute('insert into pxeaction '
+			self.db.execute('insert into bootaction '
 				'(%s) ' % (string.join(cols.keys(), ',')) + \
 				'values '
 				'(%s) ' % (string.join(cols.values(), ',')))
@@ -189,15 +134,19 @@ class Command(rocks.commands.HostArgumentProcessor,
 			#
 			# update the existing row
 			#
-			pxeactionid, = self.db.fetchone()
+			bootactionid, = self.db.fetchone()
 
-			query = 'update pxeaction set action = "%s" ' % (action)
-			if command != None:
-				query += ', command = "%s" ' % (command) 
-			if command_args != None:
-				query += ', args = "%s" ' % (command_args)
+			query = 'update bootaction set action = "%s" ' \
+				% (action)
 
-			query += 'where id = %s' % (pxeactionid)
+			if kernel != None:
+				query += ', kernel = "%s" ' % (kernel) 
+			if ramdisk != None:
+				query += ', ramdisk = "%s" ' % (ramdisk) 
+			if bootargs != None:
+				query += ', args = "%s" ' % (bootargs)
+
+			query += 'where id = %s' % (bootactionid)
 
 			self.db.execute(query)
 
@@ -210,9 +159,10 @@ class Command(rocks.commands.HostArgumentProcessor,
 		else:
 			hosts = self.getHostnames(args)
 
-		(action, command, command_args) = self.fillParams(
+		(action, kernel, ramdisk, bootargs) = self.fillParams(
 			[('action', ), 
-			('command', ),
+			('kernel', ),
+			('ramdisk', ),
 			('args', )])
 			
 		if not action:
@@ -222,14 +172,14 @@ class Command(rocks.commands.HostArgumentProcessor,
 			#
 			# set the global (all nodes) configuration
 			#
-			self.addPxeaction(0, 'global', action, command,
-				command_args)
+			self.addBootAction(0, 'global', action, kernel,
+				ramdisk, bootargs)
 
 			#	
 			# regenerate all the pxe boot configuration files
 			# including the default
 			#
-			self.command('set.host.pxeboot', self.getHostnames())
+			self.command('set.host.boot', self.getHostnames())
 			
 		else:
 			for host in hosts:
@@ -237,15 +187,15 @@ class Command(rocks.commands.HostArgumentProcessor,
 				# get the node from the nodes table
 				#
 				self.db.execute("""select id from nodes where
-					name='%s'""" % (host))
+					name = '%s'""" % (host))
 				hostid, = self.db.fetchone()
 
-				self.addPxeaction(hostid, host, action,
-					command, command_args)
+				self.addBootAction(hostid, host, action, kernel,
+					ramdisk, bootargs)
 					
 				#
 				# regenerate the pxe boot configuration
 				# file for host
 				#
-				self.command('set.host.pxeboot', [ host ])
+				self.command('set.host.boot', [ host ])
 

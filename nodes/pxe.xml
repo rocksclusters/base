@@ -13,6 +13,11 @@ Provides pre-execution environment (PXE) support for frontend machines.
 
 <changelog>
 $Log: pxe.xml,v $
+Revision 1.19  2008/12/15 22:27:21  bruno
+convert pxeboot and pxeaction tables to boot and bootaction tables.
+
+this enables merging the pxeaction and vm_profiles tables
+
 Revision 1.18  2008/10/18 00:55:45  mjk
 copyright 5.1
 
@@ -227,27 +232,31 @@ image=vmlinuz
 <post>
 
 <!-- now setup the global PXE boot default actions -->
-/opt/rocks/bin/rocks add host pxeaction action="install" \
-	command="kernel vmlinuz" \
-	args="append ks initrd=initrd.img ramdisk_size=150000 lang= devfs=nomount pxe kssendmac selinux=0 noipv6"
+/opt/rocks/bin/rocks add host bootaction action="install" \
+	kernel="vmlinuz" \
+	ramdisk="initrd.img" \
+	args="ks ramdisk_size=150000 lang= devfs=nomount pxe kssendmac selinux=0 noipv6"
 
-/opt/rocks/bin/rocks add host pxeaction action="os" \
-	command="localboot 0"
+/opt/rocks/bin/rocks add host bootaction action="os" \
+	kernel="localboot 0"
 
-/opt/rocks/bin/rocks add host pxeaction action="memtest" \
-	command="kernel memtest"
+/opt/rocks/bin/rocks add host bootaction action="memtest" \
+	kernel="kernel memtest"
 
-/opt/rocks/bin/rocks add host pxeaction action="install headless" \
-	command="kernel vmlinuz" \
-	args="append ks initrd=initrd.img ramdisk_size=150000 lang= devfs=nomount pxe kssendmac selinux=0 noipv6 headless vnc"
+/opt/rocks/bin/rocks add host bootaction action="install headless" \
+	kernel="vmlinuz" \
+	ramdisk="initrd.img" \
+	args="ks ramdisk_size=150000 lang= devfs=nomount pxe kssendmac selinux=0 noipv6 headless vnc"
 
-/opt/rocks/bin/rocks add host pxeaction action="rescue" \
-	command="kernel vmlinuz" \
-	args="append ks initrd=initrd.img ramdisk_size=150000 lang= devfs=nomount pxe kssendmac selinux=0 noipv6 rescue"
+/opt/rocks/bin/rocks add host bootaction action="rescue" \
+	kernel="vmlinuz" \
+	ramdisk="initrd.img" \
+	args="ks ramdisk_size=150000 lang= devfs=nomount pxe kssendmac selinux=0 noipv6 rescue"
 
-/opt/rocks/bin/rocks add host pxeaction action="pxeflash" \
-	command="kernel memdisk bigraw" \
-	args="append initrd=pxeflash.img keeppxe"
+/opt/rocks/bin/rocks add host bootaction action="pxeflash" \
+	kernel="kernel memdisk bigraw" \
+	ramdisk="pxeflash.img" \
+	args="keeppxe"
 
 </post>
 
