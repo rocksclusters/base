@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.1 2008/12/15 22:27:21 bruno Exp $
+# $Id: __init__.py,v 1.2 2008/12/16 00:29:11 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.2  2008/12/16 00:29:11  bruno
+# fix
+#
 # Revision 1.1  2008/12/15 22:27:21  bruno
 # convert pxeboot and pxeaction tables to boot and bootaction tables.
 #
@@ -304,7 +307,11 @@ class Command(rocks.commands.set.host.command):
 		frontend_host = self.db.getGlobalVar('Kickstart',
 			'PrivateHostname')
 
-		for host, in self.getHostnames(args):
+		for host in self.getHostnames(args):
+
+			if type(host) == type(()):
+				host, = host
+
 			#
 			# if this host is the frontend, then generate the
 			# default configuration file
