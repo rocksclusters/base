@@ -1,5 +1,5 @@
 # --------------------------------------------------- -*- Makefile -*- --
-# $Id: Makefile,v 1.10 2008/10/18 00:55:59 mjk Exp $
+# $Id: Makefile,v 1.11 2008/12/17 00:20:53 anoop Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.11  2008/12/17 00:20:53  anoop
+# Moved build target from generic makefile to os specific makefile
+#
 # Revision 1.10  2008/10/18 00:55:59  mjk
 # copyright 5.1
 #
@@ -123,17 +126,6 @@ ROCKSROOT       = ../../../../..
 -include $(ROCKSROOT)/etc/Rules.mk
 include Rules.mk
 
-
-build:
-	gunzip -c graphviz-$(VERSION).tar.gz | $(TAR) -xf -
-	( 					\
-		cd graphviz-$(VERSION);		\
-		./configure --prefix=$(PKGROOT)	\
-		LDFLAGS=$(GRAPHVIZ_LDFLAGS)	\
-		CPPFLAGS=$(GRAPHVIZ_CPPFLAGS);	\
-		$(MAKE);							\
-	)
-	
 install::
 	export LD_LIBRARY_PATH=$(ROOT)/$(PKGROOT)/lib/graphviz
 	(								\
