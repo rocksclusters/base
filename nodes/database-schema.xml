@@ -17,6 +17,10 @@
 
   <changelog>
   $Log: database-schema.xml,v $
+  Revision 1.24  2008/12/18 18:19:40  mjk
+  - Added attributes table
+  - Start of per host edge attributes
+
   Revision 1.23  2008/12/15 22:27:21  bruno
   convert pxeboot and pxeaction tables to boot and bootaction tables.
 
@@ -218,6 +222,17 @@ CREATE TABLE aliases (
   Node		int(11) NOT NULL default '0',
   Name		varchar(32) default NULL,
   PRIMARY KEY (ID)
+) TYPE=MyISAM;
+
+
+<!-- Attributes -->
+
+
+DROP TABLE IF EXISTS attributes;
+CREATE TABLE attributes (
+  Node		int(11) NOT NULL default '0',
+  Attr		varchar(64) default NULL,
+  Value		text
 ) TYPE=MyISAM;
 
 
