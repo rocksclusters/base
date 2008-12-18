@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.4 2008/10/18 00:55:48 mjk Exp $
+# $Id: __init__.py,v 1.5 2008/12/18 21:41:17 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.5  2008/12/18 21:41:17  bruno
+# add the 'enabled' field to the rolls selection code while building a distro.
+#
 # Revision 1.4  2008/10/18 00:55:48  mjk
 # copyright 5.1
 #
@@ -141,7 +144,7 @@ class Command(rocks.commands.create.command):
 
 		for name,version,arch,enabled in self.db.fetchall():
 			if enabled == 'yes' and arch == arch:
-				rolls.append([name, version])
+				rolls.append([name, version, enabled])
 
 		return rolls
 
@@ -176,7 +179,7 @@ class Command(rocks.commands.create.command):
 				rolls = self.getRolls(arch)
 		else:
 			for i in withrolls.split(' '):
-				rolls.append(i.split(','))
+				rolls.append(i.split(',') + [ 'yes' ] )
 
 		mirror = rocks.dist.Mirror()
 		mirror.setHost('rolls')

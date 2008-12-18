@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: build.py,v $
+# Revision 1.36  2008/12/18 21:41:17  bruno
+# add the 'enabled' field to the rolls selection code while building a distro.
+#
 # Revision 1.35  2008/10/18 00:56:02  mjk
 # copyright 5.1
 #
@@ -965,7 +968,7 @@ class DistributionBuilder(Builder):
     def setRolls(self, list, only=0):
 	    if list:
 		    for e in list:
-			    self.useRolls[e[0]] = e[1]
+			    self.useRolls[e[0]] = (e[1], e[2])
 		    self.allRolls = 0
 	    else:
 		    self.useRolls = {}
@@ -989,11 +992,13 @@ class DistributionBuilder(Builder):
     def useRoll(self, key, ver, arch):
     	"Returns true if we should include this roll"
 
-	if arch in self.dist.getArchList():
+	if arch == self.dist.arch:
 		if self.allRolls:
 			return 1
-		if self.useRolls.has_key(key) and self.useRolls[key] == ver:
-			return 1
+		if self.useRolls.has_key(key):
+			version, enabled = self.useRolls[key]
+			if enabled and version == ver:
+				return 1
 	return 0
 
 
@@ -1245,11 +1250,6 @@ class DistributionBuilder(Builder):
 		except ValueError:
 			continue
 			
-# Now that everything is a roll this conditional is always true so we
-# can comment it out (remove for good later).
-#
-#		if self.allRolls or self.useRolls.has_key(rollname):
-
 		print '    installing "%s" profiles...' % rollname
 		self.applyRPM(rpm.getBaseName(), build)
 

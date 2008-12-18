@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: dist.py,v $
+# Revision 1.21  2008/12/18 21:41:17  bruno
+# add the 'enabled' field to the rolls selection code while building a distro.
+#
 # Revision 1.20  2008/10/18 00:56:02  mjk
 # copyright 5.1
 #
@@ -533,15 +536,6 @@ class Base(Arch):
 		
 	def getDist(self):
 		return self.distdir
-
-	def getArchList(self):
-		"""A list of binary compatible architectures. 
-		Preffered one first."""
-
-		if self.arch == 'x86_64':
-			return [self.arch, 'i386']
-		else:
-			return [self.arch]
 
 	def getRootPath(self):
 		return self.root
