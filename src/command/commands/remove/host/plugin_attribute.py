@@ -1,5 +1,5 @@
-# $Id: __init__.py,v 1.2 2008/12/18 20:01:33 mjk Exp $
-#
+# $Id: plugin_attribute.py,v 1.1 2008/12/18 20:01:33 mjk Exp $
+# 
 # @Copyright@
 # 
 # 				Rocks(r)
@@ -53,89 +53,20 @@
 # 
 # @Copyright@
 #
-# $Log: __init__.py,v $
-# Revision 1.2  2008/12/18 20:01:33  mjk
+# $Log: plugin_attribute.py,v $
+# Revision 1.1  2008/12/18 20:01:33  mjk
 # attribute commands
 #
-# Revision 1.1  2008/12/18 18:47:55  mjk
-# *** empty log message ***
-#
-
 
 import os
-import stat
-import time
-import sys
-import string
 import rocks.commands
 
+class Plugin(rocks.commands.Plugin):
 
-class Command(rocks.commands.HostArgumentProcessor, rocks.commands.set.command):
-	"""
-	Sets an attribute to a host and sets the associated values 
+	def provides(self):
+		return 'attributes'
 
-	<arg type='string' name='host'>
-	Host name of machine
-	</arg>
-	
-	<arg type='string' name='attr'>
-	Name of the attribute
-	</arg>
-
-	<arg type='string' name='value'>
-	Value of the attribute
-	</arg>
-	
-	<param type='string' name='attr'>
-	same as attr argument
-	</param>
-
-	<param type='string' name='value'>
-	same as value argument
-	</param>
-
-	<example cmd='set host attr compute-0-0 cpus 2'>
-	Sets the number of cpus of compute-0-0 to 2
-	</example>
-
-	<example cmd='set host attr compute-0-0 attr=cpus value=2'>
-	same as above
-	</example>
-	
-	<related>list host attr</related>
-	<related>remove host attr</related>
-	"""
-
-	def run(self, params, args):
-
-		(args, attr, value) = self.fillPositionalArgs(('attr', 'value'))
-		hosts = self.getHostnames(args)
-		
-		if not attr:
-			self.abort('missing attribute name')
-		if not value:
-			self.about('missing value of attribute')
-
-		for host in hosts:
-			self.setHostAttr(host, attr, value)
-			
-	def setHostAttr(self, host, attr, value):
-		rows = self.db.execute("""
-			select * from attributes where
-			node=(select id from nodes where name='%s') and
-			attr='%s'
-			""" % (host, attr))
-		if not rows:
-			self.db.execute("""
-				insert into attributes values 
-				((select id from nodes where name='%s'), 
-				'%s', '%s')
-				""" % (host, attr, value))
-		else:
-			self.db.execute("""
-				update attributes set value='%s' where 
-				attr='%s' and
-				node=(select id from nodes where name='%s')
-				""" % (value, attr, host)) 
-
+	def run(self, host):
+		self.owner.db.execute("""delete from attributes where
+			node = (select id from nodes where name='%s')""" % host)
 
