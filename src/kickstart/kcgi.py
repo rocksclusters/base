@@ -1,6 +1,6 @@
 #! /opt/rocks/bin/python
 #
-# $Id: kcgi.py,v 1.28 2008/10/18 00:56:01 mjk Exp $
+# $Id: kcgi.py,v 1.29 2008/12/18 22:31:21 mjk Exp $
 #
 # @Copyright@
 # 
@@ -56,6 +56,9 @@
 # @Copyright@
 #
 # $Log: kcgi.py,v $
+# Revision 1.29  2008/12/18 22:31:21  mjk
+# - kickstarting set node attributes for later checks
+#
 # Revision 1.28  2008/10/18 00:56:01  mjk
 # copyright 5.1
 #
@@ -810,6 +813,23 @@ class App(rocks.kickstart.Application):
 			release = self.form['release'].value
 		if self.form.has_key('lang'):
 			lang = self.form['lang'].value
+
+		# Move all of the above into the attributes tables for
+		# conditional edge processing
+
+		rcl = '/opt/rocks/bin/rocks set host attr %s' % name
+		os.system('%s graph %s'		% (rcl, graph))
+		os.system('%s node %s'		% (rcl, node))
+		os.system('%s arch %s'		% (rcl, self.arch))
+		os.system('%s dist %s '		% (rcl, dist))
+
+		try:
+			os.system('%s release %s'	% (rcl, release))
+			os.system('%s lang %s'		% (rcl, lang))
+		except:
+			pass
+
+		os.system('%s os linux'		% (rcl))
 			
 		dist = os.path.join(dist, 'lan')
 
