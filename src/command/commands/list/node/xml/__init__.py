@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.26 2008/10/18 00:55:54 mjk Exp $
+# $Id: __init__.py,v 1.27 2008/12/19 21:08:54 mjk Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,13 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.27  2008/12/19 21:08:54  mjk
+# - solaris jgen code looks more like linux kgen code now
+# - removed solaris <part> tag (outside of <main> section)
+# - everything using cond now (arch,os are converted)
+# - cond now works inside node files also
+# - conditional edges work on linux, needs testing on solaris
+#
 # Revision 1.26  2008/10/18 00:55:54  mjk
 # copyright 5.1
 #
@@ -237,6 +244,13 @@ class Command(rocks.commands.list.command):
 	</example>
 	"""
 
+	def checkConditional(self, attrs, cond):
+		if not cond:
+			return True
+		for (k,v) in attrs.items():
+			exec('%s="%s"' % (k,v))
+		return eval(cond)
+	
 	def run(self, params, args):
 
 		if len(args) != 1:
@@ -306,6 +320,7 @@ class Command(rocks.commands.list.command):
 			fin.close()
 
 		var	= {}
+		attrs   = {}
 		parser	= make_parser()
 		handler	= SiteXMLHandler(var)
 		parser.setContentHandler(handler)
@@ -318,12 +333,23 @@ class Command(rocks.commands.list.command):
 			host = var['Kickstart_PrivateHostname']
 			addr = var['Kickstart_PrivateAddress']
 			membership = 'Frontend' # bad hardcoding here
+			attrs['arch']		= arch    # no db
+			attrs['os']		= self.os # min stuff only
 		else:
 			self.db.execute('select memberships.name from '
 				'nodes,memberships where '
 				'nodes.name="%s" and '
 				'nodes.membership=memberships.id' % host)
 			membership, = self.db.fetchone()
+			
+			# read the attributes into a dictionary to handle
+			# the conditional edges (cond tag)
+			
+			self.db.execute("""select a.attr, a.value from
+				attributes a, nodes n where
+				n.name='%s' and n.id=a.node""" % host)
+			for (a, v) in self.db.fetchall():
+				attrs[a] = v
 
 		var['Node_Root']	 = root
 		var['Node_Hostname']     = host
@@ -331,8 +357,8 @@ class Command(rocks.commands.list.command):
 		var['Node_Membership']   = membership
 		var['Node_Distribution'] = os.path.join(dist, arch)
 		var['Node_DistName']     = dist
-		var['Node_Architecture'] = arch
-		var['Node_OS']		 = self.os
+		var['Node_Architecture'] = attrs['arch']
+		var['Node_OS']		 = attrs['os']
 		var['Info_RocksVersion'] = rocks.version
 		var['Info_RocksRelease'] = rocks.release
 	
@@ -391,15 +417,14 @@ class Command(rocks.commands.list.command):
 		# Initialize the hash table for the framework
 		# nodes, and filter out everyone not for our
 		# architecture and release.
-			
+		#
+		# Now test for arbitrary conditionals (cond tag),
+		# old arch,os test are part of this now are still supported
+		
 		nodesHash = {}
-		for node,archs,oses,releases in nodes:
+		for node,cond in nodes:
 			nodesHash[node.name] = node
-			if archs and not arch in archs:
-				nodesHash[node.name] = None
-			if oses and not self.os in oses:
-				nodesHash[node.name] = None
-			if releases and not release in releases:
+			if not self.checkConditional(attrs, cond):
 				nodesHash[node.name] = None
 			
 
@@ -417,14 +442,14 @@ class Command(rocks.commands.list.command):
 			if not nodesHash.has_key(dep.name):
 				depsHash[dep.name] = None
 
-		for node,archs,oses,releases in nodes:
+		for node,cond in nodes:
 			if depsHash.has_key(node.name):
 				nodesHash[node.name] = None
 
 		list = []
 		for dep,gen in deps:
 			if dep.name == 'TAIL':
-				for node,arch,osname,release in nodes:
+				for node,cond in nodes:
 					list.append(nodesHash[node.
 							      name])
 			else:
@@ -433,7 +458,7 @@ class Command(rocks.commands.list.command):
 		# if there was not a 'TAIL' tag, then add the
 		# the nodes to the list here
 
-		for node,archs,oses,releases in nodes:
+		for node,cond in nodes:
 			if nodesHash[node.name] not in list:
 				list.append(nodesHash[node.name])
 
@@ -459,12 +484,11 @@ class Command(rocks.commands.list.command):
 				parsed.append(node)
 				kstext += node.getKSText()
 
-			
 		# Now print everyone out with the header kstext from
 		# the previously parsed nodes
 
 		self.addText('<?xml version="1.0" standalone="no"?>\n')
-		self.addText('<%s>\n' % starter_tag)
+		self.addText('<%s attrs="%s">\n' % (starter_tag, attrs))
 		if self.os != 'sunos':
 			self.addText('<loader>\n')
 			self.addText('%s\n' % saxutils.escape(kstext))

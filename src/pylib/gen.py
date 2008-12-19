@@ -54,6 +54,13 @@
 # @Copyright@
 #
 # $Log: gen.py,v $
+# Revision 1.36  2008/12/19 21:08:54  mjk
+# - solaris jgen code looks more like linux kgen code now
+# - removed solaris <part> tag (outside of <main> section)
+# - everything using cond now (arch,os are converted)
+# - cond now works inside node files also
+# - conditional edges work on linux, needs testing on solaris
+#
 # Revision 1.35  2008/10/18 00:56:02  mjk
 # copyright 5.1
 #
@@ -251,47 +258,52 @@ import rocks.js
 
 class NodeFilter(xml.dom.NodeFilter.NodeFilter):
 
-	def __init__(self, arch, osname):
-		self.arch = arch
-		self.os = osname
+	def __init__(self, attrs):
+		self.attrs = attrs
 
-	def isCorrectArch(self, node):
-		attr = node.attributes
-		if attr:
-			arch = attr.getNamedItem((None, 'arch'))
-			if arch:
-				list = []
-				for e in string.split(arch.value, ','):
-					list.append(string.strip(e))
-				arch = list
-			else:
-				arch = [ self.arch ]
-			if self.arch not in arch:
-				return 0
-		return 1
+	def checkConditional(self, cond):
+		if not cond:
+			return True
+		for (k,v) in self.attrs.items():
+			exec('%s="%s"' % (k,v))
+		return eval(cond)
 
-	def isCorrectOS(self, node):
+	def isCorrectCond(self, node):
 		attr = node.attributes
-		if attr:
-			oses = attr.getNamedItem((None, 'os'))
-			if oses:
-				list = []
-				for e in string.split(oses.value, ','):
-					list.append(string.strip(e))
-				oses = list
-			else:
-				oses = [ self.os ]
-			if self.os not in oses:
-				return 0
-		return 1
-		
-		
+
+		if not attr:
+			return True
+
+		list = []			
+
+		arch = attr.getNamedItem((None, 'arch')) # OR of archs
+		if arch:
+			l = []
+			for e in string.split(arch.value, ','):
+				l.append('arch=="%s"' % e.strip())
+			list.append(string.join(l, ' or '))
+
+		os = attr.getNamedItem((None, 'os')) # OR of os
+		if os:
+			l = []
+			for e in string.split(arch.value, ','):
+				l.append('os=="%s"' % e.strip())
+			list.append(string.join(l, ' or '))
+			
+		cond = attr.getNamedItem((None, 'cond'))
+		if cond:
+			list.append(cond.value)
+			
+		# return AND of everything
+		return self.checkConditional(string.join(list, ' and '))
+
 		
 class Generator:
 	"""Base class for various DOM based kickstart graph generators.
 	The input to all Generators is assumed to be the XML output of KPP."""
 	
 	def __init__(self):
+		self.attrs	= {}
 		self.arch	= None
 		self.rcsComment = 'ROCKS'
 		self.rcsTag	= 'ROCKS'
@@ -567,17 +579,13 @@ class Generator:
 
 
 class MainNodeFilter_linux(NodeFilter):
+
 	def acceptNode(self, node):
+	
 		if node.nodeName == 'kickstart':
 			return self.FILTER_ACCEPT
-			
-		if not self.isCorrectArch(node):
-			return self.FILTER_SKIP
-
-		if not self.isCorrectOS(node):
-			return self.FILTER_SKIP
-	
-		if node.nodeName in [
+				
+		if node.nodeName not in [
 			'include',
 			'main',
 			'auth',
@@ -611,32 +619,34 @@ class MainNodeFilter_linux(NodeFilter):
 			'xconfig',
 			'zerombr'
 			]:
-			return self.FILTER_ACCEPT
-		else:
 			return self.FILTER_SKIP
+
+		if not self.isCorrectCond(node):
+			return self.FILTER_SKIP
+
+		return self.FILTER_ACCEPT
 
 
 class OtherNodeFilter_linux(NodeFilter):
 	def acceptNode(self, node):
+
 		if node.nodeName == 'kickstart':
 			return self.FILTER_ACCEPT
 			
-		if not self.isCorrectArch(node):
-			return self.FILTER_SKIP
-
-		if not self.isCorrectOS(node):
-			return self.FILTER_SKIP
-	
-		if node.nodeName in [ 
+		if node.nodeName not in [
+			'attributes', 
 			'debug',
 			'description',
 			'package',
 			'pre', 
 			'post'
 			]:
-			return self.FILTER_ACCEPT
-		else:
 			return self.FILTER_SKIP
+			
+		if not self.isCorrectCond(node):
+			return self.FILTER_SKIP
+
+		return self.FILTER_ACCEPT
 
 
 class Generator_linux(Generator):
@@ -661,21 +671,23 @@ class Generator_linux(Generator):
 		import cStringIO
 		xml_buf = cStringIO.StringIO(xml_string)
 		doc = xml.dom.ext.reader.Sax2.FromXmlStream(xml_buf)
-		filter = MainNodeFilter_linux(self.getArch(), self.getOS())
+		filter = MainNodeFilter_linux(self.attrs)
 		iter = doc.createTreeWalker(doc, filter.SHOW_ELEMENT,
 			filter, 0)
 		node = iter.nextNode()
 		
 		while node:
-			if node.nodeName == 'main':
+			if node.nodeName == 'kickstart':
+				self.handle_kickstart(node)
+			elif node.nodeName == 'main':
 				child = iter.firstChild()
 				while child:
 					self.handle_mainChild(child)
 					child = iter.nextSibling()
 
 			node = iter.nextNode()
-
-		filter = OtherNodeFilter_linux(self.getArch(), self.getOS())
+			
+		filter = OtherNodeFilter_linux(self.attrs)
 		iter = doc.createTreeWalker(doc, filter.SHOW_ELEMENT,
 			filter, 0)
 		node = iter.nextNode()
@@ -686,6 +698,20 @@ class Generator_linux(Generator):
 			node = iter.nextNode()
 
 
+	# <kickstart>
+	
+	def handle_kickstart(self, node):
+		# pull out the attr to handle generic conditionals
+		# this replaces the old arch/os logic but still
+		# supports the old syntax
+
+		if node.attributes:
+			attrs = node.attributes.getNamedItem((None, 'attrs'))
+			if attrs:
+				dict = eval(attrs.value)
+				for (k,v) in dict.items():
+					self.attrs[k] = v
+		
 	# <main>
 	#	<clearpart>
 	# </main>
@@ -718,8 +744,8 @@ class Generator_linux(Generator):
 	# </main>
 	
 	def handle_main_lilo(self, node):
-		self.ks['main'].append('bootloader %s' % 
-			(self.getChildText(node)))
+		self.ks['main'].append('bootloader %s' %
+			self.getChildText(node))
 		return
 
 
@@ -729,7 +755,7 @@ class Generator_linux(Generator):
 
 	def handle_main_bootloader(self, node):
 		self.ks['main'].append('bootloader %s' % 
-			(self.getChildText(node)))
+			self.getChildText(node))
 		return
 
 	# <main>
@@ -738,7 +764,7 @@ class Generator_linux(Generator):
 
 	def handle_main_lang(self, node):
 		self.ks['main'].append('lang %s' % 
-			(self.getChildText(node)))
+			self.getChildText(node))
 		return
 
 	# <main>
@@ -747,7 +773,7 @@ class Generator_linux(Generator):
 
 	def handle_main_langsupport(self, node):
 		self.ks['main'].append('langsupport --default=%s' %
-			(self.getChildText(node)))
+			self.getChildText(node).strip())
 
 		return
 
@@ -757,7 +783,7 @@ class Generator_linux(Generator):
 
 	def handle_main_volgroup(self, node):
 		self.ks['main'].append('volgroup %s' % 
-			(self.getChildText(node)))
+			self.getChildText(node))
 		return
 
 	# <main>
@@ -766,7 +792,7 @@ class Generator_linux(Generator):
 
 	def handle_main_logvol(self, node):
 		self.ks['main'].append('logvol %s' % 
-			(self.getChildText(node)))
+			self.getChildText(node))
 		return
 
 	# <debug>
@@ -777,7 +803,7 @@ class Generator_linux(Generator):
 	# <package>
 		
 	def handle_package(self, node):
-		rpm = string.strip(self.getChildText(node))
+		rpm = self.getChildText(node).strip()
 
 		if self.isDisabled(node):
 			key = 'rpms-off'
@@ -882,10 +908,7 @@ class MainNodeFilter_sunos(NodeFilter):
 		if node.nodeName == 'jumpstart':
 			return self.FILTER_ACCEPT
 
-		if not self.isCorrectOS(node):
-			return self.FILTER_SKIP
-	
-		if node.nodeName in [
+		if node.nodeName not in [
 			'main', 	# <main><*></main>
 			'clearpart', 	# Clears the disk partitions
 			'url', 		# URL to download all the packages from
@@ -913,9 +936,13 @@ class MainNodeFilter_sunos(NodeFilter):
 			'pointer',	# Mouse config
 			'security_policy', # Security config
 			]:
-			return self.FILTER_ACCEPT
-		else:
 			return self.FILTER_SKIP
+			
+		if not self.isCorrectCond(node):
+			return self.FILTER_SKIP
+	
+		return self.FILTER_ACCEPT
+
 
 
 class OtherNodeFilter_sunos(NodeFilter):
@@ -929,19 +956,20 @@ class OtherNodeFilter_sunos(NodeFilter):
 		if node.nodeName == 'jumpstart':
 			return self.FILTER_ACCEPT
 
-		if not self.isCorrectOS(node):
-			return self.FILTER_SKIP
-	
-		if node.nodeName in [
+		if node.nodeName not in [
 			'cluster',
 			'package',
 			'pre',
 			'post',
 			]:
-			return self.FILTER_ACCEPT
-		else:
 			return self.FILTER_SKIP
 
+		if not self.isCorrectCond(node):
+			return self.FILTER_SKIP
+			
+		return self.FILTER_ACCEPT
+		
+		
 class Generator_sunos(Generator):
 	"""
 	Handles all the XML tags that are acceptable
@@ -965,7 +993,8 @@ class Generator_sunos(Generator):
 		self.ks['service_on']	= [] # Enabled Services section
 		self.ks['service_off']	= [] # Disabled Services section
 		self.finish_section	= 0  # Iterator. This counts up for
-					     # every post section that's encountered
+					     # every post section that's
+					     # encountered
 					     
 		self.service_instances	= {}
 		self.setRCSTag('JGEN')
@@ -977,93 +1006,168 @@ class Generator_sunos(Generator):
 		decompiles it, and parses the string.
 		"""
 		import cStringIO
-		self.xml_buf = cStringIO.StringIO(xml_string)
-		self.xml_doc = xml.dom.ext.reader.Sax2.FromXmlStream(self.xml_buf)
-		self.xml_filter = MainNodeFilter_sunos(self.getArch(), self.getOS())
-		self.xml_tree = self.xml_doc.createTreeWalker(self.xml_doc,
-			self.xml_filter.SHOW_ELEMENT, self.xml_filter, 0)
-		node = self.xml_tree.nextNode()
+		xml_buf = cStringIO.StringIO(xml_string)
+		doc = xml.dom.ext.reader.Sax2.FromXmlStream(xml_buf)
+		filter = MainNodeFilter_sunos(self.attrs)
+		iter = doc.createTreeWalker(doc, filter.SHOW_ELEMENT,
+			filter, 0)
+		node = iter.nextNode()
+		
 		while node:
-			if node.nodeName == 'main':
-				child = self.xml_tree.firstChild()
+			if node.nodeName == 'jumpstart':
+				self.handle_jumpstart(node)
+			elif node.nodeName == 'main':
+				child = iter.firstChild()
 				while child:
 					self.handle_mainChild(child)
-					child = self.xml_tree.nextSibling()
-			if node.nodeName in [
-				'part',
+					child = iter.nextSibling()
+					
+			elif node.nodeName in [
 				'name_service',
 				'network',
 				]:
 				f = getattr(self, "handle_%s" % node.nodeName)
-				f(node)
+				f(node, iter)
 
-			node = self.xml_tree.nextNode()
+			node = iter.nextNode()
 
-		self.xml_filter = OtherNodeFilter_sunos(self.getArch(), self.getOS())
-		self.xml_tree = self.xml_doc.createTreeWalker(self.xml_doc, 
-			self.xml_filter.SHOW_ELEMENT, self.xml_filter, 0)
-		node = self.xml_tree.nextNode()
+		filter = OtherNodeFilter_sunos(self.attrs)
+		iter = doc.createTreeWalker(doc, filter.SHOW_ELEMENT,
+			filter, 0)
+		node = iter.nextNode()
 		while node:
 			if node.nodeName != 'jumpstart':
 				self.order(node)
 				eval('self.handle_%s(node)' % (node.nodeName))
-			node = self.xml_tree.nextNode()
-			
+			node = iter.nextNode()
+
+	# <jumpstart>
+	
+	def handle_jumpstart(self, node):
+		# pull out the attr to handle generic conditionals
+		# this replaces the old arch/os logic but still
+		# supports the old syntax
+
+		if node.attributes:
+			attrs = node.attributes.getNamedItem((None, 'attrs'))
+			if attrs:
+				dict = eval(attrs.value)
+				for (k,v) in dict.items():
+					self.attrs[k] = v
+
+	# <main>
+	#	<clearpart>
+	# </main>
+	
 	def handle_main_clearpart(self, node):
 		self.ks['part'][0:0] = ['fdisk\trootdisk\tsolaris\tall']
 
+	# <main>
+	#	<url>
+	# </main>
+	
 	def handle_main_url(self, node):
-		self.ks['url'] = self.getChildText(node)
+		self.ks['url'] = self.getChildText(node).strip()
+	
+	# <main>
+	#	<rootpw>
+	# </main>
 	
 	def handle_main_rootpw(self, node):
-		self.ks['sysidcfg'].append("root_password=%s" % string.strip(self.getChildText(node)))
+		self.ks['sysidcfg'].append("root_password=%s" %
+			self.getChildText(node).strip())
 
+	# <main>
+	#	<locale>
+	# </main>
+	
 	def handle_main_locale(self, node):
-		self.ks['sysidcfg'].append("system_locale=%s" % string.strip(self.getChildText(node)))
+		self.ks['sysidcfg'].append("system_locale=%s" %
+			self.getChildText(node).strip())
+
+	# <main>
+	#	<timezone>
+	# </main>
 
 	def handle_main_timezone(self, node):
-		self.ks['sysidcfg'].append("timezone=%s" % string.strip(self.getChildText(node)))
+		self.ks['sysidcfg'].append("timezone=%s" %
+			self.getChildText(node).strip())
+
+	# <main>
+	#	<timeserver>
+	# </main>
 
 	def handle_main_timeserver(self, node):
-		self.ks['sysidcfg'].append("timeserver=%s" % string.strip(self.getChildText(node)))
+		self.ks['sysidcfg'].append("timeserver=%s" %
+			self.getChildText(node).strip())
+
+	# <main>
+	#	<nfs4_domain>
+	# </main>
 
 	def handle_main_nfs4_domain(self, node):
-		self.ks['sysidcfg'].append("nfs4_domain=%s" % string.strip(self.getChildText(node)))
+		self.ks['sysidcfg'].append("nfs4_domain=%s" %
+			self.getChildText(node).strip())
 
-	def handle_name_service(self, node):
+
+	# <name_service>
+	
+	def handle_name_service(self, node, iter):
 		dns = {}
-		child = self.xml_tree.firstChild()
-		while(child):
-			dns[child.nodeName] = string.strip(self.getChildText(child))
-			child = self.xml_tree.nextSibling()
-		if not dns.has_key('domain_name'):
-			dns['domain_name'] = 'local'
-		if not dns.has_key('name_server'):
-			dns['name_server'] = '10.1.1.1'
-		if not dns.has_key('search'):
-			dns['search'] = 'local'
+		child = iter.firstChild()
+		while child:
+			dns[child.nodeName] = self.getChildText(child).strip()
+			child = iter.nextSibling()
 		self.ks['sysidcfg'].append("name_service=DNS {")
 		for i in dns:
 			self.ks['sysidcfg'].append('\t%s=%s' % (i, dns[i]))
 		self.ks['sysidcfg'].append('}')
 			
+	# <main>
+	#	<security_policy>
+	# </main>
 	
 	def handle_main_security_policy(self, node):
-		self.ks['sysidcfg'].append("security_policy=%s" % string.strip(self.getChildText(node)))
+		self.ks['sysidcfg'].append("security_policy=%s" %
+			self.getChildText(node).strip())
+	
+	# <main>
+	#	<display>
+	# </main>
 	
 	def handle_main_display(self, node):
-		self.ks['sysidcfg'].append("display=%s" % string.strip(self.getChildText(node)))
+		self.ks['sysidcfg'].append("display=%s" %
+			self.getChildText(node).strip())
 
+	# <main>
+	#	<monitor>
+	# </main>
+	
 	def handle_main_monitor(self, node):
-		self.ks['sysidcfg'].append("monitor=%s" % string.strip(self.getChildText(node)))
+		self.ks['sysidcfg'].append("monitor=%s" %
+			self.getChildText(node).strip())
 
+	# <main>
+	#	<keyboard>
+	# </main>
+	
 	def handle_main_keyboard(self, node):
-		self.ks['sysidcfg'].append("keyboard=%s" % string.strip(self.getChildText(node)))
+		self.ks['sysidcfg'].append("keyboard=%s" %
+			self.getChildText(node).strip())
 
+	# <main>
+	#	<pointer>
+	# </main>
+	
 	def handle_main_pointer(self, node):
-		self.ks['sysidcfg'].append("pointer=%s" % string.strip(self.getChildText(node)))
+		self.ks['sysidcfg'].append("pointer=%s" %
+			self.getChildText(node).strip())
 		
 
+	# <*>
+	#	<service>
+	# </*>
+	
 	def handle_child_service(self, node):
 		# Handle the <service> tags that enable
 		# or disable services in Solaris
@@ -1100,40 +1204,22 @@ class Generator_sunos(Generator):
 		# later.
 		return ''
 
-	#-----------------------------------------------------------#
-	# These functions are yet to be defined depending on
-	# the redefinition of the xml files. Most likely
-	# they'll get their own handling tags, rather than
-	# being children of the main tag
-	def handle_part(self, node):
-		partition = {}
-		child = self.xml_tree.firstChild()
-		while(child):
-			partition[child.nodeName] = self.getChildText(child)
-			child = self.xml_tree.nextSibling()
-		if not partition.has_key('slice'):
-			partition['slice'] = 'any'
-		else:
-			partition['slice'] = 'rootdisk.' + partition['slice']
-		self.ks['part'].append("filesys\t%s\t%s\t%s" %
-			(partition['slice'], 
-			 partition['size'], 
-			 partition['filesys'])
-		)
-
-	def handle_network(self, node):
+	# <network>
+	
+	def handle_network(self, node, iter):
 		net = {}
 		dhcp = 0
-		child = self.xml_tree.firstChild()
-		while(child):
+		child = iter.firstChild()
+		while child :
 			if child.nodeName =='dhcp':
 				dhcp = 1
 			else:
-				net[child.nodeName] = string.strip(self.getChildText(child))
-			child = self.xml_tree.nextSibling()
+				net[child.nodeName] = self.getChildText(child).strip()
+			child = iter.nextSibling()
 		if not net.has_key('interface'):
 			net['interface'] = 'PRIMARY'
-		self.ks['sysidcfg'].append("network_interface=%s{" % net.pop('interface'))
+		self.ks['sysidcfg'].append("network_interface=%s{" %
+			net.pop('interface'))
 		if dhcp == 1:
 			self.ks['sysidcfg'].append("\t\tdhcp")
 		for i in net:
@@ -1141,18 +1227,27 @@ class Generator_sunos(Generator):
 		self.ks['sysidcfg'].append("}")
 
 
+	# <package>
+	
 	def handle_package(self, node):
-		self.ks['pkg_on'].append(self.getChildText(node))
+		self.ks['pkg_on'].append(self.getChildText(node).strip())
 
+	# <cluster>
+	
 	def handle_cluster(self, node):
-		self.ks['pkgcl_on'].append(string.strip(self.getChildText(node)))
+		self.ks['pkgcl_on'].append(
+			self.getChildText(node).strip())
 		#root_cluster = self.getChildText(node) 
 		#pkg_cluster = rocks.js.clustertoc_parse(root_cluster)
 		#self.ks['pkg_on'] += pkg_cluster.pkg_list
+	
+	# <pre>
 		
 	def handle_pre(self, node):
 		self.ks['begin'].append(self.getChildText(node))
 
+	# <post>
+	
 	def handle_post(self, node):
 		"""Function works in an interesting way. On solaris the post
 		sections are executed in the installer environment rather than
@@ -1171,7 +1266,8 @@ class Generator_sunos(Generator):
 		# By default, the interpreter is always /bin/sh, unless
 		# otherwise specified.
 		if attr.getNamedItem((None, 'interpreter')):
-			interpreter = attr.getNamedItem((None, 'interpreter')).value
+			interpreter = attr.getNamedItem((None,
+				'interpreter')).value
 		else:
 			interpreter = '/bin/sh'
 
@@ -1195,7 +1291,8 @@ class Generator_sunos(Generator):
 					% (self.finish_section, arg))
 		else:
 			if interpreter is not '/bin/sh':
-				list.append("cat > /tmp/post_section_%d << '__eof__'"
+				list.append("cat > /tmp/post_section_%d "
+					"<< '__eof__'"
 					% self.finish_section)
 				list.append("#!%s" % interpreter)
 				list.append(self.getChildText(node))
@@ -1291,7 +1388,7 @@ class Generator_sunos(Generator):
 		# all enabled and disabled services. This
 		# is going to be used when assembling services
 		# on compute nodes.
-		list = []
+		list= []
 
 		# XML Headers, and doctype
 		list.append("<?xml version='1.0'?>")

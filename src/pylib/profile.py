@@ -1,6 +1,6 @@
 #! /opt/rocks/bin/python
 #
-# $Id: profile.py,v 1.16 2008/10/18 00:56:02 mjk Exp $
+# $Id: profile.py,v 1.17 2008/12/19 21:08:54 mjk Exp $
 #
 # @Copyright@
 # 
@@ -56,6 +56,13 @@
 # @Copyright@
 #
 # $Log: profile.py,v $
+# Revision 1.17  2008/12/19 21:08:54  mjk
+# - solaris jgen code looks more like linux kgen code now
+# - removed solaris <part> tag (outside of <main> section)
+# - everything using cond now (arch,os are converted)
+# - cond now works inside node files also
+# - conditional edges work on linux, needs testing on solaris
+#
 # Revision 1.16  2008/10/18 00:56:02  mjk
 # copyright 5.1
 #
@@ -335,9 +342,38 @@ class GraphHandler(handler.ContentHandler,
 			tail = Node(self.attrs.main.child)
 
 		e = FrameworkEdge(tail, head)
-		e.setArchitecture(self.attrs.main.arch)
-		e.setOS(self.attrs.main.os)
-		e.setRelease(self.attrs.main.release)
+		
+		# Build a conditional string from the old style 'arch' and
+		# 'os' tags and use the new logic for parsing 'cond' 
+		# expressions.  We do this to get all the conditional 
+		# edge testing going through a single piece of code.
+				
+		cond = []
+		
+		if self.attrs.main.arch: # OR of archs
+			list = []
+			for arch in string.split(self.attrs.main.arch, ','):
+				list.append('arch=="%s"' % arch.strip())
+			cond.append(string.join(list, ' or '))
+			
+		if self.attrs.main.os: # OR of os
+			list = []
+			for os in string.split(self.attrs.main.os, ','):
+				list.append('os=="%s"' % os.strip())
+			cond.append(string.join(list, ' or '))
+			
+		if self.attrs.main.release: # OR of release
+			list = []
+			for rel in string.split(self.attrs.main.release, ','):
+				list.append('release=="%s"' % rel)
+			cond.append(string.join(list, ' or '))
+				
+		if self.attrs.main.cond:
+			cond.append(self.attrs.main.cond)
+			
+		# AND of everything
+		e.setConditional(string.join(cond, ' and '))
+		
 		e.setRoll(self.roll)
 		self.graph.main.addEdge(e)
 
@@ -388,11 +424,14 @@ class GraphHandler(handler.ContentHandler,
 		self.attrs.main.arch	= self.attrs.main.default.arch
 		self.attrs.main.os	= self.attrs.main.default.os
 		self.attrs.main.release	= self.attrs.main.default.release
+		self.attrs.main.cond	= self.attrs.main.default.cond
 
 		if attrs.has_key('arch'):
 			self.attrs.main.arch = attrs['arch']
 		if attrs.has_key('os'):
 			self.attrs.main.os = attrs['os']
+		if attrs.has_key('cond'):
+			self.attrs.main.cond = attrs['cond']
 		if attrs.has_key('release'):
 			self.attrs.main.release = attrs['release']
 
@@ -409,11 +448,14 @@ class GraphHandler(handler.ContentHandler,
 		self.attrs.main.arch	= self.attrs.main.default.arch
 		self.attrs.main.os	= self.attrs.main.default.os
 		self.attrs.main.release	= self.attrs.main.default.release
+		self.attrs.main.cond	= self.attrs.main.default.cond
 		
 		if attrs.has_key('arch'):
 			self.attrs.main.arch = attrs['arch']
 		if attrs.has_key('os'):
 			self.attrs.main.os   = attrs['os']
+		if attrs.has_key('cond'):
+			self.attrs.main.cond   = attrs['cond']
 		if attrs.has_key('release'):
 			self.attrs.main.release = attrs['release']
 
@@ -457,6 +499,10 @@ class GraphHandler(handler.ContentHandler,
 			self.attrs.main.default.os = attrs['os']
 		else:
 			self.attrs.main.default.os = None
+		if attrs.has_key('cond'):
+			self.attrs.main.default.cond = attrs['cond']
+		else:
+			self.attrs.main.default.cond = None
 		if attrs.has_key('release'):
 			self.attrs.main.default.release = attrs['release']
 		else:
@@ -472,6 +518,7 @@ class GraphHandler(handler.ContentHandler,
 
 		self.attrs.main.arch	= self.attrs.main.default.arch
 		self.attrs.main.os	= self.attrs.main.default.os
+		self.attrs.main.cond	= self.attrs.main.default.cond
 		self.attrs.main.release	= self.attrs.main.default.release
 
 
@@ -942,39 +989,13 @@ class Edge(rocks.graph.Edge):
 class FrameworkEdge(Edge):
 	def __init__(self, a, b):
 		Edge.__init__(self, a, b)
-		self.arch    = None
-		self.os	     = None
-		self.release = None
+		self.cond	= None
 
-	def setArchitecture(self, arch):
-		if arch:
-			self.arch = []
-			for e in string.split(arch, ','):
-				self.arch.append(string.strip(e))
-
-	def getArchitecture(self):
-		return self.arch
-
-
-	def setRelease(self, release):
-		if release:
-			self.release = []
-			for e in string.split(release, ','):
-				self.release.append(string.strip(e))
-
-
-	def getRelease(self):
-		return self.release
-
-	def setOS(self, OS):
-		if OS:
-			self.os = []
-			for e in string.split(OS, ','):
-				self.os.append(string.strip(e))
-	
-	def getOS(self):
-		return self.os
-	
+	def setConditional(self, cond):
+		self.cond = cond
+		
+	def getConditional(self):
+		return self.cond
 
 	def getDot(self, prefix=''):
 		attrs = ''
@@ -1037,14 +1058,10 @@ class FrameworkIterator(rocks.graph.GraphIterator):
 	def visitHandler(self, node, edge):
 		rocks.graph.GraphIterator.visitHandler(self, node, edge)
 		if edge:
-			arch    = edge.getArchitecture()
-			os	= edge.getOS()
-			release = edge.getRelease()
+			cond	= edge.getConditional()
 		else:
-			arch    = None
-			os	= None
-			release = None
-		self.nodes[node.name] = (node, arch, os, release)
+			cond	= None
+		self.nodes[node.name] = (node, cond)
 
 
 class OrderIterator(rocks.graph.GraphIterator):

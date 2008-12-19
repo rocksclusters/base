@@ -1,6 +1,6 @@
 #! /opt/rocks/bin/python
 #
-# $Id: kcgi.py,v 1.29 2008/12/18 22:31:21 mjk Exp $
+# $Id: kcgi.py,v 1.30 2008/12/19 21:08:54 mjk Exp $
 #
 # @Copyright@
 # 
@@ -56,6 +56,13 @@
 # @Copyright@
 #
 # $Log: kcgi.py,v $
+# Revision 1.30  2008/12/19 21:08:54  mjk
+# - solaris jgen code looks more like linux kgen code now
+# - removed solaris <part> tag (outside of <main> section)
+# - everything using cond now (arch,os are converted)
+# - cond now works inside node files also
+# - conditional edges work on linux, needs testing on solaris
+#
 # Revision 1.29  2008/12/18 22:31:21  mjk
 # - kickstarting set node attributes for later checks
 #
@@ -759,7 +766,6 @@ class App(rocks.kickstart.Application):
 				 % (self.cpus, id)
 			self.execute(update)
 
-
 		# If we have a client IP address lookup the
 		# information needed to build its kickstart file.
 		# Otherwise we look up the information to build a
@@ -796,6 +802,7 @@ class App(rocks.kickstart.Application):
 			print self
 			return
 		self.close()
+		
 
 		# The values we just pulled from the database are the
 		# default values.  The FORM data can override any of
@@ -809,27 +816,14 @@ class App(rocks.kickstart.Application):
 			self.arch = self.form['arch'].value
 		if self.form.has_key('dist'):
 			dist = self.form['dist'].value
-		if self.form.has_key('release'):
-			release = self.form['release'].value
-		if self.form.has_key('lang'):
-			lang = self.form['lang'].value
+		if self.form.has_key('os'):
+			OS = self.form['os'].value
+		else:
+			OS = 'linux' # should aways come from loader
 
-		# Move all of the above into the attributes tables for
-		# conditional edge processing
-
-		rcl = '/opt/rocks/bin/rocks set host attr %s' % name
-		os.system('%s graph %s'		% (rcl, graph))
-		os.system('%s node %s'		% (rcl, node))
-		os.system('%s arch %s'		% (rcl, self.arch))
-		os.system('%s dist %s '		% (rcl, dist))
-
-		try:
-			os.system('%s release %s'	% (rcl, release))
-			os.system('%s lang %s'		% (rcl, lang))
-		except:
-			pass
-
-		os.system('%s os linux'		% (rcl))
+		rcl = '/opt/rocks/bin/rocks set host attr %s' % self.clientName
+		os.system('%s arch %s'	% (rcl, self.arch))
+		os.system('%s os %s'	% (rcl, OS))
 			
 		dist = os.path.join(dist, 'lan')
 
@@ -851,10 +845,10 @@ class App(rocks.kickstart.Application):
 		for var in self.form.keys():
 			os.environ[var] = self.form[var].value
 
-		cmd = '/opt/rocks/bin/rocks list host xml arch=%s %s' % \
-			(self.arch, self.clientName) 
-
-		for line in os.popen(cmd).readlines():
+		for line in os.popen("""
+			/opt/rocks/bin/rocks list host xml arch=%s os=linux %s
+			""" %  (self.arch, self.clientName)).readlines():
+			
 			self.report.append(line[:-1])
 
 
@@ -1098,7 +1092,7 @@ class App(rocks.kickstart.Application):
 		#
 		self.completedLoad()
 		out = string.join(self.report, '\n')
-
+		
 		print 'Content-type: application/octet-stream'
 		print 'Content-length: %d' % (len(out))
 		print ''
