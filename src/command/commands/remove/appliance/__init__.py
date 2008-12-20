@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.9 2008/10/18 00:55:55 mjk Exp $
+# $Id: __init__.py,v 1.10 2008/12/20 01:06:15 mjk Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,16 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.10  2008/12/20 01:06:15  mjk
+# - added appliance_attributes
+# - attributes => node_attributes
+# - rocks set,list,remove appliance attr
+# - eval shell for conds has a special local dictionary that allows
+#   unresolved variables (attributes) to evaluate to None
+# - need to add this to solaris
+# - need to move UserDict stuff into pylib and remove cut/paste code
+# - need a drink
+#
 # Revision 1.9  2008/10/18 00:55:55  mjk
 # copyright 5.1
 #
@@ -103,8 +113,11 @@ import string
 import rocks.commands
 
 
-class Command(rocks.commands.ApplianceArgumentProcessor,
+class command(rocks.commands.ApplianceArgumentProcessor,
 	rocks.commands.remove.command):
+	pass
+
+class Command(command):
 	"""
 	Remove an appliance definition from the system. This can be
 	called with just the appliance or it can be further

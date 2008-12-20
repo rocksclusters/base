@@ -17,6 +17,16 @@
 
   <changelog>
   $Log: database-schema.xml,v $
+  Revision 1.25  2008/12/20 01:06:14  mjk
+  - added appliance_attributes
+  - attributes => node_attributes
+  - rocks set,list,remove appliance attr
+  - eval shell for conds has a special local dictionary that allows
+    unresolved variables (attributes) to evaluate to None
+  - need to add this to solaris
+  - need to move UserDict stuff into pylib and remove cut/paste code
+  - need a drink
+
   Revision 1.24  2008/12/18 18:19:40  mjk
   - Added attributes table
   - Start of per host edge attributes
@@ -227,14 +237,19 @@ CREATE TABLE aliases (
 
 <!-- Attributes -->
 
+DROP TABLE IF EXISTS appliance_attributes;
+CREATE TABLE appliance_attributes (
+  Appliance     int(11) NOT NULL default '0',
+  Attr          varchar(64) default NULL,
+  Value         text
+) TYPE=MyISAM;
 
-DROP TABLE IF EXISTS attributes;
-CREATE TABLE attributes (
+DROP TABLE IF EXISTS node_attributes;
+CREATE TABLE node_attributes (
   Node		int(11) NOT NULL default '0',
   Attr		varchar(64) default NULL,
   Value		text
 ) TYPE=MyISAM;
-
 
 <!-- App_Globals -->
 

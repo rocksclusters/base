@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.27 2008/12/19 21:08:54 mjk Exp $
+# $Id: __init__.py,v 1.28 2008/12/20 01:06:15 mjk Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,16 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.28  2008/12/20 01:06:15  mjk
+# - added appliance_attributes
+# - attributes => node_attributes
+# - rocks set,list,remove appliance attr
+# - eval shell for conds has a special local dictionary that allows
+#   unresolved variables (attributes) to evaluate to None
+# - need to add this to solaris
+# - need to move UserDict stuff into pylib and remove cut/paste code
+# - need a drink
+#
 # Revision 1.27  2008/12/19 21:08:54  mjk
 # - solaris jgen code looks more like linux kgen code now
 # - removed solaris <part> tag (outside of <main> section)
@@ -176,6 +186,42 @@ from xml.sax import saxutils
 from xml.sax import handler
 from xml.sax import make_parser
 
+import UserDict
+
+class CondEnv(UserDict.UserDict):
+
+	"""Behaves like a standard dictionary object but will return
+	None for any lookup that would normally through any exception.
+	"""
+
+	def __getitem__(self, key):
+		try:
+			val = UserDict.UserDict.__getitem__(self, key)
+		except:
+			return None
+		return val
+		
+def CheckConditional(cond, attrs):
+
+	"""Creates a new local environment from the attrs dictionary and
+	evaluates the cond expression in this shell.  The local environment
+	differs in that any undefined variable evaluates to None.  This
+	allows the cond to references any attribute even if it is not
+	present in the attrs (local environment).
+	""""
+	
+	if not cond:
+		return True
+
+	env = CondEnv()
+	for (k,v) in attrs.items():
+		env[k] = v
+		
+	return eval(cond, globals(), env)
+
+
+
+
 class Command(rocks.commands.list.command):
 	"""
 	Lists the XML configuration information for a host. The graph
@@ -245,12 +291,9 @@ class Command(rocks.commands.list.command):
 	"""
 
 	def checkConditional(self, attrs, cond):
-		if not cond:
-			return True
-		for (k,v) in attrs.items():
-			exec('%s="%s"' % (k,v))
-		return eval(cond)
-	
+		checker = CondChecker(attrs)
+		return checker.check(cond)
+		
 	def run(self, params, args):
 
 		if len(args) != 1:
@@ -344,9 +387,21 @@ class Command(rocks.commands.list.command):
 			
 			# read the attributes into a dictionary to handle
 			# the conditional edges (cond tag)
+			# read the defaults from the appliance_attributes
+			# and override from the node_attributes
 			
+			self.db.execute("""select aa.attr, aa.value from
+				appliance_attributes aa, nodes n, 
+				memberships m, appliances a where
+				n.membership=m.id and 
+				m.appliance=a.id and 
+				aa.appliance=a.id and 
+				n.name='%s'""" % host)
+			for (a, v) in self.db.fetchall():
+				attrs[a] = v
+				
 			self.db.execute("""select a.attr, a.value from
-				attributes a, nodes n where
+				node_attributes a, nodes n where
 				n.name='%s' and n.id=a.node""" % host)
 			for (a, v) in self.db.fetchall():
 				attrs[a] = v

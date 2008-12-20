@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.1 2008/12/18 20:01:33 mjk Exp $
+# $Id: __init__.py,v 1.2 2008/12/20 01:06:15 mjk Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,16 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.2  2008/12/20 01:06:15  mjk
+# - added appliance_attributes
+# - attributes => node_attributes
+# - rocks set,list,remove appliance attr
+# - eval shell for conds has a special local dictionary that allows
+#   unresolved variables (attributes) to evaluate to None
+# - need to add this to solaris
+# - need to move UserDict stuff into pylib and remove cut/paste code
+# - need a drink
+#
 # Revision 1.1  2008/12/18 20:01:33  mjk
 # attribute commands
 #
@@ -92,7 +102,9 @@ class Command(rocks.commands.remove.host.command):
 			self.abort('missing attribute name')
 
 		for host in self.getHostnames(args):
-			self.db.execute("""delete from attributes where 
+			self.db.execute("""
+			delete from node_attributes where 
 			node = (select id from nodes where name='%s')
-			and attr = '%s'""" % (host, attr))
+			and attr = '%s'
+			""" % (host, attr))
 

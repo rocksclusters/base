@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.2 2008/12/18 20:01:33 mjk Exp $
+# $Id: __init__.py,v 1.3 2008/12/20 01:06:15 mjk Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,16 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.3  2008/12/20 01:06:15  mjk
+# - added appliance_attributes
+# - attributes => node_attributes
+# - rocks set,list,remove appliance attr
+# - eval shell for conds has a special local dictionary that allows
+#   unresolved variables (attributes) to evaluate to None
+# - need to add this to solaris
+# - need to move UserDict stuff into pylib and remove cut/paste code
+# - need a drink
+#
 # Revision 1.2  2008/12/18 20:01:33  mjk
 # attribute commands
 #
@@ -70,7 +80,7 @@ import string
 import rocks.commands
 
 
-class Command(rocks.commands.HostArgumentProcessor, rocks.commands.set.command):
+class Command(rocks.commands.set.host.command):
 	"""
 	Sets an attribute to a host and sets the associated values 
 
@@ -121,19 +131,19 @@ class Command(rocks.commands.HostArgumentProcessor, rocks.commands.set.command):
 			
 	def setHostAttr(self, host, attr, value):
 		rows = self.db.execute("""
-			select * from attributes where
+			select * from node_attributes where
 			node=(select id from nodes where name='%s') and
 			attr='%s'
 			""" % (host, attr))
 		if not rows:
 			self.db.execute("""
-				insert into attributes values 
+				insert into node_attributes values 
 				((select id from nodes where name='%s'), 
 				'%s', '%s')
 				""" % (host, attr, value))
 		else:
 			self.db.execute("""
-				update attributes set value='%s' where 
+				update node_attributes set value='%s' where 
 				attr='%s' and
 				node=(select id from nodes where name='%s')
 				""" % (value, attr, host)) 

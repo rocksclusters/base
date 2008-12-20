@@ -54,6 +54,16 @@
 # @Copyright@
 #
 # $Log: gen.py,v $
+# Revision 1.37  2008/12/20 01:06:15  mjk
+# - added appliance_attributes
+# - attributes => node_attributes
+# - rocks set,list,remove appliance attr
+# - eval shell for conds has a special local dictionary that allows
+#   unresolved variables (attributes) to evaluate to None
+# - need to add this to solaris
+# - need to move UserDict stuff into pylib and remove cut/paste code
+# - need a drink
+#
 # Revision 1.36  2008/12/19 21:08:54  mjk
 # - solaris jgen code looks more like linux kgen code now
 # - removed solaris <part> tag (outside of <main> section)
@@ -255,6 +265,29 @@ import time
 import xml.dom.NodeFilter
 import xml.dom.ext.reader.Sax2
 import rocks.js
+import UserDict
+
+class CondEnv(UserDict.UserDict):
+	def __getitem__(self, key):
+		try:
+			val = UserDict.UserDict.__getitem__(self, key)
+		except:
+			return None
+		return val
+		
+class CondChecker:
+
+	def __init__(self, attrs):
+		self.env = CondEnv()
+		for (k,v) in attrs.items():
+			self.env[k] = v
+		
+	def check(self, cond):
+		if not cond:
+			return True
+		return eval(cond, globals(), self.env)
+	
+		
 
 class NodeFilter(xml.dom.NodeFilter.NodeFilter):
 
@@ -262,11 +295,8 @@ class NodeFilter(xml.dom.NodeFilter.NodeFilter):
 		self.attrs = attrs
 
 	def checkConditional(self, cond):
-		if not cond:
-			return True
-		for (k,v) in self.attrs.items():
-			exec('%s="%s"' % (k,v))
-		return eval(cond)
+		checker = CondChecker(self.attrs)
+		return checker.check(cond)
 
 	def isCorrectCond(self, node):
 		attr = node.attributes

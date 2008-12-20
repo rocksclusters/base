@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.12 2008/10/18 00:55:49 mjk Exp $
+# $Id: __init__.py,v 1.13 2008/12/20 01:06:15 mjk Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,16 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.13  2008/12/20 01:06:15  mjk
+# - added appliance_attributes
+# - attributes => node_attributes
+# - rocks set,list,remove appliance attr
+# - eval shell for conds has a special local dictionary that allows
+#   unresolved variables (attributes) to evaluate to None
+# - need to add this to solaris
+# - need to move UserDict stuff into pylib and remove cut/paste code
+# - need a drink
+#
 # Revision 1.12  2008/10/18 00:55:49  mjk
 # copyright 5.1
 #
@@ -112,8 +122,7 @@
 
 import rocks.commands
 
-class Command(rocks.commands.ApplianceArgumentProcessor,
-	rocks.commands.list.command):
+class Command(rocks.commands.list.appliance.command):
 
 	"""
 	Lists the XML profile for a given appliance type. This is useful

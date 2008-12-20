@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.16 2008/12/20 01:06:15 mjk Exp $
+# $Id: __init__.py,v 1.1 2008/12/20 01:06:15 mjk Exp $
 #
 # @Copyright@
 # 
@@ -54,7 +54,7 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
-# Revision 1.16  2008/12/20 01:06:15  mjk
+# Revision 1.1  2008/12/20 01:06:15  mjk
 # - added appliance_attributes
 # - attributes => node_attributes
 # - rocks set,list,remove appliance attr
@@ -64,104 +64,38 @@
 # - need to move UserDict stuff into pylib and remove cut/paste code
 # - need a drink
 #
-# Revision 1.15  2008/10/18 00:55:49  mjk
-# copyright 5.1
-#
-# Revision 1.14  2008/03/06 23:41:36  mjk
-# copyright storm on
-#
-# Revision 1.13  2007/07/04 01:47:38  mjk
-# embrace the anger
-#
-# Revision 1.12  2007/06/27 23:59:23  bruno
-# more cleanup.
-#
-# phil, commence head shaking.
-#
-# Revision 1.11  2007/06/27 21:30:08  bruno
-# small cleanup
-#
-# Revision 1.10  2007/06/26 20:21:15  bruno
-# touch ups
-#
-# added 'fillParameters' -- now, every command will have fillParameters,
-# fillPositionalArgs or neither.
-#
-# Revision 1.9  2007/06/23 03:54:52  mjk
-# - first pass at consistency
-# - still needs some docstrings
-# - argument processors take SQL wildcards
-# - add cannot run twice (must use set)
-# - dump does sets not just adds
-#
-# Revision 1.8  2007/06/19 16:42:41  mjk
-# - fix add host interface docstring xml
-# - update copyright
-#
-# Revision 1.7  2007/06/16 02:39:51  mjk
-# - added list roll commands (used for docbook)
-# - docstrings should now be XML
-# - added parser for docstring to ASCII or DocBook
-# - ditched Phil's Network regex stuff (will come back later)
-# - updated several docstrings
-#
-# Revision 1.6  2007/06/07 21:23:04  mjk
-# - command derive from verb.command class
-# - default is MustBeRoot
-# - list.command / dump.command set MustBeRoot = 0
-# - removed plugin non-bugfix
-#
-# Revision 1.5  2007/05/31 19:35:42  bruno
-# first pass at getting all the 'help' consistent on all the rocks commands
-#
-# Revision 1.4  2007/05/10 20:37:01  mjk
-# - massive rocks-command changes
-# -- list host is standardized
-# -- usage simpler
-# -- help is the docstring
-# -- host groups and select statements
-# - added viz commands
-#
-# Revision 1.3  2007/04/19 23:01:09  bruno
-# pretty print rocks command line output with addOutput() and endOutput()
-#
-# Revision 1.2  2007/04/12 19:48:05  bruno
-# added command line: 'rocks add/list/remove appliance'
-#
-# updated base, hpc, pvfs2 and viz rolls to use new command line.
-#
-#
 
-
+import sys
+import socket
 import rocks.commands
+import string
 
-
-class command(rocks.commands.ApplianceArgumentProcessor,
-        rocks.commands.list.command):
-	pass
-
-class Command(command):
+class Command(rocks.commands.list.appliance.command):
 	"""
-	Lists the appliances defined in the cluster database.
-	
-	<arg optional='1' type='string' name='appliance' repeat='1'>
-	Optional list of appliance names.
+	Lists the set of attributes for appliances.
+
+	<arg optional='1' type='string' name='appliance'>
+	Name of appliance
 	</arg>
-		
-	<example cmd='list appliance'>
-	List all known appliances.
+	
+	<example cmd='list appliance attr compute'>
+	List the attributes for compute appliances
 	</example>
 	"""
 
 	def run(self, params, args):
-		
+
 		self.beginOutput()
-		for app in self.getApplianceNames(args):
-			self.db.execute("""select 
-				shortname, graph, node from appliances
-				where name='%s'""" % app)
-			row = self.db.fetchone()
-			self.addOutput(app, row)
-			
-		self.endOutput(header=['appliance', 'shortname', 
-			'graph', 'node'])
+		
+		for appliance in self.getApplianceNames(args):
+			self.db.execute("""
+				select attr.attr, attr.value from 
+				appliance_attributes attr, appliances a where
+				attr.appliance=a.id and a.name='%s'
+				""" % appliance)
+			for row in self.db.fetchall():
+				self.addOutput(appliance, row)
+
+		self.endOutput(header=['appliance', 'attr', 'value' ],
+			trimOwner=0)
+
