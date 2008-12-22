@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.28 2008/12/20 01:06:15 mjk Exp $
+# $Id: __init__.py,v 1.29 2008/12/22 23:50:24 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.29  2008/12/22 23:50:24  bruno
+# change 4 quotes to 3.
+#
 # Revision 1.28  2008/12/20 01:06:15  mjk
 # - added appliance_attributes
 # - attributes => node_attributes
@@ -208,7 +211,7 @@ def CheckConditional(cond, attrs):
 	differs in that any undefined variable evaluates to None.  This
 	allows the cond to references any attribute even if it is not
 	present in the attrs (local environment).
-	""""
+	"""
 	
 	if not cond:
 		return True
