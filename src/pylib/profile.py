@@ -1,6 +1,6 @@
 #! /opt/rocks/bin/python
 #
-# $Id: profile.py,v 1.19 2008/12/23 01:01:19 mjk Exp $
+# $Id: profile.py,v 1.20 2008/12/23 02:03:31 mjk Exp $
 #
 # @Copyright@
 # 
@@ -56,6 +56,10 @@
 # @Copyright@
 #
 # $Log: profile.py,v $
+# Revision 1.20  2008/12/23 02:03:31  mjk
+# - fix conditional edges for new style
+# - conds are no longer labels but nodes, this make dot look better
+#
 # Revision 1.19  2008/12/23 01:01:19  mjk
 # fix rocks list host graph to handle cond instead of arch/os.  The
 # label is the created cond python expression.  good for testing.
@@ -988,14 +992,29 @@ class FrameworkEdge(Edge):
 		attrs = ''
 		attrs += 'style=%s ' % self.style
 		attrs += 'color=%s ' % self.color
-		attrs += 'arrowsize=1.5 '
-		if self.cond:
-			attrs += 'label="%s"' % self.cond.replace('"', '\\"')
 
-		return '%s"%s" -> "%s" [%s];' % (prefix, self.parent.name,
-						self.child.name,
-						attrs)
-						
+		if not self.cond:
+			return '%s"%s" -> "%s" ' \
+				'[%s arrowsize=1.5];' % (prefix,
+				self.parent.name, self.child.name, attrs)
+
+		list = [] 
+		label = self.cond.replace('"', '\\"')
+		list.append('%s"%s_%s_%s" '
+			'[ shape=none label="%s" ];' %
+			(prefix, self.parent.name, self.child.name,
+			label, label))
+		list.append('%s"%s" -> "%s_%s_%s" [%s arrowsize=0];' %
+			(prefix, self.parent.name,
+			self.parent.name, self.child.name, label,
+			attrs))
+		list.append('%s"%s_%s_%s" -> "%s" [%s arrowsize=1.5];' %
+			(prefix,
+			self.parent.name, self.child.name, label,
+			self.child.name, attrs))
+		return string.join(list, '\n')
+					
+	
 	def drawDot(self, prefix=''):
 		print self.getDot(prefix)
 		
