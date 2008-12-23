@@ -17,6 +17,9 @@
 
   <changelog>
   $Log: database-schema.xml,v $
+  Revision 1.26  2008/12/23 02:31:31  mjk
+  added global_attributes (not used yet)
+
   Revision 1.25  2008/12/20 01:06:14  mjk
   - added appliance_attributes
   - attributes => node_attributes
@@ -236,6 +239,12 @@ CREATE TABLE aliases (
 
 
 <!-- Attributes -->
+
+DROP TABLE IF EXISTS global_attributes;
+CREATE TABLE global_attributes (
+  Attr          varchar(64) default NULL,
+  Value         text
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS appliance_attributes;
 CREATE TABLE appliance_attributes (
