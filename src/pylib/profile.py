@@ -1,6 +1,6 @@
 #! /opt/rocks/bin/python
 #
-# $Id: profile.py,v 1.18 2008/12/23 00:14:05 mjk Exp $
+# $Id: profile.py,v 1.19 2008/12/23 01:01:19 mjk Exp $
 #
 # @Copyright@
 # 
@@ -56,6 +56,10 @@
 # @Copyright@
 #
 # $Log: profile.py,v $
+# Revision 1.19  2008/12/23 01:01:19  mjk
+# fix rocks list host graph to handle cond instead of arch/os.  The
+# label is the created cond python expression.  good for testing.
+#
 # Revision 1.18  2008/12/23 00:14:05  mjk
 # - moved build and eval of cond strings into cond.py
 # - added dump appliance,host attrs (and plugins)
@@ -982,16 +986,11 @@ class FrameworkEdge(Edge):
 
 	def getDot(self, prefix=''):
 		attrs = ''
-		attrs = attrs + 'style=%s ' % self.style
-		attrs = attrs + 'color=%s ' % self.color
-		attrs = attrs + 'arrowsize=1.5 '
-		label = []
-		if self.arch:
-			label.append(string.join(self.arch, '\\n'))
-		if self.os:
-			label.append(string.join(self.os, '\\n'))
-		if label:
-			attrs = attrs + 'label="%s"' % '\\n'.join(label)
+		attrs += 'style=%s ' % self.style
+		attrs += 'color=%s ' % self.color
+		attrs += 'arrowsize=1.5 '
+		if self.cond:
+			attrs += 'label="%s"' % self.cond.replace('"', '\\"')
 
 		return '%s"%s" -> "%s" [%s];' % (prefix, self.parent.name,
 						self.child.name,
