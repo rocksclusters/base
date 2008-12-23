@@ -4,6 +4,9 @@
 
 	<changelog>
 	$Log: base.xml,v $
+	Revision 1.42  2008/12/23 02:44:06  mjk
+	removed ia64 edges
+	
 	Revision 1.41  2008/08/07 20:43:14  bruno
 	store the partitions of the frontend in the database
 	
@@ -277,10 +280,8 @@
 		<to>security</to>
 		<to>apache</to>
 		<to>disk-stamp</to>
-		<to arch="ia64">elilo</to>
-		<to arch="i386, x86_64">grub</to>
+		<to>grub</to>
 		<to>ip-diag</to>
-		<to arch="ia64">keyboard</to>
 		<to>logrotate</to>
 		<to>rpc</to>
 		<to>scripting</to>
@@ -306,7 +307,7 @@
 		<to>ntp-server</to>
 		<to>autofs-server</to>
 		<to>database</to>
-		<to arch="i386, x86_64">grub-server</to>
+		<to>grub-server</to>
 		<to>install</to>
 		<to>x11</to>
 		<to>snmp-client</to>
@@ -345,7 +346,7 @@
 		<to>ntp-client</to>
 		<to>syslog-client</to>
 		<to>autofs-client</to>
-		<to arch="i386, x86_64">grub-client</to>
+		<to>grub-client</to>
 		<to>routes-client</to>
 		<to>pxeboot</to>
 		<to>networking-client</to>
