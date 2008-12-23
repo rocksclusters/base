@@ -54,6 +54,13 @@
 # @Copyright@
 #
 # $Log: gen.py,v $
+# Revision 1.38  2008/12/23 00:14:05  mjk
+# - moved build and eval of cond strings into cond.py
+# - added dump appliance,host attrs (and plugins)
+# - cond values are typed (bool, int, float, string)
+# - everything works for client nodes
+# - random 80 col fixes in code (and CVS logs)
+#
 # Revision 1.37  2008/12/20 01:06:15  mjk
 # - added appliance_attributes
 # - attributes => node_attributes
@@ -115,12 +122,14 @@
 #
 # Revision 1.22  2007/09/28 05:02:30  anoop
 # Reverting back to using the cluster keyword. For the time being decomposing
-# packages to be able to use HTTP for installation does not work and is completely
-# usesless. Will use this when the Solaris installer code is advanced
+# packages to be able to use HTTP for installation does not work and is
+# completely usesless. Will use this when the Solaris installer code is
+# advanced
 #
 # Revision 1.21  2007/09/25 21:56:03  anoop
-# Made the jumpstart config generator a bit more http aware. Still an ugly kludge
-# that the Sun engineers should work on, to get native http support into pfinstall
+# Made the jumpstart config generator a bit more http aware. Still an ugly
+# kludge that the Sun engineers should work on, to get native http support
+# into pfinstall
 #
 # Revision 1.20  2007/09/24 23:22:36  anoop
 # Minor modifications to the Solaris part when generating sysidcfg files
@@ -265,27 +274,7 @@ import time
 import xml.dom.NodeFilter
 import xml.dom.ext.reader.Sax2
 import rocks.js
-import UserDict
-
-class CondEnv(UserDict.UserDict):
-	def __getitem__(self, key):
-		try:
-			val = UserDict.UserDict.__getitem__(self, key)
-		except:
-			return None
-		return val
-		
-class CondChecker:
-
-	def __init__(self, attrs):
-		self.env = CondEnv()
-		for (k,v) in attrs.items():
-			self.env[k] = v
-		
-	def check(self, cond):
-		if not cond:
-			return True
-		return eval(cond, globals(), self.env)
+import rocks.cond
 	
 		
 
@@ -294,38 +283,34 @@ class NodeFilter(xml.dom.NodeFilter.NodeFilter):
 	def __init__(self, attrs):
 		self.attrs = attrs
 
-	def checkConditional(self, cond):
-		checker = CondChecker(self.attrs)
-		return checker.check(cond)
-
 	def isCorrectCond(self, node):
-		attr = node.attributes
 
-		if not attr:
-			return True
+		attr = node.attributes.getNamedItem((None, 'arch'))
+		if attr:
+			arch = attr.value
+		else:
+			arch = None
 
-		list = []			
+		attr = node.attributes.getNamedItem((None, 'os'))
+		if attr:
+			os = attr.value
+		else:
+			os = None
 
-		arch = attr.getNamedItem((None, 'arch')) # OR of archs
-		if arch:
-			l = []
-			for e in string.split(arch.value, ','):
-				l.append('arch=="%s"' % e.strip())
-			list.append(string.join(l, ' or '))
+		attr = node.attributes.getNamedItem((None, 'release'))
+		if attr:
+			release = attr.value
+		else:
+			release = None
 
-		os = attr.getNamedItem((None, 'os')) # OR of os
-		if os:
-			l = []
-			for e in string.split(arch.value, ','):
-				l.append('os=="%s"' % e.strip())
-			list.append(string.join(l, ' or '))
-			
-		cond = attr.getNamedItem((None, 'cond'))
-		if cond:
-			list.append(cond.value)
-			
-		# return AND of everything
-		return self.checkConditional(string.join(list, ' and '))
+		attr = node.attributes.getNamedItem((None, 'cond'))
+		if attr:
+			cond = attr.value
+		else:
+			cond = None
+
+		expr = rocks.cond.CreateCondExpr(arch, os, release, cond)
+		return rocks.cond.EvalCondExpr(expr, self.attrs)
 
 		
 class Generator:

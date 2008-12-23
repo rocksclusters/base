@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.29 2008/12/22 23:50:24 bruno Exp $
+# $Id: __init__.py,v 1.30 2008/12/23 00:14:05 mjk Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,13 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.30  2008/12/23 00:14:05  mjk
+# - moved build and eval of cond strings into cond.py
+# - added dump appliance,host attrs (and plugins)
+# - cond values are typed (bool, int, float, string)
+# - everything works for client nodes
+# - random 80 col fixes in code (and CVS logs)
+#
 # Revision 1.29  2008/12/22 23:50:24  bruno
 # change 4 quotes to 3.
 #
@@ -189,42 +196,6 @@ from xml.sax import saxutils
 from xml.sax import handler
 from xml.sax import make_parser
 
-import UserDict
-
-class CondEnv(UserDict.UserDict):
-
-	"""Behaves like a standard dictionary object but will return
-	None for any lookup that would normally through any exception.
-	"""
-
-	def __getitem__(self, key):
-		try:
-			val = UserDict.UserDict.__getitem__(self, key)
-		except:
-			return None
-		return val
-		
-def CheckConditional(cond, attrs):
-
-	"""Creates a new local environment from the attrs dictionary and
-	evaluates the cond expression in this shell.  The local environment
-	differs in that any undefined variable evaluates to None.  This
-	allows the cond to references any attribute even if it is not
-	present in the attrs (local environment).
-	"""
-	
-	if not cond:
-		return True
-
-	env = CondEnv()
-	for (k,v) in attrs.items():
-		env[k] = v
-		
-	return eval(cond, globals(), env)
-
-
-
-
 class Command(rocks.commands.list.command):
 	"""
 	Lists the XML configuration information for a host. The graph
@@ -293,10 +264,6 @@ class Command(rocks.commands.list.command):
 	</example>
 	"""
 
-	def checkConditional(self, attrs, cond):
-		checker = CondChecker(attrs)
-		return checker.check(cond)
-		
 	def run(self, params, args):
 
 		if len(args) != 1:
@@ -315,7 +282,8 @@ class Command(rocks.commands.list.command):
 		if hostname == 'None':
 			address = '127.0.0.1'
 		else:
-			self.db.execute('select ip from networks where name="%s"' % hostname)
+			self.db.execute("""select ip from networks where
+				name='%s'""" % hostname)
 			address, = self.db.fetchone()
 		
 
@@ -482,7 +450,7 @@ class Command(rocks.commands.list.command):
 		nodesHash = {}
 		for node,cond in nodes:
 			nodesHash[node.name] = node
-			if not self.checkConditional(attrs, cond):
+			if not rocks.cond.EvalCondExpr(cond, attrs):
 				nodesHash[node.name] = None
 			
 

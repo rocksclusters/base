@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.3 2008/12/23 00:14:05 mjk Exp $
+# $Id: __init__.py,v 1.1 2008/12/23 00:14:05 mjk Exp $
 #
 # @Copyright@
 # 
@@ -54,73 +54,40 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
-# Revision 1.3  2008/12/23 00:14:05  mjk
+# Revision 1.1  2008/12/23 00:14:05  mjk
 # - moved build and eval of cond strings into cond.py
 # - added dump appliance,host attrs (and plugins)
 # - cond values are typed (bool, int, float, string)
 # - everything works for client nodes
 # - random 80 col fixes in code (and CVS logs)
 #
-# Revision 1.2  2008/10/18 00:55:49  mjk
-# copyright 5.1
-#
-# Revision 1.1  2008/07/31 22:06:29  bruno
-# added 'rocks dump appliance'
-#
-#
 
-import os
 import sys
-import string
+import socket
 import rocks.commands
+import string
 
-class command(rocks.commands.ApplianceArgumentProcessor,
-	rocks.commands.dump.command):
-	pass
-
-class Command(command):
+class Command(rocks.commands.dump.host.command):
 	"""
-	Outputs info (as rocks commands) about the appliances defined in the
-	cluster database.
-	
-	<arg optional='1' type='string' name='appliance' repeat='1'>
-	Optional list of appliance names. If no appliance names are supplied,
-	then info about all appliances is output.
+	Dump the set of attributes for hosts.
+
+	<arg optional='1' type='string' name='host'>
+	Host name of machine
 	</arg>
-		
-	<example cmd='dump appliance'>
-	Dump all known appliances.
+	
+	<example cmd='list host attr compute-0-0'>
+	Dump the attributes for compute-0-0.
 	</example>
 	"""
 
 	def run(self, params, args):
-		for app in self.getApplianceNames(args):
-			self.db.execute("""select 
-				shortname, graph, node from appliances
-				where name='%s'""" % app)
 
-			(shortname, graph, node) = self.db.fetchone()
-
-			self.db.execute("""select m.name, m.compute, m.public
-				from memberships m, appliances a where
-				m.appliance = a.id and a.name = '%s'""" % (app))
-
-			(mem, compute, pub) = self.db.fetchone()
-
-			str = "add appliance %s " % app
-
-			if shortname and shortname != 'NULL':
-				str += "short-name='%s' " % shortname
-			if graph and graph != 'NULL':
-				str += "graph='%s' " % graph
-			if node and node != 'NULL':
-				str += "node='%s' " % node
-			if mem:
-				str += "membership='%s' " % mem
-			if compute:
-				str += "compute='%s' " % compute
-			if pub:
-				str += "public='%s' " % pub
-				
-			self.dump(str)
-
+		for host in self.getHostnames(args):
+			self.db.execute("""
+				select a.attr, a.value from 
+				node_attributes a, nodes n where
+				a.node=n.id and n.name='%s'
+				""" % host)
+			for (key, value) in self.db.fetchall():
+				self.dump('set host attr %s %s %s' %
+					  (host, key, value))

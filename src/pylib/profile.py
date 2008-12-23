@@ -1,6 +1,6 @@
 #! /opt/rocks/bin/python
 #
-# $Id: profile.py,v 1.17 2008/12/19 21:08:54 mjk Exp $
+# $Id: profile.py,v 1.18 2008/12/23 00:14:05 mjk Exp $
 #
 # @Copyright@
 # 
@@ -56,6 +56,13 @@
 # @Copyright@
 #
 # $Log: profile.py,v $
+# Revision 1.18  2008/12/23 00:14:05  mjk
+# - moved build and eval of cond strings into cond.py
+# - added dump appliance,host attrs (and plugins)
+# - cond values are typed (bool, int, float, string)
+# - everything works for client nodes
+# - random 80 col fixes in code (and CVS logs)
+#
 # Revision 1.17  2008/12/19 21:08:54  mjk
 # - solaris jgen code looks more like linux kgen code now
 # - removed solaris <part> tag (outside of <main> section)
@@ -147,6 +154,7 @@ import base64
 import rocks.sql
 import rocks.util
 import rocks.graph
+import rocks.cond
 from xml.sax import saxutils
 from xml.sax import handler
 from xml.sax import make_parser
@@ -307,8 +315,8 @@ class GraphHandler(handler.ContentHandler,
 			parser.setContentHandler(handler)
 			parser.feed(xml)
 
-			# Attach the final XML to the node object so we can find
-			# it again.
+			# Attach the final XML to the node object so we can
+			# find it again.
 			
 			node.addXML(handler.getXML())
 			node.addKSText(handler.getKSText())
@@ -342,38 +350,13 @@ class GraphHandler(handler.ContentHandler,
 			tail = Node(self.attrs.main.child)
 
 		e = FrameworkEdge(tail, head)
-		
-		# Build a conditional string from the old style 'arch' and
-		# 'os' tags and use the new logic for parsing 'cond' 
-		# expressions.  We do this to get all the conditional 
-		# edge testing going through a single piece of code.
+
+		e.setConditional(rocks.cond.CreateCondExpr(
+			self.attrs.main.arch,
+			self.attrs.main.os,
+			self.attrs.main.release,
+			self.attrs.main.cond))
 				
-		cond = []
-		
-		if self.attrs.main.arch: # OR of archs
-			list = []
-			for arch in string.split(self.attrs.main.arch, ','):
-				list.append('arch=="%s"' % arch.strip())
-			cond.append(string.join(list, ' or '))
-			
-		if self.attrs.main.os: # OR of os
-			list = []
-			for os in string.split(self.attrs.main.os, ','):
-				list.append('os=="%s"' % os.strip())
-			cond.append(string.join(list, ' or '))
-			
-		if self.attrs.main.release: # OR of release
-			list = []
-			for rel in string.split(self.attrs.main.release, ','):
-				list.append('release=="%s"' % rel)
-			cond.append(string.join(list, ' or '))
-				
-		if self.attrs.main.cond:
-			cond.append(self.attrs.main.cond)
-			
-		# AND of everything
-		e.setConditional(string.join(cond, ' and '))
-		
 		e.setRoll(self.roll)
 		self.graph.main.addEdge(e)
 
