@@ -1,5 +1,5 @@
 #
-# $Id: __init__.py,v 1.3 2008/10/18 00:55:50 mjk Exp $
+# $Id: __init__.py,v 1.4 2009/01/05 23:46:59 bruno Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.4  2009/01/05 23:46:59  bruno
+# can now build a compute node
+#
 # Revision 1.3  2008/10/18 00:55:50  mjk
 # copyright 5.1
 #
@@ -120,7 +123,7 @@ class Command(rocks.commands.Command):
 			rocks.commands.Abort("Must supply section")
 
 		self.xml_doc = xml.dom.ext.reader.Sax2.FromXmlStream(sys.stdin)
-		self.xml_filter = ProfileNodeFilter(self.arch, self.os)
+		self.xml_filter = ProfileNodeFilter({})
 		self.xml_tree = self.xml_doc.createTreeWalker(self.xml_doc,
 			self.xml_filter.SHOW_ELEMENT, self.xml_filter, 0)
 
