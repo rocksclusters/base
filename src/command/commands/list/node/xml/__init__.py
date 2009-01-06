@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.30 2008/12/23 00:14:05 mjk Exp $
+# $Id: __init__.py,v 1.31 2009/01/06 21:07:57 mjk Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.31  2009/01/06 21:07:57  mjk
+# *** empty log message ***
+#
 # Revision 1.30  2008/12/23 00:14:05  mjk
 # - moved build and eval of cond strings into cond.py
 # - added dump appliance,host attrs (and plugins)
@@ -514,8 +517,12 @@ class Command(rocks.commands.list.command):
 		# the previously parsed nodes
 
 		self.addText('<?xml version="1.0" standalone="no"?>\n')
+		self.addText('<!DOCTYPE rocks-graph [\n')
+		for (k, v) in attrs.items():
+			self.addText('\t<!ENTITY %s "%s">\n' % (k, v))
+		self.addText(']>\n')
 		self.addText('<%s attrs="%s">\n' % (starter_tag, attrs))
-		if self.os != 'sunos':
+		if self.os == 'linux':
 			self.addText('<loader>\n')
 			self.addText('%s\n' % saxutils.escape(kstext))
 			self.addText('%kgen\n')
