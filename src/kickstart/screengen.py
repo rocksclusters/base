@@ -1,6 +1,6 @@
 #! @PYTHON@
 #
-# $Id: screengen.py,v 1.17 2008/10/18 00:56:01 mjk Exp $
+# $Id: screengen.py,v 1.18 2009/01/08 00:41:36 mjk Exp $
 #
 # @Copyright@
 # 
@@ -56,6 +56,9 @@
 # @Copyright@
 #
 # $Log: screengen.py,v $
+# Revision 1.18  2009/01/08 00:41:36  mjk
+# test when you need to
+#
 # Revision 1.17  2008/10/18 00:56:01  mjk
 # copyright 5.1
 #
@@ -130,18 +133,18 @@ class ScreenNodeFilter(rocks.gen.NodeFilter):
 		if node.nodeName == 'kickstart':
 			return self.FILTER_ACCEPT
 			
-		if not self.isCorrectArch(node):
-			return self.FILTER_SKIP
-
-		if node.nodeName in [ 
+		if node.nodeName not in [ 
 			'screen',
 			'title',
 			'variable',
 			'code',
 			]:
-			return self.FILTER_ACCEPT
-		else:
 			return self.FILTER_SKIP
+
+		if not self.isCorrectArch(node):
+			return self.FILTER_SKIP
+
+		return self.FILTER_ACCEPT
 
 
 class Generator(rocks.gen.Generator):
