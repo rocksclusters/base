@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.31 2009/01/06 21:07:57 mjk Exp $
+# $Id: __init__.py,v 1.32 2009/01/08 01:20:57 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.32  2009/01/08 01:20:57  bruno
+# for anoop
+#
 # Revision 1.31  2009/01/06 21:07:57  mjk
 # *** empty log message ***
 #
@@ -346,13 +349,7 @@ class Command(rocks.commands.list.command):
 		# Add more variable based on who this command was
 		# called.
 
-		if not self.db: # if we are inside the installer
-			host = var['Kickstart_PrivateHostname']
-			addr = var['Kickstart_PrivateAddress']
-			membership = 'Frontend' # bad hardcoding here
-			attrs['arch']		= arch    # no db
-			attrs['os']		= self.os # min stuff only
-		else:
+		if self.db:
 			self.db.execute('select memberships.name from '
 				'nodes,memberships where '
 				'nodes.name="%s" and '
@@ -379,6 +376,22 @@ class Command(rocks.commands.list.command):
 				n.name='%s' and n.id=a.node""" % host)
 			for (a, v) in self.db.fetchall():
 				attrs[a] = v
+		else:
+			# we are inside the installer
+			host = var['Kickstart_PrivateHostname']
+			addr = var['Kickstart_PrivateAddress']
+			membership = 'Frontend' # bad hardcoding here
+
+		#
+		# in the case of 'wan' installs, we won't necessarily have
+		# entries in the database for the requesting host, thus, we
+		# won't be able to look up the 'arch' and 'os' attributes. in
+		# this case, just set them to the defaults
+		#
+		if 'arch' not in attrs.keys():
+			attrs['arch'] = arch
+		if 'os' not in attrs.keys():
+			attrs['os'] = self.os
 
 		var['Node_Root']	 = root
 		var['Node_Hostname']     = host

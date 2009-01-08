@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.2 2008/10/18 00:55:57 mjk Exp $
+# $Id: __init__.py,v 1.3 2009/01/08 01:20:57 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.3  2009/01/08 01:20:57  bruno
+# for anoop
+#
 # Revision 1.2  2008/10/18 00:55:57  mjk
 # copyright 5.1
 #
@@ -91,11 +94,11 @@ class Command(rocks.commands.set.host.command):
 	Can be used in place of the vlanid argument.
 	</param>
 
-	<example cmd='set host interface vlan compute-0-0-0 eth0 2'>
-	Sets compute-0-0-0's private interface to VLAN ID 2.
+	<example cmd='set host interface vlan compute-0-0-0 eth0 3'>
+	Sets compute-0-0-0's private interface to VLAN ID 3.
 	</example>
 
-	<example cmd='set host interface vlan compute-0-0-0 subnet=eth0 vlanid=2
+	<example cmd='set host interface vlan compute-0-0-0 subnet=eth0 vlanid=3
 '>
 	Same as above.
 	</example>

@@ -1,6 +1,6 @@
 #! @PYTHON@
 #
-# $Id: screengen.py,v 1.18 2009/01/08 00:41:36 mjk Exp $
+# $Id: screengen.py,v 1.19 2009/01/08 01:20:58 bruno Exp $
 #
 # @Copyright@
 # 
@@ -56,6 +56,9 @@
 # @Copyright@
 #
 # $Log: screengen.py,v $
+# Revision 1.19  2009/01/08 01:20:58  bruno
+# for anoop
+#
 # Revision 1.18  2009/01/08 00:41:36  mjk
 # test when you need to
 #
@@ -141,13 +144,14 @@ class ScreenNodeFilter(rocks.gen.NodeFilter):
 			]:
 			return self.FILTER_SKIP
 
-		if not self.isCorrectArch(node):
+		if not self.isCorrectCond(node):
 			return self.FILTER_SKIP
 
 		return self.FILTER_ACCEPT
 
+osGenerator = getattr(rocks.gen, 'Generator_%s' % os.uname()[0].lower())
 
-class Generator(rocks.gen.Generator):
+class Generator(osGenerator):
 
 	def __init__(self):
 		rocks.gen.Generator.__init__(self)	
@@ -161,7 +165,7 @@ class Generator(rocks.gen.Generator):
 	def parse(self, file):
 		doc  = FromXmlStream(file)
 
-		filter = ScreenNodeFilter(self.getArch(), self.getOS())
+		filter = ScreenNodeFilter({})
 		iter = doc.createTreeWalker(doc, filter.SHOW_ELEMENT,
 			filter, 0)
 		node = iter.nextNode()

@@ -1,6 +1,6 @@
 #! /opt/rocks/bin/python
 #
-# $Id: kcgi.py,v 1.30 2008/12/19 21:08:54 mjk Exp $
+# $Id: kcgi.py,v 1.31 2009/01/08 01:20:58 bruno Exp $
 #
 # @Copyright@
 # 
@@ -56,6 +56,9 @@
 # @Copyright@
 #
 # $Log: kcgi.py,v $
+# Revision 1.31  2009/01/08 01:20:58  bruno
+# for anoop
+#
 # Revision 1.30  2008/12/19 21:08:54  mjk
 # - solaris jgen code looks more like linux kgen code now
 # - removed solaris <part> tag (outside of <main> section)
@@ -859,9 +862,13 @@ class App(rocks.kickstart.Application):
 
 		if self.form.has_key('arch'):
 			self.arch = self.form['arch'].value
-			
-		cmd = '/opt/rocks/bin/rocks list node xml server-wan arch=%s' \
-			% (self.arch)
+		if self.form.has_key('os'):
+			OS = self.form['os'].value
+		else:
+			OS = 'linux' # should aways come from loader
+
+		cmd = '/opt/rocks/bin/rocks list node xml server-wan '
+		cmd += 'arch=%s os=%s' % (self.arch, OS)
 
 		for line in os.popen(cmd).readlines():
 			self.report.append(line[:-1])

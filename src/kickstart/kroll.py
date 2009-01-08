@@ -1,6 +1,6 @@
 #! @PYTHON@
 #
-# $Id: kroll.py,v 1.15 2008/10/18 00:56:01 mjk Exp $
+# $Id: kroll.py,v 1.16 2009/01/08 01:20:58 bruno Exp $
 #
 # @Copyright@
 # 
@@ -56,6 +56,9 @@
 # @Copyright@
 #
 # $Log: kroll.py,v $
+# Revision 1.16  2009/01/08 01:20:58  bruno
+# for anoop
+#
 # Revision 1.15  2008/10/18 00:56:01  mjk
 # copyright 5.1
 #
@@ -152,7 +155,7 @@ class NodeFilter(rocks.gen.NodeFilter):
 		if node.nodeName == 'kickstart':
 			return self.FILTER_ACCEPT
 			
-		if not self.isCorrectArch(node):
+		if not self.isCorrectCond(node):
 			return self.FILTER_SKIP
 
 		if not self.isFromRolls(node):

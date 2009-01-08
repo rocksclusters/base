@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: roll.py,v $
+# Revision 1.18  2009/01/08 01:20:58  bruno
+# for anoop
+#
 # Revision 1.17  2008/10/18 00:56:02  mjk
 # copyright 5.1
 #
@@ -226,7 +229,7 @@ class Generator(osGenerator):
 	def parse(self, file):
 		doc  = FromXmlStream(file)
 
-		filter = ScreenNodeFilter(self.getArch(), self.getOS())
+		filter = ScreenNodeFilter({})
 		iter = doc.createTreeWalker(doc, filter.SHOW_ELEMENT,
 			filter, 0)
 		node = iter.nextNode()
