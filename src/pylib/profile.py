@@ -1,6 +1,6 @@
 #! /opt/rocks/bin/python
 #
-# $Id: profile.py,v 1.20 2008/12/23 02:03:31 mjk Exp $
+# $Id: profile.py,v 1.21 2009/01/08 23:36:01 mjk Exp $
 #
 # @Copyright@
 # 
@@ -56,6 +56,13 @@
 # @Copyright@
 #
 # $Log: profile.py,v $
+# Revision 1.21  2009/01/08 23:36:01  mjk
+# - rsh edge is conditional (no more uncomment crap)
+# - add global_attribute commands (list, set, remove, dump)
+# - attributes are XML entities for kpp pass (both pass1 and pass2)
+# - attributes are XML entities for kgen pass (not used right now - may go away)
+# - some node are now interface=public
+#
 # Revision 1.20  2008/12/23 02:03:31  mjk
 # - fix conditional edges for new style
 # - conds are no longer labels but nodes, this make dot look better
@@ -219,14 +226,30 @@ class RollHandler(handler.ContentHandler,
 			pass
 
 
+class AttributeHandler:
+
+	def setAttributes(self, attrs):
+		list = []
+		list.append('<?xml version="1.0" standalone="no"?>\n')
+		list.append('<!DOCTYPE rocks-graph [\n')
+		for (k, v) in attrs.items():
+			list.append('\t<!ENTITY %s "%s">\n' % (k, v))
+		list.append(']>\n')
+		self.header = string.join(list, '')
+
+	def getXMLHeader(self):
+		return self.header
+
 	
 class GraphHandler(handler.ContentHandler,
 		   handler.DTDHandler,
 		   handler.EntityResolver,
-		   handler.ErrorHandler):
+		   handler.ErrorHandler,
+		   AttributeHandler):
 
-	def __init__(self, entities, OS="linux"):
+	def __init__(self, entities, attrs):
 		handler.ContentHandler.__init__(self)
+		self.setAttributes(attrs)
 		self.graph			= rocks.util.Struct()
 		self.graph.main			= rocks.graph.Graph()
 		self.graph.order		= rocks.graph.Graph()
@@ -236,9 +259,10 @@ class GraphHandler(handler.ContentHandler,
 		self.attrs.order		= rocks.util.Struct()
 		self.attrs.order.default	= rocks.util.Struct()
 		self.entities			= entities
+		self.attributes			= attrs
 		self.roll			= ''
 		self.text			= ''
-		self.os				= OS
+		self.os				= attrs['os']
 		
 
 	def getMainGraph(self):
@@ -295,17 +319,21 @@ class GraphHandler(handler.ContentHandler,
 		for xmlFile in xmlFiles:
 		
 			# 1st Pass
-			#	- Expand VAR tags
+			#	- Expand XML Entities
+			#	- Expand VAR tags (going away)
 			#	- Expand EVAL tags
 			#	- Expand INCLUDE/SINCLUDE tag
 			#	- Logging for post sections
-			
+
 			fin = open(xmlFile, 'r')
 			parser = make_parser()
 			handler = Pass1NodeHandler(node, xmlFile, 
-				self.entities, eval)
+				self.entities, self.attributes, eval)
 			parser.setContentHandler(handler)
-			parser.parse(fin)
+			parser.feed(handler.getXMLHeader())
+			for line in fin.readlines():
+				if line.find('<?xml') == -1:
+					parser.feed(line)
 			fin.close()
 			
 			# 2nd Pass
@@ -319,7 +347,7 @@ class GraphHandler(handler.ContentHandler,
 			
 			parser = make_parser()
 			xml = handler.getXML()
-			handler = Pass2NodeHandler(node)
+			handler = Pass2NodeHandler(node, self.attributes)
 			parser.setContentHandler(handler)
 			parser.feed(xml)
 
@@ -547,12 +575,14 @@ class GraphHandler(handler.ContentHandler,
 class Pass1NodeHandler(handler.ContentHandler,
 	handler.DTDHandler,
 	handler.EntityResolver,
-	handler.ErrorHandler):
+	handler.ErrorHandler,
+	AttributeHandler):
 
 	"""Sax Parser for the Kickstart Node files"""
 
-	def __init__(self, node, filename, entities, eval=0):
+	def __init__(self, node, filename, entities, attrs, eval=0):
 		handler.ContentHandler.__init__(self)
+		self.setAttributes(attrs)
 		self.node	= node
 		self.entities	= entities
 		self.evalShell	= None
@@ -564,6 +594,10 @@ class Pass1NodeHandler(handler.ContentHandler,
 		self.filename	= filename
 		self.stripText  = 0
 
+	def resolveEntity(self, a, b):
+		print 'resolveEntity', a, b
+		return None
+	
 	def startElement_description(self, name, attrs):
 		self.stripText = 1
 
@@ -831,22 +865,24 @@ class Pass1NodeHandler(handler.ContentHandler,
 			self.xml.append(saxutils.escape(s))
 			
 	def getXML(self):
-		return string.join(self.xml, '')
+		return self.getXMLHeader() + string.join(self.xml, '')
 
 
 class Pass2NodeHandler(handler.ContentHandler,
 	handler.DTDHandler,
 	handler.EntityResolver,
-	handler.ErrorHandler):
+	handler.ErrorHandler,
+	AttributeHandler):
 
-	"""Sax Parser for XML before it is written to stdout.  All generated XML 
-	is filtered through this to append the file and roll attributes to
-	all tags.  The includes tags generated from eval and include
-	sections."""
+	"""Sax Parser for XML before it is written to stdout.
+	All generated XML is filtered through this to append the file and
+	roll attributes to all tags.  The includes tags generated from eval
+	and include sections."""
 		
 
-	def __init__(self, node):
+	def __init__(self, node, attrs):
 		handler.ContentHandler.__init__(self)
+		self.setAttributes(attrs)
 		self.node = node
 		self.xml = []
 		self.kstags  = {}
@@ -944,13 +980,17 @@ class Node(rocks.graph.Node):
 	def getKSText(self):
 		return string.join(self.kstext, '')
 
-	def getDot(self, prefix=''):
+	def getDot(self, prefix='', namespace=''):
 		attrs = 'style=filled '
 		attrs = attrs + 'shape=%s '     % self.shape
 		attrs = attrs + 'label="%s" '   % self.name
 		attrs = attrs + 'fillcolor=%s ' % self.fillColor
 		attrs = attrs + 'color=%s'      % self.color
-		return '%s"%s" [%s];' % (prefix, self.name, attrs)
+		if namespace:
+			name = '%s-%s' % (namespace, self.name)
+		else:
+			name = self.name
+		return '%s"%s" [%s];' % (prefix, name, attrs)
 		
 	def drawDot(self, prefix=''):
 		print self.getDot(prefix)
@@ -1028,14 +1068,18 @@ class OrderEdge(Edge):
 	def getGenerator(self):
 		return self.gen
 
-	def getDot(self, prefix=''):
+	def getDot(self, prefix='', namespace=''):
 		attrs = ''
 		attrs = attrs + 'style=%s ' % self.style
 		attrs = attrs + 'color=%s ' % self.color
-		attrs = attrs + 'arrowhead=dot arrowsize=1.5'
-		return '%s"%s" -> "%s" [%s];' % (prefix, self.parent.name,
-						self.child.name,
-						attrs)
+		attrs = attrs + 'arrowsize=1.5'
+		if namespace:
+			child  = '%s-%s' % (namespace, self.child.name)
+			parent = '%s-%s' % (namespace, self.parent.name)
+		else:
+			child  = self.child.name
+			parent = self.parent.name
+		return '%s"%s" -> "%s" [%s];' % (prefix, parent, child, attrs)
 
 	def drawDot(self, prefix=''):
 		print self.getDot(prefix)

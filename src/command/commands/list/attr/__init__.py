@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.2 2009/01/08 23:36:01 mjk Exp $
+# $Id: __init__.py,v 1.1 2009/01/08 23:36:01 mjk Exp $
 #
 # @Copyright@
 # 
@@ -54,7 +54,7 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
-# Revision 1.2  2009/01/08 23:36:01  mjk
+# Revision 1.1  2009/01/08 23:36:01  mjk
 # - rsh edge is conditional (no more uncomment crap)
 # - add global_attribute commands (list, set, remove, dump)
 # - attributes are XML entities for kpp pass (both pass1 and pass2)
@@ -77,16 +77,16 @@ import socket
 import rocks.commands
 import string
 
-class Command(rocks.commands.list.host.command):
+class Command(rocks.commands.list.command):
 	"""
-	Lists the set of attributes for hosts.
+	Lists the set of attributes for appliances.
 
-	<arg optional='1' type='string' name='host'>
-	Host name of machine
+	<arg optional='1' type='string' name='appliance'>
+	Name of appliance
 	</arg>
 	
-	<example cmd='list host attr compute-0-0'>
-	List the attributes for compute-0-0.
+	<example cmd='list appliance attr compute'>
+	List the attributes for compute appliances
 	</example>
 	"""
 
@@ -94,36 +94,10 @@ class Command(rocks.commands.list.host.command):
 
 		self.beginOutput()
 		
-		for host in self.getHostnames(args):
-			attrs = {}
-			self.db.execute("""select attr, value from
-				global_attributes""")
-			for (key, value) in self.db.fetchall():
-				attrs[key] = (value, 'G')
-			
-			self.db.execute("""
-				select aa.attr, aa.value from
-				appliance_attributes aa, nodes n, 
-				memberships m, appliances a where
-				n.membership=m.id and 
-				m.appliance=a.id and 
-				aa.appliance=a.id and 
-				n.name='%s'
-				""" % host)
-			for (key, value) in self.db.fetchall():
-				attrs[key] = (value, 'A')
-		
-			self.db.execute("""
-				select a.attr, a.value from 
-				node_attributes a, nodes n where
-				a.node=n.id and n.name='%s'
-				""" % host)
-			for (key, value) in self.db.fetchall():
-				attrs[key] = (value, 'H')
-				
-			for (key, value) in attrs.items():
-				self.addOutput(host, (key, value[0], value[1]))
+		self.db.execute('select attr, value from global_attributes')
+		for attr, value in self.db.fetchall():
+			self.addOutput(attr, value)
 
-		self.endOutput(header=['host', 'attr', 'value', 'source' ],
+		self.endOutput(header=['attr', 'value' ],
 			trimOwner=0)
 

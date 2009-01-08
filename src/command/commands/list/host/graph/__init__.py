@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.12 2008/11/19 17:42:25 bruno Exp $
+# $Id: __init__.py,v 1.13 2009/01/08 23:36:01 mjk Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,13 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.13  2009/01/08 23:36:01  mjk
+# - rsh edge is conditional (no more uncomment crap)
+# - add global_attribute commands (list, set, remove, dump)
+# - attributes are XML entities for kpp pass (both pass1 and pass2)
+# - attributes are XML entities for kgen pass (not used right now - may go away)
+# - some node are now interface=public
+#
 # Revision 1.12  2008/11/19 17:42:25  bruno
 # fix (from long beach airport!)
 #
@@ -186,12 +193,10 @@ class Command(rocks.commands.list.host.command):
 
 		self.beginOutput()
 		
-		self.drawEdges		= 1
 		self.drawOrder		= 0
-		self.drawKey		= 0
-		self.drawInvisEdges	= 0
+		self.drawKey		= 1
 		self.drawLandscape	= 0
-		self.drawSize		= '7.5,10'
+		self.drawSize		= '10,10'
 		
 		for host in self.getHostnames(args):
 			self.db.execute("""select d.name, a.graph from
@@ -226,7 +231,7 @@ class Command(rocks.commands.list.host.command):
 					if not os.path.isfile(path):
 						continue
 					fin = open(path, 'r')
-					parser.setContentHandler(handler)	
+					parser.setContentHandler(handler)
 					parser.parse(fin)
 					fin.close()
 			
@@ -243,72 +248,90 @@ class Command(rocks.commands.list.host.command):
 	
 	def createDotGraph(self, handler, styleMap):
 		dot = []
-		graph = handler.getMainGraph()
 		dot.append('digraph rocks {')
 		dot.append('\tsize="%s";' % self.drawSize)
-		if self.drawLandscape:
-			dot.append('\trankdir=TB;')
-		else:
-			dot.append('\trankdir=LR;')
+		dot.append('\trankdir=LR;')
 
-		if self.drawKey:
-			dot.append('\tsubgraph clusterkey {')
-			dot.append('\t\tlabel="Rolls";')
-			dot.append('\t\tcolor=black;')
-			for key in styleMap:
-				a = 'style=filled '
-				a = a + 'shape=%s '    % styleMap[key].nodeShape
-				a = a + 'label="%s " ' % key
-				a = a + 'fillcolor=%s' % styleMap[key].nodeColor
-				dot.append('\t\t"roll-%s" [%s];' % (key, a))
-				dot.append('\t}')
+		# Key
+		
+		dot.append('\tsubgraph clusterkey {')
+		dot.append('\t\tlabel="Rolls";')
+		dot.append('\t\tfontsize=32;')
+		dot.append('\t\tcolor=black;')
+		for key in styleMap:
+			a = 'style=filled '
+			a += 'shape=%s '    % styleMap[key].nodeShape
+			a += 'label="%s" ' % key
+			a += 'fillcolor=%s' % styleMap[key].nodeColor
+			dot.append('\t\t"roll-%s" [%s];' % (key, a))
+		dot.append('\t}')
 
-		for node in graph.getNodes():
+		# Ordering Graph
+		
+		dot.append('\tsubgraph clusterorder {')
+		dot.append('\t\tlabel="Ordering Contraints";')
+		dot.append('\t\tfontsize=32;')
+		dot.append('\t\tcolor=black;')
+		dict = {}
+		for node in handler.getOrderGraph().getNodes():
 			try:
 				handler.parseNode(node, 0) # Skip <eval>
 			except rocks.util.KickstartNodeError:
 				pass
-
 			try:
 				color = styleMap[node.getRoll()].nodeColor
 			except:
 				color = 'white'
 			node.setFillColor(color)
-			dot.append(node.getDot('\t'))
+			dot.append(node.getDot('\t\t', 'order'))
 
-		# Draw the edges with an optional architecture label
+		iter = rocks.profile.OrderIterator(handler.getOrderGraph())
+		iter.run()
 
-		if self.drawEdges:
-			style = 'bold'
-		else:
-			style = 'invis'
+		for e in handler.getOrderGraph().getEdges():
+			try:
+				color = styleMap[e.getRoll()].edgeColor
+				style = 'bold'
+			except:
+				color = 'black'
+				style = 'invis'
+			e.setColor(color)
+			e.setStyle(style)
+			dot.append(e.getDot('\t\t', 'order'))
+		dot.append('\t}')
 
-		if self.drawEdges or self.drawInvisEdges:
-			for e in graph.getEdges():
-				try:
-					color = styleMap[e.getRoll()].edgeColor
-				except:
-					color = 'black'
-				e.setColor(color)
-				e.setStyle(style)
-				dot.append(e.getDot('\t'))
+		# Main Graph
 
-		# Now include the order edges
-			
-		if self.drawOrder:
-			style = 'bold'
-		else:
-			style = 'invis'
+		dot.append('\tsubgraph clustermain {')
+		dot.append('\t\tlabel="Profile Graph";')
+		dot.append('\t\tfontsize=32;')
+		dot.append('\t\tcolor=black;')
+		for node in handler.getMainGraph().getNodes():
+			try:
+				handler.parseNode(node, 0) # Skip <eval>
+			except rocks.util.KickstartNodeError:
+				pass
+			try:
+				color = styleMap[node.getRoll()].nodeColor
+			except:
+				color = 'white'
+			node.setFillColor(color)
+			dot.append(node.getDot('\t\t'))
+		for e in handler.getMainGraph().getEdges():
+			try:
+				color = styleMap[e.getRoll()].edgeColor
+			except:
+				color = 'black'
+			e.setColor(color)
+			e.setStyle('bold')
+			dot.append(e.getDot('\t\t'))
+		dot.append('\t}')
 
-		if self.drawOrder or self.drawInvisEdges:
-			for e in handler.getOrderGraph().getEdges():
-				try:
-					color = styleMap[e.getRoll()].edgeColor
-				except:
-					color = 'black'
-				e.setColor(color)
-				e.setStyle(style)
-				dot.append(e.getDot('\t'))
+#		for mainNode in handler.getMainGraph().getNodes():
+#			dot.append('"%s" -> "order-%s" [ style="invis"];' %
+#				(mainNode.name,
+#				 handler.getOrderGraph().getNode('HEAD')))
+
 
 		dot.append('}')
 		return dot

@@ -11,6 +11,13 @@
 
 	<changelog>
 	$Log: base-rsh.xml,v $
+	Revision 1.3  2009/01/08 23:36:01  mjk
+	- rsh edge is conditional (no more uncomment crap)
+	- add global_attribute commands (list, set, remove, dump)
+	- attributes are XML entities for kpp pass (both pass1 and pass2)
+	- attributes are XML entities for kgen pass (not used right now - may go away)
+	- some node are now interface=public
+	
 	Revision 1.2  2006/06/05 17:57:32  bruno
 	first steps towards 4.2 beta
 	
@@ -21,14 +28,10 @@
 
 
 
-	<!-- Uncomment to enable RSH on your cluster
-
-	<edge from="client">
+	<edge from="client" cond="rsh">
 		<to>xinetd</to>
 		<to>rsh</to>
 	</edge>
-
-	-->
 
 </graph>
 

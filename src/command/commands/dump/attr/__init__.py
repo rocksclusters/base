@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.2 2009/01/08 23:36:01 mjk Exp $
+# $Id: __init__.py,v 1.1 2009/01/08 23:36:01 mjk Exp $
 #
 # @Copyright@
 # 
@@ -54,22 +54,12 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
-# Revision 1.2  2009/01/08 23:36:01  mjk
+# Revision 1.1  2009/01/08 23:36:01  mjk
 # - rsh edge is conditional (no more uncomment crap)
 # - add global_attribute commands (list, set, remove, dump)
 # - attributes are XML entities for kpp pass (both pass1 and pass2)
 # - attributes are XML entities for kgen pass (not used right now - may go away)
 # - some node are now interface=public
-#
-# Revision 1.1  2008/12/20 01:06:15  mjk
-# - added appliance_attributes
-# - attributes => node_attributes
-# - rocks set,list,remove appliance attr
-# - eval shell for conds has a special local dictionary that allows
-#   unresolved variables (attributes) to evaluate to None
-# - need to add this to solaris
-# - need to move UserDict stuff into pylib and remove cut/paste code
-# - need a drink
 #
 
 import sys
@@ -77,53 +67,14 @@ import socket
 import rocks.commands
 import string
 
-class Command(rocks.commands.list.host.command):
+class Command(rocks.commands.dump.command):
 	"""
-	Lists the set of attributes for hosts.
-
-	<arg optional='1' type='string' name='host'>
-	Host name of machine
-	</arg>
-	
-	<example cmd='list host attr compute-0-0'>
-	List the attributes for compute-0-0.
-	</example>
+	Dump the set of attributes
 	"""
 
 	def run(self, params, args):
 
-		self.beginOutput()
-		
-		for host in self.getHostnames(args):
-			attrs = {}
-			self.db.execute("""select attr, value from
-				global_attributes""")
-			for (key, value) in self.db.fetchall():
-				attrs[key] = (value, 'G')
-			
-			self.db.execute("""
-				select aa.attr, aa.value from
-				appliance_attributes aa, nodes n, 
-				memberships m, appliances a where
-				n.membership=m.id and 
-				m.appliance=a.id and 
-				aa.appliance=a.id and 
-				n.name='%s'
-				""" % host)
-			for (key, value) in self.db.fetchall():
-				attrs[key] = (value, 'A')
-		
-			self.db.execute("""
-				select a.attr, a.value from 
-				node_attributes a, nodes n where
-				a.node=n.id and n.name='%s'
-				""" % host)
-			for (key, value) in self.db.fetchall():
-				attrs[key] = (value, 'H')
-				
-			for (key, value) in attrs.items():
-				self.addOutput(host, (key, value[0], value[1]))
-
-		self.endOutput(header=['host', 'attr', 'value', 'source' ],
-			trimOwner=0)
+		self.db.execute('select attr, value from global_attributes')
+		for row in self.db.fetchall():
+			self.dump('set attr %s %s' % (row[0], row[1]))
 

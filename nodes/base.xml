@@ -1,6 +1,6 @@
 <?xml version="1.0" standalone="no"?>
 
-<kickstart>
+<kickstart interface="public">
 
   <description>
 
@@ -20,6 +20,13 @@
 
   <changelog>
   $Log: base.xml,v $
+  Revision 1.36  2009/01/08 23:36:01  mjk
+  - rsh edge is conditional (no more uncomment crap)
+  - add global_attribute commands (list, set, remove, dump)
+  - attributes are XML entities for kpp pass (both pass1 and pass2)
+  - attributes are XML entities for kgen pass (not used right now - may go away)
+  - some node are now interface=public
+
   Revision 1.35  2008/10/18 00:55:45  mjk
   copyright 5.1
 

@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.32 2009/01/08 01:20:57 bruno Exp $
+# $Id: __init__.py,v 1.33 2009/01/08 23:36:01 mjk Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,13 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.33  2009/01/08 23:36:01  mjk
+# - rsh edge is conditional (no more uncomment crap)
+# - add global_attribute commands (list, set, remove, dump)
+# - attributes are XML entities for kpp pass (both pass1 and pass2)
+# - attributes are XML entities for kgen pass (not used right now - may go away)
+# - some node are now interface=public
+#
 # Revision 1.32  2009/01/08 01:20:57  bruno
 # for anoop
 #
@@ -360,7 +367,12 @@ class Command(rocks.commands.list.command):
 			# the conditional edges (cond tag)
 			# read the defaults from the appliance_attributes
 			# and override from the node_attributes
-			
+
+			self.db.execute("""select attr, value from
+				global_attributes""")
+			for (a, v) in self.db.fetchall():
+				attrs[a] = v
+
 			self.db.execute("""select aa.attr, aa.value from
 				appliance_attributes aa, nodes n, 
 				memberships m, appliances a where
@@ -381,16 +393,7 @@ class Command(rocks.commands.list.command):
 			host = var['Kickstart_PrivateHostname']
 			addr = var['Kickstart_PrivateAddress']
 			membership = 'Frontend' # bad hardcoding here
-
-		#
-		# in the case of 'wan' installs, we won't necessarily have
-		# entries in the database for the requesting host, thus, we
-		# won't be able to look up the 'arch' and 'os' attributes. in
-		# this case, just set them to the defaults
-		#
-		if 'arch' not in attrs.keys():
 			attrs['arch'] = arch
-		if 'os' not in attrs.keys():
 			attrs['os'] = self.os
 
 		var['Node_Root']	 = root
@@ -429,7 +432,7 @@ class Command(rocks.commands.list.command):
 		# Parse the XML graph files in the chosen directory
 
 		parser  = make_parser()
-		handler = rocks.profile.GraphHandler(var, self.os)
+		handler = rocks.profile.GraphHandler(var, attrs)
 
 		graphDir = os.path.join('graphs', graph)
 		if not os.path.exists(graphDir):
@@ -506,7 +509,7 @@ class Command(rocks.commands.list.command):
 
 		# Iterate over the nodes and parse everyone we need
 		# to parse.
-			
+		
 		parsed = []
 		kstext = ''
 		for node in list:

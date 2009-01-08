@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.2 2009/01/08 23:36:01 mjk Exp $
+# $Id: __init__.py,v 1.1 2009/01/08 23:36:01 mjk Exp $
 #
 # @Copyright@
 # 
@@ -54,7 +54,7 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
-# Revision 1.2  2009/01/08 23:36:01  mjk
+# Revision 1.1  2009/01/08 23:36:01  mjk
 # - rsh edge is conditional (no more uncomment crap)
 # - add global_attribute commands (list, set, remove, dump)
 # - attributes are XML entities for kpp pass (both pass1 and pass2)
@@ -72,58 +72,58 @@
 # - need a drink
 #
 
+
+import os
+import stat
+import time
 import sys
-import socket
-import rocks.commands
 import string
+import rocks.commands
 
-class Command(rocks.commands.list.host.command):
+class Command(rocks.commands.set.command):
 	"""
-	Lists the set of attributes for hosts.
+	Sets a global attribute for all nodes
 
-	<arg optional='1' type='string' name='host'>
-	Host name of machine
+	<arg type='string' name='attr'>
+	Name of the attribute
+	</arg>
+
+	<arg type='string' name='value'>
+	Value of the attribute
 	</arg>
 	
-	<example cmd='list host attr compute-0-0'>
-	List the attributes for compute-0-0.
+	<param type='string' name='attr'>
+	same as attr argument
+	</param>
+
+	<param type='string' name='value'>
+	same as value argument
+	</param>
+
+	<example cmd='set appliance attr sge False'>
+	Sets the sge attribution to False
 	</example>
+
+	<related>list attr</related>
+	<related>remove attr</related>
 	"""
 
 	def run(self, params, args):
 
-		self.beginOutput()
-		
-		for host in self.getHostnames(args):
-			attrs = {}
-			self.db.execute("""select attr, value from
-				global_attributes""")
-			for (key, value) in self.db.fetchall():
-				attrs[key] = (value, 'G')
-			
-			self.db.execute("""
-				select aa.attr, aa.value from
-				appliance_attributes aa, nodes n, 
-				memberships m, appliances a where
-				n.membership=m.id and 
-				m.appliance=a.id and 
-				aa.appliance=a.id and 
-				n.name='%s'
-				""" % host)
-			for (key, value) in self.db.fetchall():
-				attrs[key] = (value, 'A')
-		
-			self.db.execute("""
-				select a.attr, a.value from 
-				node_attributes a, nodes n where
-				a.node=n.id and n.name='%s'
-				""" % host)
-			for (key, value) in self.db.fetchall():
-				attrs[key] = (value, 'H')
-				
-			for (key, value) in attrs.items():
-				self.addOutput(host, (key, value[0], value[1]))
+		(args, attr, value) = self.fillPositionalArgs(('attr', 'value'))
+		if not attr:
+			self.abort('missing attribute name')
+		if not value:
+			self.about('missing value of attribute')
 
-		self.endOutput(header=['host', 'attr', 'value', 'source' ],
-			trimOwner=0)
+		rows = self.db.execute("""select * from global_attributes
+			where attr='%s'""" % attr)
+		if not rows:
+			self.db.execute("""insert into global_attributes
+				values ('%s', '%s')""" % (attr, value))
+		else:
+			self.db.execute("""update global_attributes
+				set value='%s' where attr='%s'""" %
+				(value, attr))
+
 

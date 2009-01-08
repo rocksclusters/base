@@ -4,6 +4,13 @@
 
 	<changelog>
 	$Log: base.xml,v $
+	Revision 1.43  2009/01/08 23:36:01  mjk
+	- rsh edge is conditional (no more uncomment crap)
+	- add global_attribute commands (list, set, remove, dump)
+	- attributes are XML entities for kpp pass (both pass1 and pass2)
+	- attributes are XML entities for kgen pass (not used right now - may go away)
+	- some node are now interface=public
+	
 	Revision 1.42  2008/12/23 02:44:06  mjk
 	removed ia64 edges
 	
@@ -275,6 +282,7 @@
 	<edge from="base">
 		<to>foundation-base</to>
 		<to>autofs</to>
+		<to>auto-kickstart</to>
 		<to>snmp-server</to>
 		<to>syslog</to>
 		<to>security</to>
@@ -292,11 +300,12 @@
 		<to>postshell</to>
 		<to>i18n</to>
 		<to>411-base</to>
-		<to>auto-kickstart</to>
 		<to>greceptor</to>
 		<to>mail</to>
 		<to>partition</to>
 	</edge>
+
+	<edge from="client" to="x11" cond="x11"/>
 
 	<edge from="server">
 		<to>foundation-server</to>

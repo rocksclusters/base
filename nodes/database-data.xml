@@ -16,6 +16,13 @@
 
   <changelog>
   $Log: database-data.xml,v $
+  Revision 1.30  2009/01/08 23:36:01  mjk
+  - rsh edge is conditional (no more uncomment crap)
+  - add global_attribute commands (list, set, remove, dump)
+  - attributes are XML entities for kpp pass (both pass1 and pass2)
+  - attributes are XML entities for kgen pass (not used right now - may go away)
+  - some node are now interface=public
+
   Revision 1.29  2008/10/18 00:55:45  mjk
   copyright 5.1
 
@@ -377,7 +384,6 @@ insert into app_globals (service, component, value) values
 	iface=eth0 subnet=private \
 	ip=<var name="Kickstart_PrivateAddress"/> \
 	name=<var name="Kickstart_PrivateHostname"/>
-
 
 </post>
 
