@@ -13,6 +13,9 @@ Provides pre-execution environment (PXE) support for frontend machines.
 
 <changelog>
 $Log: pxe.xml,v $
+Revision 1.20  2009/01/09 22:06:24  bruno
+added version and arch to vmlinuz and initrd.img files
+
 Revision 1.19  2008/12/15 22:27:21  bruno
 convert pxeboot and pxeaction tables to boot and bootaction tables.
 
@@ -190,8 +193,8 @@ service tftp
 -->
 mkdir -p /tftpboot/pxelinux
 
-cp /boot/kickstart/default/vmlinuz /tftpboot/pxelinux/
-cp /boot/kickstart/default/initrd.img /tftpboot/pxelinux/
+cp /boot/kickstart/default/vmlinuz* /tftpboot/pxelinux/
+cp /boot/kickstart/default/initrd.img* /tftpboot/pxelinux/
 
 cp /boot/memtest86* /tftpboot/pxelinux/memtest
 
@@ -210,31 +213,12 @@ cp /usr/lib/syslinux/pxelinux.0 /tftpboot/pxelinux/
 </post>
 
 
-<post arch="ia64">
-
-cp /boot/efi/efi/redhat/elilo.efi /tftpboot/pxelinux/
-
-
-<file name="/tftpboot/pxelinux/elilo.conf">
-default=ks
-prompt
-timeout=50
-
-image=vmlinuz
-        label=ks
-        initrd=initrd.img
-        read-only
-        append="ramdisk_size=300000 maxcpus=1 ks pxe kssendmac selinux=0"
-</file>
-
-</post>
-
 <post>
 
 <!-- now setup the global PXE boot default actions -->
 /opt/rocks/bin/rocks add host bootaction action="install" \
-	kernel="vmlinuz" \
-	ramdisk="initrd.img" \
+	kernel="vmlinuz-&rocks_version;-&arch;" \
+	ramdisk="initrd.img-&rocks_version;-&arch;" \
 	args="ks ramdisk_size=150000 lang= devfs=nomount pxe kssendmac selinux=0 noipv6"
 
 /opt/rocks/bin/rocks add host bootaction action="os" \
@@ -244,13 +228,13 @@ image=vmlinuz
 	kernel="kernel memtest"
 
 /opt/rocks/bin/rocks add host bootaction action="install headless" \
-	kernel="vmlinuz" \
-	ramdisk="initrd.img" \
+	kernel="vmlinuz-&rocks_version;-&arch;" \
+	ramdisk="initrd.img-&rocks_version;-&arch;" \
 	args="ks ramdisk_size=150000 lang= devfs=nomount pxe kssendmac selinux=0 noipv6 headless vnc"
 
 /opt/rocks/bin/rocks add host bootaction action="rescue" \
-	kernel="vmlinuz" \
-	ramdisk="initrd.img" \
+	kernel="vmlinuz-&rocks_version;-&arch;" \
+	ramdisk="initrd.img-&rocks_version;-&arch;" \
 	args="ks ramdisk_size=150000 lang= devfs=nomount pxe kssendmac selinux=0 noipv6 rescue"
 
 /opt/rocks/bin/rocks add host bootaction action="pxeflash" \

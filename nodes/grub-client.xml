@@ -15,6 +15,9 @@
 
   <changelog>
   $Log: grub-client.xml,v $
+  Revision 1.11  2009/01/09 22:06:24  bruno
+  added version and arch to vmlinuz and initrd.img files
+
   Revision 1.10  2008/10/22 19:34:57  bruno
   fix setting bootflags. the bootflags now survive through reboots.
 
@@ -105,11 +108,14 @@ if isXen:
 	#
 	# reinstall a virtual machine
 	#
-	args = "ks initrd=initrd.img pxe selinux=0 noipv6 lang= devfs=nomount"
+	args = "ks initrd=initrd.img-&rocks_version;-&arch; pxe selinux=0 "
+	args += "noipv6 lang= devfs=nomount"
 	makegrub = rocks.grub.App()
 	makegrub.setBootTitle('Rocks Reinstall Xen')
-	makegrub.setInstallKernel('kickstart/xen/vmlinuz')
-	makegrub.setInstallRamdisk('kickstart/xen/initrd-xen.iso.gz')
+	makegrub.setInstallKernel(
+		'kickstart/xen/vmlinuz-&rocks_version;-&arch;')
+	makegrub.setInstallRamdisk(
+		'kickstart/xen/initrd-xen.iso.gz-&rocks_version;-&arch;')
 	makegrub.run(args)
 else:
 	#
