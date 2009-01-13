@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.4 2008/10/18 00:55:58 mjk Exp $
+# $Id: __init__.py,v 1.5 2009/01/13 23:11:33 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.5  2009/01/13 23:11:33  bruno
+# add full pathname to 'service' command so folks can run insert-ethers via
+# sudo.
+#
 # Revision 1.4  2008/10/18 00:55:58  mjk
 # copyright 5.1
 #
@@ -91,7 +95,7 @@ class Command(rocks.commands.sync.host.command):
 			cmd += 'ssh %s bash > /dev/null 2>&1' % host
 			os.system(cmd)
 
-			cmd = 'ssh %s "service network restart" ' % host
+			cmd = 'ssh %s "/sbin/service network restart" ' % host
 			cmd += '> /dev/null 2>&1'
 			os.system(cmd)
 
