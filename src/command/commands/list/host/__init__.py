@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.14 2008/10/18 00:55:49 mjk Exp $
+# $Id: __init__.py,v 1.15 2009/01/14 00:20:56 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,18 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.15  2009/01/14 00:20:56  bruno
+# unify the physical node and VM node boot action functionality
+#
+# - all bootaction's are global
+#
+# - the node table has a 'runaction' (what bootaction should the node do when
+#   a node normally boots) and an 'installaction (the bootaction for installs).
+#
+# - the 'boot' table has an entry for each node and it dictates what the node
+#   will do on the next boot -- it will look up the runaction in the nodes table
+#   (for a normal boot) or the installaction in the nodes table (for an install).
+#
 # Revision 1.14  2008/10/18 00:55:49  mjk
 # copyright 5.1
 #
@@ -145,11 +157,11 @@ class Command(command):
 
 		for host in self.getHostnames(args):
 			self.db.execute("""select m.name, n.cpus,
-				n.rack, n.rank, n.comment from 
-				nodes n, memberships m where 
+				n.rack, n.rank, n.runaction, n.installaction,
+				n.comment from nodes n, memberships m where 
 				n.membership=m.id and n.name='%s'""" % host)
 			self.addOutput(host, self.db.fetchone())
 			
-		self.endOutput(header=['host', 'membership',
-			'cpus', 'rack', 'rank', 'comment'])
+		self.endOutput(header=['host', 'membership', 'cpus', 'rack',
+			'rank', 'runaction', 'installaction', 'comment'])
 		

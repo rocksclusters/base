@@ -17,6 +17,18 @@
 
   <changelog>
   $Log: database-schema.xml,v $
+  Revision 1.27  2009/01/14 00:20:55  bruno
+  unify the physical node and VM node boot action functionality
+
+  - all bootaction's are global
+
+  - the node table has a 'runaction' (what bootaction should the node do when
+    a node normally boots) and an 'installaction (the bootaction for installs).
+
+  - the 'boot' table has an entry for each node and it dictates what the node
+    will do on the next boot -- it will look up the runaction in the nodes table
+    (for a normal boot) or the installaction in the nodes table (for an install).
+
   Revision 1.26  2008/12/23 02:31:31  mjk
   added global_attributes (not used yet)
 
@@ -332,6 +344,8 @@ CREATE TABLE nodes (
   Comment	varchar(128) default NULL,
   Arch		varchar(32) default NULL,
   OS		enum('linux', 'sunos') NOT NULL default 'linux',
+  RunAction	varchar(64) default 'os',
+  InstallAction	varchar(64) default 'install',
   PRIMARY KEY  (ID)
 ) TYPE=MyISAM;
 
@@ -456,7 +470,6 @@ CREATE TABLE boot (
 DROP TABLE IF EXISTS bootaction;
 CREATE TABLE bootaction (
   ID            int(11) NOT NULL auto_increment,
-  Node          int(11) NOT NULL default '0',
   Action        varchar(256) default NULL,
   Kernel        varchar(256) default NULL,
   Ramdisk       varchar(256) default NULL,

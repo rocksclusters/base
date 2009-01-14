@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.2 2008/12/16 00:29:11 bruno Exp $
+# $Id: __init__.py,v 1.3 2009/01/14 00:20:56 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,18 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.3  2009/01/14 00:20:56  bruno
+# unify the physical node and VM node boot action functionality
+#
+# - all bootaction's are global
+#
+# - the node table has a 'runaction' (what bootaction should the node do when
+#   a node normally boots) and an 'installaction (the bootaction for installs).
+#
+# - the 'boot' table has an entry for each node and it dictates what the node
+#   will do on the next boot -- it will look up the runaction in the nodes table
+#   (for a normal boot) or the installaction in the nodes table (for an install).
+#
 # Revision 1.2  2008/12/16 00:29:11  bruno
 # fix
 #
@@ -98,13 +110,10 @@ class Command(rocks.commands.set.host.command):
 		# want to know if a action exists for this host.
 		#
 		rows = self.db.execute("""select action from bootaction where
-			(node = %s or node = 0) 
-			and bootaction.action = "%s" """ % (nodeid, action))
+			action = "%s" """ % (action))
 
 		if rows < 1:
-			self.abort('Boot action ' + 
-				'(%s) is not defined ' % (action) +
-				'for host (%s)' % (host))
+			self.abort('Boot action "%s" is not defined ' % action)
 
 		#
 		# is there already an entry in the pxeboot table
@@ -155,7 +164,7 @@ class Command(rocks.commands.set.host.command):
 
 	def writeDefaultPxebootCfg(self):
 		nrows = self.db.execute("""select kernel, ramdisk, args from
-			bootaction where action='install' and node = 0 """)
+			bootaction where action='install' """)
 
 		if nrows == 1:
 			kernel, ramdisk, args = self.db.fetchone()
@@ -201,34 +210,15 @@ class Command(rocks.commands.set.host.command):
 
 			return
 
-		#
-		# get the PXE boot kernel, ramdisk and the boot arguments
-		#
 		nrows = self.db.execute("""select
-			bootaction.kernel, bootaction.ramdisk,
-			bootaction.args from bootaction, boot where
-			boot.node = %s and bootaction.action = boot.action
-			and bootaction.node = %s """ % (nodeid, nodeid))
+			ba.kernel, ba.ramdisk, ba.args from
+			bootaction ba, boot b, nodes n where
+			n.name = '%s' and n.id = b.node and
+			b.action = ba.action and
+			ba.action = b.action """ % node)
 
 		if nrows == 1:
 			kernel, ramdisk, args = self.db.fetchone()
-		else:
-			#
-			# get the global command
-			#
-			nrows = self.db.execute("""select
-				bootaction.kernel, bootaction.ramdisk,
-				bootaction.args from bootaction, boot where
-				boot.node = %s and
-				bootaction.action = boot.action and
-				bootaction.node = 0 """ % (nodeid))
-
-			if nrows == 1:
-				kernel, ramdisk, args = self.db.fetchone()
-			else:
-				rocks.commands.Abort('PXE action ' +
-					'does not exist ' +
-					'for host (%s).' % (node))
 
 		if filename != None:
 			file = open(filename, 'w')	
