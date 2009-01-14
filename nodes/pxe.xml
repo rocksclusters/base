@@ -1,5 +1,10 @@
 <?xml version="1.0" standalone="no"?>
 
+<!DOCTYPE rocks-graph [
+	<!ENTITY rocks_version "5.2">
+	<!ENTITY arch "x86_64">
+]>
+
 <kickstart>
 
 <description>
@@ -13,6 +18,9 @@ Provides pre-execution environment (PXE) support for frontend machines.
 
 <changelog>
 $Log: pxe.xml,v $
+Revision 1.21  2009/01/14 19:58:52  bruno
+nuke xinetd -- dead XML node
+
 Revision 1.20  2009/01/09 22:06:24  bruno
 added version and arch to vmlinuz and initrd.img files
 
