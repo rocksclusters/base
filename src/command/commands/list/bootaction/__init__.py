@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.4 2009/01/16 23:58:15 bruno Exp $
+# $Id: __init__.py,v 1.1 2009/01/16 23:58:15 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,83 +54,53 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
-# Revision 1.4  2009/01/16 23:58:15  bruno
+# Revision 1.1  2009/01/16 23:58:15  bruno
 # configuring the boot action and writing the boot files (e.g., PXE host config
 # files and Xen config files) are now done in exactly the same way.
 #
+# Revision 1.1  2008/12/15 22:27:21  bruno
+# convert pxeboot and pxeaction tables to boot and bootaction tables.
+#
+# this enables merging the pxeaction and vm_profiles tables
+#
 #
 
+import sys
+import socket
 import rocks.commands
+import string
 
-class Command(rocks.commands.set.host.command):
+class Command(rocks.commands.list.command):
 	"""
-	Set a bootaction for a host. This action defines what configuration
-	is sent back to a host the next time it boots.
-	
-	<arg type='string' name='host' repeat='1'>
-	One or more host names.
-	</arg>
+	Lists the set of boot actions for hosts. Each boot action is a label
+	that points to a command string. The command string is placed into
+	a host-specific pxelinux configuration file. Example labels are
+	'install' and 'os' which point to command strings used to install
+	and boot hosts respectively.
 
-	<param type='string' name='action'>
-	The label name for the bootaction. For a list of bootactions,
-	execute: 'rocks list host bootaction'.
-
-	If no action is supplied, then only the configuration file for the
-	list of hosts will be rewritten.
-	</param>
-		
-	<example cmd='set host boot compute-0-0 action=os'>
-	On the next boot, compute-0-0 will boot from its local disk.
+	<example cmd='list host bootaction'>
+	List the boot actions available for all known hosts.
 	</example>
 	"""
 
-	def updateBoot(self, host, action):
-		#
-		# just make sure there is a action is defined for this host.
-		# we will not be using the result from the query, we just
-		# want to know if a action exists for this host.
-		#
-		rows = self.db.execute("""select action from bootaction where
-			action = "%s" """ % (action))
-
-		if rows < 1:
-			self.abort('Boot action "%s" is not defined ' % action)
-
-		#
-		# is there already an entry in the boot table
-		#
-		nrows = self.db.execute("""select b.id from boot b, nodes n
-			where n.name = '%s' and n.id = b.node""" % host)
-
-		if nrows < 1:
-			#
-			# insert a new row
-			#
-			self.db.execute("""insert into boot (node, action)
-				values(select id from nodes where name = '%s',
-				"%s") """ % (host, action))
-		else:
-			#
-			# update an existing row
-			#
-			bootid, = self.db.fetchone()
-
-			self.db.execute("""update boot set action = "%s"
-				where id = %s """ % (action, bootid))
-		return
-
 	def run(self, params, args):
-		(action,) = self.fillParams([('action', )])
+
+		self.beginOutput()
+
+		# Using a dictionary read the default values for all nodes
+		# and override the entries with the per-node values.
 		
-		if not len(args):
-			self.abort('must supply host')
+		dict = {}
+		self.db.execute("""select action, kernel, ramdisk, args from
+			bootaction""")
 
-		for host in self.getHostnames(args):
-			if action:
-				self.updateBoot(host, action)
+		for row in self.db.fetchall():
+			dict[row[0]] = row[1:]
 
-			#
-			# run the plugins
-			# 
-			self.runPlugins(host)
+		keys = dict.keys()
+		keys.sort()
+		for action in keys:
+			self.addOutput(action, dict[action])
+
+		self.endOutput(header=[ 'action', 'kernel', 'ramdisk', 'args'])
 

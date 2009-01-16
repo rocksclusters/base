@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.4 2009/01/16 23:58:15 bruno Exp $
+# $Id: __init__.py,v 1.1 2009/01/16 23:58:15 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,7 +54,7 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
-# Revision 1.4  2009/01/16 23:58:15  bruno
+# Revision 1.1  2009/01/16 23:58:15  bruno
 # configuring the boot action and writing the boot files (e.g., PXE host config
 # files and Xen config files) are now done in exactly the same way.
 #
@@ -64,73 +64,53 @@ import rocks.commands
 
 class Command(rocks.commands.set.host.command):
 	"""
-	Set a bootaction for a host. This action defines what configuration
-	is sent back to a host the next time it boots.
+	Set the install action for a list of hosts.
 	
 	<arg type='string' name='host' repeat='1'>
 	One or more host names.
 	</arg>
 
-	<param type='string' name='action'>
-	The label name for the bootaction. For a list of bootactions,
-	execute: 'rocks list host bootaction'.
+	<arg type='string' name='action'>
+	The install action to assign to each host. To get a list of all actions,
+	execute: "rocks list host bootaction".
+	</arg>
 
-	If no action is supplied, then only the configuration file for the
-	list of hosts will be rewritten.
+	<param optional='1' type='string' name='action'>
+	Can be used in place of the action argument.
 	</param>
-		
-	<example cmd='set host boot compute-0-0 action=os'>
-	On the next boot, compute-0-0 will boot from its local disk.
+
+	<example cmd='set host installaction compute-0-0 install'>
+	Sets the install action to "install" for compute-0-0.
+	</example>
+
+	<example cmd='set host installaction compute-0-0 compute-0-1 "install i386"'>
+	Sets the install action to "install i386" for compute-0-0 and compute-0-1.
+	</example>
+
+	<example cmd='set host installaction compute-0-0 compute-0-1 action="install i386"'>
+	Same as above.
 	</example>
 	"""
 
-	def updateBoot(self, host, action):
-		#
-		# just make sure there is a action is defined for this host.
-		# we will not be using the result from the query, we just
-		# want to know if a action exists for this host.
-		#
-		rows = self.db.execute("""select action from bootaction where
-			action = "%s" """ % (action))
-
-		if rows < 1:
-			self.abort('Boot action "%s" is not defined ' % action)
-
-		#
-		# is there already an entry in the boot table
-		#
-		nrows = self.db.execute("""select b.id from boot b, nodes n
-			where n.name = '%s' and n.id = b.node""" % host)
-
-		if nrows < 1:
-			#
-			# insert a new row
-			#
-			self.db.execute("""insert into boot (node, action)
-				values(select id from nodes where name = '%s',
-				"%s") """ % (host, action))
-		else:
-			#
-			# update an existing row
-			#
-			bootid, = self.db.fetchone()
-
-			self.db.execute("""update boot set action = "%s"
-				where id = %s """ % (action, bootid))
-		return
-
 	def run(self, params, args):
-		(action,) = self.fillParams([('action', )])
+		(args, action) = self.fillPositionalArgs(('action',))
 		
 		if not len(args):
 			self.abort('must supply host')
+		if not action:
+			self.abort('must supply an action')
 
+		if action.lower() == 'none':
+			installaction = 'NULL'
+		else:
+			rows = self.db.execute("""select * from bootaction where
+				action = '%s' """ % action)
+			if rows != 1:
+				self.abort('action "%s" does not exist' %
+					action)
+			installaction = "'%s'" % action
+			
 		for host in self.getHostnames(args):
-			if action:
-				self.updateBoot(host, action)
-
-			#
-			# run the plugins
-			# 
-			self.runPlugins(host)
-
+			self.db.execute("""update nodes set installaction=%s
+				where name='%s'""" % (installaction, host))
+		
