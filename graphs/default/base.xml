@@ -4,6 +4,9 @@
 
 	<changelog>
 	$Log: base.xml,v $
+	Revision 1.44  2009/01/22 18:57:56  mjk
+	removed database-security
+	
 	Revision 1.43  2009/01/08 23:36:01  mjk
 	- rsh edge is conditional (no more uncomment crap)
 	- add global_attribute commands (list, set, remove, dump)
@@ -193,11 +196,7 @@
 	</order>
 
 	<order head="database-data">
-		<tail>database-security</tail>
 		<tail>rocks-dist</tail>
-	</order>
-
-	<order head="database-security">
 		<tail>install</tail>
 		<tail>routes-server</tail>
 		<tail>insert-rolls</tail>
@@ -414,7 +413,6 @@
 	<edge from="database">
 		<to>database-schema</to>
 		<to>database-data</to>
-		<to>database-security</to>
 	</edge>
 
 	<edge from="wan" to="null"/>
