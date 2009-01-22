@@ -17,6 +17,9 @@
 
   <changelog>
   $Log: database-schema.xml,v $
+  Revision 1.28  2009/01/22 19:12:43  mjk
+  os_attributes table
+
   Revision 1.27  2009/01/14 00:20:55  bruno
   unify the physical node and VM node boot action functionality
 
@@ -254,21 +257,28 @@ CREATE TABLE aliases (
 
 DROP TABLE IF EXISTS global_attributes;
 CREATE TABLE global_attributes (
-  Attr          varchar(64) default NULL,
+  Attr          varchar(128) default NULL,
+  Value         text
+) TYPE=MyISAM;
+
+DROP TABLE IF EXISTS os_attributes;
+CREATE TABLE global_attributes (
+  OS		enum('solaris','linux') NOT NULL default 'linux',
+  Attr          varchar(128) default NULL,
   Value         text
 ) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS appliance_attributes;
 CREATE TABLE appliance_attributes (
   Appliance     int(11) NOT NULL default '0',
-  Attr          varchar(64) default NULL,
+  Attr          varchar(128) default NULL,
   Value         text
 ) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS node_attributes;
 CREATE TABLE node_attributes (
   Node		int(11) NOT NULL default '0',
-  Attr		varchar(64) default NULL,
+  Attr		varchar(128) default NULL,
   Value		text
 ) TYPE=MyISAM;
 
