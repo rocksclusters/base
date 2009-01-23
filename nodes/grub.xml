@@ -17,6 +17,9 @@
 
   <changelog>
   $Log: grub.xml,v $
+  Revision 1.13  2009/01/23 23:19:31  mjk
+  tweaks on the entities
+
   Revision 1.12  2009/01/23 21:50:23  bruno
   var tags converted to entities
 
@@ -145,11 +148,6 @@
 
 
 <post>
-
-<!-- Add our own boot message from the database -->
-<file name="/boot/message">
-&Kickstart_BootMessage;
-</file>
 
 <!-- take out the splashscreen -->
 <file name="/tmp/grub.conf" expr="grep -v splashimage /boot/grub/grub.conf"/>

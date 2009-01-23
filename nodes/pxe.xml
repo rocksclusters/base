@@ -1,10 +1,5 @@
 <?xml version="1.0" standalone="no"?>
 
-<!DOCTYPE rocks-graph [
-	<!ENTITY rocks_version "5.2">
-	<!ENTITY arch "x86_64">
-]>
-
 <kickstart>
 
 <description>
@@ -18,6 +13,9 @@ Provides pre-execution environment (PXE) support for frontend machines.
 
 <changelog>
 $Log: pxe.xml,v $
+Revision 1.22  2009/01/23 23:19:31  mjk
+tweaks on the entities
+
 Revision 1.21  2009/01/14 19:58:52  bruno
 nuke xinetd -- dead XML node
 
@@ -225,8 +223,8 @@ cp /usr/lib/syslinux/pxelinux.0 /tftpboot/pxelinux/
 
 <!-- now setup the global PXE boot default actions -->
 /opt/rocks/bin/rocks add host bootaction action="install" \
-	kernel="vmlinuz-&rocks_version;-&arch;" \
-	ramdisk="initrd.img-&rocks_version;-&arch;" \
+	kernel="vmlinuz-&version;-&arch;" \
+	ramdisk="initrd.img-&version;-&arch;" \
 	args="ks ramdisk_size=150000 lang= devfs=nomount pxe kssendmac selinux=0 noipv6"
 
 /opt/rocks/bin/rocks add host bootaction action="os" \
@@ -236,13 +234,13 @@ cp /usr/lib/syslinux/pxelinux.0 /tftpboot/pxelinux/
 	kernel="kernel memtest"
 
 /opt/rocks/bin/rocks add host bootaction action="install headless" \
-	kernel="vmlinuz-&rocks_version;-&arch;" \
-	ramdisk="initrd.img-&rocks_version;-&arch;" \
+	kernel="vmlinuz-&version;-&arch;" \
+	ramdisk="initrd.img-&version;-&arch;" \
 	args="ks ramdisk_size=150000 lang= devfs=nomount pxe kssendmac selinux=0 noipv6 headless vnc"
 
 /opt/rocks/bin/rocks add host bootaction action="rescue" \
-	kernel="vmlinuz-&rocks_version;-&arch;" \
-	ramdisk="initrd.img-&rocks_version;-&arch;" \
+	kernel="vmlinuz-&version;-&arch;" \
+	ramdisk="initrd.img-&version;-&arch;" \
 	args="ks ramdisk_size=150000 lang= devfs=nomount pxe kssendmac selinux=0 noipv6 rescue"
 
 /opt/rocks/bin/rocks add host bootaction action="pxeflash" \

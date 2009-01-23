@@ -13,6 +13,9 @@ All rights reserved. Rocks(r) v5.0 www.rocksclusters.org
 
 <changelog>
 $Log: wan.xml,v $
+Revision 1.3  2009/01/23 23:19:31  mjk
+tweaks on the entities
+
 Revision 1.2  2009/01/23 21:50:23  bruno
 var tags converted to entities
 
@@ -24,7 +27,7 @@ save the frontend's partitions in the database.
 <lang>&Kickstart_Lang;</lang>
 <keyboard>&Kickstart_Keyboard;</keyboard>
 
-<url> --url http://&Kickstart_PublicHostname;/&Kickstart_PrivateKickstartBasedir;/&Node_Distribution; </url>
+<url> --url http://&Kickstart_PublicHostname;/&Kickstart_PrivateKickstartBasedir;/&distribution; </url>
 
 </kickstart> 
 

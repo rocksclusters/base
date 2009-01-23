@@ -17,6 +17,9 @@
 
   <changelog>
   $Log: server-restore.xml,v $
+  Revision 1.6  2009/01/23 23:19:31  mjk
+  tweaks on the entities
+
   Revision 1.5  2009/01/23 21:50:23  bruno
   var tags converted to entities
 
@@ -37,7 +40,7 @@
 <main>
 
     <!-- Spell out the exact rolls. -->
-<interactive> --dist &Node_DistName;<eval shell="python">
+<interactive> --dist &distribution;<eval shell="python">
 import rocks.sql
 import os
 
@@ -83,7 +86,7 @@ mkdir -p /export/profiles/graphs/default
 
 cat &gt; /export/profiles/nodes/restore.xml &lt;&lt; 'EOF'
 <eval shell="sh">
-/opt/rocks/bin/dbreport restore --site=$Node_Address
+/opt/rocks/bin/dbreport restore --site=&hostaddr;
 </eval>
 EOF
 

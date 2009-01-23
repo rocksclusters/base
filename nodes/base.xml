@@ -20,6 +20,9 @@
 
   <changelog>
   $Log: base.xml,v $
+  Revision 1.38  2009/01/23 23:19:31  mjk
+  tweaks on the entities
+
   Revision 1.37  2009/01/23 21:50:23  bruno
   var tags converted to entities
 
@@ -362,11 +365,14 @@
 
 <lang>&Kickstart_Lang;</lang>
 <keyboard>&Kickstart_Keyboard;</keyboard>
+<!--
 <mouse>&Kickstart_Mouse;</mouse>
+-->
+
 <timezone>--utc &Kickstart_Timezone;</timezone>
 <bootloader>--location=mbr</bootloader>
 
-<url> --url http://&Kickstart_PrivateKickstartHost;/&Kickstart_PrivateKickstartBasedir;/&Node_Distribution; </url>
+<url> --url http://&Kickstart_PrivateKickstartHost;/&Kickstart_PrivateKickstartBasedir;/&distribution; </url>
 <interactive/>
 
 </main>
@@ -472,7 +478,7 @@ po:35:wait:/etc/rc.d/rc.rocksconfig after-rc
 
 <!-- message of the day -->
 <file name="/etc/motd" mode="append">
-Rocks &Info_RocksVersion; (&Info_RocksRelease;)
+Rocks &version; (&release;)
 <eval shell="sh">
 echo "Profile built `date +'%H:%M %d-%b-%Y'`"
 </eval>

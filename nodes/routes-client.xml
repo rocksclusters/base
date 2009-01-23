@@ -17,6 +17,9 @@
 
   <changelog>
   $Log: routes-client.xml,v $
+  Revision 1.5  2009/01/23 23:19:31  mjk
+  tweaks on the entities
+
   Revision 1.4  2008/10/18 00:55:45  mjk
   copyright 5.1
 
@@ -39,7 +42,7 @@
 </file>
 cat &gt;&gt; /etc/sysconfig/static-routes &lt;&lt; 'EOF'
 <eval shell="sh">
-/opt/rocks/bin/dbreport static-routes $Node_Hostname 
+/opt/rocks/bin/dbreport static-routes &hostname;
 </eval>
 EOF
 

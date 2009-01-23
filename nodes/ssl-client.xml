@@ -15,6 +15,9 @@
 
   <changelog>
   $Log: ssl-client.xml,v $
+  Revision 1.6  2009/01/23 23:19:31  mjk
+  tweaks on the entities
+
   Revision 1.5  2008/10/18 00:55:46  mjk
   copyright 5.1
 
@@ -58,7 +61,7 @@ ST=$Info_CertificateState/\
 L=$Info_CertificateLocality/\
 O=$Info_CertificateOrganization/\
 OU=$Info_ClusterName/\
-CN=$Node_Hostname.$Kickstart_PrivateDNSDomain" \
+CN=&hostname;.$Kickstart_PrivateDNSDomain" \
 	&gt; $cert/csr 2&gt;/dev/null
 )
 

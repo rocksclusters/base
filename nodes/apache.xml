@@ -15,6 +15,9 @@
 
   <changelog>
   $Log: apache.xml,v $
+  Revision 1.11  2009/01/23 23:19:31  mjk
+  tweaks on the entities
+
   Revision 1.10  2009/01/23 21:50:23  bruno
   var tags converted to entities
 
@@ -294,7 +297,7 @@ Include conf.d/rocks.conf
    &lt;TD ALIGN=right&gt;
     &lt;A HREF="http://www.rocksclusters.org/"&gt;
     &lt;IMG SRC="homepage/built-with-rocks.png" ALT="Built With Rocks" HEIGHT=120 WIDTH=100 BORDER=0&gt;&lt;/A&gt; &lt;BR&gt;
-	v &Info_RocksVersion; (&Info_RocksRelease;)
+	v &version; (&release;)
    &lt;/TD&gt;
  &lt;/TR&gt;
 &lt;/TABLE&gt;

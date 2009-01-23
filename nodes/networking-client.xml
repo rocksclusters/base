@@ -15,6 +15,9 @@ All rights reserved. Rocks(tm) v4.3 www.rocksclusters.org
 
 <changelog>
 $Log: networking-client.xml,v $
+Revision 1.5  2009/01/23 23:19:31  mjk
+tweaks on the entities
+
 Revision 1.4  2008/09/22 20:20:42  bruno
 change 'rocks config host interface|network' to
 change 'rocks report host interface|network'
@@ -52,11 +55,11 @@ confignetworks.run()
 <post>
 
 <eval mode="xml">
-/opt/rocks/bin/rocks report host network $Node_Hostname
+/opt/rocks/bin/rocks report host network &hostname;
 </eval>
 
 <eval mode="xml">
-/opt/rocks/bin/rocks report host interface $Node_Hostname
+/opt/rocks/bin/rocks report host interface &hostname;
 </eval>
 
 </post>

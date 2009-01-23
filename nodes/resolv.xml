@@ -14,6 +14,9 @@
 
   <changelog>
   $Log: resolv.xml,v $
+  Revision 1.3  2009/01/23 23:19:31  mjk
+  tweaks on the entities
+
   Revision 1.2  2009/01/23 21:50:23  bruno
   var tags converted to entities
 
@@ -76,11 +79,9 @@
 <!-- Give each host knowledge of itself. -->
 
 <file name="/etc/hosts">
-# Do not remove the following line, or various programs
-# that require network functionality will fail.
-127.0.0.1 localhost.localdomain localhost
-&Kickstart_PublicAddress; &Kickstart_PublicHostname;
-&Node_Address; &Node_Hostname;.&Kickstart_PrivateDNSDomain; &Node_Hostname;
+127.0.0.1	localhost.localdomain localhost
+&Kickstart_PublicAddress;	&Kickstart_PublicHostname;
+&hostaddr;	&hostname;.&Kickstart_PrivateDNSDomain; &hostname;
 </file>
 
 </post>

@@ -19,6 +19,9 @@
 
   <changelog>
   $Log: 411-client.xml,v $
+  Revision 1.5  2009/01/23 23:19:31  mjk
+  tweaks on the entities
+
   Revision 1.4  2009/01/23 21:50:23  bruno
   var tags converted to entities
 
@@ -138,7 +141,7 @@ do not have to resend alerts for every new node in the cluster. -->
 &lt;!-- Configuration file for the 411 Information Service --&gt;
 &lt;config&gt;
 &lt;master url="http://&Kickstart_PrivateAddress;/411.d/"/&gt;
-&lt;group&gt;&Node_Membership;&lt;/group&gt;
+&lt;group&gt;&membership;&lt;/group&gt;
 &lt;/config&gt;
 </file>
 

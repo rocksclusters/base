@@ -4,6 +4,9 @@
 
 <changelog>
 $Log: do-partition.xml,v $
+Revision 1.5  2009/01/23 23:19:31  mjk
+tweaks on the entities
+
 Revision 1.4  2009/01/23 21:50:23  bruno
 var tags converted to entities
 
@@ -22,12 +25,13 @@ katz made me do it.
 <pre>
 
 <file name="/tmp/db_partition_info.py">
-RocksVersion = '&Info_RocksVersion;'
-RocksRelease = '&Info_RocksRelease;'
+RocksVersion = '&version;'
+RocksRelease = '&release;'
 KickstartHost = '&Kickstart_PrivateKickstartHost;'
 
 <eval shell="python" mode="xml">
 import ConfigPartitions
+ConfigPartitions.App().setHostname('&hostname;')
 ConfigPartitions.App().run()
 </eval>
 </file>

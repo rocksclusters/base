@@ -15,6 +15,9 @@ Populates the frontend database with initially selected rolls.
 
   <changelog>
   $Log: insert-rolls.xml,v $
+  Revision 1.10  2009/01/23 23:19:31  mjk
+  tweaks on the entities
+
   Revision 1.9  2008/10/18 00:55:45  mjk
   copyright 5.1
 
@@ -65,7 +68,7 @@ import os.path
 import sys
 import rocks.roll
 
-if os.environ['Node_Hostname'] == 'None':
+if &hostname; == 'None':
 	#
 	# this case can happen when building a cdrom that builds a
 	# kickstart file for 'Server' and 'Client'
