@@ -13,6 +13,9 @@
 
   <changelog>
   $Log: dns-server.xml,v $
+  Revision 1.5  2009/01/23 21:50:23  bruno
+  var tags converted to entities
+
   Revision 1.4  2008/08/29 22:12:35  bruno
   fix for reverse.rocks.domain.*.local
 
@@ -156,7 +159,7 @@ awk '/usleep 100000/ {
 	printf("\tnamed_up=0\n");
 	printf("\twhile [ $named_up = 0 ]\n");
 	printf("\tdo\n");
-	printf("\t\thost %s.local ", "<var name="Kickstart_PrivateHostname"/>");
+	printf("\t\thost %s.local ", "&Kickstart_PrivateHostname;");
 	printf("127.0.0.1 | grep \"no servers could be reached\" ");
 	printf("> /dev/null\n");
         printf("\t\tnamed_up=$?\n");
@@ -165,8 +168,8 @@ awk '/usleep 100000/ {
 	printf("\tnamed_up=0\n");
 	printf("\twhile [ $named_up = 0 ]\n");
 	printf("\tdo\n");
-	printf("\t\thost %s.%s ", "<var name="Kickstart_PrivateHostname"/>", \
-		"<var name="Kickstart_PublicDNSDomain"/>");
+	printf("\t\thost %s.%s ", "&Kickstart_PrivateHostname;", \
+		"&Kickstart_PublicDNSDomain;");
 	printf("127.0.0.1 | grep \"no servers could be reached\" ");
 	printf("> /dev/null\n");
         printf("\t\tnamed_up=$?\n");

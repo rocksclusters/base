@@ -14,6 +14,9 @@
 
   <changelog>
   $Log: resolv.xml,v $
+  Revision 1.2  2009/01/23 21:50:23  bruno
+  var tags converted to entities
+
   Revision 1.1  2007/12/10 21:28:33  bruno
   the base roll now contains several elements from the HPC roll, thus
   making the HPC roll optional.
@@ -76,8 +79,8 @@
 # Do not remove the following line, or various programs
 # that require network functionality will fail.
 127.0.0.1 localhost.localdomain localhost
-<var name="Kickstart_PublicAddress"/> <var name="Kickstart_PublicHostname"/>
-<var name="Node_Address"/>  <var name="Node_Hostname"/>.<var name="Kickstart_PrivateDNSDomain"/>  <var name="Node_Hostname"/>
+&Kickstart_PublicAddress; &Kickstart_PublicHostname;
+&Node_Address; &Node_Hostname;.&Kickstart_PrivateDNSDomain; &Node_Hostname;
 </file>
 
 </post>

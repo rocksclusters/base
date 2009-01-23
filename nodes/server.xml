@@ -35,33 +35,6 @@
 </post>
 
 
-<!--
-	if this is a VM-based cluster, setup a variable that points back to
-	server that is controlling this VM
--->
-
-<pre>
-
-VHA=<var name="VM_HostingAddress"/>
-
-if [ ! -f /tmp/vm-hosting.sh ] &amp;&amp; [ "${VHA}" != "" ]
-then
-	echo '/opt/rocks/bin/rocks add var VM HostingAddress \
-		<var name="VM_HostingAddress"/>' > /tmp/vm-hosting.sh 
-fi
-
-</pre>
-
-
-<post arg="--nochroot">
-cp /tmp/vm-hosting.sh /mnt/sysimage/tmp
-</post>
-
-<post>
-sh /tmp/vm-hosting.sh
-</post>
-
-
 <!-- default configuration for firefox -->
 <post>
 

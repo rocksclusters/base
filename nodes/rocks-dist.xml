@@ -17,6 +17,9 @@
 
   <changelog>
   $Log: rocks-dist.xml,v $
+  Revision 1.22  2009/01/23 21:50:23  bruno
+  var tags converted to entities
+
   Revision 1.21  2008/10/18 00:55:45  mjk
   copyright 5.1
 
@@ -128,7 +131,7 @@ fi
 export PATH=$PATH:/opt/rocks/bin
 rocks sync config
 
-cd <var name="Kickstart_DistroDir"/>/<var name="Kickstart_PrivateKickstartBasedir"/>
+cd &Kickstart_DistroDir;/&Kickstart_PrivateKickstartBasedir;
 rm -rf rocks-dist
 rocks create distro
 

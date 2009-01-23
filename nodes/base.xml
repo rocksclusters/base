@@ -20,6 +20,9 @@
 
   <changelog>
   $Log: base.xml,v $
+  Revision 1.37  2009/01/23 21:50:23  bruno
+  var tags converted to entities
+
   Revision 1.36  2009/01/08 23:36:01  mjk
   - rsh edge is conditional (no more uncomment crap)
   - add global_attribute commands (list, set, remove, dump)
@@ -357,13 +360,13 @@
 %include /tmp/partition-info
 </install>
 
-<lang><var name="Kickstart_Lang"/></lang>
-<keyboard><var name="Kickstart_Keyboard"/></keyboard>
-<mouse><var name="Kickstart_Mouse"/></mouse>
-<timezone>--utc <var name="Kickstart_Timezone"/></timezone>
+<lang>&Kickstart_Lang;</lang>
+<keyboard>&Kickstart_Keyboard;</keyboard>
+<mouse>&Kickstart_Mouse;</mouse>
+<timezone>--utc &Kickstart_Timezone;</timezone>
 <bootloader>--location=mbr</bootloader>
 
-<url> --url http://<var name="Kickstart_PrivateKickstartHost"/>/<var name="Kickstart_PrivateKickstartBasedir"/>/<var name="Node_Distribution"/> </url>
+<url> --url http://&Kickstart_PrivateKickstartHost;/&Kickstart_PrivateKickstartBasedir;/&Node_Distribution; </url>
 <interactive/>
 
 </main>
@@ -469,7 +472,7 @@ po:35:wait:/etc/rc.d/rc.rocksconfig after-rc
 
 <!-- message of the day -->
 <file name="/etc/motd" mode="append">
-Rocks <var name="Info_RocksVersion"/> (<var name="Info_RocksRelease"/>)
+Rocks &Info_RocksVersion; (&Info_RocksRelease;)
 <eval shell="sh">
 echo "Profile built `date +'%H:%M %d-%b-%Y'`"
 </eval>

@@ -17,6 +17,9 @@
 
   <changelog>
   $Log: ntp-client.xml,v $
+  Revision 1.6  2009/01/23 21:50:23  bruno
+  var tags converted to entities
+
   Revision 1.5  2008/10/18 00:55:45  mjk
   copyright 5.1
 
@@ -81,7 +84,7 @@
 <!-- Configure NTP to use an external server -->
 
 <file name="/etc/ntp.conf">
-server <var name="Kickstart_PrivateNTPHost"/>
+server &Kickstart_PrivateNTPHost;
 driftfile /var/lib/ntp/drift
 </file>
 
@@ -90,12 +93,12 @@ driftfile /var/lib/ntp/drift
 /bin/mkdir -p /etc/ntp
 
 <file name="/etc/ntp/step-tickers">
-<var name="Kickstart_PrivateNTPHost"/>
+&Kickstart_PrivateNTPHost;
 </file>
 
 <!-- Force the clock to be set to the server right now -->
 
-/usr/sbin/ntpdate <var name="Kickstart_PrivateNTPHost"/>
+/usr/sbin/ntpdate &Kickstart_PrivateNTPHost;
 /sbin/hwclock --systohc
 </post>
 

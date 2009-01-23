@@ -19,6 +19,9 @@
 
   <changelog>
   $Log: 411-client.xml,v $
+  Revision 1.4  2009/01/23 21:50:23  bruno
+  var tags converted to entities
+
   Revision 1.3  2007/12/10 21:28:33  bruno
   the base roll now contains several elements from the HPC roll, thus
   making the HPC roll optional.
@@ -134,8 +137,8 @@ do not have to resend alerts for every new node in the cluster. -->
 <file name="/etc/411.conf">
 &lt;!-- Configuration file for the 411 Information Service --&gt;
 &lt;config&gt;
-&lt;master url="http://<var name='Kickstart_PrivateAddress'/>/411.d/"/&gt;
-&lt;group&gt;<var name='Node_Membership'/>&lt;/group&gt;
+&lt;master url="http://&Kickstart_PrivateAddress;/411.d/"/&gt;
+&lt;group&gt;&Node_Membership;&lt;/group&gt;
 &lt;/config&gt;
 </file>
 

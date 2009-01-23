@@ -17,6 +17,9 @@
 
   <changelog>
   $Log: grub.xml,v $
+  Revision 1.12  2009/01/23 21:50:23  bruno
+  var tags converted to entities
+
   Revision 1.11  2008/12/22 20:18:24  bruno
   nuke dead code
 
@@ -145,7 +148,7 @@
 
 <!-- Add our own boot message from the database -->
 <file name="/boot/message">
-<var name="Kickstart_BootMessage"/>
+&Kickstart_BootMessage;
 </file>
 
 <!-- take out the splashscreen -->

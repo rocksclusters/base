@@ -15,6 +15,9 @@ Configure yum
 
 <changelog>
 $Log: yum.xml,v $
+Revision 1.7  2009/01/23 21:50:23  bruno
+var tags converted to entities
+
 Revision 1.6  2008/10/18 00:55:46  mjk
 copyright 5.1
 
@@ -56,8 +59,8 @@ exactarch=1
 assumeyes=1
 
 [base]
-name=Rocks <var name="Info_RocksVersion"/>
-baseurl=http://<var name="Kickstart_PrivateHostname"/>/install/<var name="Node_Distribution"/>
+name=Rocks &Info_RocksVersion;
+baseurl=http://&Kickstart_PrivateHostname;/install/&Node_Distribution;
 </file>
 
 </post>

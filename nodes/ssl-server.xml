@@ -15,6 +15,9 @@
 
   <changelog>
   $Log: ssl-server.xml,v $
+  Revision 1.7  2009/01/23 21:50:23  bruno
+  var tags converted to entities
+
   Revision 1.6  2008/10/18 00:55:46  mjk
   copyright 5.1
 
@@ -49,12 +52,12 @@ cd /etc/pki/tls ; \
 /usr/bin/openssl req -new -nodes -config /etc/security/ca/ca.cfg \
 	-keyout private/localhost.key \
 	-subj "\
-/C=<var name="Info_CertificateCountry"/>/\
-ST=<var name="Info_CertificateState"/>/\
-L=<var name="Info_CertificateLocality"/>/\
-O=<var name="Info_CertificateOrganization"/>/\
-OU=<var name="Info_ClusterName"/>/\
-CN=<var name="Kickstart_PublicHostname"/>" \
+/C=&Info_CertificateCountry;/\
+ST=&Info_CertificateState;/\
+L=&Info_CertificateLocality;/\
+O=&Info_CertificateOrganization;/\
+OU=&Info_ClusterName;/\
+CN=&Kickstart_PublicHostname;" \
 	&gt; certs/localhost.csr ; \
 chmod 0400 private/localhost.key
 )

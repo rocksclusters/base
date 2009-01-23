@@ -12,6 +12,9 @@
 
   <changelog>
   $Log: mail-server.xml,v $
+  Revision 1.2  2009/01/23 21:50:23  bruno
+  var tags converted to entities
+
   Revision 1.1  2007/12/10 21:28:33  bruno
   the base roll now contains several elements from the HPC roll, thus
   making the HPC roll optional.
@@ -61,9 +64,9 @@
 #
 # Rocks Postfix configuration for mail server.
 #
-mydomain = <var name="Kickstart_PrivateDNSDomain"/>
+mydomain = &Kickstart_PrivateDNSDomain;
 mydestination = $mydomain, $myhostname, localhost.$mydomain
-mynetworks = <var name="Kickstart_PrivateNetwork"/>/<var name="Kickstart_PrivateNetmaskCIDR"/>, 127.0.0.0/8
+mynetworks = &Kickstart_PrivateNetwork;/&Kickstart_PrivateNetmaskCIDR;, 127.0.0.0/8
 inet_interfaces = all
 append_dot_mydomain = no
 sender_canonical_maps = hash:/etc/postfix/sender-canonical
@@ -71,11 +74,11 @@ recipient_canonical_maps = hash:/etc/postfix/recipient-canonical
 </file>
 
 <file name="/etc/postfix/sender-canonical">
-@<var name="Kickstart_PrivateDNSDomain"/> @<var name="Kickstart_PublicHostname"/>
+@&Kickstart_PrivateDNSDomain; @&Kickstart_PublicHostname;
 </file>
 
 <file name="/etc/postfix/recipient-canonical">
-root@<var name="Kickstart_PublicDNSDomain"/> root
+root@&Kickstart_PublicDNSDomain; root
 </file>
 
 /usr/sbin/postmap /etc/postfix/sender-canonical

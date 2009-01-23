@@ -18,6 +18,9 @@
 
   <changelog>
   $Log: install.xml,v $
+  Revision 1.23  2009/01/23 21:50:23  bruno
+  var tags converted to entities
+
   Revision 1.22  2008/10/30 20:17:48  bruno
   more packages needed for 'record_partitions.py'
 
@@ -250,7 +253,7 @@ fi
 <!-- set up the install directory so it can be served by the web -->
 (
 	cd /var/www/html;
-	ln -s <var name="Kickstart_DistroDir"/>/<var name="Kickstart_PrivateKickstartBasedir"/> install;
+	ln -s &Kickstart_DistroDir;/&Kickstart_PrivateKickstartBasedir; install;
 ) 
 
 <!-- now add an entry in the cluster homepage -->

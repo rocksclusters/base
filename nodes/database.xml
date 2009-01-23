@@ -16,6 +16,9 @@
 
   <changelog>
   $Log: database.xml,v $
+  Revision 1.16  2009/01/23 21:50:23  bruno
+  var tags converted to entities
+
   Revision 1.15  2008/10/18 00:55:45  mjk
   copyright 5.1
 
@@ -315,7 +318,7 @@ $cfg['MaxRows'] = 150;
 
 <!-- Password for web admin access -->
 <file name="/etc/httpd/conf/passwd-mysql" perms="0440" owner="root.apache">
-root:<var name="Kickstart_PrivateRootPassword"/>
+root:&Kickstart_PrivateRootPassword;
 </file>
 
 <!-- Apache configuration -->
@@ -334,7 +337,7 @@ root:<var name="Kickstart_PrivateRootPassword"/>
 	Options FollowSymLinks Indexes ExecCGI
 	AllowOverride None
 	Order deny,allow
-	Allow from <var name="Kickstart_PrivateNetwork"/>/<var name="Kickstart_PrivateNetmask"/>
+	Allow from &Kickstart_PrivateNetwork;/&Kickstart_PrivateNetmask;
 	Allow from 127.0.0.1
 	Deny from all
 &lt;/Directory&gt;
@@ -352,7 +355,7 @@ chown -R apache /var/www/html/labels/
 
 <file name="/tmp/perms.sql" perms="0400">
 grant select,update,insert,delete,lock tables on cluster.* to apache@localhost;
-grant select,update,insert,delete,lock tables on cluster.* to apache@"<var name="Kickstart_PrivateHostname"/>";
+grant select,update,insert,delete,lock tables on cluster.* to apache@"&Kickstart_PrivateHostname;";
 grant select on cluster.* to ''@localhost;
 </file>
 

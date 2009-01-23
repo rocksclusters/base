@@ -15,6 +15,9 @@ All rights reserved. Rocks(tm) v4.3 www.rocksclusters.org
 
 <changelog>
 $Log: networking-server.xml,v $
+Revision 1.5  2009/01/23 21:50:23  bruno
+var tags converted to entities
+
 Revision 1.4  2008/09/22 20:20:42  bruno
 change 'rocks config host interface|network' to
 change 'rocks report host interface|network'
@@ -36,7 +39,7 @@ this also includes changes to help build and configure VMs for V.
 
 <post>
 
-MYHOST=<var name="Kickstart_PrivateHostname"/>
+MYHOST=&Kickstart_PrivateHostname;
 
 /opt/rocks/bin/rocks report host network $MYHOST | \
 	/opt/rocks/bin/rocks report script > /tmp/do-network.sh

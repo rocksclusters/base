@@ -17,6 +17,9 @@ disk (because the stamp isn't there).
 
 <changelog>
 $Log: disk-stamp.xml,v $
+Revision 1.5  2009/01/23 21:50:23  bruno
+var tags converted to entities
+
 Revision 1.4  2008/10/18 00:55:45  mjk
 copyright 5.1
 
@@ -71,7 +74,7 @@ initial release
 <post>
 
 <file name="/etc/rocks-release">
-Rocks release <var name="Info_RocksVersion"/> (<var name="Info_RocksRelease"/>)
+Rocks release &Info_RocksVersion; (&Info_RocksRelease;)
 </file>
 
 sed "s/redhat-release/rocks-release/" /etc/rc.sysinit &gt; /tmp/rc.sysinit

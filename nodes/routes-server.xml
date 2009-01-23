@@ -15,6 +15,9 @@
 
   <changelog>
   $Log: routes-server.xml,v $
+  Revision 1.13  2009/01/23 21:50:23  bruno
+  var tags converted to entities
+
   Revision 1.12  2008/10/18 00:55:45  mjk
   copyright 5.1
 
@@ -63,7 +66,7 @@
 <file name="/tmp/routes.sql">
 insert into routes(Network, Netmask, Gateway, Device) values("224.0.0.0", 4, NULL, "eth0");
 insert into routes(Network, Netmask, Gateway, Device) values("255.255.255.255", 32, NULL, "eth0");
-insert into routes(Network, Netmask, Gateway) values("<var name="Kickstart_PublicAddress"/>", 32, "<var name="Kickstart_PrivateAddress"/>");
+insert into routes(Network, Netmask, Gateway) values("&Kickstart_PublicAddress;", 32, "&Kickstart_PrivateAddress;");
 </file>
 
 if [ -f "/root/.my.cnf" ]; then
@@ -78,7 +81,7 @@ fi
 
 
 <file name="/etc/sysconfig/static-routes"/> 
-/opt/rocks/bin/dbreport static-routes <var name="Kickstart_PrivateHostname"/> &gt;&gt; /etc/sysconfig/static-routes
+/opt/rocks/bin/dbreport static-routes &Kickstart_PrivateHostname; &gt;&gt; /etc/sysconfig/static-routes
 
 </post>
 

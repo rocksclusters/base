@@ -17,6 +17,9 @@
 
   <changelog>
   $Log: node.xml,v $
+  Revision 1.16  2009/01/23 21:50:23  bruno
+  var tags converted to entities
+
   Revision 1.15  2008/10/18 00:55:45  mjk
   copyright 5.1
 
@@ -296,7 +299,7 @@
   </changelog>
 
   <main>
-    <rootpw>--iscrypted <var name="Kickstart_PrivateRootPassword"/></rootpw>
+    <rootpw>--iscrypted &Kickstart_PrivateRootPassword;</rootpw>
   </main>
 
   <package>rocks-config</package>

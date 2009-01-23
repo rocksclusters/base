@@ -15,6 +15,9 @@
 
   <changelog>
   $Log: server-wan.xml,v $
+  Revision 1.8  2009/01/23 21:50:23  bruno
+  var tags converted to entities
+
   Revision 1.7  2008/10/18 00:55:46  mjk
   copyright 5.1
 
@@ -82,9 +85,6 @@
   updates to support new directory structure for XML files
 
   </changelog>
-
-  <var name="Kickstart_PrivateKickstartHost"
-	ref="Kickstart_PublicHostname"/>
 
 </kickstart> 
 

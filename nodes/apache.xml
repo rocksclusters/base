@@ -15,6 +15,9 @@
 
   <changelog>
   $Log: apache.xml,v $
+  Revision 1.10  2009/01/23 21:50:23  bruno
+  var tags converted to entities
+
   Revision 1.9  2008/10/18 00:55:45  mjk
   copyright 5.1
 
@@ -238,7 +241,7 @@ mv /var/www/html/index.html /var/www/html/index.orig.html
 &lt;/IfModule&gt;
 
 UseCanonicalName Off
-ServerName <var name="Kickstart_PublicHostname"/>
+ServerName &Kickstart_PublicHostname;
 
 DirectoryIndex index.cgi
 
@@ -253,7 +256,7 @@ DirectoryIndex index.cgi
 	Options FollowSymLinks Indexes ExecCGI
 	AllowOverride None
 	Order deny,allow
-	Allow from <var name="Kickstart_PrivateNetwork"/>/<var name="Kickstart_PrivateNetmask"/>
+	Allow from &Kickstart_PrivateNetwork;/&Kickstart_PrivateNetmask;
 	Allow from 127.0.0.1
 	Deny from all
 &lt;/Directory&gt;
@@ -262,7 +265,7 @@ DirectoryIndex index.cgi
 	Options FollowSymLinks Indexes ExecCGI
 	AllowOverride None
 	Order deny,allow
-	Allow from <var name="Kickstart_PrivateNetwork"/>/<var name="Kickstart_PrivateNetmask"/>
+	Allow from &Kickstart_PrivateNetwork;/&Kickstart_PrivateNetmask;
 	Allow from 127.0.0.1
 	Deny from all
 &lt;/Directory&gt;
@@ -279,19 +282,19 @@ Include conf.d/rocks.conf
 <file name="/var/www/html/homepage/02-header.html">
 &lt;html&gt;
 &lt;head&gt;
-&lt;title&gt;<var name="Info_ClusterName"/> Cluster&lt;/title&gt;
+&lt;title&gt;&Info_ClusterName; Cluster&lt;/title&gt;
 &lt;/head&gt;
 &lt;body bgcolor=white&gt;
 
 &lt;TABLE WIDTH=100% CELLSPACING=10&gt;
  &lt;TR&gt;
    &lt;TD ALIGN=left&gt;
-    &lt;H1&gt;<var name="Info_ClusterName"/> Cluster&lt;/H1&gt;
+    &lt;H1&gt;&Info_ClusterName; Cluster&lt;/H1&gt;
    &lt;/TD&gt;
    &lt;TD ALIGN=right&gt;
     &lt;A HREF="http://www.rocksclusters.org/"&gt;
     &lt;IMG SRC="homepage/built-with-rocks.png" ALT="Built With Rocks" HEIGHT=120 WIDTH=100 BORDER=0&gt;&lt;/A&gt; &lt;BR&gt;
-	v <var name="Info_RocksVersion"/> (<var name="Info_RocksRelease"/>)
+	v &Info_RocksVersion; (&Info_RocksRelease;)
    &lt;/TD&gt;
  &lt;/TR&gt;
 &lt;/TABLE&gt;

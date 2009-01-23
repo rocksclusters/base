@@ -9,6 +9,9 @@ Rocks Cluster NAS Node export file system definitions
 
 <changelog>
 $Log: nas-exports.xml,v $
+Revision 1.2  2009/01/23 21:50:23  bruno
+var tags converted to entities
+
 Revision 1.1  2007/12/10 21:28:33  bruno
 the base roll now contains several elements from the HPC roll, thus
 making the HPC roll optional.
@@ -41,7 +44,7 @@ partitioning tuning.
 	listed.--> 
 
 <file name="/etc/exports">
-/export/data1 <var name="Kickstart_PrivateNetwork"/>/<var name="Kickstart_PrivateNetmask"/>(rw,no_root_squash,async)
+/export/data1 &Kickstart_PrivateNetwork;/&Kickstart_PrivateNetmask;(rw,no_root_squash,async)
 </file>
 
 </post>

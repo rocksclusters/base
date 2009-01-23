@@ -27,9 +27,9 @@ ksMac=`/bin/cat /proc/cmdline | /bin/awk 'BEGIN {RS="[[:space:]]"; FS="="} /ksde
 if  [ "x$ksMac" != "x" ]; then 
 	ethDev=`/sbin/ifconfig -a | grep -i $ksMac | /bin/awk '{print $1}'`
 	if [ "x$ethDev" != "x" ]; then 
-       		/sbin/ifconfig $ethDev netmask <var name="Kickstart_PublicNetmask"/> <var name="Kickstart_PublicAddress"/> 
+       		/sbin/ifconfig $ethDev netmask &Kickstart_PublicNetmask; &Kickstart_PublicAddress;
 
-       		/sbin/route add default gw <var name="Kickstart_PublicGateway"/> 
+       		/sbin/route add default gw &Kickstart_PublicGateway;
 	fi
 fi
 

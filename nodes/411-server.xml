@@ -12,6 +12,9 @@
 
   <changelog>
   $Log: 411-server.xml,v $
+  Revision 1.4  2009/01/23 21:50:23  bruno
+  var tags converted to entities
+
   Revision 1.3  2007/12/10 21:28:33  bruno
   the base roll now contains several elements from the HPC roll, thus
   making the HPC roll optional.
@@ -153,7 +156,7 @@ Alias /411.d "/etc/411.d"
 
 	AllowOverride None
 	Order deny,allow
-	Allow from <var name="Kickstart_PrivateNetwork"/>/<var name="Kickstart_PrivateNetmask"/>
+	Allow from &Kickstart_PrivateNetwork;/&Kickstart_PrivateNetmask;
 	Allow from 127.0.0.1
 	Deny from all
 

@@ -17,6 +17,9 @@
 
   <changelog>
   $Log: server-restore.xml,v $
+  Revision 1.5  2009/01/23 21:50:23  bruno
+  var tags converted to entities
+
   Revision 1.4  2008/10/18 00:55:46  mjk
   copyright 5.1
 
@@ -34,7 +37,7 @@
 <main>
 
     <!-- Spell out the exact rolls. -->
-<interactive> --dist <var name="Node_DistName"/><eval shell="python">
+<interactive> --dist &Node_DistName;<eval shell="python">
 import rocks.sql
 import os
 

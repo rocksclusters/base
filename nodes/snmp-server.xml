@@ -16,6 +16,9 @@
 
   <changelog>
   $Log: snmp-server.xml,v $
+  Revision 1.6  2009/01/23 21:50:23  bruno
+  var tags converted to entities
+
   Revision 1.5  2008/10/18 00:55:46  mjk
   copyright 5.1
 
@@ -78,8 +81,8 @@ view    all             included        .1             80
 
 access  notConfigGroup  "" any noauth exact all all all
 
-syslocation "<var name="Info_CertificateLocality"/>, <var name="Info_CertificateState"/>, <var name="Info_CertificateCountry"/>"
-syscontact "<var name="Info_ClusterContact"/>"
+syslocation "&Info_CertificateLocality;, &Info_CertificateState;, &Info_CertificateCountry;"
+syscontact "&Info_ClusterContact;"
 </file>
 
 </post>

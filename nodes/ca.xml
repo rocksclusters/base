@@ -16,6 +16,9 @@ Sets up keys for the frontend Certificate Authority
 
   <changelog>
   $Log: ca.xml,v $
+  Revision 1.6  2009/01/23 21:50:23  bruno
+  var tags converted to entities
+
   Revision 1.5  2008/10/18 00:55:45  mjk
   copyright 5.1
 
@@ -100,13 +103,13 @@ countryName_min		= 2
 countryName_max		= 2
 commonName		= Common Name (hostname, IP, or your name)
 
-commonName_default = <var name="Kickstart_PublicHostname"/>
-organizationalUnitName_default	= <var name="Info_ClusterName"/>-CA
-emailAddress_default		= <var name="Info_ClusterContact"/>
-0.organizationName_default	= <var name="Info_CertificateOrganization"/>
-localityName_default		= <var name="Info_CertificateLocality"/>
-stateOrProvinceName_default	= <var name="Info_CertificateState"/>
-countryName_default		= <var name="Info_CertificateCountry"/>
+commonName_default = &Kickstart_PublicHostname;
+organizationalUnitName_default	= &Info_ClusterName;-CA
+emailAddress_default		= &Info_ClusterContact;
+0.organizationName_default	= &Info_CertificateOrganization;
+localityName_default		= &Info_CertificateLocality;
+stateOrProvinceName_default	= &Info_CertificateState;
+countryName_default		= &Info_CertificateCountry;
 </file>
 
 </post>

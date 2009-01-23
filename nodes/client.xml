@@ -17,6 +17,9 @@ This file is used as a connection point for other XML configuration nodes.
 
 <changelog>
 $Log: client.xml,v $
+Revision 1.10  2009/01/23 21:50:23  bruno
+var tags converted to entities
+
 Revision 1.9  2008/10/18 00:55:45  mjk
 copyright 5.1
 
@@ -87,7 +90,7 @@ touch /tmp/rocks-skip-welcome
 <post>
 
 <file name="/var/cluster/frontend">
-<var name="Kickstart_PrivateAddress"/>
+&Kickstart_PrivateAddress;
 </file>
 
 </post>

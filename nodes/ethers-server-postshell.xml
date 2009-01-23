@@ -18,6 +18,9 @@
 
 <changelog>
 $Log: ethers-server-postshell.xml,v $
+Revision 1.8  2009/01/23 21:50:23  bruno
+var tags converted to entities
+
 Revision 1.7  2008/10/18 00:55:45  mjk
 copyright 5.1
 
@@ -54,7 +57,7 @@ NETIFS=`/opt/rocks/bin/rocks list host interface jeebs  | /bin/sed -e '1d' | /bi
 
 
 for NETIF in $NETIFS; do 
-	MYHOST=<var name="Kickstart_PrivateHostname"/>
+	MYHOST=&Kickstart_PrivateHostname;
 	<file name="/etc/sysconfig/network-scripts/ifcfg-$NETIF"  
 	expr="/opt/rocks/bin/dbreport ifcfg $NETIF $MYHOST"/>
 done
@@ -64,7 +67,7 @@ for NETIF in $NETIFS; do
 	sed -i "/alias $NETIF/d" /etc/modprobe.conf
 done
 
-MYHOST=<var name="Kickstart_PrivateHostname"/>
+MYHOST=&Kickstart_PrivateHostname;
 <file name="/etc/modprobe.conf" mode="append" 
     expr="/opt/rocks/bin/dbreport ifcfg modules $MYHOST" />
 

@@ -13,6 +13,9 @@
 
   <changelog>
   $Log: mail-client.xml,v $
+  Revision 1.2  2009/01/23 21:50:23  bruno
+  var tags converted to entities
+
   Revision 1.1  2007/12/10 21:28:33  bruno
   the base roll now contains several elements from the HPC roll, thus
   making the HPC roll optional.
@@ -47,14 +50,14 @@
 # Rocks Postfix configuration for cluster nodes.
 #
 mydestination = 
-relayhost = <var name="Kickstart_PrivateGateway"/>
-masquerade_domains = <var name="Kickstart_PrivateDNSDomain"/>
+relayhost = &Kickstart_PrivateGateway;
+masquerade_domains = &Kickstart_PrivateDNSDomain;
 append_dot_mydomain = no
 canonical_maps = hash:/etc/postfix/canonical
 </file>
 
 <file name="/etc/postfix/canonical" mode="append">
-root root@<var name="Kickstart_PrivateDNSDomain"/>
+root root@&Kickstart_PrivateDNSDomain;
 </file>
 
 /usr/sbin/postmap /etc/postfix/canonical

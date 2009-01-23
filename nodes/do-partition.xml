@@ -4,6 +4,9 @@
 
 <changelog>
 $Log: do-partition.xml,v $
+Revision 1.4  2009/01/23 21:50:23  bruno
+var tags converted to entities
+
 Revision 1.3  2008/04/22 17:47:25  bruno
 tweak partitioning
 
@@ -19,9 +22,9 @@ katz made me do it.
 <pre>
 
 <file name="/tmp/db_partition_info.py">
-RocksVersion = '<var name="Info_RocksVersion"/>'
-RocksRelease = '<var name="Info_RocksRelease"/>'
-KickstartHost = '<var name="Kickstart_PrivateKickstartHost"/>'
+RocksVersion = '&Info_RocksVersion;'
+RocksRelease = '&Info_RocksRelease;'
+KickstartHost = '&Kickstart_PrivateKickstartHost;'
 
 <eval shell="python" mode="xml">
 import ConfigPartitions

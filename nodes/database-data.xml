@@ -16,6 +16,9 @@
 
   <changelog>
   $Log: database-data.xml,v $
+  Revision 1.31  2009/01/23 21:50:23  bruno
+  var tags converted to entities
+
   Revision 1.30  2009/01/08 23:36:01  mjk
   - rsh edge is conditional (no more uncomment crap)
   - add global_attribute commands (list, set, remove, dump)
@@ -369,21 +372,21 @@ insert into app_globals (service, component, value) values
 <!-- Insert the networking information to the nodes, subnets, and networks tables -->
 
 /opt/rocks/bin/rocks add network private \
-	subnet=<var name="Kickstart_PrivateNetwork"/> \
-	netmask=<var name="Kickstart_PrivateNetmask"/>
+	subnet=&Kickstart_PrivateNetwork; \
+	netmask=&Kickstart_PrivateNetmask;
 
 /opt/rocks/bin/rocks add network public \
-	subnet=<var name="Kickstart_PublicNetwork"/> \
-	netmask=<var name="Kickstart_PublicNetmask"/>
+	subnet=&Kickstart_PublicNetwork; \
+	netmask=&Kickstart_PublicNetmask;
 
-/opt/rocks/bin/rocks add host <var name="Kickstart_PrivateHostname"/> \
+/opt/rocks/bin/rocks add host &Kickstart_PrivateHostname; \
 	membership=Frontend rack=0 rank=0
 	
 /opt/rocks/bin/rocks add host interface \
-	<var name="Kickstart_PrivateHostname"/> \
+	&Kickstart_PrivateHostname; \
 	iface=eth0 subnet=private \
-	ip=<var name="Kickstart_PrivateAddress"/> \
-	name=<var name="Kickstart_PrivateHostname"/>
+	ip=&Kickstart_PrivateAddress; \
+	name=&Kickstart_PrivateHostname;
 
 </post>
 
@@ -403,7 +406,7 @@ import rocks.ConfigNetworks
 # an eval statement during a kickstart.cgi http request
 #
 
-os.environ['Node_Hostname'] = '<var name="Kickstart_PrivateHostname"/>'
+os.environ['Node_Hostname'] = '&Kickstart_PrivateHostname;'
 
 file = open('/tmp/interfaces', 'r')
 
@@ -454,23 +457,23 @@ confignetworks.assignDeviceNames()
 
 <!-- now assign public network info to eth1 -->
 /opt/rocks/bin/rocks add host interface \
-		<var name="Kickstart_PrivateHostname"/> \
+		&Kickstart_PrivateHostname; \
 		iface=eth1
 
 /opt/rocks/bin/rocks set host interface gateway \
-		<var name="Kickstart_PrivateHostname"/> \
-		iface=eth1 gateway=<var name="Kickstart_PublicGateway"/>
+		&Kickstart_PrivateHostname; \
+		iface=eth1 gateway=&Kickstart_PublicGateway;
 
 /opt/rocks/bin/rocks set host interface ip \
-		<var name="Kickstart_PrivateHostname"/> \
-		iface=eth1 ip=<var name="Kickstart_PublicAddress"/>
+		&Kickstart_PrivateHostname; \
+		iface=eth1 ip=&Kickstart_PublicAddress;
 
 /opt/rocks/bin/rocks set host interface name \
-		<var name="Kickstart_PrivateHostname"/> \
-		iface=eth1 name=<var name="Kickstart_PublicHostname"/> \
+		&Kickstart_PrivateHostname; \
+		iface=eth1 name=&Kickstart_PublicHostname;
 
 /opt/rocks/bin/rocks set host interface subnet \
-		<var name="Kickstart_PrivateHostname"/> \
+		&Kickstart_PrivateHostname; \
 		iface=eth1 subnet=public
 
 </post>
@@ -483,11 +486,11 @@ export clupass=`/bin/date +%N`
 <!-- now password protect the root user and apache user in database --> 
 <file name="/tmp/perms2.sql" perms="0400">
 update mysql.user set \
-	password='*<var name="Kickstart_PrivateSHARootPassword"/>' \
+	password='*&Kickstart_PrivateSHARootPassword;' \
 	where user='root';
 </file>
 echo "set password for apache@localhost=PASSWORD(\"$clupass\");" &gt;&gt; /tmp/perms2.sql
-echo "set password for apache@<var name='Kickstart_PrivateHostname'/>=PASSWORD(\"$clupass\");" &gt;&gt; /tmp/perms2.sql
+echo "set password for apache@&Kickstart_PrivateHostname;=PASSWORD(\"$clupass\");" &gt;&gt; /tmp/perms2.sql
 
 /usr/bin/mysql &lt; /tmp/perms2.sql
 

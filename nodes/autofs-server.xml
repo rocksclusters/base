@@ -17,6 +17,9 @@
 
   <changelog>
   $Log: autofs-server.xml,v $
+  Revision 1.11  2009/01/23 21:50:23  bruno
+  var tags converted to entities
+
   Revision 1.10  2008/10/18 00:55:45  mjk
   copyright 5.1
 
@@ -108,7 +111,7 @@
 <file name="/etc/auto.home"/>
 
 <file name="/etc/auto.share">
-apps <var name="Kickstart_PrivateHostname"/>.<var name="Kickstart_PrivateDNSDomain"/>:/export/&amp;
+apps &Kickstart_PrivateHostname;.&Kickstart_PrivateDNSDomain;:/export/&amp;
 </file>
 
 
