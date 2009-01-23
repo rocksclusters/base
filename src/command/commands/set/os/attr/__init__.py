@@ -1,5 +1,4 @@
-#
-# $Id: ConfigPartitions.py,v 1.12 2009/01/23 23:46:50 mjk Exp $
+# $Id: __init__.py,v 1.1 2009/01/23 23:46:51 mjk Exp $
 #
 # @Copyright@
 # 
@@ -54,114 +53,92 @@
 # 
 # @Copyright@
 #
-# $Log: ConfigPartitions.py,v $
-# Revision 1.12  2009/01/23 23:46:50  mjk
+# $Log: __init__.py,v $
+# Revision 1.1  2009/01/23 23:46:51  mjk
 # - continue to kill off the var tag
 # - can build xml and kickstart files for compute nodes (might even work)
 #
-# Revision 1.11  2008/10/18 00:55:44  mjk
-# copyright 5.1
-#
-# Revision 1.10  2008/03/06 23:41:30  mjk
-# copyright storm on
-#
-# Revision 1.9  2007/06/23 04:03:18  mjk
-# mars hill copyright
-#
-# Revision 1.8  2006/09/11 22:46:56  mjk
-# monkey face copyright
-#
-# Revision 1.7  2006/08/10 00:09:24  mjk
-# 4.2 copyright
-#
-# Revision 1.6  2005/10/12 18:08:27  mjk
-# final copyright for 4.1
-#
-# Revision 1.5  2005/09/16 01:02:07  mjk
-# updated copyright
-#
-# Revision 1.4  2005/05/24 21:21:46  mjk
-# update copyright, release is not any closer
-#
-# Revision 1.3  2005/04/28 21:47:23  bruno
-# partitioning function updates in order to support itanium.
-#
-# itanics need 'parted' as 'sfdisk' only looks at block 0 on a disk and
-# itanics put their real partition info in block 1 (this is the GPT partitioning
-# scheme)
-#
-# Revision 1.2  2005/03/12 00:01:50  bruno
-# minor checkin
-#
-# Revision 1.1  2005/03/01 00:22:25  mjk
-# moved to base roll
-#
-# Revision 1.1  2005/02/14 21:55:00  bruno
-# support for phil's phartitioning phun
-#
-#
-#
+# Revision 1.1  2008/12/20 01:06:15  mjk
+
 
 import os
-import string
-import re
+import stat
+import time
 import sys
-import syslog
-import rocks.sql
+import string
+import rocks.commands
 
-#
-# uncomment for testing
-#
-#os.environ['Node_Hostname'] = 'compute-0-1'
+class Command(rocks.commands.set.appliance.command):
+	"""
+	Sets an attribute to an appliance and sets the associated values 
 
+	<arg type='string' name='appliance'>
+	Name of appliance
+	</arg>
+	
+	<arg type='string' name='attr'>
+	Name of the attribute
+	</arg>
 
-class App(rocks.sql.Application):
+	<arg type='string' name='value'>
+	Value of the attribute
+	</arg>
+	
+	<param type='string' name='attr'>
+	same as attr argument
+	</param>
 
-	def __init__(self):
-		rocks.sql.Application.__init__(self)
-		self.hostname = None
+	<param type='string' name='value'>
+	same as value argument
+	</param>
 
-	def setHostname(self, hostname):
-		self.hostname = hostname
+	<example cmd='set appliance attr compute sge False'>
+	Sets the sge attribution to False for compute appliances
+	</example>
 
-	def getPartitionInfo(self):
-		partinfo = {}
+	<example cmd='set appliance attr compute sge attr=cpus value=2'>
+	same as above
+	</example>
+	
+	<related>list appliance attr</related>
+	<related>remove appliance attr</related>
+	<related>set host attr</related>
+	<related>list host attr</related>
+	<related>remove host attr</related>
+	"""
 
-		self.execute('select partitions.device, partitions.mountpoint, '
-			'partitions.sectorstart, partitions.partitionsize, '
-			'partitions.partitionid, partitions.fstype, '
-			'partitions.partitionflags, partitions.formatflags '
-			'from partitions,nodes '
-			'where partitions.node = nodes.id and '
-			'nodes.name = "%s" ' % self.hostname +
-			'order by partitions.device')
+	def run(self, params, args):
 
-		for dev,mnt,sect,size,id,fstype,pflags,fflags in \
-								self.fetchall():
+		(args, attr, value) = self.fillPositionalArgs(('attr', 'value'))
+		appliances = self.getApplianceNames(args)
+		
+		if not attr:
+			self.abort('missing attribute name')
+		if not value:
+			self.about('missing value of attribute')
 
-			s = (dev,sect,size,id,fstype,pflags,fflags,mnt)
-			a = re.split('[0-9]+$', dev)
-
-			if not partinfo.has_key(a[0]):
-				partinfo[a[0]] = [ s ]
-			else:
-				partinfo[a[0]].append(s)
-
-		return partinfo
-
-
-        def run(self):
-		#
-		# if we are installing a standalone node (e.g., a frontend
-		# or a web server) the database will not be accessible, so
-		# don't do anything and just return
-		#
-		if self.connect():
-			partinfo = self.getPartitionInfo()
-			print 'dbpartinfo = ', repr(partinfo)
-			self.close()
+		for appliance in appliances:
+			self.setApplianceAttr(appliance, attr, value)
+			
+	def setApplianceAttr(self, appliance, attr, value):
+		rows = self.db.execute("""
+			select * from appliance_attributes where
+			appliance=
+			(select id from appliances where name='%s') and
+			attr='%s'
+			""" % (appliance, attr))
+		if not rows:
+			self.db.execute("""
+				insert into appliance_attributes values 
+				((select id from appliances where name='%s'), 
+				'%s', '%s')
+				""" % (appliance, attr, value))
 		else:
-			print 'dbpartinfo = {}'
+			self.db.execute("""
+				update appliance_attributes set value='%s' where 
+				attr='%s' and
+				appliance=
+				(select id from appliances where name='%s')
+				""" % (value, attr, appliance)) 
 
-		return
 

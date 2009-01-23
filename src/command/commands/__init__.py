@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.58 2008/10/18 00:55:48 mjk Exp $
+# $Id: __init__.py,v 1.59 2009/01/23 23:46:50 mjk Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.59  2009/01/23 23:46:50  mjk
+# - continue to kill off the var tag
+# - can build xml and kickstart files for compute nodes (might even work)
+#
 # Revision 1.58  2008/10/18 00:55:48  mjk
 # copyright 5.1
 #
@@ -905,6 +909,59 @@ class DatabaseConnection:
 		if self.link:
 			return self.link.fetchall()
 		return None
+		
+
+	def getHostAttrs(self, host):
+		"""Return a dictionary of KEY x VALUE pairs for the host
+		specific attributes for the given host.
+		"""
+
+		attrs = {}
+			
+		# global
+		self.execute('select attr, value from global_attributes')
+		for (a, v) in self.fetchall():
+			attrs[a] = v
+
+		# os
+		self.execute("""select a.attr, a.value from
+			os_attributes a, nodes n where
+			a.os=n.os and n.name='%s'"""  % host)
+		for (key, value) in self.fetchall():
+			attrs[key] = (value, 'O')
+
+		# appliance		
+		self.execute("""select a.attr, a.value from
+			appliance_attributes a,
+			nodes n,
+			memberships m,
+			appliances app where
+			n.membership=m.id and m.appliance=app.id and 
+			a.appliance=app.id and n.name='%s'""" % host)
+		for (a, v) in self.fetchall():
+			attrs[a] = v
+
+		# host				
+		self.execute("""select a.attr, a.value from
+			node_attributes a, nodes n where
+			n.name='%s' and n.id=a.node""" % host)
+		for (a, v) in self.fetchall():
+			attrs[a] = v
+			
+		return attrs
+
+
+	def getHostAttr(self, host, key):
+		"""Return the value for the host specific attribute KEY or
+		None if it does not exist.
+		"""
+		
+		# This should be its own SQL but cheat until the code
+		# stabilizes.
+		
+		self.getHostAttrs(host).get('key')
+
+		
 
 	def getGlobalVars(self, service, hostname='', site=0):
 		"""Returns a dictionary of COMPONENT x VALUES for all

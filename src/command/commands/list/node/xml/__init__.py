@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.33 2009/01/08 23:36:01 mjk Exp $
+# $Id: __init__.py,v 1.34 2009/01/23 23:46:51 mjk Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.34  2009/01/23 23:46:51  mjk
+# - continue to kill off the var tag
+# - can build xml and kickstart files for compute nodes (might even work)
+#
 # Revision 1.33  2009/01/08 23:36:01  mjk
 # - rsh edge is conditional (no more uncomment crap)
 # - add global_attribute commands (list, set, remove, dump)
@@ -279,145 +283,57 @@ class Command(rocks.commands.list.command):
 
 	def run(self, params, args):
 
-		if len(args) != 1:
-			self.abort('must supply an XML node name')
-		root = args[0]
-
-		if params.has_key('os'):
-			self.os = params['os']
-		if self.db:
-			hostname = self.db.getHostname()
-		else:
-			hostname = 'None'
-		if params.has_key('host'):
-			hostname = params['host']
-			
-		if hostname == 'None':
-			address = '127.0.0.1'
-		else:
-			self.db.execute("""select ip from networks where
-				name='%s'""" % hostname)
-			address, = self.db.fetchone()
-		
-
-		(arch, host, addr, graph, dist, roll, eval, missing, 
+		(attributes, roll, evalp, missing, 
 			generator, basedir) = self.fillParams(
-			[('arch', self.arch),
-			('host', hostname),
-			('addr', address),
-			('graph', 'default'),
-			('dist', 'rocks-dist'),
+			[('attrs', ),
 			('roll', ),
 			('eval', 'yes'),
 			('missing-check', 'no'),
 			('gen', 'kgen'),
-			('basedir', )])
+			('basedir', )
+			])
 
-		doEval = self.str2bool(eval)
+		if attributes:
+			attrs = eval(attributes)
+		else:
+			attrs = {}
+			attrs['os']   = self.os
+			attrs['arch'] = self.arch
+			
+		if 'host' not in attrs:
+			attrs['hostname'] = self.db.getHostname()
+
+		if 'graph' not in attrs:
+			attrs['graph'] = 'default'
+			
+		if 'dict' not in attrs:
+			attrs['distribution'] = 'rocks-dist'
+			
+		if 'membership' not in attrs:
+			attrs['membership'] = 'Frontend'
+	
+		if len(args) != 1:
+			self.abort('must supply an XML node name')
+		root = args[0]
+
+		doEval = self.str2bool(evalp)
 		allowMissing = self.str2bool(missing)
 
-
-		if self.os == 'sunos':
+		if attrs['os'] == 'sunos':
 			starter_tag = "jumpstart"
 		else:
 			starter_tag = "kickstart"
-		# If we are connected to the database, generate the siteXML
-		# using 'rocks list sitexml', otherwise use the file in
-		# /tmp/site.xml.  The later case should only be run while
-		# inside the installation environment (no database).
-		# 
-		# Once the siteXML has been populated feed it to the
-		# SiteXMLHandler for parsing.  The result is the var
-		# dictionary get populated from the siteXML
+
+
+		# Add more values to the attributes
+		attrs['version'] = rocks.version
+		attrs['release'] = rocks.release
 		
-		if self.db:
-			siteXML = self.command('list.host.sitexml', 
-					[
-				 	 host,
-					 'os=%s' % self.os,
-					])
-		else:
-			try:
-				sitefile = 'site.xml'
-				fin = open(os.path.join(os.sep, 
-					'tmp', sitefile), 'r')
-			except IOError:
-				pass
-			siteXML = fin.read()
-			fin.close()
+		#
+		# site.entities code goes here
+		#
+					
 
-		var	= {}
-		attrs   = {}
-		parser	= make_parser()
-		handler	= SiteXMLHandler(var)
-		parser.setContentHandler(handler)
-		parser.feed(siteXML)
-
-		# Add more variable based on who this command was
-		# called.
-
-		if self.db:
-			self.db.execute('select memberships.name from '
-				'nodes,memberships where '
-				'nodes.name="%s" and '
-				'nodes.membership=memberships.id' % host)
-			membership, = self.db.fetchone()
-			
-			# read the attributes into a dictionary to handle
-			# the conditional edges (cond tag)
-			# read the defaults from the appliance_attributes
-			# and override from the node_attributes
-
-			self.db.execute("""select attr, value from
-				global_attributes""")
-			for (a, v) in self.db.fetchall():
-				attrs[a] = v
-
-			self.db.execute("""select aa.attr, aa.value from
-				appliance_attributes aa, nodes n, 
-				memberships m, appliances a where
-				n.membership=m.id and 
-				m.appliance=a.id and 
-				aa.appliance=a.id and 
-				n.name='%s'""" % host)
-			for (a, v) in self.db.fetchall():
-				attrs[a] = v
-				
-			self.db.execute("""select a.attr, a.value from
-				node_attributes a, nodes n where
-				n.name='%s' and n.id=a.node""" % host)
-			for (a, v) in self.db.fetchall():
-				attrs[a] = v
-		else:
-			# we are inside the installer
-			host = var['Kickstart_PrivateHostname']
-			addr = var['Kickstart_PrivateAddress']
-			membership = 'Frontend' # bad hardcoding here
-			attrs['arch'] = arch
-			attrs['os'] = self.os
-
-		var['Node_Root']	 = root
-		var['Node_Hostname']     = host
-		var['Node_Address']      = addr
-		var['Node_Membership']   = membership
-		var['Node_Distribution'] = os.path.join(dist, arch)
-		var['Node_DistName']     = dist
-		var['Node_Architecture'] = attrs['arch']
-		var['Node_OS']		 = attrs['os']
-		var['Info_RocksVersion'] = rocks.version
-		var['Info_RocksRelease'] = rocks.release
-	
-		var['ROCKS_VARS_HOSTNAME'] = host
-		os.putenv('ROCKS_VARS_HOSTNAME', host)
-
-		# If environment variable exist of the form
-		# Kickstart_<component> = <value> then override
-		# the above and place into the var dictionary.
-
-		for env in os.environ.keys():
-			list = string.split(env, '_', 1)
-			if len(list) == 2 and list[0] == 'Kickstart':
-				var[env] = os.environ[env]
 		if not self.db:
 			kickstart_dir = 'install'
 		else:
@@ -425,16 +341,18 @@ class Command(rocks.commands.list.command):
 
 		if not basedir:
 			os.chdir(os.path.join(os.sep, 'home', 
-				kickstart_dir, dist, arch, 'build'))
+				kickstart_dir,
+				attrs['distribution'], attrs['arch'],
+				'build'))
 		else:
 			os.chdir(basedir)
 
 		# Parse the XML graph files in the chosen directory
 
 		parser  = make_parser()
-		handler = rocks.profile.GraphHandler(var, attrs)
+		handler = rocks.profile.GraphHandler(attrs)
 
-		graphDir = os.path.join('graphs', graph)
+		graphDir = os.path.join('graphs', attrs['graph'])
 		if not os.path.exists(graphDir):
 			print 'error - not such graph', graphDir
 			sys.exit(-1)
@@ -537,8 +455,11 @@ class Command(rocks.commands.list.command):
 		for (k, v) in attrs.items():
 			self.addText('\t<!ENTITY %s "%s">\n' % (k, v))
 		self.addText(']>\n')
-		self.addText('<%s attrs="%s">\n' % (starter_tag, attrs))
-		if self.os == 'linux':
+		d = {}
+		for key in attrs.keys():
+			d[key] = '&%s;' % key
+		self.addText('<%s attrs="%s">\n' % (starter_tag, d))
+		if attrs['os'] == 'linux':
 			self.addText('<loader>\n')
 			self.addText('%s\n' % saxutils.escape(kstext))
 			self.addText('%kgen\n')
@@ -561,33 +482,4 @@ class Command(rocks.commands.list.command):
 		self.addText('</%s>\n' % starter_tag)
 		
 		
-
-class SiteXMLHandler(handler.ContentHandler,
-	handler.DTDHandler,
-	handler.EntityResolver,
-	handler.ErrorHandler):
-
-	def __init__(self, vars):
-		handler.ContentHandler.__init__(self)
-		self.vars = vars
-	
-	def startElement(self, name, attrs):
-		if not name == 'var':
-			return
-			
-		varName = attrs.get('name')
-		varRef  = attrs.get('ref')
-		varVal  = attrs.get('val')
-
-		# Undo quoting from writeSiteVar() - dead code?
-		varName = varName.replace("\\'","'")
-
-		if varVal:
-			varVal = varVal.replace("\\'","'")
-			self.vars[varName] = varVal
-		elif varRef:
-			if self.vars.has_key(varRef):
-				self.vars[varName] = self.vars[varRef]
-			else:
-				self.vars[varName] = ''
 

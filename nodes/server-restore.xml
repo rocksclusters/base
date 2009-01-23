@@ -17,6 +17,10 @@
 
   <changelog>
   $Log: server-restore.xml,v $
+  Revision 1.7  2009/01/23 23:46:50  mjk
+  - continue to kill off the var tag
+  - can build xml and kickstart files for compute nodes (might even work)
+
   Revision 1.6  2009/01/23 23:19:31  mjk
   tweaks on the entities
 
@@ -49,11 +53,10 @@ rolls = []
 try:
 	s = rocks.sql.Application()
 	s.connect()
-	central = os.environ['Kickstart_PublicHostname']
-	basedir = os.environ['Kickstart_PublicKickstartBasedir']
-	client = os.environ['Node_Address']
-	site = s.getSiteId(client)
-	dist = os.environ['Node_Distribution']
+	central = '&Kickstart_PublicHostname;'
+	basedir = '&Kickstart_PublicKickstartBasedir;'
+	site = s.getSiteId('&hostaddr;')
+	dist = '&distribution;'
 	rollbase = apply(os.path.join, dist.split('/')[:3] + ['rolls'])
 	
 	s.execute('select name,version,arch from rolls where '

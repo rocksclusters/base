@@ -15,6 +15,10 @@
 
   <changelog>
   $Log: ssl-client.xml,v $
+  Revision 1.7  2009/01/23 23:46:50  mjk
+  - continue to kill off the var tag
+  - can build xml and kickstart files for compute nodes (might even work)
+
   Revision 1.6  2009/01/23 23:19:31  mjk
   tweaks on the entities
 
@@ -56,12 +60,12 @@ cd /etc/security/ca; \
 /usr/bin/openssl req -new -nodes -config ca.cfg \
 	-keyout $cert/key \
 	-subj "\
-/C=$Info_CertificateCountry/\
-ST=$Info_CertificateState/\
-L=$Info_CertificateLocality/\
-O=$Info_CertificateOrganization/\
-OU=$Info_ClusterName/\
-CN=&hostname;.$Kickstart_PrivateDNSDomain" \
+/C=&Info_CertificateCountry;/\
+ST=&Info_CertificateState;/\
+L=&Info_CertificateLocality;/\
+O=&Info_CertificateOrganization;/\
+OU=&Info_ClusterName;/\
+CN=&hostname;.&Kickstart_PrivateDNSDomain; \
 	&gt; $cert/csr 2&gt;/dev/null
 )
 

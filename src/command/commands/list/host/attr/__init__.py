@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.2 2009/01/08 23:36:01 mjk Exp $
+# $Id: __init__.py,v 1.3 2009/01/23 23:46:51 mjk Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.3  2009/01/23 23:46:51  mjk
+# - continue to kill off the var tag
+# - can build xml and kickstart files for compute nodes (might even work)
+#
 # Revision 1.2  2009/01/08 23:36:01  mjk
 # - rsh edge is conditional (no more uncomment crap)
 # - add global_attribute commands (list, set, remove, dump)
@@ -100,6 +104,14 @@ class Command(rocks.commands.list.host.command):
 				global_attributes""")
 			for (key, value) in self.db.fetchall():
 				attrs[key] = (value, 'G')
+
+			self.db.execute("""
+				select oa.attr, oa.value from
+				os_attributes oa, nodes n where
+				oa.os=n.os and n.name='%s'
+				""" % host)
+			for (key, value) in self.db.fetchall():
+				attrs[key] = (value, 'O')
 			
 			self.db.execute("""
 				select aa.attr, aa.value from
@@ -120,9 +132,11 @@ class Command(rocks.commands.list.host.command):
 				""" % host)
 			for (key, value) in self.db.fetchall():
 				attrs[key] = (value, 'H')
-				
-			for (key, value) in attrs.items():
-				self.addOutput(host, (key, value[0], value[1]))
+		
+			keys = attrs.keys()
+			keys.sort()
+			for key in keys:		
+				self.addOutput(host, (key, attrs[key][0], attrs[key][1]))
 
 		self.endOutput(header=['host', 'attr', 'value', 'source' ],
 			trimOwner=0)

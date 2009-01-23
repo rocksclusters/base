@@ -1,6 +1,6 @@
 #! /opt/rocks/bin/python
 #
-# $Id: profile.py,v 1.21 2009/01/08 23:36:01 mjk Exp $
+# $Id: profile.py,v 1.22 2009/01/23 23:46:51 mjk Exp $
 #
 # @Copyright@
 # 
@@ -56,6 +56,10 @@
 # @Copyright@
 #
 # $Log: profile.py,v $
+# Revision 1.22  2009/01/23 23:46:51  mjk
+# - continue to kill off the var tag
+# - can build xml and kickstart files for compute nodes (might even work)
+#
 # Revision 1.21  2009/01/08 23:36:01  mjk
 # - rsh edge is conditional (no more uncomment crap)
 # - add global_attribute commands (list, set, remove, dump)
@@ -247,7 +251,7 @@ class GraphHandler(handler.ContentHandler,
 		   handler.ErrorHandler,
 		   AttributeHandler):
 
-	def __init__(self, entities, attrs):
+	def __init__(self, attrs):
 		handler.ContentHandler.__init__(self)
 		self.setAttributes(attrs)
 		self.graph			= rocks.util.Struct()
@@ -258,8 +262,8 @@ class GraphHandler(handler.ContentHandler,
 		self.attrs.main.default		= rocks.util.Struct()
 		self.attrs.order		= rocks.util.Struct()
 		self.attrs.order.default	= rocks.util.Struct()
-		self.entities			= entities
 		self.attributes			= attrs
+		self.entities			= {}
 		self.roll			= ''
 		self.text			= ''
 		self.os				= attrs['os']
@@ -333,6 +337,7 @@ class GraphHandler(handler.ContentHandler,
 			parser.feed(handler.getXMLHeader())
 			for line in fin.readlines():
 				if line.find('<?xml') == -1:
+#					print 'FEED', line[:-1]
 					parser.feed(line)
 			fin.close()
 			

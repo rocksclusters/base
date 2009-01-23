@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.12 2008/10/18 00:55:51 mjk Exp $
+# $Id: __init__.py,v 1.13 2009/01/23 23:46:51 mjk Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.13  2009/01/23 23:46:51  mjk
+# - continue to kill off the var tag
+# - can build xml and kickstart files for compute nodes (might even work)
+#
 # Revision 1.12  2008/10/18 00:55:51  mjk
 # copyright 5.1
 #
@@ -119,11 +123,6 @@ class Command(rocks.commands.list.host.command):
 	all the known hosts is listed.
 	</arg>
 
-	<param type='string' name='arch'>
-	Optional. If specified, generate a graph for the specified CPU type.
-	If not specified, then 'arch' defaults to this host's architecture.
-	</param>
-
 	<example cmd='list host xml compute-0-0'>
 	List the XML configuration file for compute-0-0.
 	</example>
@@ -135,19 +134,12 @@ class Command(rocks.commands.list.host.command):
 
 	def run(self, params, args):
 
-		# In the future we should store the ARCH in the database
-		# and allow the cgi/url to override the default setting.
-		# When this happens we can do a db lookup instead of using
-		# a flag and defaulting to the host architecture.
-
-		(arch, ) = self.fillParams([('arch', self.arch)])
-		
-		if params.has_key('os'):
-			self.os = params['os']
-			
 		self.beginOutput()
 
 		for host in self.getHostnames(args):
+
+			# Find the node, dist, and graph for the host
+			
 			self.db.execute("""select d.name,a.graph,a.node from
 				appliances a, nodes n, 
 				memberships m, distributions d where
@@ -155,18 +147,25 @@ class Command(rocks.commands.list.host.command):
 				a.id=m.appliance and n.name='%s'""" % host)
 			(dist, graph, node) = self.db.fetchone()
 			
-			# Call "rocks list node xml" with the above 
-			# computed flags, and the root node as the argument.
+			# Call "rocks list node xml" with attrs{} dictionary
+			# set from the database.
+
+			self.db.execute("""select ip from networks where
+				name='%s'""" % host)
+                        address, = self.db.fetchone()
+
+			attrs = self.db.getHostAttrs(host)
+			attrs['hostname']	= host
+			attrs['hostaddr']	= address
+			attrs['distribution']	= dist
+			attrs['graph']		= graph
+			attrs['root']		= node
 
 			xml = self.command('list.node.xml', [
-				node,
-				'arch=%s' % arch,
-				'host=%s' % host,
-				'addr=%s' % socket.gethostbyname(host),
-				'dist=%s' % dist,
-				'graph=%s' % graph,
-				'os=%s' % self.os,
+				node, 
+				'attrs=%s' % attrs,
 				])
+				
 			for line in xml.split('\n'):
 				self.addOutput(host, line)
 
