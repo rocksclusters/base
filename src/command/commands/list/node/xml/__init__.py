@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.34 2009/01/23 23:46:51 mjk Exp $
+# $Id: __init__.py,v 1.35 2009/01/24 00:44:22 mjk Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.35  2009/01/24 00:44:22  mjk
+# fix hostname
+#
 # Revision 1.34  2009/01/23 23:46:51  mjk
 # - continue to kill off the var tag
 # - can build xml and kickstart files for compute nodes (might even work)
@@ -300,7 +303,7 @@ class Command(rocks.commands.list.command):
 			attrs['os']   = self.os
 			attrs['arch'] = self.arch
 			
-		if 'host' not in attrs:
+		if 'hostname' not in attrs:
 			attrs['hostname'] = self.db.getHostname()
 
 		if 'graph' not in attrs:
