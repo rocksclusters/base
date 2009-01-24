@@ -15,6 +15,11 @@
 
   <changelog>
   $Log: ssl-client.xml,v $
+  Revision 1.8  2009/01/24 02:04:28  mjk
+  - more ROCKDEBUG stuff (now to stderr)
+  - os attr commands (still incomplete)
+  - fix ssl code
+
   Revision 1.7  2009/01/23 23:46:50  mjk
   - continue to kill off the var tag
   - can build xml and kickstart files for compute nodes (might even work)
@@ -65,7 +70,7 @@ ST=&Info_CertificateState;/\
 L=&Info_CertificateLocality;/\
 O=&Info_CertificateOrganization;/\
 OU=&Info_ClusterName;/\
-CN=&hostname;.&Kickstart_PrivateDNSDomain; \
+CN=&hostname;.&Kickstart_PrivateDNSDomain;" \
 	&gt; $cert/csr 2&gt;/dev/null
 )
 

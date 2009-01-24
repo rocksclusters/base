@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.59 2009/01/23 23:46:50 mjk Exp $
+# $Id: __init__.py,v 1.60 2009/01/24 02:04:28 mjk Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,11 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.60  2009/01/24 02:04:28  mjk
+# - more ROCKDEBUG stuff (now to stderr)
+# - os attr commands (still incomplete)
+# - fix ssl code
+#
 # Revision 1.59  2009/01/23 23:46:50  mjk
 # - continue to kill off the var tag
 # - can build xml and kickstart files for compute nodes (might even work)
@@ -911,7 +916,7 @@ class DatabaseConnection:
 		return None
 		
 
-	def getHostAttrs(self, host):
+	def getHostAttrs(self, host, showsource=0):
 		"""Return a dictionary of KEY x VALUE pairs for the host
 		specific attributes for the given host.
 		"""
@@ -921,14 +926,20 @@ class DatabaseConnection:
 		# global
 		self.execute('select attr, value from global_attributes')
 		for (a, v) in self.fetchall():
-			attrs[a] = v
+			if showsource:
+				attrs[a] = (v, 'G')
+			else:
+				attrs[a] = v
 
 		# os
 		self.execute("""select a.attr, a.value from
 			os_attributes a, nodes n where
 			a.os=n.os and n.name='%s'"""  % host)
-		for (key, value) in self.fetchall():
-			attrs[key] = (value, 'O')
+		for (a, v) in self.fetchall():
+			if showsource:
+				attrs[a] = (v, 'O')
+			else:
+				attrs[a] = v
 
 		# appliance		
 		self.execute("""select a.attr, a.value from
@@ -939,14 +950,20 @@ class DatabaseConnection:
 			n.membership=m.id and m.appliance=app.id and 
 			a.appliance=app.id and n.name='%s'""" % host)
 		for (a, v) in self.fetchall():
-			attrs[a] = v
+			if showsource:
+				attrs[a] = (v, 'A')
+			else:
+				attrs[a] = v
 
 		# host				
 		self.execute("""select a.attr, a.value from
 			node_attributes a, nodes n where
 			n.name='%s' and n.id=a.node""" % host)
 		for (a, v) in self.fetchall():
-			attrs[a] = v
+			if showsource:
+				attrs[a] = (v, 'H')
+			else:
+				attrs[a] = v
 			
 		return attrs
 

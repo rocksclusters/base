@@ -1,6 +1,6 @@
 #! /opt/rocks/bin/python
 #
-# $Id: profile.py,v 1.23 2009/01/24 00:26:08 mjk Exp $
+# $Id: profile.py,v 1.24 2009/01/24 02:04:29 mjk Exp $
 #
 # @Copyright@
 # 
@@ -56,8 +56,10 @@
 # @Copyright@
 #
 # $Log: profile.py,v $
-# Revision 1.23  2009/01/24 00:26:08  mjk
-# Added ROCKSDEBUG env var
+# Revision 1.24  2009/01/24 02:04:29  mjk
+# - more ROCKDEBUG stuff (now to stderr)
+# - os attr commands (still incomplete)
+# - fix ssl code
 #
 # Revision 1.22  2009/01/23 23:46:51  mjk
 # - continue to kill off the var tag
@@ -341,7 +343,8 @@ class GraphHandler(handler.ContentHandler,
 			for line in fin.readlines():
 				if line.find('<?xml') == -1:
 					if os.environ.has_key('ROCKSDEBUG'):
-						print '[parse]', line[:-1]
+						sys.stderr.write('[parse]%s' %
+							line)
 					parser.feed(line)
 			fin.close()
 			
@@ -681,8 +684,13 @@ class Pass1NodeHandler(handler.ContentHandler,
 		file = open(os.path.join('include', filename), 'r')
 		for line in file.readlines():
 			if mode == 'quote':
+				if os.environ['ROCKSDEBUG']:
+					sys.stderr.write('[include]%s' %
+						saxutils.escape(line))
 				self.xml.append(saxutils.escape(line))
 			else:
+				if os.environ['ROCKSDEBUG']:
+					sys.stderr.write('[include]%s' % line)
 				self.xml.append(line)
 		file.close()
 
@@ -792,11 +800,15 @@ class Pass1NodeHandler(handler.ContentHandler,
 		for key in self.entities.keys():
 			os.environ[key] = self.entities[key]
 		r, w = popen2.popen2(self.evalShell)
+
+		if os.environ.has_key('ROCKSDEBUG'):
+			for line in string.join(self.evalText, '').split('\n'):
+				sys.stderr.write('[eval]%s\n' % line)
+		
 		for line in self.evalText:
-			if os.environ.has_key('ROCKSDEBUG'):
-				print '[eval]', line[:-1]
 			w.write(line)
 		w.close()
+
 		for line in r.readlines():
 			if self.evalMode == 'quote':
 				self.xml.append(saxutils.escape(line))
