@@ -20,6 +20,9 @@
 
   <changelog>
   $Log: base.xml,v $
+  Revision 1.39  2009/01/24 00:13:22  mjk
+  add arch to url
+
   Revision 1.38  2009/01/23 23:19:31  mjk
   tweaks on the entities
 
@@ -372,7 +375,7 @@
 <timezone>--utc &Kickstart_Timezone;</timezone>
 <bootloader>--location=mbr</bootloader>
 
-<url> --url http://&Kickstart_PrivateKickstartHost;/&Kickstart_PrivateKickstartBasedir;/&distribution; </url>
+<url> --url http://&Kickstart_PrivateKickstartHost;/&Kickstart_PrivateKickstartBasedir;/&distribution;/&arch; </url>
 <interactive/>
 
 </main>
