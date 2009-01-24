@@ -1,6 +1,6 @@
 #! /opt/rocks/bin/python
 #
-# $Id: profile.py,v 1.22 2009/01/23 23:46:51 mjk Exp $
+# $Id: profile.py,v 1.23 2009/01/24 00:26:08 mjk Exp $
 #
 # @Copyright@
 # 
@@ -56,6 +56,9 @@
 # @Copyright@
 #
 # $Log: profile.py,v $
+# Revision 1.23  2009/01/24 00:26:08  mjk
+# Added ROCKSDEBUG env var
+#
 # Revision 1.22  2009/01/23 23:46:51  mjk
 # - continue to kill off the var tag
 # - can build xml and kickstart files for compute nodes (might even work)
@@ -337,7 +340,8 @@ class GraphHandler(handler.ContentHandler,
 			parser.feed(handler.getXMLHeader())
 			for line in fin.readlines():
 				if line.find('<?xml') == -1:
-#					print 'FEED', line[:-1]
+					if os.environ.has_key('ROCKSDEBUG'):
+						print '[parse]', line[:-1]
 					parser.feed(line)
 			fin.close()
 			
@@ -789,6 +793,8 @@ class Pass1NodeHandler(handler.ContentHandler,
 			os.environ[key] = self.entities[key]
 		r, w = popen2.popen2(self.evalShell)
 		for line in self.evalText:
+			if os.environ.has_key('ROCKSDEBUG'):
+				print '[eval]', line[:-1]
 			w.write(line)
 		w.close()
 		for line in r.readlines():
