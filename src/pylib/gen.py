@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: gen.py,v $
+# Revision 1.39  2009/01/29 01:28:13  anoop
+# Better support for package clusters in solaris
+#
 # Revision 1.38  2008/12/23 00:14:05  mjk
 # - moved build and eval of cond strings into cond.py
 # - added dump appliance,host attrs (and plugins)
@@ -1245,17 +1248,22 @@ class Generator_sunos(Generator):
 	# <package>
 	
 	def handle_package(self, node):
-		self.ks['pkg_on'].append(self.getChildText(node).strip())
+		attr = node.attributes
+		type = None
+		if attr.getNamedItem((None, 'type')):
+			type = attr.getNamedItem((None, 'type'))
+		if  type is 'meta':
+			key = "pkgcl"
+		else:
+			key = "pkg"
 
-	# <cluster>
-	
-	def handle_cluster(self, node):
-		self.ks['pkgcl_on'].append(
-			self.getChildText(node).strip())
-		#root_cluster = self.getChildText(node) 
-		#pkg_cluster = rocks.js.clustertoc_parse(root_cluster)
-		#self.ks['pkg_on'] += pkg_cluster.pkg_list
-	
+		if self.isDisabled(node):
+			key = key + "_off"
+		else:
+			key = key + "_on"
+
+		self.ks[key].append(self.getChildText(node).strip())
+		
 	# <pre>
 		
 	def handle_pre(self, node):
