@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# $RCSfile: greceptor.init,v $
+# $RCSfile: greceptor.init.linux,v $
 #
 # chkconfig: 2345 11 70
 # description: greceptor startup
@@ -58,7 +58,10 @@
 # 
 # @Copyright@
 #
-# $Log: greceptor.init,v $
+# $Log: greceptor.init.linux,v $
+# Revision 1.1  2009/01/29 01:29:07  anoop
+# OS specific greceptor init script
+#
 # Revision 1.3  2008/10/18 00:56:02  mjk
 # copyright 5.1
 #

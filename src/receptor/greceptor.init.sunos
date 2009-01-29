@@ -55,6 +55,9 @@
 # 
 # @Copyright@
 # $Log: greceptor.init.sunos,v $
+# Revision 1.3  2009/01/29 01:29:07  anoop
+# OS specific greceptor init script
+#
 # Revision 1.2  2008/10/18 00:56:02  mjk
 # copyright 5.1
 #
@@ -76,29 +79,24 @@ case "$1" in
 		$DAEMON
 		RETVAL=$?
 		echo
-		[ $RETVAL -eq 0 ] && touch /var/lock/subsys/$NAME
+		[ $RETVAL -eq 0 ] && touch /var/lock/$NAME
 		;;
 
 	stop)
-		echo -n "Shutting down Ganglia Receptor: "
+		echo "Shutting down Ganglia Receptor: "
 		pkill -TERM ${NAME}
 		RETVAL=$?
 		echo
-		[ $RETVAL -eq 0 ] && rm -f /var/lock/subsys/$NAME
+		[ $RETVAL -eq 0 ] && rm -f /var/lock/$NAME
 		;;
 
 	restart)
 		$0 stop
 		$0 start
 		;;
-	status)
-		status $NAME
-		;;
 	*)
-		echo "Usage: $NAME {start|stop|restart|status}"
+		echo "Usage: $NAME {start|stop|restart}"
 		exit 1
 esac
 
 exit 0
-
-

@@ -53,6 +53,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.6  2009/01/29 01:29:07  anoop
+# OS specific greceptor init script
+#
 # Revision 1.5  2008/10/18 00:56:02  mjk
 # copyright 5.1
 #
@@ -158,12 +161,7 @@ install::
 	$(INSTALL) -m0444 $(METRICS) $(ROOT)/$(PY.ROCKS)/gmon/metrics/
 
 	mkdir -p $(ROOT)/$(INIT_SCRIPTS_DIR)
-	$(INSTALL) -m0555 greceptor.init $(ROOT)/$(INIT_SCRIPTS_DIR)/greceptor
-	(\
-	if [ $(OS) == sunos ]; then	\
-	$(INSTALL) -m0555 greceptor.init.sunos $(ROOT)/$(INIT_SCRIPTS_DIR)/greceptor;\
-	fi;\
-	)
+	$(INSTALL) -m0555 greceptor.init.$(OS) $(ROOT)/$(INIT_SCRIPTS_DIR)/greceptor
 
 	mkdir -p $(ROOT)/var/lock/greceptor-startup/
 	mkdir -p $(ROOT)/var/cluster/
