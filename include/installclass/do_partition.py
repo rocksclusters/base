@@ -52,6 +52,9 @@ else:
 	# get the list of hard disks and software raid devices
 	#
 	disks = p.getDisks() + p.getRaids()
+	
+	for disk in p.getRaids():
+		os.system('raidstart /dev/%s' % disk)
 
 #
 # get partition info for all the disks
@@ -107,11 +110,14 @@ for disk in nodedisks.keys():
 #
 # get the user partitioning info
 #
+douserpartitioning = 0
 if os.path.exists('/tmp/user_partition_info'):
 	#
 	# only do user partitioning if we *didn't* reconnect *any* of the disks
 	#
 	if len(parts) == 0:
+		douserpartitioning = 1
+
 		file = open('/tmp/user_partition_info', 'r')
 		for line in file.readlines():
 			parts.append(line[:-1])
@@ -142,12 +148,35 @@ else:
 			parts += p.defaultDataDisk(disk)
 
 raid = []
+raidparts = []
 for line in parts:
 	if line[0:4] == 'raid':
 		raid.append(line)
 	else:
 		print line
 	
+if douserpartitioning == 0:
+	for line in raid:
+		#
+		# if a physical partition specification for this software RAID
+		# doesn't exist, then we need to create one
+		#
+		l = line.split()
+		for i in range(len(l) - 1, -1, -1):
+			if len(l[i]) > len('raid') and l[i][0:4] == 'raid':
+				if l[i] not in p.mountpoints:
+					a = l[i].split('.')
+					if len(a) > 1:
+						part = 'part %s --noformat ' \
+							% l[i]
+						part += '--size 1 --onpart %s' \
+							% a[1]
+					
+						raidparts.append(part)
+				
+for line in raidparts:                                                              
+	print line 
+		
 for line in raid:
 	print line
 

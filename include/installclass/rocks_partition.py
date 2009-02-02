@@ -125,7 +125,7 @@ class RocksPartition:
 
 	def getMountPoint(self, devicename):
 		mntpoint = self.findMntInFstab('/dev/' + devicename)
-
+		
 		if mntpoint == '':
 			#
 			# see if the device is part of a raidset
@@ -186,7 +186,7 @@ class RocksPartition:
 		#
 		partinfo = []
 		isDisk = 0
-
+		
 		for line in info:
 			l = string.split(line[:-1])
 
@@ -204,19 +204,44 @@ class RocksPartition:
 			sectorstart = l[1]
 			partitionsize = l[3]
 			partid = ''
-
-			if len(l) > 5:
-				fstype = l[5]
-			else:
-				fstype = ''
-
-			if len(l) > 6:
-				bf = []                                         
-				for b in l[6:]:                                 
-					bf.append(b.rstrip(','))                
-				bootflags = ' '.join(bf)  
-			else:
+			
+			if devname[0:2] == 'md' and len(l) > 4:
+				#
+				# special case for software RAID. there is
+				# no 'Type' or 'Flags' fields, so the
+				# 'File system' field is 5th field
+				#
+				fstype = l[4]
 				bootflags = ''
+			else:
+				bfs = None	
+				if len(l) > 5:
+					#
+					# there is a case for RAID 0 that the 
+					# second partition of the drive does not
+					# get the file system label (e.g., ext3), so
+					# the 'boot flags' get misidentified as a
+					# file system type
+					#
+					if 'raid' in l[5] or 'boot' in l[5]:
+						bfs = l[5:]
+						fstype = ''
+					
+					else:
+						fstype = l[5]
+				else:
+					fstype = ''
+
+				if not bfs and len(l) > 6:
+					bfs = l[6:]
+
+				if bfs:
+					bf = []                                         
+					for b in bfs:
+						bf.append(b.rstrip(','))                
+					bootflags = ' '.join(bf)  
+				else:
+					bootflags = ''
 
 			if fstype == 'linux-swap':
 				mntpoint = 'swap'
@@ -230,7 +255,7 @@ class RocksPartition:
 						partid, fstype, bootflags, '',
 								mntpoint))
 
-			# print 'formatPartedNodePartInfo:partinfo: ', partinfo
+		# print 'formatPartedNodePartInfo:partinfo: ', partinfo
 
 		if partinfo == [] and isDisk:
 			#
@@ -264,9 +289,10 @@ class RocksPartition:
 	def getDiskInfo(self, disk):
 		syslog.syslog('getDiskInfo: disk:%s' % (disk))
 
-		cmd = '%s /dev/%s print -s 2> /dev/null' % (self.parted, disk)
+		cmd = '%s /dev/%s ' % (self.parted, disk)
+		cmd += 'print -s 2> /dev/null'
 		diskinfo = os.popen(cmd).readlines()
-
+		
 		syslog.syslog('getNodePartInfo: diskinfo:%s' % (diskinfo))
 
 		return diskinfo
@@ -314,6 +340,7 @@ class RocksPartition:
 		partinfo = []
 		nodedisks = {}
 
+		# print 'getNodePartInfo:disks ', disks
 		#
 		# try to get the 
 		#
@@ -375,9 +402,12 @@ class RocksPartition:
 		return nodedisks
 
 
-	def listDiskPartitionNumbers(self, disk):
+	def listDiskPartitions(self, disk):
 		list = []
 		inHeader = 1
+		
+		if disk[0:2] == 'md':
+			return [ disk ]
 
 		for part in self.getDiskInfo(disk):
 			l = string.split(part)
@@ -401,7 +431,7 @@ class RocksPartition:
 				partnumber = int(l[0])
 
 			if partnumber > 0:
-				list.append(partnumber)
+				list.append('%s%d' % (disk, partnumber))
 
 		return list
 
@@ -489,9 +519,9 @@ class RocksPartition:
 
 		lines = []
 		for disk in disks:
-			for partnumber in self.listDiskPartitionNumbers(disk):
-				os.system('mount /dev/%s%d %s' \
-					% (disk, partnumber, mountpoint) + \
+			for partition in self.listDiskPartitions(disk):
+				os.system('mount /dev/%s %s' \
+					% (partition, mountpoint) + \
 					' > /dev/null 2>&1')
 
 				if os.path.exists(fstab):

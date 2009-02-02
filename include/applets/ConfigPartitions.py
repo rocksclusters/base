@@ -1,5 +1,5 @@
 #
-# $Id: ConfigPartitions.py,v 1.12 2009/01/23 23:46:50 mjk Exp $
+# $Id: ConfigPartitions.py,v 1.13 2009/02/02 18:32:30 bruno Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: ConfigPartitions.py,v $
+# Revision 1.13  2009/02/02 18:32:30  bruno
+# fixes for software RAID
+#
 # Revision 1.12  2009/01/23 23:46:50  mjk
 # - continue to kill off the var tag
 # - can build xml and kickstart files for compute nodes (might even work)
@@ -140,12 +143,17 @@ class App(rocks.sql.Application):
 								self.fetchall():
 
 			s = (dev,sect,size,id,fstype,pflags,fflags,mnt)
-			a = re.split('[0-9]+$', dev)
 
-			if not partinfo.has_key(a[0]):
-				partinfo[a[0]] = [ s ]
+			if dev[0:2] == 'md':
+				devbasename = dev
 			else:
-				partinfo[a[0]].append(s)
+				a = re.split('[0-9]+$', dev)
+				devbasename = a[0]
+
+			if not partinfo.has_key(devbasename):
+				partinfo[devbasename] = [ s ]
+			else:
+				partinfo[devbasename].append(s)
 
 		return partinfo
 
