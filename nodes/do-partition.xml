@@ -4,6 +4,9 @@
 
 <changelog>
 $Log: do-partition.xml,v $
+Revision 1.6  2009/02/02 19:51:36  bruno
+fix for new entities
+
 Revision 1.5  2009/01/23 23:19:31  mjk
 tweaks on the entities
 
@@ -31,8 +34,9 @@ KickstartHost = '&Kickstart_PrivateKickstartHost;'
 
 <eval shell="python" mode="xml">
 import ConfigPartitions
-ConfigPartitions.App().setHostname('&hostname;')
-ConfigPartitions.App().run()
+app = ConfigPartitions.App()
+app.setHostname('&hostname;')
+app.run()
 </eval>
 </file>
 
