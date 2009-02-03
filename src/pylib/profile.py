@@ -1,6 +1,6 @@
 #! /opt/rocks/bin/python
 #
-# $Id: profile.py,v 1.24 2009/01/24 02:04:29 mjk Exp $
+# $Id: profile.py,v 1.25 2009/02/03 20:55:32 bruno Exp $
 #
 # @Copyright@
 # 
@@ -56,6 +56,9 @@
 # @Copyright@
 #
 # $Log: profile.py,v $
+# Revision 1.25  2009/02/03 20:55:32  bruno
+# some more ROCKSDEBUG fixes
+#
 # Revision 1.24  2009/01/24 02:04:29  mjk
 # - more ROCKDEBUG stuff (now to stderr)
 # - os attr commands (still incomplete)
@@ -684,12 +687,12 @@ class Pass1NodeHandler(handler.ContentHandler,
 		file = open(os.path.join('include', filename), 'r')
 		for line in file.readlines():
 			if mode == 'quote':
-				if os.environ['ROCKSDEBUG']:
+				if os.environ.has_key('ROCKSDEBUG'):
 					sys.stderr.write('[include]%s' %
 						saxutils.escape(line))
 				self.xml.append(saxutils.escape(line))
 			else:
-				if os.environ['ROCKSDEBUG']:
+				if os.environ.has_key('ROCKSDEBUG'):
 					sys.stderr.write('[include]%s' % line)
 				self.xml.append(line)
 		file.close()
