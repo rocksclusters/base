@@ -327,9 +327,14 @@ class RocksPartition:
 
 			if foundparts == 0:
 				continue
-			
-			part = l[-1].split('/')
-			parts.append('raid.%s' % part[-1])
+
+			#
+			# XXX - look for 'spare' for the 'state' entry.
+			# how should we handle 'spare' drives?
+			#
+			if len(l) > 0:
+				part = l[-1].split('/')
+				parts.append('raid.%s' % part[-1])
 
 		return ' '.join(parts)
 
