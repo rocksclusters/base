@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.5 2009/01/13 23:11:33 bruno Exp $
+# $Id: __init__.py,v 1.6 2009/02/09 00:29:04 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.6  2009/02/09 00:29:04  bruno
+# parallelize 'rocks sync host network'
+#
 # Revision 1.5  2009/01/13 23:11:33  bruno
 # add full pathname to 'service' command so folks can run insert-ethers via
 # sudo.
@@ -75,7 +78,21 @@
 #
 
 import os
+import time
 import rocks.commands
+import threading
+
+max_threading = 512
+timeout = 30.0
+
+class Parallel(threading.Thread):
+	def __init__(self, cmd):
+		threading.Thread.__init__(self)
+		self.cmd = cmd
+
+	def run(self):
+		os.system(self.cmd)
+
 
 class Command(rocks.commands.sync.host.command):
 	"""
@@ -88,16 +105,54 @@ class Command(rocks.commands.sync.host.command):
 
 	def run(self, params, args):
 		hosts = self.getHostnames(args)
+
+		threads = []
 		for host in hosts:
+			if max_threading > 0:
+				while threading.activeCount() > max_threading:
+					#
+					# need to wait for some threads to
+					# complete before starting any new ones
+					#
+					time.sleep(0.001)
+
 			cmd = '/opt/rocks/bin/rocks report host interface '
 			cmd += '%s | ' % host
 			cmd += '/opt/rocks/bin/rocks report script | '
 			cmd += 'ssh %s bash > /dev/null 2>&1' % host
-			os.system(cmd)
+
+			p = Parallel(cmd)
+			threads.append(p)
+			p.start()
+
+		#
+		# collect the threads
+		#
+		for thread in threads:
+			thread.join(timeout)
+
+		threads = []
+		for host in hosts:
+			if max_threading > 0:
+				while threading.activeCount() > max_threading:
+					#
+					# need to wait for some threads to
+					# complete before starting any new ones
+					#
+					time.sleep(0.001)
 
 			cmd = 'ssh %s "/sbin/service network restart" ' % host
 			cmd += '> /dev/null 2>&1'
-			os.system(cmd)
+
+			p = Parallel(cmd)
+			threads.append(p)
+			p.start()
+
+		#
+		# collect the threads
+		#
+		for thread in threads:
+			thread.join(timeout)
 
 		self.runPlugins(hosts)
 
