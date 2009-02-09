@@ -16,6 +16,9 @@
 
   <changelog>
   $Log: database-data.xml,v $
+  Revision 1.32  2009/02/09 23:30:36  bruno
+  use long passwords
+
   Revision 1.31  2009/01/23 21:50:23  bruno
   var tags converted to entities
 
@@ -499,7 +502,14 @@ echo "set password for apache@&Kickstart_PrivateHostname;=PASSWORD(\"$clupass\")
 <file name="/root/.my.cnf" perms="0440" owner="root.apache">
 [client]
 </file>
+
 echo "password=$clupass" &gt;&gt; /root/.my.cnf
+
+<!-- use long passwords in the database -->
+<file name="/tmp/my.cnf" expr="grep -v '^old_passwords' /etc/my.cnf"/>
+<file name="/etc/my.cnf" perms="644" expr="cat /tmp/my.cnf"/>
+rm /tmp/my.cnf
+
 </post>
 
 </kickstart>
