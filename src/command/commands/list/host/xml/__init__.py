@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.13 2009/01/23 23:46:51 mjk Exp $
+# $Id: __init__.py,v 1.14 2009/02/10 20:11:20 mjk Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.14  2009/02/10 20:11:20  mjk
+# os attr stuff for anoop
+#
 # Revision 1.13  2009/01/23 23:46:51  mjk
 # - continue to kill off the var tag
 # - can build xml and kickstart files for compute nodes (might even work)
@@ -159,7 +162,6 @@ class Command(rocks.commands.list.host.command):
 			attrs['hostaddr']	= address
 			attrs['distribution']	= dist
 			attrs['graph']		= graph
-			attrs['root']		= node
 
 			xml = self.command('list.node.xml', [
 				node, 

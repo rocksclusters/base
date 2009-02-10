@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.35 2009/01/24 00:44:22 mjk Exp $
+# $Id: __init__.py,v 1.36 2009/02/10 20:11:20 mjk Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.36  2009/02/10 20:11:20  mjk
+# os attr stuff for anoop
+#
 # Revision 1.35  2009/01/24 00:44:22  mjk
 # fix hostname
 #
@@ -331,6 +334,7 @@ class Command(rocks.commands.list.command):
 		# Add more values to the attributes
 		attrs['version'] = rocks.version
 		attrs['release'] = rocks.release
+		attrs['root']	 = root
 		
 		#
 		# site.entities code goes here

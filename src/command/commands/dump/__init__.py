@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.11 2008/10/18 00:55:49 mjk Exp $
+# $Id: __init__.py,v 1.12 2009/02/10 20:11:20 mjk Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.12  2009/02/10 20:11:20  mjk
+# os attr stuff for anoop
+#
 # Revision 1.11  2008/10/18 00:55:49  mjk
 # copyright 5.1
 #
@@ -109,17 +112,13 @@
 # - more flexible hostname lookup for the command line
 #
 
-
-import os
 import rocks.commands
 
 class command(rocks.commands.Command):
 	MustBeRoot = 0
 	
 	def dump(self, line):
-		self.addText('%s %s\n' % 
-			(os.path.join(os.sep, 'opt', 'rocks', 'bin', 'rocks'),
-			line))
+		self.addText('/opt/rocks/bin/rocks %s\n' % line)
 		
 
 	

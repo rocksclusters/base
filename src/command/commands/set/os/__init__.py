@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.1 2009/01/24 02:04:29 mjk Exp $
+# $Id: __init__.py,v 1.2 2009/02/10 20:11:20 mjk Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.2  2009/02/10 20:11:20  mjk
+# os attr stuff for anoop
+#
 # Revision 1.1  2009/01/24 02:04:29  mjk
 # - more ROCKDEBUG stuff (now to stderr)
 # - os attr commands (still incomplete)
@@ -62,5 +65,5 @@
 
 import rocks.commands
 
-class command(rocks.commands.set.command):
+class command(rocks.commands.OSArgumentProcessor, rocks.commands.set.command):
 	pass

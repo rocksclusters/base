@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.60 2009/01/24 02:04:28 mjk Exp $
+# $Id: __init__.py,v 1.61 2009/02/10 20:11:20 mjk Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.61  2009/02/10 20:11:20  mjk
+# os attr stuff for anoop
+#
 # Revision 1.60  2009/01/24 02:04:28  mjk
 # - more ROCKDEBUG stuff (now to stderr)
 # - os attr commands (still incomplete)
@@ -322,6 +325,32 @@ def Abort(message, doExit=1):
 	if doExit:
 		sys.exit(-1)
 
+
+class OSArgumentProcessor:
+	"""An Interface class to add the ability to process os arguments."""
+
+	def getOSNames(self, args=None):
+		"""Returns a list of OS names.  For each arg in the ARGS list
+		normalize the name to one of either 'linux' or 'solaris' as
+		they are the only supported OSes.  If the ARGS list is empty
+		return a list of all supported OS names.
+		"""
+
+		list = []
+		for arg in args:
+			s = arg.lower()
+			if s == 'linux':
+				list.append(s)
+			elif s == 'solaris':
+				list.append(s)
+			else:
+				Abort('unkown os "%s"' % arg)
+		if not list:
+			list.append('linux')
+			list.append('solaris')
+
+		return list
+	
 
 class MembershipArgumentProcessor:
 	"""An Interface class to add the ability to process membership

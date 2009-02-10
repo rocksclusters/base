@@ -1,5 +1,5 @@
-# $Id: __init__.py,v 1.2 2009/02/10 20:11:20 mjk Exp $
-#
+# $Id: plugin_os_attrs.py,v 1.1 2009/02/10 20:11:20 mjk Exp $
+# 
 # @Copyright@
 # 
 # 				Rocks(r)
@@ -53,71 +53,20 @@
 # 
 # @Copyright@
 #
-# $Log: __init__.py,v $
-# Revision 1.2  2009/02/10 20:11:20  mjk
+# $Log: plugin_os_attrs.py,v $
+# Revision 1.1  2009/02/10 20:11:20  mjk
 # os attr stuff for anoop
 #
 
-
 import os
-import stat
-import time
-import sys
-import string
 import rocks.commands
 
-class Command(rocks.commands.set.os.command):
-	"""
-	Sets an attribute to an os and sets the associated values 
+class Plugin(rocks.commands.Plugin):
 
-	<arg type='string' name='os'>
-	Name of os
-	</arg>
-	
-	<arg type='string' name='attr'>
-	Name of the attribute
-	</arg>
-
-	<arg type='string' name='value'>
-	Value of the attribute
-	</arg>
-	
-	<param type='string' name='attr'>
-	same as attr argument
-	</param>
-
-	<param type='string' name='value'>
-	same as value argument
-	</param>
-
-	<example cmd='set os attr linux sge False'>
-	Sets the sge attribution to False for linux nodes
-	</example>
-
-	"""
-
-	def run(self, params, args):
-
-		(args, attr, value) = self.fillPositionalArgs(('attr', 'value'))
-		oses = self.getOSNames(args)
+	def provides(self):
+		return 'os-attr'
 		
-		if not attr:
-			self.abort('missing attribute name')
-		if not value:
-			self.about('missing value of attribute')
-
-		for os in oses:
-			self.setOSAttr(os, attr, value)
-			
-	def setOSAttr(self, os, attr, value):
-		rows = self.db.execute("""select * from os_attributes where
-			os='%s' and attr='%s'""" % (os, attr))
-		if not rows:
-			self.db.execute("""insert into os_attributes values 
-				('%s', '%s', '%s')""" % (os, attr, value))
-		else:
-			self.db.execute("""update os_attributes set value='%s' 
-				where os='%s' and attr='%s'""" %
-				(value, os, attr))
-
+	def run(self, args):
+		self.owner.addText(self.owner.command('dump.os.attr', []))
+		
 

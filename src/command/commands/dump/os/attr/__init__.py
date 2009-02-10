@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.2 2009/02/10 20:11:20 mjk Exp $
+# $Id: __init__.py,v 1.1 2009/02/10 20:11:20 mjk Exp $
 #
 # @Copyright@
 # 
@@ -54,70 +54,33 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
-# Revision 1.2  2009/02/10 20:11:20  mjk
+# Revision 1.1  2009/02/10 20:11:20  mjk
 # os attr stuff for anoop
 #
+# Revision 1.1  2009/01/08 23:36:01  mjk
+# - rsh edge is conditional (no more uncomment crap)
+# - add global_attribute commands (list, set, remove, dump)
+# - attributes are XML entities for kpp pass (both pass1 and pass2)
+# - attributes are XML entities for kgen pass (not used right now - may go away)
+# - some node are now interface=public
+#
 
-
-import os
-import stat
-import time
 import sys
-import string
+import socket
 import rocks.commands
+import string
 
-class Command(rocks.commands.set.os.command):
+class Command(rocks.commands.dump.os.command):
 	"""
-	Sets an attribute to an os and sets the associated values 
-
-	<arg type='string' name='os'>
-	Name of os
-	</arg>
-	
-	<arg type='string' name='attr'>
-	Name of the attribute
-	</arg>
-
-	<arg type='string' name='value'>
-	Value of the attribute
-	</arg>
-	
-	<param type='string' name='attr'>
-	same as attr argument
-	</param>
-
-	<param type='string' name='value'>
-	same as value argument
-	</param>
-
-	<example cmd='set os attr linux sge False'>
-	Sets the sge attribution to False for linux nodes
-	</example>
-
+	Dump the set of attributes for the OS
 	"""
 
 	def run(self, params, args):
 
-		(args, attr, value) = self.fillPositionalArgs(('attr', 'value'))
-		oses = self.getOSNames(args)
-		
-		if not attr:
-			self.abort('missing attribute name')
-		if not value:
-			self.about('missing value of attribute')
-
-		for os in oses:
-			self.setOSAttr(os, attr, value)
-			
-	def setOSAttr(self, os, attr, value):
-		rows = self.db.execute("""select * from os_attributes where
-			os='%s' and attr='%s'""" % (os, attr))
-		if not rows:
-			self.db.execute("""insert into os_attributes values 
-				('%s', '%s', '%s')""" % (os, attr, value))
-		else:
-			self.db.execute("""update os_attributes set value='%s' 
-				where os='%s' and attr='%s'""" %
-				(value, os, attr))
-
+		for os in self.getOSNames(args):
+			self.db.execute("""select attr, value from 
+				os_attributes where os='%s'""" % (os))
+			for row in self.db.fetchall():
+				self.dump('set os attr %s %s %s' % 
+					(os, row[0], row[1]))
 
