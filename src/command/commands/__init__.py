@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.61 2009/02/10 20:11:20 mjk Exp $
+# $Id: __init__.py,v 1.62 2009/02/10 20:11:59 mjk Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.62  2009/02/10 20:11:59  mjk
+# solaris -> sunos
+#
 # Revision 1.61  2009/02/10 20:11:20  mjk
 # os attr stuff for anoop
 #
@@ -341,7 +344,7 @@ class OSArgumentProcessor:
 			s = arg.lower()
 			if s == 'linux':
 				list.append(s)
-			elif s == 'solaris':
+			elif s == 'sunos':
 				list.append(s)
 			else:
 				Abort('unkown os "%s"' % arg)

@@ -17,6 +17,9 @@
 
   <changelog>
   $Log: database-schema.xml,v $
+  Revision 1.30  2009/02/10 20:12:58  mjk
+  solaris -> sunos
+
   Revision 1.29  2009/01/22 19:14:25  mjk
   this time with feeling
 
@@ -266,7 +269,7 @@ CREATE TABLE global_attributes (
 
 DROP TABLE IF EXISTS os_attributes;
 CREATE TABLE os_attributes (
-  OS		enum('solaris','linux') NOT NULL default 'linux',
+  OS		enum('sunos','linux') NOT NULL default 'linux',
   Attr          varchar(128) default NULL,
   Value         text
 ) TYPE=MyISAM;
