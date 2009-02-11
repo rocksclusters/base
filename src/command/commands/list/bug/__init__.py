@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.1 2008/11/21 01:03:46 bruno Exp $
+# $Id: __init__.py,v 1.2 2009/02/11 19:52:38 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,11 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.2  2009/02/11 19:52:38  bruno
+# nuked the PublicRootPassword and PrivateMD5RootPassword variables.
+#
+# also, made the private root password an MD5-based password
+#
 # Revision 1.1  2008/11/21 01:03:46  bruno
 # moved 'dbreport bug' to 'rocks list bug'
 #
@@ -125,9 +130,7 @@ class Command(rocks.commands.RollArgumentProcessor,
 	def globals(self):
 		self.db.execute('select membership,service,component,value '
 			'from app_globals where site=0 and '
-			'component!="PublicRootPassword" and '
 			'component!="PrivateRootPassword" and '
-			'component!="PrivateMD5RootPassword" and '
 			'component!="PrivatePortableRootPassword" and '
 			'component!="PrivateSHARootPassword"')
 		for col in self.db.fetchall():

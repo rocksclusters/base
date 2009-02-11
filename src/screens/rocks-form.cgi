@@ -32,36 +32,29 @@ class App(rocks.sql.Application):
 				#
 				# encrypt the root password
 				#
-				import crypt
-				import md5
 				import sha
 				import rocks.password
+				import random
+				import crypt
+				import string
 
-				m = md5.new(xmlvalue)
-				crypted = crypt.crypt(xmlvalue,
-							m.hexdigest()[:2])
+				salt = '$1$'
+				for i in range(0, 8):
+					salt += random.choice(
+						string.ascii_letters +
+						string.digits + './')
+
+				str = '<var '
+				str += 'name="Kickstart_PrivateRootPassword" '
+				str += 'val="%s"/>' % \
+					crypt.crypt(xmlvalue, salt)
+				file.write('%s\n' % (str))
 
 				#
 				# mysql requires a sha(sha()) password
 				#
 				a = sha.new(xmlvalue)
 				sha_sha = sha.new(a.digest())
-
-				str = '<var '
-				str += 'name="Kickstart_PrivateRootPassword" '
-				str += 'val="%s"/>' % (crypted)
-				file.write('%s\n' % (str))
-
-				str = '<var '
-				str += 'name="Kickstart_PublicRootPassword" '
-				str += 'val="%s"/>' % (crypted)
-				file.write('%s\n' % (str))
-
-				str = '<var '
-				str += 'name='
-				str += '"Kickstart_PrivateMD5RootPassword" '
-				str += 'val="%s"/>' % (m.hexdigest())
-				file.write('%s\n' % (str))
 
 				str = '<var '
 				str += 'name='
