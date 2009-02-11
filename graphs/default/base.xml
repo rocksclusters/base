@@ -4,6 +4,9 @@
 
 	<changelog>
 	$Log: base.xml,v $
+	Revision 1.45  2009/02/11 19:50:34  bruno
+	nuke unneeded nodes
+	
 	Revision 1.44  2009/01/22 18:57:56  mjk
 	removed database-security
 	
@@ -236,10 +239,6 @@
 		<tail>do-partition</tail>
 	</order>
 
-	<order head="server-wan">
-		<tail>base</tail>
-	</order>
-
 	<!-- order the screens -->
 	<order head="screen-clusterinfo">
 		<tail>screen-network-eth0</tail>
@@ -405,10 +404,6 @@
 		<to>python-development</to>
 		<to>tcl-development</to>
 	</edge>
-
-	<edge from="wan-install"    to="server"/>
-	<edge from="server-wan"     to="wan-install"/>
-	<edge from="server-restore" to="wan-install"/>
 
 	<edge from="database">
 		<to>database-schema</to>
