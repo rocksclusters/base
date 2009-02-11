@@ -1,5 +1,5 @@
 #
-# $Id: __init__.py,v 1.6 2008/10/18 00:55:56 mjk Exp $
+# $Id: __init__.py,v 1.7 2009/02/11 19:26:01 bruno Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.7  2009/02/11 19:26:01  bruno
+# put quotes around the group id. thanks to Kaizaad Bilimorya for the fix.
+#
 # Revision 1.6  2008/10/18 00:55:56  mjk
 # copyright 5.1
 #
@@ -205,7 +208,7 @@ class Command(rocks.commands.report.host.command):
 
 		self.printOptions('\t', defopt)
 
-		self.addOutput('', '\tgroup %s {' % dn)
+		self.addOutput('', '\tgroup "%s" {' % dn)
 		ip  = rocks.ip.IPGenerator(defopt['PrivateNetwork'],
 			defopt['PrivateNetmask'])
 		
