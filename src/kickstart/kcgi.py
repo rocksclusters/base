@@ -1,6 +1,6 @@
 #! /opt/rocks/bin/python
 #
-# $Id: kcgi.py,v 1.31 2009/01/08 01:20:58 bruno Exp $
+# $Id: kcgi.py,v 1.32 2009/02/11 19:26:46 bruno Exp $
 #
 # @Copyright@
 # 
@@ -56,6 +56,10 @@
 # @Copyright@
 #
 # $Log: kcgi.py,v $
+# Revision 1.32  2009/02/11 19:26:46  bruno
+# kickstart.cgi now uses the 'wan' node instead of the 'server-wan' node for
+# public kickstarting
+#
 # Revision 1.31  2009/01/08 01:20:58  bruno
 # for anoop
 #
@@ -867,7 +871,7 @@ class App(rocks.kickstart.Application):
 		else:
 			OS = 'linux' # should aways come from loader
 
-		cmd = '/opt/rocks/bin/rocks list node xml server-wan '
+		cmd = '/opt/rocks/bin/rocks list node xml wan '
 		cmd += 'arch=%s os=%s' % (self.arch, OS)
 
 		for line in os.popen(cmd).readlines():
