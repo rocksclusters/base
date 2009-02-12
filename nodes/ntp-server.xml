@@ -17,6 +17,9 @@
 
   <changelog>
   $Log: ntp-server.xml,v $
+  Revision 1.7  2009/02/12 17:59:08  bruno
+  added iburst flag -- thanks to Tim Theisen for suggesting it.
+
   Revision 1.6  2009/01/23 21:50:23  bruno
   var tags converted to entities
 
@@ -84,8 +87,8 @@
 <!-- Configure NTP to use an external server -->
 
 <file name="/etc/ntp.conf">
-server &Kickstart_PublicNTPHost;
-server	127.127.1.1
+server &Kickstart_PublicNTPHost; iburst
+server	127.127.1.1 iburst
 fudge	127.127.1.1 stratum 10
 driftfile /var/lib/ntp/drift
 </file>
