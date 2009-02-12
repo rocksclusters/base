@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.6 2008/10/18 00:55:55 mjk Exp $
+# $Id: __init__.py,v 1.7 2009/02/12 05:17:01 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.7  2009/02/12 05:17:01  bruno
+# typo
+#
 # Revision 1.6  2008/10/18 00:55:55  mjk
 # copyright 5.1
 #
@@ -84,7 +87,7 @@ class Command(command):
 	related database rows for each specified host.
 
 	<arg type='string' name='host' repeat='1'>
-	List of hosts to remove from the databavse.
+	List of hosts to remove from the database.
 	</arg>
 
 	<example cmd='remove host compute-0-0'>
