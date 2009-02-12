@@ -1,4 +1,4 @@
-# $Id: plugin_bootaction.py,v 1.1 2008/12/15 22:27:21 bruno Exp $
+# $Id: __init__.py,v 1.1 2009/02/12 21:40:05 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -53,32 +53,45 @@
 # 
 # @Copyright@
 #
-# $Log: plugin_bootaction.py,v $
-# Revision 1.1  2008/12/15 22:27:21  bruno
-# convert pxeboot and pxeaction tables to boot and bootaction tables.
-#
-# this enables merging the pxeaction and vm_profiles tables
-#
-# Revision 1.3  2008/10/18 00:55:55  mjk
-# copyright 5.1
-#
-# Revision 1.2  2008/03/06 23:41:38  mjk
-# copyright storm on
-#
-# Revision 1.1  2008/02/01 20:52:27  bruno
-# use plugins to support removing all database entries for a host.
+# $Log: __init__.py,v $
+# Revision 1.1  2009/02/12 21:40:05  bruno
+# make the bootaction global
 #
 #
 
-import os
+import sys
+import string
 import rocks.commands
+import os
 
-class Plugin(rocks.commands.Plugin):
+class Command(rocks.commands.HostArgumentProcessor,
+	rocks.commands.remove.command):
 
-	def provides(self):
-		return 'pxeaction'
+	"""
+	Remove a boot action specification from the system.
 
-	def run(self, args):
-		if len(args) > 0:
-			self.owner.command('remove.host.bootaction', [ args ])
+	<param type='string' name='action'>
+	The label name for the boot action. You can see the boot action label
+	names by executing: 'rocks list host bootaction'.
+	</param>
+
+	<example cmd='remove bootaction action=os'>
+	Remove the 'os' boot action from the system.
+	</example>
+	"""
+
+	def run(self, params, args):
+		(action, ) = self.fillParams([('action', '%')])
+
+		# If no host list is provided remove the default action.
+		# Otherwise remove the action for each host.
 		
+		self.db.execute("""delete from bootaction where
+			bootaction.action = '%s' """ % action)
+
+		#	
+		# regenerate all the pxe boot configuration files
+		# including the default
+		#
+		self.command('set.host.boot', self.getHostnames())
+

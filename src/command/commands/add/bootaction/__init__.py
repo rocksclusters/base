@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.1 2008/12/15 22:27:21 bruno Exp $
+# $Id: __init__.py,v 1.1 2009/02/12 21:40:05 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,10 +54,8 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
-# Revision 1.1  2008/12/15 22:27:21  bruno
-# convert pxeboot and pxeaction tables to boot and bootaction tables.
-#
-# this enables merging the pxeaction and vm_profiles tables
+# Revision 1.1  2009/02/12 21:40:05  bruno
+# make the bootaction global
 #
 #
 
@@ -66,16 +64,10 @@ import string
 import rocks.commands
 import os
 
-class Command(rocks.commands.HostArgumentProcessor,
-	rocks.commands.add.command):
+class Command(rocks.commands.HostArgumentProcessor, rocks.commands.add.command):
 	"""
-	Add a bootaction specification for a host.
+	Add a bootaction specification to the system.
 	
-	<arg type='string' name='host' repeat='1' optional='1'>
-	List of hosts to add bootaction definitions. If no hosts are listed,
-	then the global definition for 'action=name' is added.
-	</arg>
-
 	<param type='string' name='action'>
 	Label name for the bootaction. You can see the bootaction label names by
 	executing: 'rocks list host bootaction [host(s)]'.
@@ -94,29 +86,26 @@ class Command(rocks.commands.HostArgumentProcessor,
 	lang= devfs=nomount pxe kssendmac selinux=0)
 	</param>
 	
-	<example cmd='add host bootaction action=os kernel="localboot 0"'>
-	Add the global 'os' bootaction.
+	<example cmd='add bootaction action=os kernel="localboot 0"'>
+	Add the 'os' bootaction.
 	</example>
 	
-	<example cmd='add host bootaction compute-0-0 action=memtest command="memtest"'>
-	Add the 'memtest' bootaction for compute-0-0
+	<example cmd='add bootaction action=memtest command="memtest"'>
+	Add the 'memtest' bootaction.
 	</example>
 	"""
 
-	def addBootAction(self, nodeid, host, action, kernel, ramdisk,
-		bootargs):
-
+	def addBootAction(self, action, kernel, ramdisk, bootargs):
 		#
-		# is there already an entry in the pxeaction table
+		# is there already an entry in the bootaction table
 		#
 		rows = self.db.execute("""select id from bootaction where
-			node = %d and action = '%s'""" % (nodeid, action))
+			action = '%s'""" % (action))
 		if rows < 1:
 			#
 			# insert a new row
 			#
 			cols = {}
-			cols['node'] = '%s' %  (nodeid)
 			cols['action'] = '"%s"' % (action)
 
 			if kernel != None:
@@ -154,11 +143,6 @@ class Command(rocks.commands.HostArgumentProcessor,
 
 
 	def run(self, params, args):
-		if len(args) == 0:
-			hosts = []
-		else:
-			hosts = self.getHostnames(args)
-
 		(action, kernel, ramdisk, bootargs) = self.fillParams(
 			[('action', ), 
 			('kernel', ),
@@ -168,34 +152,11 @@ class Command(rocks.commands.HostArgumentProcessor,
 		if not action:
 			self.abort('must supply an action')
 
-		if not hosts:
-			#
-			# set the global (all nodes) configuration
-			#
-			self.addBootAction(0, 'global', action, kernel,
-				ramdisk, bootargs)
+		self.addBootAction(action, kernel, ramdisk, bootargs)
 
-			#	
-			# regenerate all the pxe boot configuration files
-			# including the default
-			#
-			self.command('set.host.boot', self.getHostnames())
-			
-		else:
-			for host in hosts:
-				#
-				# get the node from the nodes table
-				#
-				self.db.execute("""select id from nodes where
-					name = '%s'""" % (host))
-				hostid, = self.db.fetchone()
-
-				self.addBootAction(hostid, host, action, kernel,
-					ramdisk, bootargs)
-					
-				#
-				# regenerate the pxe boot configuration
-				# file for host
-				#
-				self.command('set.host.boot', [ host ])
+		#	
+		# regenerate all the pxe boot configuration files
+		# including the default.
+		#
+		self.command('set.host.boot', self.getHostnames())
 
