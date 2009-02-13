@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.4 2009/01/16 23:58:15 bruno Exp $
+# $Id: __init__.py,v 1.5 2009/02/13 20:21:12 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.5  2009/02/13 20:21:12  bruno
+# make sure physical hosts look at the 'runaction' or 'installaction'
+# columns in the nodes table in order to reference the correct bootaction.
+#
 # Revision 1.4  2009/01/16 23:58:15  bruno
 # configuring the boot action and writing the boot files (e.g., PXE host config
 # files and Xen config files) are now done in exactly the same way.
@@ -64,38 +68,29 @@ import rocks.commands
 
 class Command(rocks.commands.set.host.command):
 	"""
-	Set a bootaction for a host. This action defines what configuration
-	is sent back to a host the next time it boots.
-	
+	Set a bootaction for a host. A hosts action can be set to 'install' 
+	or to 'os' (also, 'run' is a synonym for 'os').
+
 	<arg type='string' name='host' repeat='1'>
 	One or more host names.
 	</arg>
 
 	<param type='string' name='action'>
-	The label name for the bootaction. For a list of bootactions,
-	execute: 'rocks list host bootaction'.
+	The label name for the bootaction. This must be one of: 'os',
+	'install', or 'run'.
 
 	If no action is supplied, then only the configuration file for the
 	list of hosts will be rewritten.
 	</param>
 		
 	<example cmd='set host boot compute-0-0 action=os'>
-	On the next boot, compute-0-0 will boot from its local disk.
+	On the next boot, compute-0-0 will boot the profile based on its
+	"run action". To see the node's "run action", execute:
+	"rocks list host runaction compute-0-0".
 	</example>
 	"""
 
 	def updateBoot(self, host, action):
-		#
-		# just make sure there is a action is defined for this host.
-		# we will not be using the result from the query, we just
-		# want to know if a action exists for this host.
-		#
-		rows = self.db.execute("""select action from bootaction where
-			action = "%s" """ % (action))
-
-		if rows < 1:
-			self.abort('Boot action "%s" is not defined ' % action)
-
 		#
 		# is there already an entry in the boot table
 		#
@@ -107,7 +102,7 @@ class Command(rocks.commands.set.host.command):
 			# insert a new row
 			#
 			self.db.execute("""insert into boot (node, action)
-				values(select id from nodes where name = '%s',
+				values((select id from nodes where name = '%s'),
 				"%s") """ % (host, action))
 		else:
 			#
@@ -124,6 +119,10 @@ class Command(rocks.commands.set.host.command):
 		
 		if not len(args):
 			self.abort('must supply host')
+
+		if action not in [ 'os', 'run', 'install', None ]:
+			self.abort('invalid action. action must be ' +
+				'"os", "run" or "install"')
 
 		for host in self.getHostnames(args):
 			if action:

@@ -1,4 +1,4 @@
-# $Id: plugin_physical_host.py,v 1.1 2009/01/16 23:58:15 bruno Exp $
+# $Id: plugin_physical_host.py,v 1.2 2009/02/13 20:21:12 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: plugin_physical_host.py,v $
+# Revision 1.2  2009/02/13 20:21:12  bruno
+# make sure physical hosts look at the 'runaction' or 'installaction'
+# columns in the nodes table in order to reference the correct bootaction.
+#
 # Revision 1.1  2009/01/16 23:58:15  bruno
 # configuring the boot action and writing the boot files (e.g., PXE host config
 # files and Xen config files) are now done in exactly the same way.
@@ -155,23 +159,43 @@ class Plugin(rocks.commands.Plugin):
 		#
 		filename = self.getFilename(nodeid)
 
-		rows = self.db.execute("""select * from boot where
+		nrows = self.db.execute("""select action from boot where
 			node = %s """ % (nodeid))
-		if rows < 1:
+		if nrows < 1:
 			if filename != None and os.path.exists(filename):
 				os.unlink(filename)
 
 			return
+		else:
+			action, = self.db.fetchone()
 
-		nrows = self.db.execute("""select
-			ba.kernel, ba.ramdisk, ba.args from
-			bootaction ba, boot b, nodes n where
-			n.name = '%s' and n.id = b.node and
-			b.action = ba.action and
-			ba.action = b.action """ % node)
+		#
+		# get the bootaction from the 'installaction' or
+		# 'runaction' column
+		#
+		if action in [ 'os', 'run' ]:
+			nrows = self.db.execute("""select runaction from 
+				nodes where name = '%s' """ % node)
+		elif action in [ 'install' ]:
+			nrows = self.db.execute("""select installaction from 
+				nodes where name = '%s' """ % node)
+		else:
+			self.abort('action "%s" for host "%s" is invalid' %
+				(action, node))
+
+		if nrows == 1:
+			bootaction, = self.db.fetchone()
+		else:
+			self.abort('failed to get bootaction')
+
+		nrows = self.db.execute("""select kernel, ramdisk, args from
+			bootaction where action = '%s' """% bootaction)
 
 		if nrows == 1:
 			kernel, ramdisk, args = self.db.fetchone()
+		else:
+			self.abort('bootaction "%s" for host "%s" is invalid' %
+				(action, node))
 
 		if filename != None:
 			file = open(filename, 'w')	
@@ -205,10 +229,10 @@ class Plugin(rocks.commands.Plugin):
 
 	# Solaris Function Only
 	def writePxegrub(self, host, nodeid):
-		rows = self.db.execute("select action from boot"
+		nrows = self.db.execute("select action from boot"
 				" where node='%s'" % (nodeid))
 
-		if rows < 1:
+		if nrows < 1:
 			return
 		action, = self.db.fetchone()
 
@@ -242,12 +266,9 @@ class Plugin(rocks.commands.Plugin):
 
 
 	def run(self, host):
-		# if type(host) == type(()):
-			# host, = host
-
-		rows = self.db.execute("""select id from nodes where
+		nrows = self.db.execute("""select id from nodes where
 			name = '%s' """ % host)
-		if rows > 0:
+		if nrows > 0:
 			nodeid, = self.db.fetchone()
 		else:
 			self.abort('could not find host "%s" in the database'
@@ -269,15 +290,15 @@ class Plugin(rocks.commands.Plugin):
 			#
 			physnode = 1
 
-			rows = self.db.execute("""show tables like
+			nrows = self.db.execute("""show tables like
 				'vm_nodes' """)
 
-			if rows == 1:
-				rows = self.db.execute("""select vn.id from
+			if nrows == 1:
+				nrows = self.db.execute("""select vn.id from
 					vm_nodes vn, nodes n
 					where vn.node = n.id and
 					n.name = "%s" """ % (host))
-				if rows == 1:
+				if nrows == 1:
 					physnode = 0
 
 			if physnode:
