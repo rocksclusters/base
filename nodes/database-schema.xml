@@ -17,6 +17,11 @@
 
   <changelog>
   $Log: database-schema.xml,v $
+  Revision 1.31  2009/02/14 00:04:29  bruno
+  there are only three boot states: os, run and install.
+
+  really only two (os = run) but we'll keep 'os' as a legacy state for now.
+
   Revision 1.30  2009/02/10 20:12:58  mjk
   solaris -> sunos
 
@@ -479,7 +484,7 @@ DROP TABLE IF EXISTS boot;
 CREATE TABLE boot (
   ID            int(11) NOT NULL auto_increment,
   Node          int(11) NOT NULL default '0',
-  Action        varchar(256) default NULL,
+  Action        enum ('install', 'os', 'run'),
   PRIMARY KEY (ID)
 ) TYPE=MyISAM;
 
