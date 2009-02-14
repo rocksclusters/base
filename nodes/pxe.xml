@@ -13,6 +13,9 @@ Provides pre-execution environment (PXE) support for frontend machines.
 
 <changelog>
 $Log: pxe.xml,v $
+Revision 1.23  2009/02/14 00:03:23  bruno
+'rocks add host bootaction' is dead. all bootactions are global
+
 Revision 1.22  2009/01/23 23:19:31  mjk
 tweaks on the entities
 
@@ -222,28 +225,28 @@ cp /usr/lib/syslinux/pxelinux.0 /tftpboot/pxelinux/
 <post>
 
 <!-- now setup the global PXE boot default actions -->
-/opt/rocks/bin/rocks add host bootaction action="install" \
+/opt/rocks/bin/rocks add bootaction action="install" \
 	kernel="vmlinuz-&version;-&arch;" \
 	ramdisk="initrd.img-&version;-&arch;" \
 	args="ks ramdisk_size=150000 lang= devfs=nomount pxe kssendmac selinux=0 noipv6"
 
-/opt/rocks/bin/rocks add host bootaction action="os" \
+/opt/rocks/bin/rocks add bootaction action="os" \
 	kernel="localboot 0"
 
-/opt/rocks/bin/rocks add host bootaction action="memtest" \
+/opt/rocks/bin/rocks add bootaction action="memtest" \
 	kernel="kernel memtest"
 
-/opt/rocks/bin/rocks add host bootaction action="install headless" \
+/opt/rocks/bin/rocks add bootaction action="install headless" \
 	kernel="vmlinuz-&version;-&arch;" \
 	ramdisk="initrd.img-&version;-&arch;" \
 	args="ks ramdisk_size=150000 lang= devfs=nomount pxe kssendmac selinux=0 noipv6 headless vnc"
 
-/opt/rocks/bin/rocks add host bootaction action="rescue" \
+/opt/rocks/bin/rocks add bootaction action="rescue" \
 	kernel="vmlinuz-&version;-&arch;" \
 	ramdisk="initrd.img-&version;-&arch;" \
 	args="ks ramdisk_size=150000 lang= devfs=nomount pxe kssendmac selinux=0 noipv6 rescue"
 
-/opt/rocks/bin/rocks add host bootaction action="pxeflash" \
+/opt/rocks/bin/rocks add bootaction action="pxeflash" \
 	kernel="kernel memdisk bigraw" \
 	ramdisk="pxeflash.img" \
 	args="keeppxe"
