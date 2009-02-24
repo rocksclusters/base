@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.6 2009/02/09 00:29:04 bruno Exp $
+# $Id: __init__.py,v 1.7 2009/02/24 00:53:04 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,12 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.7  2009/02/24 00:53:04  bruno
+# add the flag 'managed_only' to getHostnames(). if managed_only is true and
+# if no host names are provide to getHostnames(), then only machines that
+# traditionally have ssh login shells will be in the list returned from
+# getHostnames()
+#
 # Revision 1.6  2009/02/09 00:29:04  bruno
 # parallelize 'rocks sync host network'
 #
@@ -104,7 +110,7 @@ class Command(rocks.commands.sync.host.command):
 	"""
 
 	def run(self, params, args):
-		hosts = self.getHostnames(args)
+		hosts = self.getHostnames(args, managed_only=1)
 
 		threads = []
 		for host in hosts:

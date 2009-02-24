@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.62 2009/02/10 20:11:59 mjk Exp $
+# $Id: __init__.py,v 1.63 2009/02/24 00:53:04 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,12 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.63  2009/02/24 00:53:04  bruno
+# add the flag 'managed_only' to getHostnames(). if managed_only is true and
+# if no host names are provide to getHostnames(), then only machines that
+# traditionally have ssh login shells will be in the list returned from
+# getHostnames()
+#
 # Revision 1.62  2009/02/10 20:11:59  mjk
 # solaris -> sunos
 #
@@ -506,7 +512,7 @@ class RollArgumentProcessor:
 class HostArgumentProcessor:
 	"""An Interface class to add the ability to process host arguments."""
 	
-	def getHostnames(self, names=None):
+	def getHostnames(self, names=None, managed_only=0):
 		"""Expands the given list of names to valid cluster 
 		hostnames.  A name can be a hostname, IP address, our
 		group (membership name), or a MAC address. Any combination of
@@ -519,6 +525,12 @@ class HostArgumentProcessor:
 		rackN - All non-frontend host in rack N
 		appliancename - All appliances of a given type (e.g. compute)
 		select ... - an SQL statement that returns a list of hosts
+
+		The 'managed_only' flag means that the list of hosts will
+		*not* contain hosts that traditionally don't have ssh login
+		shells (for example, the following appliances usually don't
+		have ssh login access: 'Ethernet Switches', 'Power Units',
+		'Remote Management')
 		"""
 		
 		# Handle the simple case first and just return a complete
@@ -527,7 +539,17 @@ class HostArgumentProcessor:
 		
 		list = []
 		if not names:
-			self.db.execute('select name from nodes')
+			if managed_only:
+				query = """select n.name from nodes n,
+					memberships m where
+					n.membership = m.id and
+					(m.name != "Ethernet Switches" and
+					m.name != "Power Units" and
+					m.name != "Remote Management") """
+			else:
+				query = 'select name from nodes'
+
+			self.db.execute(query)
 			for host, in self.db.fetchall():
 				list.append(host)
 			return list

@@ -1,4 +1,4 @@
-# $Id: plugin_411.py,v 1.6 2008/10/18 00:55:58 mjk Exp $
+# $Id: plugin_411.py,v 1.7 2009/02/24 00:53:04 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,12 @@
 # @Copyright@
 #
 # $Log: plugin_411.py,v $
+# Revision 1.7  2009/02/24 00:53:04  bruno
+# add the flag 'managed_only' to getHostnames(). if managed_only is true and
+# if no host names are provide to getHostnames(), then only machines that
+# traditionally have ssh login shells will be in the list returned from
+# getHostnames()
+#
 # Revision 1.6  2008/10/18 00:55:58  mjk
 # copyright 5.1
 #
@@ -85,7 +91,7 @@
 import os
 import rocks.commands
 
-class Plugin(rocks.commands.Plugin):
+class Plugin(rocks.commands.Plugin, rocks.commands.HostArgumentProcessor):
 	"""Force a 411 update and re-load autofs on all nodes"""
 
 	def provides(self):
@@ -104,8 +110,10 @@ class Plugin(rocks.commands.Plugin):
 		#
 		# restart autofs on all known hosts
 		#
-		cmd = '/opt/rocks/bin/tentakel "service autofs reload"'
-                for line in os.popen(cmd).readlines():
-                        self.owner.addText(line)
+		hosts = self.getHostnames(managed_only=1)
 		
+		self.owner.command('run.host',
+			hosts + [ ' "/sbin/service autofs stop" '])
+		self.owner.command('run.host',
+			hosts + [ ' "/sbin/service autofs start" '])
 
