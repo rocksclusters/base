@@ -294,7 +294,6 @@ class AnacondaYumRepo(YumRepository):
                     raise yum.Errors.RepoError, errstr
                     
         else:
-            log.info("ROCKS: timeout %f" % self.timeout)
             try:
                 # ROCKS
                 # result = self.grab.urlgrab(relative, local,
