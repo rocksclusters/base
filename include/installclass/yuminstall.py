@@ -294,7 +294,22 @@ class AnacondaYumRepo(YumRepository):
                     raise yum.Errors.RepoError, errstr
                     
         else:
+            log.info("ROCKS: timeout %f" % self.timeout)
             try:
+                # ROCKS
+                # result = self.grab.urlgrab(relative, local,
+                                           # keepalive = False,
+                                           # text = text,
+                                           # range = (start, end),
+                                           # copy_local=copy_local,
+                                           # reget = reget,
+                                           # checkfunc=checkfunc,
+                                           # http_headers=headers,
+                                           # )
+
+                #
+                # add 'timeout' parameter
+                #
                 result = self.grab.urlgrab(relative, local,
                                            keepalive = False,
                                            text = text,
@@ -303,8 +318,16 @@ class AnacondaYumRepo(YumRepository):
                                            reget = reget,
                                            checkfunc=checkfunc,
                                            http_headers=headers,
+                                           timeout=self.timeout,
                                            )
+                # ROCKS
+
             except URLGrabError, e:
+                # ROCKS
+                # slowly increase the timeout by 30 second increments
+                self.timeout += 30.0
+                # ROCKS
+
                 errstr = "failure: %s from %s: %s" % (relative, self.id, e)
                 if e.errno == 256:
                     raise NoMoreMirrorsRepoError, errstr
