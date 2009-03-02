@@ -1,5 +1,5 @@
 # --------------------------------------------------- -*- Makefile -*- --
-# $Id: PyXML.mk,v 1.7 2008/10/18 00:56:00 mjk Exp $
+# $Id: Makefile,v 1.1 2009/03/02 23:41:25 mjk Exp $
 #
 # @Copyright@
 # 
@@ -54,60 +54,32 @@
 # 
 # @Copyright@
 #
-# $Log: PyXML.mk,v $
-# Revision 1.7  2008/10/18 00:56:00  mjk
-# copyright 5.1
-#
-# Revision 1.6  2008/03/06 23:41:43  mjk
-# copyright storm on
-#
-# Revision 1.5  2007/06/23 04:03:23  mjk
-# mars hill copyright
-#
-# Revision 1.4  2006/12/06 00:20:21  anoop
-# All the Makefiles get a bit of an overhaul
-#
-# $(INSTALL) is used instead of install
-# $(MAKE) is used instead of make or gmake
-# $(TAR) is used instead of tar of gtar
-#
-# The mode argument for the $(INSTALL) command needs to be numeric and
-# follow the convention of
-#
-# install [-cs] [-g group] [-m mode] [-o owner] file ...  destination
-# install  -d   [-g group] [-m mode] [-o owner] dir
-#
-# This is portable across solaris and linux.
-#
-# Finally "tar xzf $TARFILE.tar.gz" is replaced with "gunzip -c $TARFILE.tar.gz | tar -xf -"
-# This is again done for portability.
-#
-# This needs to be the convention from now on.
-#
-# Revision 1.3  2006/09/11 22:47:14  mjk
-# monkey face copyright
-#
-# Revision 1.2  2006/08/10 00:09:36  mjk
-# 4.2 copyright
-#
-# Revision 1.1  2006/01/16 23:14:06  mjk
-# - more source built foundations
-# - scipy stuff is here now (may move to hpc roll)
+# $Log: Makefile,v $
+# Revision 1.1  2009/03/02 23:41:25  mjk
+# *** empty log message ***
 #
 
-build::
-	gunzip -c PyXML-0.8.4.tar.gz | $(TAR) -xf -
+PKGROOT		= /opt/rocks
+REDHAT.ROOT     = $(CURDIR)/../../
+ROCKSROOT       = ../../../../..
+-include $(ROCKSROOT)/etc/Rules.mk
+include Rules.mk
+
+
+build:
+	gunzip -c PyXML-$(VERSION).tar.gz | $(TAR) -xf -
+	-cd patch-files && find . -type f | grep -v CVS | cpio -pduv ../
 	(								\
-		cd PyXML-0.8.4;						\
+		cd PyXML-$(VERSION);					\
 		$(PY.PATH) setup.py build;				\
 	)
-	
+
 install::
+	mkdir -p $(ROOT)/$(PKGROOT)
 	(								\
-		cd PyXML-0.8.4;						\
+		cd PyXML-$(VERSION);					\
 		$(PY.PATH) setup.py install --root=$(ROOT);		\
 	)
 
-
 clean::
-	rm -rf PyXML-0.8.4
+	rm -rf PyXML-$(VERSION)
