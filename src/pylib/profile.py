@@ -1,6 +1,6 @@
 #! /opt/rocks/bin/python
 #
-# $Id: profile.py,v 1.25 2009/02/03 20:55:32 bruno Exp $
+# $Id: profile.py,v 1.26 2009/03/03 00:30:29 mjk Exp $
 #
 # @Copyright@
 # 
@@ -56,6 +56,9 @@
 # @Copyright@
 #
 # $Log: profile.py,v $
+# Revision 1.26  2009/03/03 00:30:29  mjk
+# more attr stuff
+#
 # Revision 1.25  2009/02/03 20:55:32  bruno
 # some more ROCKSDEBUG fixes
 #
@@ -343,12 +346,24 @@ class GraphHandler(handler.ContentHandler,
 				self.entities, self.attributes, eval)
 			parser.setContentHandler(handler)
 			parser.feed(handler.getXMLHeader())
+
 			for line in fin.readlines():
-				if line.find('<?xml') == -1:
-					if os.environ.has_key('ROCKSDEBUG'):
-						sys.stderr.write('[parse]%s' %
-							line)
-					parser.feed(line)
+			
+				# Some of the node files might have the <?xml
+				# document header.  Since we are replacing
+				# the XML header with our own (which includes
+				# the entities) we need to skip it.
+				
+				if line.find('<?xml') != -1:
+					continue
+					
+				# Send the XML to stderr for debugging before
+				# we parse it.
+				
+				if os.environ.has_key('ROCKSDEBUG'):
+					sys.stderr.write('[parse1]%s' % line)
+				parser.feed(line)
+				
 			fin.close()
 			
 			# 2nd Pass
@@ -364,6 +379,8 @@ class GraphHandler(handler.ContentHandler,
 			xml = handler.getXML()
 			handler = Pass2NodeHandler(node, self.attributes)
 			parser.setContentHandler(handler)
+			if os.environ.has_key('ROCKSDEBUG'):
+				sys.stderr.write('[parse2]%s' % xml)
 			parser.feed(xml)
 
 			# Attach the final XML to the node object so we can
@@ -609,10 +626,6 @@ class Pass1NodeHandler(handler.ContentHandler,
 		self.filename	= filename
 		self.stripText  = 0
 
-	def resolveEntity(self, a, b):
-		print 'resolveEntity', a, b
-		return None
-	
 	def startElement_description(self, name, attrs):
 		self.stripText = 1
 
