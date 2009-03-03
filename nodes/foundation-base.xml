@@ -16,6 +16,9 @@
 
 	<changelog>
 	$Log: foundation-base.xml,v $
+	Revision 1.15  2009/03/03 22:20:29  mjk
+	added python-xml (own package now)
+	
 	Revision 1.14  2008/10/18 00:55:45  mjk
 	copyright 5.1
 	
@@ -63,6 +66,7 @@
 	<package>foundation-redhat</package>
 	<package>foundation-python</package>
 	<package>foundation-python-extras</package>
+	<package>foundation-python-xml</package>
 	<package>foundation-perl</package>
 	<package>foundation-perl-tk</package>
 	<package>foundation-graphviz</package>
