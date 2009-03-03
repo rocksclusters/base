@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.36 2009/02/10 20:11:20 mjk Exp $
+# $Id: __init__.py,v 1.37 2009/03/03 20:45:28 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.37  2009/03/03 20:45:28  bruno
+# gooder english
+#
 # Revision 1.36  2009/02/10 20:11:20  mjk
 # os attr stuff for anoop
 #
@@ -361,7 +364,7 @@ class Command(rocks.commands.list.command):
 
 		graphDir = os.path.join('graphs', attrs['graph'])
 		if not os.path.exists(graphDir):
-			print 'error - not such graph', graphDir
+			print 'error - no such graph', graphDir
 			sys.exit(-1)
 
 		for file in os.listdir(graphDir):
