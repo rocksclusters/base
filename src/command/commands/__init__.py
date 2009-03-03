@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.63 2009/02/24 00:53:04 bruno Exp $
+# $Id: __init__.py,v 1.64 2009/03/03 21:57:57 mjk Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.64  2009/03/03 21:57:57  mjk
+# pylib style db connections
+#
 # Revision 1.63  2009/02/24 00:53:04  bruno
 # add the flag 'managed_only' to getHostnames(). if managed_only is true and
 # if no host names are provide to getHostnames(), then only machines that
@@ -951,8 +954,12 @@ class DatabaseConnection:
 	def __init__(self, db):
 		# self.database : object returned from orginal connect call
 		# self.link	: database cursor used by everyone else
-		self.database	= db
-		self.link	= db.cursor()
+		if db:
+			self.database = db
+			self.link     = db.cursor()
+		else:
+			self.database = None
+			self.link     = None
 		
 	def execute(self, command):
 		if self.link:
@@ -1030,7 +1037,7 @@ class DatabaseConnection:
 		# This should be its own SQL but cheat until the code
 		# stabilizes.
 		
-		self.getHostAttrs(host).get('key')
+		self.getHostAttrs(host).get(key)
 
 		
 
@@ -1154,10 +1161,9 @@ class Command:
 		"""Creates a DatabaseConnection for the RocksCommand to use.
 		This is called for all commands, including those that do not
 		require a database connection."""
-		if database:
-			self.db = DatabaseConnection(database)
-		else:
-			self.db = None
+
+		self.db = DatabaseConnection(database)
+
 		self.text = ''
 		
 		self.output = []
