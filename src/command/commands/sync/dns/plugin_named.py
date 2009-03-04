@@ -1,4 +1,4 @@
-# $Id: plugin_named.py,v 1.3 2008/10/18 00:55:58 mjk Exp $
+# $Id: plugin_named.py,v 1.4 2009/03/04 21:16:54 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: plugin_named.py,v $
+# Revision 1.4  2009/03/04 21:16:54  bruno
+# replace getGlobalVar with getHostAttr
+#
 # Revision 1.3  2008/10/18 00:55:58  mjk
 # copyright 5.1
 #
@@ -66,7 +69,6 @@
 #
 
 import os
-import string
 import rocks.commands
 
 config_template = """options {
@@ -148,24 +150,24 @@ class Plugin(rocks.commands.Plugin):
 		#return ['dns']
 
 	def run(self, args):
-		domain = self.db.getGlobalVar('Kickstart', 'PrivateDNSDomain')
-		nameservers = self.db.getGlobalVar('Kickstart',
-			'PublicDNSServers')
-
-		file = open('/etc/named.conf', 'w')
+		domain = self.db.getHostAttr('localhost',
+			'Kickstart_PrivateDNSDomain')
+		nameservers = self.db.getHostAttr('localhost',
+			'Kickstart_PublicDNSServers')
 
 		ns = ''
-		if len(string.strip(nameservers)) > 0:
-			ns = 'forwarders { %s; };' % \
-				string.join(string.split(nameservers, ','), ';')
+		n = nameservers.strip()
+		if len(n) > 0:
+			ns = 'forwarders { %s; };' % ';'.join(n.split(','))
 
 		zone = ''
 		for subnet in self.owner.getSubnets():
 			subnet.reverse()
-			zonename = string.join(subnet, '.')
+			zonename = '.'.join(subnet)
 
 			zone += zone_template % (zonename, zonename)
 
+		file = open('/etc/named.conf', 'w')
 		file.write(config_template % (ns, domain, zone))
 		file.close()
 
