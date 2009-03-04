@@ -1,5 +1,5 @@
 #
-# $Id: __init__.py,v 1.7 2009/02/11 19:26:01 bruno Exp $
+# $Id: __init__.py,v 1.8 2009/03/04 20:15:31 bruno Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.8  2009/03/04 20:15:31  bruno
+# moved 'dbreport hosts' and 'dbreport resolv' into the command line
+#
 # Revision 1.7  2009/02/11 19:26:01  bruno
 # put quotes around the group id. thanks to Kaizaad Bilimorya for the fix.
 #
@@ -98,7 +101,8 @@ import string
 import rocks.commands
 import rocks.ip
 
-class Command(rocks.commands.report.host.command):
+class Command(rocks.commands.HostArgumentProcessor,
+	rocks.commands.report.command):
 	"""
 	Output the DHCP server configuration file for a specific host.
 

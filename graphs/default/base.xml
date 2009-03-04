@@ -4,6 +4,9 @@
 
 	<changelog>
 	$Log: base.xml,v $
+	Revision 1.46  2009/03/04 20:15:30  bruno
+	moved 'dbreport hosts' and 'dbreport resolv' into the command line
+	
 	Revision 1.45  2009/02/11 19:50:34  bruno
 	nuke unneeded nodes
 	
@@ -208,7 +211,6 @@
 		<tail>networking-server</tail>
 		<tail>dhcp-server</tail>
 		<tail>dns-server</tail>
-		<tail>resolv</tail>
 	</order>
 
 	<order head="grub">

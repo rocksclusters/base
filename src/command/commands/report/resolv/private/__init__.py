@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.2 2009/03/04 20:15:31 bruno Exp $
+# $Id: __init__.py,v 1.1 2009/03/04 20:15:31 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,45 +54,26 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
-# Revision 1.2  2009/03/04 20:15:31  bruno
+# Revision 1.1  2009/03/04 20:15:31  bruno
 # moved 'dbreport hosts' and 'dbreport resolv' into the command line
 #
-# Revision 1.1  2009/03/03 22:40:32  mjk
-# - remove list.host.sitexml
-# - added  report.host.attr
 #
 
-import sys
-import socket
 import rocks.commands
-import string
 
-class Command(rocks.commands.HostArgumentProcessor,
-	rocks.commands.report.command):
+class Command(rocks.commands.report.resolv.command):
 	"""
-	Report the set of attributes for hosts.
+	Report for /etc/resolv.conf for private side nodes.
 
-	<arg optional='1' type='string' name='host'>
-	Host name of machine
-	</arg>
-	
-	<example cmd='report host attr compute-0-0'>
-	Report the attributes for compute-0-0.
+	<example cmd='report resolv private'>
+	Outputs data for /etc/resolv.conf for compute nodes.
 	</example>
 	"""
 
-	def run(self, params, args):
+	def run(self, param, args):
+		"""Defines the resolv.conf for private side nodes."""
 
-		self.beginOutput()
-		
-		for host in self.getHostnames(args):
-			attrs = self.db.getHostAttrs(host)
-
-			keys = attrs.keys()
-			keys.sort()
-			for key in keys:
-				self.addOutput(host,
-					'%s:%s' % (key, attrs[key]))
-
-		self.endOutput(padChar='')
+		self.searchdomain()
+		self.nameservers(self.db.getHostAttr('localhost',
+			'Kickstart_PrivateDNSServers'))
 

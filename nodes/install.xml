@@ -18,6 +18,9 @@
 
   <changelog>
   $Log: install.xml,v $
+  Revision 1.24  2009/03/04 20:15:30  bruno
+  moved 'dbreport hosts' and 'dbreport resolv' into the command line
+
   Revision 1.23  2009/01/23 21:50:23  bruno
   var tags converted to entities
 
@@ -248,7 +251,7 @@ fi
 
 
 <!-- in order to automount, the hostname must be in /etc/hosts -->
-<file name="/etc/hosts" expr="/opt/rocks/bin/dbreport hosts"/>
+<file name="/etc/hosts" expr="/opt/rocks/bin/rocks report host"/>
 
 <!-- set up the install directory so it can be served by the web -->
 (

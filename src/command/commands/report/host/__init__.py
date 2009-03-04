@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.3 2008/10/18 00:55:56 mjk Exp $
+# $Id: __init__.py,v 1.4 2009/03/04 20:15:31 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.4  2009/03/04 20:15:31  bruno
+# moved 'dbreport hosts' and 'dbreport resolv' into the command line
+#
 # Revision 1.3  2008/10/18 00:55:56  mjk
 # copyright 5.1
 #
@@ -67,7 +70,136 @@
 #
 
 import rocks.commands
+import rocks.ip
+import os.path
 
-class command(rocks.commands.HostArgumentProcessor,
+class Command(rocks.commands.HostArgumentProcessor,
 		rocks.commands.report.command):
-	pass
+	"""
+	Report the host to IP address mapping in the form suitable for
+	/etc/hosts.
+
+	<example cmd='report host'>
+	Outputs data for /etc/hosts.
+	</example>
+	"""
+
+	def hostlocal(self, hostsFile):
+
+		# Allow easy addition of extra hosts from a local
+		# file.  This change was submitted as a patch from
+		# Gouichi Iisaka (HP Japan).
+
+		if os.path.isfile(hostsFile):
+			print '# import from %s' % hostsFile
+			file = open(hostsFile, 'r')
+			for line in file.readlines():
+				print line[:-1]
+			file.close()
+
+
+	def extranics(self):
+		self.db.execute("""select networks.IP, networks.Name from
+			networks,subnets where subnets.name != "private" and
+			networks.subnet = subnets.id and
+			networks.ip is not NULL order by networks.IP""")
+
+		nodes=[]
+		for row in self.db.fetchall():
+			node = rocks.util.Struct()
+			node.address	= row[0]
+			node.name	= [row[1],]
+			nodes.append(node)
+
+		for node in nodes:
+			if node.name:
+				print '%s\t%s' % (node.address,
+					' '.join(node.name))
+
+
+	def hostlines(self, subnet, netmask):
+
+		ip  = rocks.ip.IPGenerator(subnet, netmask)
+
+		domain = self.db.getHostAttr('localhost',
+			'Kickstart_PrivateDNSDomain')
+
+		self.db.execute('select n.id, n.rack, n.rank, a.name '
+			     'from nodes n, appliances a, memberships m '
+			     'where n.membership=m.id and '
+			     'm.appliance=a.id and n.site=0 '
+			     'order by n.id')
+
+		nodes=[]
+		for row in self.db.fetchall():
+			node = rocks.util.Struct()
+			node.id		= row[0]
+			node.rack	= row[1]
+			node.rank	= row[2]
+			node.appname	= row[3]
+			node.warning    = None
+
+			self.db.execute("""select networks.name, networks.ip
+				from networks, subnets where
+				networks.node = %d and
+				subnets.name = "private" and
+				networks.subnet = subnets.id and
+				networks.device not like 'vlan%%' """ %
+				(node.id))
+
+			row = self.db.fetchone()
+			if row == None:
+				continue
+
+			nodes.append(node)
+			node.name = [row[0],]
+			node.address = row[1]
+
+			if not node.address:
+				node.address = ip.dec()
+
+			name  = '%s-%d-%d' % (node.appname, node.rack,
+				node.rank)
+
+			# If there is no name in the database, use the
+			# generated one.
+
+			if not node.name[0]:
+				node.name = [name,]
+			
+			if node.name[0] != name:
+				node.warning = 'originally %s' % name
+
+		# Append names from the Aliases table.
+		
+		for node in nodes:
+			self.db.execute('select name from aliases '
+				     'where node = %d' % (node.id))
+			for alias, in self.db.fetchall():
+				node.name.append(alias)
+
+		# Format the data
+		
+		for node in nodes:
+			fqdn = "%s.%s" % (node.name[0], domain)
+			entry = '%s\t%s %s' % (node.address, fqdn,
+				' '.join(node.name))
+			if node.warning:
+				entry = entry + ' # ' + node.warning
+			print entry
+
+      
+	def run(self, param, args):
+		print '127.0.0.1\tlocalhost.localdomain\tlocalhost' 
+		
+		# Build the static addresses
+		
+		netmask = self.db.getHostAttr('localhost',
+			'Kickstart_PrivateNetmask')
+		network = self.db.getHostAttr('localhost',
+			'Kickstart_PrivateNetwork')
+
+		self.hostlines(network, netmask)
+		self.extranics()
+		self.hostlocal('/etc/hosts.local')
+

@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.2 2009/03/04 20:15:31 bruno Exp $
+# $Id: __init__.py,v 1.1 2009/03/04 20:15:31 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,45 +54,49 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
-# Revision 1.2  2009/03/04 20:15:31  bruno
+# Revision 1.1  2009/03/04 20:15:31  bruno
 # moved 'dbreport hosts' and 'dbreport resolv' into the command line
 #
-# Revision 1.1  2009/03/03 22:40:32  mjk
-# - remove list.host.sitexml
-# - added  report.host.attr
 #
 
-import sys
-import socket
 import rocks.commands
-import string
 
-class Command(rocks.commands.HostArgumentProcessor,
-	rocks.commands.report.command):
+class command(rocks.commands.HostArgumentProcessor,
+		rocks.commands.report.command):
+
+	def searchdomain(self):
+		"""Prints the domain and search entries."""
+
+		print 'search', \
+			self.db.getHostAttr('localhost',
+				'Kickstart_PrivateDNSDomain'), \
+			self.db.getHostAttr('localhost',
+				'Kickstart_PublicDNSDomain')
+		
+
+	def nameservers(self, servers):
+		"""Prints a comma-separated list of name servers
+		in the resolv.conf style."""
+
+		if servers:
+			for server in servers.split(','):
+				print 'nameserver', server
+
+
+class Command(command):
 	"""
-	Report the set of attributes for hosts.
+	Report for /etc/resolv.conf for public side nodes.
 
-	<arg optional='1' type='string' name='host'>
-	Host name of machine
-	</arg>
-	
-	<example cmd='report host attr compute-0-0'>
-	Report the attributes for compute-0-0.
+	<example cmd='report resolv'>
+	Outputs data for /etc/resolv.conf for the frontend.
 	</example>
 	"""
 
-	def run(self, params, args):
-
-		self.beginOutput()
+	def run(self, param, args):
+		"""Defines the resolv.conf for public side nodes."""
 		
-		for host in self.getHostnames(args):
-			attrs = self.db.getHostAttrs(host)
-
-			keys = attrs.keys()
-			keys.sort()
-			for key in keys:
-				self.addOutput(host,
-					'%s:%s' % (key, attrs[key]))
-
-		self.endOutput(padChar='')
+		self.searchdomain()
+		print 'nameserver 127.0.0.1'
+		self.nameservers(self.db.getHostAttr('localhost',
+			'Kickstart_PublicDNSServers'))
 

@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.2 2008/10/18 00:55:56 mjk Exp $
+# $Id: __init__.py,v 1.3 2009/03/04 20:15:31 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.3  2009/03/04 20:15:31  bruno
+# moved 'dbreport hosts' and 'dbreport resolv' into the command line
+#
 # Revision 1.2  2008/10/18 00:55:56  mjk
 # copyright 5.1
 #
@@ -65,7 +68,8 @@
 
 import rocks.commands
 
-class Command(rocks.commands.report.host.command):
+class Command(rocks.commands.HostArgumentProcessor,
+	rocks.commands.report.command):
 	"""
 	Output the network configuration file for a host's interface.
 
