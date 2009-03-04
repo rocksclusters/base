@@ -5,8 +5,7 @@
 
 <description>
 Probes the ethernet hardware on the frontend and inserts information into
-the database. This information can be used subsequently with a 
-dbreport ifcfg modules frontend
+the database.
 </description>
 
         <copyright>
@@ -16,6 +15,9 @@ dbreport ifcfg modules frontend
 
 <changelog>
 $Log: ethers-server.xml,v $
+Revision 1.6  2009/03/04 23:31:09  bruno
+nuked 'dbreport ifcfg'
+
 Revision 1.5  2008/10/18 00:55:45  mjk
 copyright 5.1
 

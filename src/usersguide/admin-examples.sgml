@@ -1,5 +1,5 @@
 <!-- 
-$Id: admin-examples.sgml,v 1.9 2008/12/15 22:27:22 bruno Exp $
+$Id: admin-examples.sgml,v 1.10 2009/03/04 23:31:09 bruno Exp $
 
 Administration guide
 
@@ -7,6 +7,9 @@ Administration guide
 @Copyright@
 
 $Log: admin-examples.sgml,v $
+Revision 1.10  2009/03/04 23:31:09  bruno
+nuked 'dbreport ifcfg'
+
 Revision 1.9  2008/12/15 22:27:22  bruno
 convert pxeboot and pxeaction tables to boot and bootaction tables.
 
@@ -384,35 +387,6 @@ configuration files (like dhcpd). Reinstalling a node will apply these types of 
 </para>
 </note>
 
-<section><title>Swapping Interfaces on the Frontend</title>
-<para> The previous section described how to swap two interfaces in the database. For compute nodes it is easiest to simply reinstall nodes for the new
-configuration to be applied properly. For frontends, this is not possible
-and you should apply the following procedure after you have updated
-information in the database. This will recreate the appropriate files.
-</para>
-
-<warning>
-<para>
-Before performing this procedure, you must be logged into the frontend's
-console.
-Then, you must shutdown the frontend's network by executing:
-
-<screen>
-# service network stop
-</screen>
-
-</para>
-</warning>
-
-<screen>
-# sed -i -e '/alias eth/d' -e '/^#/d' /etc/modprobe.conf
-# dbreport ifcfg modules jeebs >> /etc/modprobe.conf
-# dbreport ifcfg eth0 jeebs > /etc/sysconfig/network-scripts/ifcfg-eth0
-# dbreport ifcfg eth1 jeebs > /etc/sysconfig/network-scripts/ifcfg-eth1
-
-# shutdown -r now
-</screen>
-</section>
 </section>
 
 <!-- ####################################### -->

@@ -18,6 +18,9 @@
 
 <changelog>
 $Log: ethers-server-postshell.xml,v $
+Revision 1.9  2009/03/04 23:31:09  bruno
+nuked 'dbreport ifcfg'
+
 Revision 1.8  2009/01/23 21:50:23  bruno
 var tags converted to entities
 
@@ -52,24 +55,7 @@ based on what is in the networks table.
 
 <post>
 
-<!-- Regenerate the ifcfg-device files -->
-NETIFS=`/opt/rocks/bin/rocks list host interface jeebs  | /bin/sed -e '1d' | /bin/awk '{print $2}'`
-
-
-for NETIF in $NETIFS; do 
-	MYHOST=&Kickstart_PrivateHostname;
-	<file name="/etc/sysconfig/network-scripts/ifcfg-$NETIF"  
-	expr="/opt/rocks/bin/dbreport ifcfg $NETIF $MYHOST"/>
-done
-
-<!-- Regenerate modprobe.conf -->
-for NETIF in $NETIFS; do
-	sed -i "/alias $NETIF/d" /etc/modprobe.conf
-done
-
-MYHOST=&Kickstart_PrivateHostname;
-<file name="/etc/modprobe.conf" mode="append" 
-    expr="/opt/rocks/bin/dbreport ifcfg modules $MYHOST" />
+<!-- place holder -->
 
 </post>
 
