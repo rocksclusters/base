@@ -16,6 +16,9 @@
 
   <changelog>
   $Log: database-data.xml,v $
+  Revision 1.33  2009/03/04 19:06:29  bruno
+  put site attrs in database
+
   Revision 1.32  2009/02/09 23:30:36  bruno
   use long passwords
 
@@ -313,29 +316,44 @@
   </changelog>
 
 
-<post>
+<post arg="--nochroot">
 
-<file name="/tmp/data.sql" perms="0400">
+cp /tmp/site.attrs /mnt/sysimage/tmp
+chmod 400 /mnt/sysimage/tmp/site.attrs
+cp /tmp/rolls.xml /mnt/sysimage/tmp
 
-<eval shell="python">
-import os
-import string
+</post>
 
-# Populate app_globals with all appropriate environment vars.
-for i in os.environ.keys():
-	key = string.split(i, "_")
-	if key[0] in ("Kickstart","Info"):
-		print "insert into app_globals (service, component, value)" ,
-		print "values (\"%s\", \"%s\", \"%s\");" % (key[0], key[1], \
-			 os.environ[i])
 
-</eval>
+<post arg="--interpreter /opt/rocks/bin/python">
 
-insert into app_globals (service, component, value) values
-	('Info', 'Born', NOW());
-</file>
+import os.path
 
-/usr/bin/mysql cluster &lt; /tmp/data.sql
+if os.path.exists('/tmp/site.attrs'):
+	file = open('/tmp/site.attrs', 'r')
+	for line in file.readlines():
+		l = line.split(':', 1)
+		if len(l) == 2:
+			#
+			# key/value pairs
+			#
+			value = ''
+			for i in l[1][:-1]:
+				if i == "'":
+					value += "'"
+					value += '"'
+					value += "\\'"
+					value += '"'
+					value += "'"
+				else:
+					value += i
+			
+			os.system("/opt/rocks/bin/rocks set attr '%s' '%s'" %
+				(l[0], value))
+	file.close()
+
+</post>
+
 
 <!-- insert the base distributions into the database -->
 /opt/rocks/bin/rocks add distribution rocks-dist 

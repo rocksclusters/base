@@ -15,6 +15,9 @@ Populates the frontend database with initially selected rolls.
 
   <changelog>
   $Log: insert-rolls.xml,v $
+  Revision 1.13  2009/03/04 19:06:29  bruno
+  put site attrs in database
+
   Revision 1.12  2009/03/04 01:32:12  bruno
   attributes work for frontend installs
 
@@ -109,13 +112,6 @@ fi
 
 rm -f /tmp/insert-rolls.sql
 
-</post>
-
-
-<post arg="--nochroot">
-cp /tmp/site.attrs /mnt/sysimage/tmp
-chmod 400 /mnt/sysimage/tmp/site.attrs
-cp /tmp/rolls.xml /mnt/sysimage/tmp
 </post>
 
 
