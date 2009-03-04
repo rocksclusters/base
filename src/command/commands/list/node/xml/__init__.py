@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.37 2009/03/03 20:45:28 bruno Exp $
+# $Id: __init__.py,v 1.38 2009/03/04 00:18:00 mjk Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.38  2009/03/04 00:18:00  mjk
+# default to localhost os and arch
+#
 # Revision 1.37  2009/03/03 20:45:28  bruno
 # gooder english
 #
@@ -306,7 +309,11 @@ class Command(rocks.commands.list.command):
 			attrs = eval(attributes)
 		else:
 			attrs = {}
-			attrs['os']   = self.os
+
+		if 'os' not in attrs:
+			attrs['os'] = self.os
+
+		if 'arch' not in attrs:
 			attrs['arch'] = self.arch
 			
 		if 'hostname' not in attrs:
