@@ -1,4 +1,4 @@
-# $Id: plugin_dns.py,v 1.9 2008/10/18 00:55:58 mjk Exp $
+# $Id: plugin_dns.py,v 1.10 2009/03/04 21:31:44 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: plugin_dns.py,v $
+# Revision 1.10  2009/03/04 21:31:44  bruno
+# convert all getGlobalVar to getHostAttr
+#
 # Revision 1.9  2008/10/18 00:55:58  mjk
 # copyright 5.1
 #
@@ -299,7 +302,8 @@ class Plugin(rocks.commands.Plugin):
 
 	def run(self, args):
 		serial = int(time.time())
-		self.dn = self.db.getGlobalVar('Kickstart', 'PrivateDNSDomain')
+		self.dn = self.db.getHostAttr('localhost',
+			'Kickstart_PrivateDNSDomain')
 
 		self.writeForward(serial)
 		self.writeReverse(serial)

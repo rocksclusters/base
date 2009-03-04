@@ -1,4 +1,4 @@
-# $Id: plugin_fixnewusers.py,v 1.8 2008/10/21 18:14:36 bruno Exp $
+# $Id: plugin_fixnewusers.py,v 1.9 2009/03/04 21:31:44 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: plugin_fixnewusers.py,v $
+# Revision 1.9  2009/03/04 21:31:44  bruno
+# convert all getGlobalVar to getHostAttr
+#
 # Revision 1.8  2008/10/21 18:14:36  bruno
 # add jon forrest's patch to easily incorporate file servers to serve user
 # home directories
@@ -124,16 +127,16 @@ class Plugin(rocks.commands.Plugin):
 
 		# if there is a file server specified in the database
 		# use it. otherwise, use the default.
-		hostname = self.db.getGlobalVar('Info', 'HomeDirSrv')
+		hostname = self.db.getHostAttr('localhost', 'Info_HomeDirSrv')
 		if not hostname:
-			hostname = '%s.%s' % (self.db.getGlobalVar('Kickstart',
-				'PrivateHostname'),
-				self.db.getGlobalVar('Kickstart',
-					'PrivateDNSDomain'))
+			hostname = '%s.%s' % (self.db.getHostAttr(
+				'localhost', 'Kickstart_PrivateHostname'),
+				self.db.getHostAttr('localhost',
+					'Kickstart_PrivateDNSDomain'))
 
 		# if there is a home directory specified in the database
 		# use it. otherwise, use the default.
-		homedirloc = self.db.getGlobalVar('Info', 'HomeDirLoc')
+		homedirloc = self.db.getHostAttr('localhost', 'Info_HomeDirLoc')
 		if not homedirloc:
 			homedirloc = '/export/home'
 			

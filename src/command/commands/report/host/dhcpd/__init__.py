@@ -1,5 +1,5 @@
 #
-# $Id: __init__.py,v 1.8 2009/03/04 20:15:31 bruno Exp $
+# $Id: __init__.py,v 1.9 2009/03/04 21:31:44 bruno Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.9  2009/03/04 21:31:44  bruno
+# convert all getGlobalVar to getHostAttr
+#
 # Revision 1.8  2009/03/04 20:15:31  bruno
 # moved 'dbreport hosts' and 'dbreport resolv' into the command line
 #
@@ -193,7 +196,8 @@ class Command(rocks.commands.HostArgumentProcessor,
 
 		self.beginOutput()
 
-		dn = self.db.getGlobalVar('Kickstart', 'PrivateDNSDomain')
+		dn = self.db.getHostAttr('localhost',
+			'Kickstart_PrivateDNSDomain')
 
 		self.db.execute("""select component,value from app_globals
 			where membership=0 and site=0 and

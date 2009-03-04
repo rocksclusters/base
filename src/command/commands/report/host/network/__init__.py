@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.3 2009/03/04 20:15:31 bruno Exp $
+# $Id: __init__.py,v 1.4 2009/03/04 21:31:44 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.4  2009/03/04 21:31:44  bruno
+# convert all getGlobalVar to getHostAttr
+#
 # Revision 1.3  2009/03/04 20:15:31  bruno
 # moved 'dbreport hosts' and 'dbreport resolv' into the command line
 #
@@ -129,8 +132,8 @@ class Command(rocks.commands.HostArgumentProcessor,
 	def run_sunos(self, host):
  
 		# Get the default domain for the host
-		domain = self.db.getGlobalVar('Kickstart', 
-				'PrivateDNSDomain')
+		domain = self.db.getHostAttr('localhost',
+			'Kickstart_PrivateDNSDomain')
 
  		# Print the /etc/nodename file
 		self.addText('<file name="/etc/nodename">\n')
@@ -197,11 +200,11 @@ class Command(rocks.commands.HostArgumentProcessor,
 				gateway, = self.db.fetchone()
 
 			if not gateway:
-				gateway = self.db.getGlobalVar('Kickstart',
-					'PrivateGateway')
+				gateway = self.db.getHostAttr('localhost',
+					'Kickstart_PrivateGateway')
 
-			domain = self.db.getGlobalVar('Kickstart',
-				'PrivateDNSDomain')
+			domain = self.db.getHostAttr('localhost',
+				'Kickstart_PrivateDNSDomain')
 
 			hostname = '%s.%s' % (host, domain)
 

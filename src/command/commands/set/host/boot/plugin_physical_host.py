@@ -1,4 +1,4 @@
-# $Id: plugin_physical_host.py,v 1.2 2009/02/13 20:21:12 bruno Exp $
+# $Id: plugin_physical_host.py,v 1.3 2009/03/04 21:31:44 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: plugin_physical_host.py,v $
+# Revision 1.3  2009/03/04 21:31:44  bruno
+# convert all getGlobalVar to getHostAttr
+#
 # Revision 1.2  2009/02/13 20:21:12  bruno
 # make sure physical hosts look at the 'runaction' or 'installaction'
 # columns in the nodes table in order to reference the correct bootaction.
@@ -278,8 +281,8 @@ class Plugin(rocks.commands.Plugin):
 		# if this host is the frontend, then generate the
 		# default configuration file
 		#
-		frontend_host = self.db.getGlobalVar('Kickstart',
-			'PrivateHostname')
+		frontend_host = self.db.getHostAttr('localhost',
+			'Kickstart_PrivateHostname')
 
 		if host == frontend_host:
 			self.writeDefaultPxebootCfg()

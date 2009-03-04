@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.11 2008/10/18 00:55:48 mjk Exp $
+# $Id: __init__.py,v 1.12 2009/03/04 21:31:44 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.12  2009/03/04 21:31:44  bruno
+# convert all getGlobalVar to getHostAttr
+#
 # Revision 1.11  2008/10/18 00:55:48  mjk
 # copyright 5.1
 #
@@ -170,7 +173,8 @@ class Command(rocks.commands.create.command):
 		#
 		# announce string
 		#
-		localhost = self.db.getGlobalVar('Kickstart', 'PrivateAddress')
+		localhost = self.db.getHostAttr('localhost',
+			'Kickstart_PrivateAddress')
 		data['announce'] = 'http://%s:7625/announce' % (localhost)
 
 		data['creation date'] = creation_date
