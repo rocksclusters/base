@@ -12,6 +12,9 @@
 
 <changelog>
 $Log: screen-clusterinfo.xml,v $
+Revision 1.15  2009/03/04 01:32:12  bruno
+attributes work for frontend installs
+
 Revision 1.14  2008/10/18 00:55:46  mjk
 copyright 5.1
 
@@ -87,7 +90,7 @@ first pass at new screens
 		<type>string</type>
 		<size>40</size>
 		<default>cluster.hpc.org</default>
-		<value><var name="Kickstart_PublicHostname"/></value>
+		<value>&Kickstart_PublicHostname;</value>
 		<help>This must be the fully-qualified domain name (required).</help>
 		<validate>process_dns</validate>
 	</variable>
@@ -98,7 +101,7 @@ first pass at new screens
 		<type>string</type>
 		<size>40</size>
 		<default>Our Cluster</default>
-		<value><var name="Info_ClusterName"/></value>
+		<value>&Info_ClusterName;</value>
 		<help>The name of the cluster (optional).</help>
 		<validate>validate_cluster_name</validate>
 	</variable>
@@ -109,7 +112,7 @@ first pass at new screens
 		<type>string</type>
 		<size>40</size>
 		<default>SDSC</default>
-		<value><var name="Info_CertificateOrganization"/></value>
+		<value>&Info_CertificateOrganization;</value>
 		<help>The name of your organization. Used when building a certificate for this host (optional).</help>
 		<validate>validate_certificate_organization</validate>
 	</variable>
@@ -120,7 +123,7 @@ first pass at new screens
 		<type>string</type>
 		<size>40</size>
 		<default>San Diego</default>
-		<value><var name="Info_CertificateLocality"/></value>
+		<value>&Info_CertificateLocality;</value>
 		<help>Your city (optional).</help>
 		<validate>validate_certificate_locality</validate>
 	</variable>
@@ -131,7 +134,7 @@ first pass at new screens
 		<type>string</type>
 		<size>40</size>
 		<default>California</default>
-		<value><var name="Info_CertificateState"/></value>
+		<value>&Info_CertificateState;</value>
 		<help>Your state (optional).</help>
 		<validate>validate_certificate_state</validate>
 	</variable>
@@ -142,7 +145,7 @@ first pass at new screens
 		<type>string</type>
 		<size>40</size>
 		<default>US</default>
-		<value><var name="Info_CertificateCountry"/></value>
+		<value>&Info_CertificateCountry;</value>
 		<help>Your country (optional).</help>
 		<validate>validate_certificate_country</validate>
 	</variable>
@@ -153,7 +156,7 @@ first pass at new screens
 		<type>string</type>
 		<size>40</size>
 		<default>admin@place.org</default>
-		<value><var name="Info_ClusterContact"/></value>
+		<value>&Info_ClusterContact;</value>
 		<help>Email address for the cluster admin (optional).</help>
 	</variable>
 
@@ -163,7 +166,7 @@ first pass at new screens
 		<type>string</type>
 		<size>40</size>
 		<default>http://www.place.org/</default>
-		<value><var name="Info_ClusterURL"/></value>
+		<value>&Info_ClusterURL;</value>
 		<help>URL for this cluster or for the project it supports (optional).</help>
 	</variable>
 
@@ -173,7 +176,7 @@ first pass at new screens
 		<type>string</type>
 		<size>40</size>
 		<default>N32.87 W117.22</default>
-		<value><var name="Info_ClusterLatlong"/></value>
+		<value>&Info_ClusterLatlong;</value>
 		<help>The physical location of this cluster (optional).</help>
 	</variable>
 
@@ -184,7 +187,7 @@ first pass at new screens
 		<name>Kickstart_PrivateHostname</name>
 		<type>hidden</type>
 		<size>20</size>
-		<value><var name="Kickstart_PrivateHostname"/></value>
+		<value>&Kickstart_PrivateHostname;</value>
 	</variable>
 
 	<variable>
@@ -193,7 +196,7 @@ first pass at new screens
 		<type>hidden</type>
 		<size>20</size>
 		<default>sbin/kickstart.cgi</default>
-		<value><var name="Kickstart_PrivateKickstartCGI"/></value>
+		<value>&Kickstart_PrivateKickstartCGI;</value>
 	</variable>
 
 	<variable>
@@ -202,7 +205,7 @@ first pass at new screens
 		<type>hidden</type>
 		<size>50</size>
 		<default>/export/rocks</default>
-		<value><var name="Kickstart_DistroDir"/></value>
+		<value>&Kickstart_DistroDir;</value>
 	</variable>
 
 	<variable>
@@ -211,7 +214,7 @@ first pass at new screens
 		<type>hidden</type>
 		<size>50</size>
 		<default>install</default>
-		<value><var name="Kickstart_PrivateKickstartBasedir"/></value>
+		<value>&Kickstart_PrivateKickstartBasedir;</value>
 	</variable>
 
 	<variable>
@@ -220,7 +223,7 @@ first pass at new screens
 		<type>hidden</type>
 		<size>20</size>
 		<default>central.rocksclusters.org</default>
-		<value><var name="Kickstart_PublicKickstartHost"/></value>
+		<value>&Kickstart_PublicKickstartHost;</value>
 	</variable>
 
 	<variable>
@@ -229,7 +232,7 @@ first pass at new screens
 		<type>hidden</type>
 		<size>20</size>
 		<default>local</default>
-		<value><var name="Kickstart_PrivateDNSDomain"/></value>
+		<value>&Kickstart_PrivateDNSDomain;</value>
 	</variable>
 
 	<variable>
@@ -238,7 +241,7 @@ first pass at new screens
 		<type>hidden</type>
 		<size>20</size>
 		<default>hpc.org</default>
-		<value><var name="Kickstart_PublicDNSDomain"/></value>
+		<value>&Kickstart_PublicDNSDomain;</value>
 	</variable>
 
 	<variable>
@@ -247,7 +250,7 @@ first pass at new screens
 		<type>hidden</type>
 		<size>20</size>
 		<default>en_US</default>
-		<value><var name="Kickstart_Lang"/></value>
+		<value>&Kickstart_Lang;</value>
 	</variable>
 
 	<variable>
@@ -256,7 +259,7 @@ first pass at new screens
 		<type>hidden</type>
 		<size>20</size>
 		<default>en_US</default>
-		<value><var name="Kickstart_Langsupport"/></value>
+		<value>&Kickstart_Langsupport;</value>
 	</variable>
 
 	<variable>
@@ -265,7 +268,7 @@ first pass at new screens
 		<type>hidden</type>
 		<size>20</size>
 		<default>us</default>
-		<value><var name="Kickstart_Keyboard"/></value>
+		<value>&Kickstart_Keyboard;</value>
 	</variable>
 
 </screen>

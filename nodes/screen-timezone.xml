@@ -12,6 +12,9 @@
 
 <changelog>
 $Log: screen-timezone.xml,v $
+Revision 1.8  2009/03/04 01:32:12  bruno
+attributes work for frontend installs
+
 Revision 1.7  2008/10/18 00:55:46  mjk
 copyright 5.1
 
@@ -431,8 +434,8 @@ screen updates
 		<option>Pacific/Truk</option>
 		<option>Pacific/Wake</option>
 		<option>Pacific/Wallis</option>
-		<default><var name="Kickstart_Timezone"/></default>
-		<value><var name="Kickstart_Timezone"/></value>
+		<default>&Kickstart_Timezone;</default>
+		<value>&Kickstart_Timezone;</value>
 		<help>Select a timezone for your cluster.</help>
 	</variable>
 
@@ -442,7 +445,7 @@ screen updates
 		<type>string</type>
 		<size>20</size>
 		<default>pool.ntp.org</default>
-		<value><var name="Kickstart_PublicNTPHost"/></value>
+		<value>&Kickstart_PublicNTPHost;</value>
 		<help>Input a Network Time Protocol (NTP) server that will keep the clock on your frontend in sync.</help>
 		<validate>check_ntp</validate>
 	</variable>

@@ -1,5 +1,5 @@
 #
-# $Id: welcome.py,v 1.17 2008/10/18 00:55:45 mjk Exp $
+# $Id: welcome.py,v 1.18 2009/03/04 01:32:12 bruno Exp $
 #
 # Our patch to redhat's installer
 #
@@ -57,6 +57,9 @@
 # @Copyright@
 #
 # $Log: welcome.py,v $
+# Revision 1.18  2009/03/04 01:32:12  bruno
+# attributes work for frontend installs
+#
 # Revision 1.17  2008/10/18 00:55:45  mjk
 # copyright 5.1
 #
@@ -223,15 +226,15 @@ class RocksWelcomeWindowGUI(InstallWindow):
 		InstallWindow.__init__(self, ics)
 		ics.setGrabNext(1)
 
-		if not os.path.exists('/tmp/site.xml'):
+		if not os.path.exists('/tmp/site.attrs'):
 			#
 			# run the browser to select the rolls and
-			# to build the /tmp/site.xml file
+			# to build the /tmp/site.attrs file
 			#
 			self.displayBrowser()
 		elif os.path.exists('/tmp/rolls.xml'):
 			#
-			# if /tmp/site.xml exists and if /tmp/rolls.xml
+			# if /tmp/site.attrs exists and if /tmp/rolls.xml
 			# exists, then this is a 'lights out' frontend
 			# install -- go get the roll-*-kickstart files
 			#

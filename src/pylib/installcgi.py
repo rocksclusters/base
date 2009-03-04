@@ -1,6 +1,6 @@
 #! /opt/rocks/bin/python
 #
-# $Id: installcgi.py,v 1.13 2008/10/18 00:56:02 mjk Exp $
+# $Id: installcgi.py,v 1.14 2009/03/04 01:32:13 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -56,6 +56,9 @@
 # @Copyright@
 #
 # $Log: installcgi.py,v $
+# Revision 1.14  2009/03/04 01:32:13  bruno
+# attributes work for frontend installs
+#
 # Revision 1.13  2008/10/18 00:56:02  mjk
 # copyright 5.1
 #
@@ -134,27 +137,25 @@ class InstallCGI:
 		return
 
 
-	def getSiteDotXML(self):
+	def getSiteDotAttrs(self):
 		#
-		# look in the newly built distro for site.xml
+		# look in the newly built distro for site.attrs
 		#
-		site_xml = os.path.join(self.rootdir, 'rocks-dist', self.arch,
-			'build', 'nodes', 'site.xml')
+		site_attrs = os.path.join(self.rootdir, 'rocks-dist', self.arch,
+			'build', 'nodes', 'site.attrs')
 
-		if os.path.exists(site_xml):
-			shutil.copy(site_xml, '/tmp/site.xml')
+		if os.path.exists(site_attrs):
+			shutil.copy(site_attrs, '/tmp/site.attrs')
 
 		return
 
 
-	def createSkeletonSiteXML(self):
-		self.getSiteDotXML()
-		if os.path.exists('/tmp/site.xml'):
+	def createSkeletonSiteAttrs(self):
+		self.getSiteDotAttrs()
+		if os.path.exists('/tmp/site.attrs'):
 			return
 
-		file = open('/tmp/site.xml', 'w')
-
-		file.write('<kickstart>\n')
+		file = open('/tmp/site.attrs', 'w')
 
 		#
 		# set the language
@@ -182,12 +183,8 @@ class InstallCGI:
 						'en_US'
 						])
 
-		file.write('<var name="Kickstart_Lang" ')
-		file.write('val="%s"/>\n' % (lang))
-		file.write('<var name="Kickstart_Langsupport" ')
-		file.write('val="%s"/>\n' % (langsupport))
-
-		file.write('</kickstart>\n')
+		file.write('Kickstart_Lang:%s\n' % lang)
+		file.write('Kickstart_Langsupport:%s\n' % langsupport)
 
 		file.close()
 

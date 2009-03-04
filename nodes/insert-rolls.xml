@@ -15,6 +15,9 @@ Populates the frontend database with initially selected rolls.
 
   <changelog>
   $Log: insert-rolls.xml,v $
+  Revision 1.12  2009/03/04 01:32:12  bruno
+  attributes work for frontend installs
+
   Revision 1.11  2009/02/03 20:56:08  bruno
   fix frontend eval command with entity
 
@@ -110,8 +113,8 @@ rm -f /tmp/insert-rolls.sql
 
 
 <post arg="--nochroot">
-cp /tmp/site.xml /mnt/sysimage/tmp
-chmod 400 /mnt/sysimage/tmp/site.xml
+cp /tmp/site.attrs /mnt/sysimage/tmp
+chmod 400 /mnt/sysimage/tmp/site.attrs
 cp /tmp/rolls.xml /mnt/sysimage/tmp
 </post>
 

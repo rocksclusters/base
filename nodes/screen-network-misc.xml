@@ -12,6 +12,9 @@
 
 <changelog>
 $Log: screen-network-misc.xml,v $
+Revision 1.8  2009/03/04 01:32:12  bruno
+attributes work for frontend installs
+
 Revision 1.7  2008/10/18 00:55:46  mjk
 copyright 5.1
 
@@ -49,7 +52,7 @@ first pass at new screens
 		<name>Kickstart_PublicGateway</name>
 		<type>ipv4-address</type>
 		<size>20</size>
-		<value><var name="Kickstart_PublicGateway"/></value>
+		<value>&Kickstart_PublicGateway;</value>
 		<help>The IP address of your public gateway.</help>
 		<validate>check_gateway</validate>
 	</variable>
@@ -59,7 +62,7 @@ first pass at new screens
 		<name>Kickstart_PublicDNSServers</name>
 		<type>ipv4-address</type>
 		<size>20</size>
-		<value><var name="Kickstart_PublicDNSServers"/></value>
+		<value>&Kickstart_PublicDNSServers;</value>
 		<help>Supply a comma separated list of your DNS servers.</help>
 		<validate>check_dns</validate>
 	</variable>

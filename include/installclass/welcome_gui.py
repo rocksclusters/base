@@ -1,5 +1,5 @@
 #
-# $Id: welcome_gui.py,v 1.9 2008/10/18 00:55:45 mjk Exp $
+# $Id: welcome_gui.py,v 1.10 2009/03/04 01:32:12 bruno Exp $
 #
 # Our patch to redhat's installer
 #
@@ -57,6 +57,9 @@
 # @Copyright@
 #
 # $Log: welcome_gui.py,v $
+# Revision 1.10  2009/03/04 01:32:12  bruno
+# attributes work for frontend installs
+#
 # Revision 1.9  2008/10/18 00:55:45  mjk
 # copyright 5.1
 #
@@ -224,8 +227,23 @@ class WelcomeWindow(InstallWindow):
 			
 		os.environ['PYTHONPATH'] = ''
 
-		cmd = '/opt/rocks/sbin/kpp %s ' % (rootnode)
-		cmd += '| /opt/rocks/sbin/kgen > '
+		attrs = {}
+		if os.path.exists('/tmp/site.attrs'):
+			file = open('/tmp/site.attrs', 'r')
+			for line in file.readlines():
+				l = line.split(':', 1)
+				if len(l) == 2:
+					#
+					# key/value pairs
+					#
+					attrs[l[0]] = l[1][:-1]
+			file.close()
+		
+		cmd = '/opt/rocks/bin/rocks list node xml %s attrs="%s"' \
+			% (rootnode, attrs)
+		cmd += '| /opt/rocks/bin/rocks list host profile '
+		cmd += '| /opt/rocks/bin/rocks list host installfile '
+		cmd += 'section=kickstart > '
 		cmd += '/tmp/ks.cfg 2> /tmp/ks.cfg.debug'
 		os.system(cmd)
 		return
@@ -260,15 +278,15 @@ class WelcomeWindow(InstallWindow):
 		InstallWindow.__init__(self, ics)
 		ics.setGrabNext(1)
 
-		if not os.path.exists('/tmp/site.xml'):
+		if not os.path.exists('/tmp/site.attrs'):
 			#
 			# run the browser to select the rolls and
-			# to build the /tmp/site.xml file
+			# to build the /tmp/site.attrs file
 			#
 			self.displayBrowser()
 		elif os.path.exists('/tmp/rolls.xml'):
 			#
-			# if /tmp/site.xml exists and if /tmp/rolls.xml
+			# if /tmp/site.attrs exists and if /tmp/rolls.xml
 			# exists, then this is a 'lights out' 
 			# install -- go get the roll-*-kickstart files
 			#

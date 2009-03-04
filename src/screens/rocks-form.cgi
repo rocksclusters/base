@@ -16,9 +16,8 @@ class App(rocks.sql.Application):
 		return
 
 
-	def buildSiteXML(self):
-		file = open('/tmp/site.xml', 'w')
-		file.write('<kickstart>\n')
+	def buildSiteAttrs(self):
+		file = open('/tmp/site.attrs', 'w')
 
 		form = cgi.FieldStorage()
 		for name in form.keys():
@@ -44,10 +43,8 @@ class App(rocks.sql.Application):
 						string.ascii_letters +
 						string.digits + './')
 
-				str = '<var '
-				str += 'name="Kickstart_PrivateRootPassword" '
-				str += 'val="%s"/>' % \
-					crypt.crypt(xmlvalue, salt)
+				str = 'Kickstart_PrivateRootPassword:%s' \
+					% crypt.crypt(xmlvalue, salt)
 				file.write('%s\n' % (str))
 
 				#
@@ -56,18 +53,13 @@ class App(rocks.sql.Application):
 				a = sha.new(xmlvalue)
 				sha_sha = sha.new(a.digest())
 
-				str = '<var '
-				str += 'name='
-				str += '"Kickstart_PrivateSHARootPassword" '
-				str += 'val="%s"/>' % (sha_sha.hexdigest())
+				str = 'Kickstart_PrivateSHARootPassword:%s' \
+					% (sha_sha.hexdigest())
 				file.write('%s\n' % (str))
 
 				pw = rocks.password.Password()
-				str = '<var '
-				str += 'name='
-				str += '"Kickstart_PrivatePortableRootPassword" '
-				str += 'val="%s"/>' % \
-					(pw.create_password(xmlvalue))
+				str = 'Kickstart_PrivatePortableRootPassword:'
+				str += '%s' % (pw.create_password(xmlvalue))
 				file.write('%s\n' % (str))
 
 				continue
@@ -84,12 +76,9 @@ class App(rocks.sql.Application):
 				partfile.write('rocks %s\n' % xmlvalue)
 				partfile.close()
 
-			str = '<var name="%s" ' % (xmlname)
-			str += 'val="%s"/>' % (xmlvalue)
-
+			str = '%s:%s' % (xmlname, xmlvalue)
 			file.write('%s\n' % (str))
 
-		file.write('</kickstart>\n')
 		file.close()
 		return
 
@@ -101,7 +90,7 @@ class App(rocks.sql.Application):
 
 
         def run(self):
-		self.buildSiteXML()
+		self.buildSiteAttrs()
 		self.killBrowser()
 		return
 

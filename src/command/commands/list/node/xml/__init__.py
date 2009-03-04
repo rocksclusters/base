@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.38 2009/03/04 00:18:00 mjk Exp $
+# $Id: __init__.py,v 1.39 2009/03/04 01:32:13 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.39  2009/03/04 01:32:13  bruno
+# attributes work for frontend installs
+#
 # Revision 1.38  2009/03/04 00:18:00  mjk
 # default to localhost os and arch
 #
@@ -244,6 +247,11 @@ class Command(rocks.commands.list.command):
 	host's architecture.
 	</param>
 
+	<param type='string' name='attrs'>
+	A list of attributes. This list must be in python dictionary form,
+	e.g., attrs="{ 'os': 'linux', 'arch' : 'x86_64' }"
+	</param>
+
 	<param type='string' name='host'>
 	Primary name of host. If not supplied, then the name of
 	this host is used.
@@ -322,7 +330,7 @@ class Command(rocks.commands.list.command):
 		if 'graph' not in attrs:
 			attrs['graph'] = 'default'
 			
-		if 'dict' not in attrs:
+		if 'distribution' not in attrs:
 			attrs['distribution'] = 'rocks-dist'
 			
 		if 'membership' not in attrs:
@@ -346,19 +354,10 @@ class Command(rocks.commands.list.command):
 		attrs['release'] = rocks.release
 		attrs['root']	 = root
 		
-		#
-		# site.entities code goes here
-		#
-					
-
-		if not self.db:
-			kickstart_dir = 'install'
-		else:
-			kickstart_dir = self.command('report.distro').strip()
+		kickstart_dir = self.command('report.distro').strip()
 
 		if not basedir:
-			os.chdir(os.path.join(os.sep, 'home', 
-				kickstart_dir,
+			os.chdir(os.path.join(os.sep, kickstart_dir,
 				attrs['distribution'], attrs['arch'],
 				'build'))
 		else:

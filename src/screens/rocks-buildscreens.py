@@ -29,10 +29,8 @@ class App(rocks.sql.Application):
 		return
 
 
-	def writeSiteXML(self):
-		file = open('/tmp/site.xml', 'w')
-
-		file.write('<kickstart>\n')
+	def writeSiteAttrs(self):
+		file = open('/tmp/site.attrs', 'w')
 
 		#
 		# set the language
@@ -60,10 +58,8 @@ class App(rocks.sql.Application):
 						'en_US'
 						])
 
-		file.write('<var name="Kickstart_Lang" ')
-		file.write('val="%s"/>\n' % (lang))
-		file.write('<var name="Kickstart_Langsupport" ')
-		file.write('val="%s"/>\n' % (langsupport))
+		file.write('Kickstart_Lang:%s\n' % lang)
+		file.write('Kickstart_Langsupport:%s\n' % langsupport)
 
 		#
 		# set networking info
@@ -73,8 +69,6 @@ class App(rocks.sql.Application):
 			for line in netinfo.readlines():
 				file.write(line)
 			netinfo.close()
-
-		file.write('</kickstart>\n')
 
 		file.close()
 		return
@@ -107,26 +101,43 @@ class App(rocks.sql.Application):
 		nativearch = rocks.util.getNativeArch()
 		builddir = '%s/rocks-dist/%s/build' % (distrodir, nativearch)
 
-		isbasicSiteXML = 0
-		if os.path.exists('%s/nodes/site.xml' % (builddir)):
+		isbasicSiteAttrs = 0
+		if os.path.exists('%s/nodes/site.attrs' % (builddir)):
 			#
 			# if the user supplied the restore roll, then grab the
-			# site.xml from the distro
+			# site.attrs from the distro
 			#
-			os.system('cp %s/nodes/site.xml /tmp/' % (builddir))
+			os.system('cp %s/nodes/site.attrs /tmp/' %
+				(builddir))
 		else:
 			#
-			# write a basic site.xml file
+			# write a basic site.attrs file
 			#
-			self.writeSiteXML()
-			isbasicSiteXML = 1
+			self.writeSiteAttrs()
+			isbasicSiteAttrs = 1
 
 		#
 		# build the screens
 		#
 		os.chdir(builddir)
 
-		cmd = '/opt/rocks/sbin/kpp root '
+		#
+		# get the attributes
+		#
+		attrs = {}
+		if os.path.exists('/tmp/site.attrs'):
+			file = open('/tmp/site.attrs', 'r')
+			for line in file.readlines():
+				l = line.split(':', 1)
+				if len(l) == 2:
+					#
+					# key/value pairs
+					#
+					attrs[l[0]] = l[1][:-1]
+			file.close()
+
+		cmd = '/opt/rocks/bin/rocks list node xml root '
+		cmd += 'attrs="%s"' % attrs
 		cmd += '| /opt/rocks/sbin/screengen > '
 		cmd += '/tmp/updates/opt/rocks/screens/screens.html '
 		cmd += '2> /tmp/screens.debug'
@@ -135,20 +146,21 @@ class App(rocks.sql.Application):
 		os.chdir(pwd)
 
 		#
-		# if a basic site.xml file was created (this site.xml
-		# has networking info in it), then remove it after the
-		# screens.html is created.
+		# if a basic site.attrs file was created (this
+		# site.attrs has networking info in it), then remove it
+		# after the screens.html is created.
 		#
-		# the purpose of the basic site.xml is to provide default
+		# the purpose of the basic site.attrs is to provide default
 		# networking info that was gathered from the first text-based
 		# screen that asked for networking info.
 		#
-		# then, by removing this basic site.xml file, the installer
-		# will know to build a 'real' site.xml by starting the
-		# browser and asking the user for cluster variable info.
+		# then, by removing this basic site.attrs file, the
+		# installer will know to build a 'real' site.attrs by
+		# starting the browser and asking the user for cluster
+		# variable info.
 		#
-		if isbasicSiteXML:
-			os.system('rm -f /tmp/site.xml')
+		if isbasicSiteAttrs:
+			os.system('rm -f /tmp/site.attrs')
 
 		return
 

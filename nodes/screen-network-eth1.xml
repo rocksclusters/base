@@ -12,6 +12,9 @@
 
 <changelog>
 $Log: screen-network-eth1.xml,v $
+Revision 1.12  2009/03/04 01:32:12  bruno
+attributes work for frontend installs
+
 Revision 1.11  2008/10/18 00:55:46  mjk
 copyright 5.1
 
@@ -62,7 +65,7 @@ first pass at new screens
 		<name>Kickstart_PublicAddress</name>
 		<type>ipv4-address</type>
 		<size>20</size>
-		<value><var name="Kickstart_PublicAddress"/></value>
+		<value>&Kickstart_PublicAddress;</value>
 		<help>Enter the IP address for eth1. This is the interface that connects the frontend to the outside network.</help>
 		<validate>check_eth1_ip</validate>
 	</variable>
@@ -73,7 +76,7 @@ first pass at new screens
 		<type>ipv4-address</type>
 		<size>20</size>
 		<validate>process_eth1</validate>
-		<value><var name="Kickstart_PublicNetmask"/></value>
+		<value>&Kickstart_PublicNetmask;</value>
 		<help>Enter the netmask for eth1.</help>
 	</variable>
 
@@ -84,7 +87,7 @@ first pass at new screens
 		<name>Kickstart_PublicNetwork</name>
 		<type>hidden</type>
 		<size>20</size>
-		<value><var name="Kickstart_PublicNetwork"/></value>
+		<value>&Kickstart_PublicNetwork;</value>
 	</variable>
 
 	<variable>
@@ -92,7 +95,7 @@ first pass at new screens
 		<name>Kickstart_PublicBroadcast</name>
 		<type>hidden</type>
 		<size>20</size>
-		<value><var name="Kickstart_PublicBroadcast"/></value>
+		<value>&Kickstart_PublicBroadcast;</value>
 	</variable>
 
 	<variable>
@@ -101,7 +104,7 @@ first pass at new screens
 		<type>hidden</type>
 		<size>20</size>
 		<default>8</default>
-		<value><var name="Kickstart_PublicNetmaskCIDR"/></value>
+		<value>&Kickstart_PublicNetmaskCIDR;</value>
 	</variable>
 
 </screen>

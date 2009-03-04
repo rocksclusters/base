@@ -12,6 +12,9 @@
 
 <changelog>
 $Log: screen-partitioning.xml,v $
+Revision 1.10  2009/03/04 01:32:12  bruno
+attributes work for frontend installs
+
 Revision 1.9  2008/10/18 00:55:46  mjk
 copyright 5.1
 
@@ -60,7 +63,7 @@ screen updates
 		<name>Server_Partitioning</name>
 		<type>radio</type>
 		<default>force-default-root-disk-only</default>
-		<value><var name="Server_Partitioning"/></value>
+		<value>&Server_Partitioning;</value>
 		<help>The first disk on this machine will be partitioned in the default manner. See the documentation at www.rocksclusters.org for details on the default partitioning scheme.</help>
 		<validate>process_partitioning</validate>
 	</variable>
@@ -70,7 +73,7 @@ screen updates
 		<name>Server_Partitioning</name>
 		<type>radio</type>
 		<default>manual</default>
-		<value><var name="Server_Partitioning"/></value>
+		<value>&Server_Partitioning;</value>
 		<help>The user will be required to set all partitioning information for this machine. A subsequent installation screen will allow you to enter your partitioning information.</help>
 	</variable>
 

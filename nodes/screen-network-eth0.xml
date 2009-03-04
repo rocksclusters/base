@@ -12,6 +12,9 @@
 
 <changelog>
 $Log: screen-network-eth0.xml,v $
+Revision 1.13  2009/03/04 01:32:12  bruno
+attributes work for frontend installs
+
 Revision 1.12  2008/10/18 00:55:46  mjk
 copyright 5.1
 
@@ -67,7 +70,7 @@ first pass at new screens
 		<type>ipv4-address</type>
 		<size>20</size>
 		<default>10.1.1.1</default>
-		<value><var name="Kickstart_PrivateAddress"/></value>
+		<value>&Kickstart_PrivateAddress;</value>
 		<help>Enter the IP address for eth0. This is the interface that connects the frontend to the compute nodes.</help>
 		<validate>check_eth0_ip</validate>
 	</variable>
@@ -78,7 +81,7 @@ first pass at new screens
 		<type>ipv4-address</type>
 		<size>20</size>
 		<default>255.255.0.0</default>
-		<value><var name="Kickstart_PrivateNetmask"/></value>
+		<value>&Kickstart_PrivateNetmask;</value>
 		<validate>process_eth0</validate>
 		<help>Enter the netmask for eth0.</help>
 	</variable>
@@ -91,7 +94,7 @@ first pass at new screens
 		<type>hidden</type>
 		<size>20</size>
 		<default>10.0.0.0</default>
-		<value><var name="Kickstart_PrivateNetwork"/></value>
+		<value>&Kickstart_PrivateNetwork;</value>
 	</variable>
 
 	<variable>
@@ -100,7 +103,7 @@ first pass at new screens
 		<type>hidden</type>
 		<size>20</size>
 		<default>10.255.255.255</default>
-		<value><var name="Kickstart_PrivateBroadcast"/></value>
+		<value>&Kickstart_PrivateBroadcast;</value>
 	</variable>
 
 	<variable>
@@ -109,7 +112,7 @@ first pass at new screens
 		<type>hidden</type>
 		<size>20</size>
 		<default>8</default>
-		<value><var name="Kickstart_PrivateNetmaskCIDR"/></value>
+		<value>&Kickstart_PrivateNetmaskCIDR;</value>
 	</variable>
 
 	<variable>
@@ -118,7 +121,7 @@ first pass at new screens
 		<type>hidden</type>
 		<size>20</size>
 		<default>10.1.1.1</default>
-		<value><var name="Kickstart_PrivateKickstartHost"/></value>
+		<value>&Kickstart_PrivateKickstartHost;</value>
 	</variable>
 
 	<variable>
@@ -127,7 +130,7 @@ first pass at new screens
 		<type>hidden</type>
 		<size>20</size>
 		<default>10.1.1.1</default>
-		<value><var name="Kickstart_PrivateNTPHost"/></value>
+		<value>&Kickstart_PrivateNTPHost;</value>
 	</variable>
 
 	<variable>
@@ -136,7 +139,7 @@ first pass at new screens
 		<type>hidden</type>
 		<size>20</size>
 		<default>10.1.1.1</default>
-		<value><var name="Kickstart_PrivateGateway"/></value>
+		<value>&Kickstart_PrivateGateway;</value>
 	</variable>
 
 	<variable>
@@ -145,7 +148,7 @@ first pass at new screens
 		<type>hidden</type>
 		<size>20</size>
 		<default>10.1.1.1</default>
-		<value><var name="Kickstart_PrivateDNSServers"/></value>
+		<value>&Kickstart_PrivateDNSServers;</value>
 	</variable>
 
 	<variable>
@@ -154,7 +157,7 @@ first pass at new screens
 		<type>hidden</type>
 		<size>20</size>
 		<default>10.1.1.1</default>
-		<value><var name="Kickstart_PrivateSyslogHost"/></value>
+		<value>&Kickstart_PrivateSyslogHost;</value>
 	</variable>
 
 	<variable>
@@ -163,7 +166,7 @@ first pass at new screens
 		<type>hidden</type>
 		<size>20</size>
 		<validate>generate_multicast</validate>
-		<value><var name="Kickstart_Multicast"/></value>
+		<value>&Kickstart_Multicast;</value>
 	</variable>
 
 </screen>

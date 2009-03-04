@@ -1,6 +1,6 @@
 #!/opt/rocks/usr/bin/python
 #
-# $Id: build-updates-img.py,v 1.8 2008/10/18 00:56:03 mjk Exp $
+# $Id: build-updates-img.py,v 1.9 2009/03/04 01:32:13 bruno Exp $
 #
 # @Copyright@
 # 
@@ -56,6 +56,9 @@
 # @Copyright@
 #
 # $Log: build-updates-img.py,v $
+# Revision 1.9  2009/03/04 01:32:13  bruno
+# attributes work for frontend installs
+#
 # Revision 1.8  2008/10/18 00:56:03  mjk
 # copyright 5.1
 #
@@ -233,6 +236,7 @@ class App(rocks.app.Application):
 			'foundation-libxml2',
 			'foundation-python',
 			'foundation-python-extras',
+			'foundation-python-xml',
 			'foundation-redhat',
 			'keyutils-libs',
 			'keyutils-libs-devel',
