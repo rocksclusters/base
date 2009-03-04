@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.64 2009/03/03 21:57:57 mjk Exp $
+# $Id: __init__.py,v 1.65 2009/03/04 19:48:59 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.65  2009/03/04 19:48:59  bruno
+# return the value
+#
 # Revision 1.64  2009/03/03 21:57:57  mjk
 # pylib style db connections
 #
@@ -1037,7 +1040,7 @@ class DatabaseConnection:
 		# This should be its own SQL but cheat until the code
 		# stabilizes.
 		
-		self.getHostAttrs(host).get(key)
+		return self.getHostAttrs(host).get(key)
 
 		
 
