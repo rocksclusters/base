@@ -16,6 +16,9 @@ Append rules to logrotate to prune files in /var/log
 <changelog>
 
 $Log: logrotate.xml,v $
+Revision 1.5  2009/03/05 18:03:01  bruno
+rotate log file authpriv too. thanks to Tim Theisen for the fix.
+
 Revision 1.4  2008/10/18 00:55:45  mjk
 copyright 5.1
 
@@ -80,6 +83,13 @@ initial release
 
 <file name="/etc/logrotate.d/rocks">
 /var/log/auth {
+	size=100M
+	postrotate
+		/bin/kill -HUP `cat /var/run/syslogd.pid 2&gt; /dev/null` \
+			2&gt; /dev/null || true
+	endscript
+}
+var/log/authpriv {
 	size=100M
 	postrotate
 		/bin/kill -HUP `cat /var/run/syslogd.pid 2&gt; /dev/null` \
