@@ -1,5 +1,5 @@
 #
-# $Id: __init__.py,v 1.9 2009/03/04 21:31:44 bruno Exp $
+# $Id: __init__.py,v 1.10 2009/03/06 21:21:13 bruno Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.10  2009/03/06 21:21:13  bruno
+# updated for host attributes
+#
 # Revision 1.9  2009/03/04 21:31:44  bruno
 # convert all getGlobalVar to getHostAttr
 #
@@ -120,67 +123,63 @@ class Command(rocks.commands.HostArgumentProcessor,
 	</example>
 	"""
 
-	def printOptions(self, prefix, opt, defopt={}):
-		map = {}
-		map['subnet-mask']         = ('PrivateNetmask',    '')
-		map['broadcast-address']   = ('PrivateBroadcast',  '')
-		map['domain-name']         = ('PrivateDNSDomain',  '"')
-		map['nis-domain']	   = ('PrivateNISDomain',  '"')
-		map['routers']		   = ('PrivateGateway',    '')
-		map['domain-name-servers'] = ('PrivateDNSServers', '')
-		for key in map.keys():
-			if opt.has_key(map[key][0]):
-				value = opt[map[key][0]]
-				# Dont print empty values.
-				if not value or not string.strip(value): 
-					continue
-				quote = map[key][1]
-				self.addOutput('', '%soption %s %s%s%s;' %
-					(prefix, key, quote, value, quote))
+	def printOptions(self, prefix):
+		self.addOutput('', '%soption routers %s;' %
+			(prefix, self.db.getHostAttr('localhost',
+				'Kickstart_PrivateGateway')))
+
+		self.addOutput('', '%soption subnet-mask %s;' %
+			(prefix, self.db.getHostAttr('localhost',
+				'Kickstart_PrivateNetmask')))
+
+		self.addOutput('', '%soption domain-name %s;' %
+			(prefix, self.db.getHostAttr('localhost',
+				'Kickstart_PrivateDNSDomain')))
+
+		self.addOutput('', '%soption domain-name-servers %s;' %
+			(prefix, self.db.getHostAttr('localhost',
+				'Kickstart_PrivateDNSServers')))
+
+		self.addOutput('', '%soption broadcast-address %s;' %
+			(prefix, self.db.getHostAttr('localhost',
+				'Kickstart_PrivateBroadcast')))
 
 		#
 		# drop in the filename option
 		#
-		override = 0
-		try:
-			cgi = opt['PrivateKickstartCGI']
-			override = 1
-		except KeyError:
-			cgi = defopt['PrivateKickstartCGI']
+		cgi = self.db.getHostAttr('localhost',
+			'Kickstart_PrivateKickstartCGI')
 
-		if override:
-			#
-			# if a filename exist, put in PXE configuration
-			#
-			cgi = os.path.join(os.sep, 'install', cgi)
+		cgi = os.path.join(os.sep, 'install', cgi)
 
-			self.addOutput('', prefix + 'if ((substring (option' +
-				' vendor-class-identifier, 0, 9)')
-			self.addOutput('', prefix + '\t\t= "PXEClient") or')
-			self.addOutput('', prefix + '\t(substring (option' +
-				' vendor-class-identifier, 0, 9)')
-			self.addOutput('', prefix + '\t\t= "Etherboot")) {')
-			self.addOutput('', prefix + '\t# i386 and x86_64')
-			self.addOutput('', prefix + '\tfilename' +
-				' "pxelinux.0";')
-			self.addOutput('', prefix + '\tnext-server %s;' %
-				(opt['PrivateKickstartHost']))
+		self.addOutput('', prefix + 'if ((substring (option' +
+			' vendor-class-identifier, 0, 9)')
+		self.addOutput('', prefix + '\t\t= "PXEClient") or')
+		self.addOutput('', prefix + '\t(substring (option' +
+			' vendor-class-identifier, 0, 9)')
+		self.addOutput('', prefix + '\t\t= "Etherboot")) {')
+		self.addOutput('', prefix + '\t# i386 and x86_64')
+		self.addOutput('', prefix + '\tfilename' +
+			' "pxelinux.0";')
+		self.addOutput('', prefix + '\tnext-server %s;' %
+			(self.db.getHostAttr('localhost',
+				'Kickstart_PrivateKickstartHost')))
 
-			self.addOutput('', prefix + '} else {')
-			self.addOutput('', prefix + '\tfilename "%s";' % (cgi))
-			self.addOutput('', prefix + '\tnext-server %s;' % 
-				(opt['PrivateKickstartHost']))
-			self.addOutput('', prefix + '}\n')
+		self.addOutput('', prefix + '} else {')
+		self.addOutput('', prefix + '\tfilename "%s";' % (cgi))
+		self.addOutput('', prefix + '\tnext-server %s;' % 
+			(self.db.getHostAttr('localhost',
+				'Kickstart_PrivateKickstartHost')))
+		self.addOutput('', prefix + '}\n')
 
 
-	def printHost(self, name, hostname, mac, ip, opt, defopt, appliance, osname='linux'):
+	def printHost(self, name, hostname, mac, ip):
 		self.addOutput('', '\t\thost %s {' % name)
 		if mac:
 			self.addOutput('', '\t\t\thardware ethernet %s;' % mac)
 
 		self.addOutput('', '\t\t\toption host-name "%s";' % hostname)
 		self.addOutput('', '\t\t\tfixed-address %s;' % ip)
-		self.printOptions('\t\t\t', opt, defopt)
 		self.addOutput('', '\t\t}')
 
 		return
@@ -198,31 +197,25 @@ class Command(rocks.commands.HostArgumentProcessor,
 
 		dn = self.db.getHostAttr('localhost',
 			'Kickstart_PrivateDNSDomain')
-
-		self.db.execute("""select component,value from app_globals
-			where membership=0 and site=0 and
-			service='Kickstart'""")
-
-		defopt = {}
-		for key,value in self.db.fetchall():
-			defopt[key] = value
+		network = self.db.getHostAttr('localhost',
+			'Kickstart_PrivateNetwork')
+		netmask = self.db.getHostAttr('localhost',
+			'Kickstart_PrivateNetmask')
 
 		self.addOutput('', 'ddns-update-style none;')
 		self.addOutput('', 'subnet %s netmask %s {'
-			% (defopt['PrivateNetwork'], defopt['PrivateNetmask']))
+			% (network, netmask))
 
 		self.addOutput('', '\tdefault-lease-time 1200;')
 		self.addOutput('', '\tmax-lease-time 1200;')
 
-		self.printOptions('\t', defopt)
+		self.printOptions('\t')
 
 		self.addOutput('', '\tgroup "%s" {' % dn)
-		ip  = rocks.ip.IPGenerator(defopt['PrivateNetwork'],
-			defopt['PrivateNetmask'])
+		ip  = rocks.ip.IPGenerator(network, netmask)
 		
-		self.db.execute("""select nodes.id,nodes.name,nodes.rack,
-			nodes.rank,nodes.os,appliances.name,memberships.id from
-			nodes,appliances,memberships where
+		self.db.execute("""select nodes.id, nodes.name, nodes.rack,
+			nodes.rank from nodes, appliances, memberships where
 			nodes.membership=memberships.id and 
 			memberships.appliance=appliances.id and nodes.site=0
 			order by nodes.id""")
@@ -233,17 +226,7 @@ class Command(rocks.commands.HostArgumentProcessor,
 			node.name	= row[1]
 			node.rack	= row[2]
 			node.rank	= row[3]
-			node.osname	= row[4]
-			node.appname	= row[5]
-			node.membership = row[6]
 
-			self.db.execute("""select component,value from
-				app_globals where site=0 and membership=%d and
-				service='Kickstart'""" % node.membership)
-			opt = {}
-			for key,value in self.db.fetchall():
-				opt[key] = value
-			
 			#
 			# look for a physical private interface that has an
 			# IP address assigned to it.
@@ -282,8 +265,7 @@ class Command(rocks.commands.HostArgumentProcessor,
 			# Go fully-qualified.
 			node.name = node.name + "." + dn
 
-			self.printHost(node.name, node.name, node.mac,
-				node.ip, opt, defopt, node.appname, node.osname)
+			self.printHost(node.name, node.name, node.mac, node.ip)
 
 			#
 			# associate all unassigned macs to this node
@@ -298,8 +280,7 @@ class Command(rocks.commands.HostArgumentProcessor,
 				if extramac is None:
 					continue
 				self.printHost(node.name + '-%d' % (i),
-					node.name, extramac,
-					node.ip, opt, defopt, node.appname, node.osname)
+					node.name, extramac, node.ip)
 				i = i + 1
 
 		self.addOutput('', '\t}')
