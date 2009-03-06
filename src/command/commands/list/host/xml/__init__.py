@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.14 2009/02/10 20:11:20 mjk Exp $
+# $Id: __init__.py,v 1.15 2009/03/06 22:34:16 mjk Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.15  2009/03/06 22:34:16  mjk
+# - added roll argument to list.host.xml and list.node.xml
+# - kroll is dead, added run.roll
+#
 # Revision 1.14  2009/02/10 20:11:20  mjk
 # os attr stuff for anoop
 #
@@ -137,6 +141,8 @@ class Command(rocks.commands.list.host.command):
 
 	def run(self, params, args):
 
+                (roll, ) = self.fillParams([('roll', )])
+                
 		self.beginOutput()
 
 		for host in self.getHostnames(args):
@@ -163,11 +169,11 @@ class Command(rocks.commands.list.host.command):
 			attrs['distribution']	= dist
 			attrs['graph']		= graph
 
-			xml = self.command('list.node.xml', [
-				node, 
-				'attrs=%s' % attrs,
-				])
-				
+			args = [ node ]
+			args.append('attrs=%s' % attrs)
+			if roll:
+				args.append('roll=%s' % roll)
+			xml = self.command('list.node.xml', args)
 			for line in xml.split('\n'):
 				self.addOutput(host, line)
 

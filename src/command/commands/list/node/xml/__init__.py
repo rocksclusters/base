@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.39 2009/03/04 01:32:13 bruno Exp $
+# $Id: __init__.py,v 1.40 2009/03/06 22:34:16 mjk Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.40  2009/03/06 22:34:16  mjk
+# - added roll argument to list.host.xml and list.node.xml
+# - kroll is dead, added run.roll
+#
 # Revision 1.39  2009/03/04 01:32:13  bruno
 # attributes work for frontend installs
 #
@@ -303,7 +307,7 @@ class Command(rocks.commands.list.command):
 
 	def run(self, params, args):
 
-		(attributes, roll, evalp, missing, 
+		(attributes, rolls, evalp, missing, 
 			generator, basedir) = self.fillParams(
 			[('attrs', ),
 			('roll', ),
@@ -312,6 +316,9 @@ class Command(rocks.commands.list.command):
 			('gen', 'kgen'),
 			('basedir', )
 			])
+			
+		if rolls:
+			rolls = rolls.split(',')
 
 		if attributes:
 			attrs = eval(attributes)
@@ -486,7 +493,7 @@ class Command(rocks.commands.list.command):
 			# If we are only expanding a roll subgraph
 			# then do not ouput the XML for other nodes
 				
-			if roll and node.getRoll() != roll:
+			if rolls and node.getRoll() not in rolls:
 				continue
 				
 			try:
