@@ -1,4 +1,4 @@
-# $Id: plugin_attribute.py,v 1.1 2008/12/18 20:01:33 mjk Exp $
+# $Id: plugin_attribute.py,v 1.2 2009/03/06 21:28:12 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: plugin_attribute.py,v $
+# Revision 1.2  2009/03/06 21:28:12  bruno
+# need to look at node_attributes table.
+#
 # Revision 1.1  2008/12/18 20:01:33  mjk
 # attribute commands
 #
@@ -67,6 +70,6 @@ class Plugin(rocks.commands.Plugin):
 		return 'attributes'
 
 	def run(self, host):
-		self.owner.db.execute("""delete from attributes where
+		self.owner.db.execute("""delete from node_attributes where
 			node = (select id from nodes where name='%s')""" % host)
 
