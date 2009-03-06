@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.2 2009/03/04 20:15:31 bruno Exp $
+# $Id: __init__.py,v 1.3 2009/03/06 00:21:52 mjk Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.3  2009/03/06 00:21:52  mjk
+# added attr param
+#
 # Revision 1.2  2009/03/04 20:15:31  bruno
 # moved 'dbreport hosts' and 'dbreport resolv' into the command line
 #
@@ -83,16 +86,22 @@ class Command(rocks.commands.HostArgumentProcessor,
 
 	def run(self, params, args):
 
+		(args, attr) = self.fillPositionalArgs(('attr', ))
+
 		self.beginOutput()
 		
 		for host in self.getHostnames(args):
-			attrs = self.db.getHostAttrs(host)
-
-			keys = attrs.keys()
-			keys.sort()
-			for key in keys:
+		
+			if not attr:
+				attrs = self.db.getHostAttrs(host)
+				keys = attrs.keys()
+				keys.sort()
+				for key in keys:
+					self.addOutput(host,
+						'%s:%s' % (key, attrs[key]))
+			else:
 				self.addOutput(host,
-					'%s:%s' % (key, attrs[key]))
+					self.db.getHostAttr(host, attr))
 
 		self.endOutput(padChar='')
 
