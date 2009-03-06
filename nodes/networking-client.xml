@@ -15,6 +15,9 @@ All rights reserved. Rocks(tm) v4.3 www.rocksclusters.org
 
 <changelog>
 $Log: networking-client.xml,v $
+Revision 1.6  2009/03/06 22:45:21  bruno
+use attributes
+
 Revision 1.5  2009/01/23 23:19:31  mjk
 tweaks on the entities
 
@@ -43,7 +46,7 @@ this also includes changes to help build and configure VMs for V.
 <eval shell="/opt/rocks/bin/python" mode="xml">
 import rocks.ConfigNetworks
 
-confignetworks = rocks.ConfigNetworks.App()
+confignetworks = rocks.ConfigNetworks.App('&hostname;')
 
 confignetworks.params['user'] = [ 'apache', 'host' ]
 confignetworks.run()

@@ -1,5 +1,5 @@
 #
-# $Id: ConfigNetworks.py,v 1.14 2008/10/18 00:56:02 mjk Exp $
+# $Id: ConfigNetworks.py,v 1.15 2009/03/06 22:45:21 bruno Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: ConfigNetworks.py,v $
+# Revision 1.15  2009/03/06 22:45:21  bruno
+# use attributes
+#
 # Revision 1.14  2008/10/18 00:56:02  mjk
 # copyright 5.1
 #
@@ -220,12 +223,13 @@ import rocks.sql
 #os.environ['HTTP_X_RHN_PROVISIONING_MAC_1'] = 'eth1 00:09:3d:00:08:fd tg3 ks'
 #os.environ['HTTP_X_RHN_PROVISIONING_MAC_2'] = 'eth0 00:07:e9:03:ee:49 tg3'
 #os.environ['HTTP_X_RHN_PROVISIONING_MAC_3'] = 'eth1 00:07:e9:03:ee:48 fat'
-#os.environ['Node_Hostname'] = 'compute-0-0'
 
 class App(rocks.sql.Application):
 
-	def __init__(self):
+	def __init__(self, hostname):
 		rocks.sql.Application.__init__(self)
+
+		self.hostname = hostname
 		self.ifcfg = '/etc/sysconfig/network-scripts/ifcfg'
 		self.route = '/etc/sysconfig/static-routes'
 
@@ -276,8 +280,7 @@ class App(rocks.sql.Application):
 		for dev in l:
 			self.discovered_macs.append(devnames[dev])
 
-		hostname = os.environ['Node_Hostname']
-		node_id = self.getNodeId(hostname)
+		node_id = self.getNodeId(self.hostname)
 		if node_id:
 			self.node_id = node_id
 
