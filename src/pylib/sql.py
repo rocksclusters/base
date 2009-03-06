@@ -57,6 +57,9 @@
 # @Copyright@
 #
 # $Log: sql.py,v $
+# Revision 1.25  2009/03/06 22:45:41  bruno
+# nuke 'dbreport access' and 'dbreport machines'
+#
 # Revision 1.24  2008/10/18 00:56:02  mjk
 # copyright 5.1
 #
@@ -189,6 +192,7 @@ import sys
 import string
 import getopt
 import types
+import popen2
 import rocks.util
 import rocks.app
 
@@ -389,26 +393,16 @@ class Application(rocks.app.Application):
     def __repr__(self):
         return string.join(self.report, '\n')
 
-
     def getGlobalVar(self, service, component, site=0, node=0):
-	"""Returns the value of a variable in the app_globals table.
-	Raises a KeyError exception if the variable is not found."""
+        cmd = '/opt/rocks/bin/rocks report host attr localhost '
+        cmd += 'attr=%s_%s' % (service, component)
 
-	if not hasSQL:
-		return None
+        r, w = popen2.popen2(cmd)
+        value = r.readline()
 
-	# Does not currently respect the node (and therefore membership)
-	# attributes.
+        return value.strip()
 
-	rows = self.execute("select value from app_globals where "
-		"service='%s' and component='%s' and site=%d" 
-				% (service, component, site))
-	if not rows:
-		raise KeyError, "Cannot find '%s_%s' in app_globals" % (
-			service, component)
-	return self.fetchone()[0]
 	
-
     def getSiteId(self, client):
     	"""Returns a Site Id. Client can be an IP address
 	or site id. Returns 0 if site could not be found."""

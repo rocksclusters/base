@@ -58,6 +58,9 @@
 # @Copyright@
 #
 # $Log: insert-ethers.py,v $
+# Revision 1.44  2009/03/06 22:45:41  bruno
+# nuke 'dbreport access' and 'dbreport machines'
+#
 # Revision 1.43  2008/11/21 19:10:10  bruno
 # restart syslog if we see 'last message repeated' messages from the frontend
 #
@@ -530,7 +533,6 @@ import snack
 import rocks.sql
 import rocks.ip
 import rocks.util
-import rocks.security
 import rocks.app
 import rocks.kickstart
 import rocks.clusterdb
@@ -1574,7 +1576,6 @@ class App(rocks.sql.Application):
 		self.insertor		= InsertEthers(self)
 		self.dist		= None
 		self.controller		= ServiceController()
-		self.security		= rocks.security.Modes()
 		self.lockFile		= '/var/lock/insert-ethers'
 		self.ipBaseAddress	= None
 		self.ipIncrement	= -1
@@ -1582,7 +1583,6 @@ class App(rocks.sql.Application):
 		self.doUpdate		= 0
 		self.batch		= 0
 
-		self.security.setBase('/var/www/html/install/sbin')
 		self.getopt.l.extend([
 			('baseip=', 'ip address'),
 			('basename=', 'basename'),
@@ -1707,30 +1707,22 @@ class App(rocks.sql.Application):
 		if self.doUpdate:
 			self.controller.loadPlugins(self)
 			self.controller.update()
-			self.security.endPublicMode()
 			os.unlink(self.lockFile)
 			return
 
-		try:
-			self.security.startPublicMode(self.getPrivateNet())
-		except Exception, msg:
-			note = _("Note: %s\n") % msg
-			sys.stderr.write(note)
 		if self.doPublicMode:
 			self.insertor.runPublicOnly()
 		else:
 			self.insertor.run()
-		self.security.endPublicMode()
 
 		self.cleanup()
 
 
 
-class RCFileHandler(rocks.sql.RCFileHandler, rocks.security.RCFileHandler):
+class RCFileHandler(rocks.sql.RCFileHandler):
     
 	def __init__(self, app):
 		rocks.sql.RCFileHandler.__init__(self, app)
-		rocks.security.RCFileHandler.__init__(self, app.security)
 
 	def startElement_nameserver(self, name, attrs):
 		ns = attrs.get('name')
