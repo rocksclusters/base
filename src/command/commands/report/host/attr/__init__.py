@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.3 2009/03/06 00:21:52 mjk Exp $
+# $Id: __init__.py,v 1.4 2009/03/06 00:26:17 mjk Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.4  2009/03/06 00:26:17  mjk
+# *** empty log message ***
+#
 # Revision 1.3  2009/03/06 00:21:52  mjk
 # added attr param
 #
@@ -86,7 +89,7 @@ class Command(rocks.commands.HostArgumentProcessor,
 
 	def run(self, params, args):
 
-		(args, attr) = self.fillPositionalArgs(('attr', ))
+		(attr, ) = self.fillParams([('attr', )])
 
 		self.beginOutput()
 		
