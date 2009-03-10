@@ -17,6 +17,9 @@
 
   <changelog>
   $Log: database-schema.xml,v $
+  Revision 1.32  2009/03/10 21:38:16  mjk
+  *_routes tables
+
   Revision 1.31  2009/02/14 00:04:29  bruno
   there are only three boot states: os, run and install.
 
@@ -293,6 +296,7 @@ CREATE TABLE node_attributes (
   Value		text
 ) TYPE=MyISAM;
 
+
 <!-- App_Globals -->
 
 
@@ -404,15 +408,32 @@ CREATE TABLE subnets (
 
 <!-- Routes -->
 
-DROP TABLE IF EXISTS routes;
-CREATE TABLE routes (
-  Owner		enum('membership','node') NOT NULL default 'node',
-  ID		int(11) NOT NULL default '0',
+DROP TABLE IF EXISTS global_routes;
+CREATE TABLE global_routes (
   Network	varchar(32) NOT NULL default '',
-  Netmask	int(11) NOT NULL default '24',
-  Gateway	varchar(32) default NULL,
-  Device	varchar(32) default NULL,
-  Comment	varchar(128) default NULL
+  Netmask	varchar(32) NOT NULL default '',
+  Gateway	varchar(32) NOT NULL default ''
+) TYPE=MyISAM;
+
+DROP TABLE IF EXISTS os_routes;
+CREATE TABLE os_routes (
+  Network	varchar(32) NOT NULL default '',
+  Netmask	varchar(32) NOT NULL default '',
+  Gateway	varchar(32) NOT NULL default ''
+) TYPE=MyISAM;
+
+DROP TABLE IF EXISTS appliance_routes;
+CREATE TABLE appliance_routes (
+  Network	varchar(32) NOT NULL default '',
+  Netmask	varchar(32) NOT NULL default '',
+  Gateway	varchar(32) NOT NULL default ''
+) TYPE=MyISAM;
+
+DROP TABLE IF EXISTS node_routes;
+CREATE TABLE node_routes (
+  Network	varchar(32) NOT NULL default '',
+  Netmask	varchar(32) NOT NULL default '',
+  Gateway	varchar(32) NOT NULL default ''
 ) TYPE=MyISAM;
 
 
