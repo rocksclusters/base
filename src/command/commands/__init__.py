@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.65 2009/03/04 19:48:59 bruno Exp $
+# $Id: __init__.py,v 1.66 2009/03/13 00:02:59 mjk Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,13 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.66  2009/03/13 00:02:59  mjk
+# - checkpoint for route commands
+# - gateway is dead (now a default route)
+# - removed comment rows from schema (let's see what breaks)
+# - removed short-name from appliance (let's see what breaks)
+# - dbreport static-routes is dead
+#
 # Revision 1.65  2009/03/04 19:48:59  bruno
 # return the value
 #
@@ -980,13 +987,77 @@ class DatabaseConnection:
 		return None
 		
 
+
+	def getHostRoutes(self, host, showsource=0):
+
+		routes = {}
+		
+		# global
+		self.execute("""select network, netmask, gateway from
+			global_routes""")
+		for (n, m, g) in self.fetchall():
+			if showsource:
+				routes[n] = (m, g, 'G')
+			else:
+				routes[n] = (m, g)
+
+		# os
+		self.execute("""select r.network, r.netmask, r.gateway, r.os
+			from os_routes r, nodes n where
+			r.os=n.os and n.name='%s'"""  % host)
+		for (n, m, g) in self.fetchall():
+			if showsource:
+				routes[n] = (m, g, 'O')
+			else:
+				routes[n] = (m, g)
+
+		# appliance		
+		self.execute("""select r.network, r.netmask, r.gateway,
+			r.appliance from
+			appliance_routes r,
+			nodes n,
+			memberships m,
+			appliances app where
+			n.membership=m.id and m.appliance=app.id and 
+			r.appliance=app.id and n.name='%s'""" % host)
+		for (n, m, g) in self.fetchall():
+			if showsource:
+				routes[n] = (m, g, 'A')
+			else:
+				routes[n] = (m, g)
+
+		# host				
+		self.execute("""select r.network, r.netmask, r.gateway,
+			r.node from
+			node_routes r, nodes n where
+			n.name='%s' and n.id=r.node""" % host)
+		for (n, m, g) in self.fetchall():
+			if showsource:
+				routes[n] = (m, g, 'H')
+			else:
+				routes[n] = (m, g)
+			
+		return routes
+
 	def getHostAttrs(self, host, showsource=0):
 		"""Return a dictionary of KEY x VALUE pairs for the host
 		specific attributes for the given host.
 		"""
 
 		attrs = {}
-			
+		
+		self.execute('select rack,rank from nodes where name="%s"' %
+			host)
+		(rack, rank) = self.fetchone()
+		if showsource:
+			attrs['hostname']	= (host, 'I')
+			attrs['rack']		= (rack, 'I')
+			attrs['rank']		= (rank, 'I')
+		else:
+			attrs['hostname']	= host
+			attrs['rack']		= rack
+			attrs['rank']		= rank
+
 		# global
 		self.execute('select attr, value from global_attributes')
 		for (a, v) in self.fetchall():

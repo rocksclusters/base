@@ -17,6 +17,13 @@
 
   <changelog>
   $Log: database-schema.xml,v $
+  Revision 1.33  2009/03/13 00:02:59  mjk
+  - checkpoint for route commands
+  - gateway is dead (now a default route)
+  - removed comment rows from schema (let's see what breaks)
+  - removed short-name from appliance (let's see what breaks)
+  - dbreport static-routes is dead
+
   Revision 1.32  2009/03/10 21:38:16  mjk
   *_routes tables
 
@@ -318,7 +325,6 @@ DROP TABLE IF EXISTS appliances;
 CREATE TABLE appliances (
   ID		int(11) NOT NULL auto_increment,
   Name		varchar(32) NOT NULL default '',
-  ShortName	varchar(32) default NULL,
   Graph		varchar(64) NOT NULL default 'default',
   Node		varchar(64) NOT NULL default '',
   OS		set('linux','sunos') NOT NULL default 'linux',
@@ -346,7 +352,6 @@ CREATE TABLE memberships (
   Name		varchar(64) NOT NULL default '',
   Appliance	int(11) default '0',
   Distribution	int(11) default '1',
-  Compute	enum('yes','no') NOT NULL default 'yes',
   Public	enum('yes','no') NOT NULL default 'no',
   PRIMARY KEY (ID)
 ) TYPE=MyISAM;
@@ -366,7 +371,6 @@ CREATE TABLE nodes (
   CPUs		int(11) NOT NULL default '1',
   Rack		int(11) default NULL,
   Rank		int(11) default NULL,
-  Comment	varchar(128) default NULL,
   Arch		varchar(32) default NULL,
   OS		enum('linux', 'sunos') NOT NULL default 'linux',
   RunAction	varchar(64) default 'os',
@@ -391,7 +395,6 @@ CREATE TABLE networks (
   Module	varchar(128) default NULL,
   VlanID	int(11) default NULL,
   Options	varchar(128) default NULL,
-  Comment	varchar(128) default NULL,
   PRIMARY KEY(ID)
 ) TYPE=MyISAM;
 
@@ -417,6 +420,7 @@ CREATE TABLE global_routes (
 
 DROP TABLE IF EXISTS os_routes;
 CREATE TABLE os_routes (
+  OS            enum('sunos','linux') NOT NULL default 'linux',
   Network	varchar(32) NOT NULL default '',
   Netmask	varchar(32) NOT NULL default '',
   Gateway	varchar(32) NOT NULL default ''
@@ -424,6 +428,7 @@ CREATE TABLE os_routes (
 
 DROP TABLE IF EXISTS appliance_routes;
 CREATE TABLE appliance_routes (
+  Appliance     int(11) NOT NULL default '0',
   Network	varchar(32) NOT NULL default '',
   Netmask	varchar(32) NOT NULL default '',
   Gateway	varchar(32) NOT NULL default ''
@@ -431,6 +436,7 @@ CREATE TABLE appliance_routes (
 
 DROP TABLE IF EXISTS node_routes;
 CREATE TABLE node_routes (
+  Node		int(11) NOT NULL default '0',
   Network	varchar(32) NOT NULL default '',
   Netmask	varchar(32) NOT NULL default '',
   Gateway	varchar(32) NOT NULL default ''

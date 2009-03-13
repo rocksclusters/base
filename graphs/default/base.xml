@@ -4,6 +4,13 @@
 
 	<changelog>
 	$Log: base.xml,v $
+	Revision 1.47  2009/03/13 00:02:59  mjk
+	- checkpoint for route commands
+	- gateway is dead (now a default route)
+	- removed comment rows from schema (let's see what breaks)
+	- removed short-name from appliance (let's see what breaks)
+	- dbreport static-routes is dead
+	
 	Revision 1.46  2009/03/04 20:15:30  bruno
 	moved 'dbreport hosts' and 'dbreport resolv' into the command line
 	
@@ -17,7 +24,8 @@
 	- rsh edge is conditional (no more uncomment crap)
 	- add global_attribute commands (list, set, remove, dump)
 	- attributes are XML entities for kpp pass (both pass1 and pass2)
-	- attributes are XML entities for kgen pass (not used right now - may go away)
+	- attributes are XML entities for kgen pass (not used right now - may 
+	go away)
 	- some node are now interface=public
 	
 	Revision 1.42  2008/12/23 02:44:06  mjk
@@ -204,7 +212,7 @@
 	<order head="database-data">
 		<tail>rocks-dist</tail>
 		<tail>install</tail>
-		<tail>routes-server</tail>
+		<tail>routes-base</tail>
 		<tail>insert-rolls</tail>
 		<tail>server</tail>
 		<tail>pxe</tail>
@@ -291,6 +299,7 @@
 		<to>grub</to>
 		<to>ip-diag</to>
 		<to>logrotate</to>
+		<to>routes-base</to>
 		<to>rpc</to>
 		<to>scripting</to>
 		<to>node</to>
@@ -320,7 +329,6 @@
 		<to>install</to>
 		<to>x11</to>
 		<to>snmp-client</to>
-		<to>routes-server</to>
 		<to>pxe</to>
 		<to>insert-rolls</to>
 		<to>rlo</to>
@@ -356,7 +364,6 @@
 		<to>syslog-client</to>
 		<to>autofs-client</to>
 		<to>grub-client</to>
-		<to>routes-client</to>
 		<to>pxeboot</to>
 		<to>networking-client</to>
 		<to>411-client</to>
@@ -415,6 +422,12 @@
 	<edge from="wan" to="null"/>
 
 	<edge from="postshell"   to="ethers-server-postshell"/>
+
+        <edge from="client" cond="rsh">
+                <to>rsh</to>
+        </edge>
+
+
 
 </graph>
 

@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.15 2008/10/18 00:55:48 mjk Exp $
+# $Id: __init__.py,v 1.16 2009/03/13 00:02:59 mjk Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,13 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.16  2009/03/13 00:02:59  mjk
+# - checkpoint for route commands
+# - gateway is dead (now a default route)
+# - removed comment rows from schema (let's see what breaks)
+# - removed short-name from appliance (let's see what breaks)
+# - dbreport static-routes is dead
+#
 # Revision 1.15  2008/10/18 00:55:48  mjk
 # copyright 5.1
 #
@@ -170,10 +177,6 @@ class Command(rocks.commands.HostArgumentProcessor, rocks.commands.add.command):
 	The name of the subnet to assign to the interface (e.g., 'private')
 	</param>
 	
-	<param type='string' name='gateway'>
-	The gateway to assign to the interface (e.g., '192.168.1.1')
-	</param>
-	
 	<param type='string' name='name'>
 	The name to assign to the interface
 	</param>
@@ -190,14 +193,13 @@ class Command(rocks.commands.HostArgumentProcessor, rocks.commands.add.command):
 	The VLAN ID to assign the interface
 	</param>
 
-	<example cmd='add host interface compute-0-0 eth1 ip=192.168.1.2 subnet=private gateway=192.168.1.1 name=fast-0-0'>
+	<example cmd='add host interface compute-0-0 eth1 ip=192.168.1.2 subnet=private name=fast-0-0'>
 	</example>
 	
-	<example cmd='add host interface compute-0-0 iface=eth1 ip=192.168.1.2 subnet=private gateway=192.168.1.1 name=fast-0-0'>
+	<example cmd='add host interface compute-0-0 iface=eth1 ip=192.168.1.2 subnet=private name=fast-0-0'>
 	same as above
 	</example>
 
-	<related>set host interface gateway</related>
 	<related>set host interface iface</related>
 	<related>set host interface ip</related>
 	<related>set host interface mac</related>
@@ -245,8 +247,7 @@ class Command(rocks.commands.HostArgumentProcessor, rocks.commands.add.command):
 				values ((select id from nodes where name='%s'),
 				'%s')""" % (host, iface)) 
 
-		for key in ['gateway', 'ip', 'mac', 'module', 'name', \
-				'subnet', 'vlan']:
+		for key in ['ip', 'mac', 'module', 'name', 'subnet', 'vlan']:
 			if params.has_key(key):
 				self.command('set.host.interface.%s' % key,
 					(host, iface, params[key]))

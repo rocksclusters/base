@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.15 2008/10/18 00:55:48 mjk Exp $
+# $Id: __init__.py,v 1.16 2009/03/13 00:02:59 mjk Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,13 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.16  2009/03/13 00:02:59  mjk
+# - checkpoint for route commands
+# - gateway is dead (now a default route)
+# - removed comment rows from schema (let's see what breaks)
+# - removed short-name from appliance (let's see what breaks)
+# - dbreport static-routes is dead
+#
 # Revision 1.15  2008/10/18 00:55:48  mjk
 # copyright 5.1
 #
@@ -193,7 +200,7 @@ class Command(rocks.commands.ApplianceArgumentProcessor,
 			self.fillParams(
 				[('membership', ), 
 				('node', ''),
-				('graph', 'default'), 
+				('graph', ''), 
 				('short-name', 'NULL'), 
 				('compute', 'y'), 
 				('public', 'y'),
@@ -202,6 +209,9 @@ class Command(rocks.commands.ApplianceArgumentProcessor,
 		compute = self.bool2str(self.str2bool(compute))
 		public  = self.bool2str(self.str2bool(public))
 		
+		if node and not graph:
+			graph = 'default'
+			
 		self.db.execute("""insert into appliances 
 			(name, shortname, graph, node, os) values
 			('%s', '%s', '%s', '%s', '%s')""" % 

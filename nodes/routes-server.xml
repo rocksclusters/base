@@ -14,6 +14,13 @@
 
 	<changelog>
 	$Log: routes-server.xml,v $
+	Revision 1.15  2009/03/13 00:02:59  mjk
+	- checkpoint for route commands
+	- gateway is dead (now a default route)
+	- removed comment rows from schema (let's see what breaks)
+	- removed short-name from appliance (let's see what breaks)
+	- dbreport static-routes is dead
+	
 	Revision 1.14  2009/03/12 22:21:04  mjk
 	- use the new route commands
 	- kill routes-client (move code to routes-base)
@@ -63,23 +70,7 @@
 
 <post>
 
-<!-- multicast (bottom 255 addresses only) -->
-/opt/rocks/bin/rocks add route 224.0.0.0 eth0 netmask=255.255.255.0
 
-<!-- broadcast -->
-/opt/rocks/bin/rocks add route 255.255.255.255 eth0 netmask=255.255.255.255
-
-<!-- default gateway (frontend) -->
-/opt/rocks/bin/rocks add host route &hostname; 0.0.0.0 \
-	&Kickstart_PublicGateway; netmask=0.0.0.0
-
-<!-- default gateway (backend nodes) -->
-/opt/rocks/bin/rocks add route 0.0.0.0 \
-	&Kickstart_PrivateGateway; netmask=0.0.0.0
-
-<!-- frontend public interface over private network -->
-/opt/rocks/bin/rocks add route &Kickstart_PublicAddress; \
-	&Kickstart_PrivateAddress; netmask=255.255.255.255
 
 
 </post>

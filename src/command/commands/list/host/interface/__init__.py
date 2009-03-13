@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.14 2008/10/18 00:55:50 mjk Exp $
+# $Id: __init__.py,v 1.15 2009/03/13 00:02:59 mjk Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,13 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.15  2009/03/13 00:02:59  mjk
+# - checkpoint for route commands
+# - gateway is dead (now a default route)
+# - removed comment rows from schema (let's see what breaks)
+# - removed short-name from appliance (let's see what breaks)
+# - dbreport static-routes is dead
+#
 # Revision 1.14  2008/10/18 00:55:50  mjk
 # copyright 5.1
 #
@@ -163,7 +170,7 @@ class Command(rocks.commands.list.host.command):
 				IF(net.subnet, sub.name, NULL),
 				net.device, net.mac, net.ip,
 				IF(net.subnet,sub.netmask,NULL),
-				net.gateway, net.module, net.name, net.vlanid
+				net.module, net.name, net.vlanid
 				from nodes n, networks net, subnets sub
 				where n.name='%s' and net.node=n.id
 				and (net.subnet=sub.id or net.subnet is NULL)
@@ -176,11 +183,11 @@ class Command(rocks.commands.list.host.command):
 				#
                 		if row[1] and reg.match(row[1]):  
 					self.addOutput(host, (row[0], row[1],
-						None, None, None, None, None,
+						None, None, None, None,
 						None, row[8]) )
 				else:
 					self.addOutput(host, row )
 
 		self.endOutput(header=['host', 'subnet', 'iface', 'mac', 
-			'ip', 'netmask', 'gateway', 'module', 'name', 'vlanid'])
+			'ip', 'netmask', 'module', 'name', 'vlanid'])
 

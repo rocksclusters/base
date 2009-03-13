@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.4 2009/03/04 21:31:44 bruno Exp $
+# $Id: __init__.py,v 1.5 2009/03/13 00:03:00 mjk Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,13 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.5  2009/03/13 00:03:00  mjk
+# - checkpoint for route commands
+# - gateway is dead (now a default route)
+# - removed comment rows from schema (let's see what breaks)
+# - removed short-name from appliance (let's see what breaks)
+# - dbreport static-routes is dead
+#
 # Revision 1.4  2009/03/04 21:31:44  bruno
 # convert all getGlobalVar to getHostAttr
 #
@@ -109,106 +116,85 @@ class Command(rocks.commands.HostArgumentProcessor,
 	"""
 
 	def run(self, params, args):
-                hosts = self.getHostnames(args)
-
-		#
-		# only takes one host
-		#
-		if len(hosts) != 1:
-			return
-
-		host = hosts[0]
-
-		self.db.execute("select os from nodes where " +\
-				"name='%s'" % host)
-		osname, = self.db.fetchone()
-
-		f = getattr(self, 'run_%s' % osname)
 
 		self.beginOutput()
-		f(host)
-		self.endOutput()
+		
+		for host in self.getHostnames(args):
+			self.db.execute("select os from nodes where name='%s'" %
+				host)
+			osname, = self.db.fetchone()
+
+			f = getattr(self, 'run_%s' % osname)
+
+			f(host)
+			
+		self.endOutput(padChar='')
 
 	def run_sunos(self, host):
  
-		# Get the default domain for the host
-		domain = self.db.getHostAttr('localhost',
-			'Kickstart_PrivateDNSDomain')
+		domain = self.db.getHostAttr(host, 'Kickstart_PrivateDNSDomain')
 
  		# Print the /etc/nodename file
-		self.addText('<file name="/etc/nodename">\n')
-		self.addText('%s\n' % host)
-		self.addText('</file>\n')
+		self.addOutput(host, '<file name="/etc/nodename">')
+		self.addOutput(host, host)
+		self.addOutput(host, '</file>')
 
 		# Print out the /etc/defaultdomain file
-		self.addText('<file name="/etc/defaultdomain">\n')
-		self.addText('%s\n' % domain)
-		self.addText('</file>\n')
+		self.addOutput(host, '<file name="/etc/defaultdomain">')
+		self.addOutput(host, domain)
+		self.addOutput(host, '</file>\n')
 
 		# Get all the subnets that this node is associated with
-		self.db.execute("select distinctrow subnets.subnet, "	+\
-				" subnets.netmask from subnets, "	+\
-				"networks, nodes "	+\
-				"where nodes.name='%s' and " % (host) 	+\
-				"networks.node=nodes.id and "		+\
-				"subnets.id=networks.subnet;")
+		self.db.execute("""select distinctrow 
+			subnets.subnet, subnets.netmask from
+			subnets, networks, nodes
+			where nodes.name='%s' and 
+			networks.node=nodes.id and
+			subnets.id=networks.subnet""" % host)
 
-		self.addText('<file name="/etc/netmasks">\n')
+		self.addOutput(host, '<file name="/etc/netmasks">')
 		for row in self.db.fetchall():
-			self.addText('%s\t%s\n' % row)
-		self.addText('</file>\n')
+			self.addOutput(host, '%s\t%s' % row)
+		self.addOutput(host, '</file>')
 
 	def run_linux(self, host):
 		#
 		# get the appliance type
 		#
-		rows = self.db.execute("""select app.name from
+		self.db.execute("""select app.name from
 			appliances app, memberships mem, nodes n where
 			app.id = mem.appliance and
 			n.membership = mem.id and n.name = '%s'""" % (host))
-
-		if rows != 1:
-			return
-
 		appliance, = self.db.fetchone()
 
-		self.beginOutput()
-		self.addOutput('', '<file name="/etc/sysconfig/network">')
+		self.addOutput(host, '<file name="/etc/sysconfig/network">')
+		self.addOutput(host, 'NETWORKING=yes')
 
-		self.addOutput('', 'NETWORKING=yes')
-
-		hostname = ''
-		gateway = ''
+		gateway = None
+		for (key, val) in self.db.getHostRoutes(host).items():
+			if key == '0.0.0.0' and val[0] == '0.0.0.0':
+				gateway = val[1]
 
 		if appliance == 'frontend':
-			rows = self.db.execute("""select net.name, net.gateway
-				from networks net, nodes n, subnets s where
-				n.id = net.node and net.subnet = s.id and
-				s.name = 'public' and n.name = '%s'""" % (host))
-		
-			if rows == 1:
-				hostname, gateway = self.db.fetchone()
-
+			interface = 'public'
+			domain = None
 		else:
-			rows = self.db.execute("""select net.gateway
-				from networks net, nodes n, subnets s where
-				n.id = net.node and net.subnet = s.id and
-				s.name = 'private' and n.name = '%s'""" %
-				(host))
-
-			if rows == 1:
-				gateway, = self.db.fetchone()
-
-			if not gateway:
-				gateway = self.db.getHostAttr('localhost',
-					'Kickstart_PrivateGateway')
-
-			domain = self.db.getHostAttr('localhost',
+			interface = 'private'
+			domain = self.db.getHostAttr(host, 
 				'Kickstart_PrivateDNSDomain')
+			
+		self.db.execute("""select net.name from 
+			networks net, nodes n, subnets s where
+			n.id = net.node and net.subnet = s.id and
+			s.name = '%s' and n.name = '%s'""" % (interface, host))
+		hostname, = self.db.fetchone()
 
-			hostname = '%s.%s' % (host, domain)
+		if not domain:
+			self.addOutput(host, 'HOSTNAME=%s' % hostname)
+		else:
+			self.addOutput(host, 'HOSTNAME=%s.%s' % 
+				(hostname, domain))
+		if gateway:
+			self.addOutput(host, 'GATEWAY=%s' % gateway)
 
-		self.addOutput('', 'HOSTNAME=%s' % hostname)
-		self.addOutput('', 'GATEWAY=%s' % gateway)
-
-		self.addOutput('', '</file>')
+		self.addOutput(host, '</file>')

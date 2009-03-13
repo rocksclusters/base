@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.3 2009/03/04 20:15:31 bruno Exp $
+# $Id: __init__.py,v 1.4 2009/03/13 00:02:59 mjk Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,13 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.4  2009/03/13 00:02:59  mjk
+# - checkpoint for route commands
+# - gateway is dead (now a default route)
+# - removed comment rows from schema (let's see what breaks)
+# - removed short-name from appliance (let's see what breaks)
+# - dbreport static-routes is dead
+#
 # Revision 1.3  2009/03/04 20:15:31  bruno
 # moved 'dbreport hosts' and 'dbreport resolv' into the command line
 #
@@ -108,70 +115,55 @@ class Command(rocks.commands.HostArgumentProcessor,
 		return retval
 
 
-	def writeConfig(self, mac, ip, device, gateway, netmask, vlanid, host):
+	def writeConfig(self, host, mac, ip, device, netmask, vlanid):
 		configured = 0
 
-		self.addOutput('', 'DEVICE=%s' % device)
+		self.addOutput(host, 'DEVICE=%s' % device)
 
 		if mac:
-			self.addOutput('', 'HWADDR=%s' % mac)
+			self.addOutput(host, 'HWADDR=%s' % mac)
 
 		if ip and netmask:
-			self.addOutput('', 'IPADDR=%s' % ip)
-			self.addOutput('', 'NETMASK=%s' % netmask)
-			self.addOutput('', 'BOOTPROTO=static')
-			if gateway:
-				self.addOutput('', 'GATEWAY=%s' % gateway)
-			self.addOutput('', 'ONBOOT=yes')
+			self.addOutput(host, 'IPADDR=%s' % ip)
+			self.addOutput(host, 'NETMASK=%s' % netmask)
+			self.addOutput(host, 'BOOTPROTO=static')
+			self.addOutput(host, 'ONBOOT=yes')
 			configured = 1
 
 		if vlanid and self.isPhysicalHost(host):
-			self.addOutput('', 'VLAN=yes')
-			self.addOutput('', 'ONBOOT=yes')
+			self.addOutput(host, 'VLAN=yes')
+			self.addOutput(host, 'ONBOOT=yes')
 			configured = 1
 
 		if not configured:
-			self.addOutput('', 'BOOTPROTO=none')
-			self.addOutput('', 'ONBOOT=no')
+			self.addOutput(host, 'BOOTPROTO=none')
+			self.addOutput(host, 'ONBOOT=no')
 		
 
-	def writeModprobe(self, device, module):
+	def writeModprobe(self, host, device, module):
 		if not module:
 			return
 
-		self.addOutput('', '<![CDATA[')
-		self.addOutput('', 'grep -v "\<%s\>" /etc/modprobe.conf > /tmp/modprobe.conf' % (device))
-		self.addOutput('', "echo 'alias %s %s' >> /tmp/modprobe.conf" % (device, module))
-		self.addOutput('', 'mv /tmp/modprobe.conf /etc/modprobe.conf')
-		self.addOutput('', 'chmod 444 /etc/modprobe.conf')
-		self.addOutput('', ']]>')
+		self.addOutput(host, '<![CDATA[')
+		self.addOutput(host, 'grep -v "\<%s\>" /etc/modprobe.conf > /tmp/modprobe.conf' % (device))
+		self.addOutput(host, "echo 'alias %s %s' >> /tmp/modprobe.conf" % (device, module))
+		self.addOutput(host, 'mv /tmp/modprobe.conf /etc/modprobe.conf')
+		self.addOutput(host, 'chmod 444 /etc/modprobe.conf')
+		self.addOutput(host, ']]>')
 
 
 	def run(self, params, args):
+
 		self.iface, = self.fillParams([('iface', ), ])
-
-                hosts = self.getHostnames(args)
-
-		#
-		# only takes one host
-		#
-		if len(hosts) != 1:
-			return
-
-		host = hosts[0]
-
-		mac = None
-		ip = None
-		netmask = None
-		bootproto = None
-		gateway = None
-
-		self.db.execute("select os from nodes where " +\
-				"name='%s'" % (host))
-		osname = self.db.fetchone()[0].strip()
-		f = getattr(self, 'run_%s' % (osname))
 		self.beginOutput()
-		f(host)
+
+                for host in self.getHostnames(args):
+			self.db.execute("select os from nodes where " +\
+					"name='%s'" % (host))
+			osname, = self.db.fetchone()
+			f = getattr(self, 'run_%s' % (osname))
+			f(host)
+
 		self.endOutput()
 
 	def run_sunos(self, host):
@@ -192,8 +184,8 @@ class Command(rocks.commands.HostArgumentProcessor,
 		self.addText(s)
 		
 	def run_linux(self, host):
-		self.db.execute("""select distinctrow net.mac, net.ip,
-			net.device, net.gateway,
+		self.db.execute("""select distinctrow 
+			net.mac, net.ip, net.device,
 			if(net.subnet, s.netmask, NULL), net.vlanid,
 			net.subnet, net.module from
 			networks net, nodes n, subnets s where net.node = n.id
@@ -202,14 +194,13 @@ class Command(rocks.commands.HostArgumentProcessor,
 
 
 		for row in self.db.fetchall():
-			mac,ip,device,gateway,netmask,vlanid,subnetid,module \
-				= row
+			mac,ip,device,netmask,vlanid,subnetid,module = row
 
 			if device and device[0:4] != 'vlan':
 				#
 				# output a script to update modprobe.conf
 				#
-				self.writeModprobe(device, module)
+				self.writeModprobe(host, device, module)
 
 			if vlanid and self.isPhysicalHost(host):
 				#
@@ -234,15 +225,15 @@ class Command(rocks.commands.HostArgumentProcessor,
 
 			if self.iface:
 				if self.iface == device:
-					self.writeConfig(mac, ip, device,
-						gateway, netmask, vlanid, host)
+					self.writeConfig(host, mac, ip, device,
+						netmask, vlanid)
 			else:
 				s = '<file name="'
 				s += '/etc/sysconfig/network-scripts/ifcfg-'
 				s += '%s">' % (device)
 
-				self.addOutput('', s)
-				self.writeConfig(mac, ip, device, gateway,
-					netmask, vlanid, host)
-				self.addOutput('', '</file>')
+				self.addOutput(host, s)
+				self.writeConfig(host, mac, ip, device,
+					netmask, vlanid)
+				self.addOutput(host, '</file>')
 

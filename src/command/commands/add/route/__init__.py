@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.5 2009/03/13 00:02:59 mjk Exp $
+# $Id: __init__.py,v 1.1 2009/03/13 00:02:59 mjk Exp $
 #
 # @Copyright@
 # 
@@ -54,71 +54,50 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
-# Revision 1.5  2009/03/13 00:02:59  mjk
+# Revision 1.1  2009/03/13 00:02:59  mjk
 # - checkpoint for route commands
 # - gateway is dead (now a default route)
 # - removed comment rows from schema (let's see what breaks)
 # - removed short-name from appliance (let's see what breaks)
 # - dbreport static-routes is dead
 #
-# Revision 1.4  2009/01/24 02:04:28  mjk
-# - more ROCKDEBUG stuff (now to stderr)
-# - os attr commands (still incomplete)
-# - fix ssl code
-#
-# Revision 1.3  2009/01/23 23:46:51  mjk
-# - continue to kill off the var tag
-# - can build xml and kickstart files for compute nodes (might even work)
-#
-# Revision 1.2  2009/01/08 23:36:01  mjk
-# - rsh edge is conditional (no more uncomment crap)
-# - add global_attribute commands (list, set, remove, dump)
-# - attributes are XML entities for kpp pass (both pass1 and pass2)
-# - attributes are XML entities for kgen pass (not used right now - may go away)
-# - some node are now interface=public
-#
-# Revision 1.1  2008/12/20 01:06:15  mjk
-# - added appliance_attributes
-# - attributes => node_attributes
-# - rocks set,list,remove appliance attr
-# - eval shell for conds has a special local dictionary that allows
-#   unresolved variables (attributes) to evaluate to None
-# - need to add this to solaris
-# - need to move UserDict stuff into pylib and remove cut/paste code
-# - need a drink
-#
 
-import sys
-import socket
+
 import rocks.commands
-import string
 
-class Command(rocks.commands.list.host.command):
+class Command(rocks.commands.add.command):
 	"""
-	Lists the set of attributes for hosts.
-
-	<arg optional='1' type='string' name='host'>
-	Host name of machine
+	Add a route for all machine in the cluster
+	
+	<arg type='string' name='address'>
+	Host or network address
 	</arg>
 	
-	<example cmd='list host attr compute-0-0'>
-	List the attributes for compute-0-0.
-	</example>
+	<arg type='string' name='gateway'>
+	Network or device gateway
+	</arg>
+
+	<param type='string' name='netmask'>
+	Specifies the netmask for a network route.  For a host route
+	this is not required and assumed to be 255.255.255.255
+	</param>
 	"""
 
 	def run(self, params, args):
 
-		self.beginOutput()
+		(netmask,) = self.fillParams([('netmask', '255.255.255.255')])
 		
-		for host in self.getHostnames(args):
-			attrs = self.db.getHostAttrs(host, 1)
+		if len(args) != 2:
+			self.abort('must supply address and gateway')
 			
-			keys = attrs.keys()
-			keys.sort()
-			for key in keys:		
-				self.addOutput(host, 
-					(key, attrs[key][0], attrs[key][1]))
-
-		self.endOutput(header=['host', 'attr', 'value', 'source' ],
-			trimOwner=0)
-
+		address = args[0]
+		gateway = args[1]
+		
+		rows = self.db.execute("""select * from global_routes
+			where network='%s'""" % address)
+		if rows:
+			self.about('route exists')
+			
+		self.db.execute("""insert into global_routes
+                                values ('%s', '%s', '%s')""" %
+                                (address, netmask, gateway))

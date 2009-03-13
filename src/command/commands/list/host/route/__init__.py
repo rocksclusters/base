@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.5 2009/03/13 00:02:59 mjk Exp $
+# $Id: __init__.py,v 1.1 2009/03/13 00:02:59 mjk Exp $
 #
 # @Copyright@
 # 
@@ -54,39 +54,14 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
-# Revision 1.5  2009/03/13 00:02:59  mjk
+# Revision 1.1  2009/03/13 00:02:59  mjk
 # - checkpoint for route commands
 # - gateway is dead (now a default route)
 # - removed comment rows from schema (let's see what breaks)
 # - removed short-name from appliance (let's see what breaks)
 # - dbreport static-routes is dead
 #
-# Revision 1.4  2009/01/24 02:04:28  mjk
-# - more ROCKDEBUG stuff (now to stderr)
-# - os attr commands (still incomplete)
-# - fix ssl code
-#
-# Revision 1.3  2009/01/23 23:46:51  mjk
-# - continue to kill off the var tag
-# - can build xml and kickstart files for compute nodes (might even work)
-#
-# Revision 1.2  2009/01/08 23:36:01  mjk
-# - rsh edge is conditional (no more uncomment crap)
-# - add global_attribute commands (list, set, remove, dump)
-# - attributes are XML entities for kpp pass (both pass1 and pass2)
-# - attributes are XML entities for kgen pass (not used right now - may go away)
-# - some node are now interface=public
-#
-# Revision 1.1  2008/12/20 01:06:15  mjk
-# - added appliance_attributes
-# - attributes => node_attributes
-# - rocks set,list,remove appliance attr
-# - eval shell for conds has a special local dictionary that allows
-#   unresolved variables (attributes) to evaluate to None
-# - need to add this to solaris
-# - need to move UserDict stuff into pylib and remove cut/paste code
-# - need a drink
-#
+
 
 import sys
 import socket
@@ -94,31 +69,24 @@ import rocks.commands
 import string
 
 class Command(rocks.commands.list.host.command):
-	"""
-	Lists the set of attributes for hosts.
-
-	<arg optional='1' type='string' name='host'>
-	Host name of machine
-	</arg>
-	
-	<example cmd='list host attr compute-0-0'>
-	List the attributes for compute-0-0.
-	</example>
-	"""
 
 	def run(self, params, args):
 
 		self.beginOutput()
 		
 		for host in self.getHostnames(args):
-			attrs = self.db.getHostAttrs(host, 1)
-			
-			keys = attrs.keys()
+			routes = self.db.getHostRoutes(host, 1)
+
+			keys = routes.keys()
 			keys.sort()
 			for key in keys:		
 				self.addOutput(host, 
-					(key, attrs[key][0], attrs[key][1]))
+					(key,
+					routes[key][0], 
+					routes[key][1], 
+					routes[key][2]))
 
-		self.endOutput(header=['host', 'attr', 'value', 'source' ],
+		self.endOutput(header=['host', 
+			'network', 'netmask', 'gateway', 'source' ],
 			trimOwner=0)
 

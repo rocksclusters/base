@@ -16,6 +16,13 @@
 
   <changelog>
   $Log: database-data.xml,v $
+  Revision 1.34  2009/03/13 00:02:59  mjk
+  - checkpoint for route commands
+  - gateway is dead (now a default route)
+  - removed comment rows from schema (let's see what breaks)
+  - removed short-name from appliance (let's see what breaks)
+  - dbreport static-routes is dead
+
   Revision 1.33  2009/03/04 19:06:29  bruno
   put site attrs in database
 
@@ -360,54 +367,55 @@ if os.path.exists('/tmp/site.attrs'):
 
 <!-- insert the base appliances into the database -->
 
-/opt/rocks/bin/rocks add appliance frontend \
-	membership='Frontend' short-name='f' \
-	node='server' graph='default' \
-	compute='no' public='no'
-	
-/opt/rocks/bin/rocks add appliance network \
-	membership='Ethernet Switches' short-name='n' \
-	node='' graph='' \
-	compute='no' public='yes'
+/opt/rocks/bin/rocks add appliance frontend membership=Frontend node=server \
+	public=no
+/opt/rocks/bin/rocks add appliance compute  membership=Compute node=compute
+/opt/rocks/bin/rocks add appliance nas      membership='NAS Appliance' node=nas 
+/opt/rocks/bin/rocks add appliance network  membership='Ethernet Switch'
+/opt/rocks/bin/rocks add appliance power    membership='Power Distribution Unit'
+/opt/rocks/bin/rocks add appliance ipmi     membership=IPMI
 
-/opt/rocks/bin/rocks add appliance power \
-	membership='Power Units' short-name='p' \
-	node='' graph='' \
-	compute='no' public='yes'
-
-/opt/rocks/bin/rocks add appliance manager \
-	membership='Remote Management' \
-	node='' graph='' \
-	compute='no' public='yes'
-
-/opt/rocks/bin/rocks add appliance nas \
-        membership='NAS Appliance' \
-        node='nas' graph='default' \
-        compute='no' public='yes'
-
-/opt/rocks/bin/rocks add appliance compute \
-        membership='Compute' short-name='c' \
-        node='compute' graph='default' \
-        compute='yes' public='yes'
-
-<!-- Insert the networking information to the nodes, subnets, and networks tables -->
+<!-- networks -->
 
 /opt/rocks/bin/rocks add network private \
-	subnet=&Kickstart_PrivateNetwork; \
-	netmask=&Kickstart_PrivateNetmask;
+	&Kickstart_PrivateNetwork; &Kickstart_PrivateNetmask;
 
 /opt/rocks/bin/rocks add network public \
-	subnet=&Kickstart_PublicNetwork; \
-	netmask=&Kickstart_PublicNetmask;
+	&Kickstart_PublicNetwork; &Kickstart_PublicNetmask;
+
+<!-- frontend host -->
 
 /opt/rocks/bin/rocks add host &Kickstart_PrivateHostname; \
 	membership=Frontend rack=0 rank=0
+
+<!-- routes
+	multicast (bottom 255 addresses only)
+	broadcast
+	default gateway (frontend)
+	default gateway (backend nodes)
+	frontend public interface over private network
+-->
+/opt/rocks/bin/rocks add route 224.0.0.0 eth0 netmask=255.255.255.0
+
+/opt/rocks/bin/rocks add route 255.255.255.255 eth0 netmask=255.255.255.255
+
+/opt/rocks/bin/rocks add host route &hostname; 0.0.0.0 \
+	&Kickstart_PublicGateway; netmask=0.0.0.0
+
+/opt/rocks/bin/rocks add route 0.0.0.0 \
+	&Kickstart_PrivateGateway; netmask=0.0.0.0
+
+/opt/rocks/bin/rocks add route &Kickstart_PublicAddress; \
+	&Kickstart_PrivateAddress; netmask=255.255.255.255
 	
-/opt/rocks/bin/rocks add host interface \
-	&Kickstart_PrivateHostname; \
-	iface=eth0 subnet=private \
-	ip=&Kickstart_PrivateAddress; \
-	name=&Kickstart_PrivateHostname;
+<!-- fronend eth0 -->
+	
+/opt/rocks/bin/rocks add host interface &hostname; eth0
+/opt/rocks/bin/rocks set host interface subnet &hostname; eth0 private
+/opt/rocks/bin/rocks set host interface ip &hostname; eth0 \
+	&Kickstart_PrivateAddress;
+/opt/rocks/bin/rocks set host interface name &hostname; eth0 \
+	&Kickstart_PrivateHostname;
 
 </post>
 
@@ -477,25 +485,15 @@ confignetworks.assignDeviceNames()
 <post>
 
 <!-- now assign public network info to eth1 -->
-/opt/rocks/bin/rocks add host interface \
-		&Kickstart_PrivateHostname; \
-		iface=eth1
+/opt/rocks/bin/rocks add host interface &hostname; eth1
 
-/opt/rocks/bin/rocks set host interface gateway \
-		&Kickstart_PrivateHostname; \
-		iface=eth1 gateway=&Kickstart_PublicGateway;
+/opt/rocks/bin/rocks set host interface subnet &hostname; eth1 public
 
-/opt/rocks/bin/rocks set host interface ip \
-		&Kickstart_PrivateHostname; \
-		iface=eth1 ip=&Kickstart_PublicAddress;
+/opt/rocks/bin/rocks set host interface ip &hostname; eth1 \
+	&Kickstart_PublicAddress;
 
-/opt/rocks/bin/rocks set host interface name \
-		&Kickstart_PrivateHostname; \
-		iface=eth1 name=&Kickstart_PublicHostname;
-
-/opt/rocks/bin/rocks set host interface subnet \
-		&Kickstart_PrivateHostname; \
-		iface=eth1 subnet=public
+/opt/rocks/bin/rocks set host interface name  &hostname; eth1 \
+	&Kickstart_PublicHostname;
 
 </post>
 

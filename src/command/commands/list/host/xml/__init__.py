@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.15 2009/03/06 22:34:16 mjk Exp $
+# $Id: __init__.py,v 1.16 2009/03/13 00:02:59 mjk Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,13 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.16  2009/03/13 00:02:59  mjk
+# - checkpoint for route commands
+# - gateway is dead (now a default route)
+# - removed comment rows from schema (let's see what breaks)
+# - removed short-name from appliance (let's see what breaks)
+# - dbreport static-routes is dead
+#
 # Revision 1.15  2009/03/06 22:34:16  mjk
 # - added roll argument to list.host.xml and list.node.xml
 # - kroll is dead, added run.roll
@@ -164,7 +171,6 @@ class Command(rocks.commands.list.host.command):
                         address, = self.db.fetchone()
 
 			attrs = self.db.getHostAttrs(host)
-			attrs['hostname']	= host
 			attrs['hostaddr']	= address
 			attrs['distribution']	= dist
 			attrs['graph']		= graph
