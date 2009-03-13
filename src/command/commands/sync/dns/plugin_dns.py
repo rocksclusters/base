@@ -1,4 +1,4 @@
-# $Id: plugin_dns.py,v 1.10 2009/03/04 21:31:44 bruno Exp $
+# $Id: plugin_dns.py,v 1.11 2009/03/13 21:19:16 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: plugin_dns.py,v $
+# Revision 1.11  2009/03/13 21:19:16  bruno
+# no more riding the shortname
+#
 # Revision 1.10  2009/03/04 21:31:44  bruno
 # convert all getGlobalVar to getHostAttr
 #
@@ -128,7 +131,7 @@ class Plugin(rocks.commands.Plugin):
 		file.write("ns A 127.0.0.1\n\n")
 
 		self.db.execute("""select n.id, n.name, n.rack, n.rank,
-			a.name, a.shortname from nodes n, appliances a,
+			a.name from nodes n, appliances a,
 			memberships m where n.membership=m.id and
 			m.appliance=a.id and n.site=0 order by n.id""")
 
@@ -139,7 +142,6 @@ class Plugin(rocks.commands.Plugin):
 			node.rack = row[2]
 			node.rank = row[3]
 			node.appname = row[4]
-			node.appalias = row[5]
 
 			# Name each active subnet
 
