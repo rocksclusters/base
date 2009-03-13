@@ -1,4 +1,4 @@
-# $Id: plugin_alias.py,v 1.1 2008/10/21 19:34:03 bruno Exp $
+# $Id: plugin_alias.py,v 1.2 2009/03/13 22:19:56 mjk Exp $
 # 
 # @Copyright@
 # 
@@ -54,13 +54,16 @@
 # @Copyright@
 #
 # $Log: plugin_alias.py,v $
+# Revision 1.2  2009/03/13 22:19:56  mjk
+# - route commands done
+# - cleanup of rocks.host plugins
+#
 # Revision 1.1  2008/10/21 19:34:03  bruno
 # added 'alias' commands
 #
 #
 #
 
-import os
 import rocks.commands
 
 class Plugin(rocks.commands.Plugin):
@@ -69,6 +72,4 @@ class Plugin(rocks.commands.Plugin):
 		return 'alias'
 
 	def run(self, host):
-		self.owner.db.execute("""delete from aliases where
-			node = (select id from nodes where name='%s')""" % host)
-
+		self.owner.command('remove.host.alias', [ host ])

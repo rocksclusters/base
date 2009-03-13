@@ -1,4 +1,4 @@
-# $Id: plugin_host.py,v 1.4 2009/03/13 22:19:56 mjk Exp $
+# $Id: plugin_attr.py,v 1.1 2009/03/13 22:19:55 mjk Exp $
 # 
 # @Copyright@
 # 
@@ -53,20 +53,16 @@
 # 
 # @Copyright@
 #
-# $Log: plugin_host.py,v $
-# Revision 1.4  2009/03/13 22:19:56  mjk
+# $Log: plugin_attr.py,v $
+# Revision 1.1  2009/03/13 22:19:55  mjk
 # - route commands done
 # - cleanup of rocks.host plugins
 #
-# Revision 1.3  2008/10/18 00:55:55  mjk
-# copyright 5.1
+# Revision 1.2  2009/03/06 21:28:12  bruno
+# need to look at node_attributes table.
 #
-# Revision 1.2  2008/03/06 23:41:38  mjk
-# copyright storm on
-#
-# Revision 1.1  2008/02/01 20:52:27  bruno
-# use plugins to support removing all database entries for a host.
-#
+# Revision 1.1  2008/12/18 20:01:33  mjk
+# attribute commands
 #
 
 import rocks.commands
@@ -74,15 +70,8 @@ import rocks.commands
 class Plugin(rocks.commands.Plugin):
 
 	def provides(self):
-		return 'host'
+		return 'attr'
 
-	def requires(self):
-		#
-		# make sure this plugin runs last
-		#
-		return [ 'TAIL' ]
-		
-	def run(self, host):
-		self.owner.db.execute("""delete from nodes where
-			name = '%s' """ % host)
+	def run(self, appliance):
+		self.owner.command('remove.appliance.attribute', [ appliance ])
 

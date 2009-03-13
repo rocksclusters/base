@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.10 2008/12/20 01:06:15 mjk Exp $
+# $Id: __init__.py,v 1.11 2009/03/13 22:19:55 mjk Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.11  2009/03/13 22:19:55  mjk
+# - route commands done
+# - cleanup of rocks.host plugins
+#
 # Revision 1.10  2008/12/20 01:06:15  mjk
 # - added appliance_attributes
 # - attributes => node_attributes
@@ -105,13 +109,7 @@
 #
 
 
-import os
-import stat
-import time
-import sys
-import string
 import rocks.commands
-
 
 class command(rocks.commands.ApplianceArgumentProcessor,
 	rocks.commands.remove.command):
@@ -134,17 +132,10 @@ class Command(command):
 	"""
 
 	def run(self, params, args):
-		apps = self.getApplianceNames(args)
+		if len(args) < 1:
+			self.abort('must supply at least one appliance')
+			
+		for appliance in self.getApplianceNames(args):
+			self.runPlugins(appliance)
 
-		if len(apps) != 1:
-			self.abort('must supply one appliance')
-
-		app_name = apps[0]
-		
-		self.db.execute("""delete from memberships where 
-			appliance=(select id from appliances where name='%s')"""
-			% app_name)
-		
-		self.db.execute("""delete from appliances where name='%s'"""
-			% app_name)
 

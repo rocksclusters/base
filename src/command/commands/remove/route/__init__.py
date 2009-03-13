@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.1 2009/03/13 21:10:50 mjk Exp $
+# $Id: __init__.py,v 1.2 2009/03/13 22:19:56 mjk Exp $
 #
 # @Copyright@
 # 
@@ -54,8 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
-# Revision 1.1  2009/03/13 21:10:50  mjk
-# - added dump route commands
+# Revision 1.2  2009/03/13 22:19:56  mjk
+# - route commands done
+# - cleanup of rocks.host plugins
 #
 
 
@@ -72,5 +73,5 @@ class Command(rocks.commands.remove.command):
 			self.abort('address required')
 
 		self.db.execute("""delete from global_routes where 
-			network='%s'""" % address)
+			network = '%s'""" % address)
 

@@ -1,4 +1,4 @@
-# $Id: plugin_interface.py,v 1.3 2008/10/18 00:55:55 mjk Exp $
+# $Id: plugin_interface.py,v 1.4 2009/03/13 22:19:56 mjk Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: plugin_interface.py,v $
+# Revision 1.4  2009/03/13 22:19:56  mjk
+# - route commands done
+# - cleanup of rocks.host plugins
+#
 # Revision 1.3  2008/10/18 00:55:55  mjk
 # copyright 5.1
 #
@@ -65,7 +69,6 @@
 #
 #
 
-import os
 import rocks.commands
 
 class Plugin(rocks.commands.Plugin):
@@ -76,11 +79,6 @@ class Plugin(rocks.commands.Plugin):
 	def requires(self):
 		return [ 'pxeboot' ]
 		
-	def run(self, args):
-		if len(args) > 0:
-			#
-			# remove all the interfaces for this host
-			#
-			self.owner.command('remove.host.interface',
-				[ args, '%' ])
+	def run(self, host):
+		self.owner.command('remove.host.interface', [ host ])
 		

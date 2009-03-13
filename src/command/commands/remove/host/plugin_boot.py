@@ -1,4 +1,4 @@
-# $Id: plugin_boot.py,v 1.1 2008/12/15 22:27:21 bruno Exp $
+# $Id: plugin_boot.py,v 1.2 2009/03/13 22:19:56 mjk Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: plugin_boot.py,v $
+# Revision 1.2  2009/03/13 22:19:56  mjk
+# - route commands done
+# - cleanup of rocks.host plugins
+#
 # Revision 1.1  2008/12/15 22:27:21  bruno
 # convert pxeboot and pxeaction tables to boot and bootaction tables.
 #
@@ -70,7 +74,6 @@
 #
 #
 
-import os
 import rocks.commands
 
 class Plugin(rocks.commands.Plugin):
@@ -78,7 +81,6 @@ class Plugin(rocks.commands.Plugin):
 	def provides(self):
 		return 'pxeboot'
 
-	def run(self, args):
-		if len(args) > 0:
-			self.owner.command('remove.host.boot', [ args ])
+	def run(self, host):
+		self.owner.command('remove.host.boot', [ host ])
 		

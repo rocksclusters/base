@@ -1,5 +1,5 @@
-# $Id: plugin_host.py,v 1.4 2009/03/13 22:19:56 mjk Exp $
-# 
+# $Id: __init__.py,v 1.1 2009/03/13 22:19:55 mjk Exp $
+#
 # @Copyright@
 # 
 # 				Rocks(r)
@@ -53,36 +53,26 @@
 # 
 # @Copyright@
 #
-# $Log: plugin_host.py,v $
-# Revision 1.4  2009/03/13 22:19:56  mjk
+# $Log: __init__.py,v $
+# Revision 1.1  2009/03/13 22:19:55  mjk
 # - route commands done
 # - cleanup of rocks.host plugins
-#
-# Revision 1.3  2008/10/18 00:55:55  mjk
-# copyright 5.1
-#
-# Revision 1.2  2008/03/06 23:41:38  mjk
-# copyright storm on
-#
-# Revision 1.1  2008/02/01 20:52:27  bruno
-# use plugins to support removing all database entries for a host.
-#
 #
 
 import rocks.commands
 
-class Plugin(rocks.commands.Plugin):
+class Command(rocks.commands.remove.appliance.command):
 
-	def provides(self):
-		return 'host'
+	def run(self, params, args):
+		(args, address) = self.fillPositionalArgs(('address', ))
 
-	def requires(self):
-		#
-		# make sure this plugin runs last
-		#
-		return [ 'TAIL' ]
-		
-	def run(self, host):
-		self.owner.db.execute("""delete from nodes where
-			name = '%s' """ % host)
+		if not address:
+			self.abort('requires address')
+
+		for appliance in self.getApplianceNames(args):
+			self.db.execute("""
+			delete from appliance_routes where 
+			appliance = (select id from appliances where name='%s')
+			and network = '%s'
+			""" % (appliance, address))
 

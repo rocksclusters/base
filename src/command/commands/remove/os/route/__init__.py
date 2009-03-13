@@ -1,5 +1,5 @@
-# $Id: plugin_attribute.py,v 1.2 2009/03/06 21:28:12 bruno Exp $
-# 
+# $Id: __init__.py,v 1.1 2009/03/13 22:19:56 mjk Exp $
+#
 # @Copyright@
 # 
 # 				Rocks(r)
@@ -53,23 +53,23 @@
 # 
 # @Copyright@
 #
-# $Log: plugin_attribute.py,v $
-# Revision 1.2  2009/03/06 21:28:12  bruno
-# need to look at node_attributes table.
-#
-# Revision 1.1  2008/12/18 20:01:33  mjk
-# attribute commands
+# $Log: __init__.py,v $
+# Revision 1.1  2009/03/13 22:19:56  mjk
+# - route commands done
+# - cleanup of rocks.host plugins
 #
 
-import os
 import rocks.commands
 
-class Plugin(rocks.commands.Plugin):
+class Command(rocks.commands.remove.os.command):
 
-	def provides(self):
-		return 'attributes'
+	def run(self, params, args):
+		(args, address) = self.fillPositionalArgs(('address', ))
 
-	def run(self, host):
-		self.owner.db.execute("""delete from node_attributes where
-			node = (select id from nodes where name='%s')""" % host)
+		if not address:
+			self.abort('address required')
+
+		for os in self.getOSNames(args):
+			self.db.execute("""delete from os_routes where 
+			os = '%s' and network = '%s'""" % (os, address))
 
