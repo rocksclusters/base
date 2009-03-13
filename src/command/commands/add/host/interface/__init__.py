@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.16 2009/03/13 00:02:59 mjk Exp $
+# $Id: __init__.py,v 1.17 2009/03/13 18:45:59 mjk Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,12 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.17  2009/03/13 18:45:59  mjk
+# - rocks add host route works
+# - added rocks.add.host.command class
+# - getHostAttrs|Routes uses getHostname to normalize the host arg
+# - fixed getHostRoutes
+#
 # Revision 1.16  2009/03/13 00:02:59  mjk
 # - checkpoint for route commands
 # - gateway is dead (now a default route)
@@ -153,7 +159,7 @@ import string
 import rocks.commands
 
 
-class Command(rocks.commands.HostArgumentProcessor, rocks.commands.add.command):
+class Command(rocks.commands.add.host.command):
 	"""
 	Adds an interface to a host and sets the associated values 
 

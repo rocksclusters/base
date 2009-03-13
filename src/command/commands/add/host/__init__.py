@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.13 2008/10/18 00:55:48 mjk Exp $
+# $Id: __init__.py,v 1.14 2009/03/13 18:45:58 mjk Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,12 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.14  2009/03/13 18:45:58  mjk
+# - rocks add host route works
+# - added rocks.add.host.command class
+# - getHostAttrs|Routes uses getHostname to normalize the host arg
+# - fixed getHostRoutes
+#
 # Revision 1.13  2008/10/18 00:55:48  mjk
 # copyright 5.1
 #
@@ -121,8 +127,10 @@ import sys
 import string
 import rocks.commands
 
-class Command(rocks.commands.HostArgumentProcessor,
-	rocks.commands.add.command):
+class command(rocks.commands.HostArgumentProcessor, rocks.commands.add.command):
+	pass
+	
+class Command(command):
 	"""
 	Add an new host to the cluster.
 

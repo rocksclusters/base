@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.66 2009/03/13 00:02:59 mjk Exp $
+# $Id: __init__.py,v 1.67 2009/03/13 18:45:58 mjk Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,12 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.67  2009/03/13 18:45:58  mjk
+# - rocks add host route works
+# - added rocks.add.host.command class
+# - getHostAttrs|Routes uses getHostname to normalize the host arg
+# - fixed getHostRoutes
+#
 # Revision 1.66  2009/03/13 00:02:59  mjk
 # - checkpoint for route commands
 # - gateway is dead (now a default route)
@@ -990,6 +996,7 @@ class DatabaseConnection:
 
 	def getHostRoutes(self, host, showsource=0):
 
+		host = self.getHostname(host)
 		routes = {}
 		
 		# global
@@ -1002,8 +1009,8 @@ class DatabaseConnection:
 				routes[n] = (m, g)
 
 		# os
-		self.execute("""select r.network, r.netmask, r.gateway, r.os
-			from os_routes r, nodes n where
+		self.execute("""select r.network, r.netmask, r.gateway from
+			os_routes r, nodes n where
 			r.os=n.os and n.name='%s'"""  % host)
 		for (n, m, g) in self.fetchall():
 			if showsource:
@@ -1012,8 +1019,7 @@ class DatabaseConnection:
 				routes[n] = (m, g)
 
 		# appliance		
-		self.execute("""select r.network, r.netmask, r.gateway,
-			r.appliance from
+		self.execute("""select r.network, r.netmask, r.gateway from
 			appliance_routes r,
 			nodes n,
 			memberships m,
@@ -1027,8 +1033,7 @@ class DatabaseConnection:
 				routes[n] = (m, g)
 
 		# host				
-		self.execute("""select r.network, r.netmask, r.gateway,
-			r.node from
+		self.execute("""select r.network, r.netmask, r.gateway from
 			node_routes r, nodes n where
 			n.name='%s' and n.id=r.node""" % host)
 		for (n, m, g) in self.fetchall():
@@ -1044,11 +1049,18 @@ class DatabaseConnection:
 		specific attributes for the given host.
 		"""
 
+		host = self.getHostname(host)
+
 		attrs = {}
 		
 		self.execute('select rack,rank from nodes where name="%s"' %
 			host)
-		(rack, rank) = self.fetchone()
+			
+		try:
+			(rack, rank) = self.fetchone()
+		except:
+			print 'XXX', host
+		
 		if showsource:
 			attrs['hostname']	= (host, 'I')
 			attrs['rack']		= (rack, 'I')

@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.1 2008/10/21 19:34:03 bruno Exp $
+# $Id: __init__.py,v 1.2 2009/03/13 18:45:58 mjk Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,12 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.2  2009/03/13 18:45:58  mjk
+# - rocks add host route works
+# - added rocks.add.host.command class
+# - getHostAttrs|Routes uses getHostname to normalize the host arg
+# - fixed getHostRoutes
+#
 # Revision 1.1  2008/10/21 19:34:03  bruno
 # added 'alias' commands
 #
@@ -62,7 +68,7 @@
 
 import rocks.commands
 
-class Command(rocks.commands.HostArgumentProcessor, rocks.commands.add.command):
+class Command(rocks.commands.add.host.command):
 	"""
 	Adds an alias to a host
 

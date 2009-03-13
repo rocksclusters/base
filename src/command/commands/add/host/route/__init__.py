@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.1 2009/03/13 17:58:15 mjk Exp $
+# $Id: __init__.py,v 1.2 2009/03/13 18:45:59 mjk Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,12 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.2  2009/03/13 18:45:59  mjk
+# - rocks add host route works
+# - added rocks.add.host.command class
+# - getHostAttrs|Routes uses getHostname to normalize the host arg
+# - fixed getHostRoutes
+#
 # Revision 1.1  2009/03/13 17:58:15  mjk
 # *** empty log message ***
 #
@@ -88,12 +94,17 @@ class Command(rocks.commands.add.host.command):
 		
 		hosts = self.getHostnames(args)
 		
+		if not address:
+			self.abort('address required')
+		if not gateway:
+			self.abourt('gateway required')
+		
 		# Verify the route doesn't already exist.  If it does
 		# for any of the hosts abort.
 		
 		for host in hosts:
 			rows = self.db.execute("""select * from 
-				node_routes r, node n where
+				node_routes r, nodes n where
 				r.node=n.id and r.network='%s' 
 				and n.name='%s'""" %	
 				(address, host)) 
