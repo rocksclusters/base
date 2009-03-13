@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.3 2009/03/13 19:44:09 mjk Exp $
+# $Id: __init__.py,v 1.1 2009/03/13 19:44:09 mjk Exp $
 #
 # @Copyright@
 # 
@@ -54,18 +54,15 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
-# Revision 1.3  2009/03/13 19:44:09  mjk
+# Revision 1.1  2009/03/13 19:44:09  mjk
 # - added add.appliance.route
 # - added add.os.route
-#
-# Revision 1.1  2009/03/13 17:58:15  mjk
-# *** empty log message ***
 #
 
 
 import rocks.commands
 
-class Command(rocks.commands.add.host.command):
+class Command(rocks.commands.add.appliance.command):
 	"""
 	Add a route for all machine in the cluster
 	
@@ -90,7 +87,7 @@ class Command(rocks.commands.add.host.command):
 
 		(netmask,) = self.fillParams([('netmask', '255.255.255.255')])
 		
-		hosts = self.getHostnames(args)
+		apps = self.getApplianceNames(args)
 		
 		if not address:
 			self.abort('address required')
@@ -98,22 +95,22 @@ class Command(rocks.commands.add.host.command):
 			self.abort('gateway required')
 		
 		# Verify the route doesn't already exist.  If it does
-		# for any of the hosts abort.
+		# for any of the appliances abort.
 		
-		for host in hosts:
+		for app in apps:
 			rows = self.db.execute("""select * from 
-				node_routes r, nodes n where
-				r.node=n.id and r.network='%s' 
-				and n.name='%s'""" %	
-				(address, host)) 
+				appliance_routes r, appliances a where
+				r.appliance=a.id and r.network='%s' 
+				and a.name='%s'""" %	
+				(address, app)) 
 			if rows:
 				self.abort('route exists')
 		
 		# Now that we know things will work insert the route for
-		# all the hosts
+		# all the appliances
 		
-		for host in hosts:	
-			self.db.execute("""insert into node_routes values 
-				((select id from nodes where name='%s'),
+		for app in apps:	
+			self.db.execute("""insert into appliance_routes values 
+				((select id from appliances where name='%s'),
 				'%s', '%s', '%s')""" %
-                	        (host, address, netmask, gateway))
+                	        (app, address, netmask, gateway))

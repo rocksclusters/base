@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.17 2009/03/13 17:29:11 bruno Exp $
+# $Id: __init__.py,v 1.18 2009/03/13 19:44:09 mjk Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.18  2009/03/13 19:44:09  mjk
+# - added add.appliance.route
+# - added add.os.route
+#
 # Revision 1.17  2009/03/13 17:29:11  bruno
 # cleanup
 #
@@ -138,9 +142,11 @@ import sys
 import string
 import rocks.commands
 
-
-class Command(rocks.commands.ApplianceArgumentProcessor,
+class command(rocks.commands.ApplianceArgumentProcessor,
 	rocks.commands.add.command):
+	pass
+
+class Command(command):
 	"""
 	Add an appliance specification to the database.
 	

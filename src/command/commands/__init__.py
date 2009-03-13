@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.67 2009/03/13 18:45:58 mjk Exp $
+# $Id: __init__.py,v 1.68 2009/03/13 19:44:09 mjk Exp $
 # 
 # @Copyright@
 # 
@@ -54,11 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
-# Revision 1.67  2009/03/13 18:45:58  mjk
-# - rocks add host route works
-# - added rocks.add.host.command class
-# - getHostAttrs|Routes uses getHostname to normalize the host arg
-# - fixed getHostRoutes
+# Revision 1.68  2009/03/13 19:44:09  mjk
+# - added add.appliance.route
+# - added add.os.route
 #
 # Revision 1.66  2009/03/13 00:02:59  mjk
 # - checkpoint for route commands
