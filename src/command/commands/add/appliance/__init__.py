@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.16 2009/03/13 00:02:59 mjk Exp $
+# $Id: __init__.py,v 1.17 2009/03/13 17:29:11 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.17  2009/03/13 17:29:11  bruno
+# cleanup
+#
 # Revision 1.16  2009/03/13 00:02:59  mjk
 # - checkpoint for route commands
 # - gateway is dead (now a default route)
@@ -145,11 +148,6 @@ class Command(rocks.commands.ApplianceArgumentProcessor,
 	The appliance name (e.g., 'compute', 'frontend', 'nas').
 	</arg>
 
-	<param type='bool' name='compute'>
-	True means jobs can be scheduled on these types of appliances. The
-	default is 'yes'.
-	</param>
-	
 	<param type='string' name='graph'>
 	The directory name of the graph XML files. The default is 'default'.
 	</param>
@@ -165,10 +163,6 @@ class Command(rocks.commands.ApplianceArgumentProcessor,
 	not supplied, the node name is set to the appliance name.
 	</param>
 	
-	<param type='string' name='short-name'>
-	The basename for the short host name (e.g., 'c', 'f', 'n').
-	</param>
-	
 	<param type='bool' name='public'>
 	True means this appliance will be displayed by 'insert-ethers' in 
 	the Appliance menu. The default is 'yes'.
@@ -180,10 +174,10 @@ class Command(rocks.commands.ApplianceArgumentProcessor,
 	Acceptable values are 'linux' or 'sunos'. Defaults to 'linux'
 	</param>
 
-	<example cmd='add appliance nas membership="NAS Appliance" node=nas graph=default compute=no public=yes'>
+	<example cmd='add appliance nas membership="NAS Appliance" node=nas graph=default public=yes'>
 	</example>
 	
-	<example cmd='add appliance tile membership=Tile node=viz-tile graph=default compute=yes public=yes'>
+	<example cmd='add appliance tile membership=Tile node=viz-tile graph=default public=yes'>
 	</example>
 	"""
 
@@ -196,26 +190,23 @@ class Command(rocks.commands.ApplianceArgumentProcessor,
 		if app_name in self.getApplianceNames():
 			self.abort('appliance "%s" exists' % app_name)
 
-		(mem_name, root, graph,	shortname, compute, public, osname) = \
+		(mem_name, node, graph,	public, osname) = \
 			self.fillParams(
 				[('membership', ), 
 				('node', ''),
 				('graph', ''), 
-				('short-name', 'NULL'), 
-				('compute', 'y'), 
 				('public', 'y'),
 				('os','linux')])
 
-		compute = self.bool2str(self.str2bool(compute))
 		public  = self.bool2str(self.str2bool(public))
 		
 		if node and not graph:
 			graph = 'default'
 			
 		self.db.execute("""insert into appliances 
-			(name, shortname, graph, node, os) values
-			('%s', '%s', '%s', '%s', '%s')""" % 
-			(app_name, shortname, graph, root, osname))
+			(name, graph, node, os) values
+			('%s', '%s', '%s', '%s')""" % 
+			(app_name, graph, node, osname))
 
 		# add a row to the memberships table
 
@@ -223,11 +214,10 @@ class Command(rocks.commands.ApplianceArgumentProcessor,
 			mem_name = string.capitalize(app_name)
 
 		self.db.execute("""insert into memberships
-			(name, appliance, distribution, compute, public)
+			(name, appliance, distribution, public)
 			values
 			('%s',
 			(select id from appliances where name='%s'), 
 			(select id from distributions where name='rocks-dist'),
-			'%s',
 			'%s')""" %
-			(mem_name, app_name, compute, public))
+			(mem_name, app_name, public))
