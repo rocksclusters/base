@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.4 2009/03/04 20:15:31 bruno Exp $
+# $Id: __init__.py,v 1.5 2009/03/13 17:28:50 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.5  2009/03/13 17:28:50  bruno
+# make a class that can be inherited by lower commands
+#
 # Revision 1.4  2009/03/04 20:15:31  bruno
 # moved 'dbreport hosts' and 'dbreport resolv' into the command line
 #
@@ -73,8 +76,11 @@ import rocks.commands
 import rocks.ip
 import os.path
 
-class Command(rocks.commands.HostArgumentProcessor,
+class command(rocks.commands.HostArgumentProcessor,
 		rocks.commands.report.command):
+	pass
+
+class Command(command):
 	"""
 	Report the host to IP address mapping in the form suitable for
 	/etc/hosts.
