@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.15 2009/01/14 00:20:56 bruno Exp $
+# $Id: __init__.py,v 1.16 2009/03/13 17:32:21 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.16  2009/03/13 17:32:21  bruno
+# nuked 'comment'
+#
 # Revision 1.15  2009/01/14 00:20:56  bruno
 # unify the physical node and VM node boot action functionality
 #
@@ -135,7 +138,7 @@ class command(rocks.commands.HostArgumentProcessor,
 	
 class Command(command):
 	"""
-	List the membership, CPU count, physical position info and comment for
+	List the membership, CPU count and physical position info for
 	a list of hosts.
 
 	<arg optional='1' type='string' name='host' repeat='1'>
@@ -157,11 +160,11 @@ class Command(command):
 
 		for host in self.getHostnames(args):
 			self.db.execute("""select m.name, n.cpus,
-				n.rack, n.rank, n.runaction, n.installaction,
-				n.comment from nodes n, memberships m where 
+				n.rack, n.rank, n.runaction, n.installaction
+				from nodes n, memberships m where 
 				n.membership=m.id and n.name='%s'""" % host)
 			self.addOutput(host, self.db.fetchone())
 			
 		self.endOutput(header=['host', 'membership', 'cpus', 'rack',
-			'rank', 'runaction', 'installaction', 'comment'])
+			'rank', 'runaction', 'installaction'])
 		
