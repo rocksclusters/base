@@ -1,4 +1,4 @@
-# $Id: plugin_appliance_attr.py,v 1.1 2008/12/23 00:14:05 mjk Exp $
+# $Id: plugin_appliance_attr.py,v 1.2 2009/03/13 21:10:49 mjk Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: plugin_appliance_attr.py,v $
+# Revision 1.2  2009/03/13 21:10:49  mjk
+# - added dump route commands
+#
 # Revision 1.1  2008/12/23 00:14:05  mjk
 # - moved build and eval of cond strings into cond.py
 # - added dump appliance,host attrs (and plugins)
@@ -62,7 +65,6 @@
 # - random 80 col fixes in code (and CVS logs)
 #
 
-import os
 import rocks.commands
 
 class Plugin(rocks.commands.Plugin):
@@ -74,6 +76,7 @@ class Plugin(rocks.commands.Plugin):
 		return [ 'appliance' ]
 		
 	def run(self, args):
-		self.owner.addText(self.owner.command('dump.appliance.attr', []))
+		self.owner.addText(self.owner.command('dump.appliance.attr',
+			[]))
 		
 

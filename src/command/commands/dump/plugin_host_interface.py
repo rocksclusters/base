@@ -1,4 +1,4 @@
-# $Id: plugin_host_interface.py,v 1.6 2008/10/18 00:55:49 mjk Exp $
+# $Id: plugin_host_interface.py,v 1.7 2009/03/13 21:10:49 mjk Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: plugin_host_interface.py,v $
+# Revision 1.7  2009/03/13 21:10:49  mjk
+# - added dump route commands
+#
 # Revision 1.6  2008/10/18 00:55:49  mjk
 # copyright 5.1
 #
@@ -74,7 +77,6 @@
 # added lost plugins
 #
 
-import os
 import rocks.commands
 
 class Plugin(rocks.commands.Plugin):

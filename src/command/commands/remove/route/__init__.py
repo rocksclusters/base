@@ -1,5 +1,5 @@
-# $Id: plugin_attr.py,v 1.2 2009/03/13 21:10:49 mjk Exp $
-# 
+# $Id: __init__.py,v 1.1 2009/03/13 21:10:50 mjk Exp $
+#
 # @Copyright@
 # 
 # 				Rocks(r)
@@ -53,26 +53,24 @@
 # 
 # @Copyright@
 #
-# $Log: plugin_attr.py,v $
-# Revision 1.2  2009/03/13 21:10:49  mjk
+# $Log: __init__.py,v $
+# Revision 1.1  2009/03/13 21:10:50  mjk
 # - added dump route commands
 #
-# Revision 1.1  2009/01/08 23:36:01  mjk
-# - rsh edge is conditional (no more uncomment crap)
-# - add global_attribute commands (list, set, remove, dump)
-# - attributes are XML entities for kpp pass (both pass1 and pass2)
-# - attributes are XML entities for kgen pass (not used right now - may go away)
-# - some node are now interface=public
-#
+
+
 
 import rocks.commands
 
-class Plugin(rocks.commands.Plugin):
+class Command(rocks.commands.remove.command):
 
-	def provides(self):
-		return 'attr'
-		
-	def run(self, args):
-		self.owner.addText(self.owner.command('dump.attr', []))
-		
+
+	def run(self, params, args):
+		(args, address) = self.fillPositionalArgs(('address', ))
+
+		if not address:
+			self.abort('address required')
+
+		self.db.execute("""delete from global_routes where 
+			network='%s'""" % address)
 

@@ -1,5 +1,5 @@
-# $Id: plugin_os_attrs.py,v 1.1 2009/02/10 20:11:20 mjk Exp $
-# 
+# $Id: __init__.py,v 1.1 2009/03/13 21:10:49 mjk Exp $
+#
 # @Copyright@
 # 
 # 				Rocks(r)
@@ -53,20 +53,23 @@
 # 
 # @Copyright@
 #
-# $Log: plugin_os_attrs.py,v $
-# Revision 1.1  2009/02/10 20:11:20  mjk
-# os attr stuff for anoop
+# $Log: __init__.py,v $
+# Revision 1.1  2009/03/13 21:10:49  mjk
+# - added dump route commands
 #
 
-import os
 import rocks.commands
 
-class Plugin(rocks.commands.Plugin):
+class Command(rocks.commands.dump.os.command):
+	"""
+	Dump the set of attributes
+	"""
 
-	def provides(self):
-		return 'os-attr'
-		
-	def run(self, args):
-		self.owner.addText(self.owner.command('dump.os.attr', []))
-		
-
+	def run(self, params, args):
+	
+		for os in self.getOSNames(args):
+			self.db.execute("""select network, netmask, gateway
+				from os_routes where os='%s'""" % os)
+			for n, m, g in self.db.fetchall():
+				self.dump('add os route %s %s %s netmask=%s' %
+					(os, n, g, m))
