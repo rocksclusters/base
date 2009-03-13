@@ -16,6 +16,9 @@
 
   <changelog>
   $Log: database-data.xml,v $
+  Revision 1.36  2009/03/13 20:48:26  bruno
+  nuke another Node_Hostname
+
   Revision 1.35  2009/03/13 16:41:00  bruno
   added starting 'post' tag
 
@@ -435,13 +438,6 @@ import os
 import string
 import rocks.ConfigNetworks
 
-#
-# load the 'environment' variables with values that normally are loaded by
-# an eval statement during a kickstart.cgi http request
-#
-
-os.environ['Node_Hostname'] = '&Kickstart_PrivateHostname;'
-
 file = open('/tmp/interfaces', 'r')
 
 macstr = 'X-RHN-Provisioning'
@@ -475,7 +471,7 @@ file.close()
 #
 # connect to the database
 #
-confignetworks = rocks.ConfigNetworks.App()
+confignetworks = rocks.ConfigNetworks.App('&Kickstart_PrivateHostname;')
 
 confignetworks.params['user'] = [ 'apache', 'host' ]
 confignetworks.connect()
