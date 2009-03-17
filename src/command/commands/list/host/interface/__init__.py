@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.15 2009/03/13 00:02:59 mjk Exp $
+# $Id: __init__.py,v 1.16 2009/03/17 18:50:24 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.16  2009/03/17 18:50:24  bruno
+# adjust for no gateway
+#
 # Revision 1.15  2009/03/13 00:02:59  mjk
 # - checkpoint for route commands
 # - gateway is dead (now a default route)
@@ -184,7 +187,7 @@ class Command(rocks.commands.list.host.command):
                 		if row[1] and reg.match(row[1]):  
 					self.addOutput(host, (row[0], row[1],
 						None, None, None, None,
-						None, row[8]) )
+						None, row[7]) )
 				else:
 					self.addOutput(host, row )
 
