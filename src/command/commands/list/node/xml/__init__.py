@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.40 2009/03/06 22:34:16 mjk Exp $
+# $Id: __init__.py,v 1.41 2009/03/19 21:37:02 mjk Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.41  2009/03/19 21:37:02  mjk
+# attrs can also be the pathname of the site.attrs file
+#
 # Revision 1.40  2009/03/06 22:34:16  mjk
 # - added roll argument to list.host.xml and list.node.xml
 # - kroll is dead, added run.roll
@@ -321,7 +324,21 @@ class Command(rocks.commands.list.command):
 			rolls = rolls.split(',')
 
 		if attributes:
-			attrs = eval(attributes)
+			try:
+				attrs = eval(attributes)
+			except:
+				attrs = {}
+				if os.path.exists(attributes):
+					file = open('attributes', 'r')
+					for line in file.readlines():
+						l = line.split(':', 1)
+						if len(l) == 2:
+							#
+							# key/value pairs
+							#
+							attrs[l[0].strip()] = \
+								l[1].strip()
+				file.close()
 		else:
 			attrs = {}
 
