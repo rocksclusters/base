@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.5 2008/12/18 21:41:17 bruno Exp $
+# $Id: __init__.py,v 1.6 2009/03/21 22:22:55 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,11 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.6  2009/03/21 22:22:55  bruno
+#  - lights-out install of VM frontends with new node_rolls table
+#  - nuked 'site' columns and tables from database
+#  - worked through some bugs regarding entities
+#
 # Revision 1.5  2008/12/18 21:41:17  bruno
 # add the 'enabled' field to the rolls selection code while building a distro.
 #
@@ -140,7 +145,7 @@ class Command(rocks.commands.create.command):
 		rolls = []
 
 		self.db.execute("""select name,version,arch,enabled from
-			rolls where site=0 and OS="linux" """)
+			rolls where OS="linux" """)
 
 		for name,version,arch,enabled in self.db.fetchall():
 			if enabled == 'yes' and arch == arch:

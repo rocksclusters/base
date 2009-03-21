@@ -4,6 +4,11 @@
 
 	<changelog>
 	$Log: base.xml,v $
+	Revision 1.48  2009/03/21 22:22:54  bruno
+	 - lights-out install of VM frontends with new node_rolls table
+	 - nuked 'site' columns and tables from database
+	 - worked through some bugs regarding entities
+	
 	Revision 1.47  2009/03/13 00:02:59  mjk
 	- checkpoint for route commands
 	- gateway is dead (now a default route)
@@ -212,7 +217,8 @@
 	<order head="database-data">
 		<tail>rocks-dist</tail>
 		<tail>install</tail>
-		<tail>routes-base</tail>
+		<tail>routes-client</tail>
+		<tail>routes-server</tail>
 		<tail>insert-rolls</tail>
 		<tail>server</tail>
 		<tail>pxe</tail>
@@ -299,7 +305,6 @@
 		<to>grub</to>
 		<to>ip-diag</to>
 		<to>logrotate</to>
-		<to>routes-base</to>
 		<to>rpc</to>
 		<to>scripting</to>
 		<to>node</to>
@@ -343,6 +348,7 @@
 		<to>syslog-server</to>
 		<to>server-firewall</to>
 		<to>partitions-save-server</to>
+		<to>routes-server</to>
 	</edge>
 
 	<edge from="server">
@@ -373,6 +379,7 @@
 		<to>shared-memory</to>
 		<to>client-firewall</to>
 		<to>partitions-save</to>
+		<to>routes-client</to>
 	</edge>
 
 	<edge from="security-client">

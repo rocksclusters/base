@@ -16,6 +16,11 @@
 
   <changelog>
   $Log: database-data.xml,v $
+  Revision 1.37  2009/03/21 22:22:55  bruno
+   - lights-out install of VM frontends with new node_rolls table
+   - nuked 'site' columns and tables from database
+   - worked through some bugs regarding entities
+
   Revision 1.36  2009/03/13 20:48:26  bruno
   nuke another Node_Hostname
 
@@ -407,7 +412,7 @@ if os.path.exists('/tmp/site.attrs'):
 
 /opt/rocks/bin/rocks add route 255.255.255.255 eth0 netmask=255.255.255.255
 
-/opt/rocks/bin/rocks add host route &hostname; 0.0.0.0 \
+/opt/rocks/bin/rocks add host route &Kickstart_PrivateHostname; 0.0.0.0 \
 	&Kickstart_PublicGateway; netmask=0.0.0.0
 
 /opt/rocks/bin/rocks add route 0.0.0.0 \
@@ -418,11 +423,15 @@ if os.path.exists('/tmp/site.attrs'):
 	
 <!-- fronend eth0 -->
 	
-/opt/rocks/bin/rocks add host interface &hostname; eth0
-/opt/rocks/bin/rocks set host interface subnet &hostname; eth0 private
-/opt/rocks/bin/rocks set host interface ip &hostname; eth0 \
+/opt/rocks/bin/rocks add host interface &Kickstart_PrivateHostname; eth0
+
+/opt/rocks/bin/rocks set host interface subnet &Kickstart_PrivateHostname; \
+	eth0 private
+
+/opt/rocks/bin/rocks set host interface ip &Kickstart_PrivateHostname; eth0 \
 	&Kickstart_PrivateAddress;
-/opt/rocks/bin/rocks set host interface name &hostname; eth0 \
+
+/opt/rocks/bin/rocks set host interface name &Kickstart_PrivateHostname; eth0 \
 	&Kickstart_PrivateHostname;
 
 </post>
@@ -486,14 +495,15 @@ confignetworks.assignDeviceNames()
 <post>
 
 <!-- now assign public network info to eth1 -->
-/opt/rocks/bin/rocks add host interface &hostname; eth1
+/opt/rocks/bin/rocks add host interface &Kickstart_PrivateHostname; eth1
 
-/opt/rocks/bin/rocks set host interface subnet &hostname; eth1 public
+/opt/rocks/bin/rocks set host interface subnet &Kickstart_PrivateHostname; \
+	eth1 public
 
-/opt/rocks/bin/rocks set host interface ip &hostname; eth1 \
+/opt/rocks/bin/rocks set host interface ip &Kickstart_PrivateHostname; eth1 \
 	&Kickstart_PublicAddress;
 
-/opt/rocks/bin/rocks set host interface name  &hostname; eth1 \
+/opt/rocks/bin/rocks set host interface name  &Kickstart_PrivateHostname; eth1 \
 	&Kickstart_PublicHostname;
 
 </post>

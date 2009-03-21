@@ -23,12 +23,6 @@
 
 <post>
 
-<file name="/etc/rc.d/rocksconfig.d/post-50-insert-pci" perms="555">
-#!/bin/bash
-
-/opt/rocks/sbin/insert-pcis &gt; /dev/null 2&gt;&amp;1 
-</file>
-
 <!-- On servers, turn off auto reinstall -->
 /sbin/chkconfig rocks-grub off
 

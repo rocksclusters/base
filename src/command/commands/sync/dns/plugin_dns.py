@@ -1,4 +1,4 @@
-# $Id: plugin_dns.py,v 1.11 2009/03/13 21:19:16 bruno Exp $
+# $Id: plugin_dns.py,v 1.12 2009/03/21 22:22:55 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,11 @@
 # @Copyright@
 #
 # $Log: plugin_dns.py,v $
+# Revision 1.12  2009/03/21 22:22:55  bruno
+#  - lights-out install of VM frontends with new node_rolls table
+#  - nuked 'site' columns and tables from database
+#  - worked through some bugs regarding entities
+#
 # Revision 1.11  2009/03/13 21:19:16  bruno
 # no more riding the shortname
 #
@@ -133,7 +138,7 @@ class Plugin(rocks.commands.Plugin):
 		self.db.execute("""select n.id, n.name, n.rack, n.rank,
 			a.name from nodes n, appliances a,
 			memberships m where n.membership=m.id and
-			m.appliance=a.id and n.site=0 order by n.id""")
+			m.appliance=a.id order by n.id""")
 
 		for row in self.db.fetchall():
 			node = rocks.util.Struct()
@@ -234,7 +239,7 @@ class Plugin(rocks.commands.Plugin):
 
 		mask = self.owner.getNetmask()
 
-		self.db.execute('select id,name from nodes where site=0')
+		self.db.execute('select id,name from nodes')
 
 		for row in self.db.fetchall():
 			nodeid, name = row

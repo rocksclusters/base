@@ -14,6 +14,11 @@
 
 	<changelog>
 	$Log: routes-server.xml,v $
+	Revision 1.16  2009/03/21 22:22:55  bruno
+	 - lights-out install of VM frontends with new node_rolls table
+	 - nuked 'site' columns and tables from database
+	 - worked through some bugs regarding entities
+	
 	Revision 1.15  2009/03/13 00:02:59  mjk
 	- checkpoint for route commands
 	- gateway is dead (now a default route)
@@ -68,10 +73,10 @@
 	Create static-routes file from database
 	</changelog>
 
+
 <post>
 
-
-
+/opt/rocks/bin/rocks report host route localhost > /etc/sysconfig/static-routes
 
 </post>
 

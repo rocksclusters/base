@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.14 2009/03/13 18:45:58 mjk Exp $
+# $Id: __init__.py,v 1.15 2009/03/21 22:22:55 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,11 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.15  2009/03/21 22:22:55  bruno
+#  - lights-out install of VM frontends with new node_rolls table
+#  - nuked 'site' columns and tables from database
+#  - worked through some bugs regarding entities
+#
 # Revision 1.14  2009/03/13 18:45:58  mjk
 # - rocks add host route works
 # - added rocks.add.host.command class
@@ -244,10 +249,9 @@ class Command(command):
 				osname = 'linux'
 
 		self.db.execute("""insert into nodes
-			(site, name, membership, cpus, rack, rank, os)
-			values (0, '%s',
+			(name, membership, cpus, rack, rank, os)
+			values ('%s',
 			(select id from memberships where name='%s'),
 			'%d', '%d', '%d', '%s')""" % (host, membership,
 			int(numCPUs), int(rack), int(rank), osname))
-
 

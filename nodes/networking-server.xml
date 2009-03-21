@@ -15,6 +15,11 @@ All rights reserved. Rocks(tm) v4.3 www.rocksclusters.org
 
 <changelog>
 $Log: networking-server.xml,v $
+Revision 1.6  2009/03/21 22:22:55  bruno
+ - lights-out install of VM frontends with new node_rolls table
+ - nuked 'site' columns and tables from database
+ - worked through some bugs regarding entities
+
 Revision 1.5  2009/01/23 21:50:23  bruno
 var tags converted to entities
 
@@ -39,15 +44,13 @@ this also includes changes to help build and configure VMs for V.
 
 <post>
 
-MYHOST=&Kickstart_PrivateHostname;
-
-/opt/rocks/bin/rocks report host network $MYHOST | \
+/opt/rocks/bin/rocks report host network &Kickstart_PrivateHostname; | \
 	/opt/rocks/bin/rocks report script > /tmp/do-network.sh
 
 chmod a+x /tmp/do-network.sh
 /tmp/do-network.sh
 
-/opt/rocks/bin/rocks report host interface $MYHOST | \
+/opt/rocks/bin/rocks report host interface &Kickstart_PrivateHostname; | \
 	/opt/rocks/bin/rocks report script > /tmp/do-interface.sh
 
 chmod a+x /tmp/do-interface.sh

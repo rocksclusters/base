@@ -1,5 +1,5 @@
 #
-# $Id: welcome_gui.py,v 1.10 2009/03/04 01:32:12 bruno Exp $
+# $Id: welcome_gui.py,v 1.11 2009/03/21 22:22:55 bruno Exp $
 #
 # Our patch to redhat's installer
 #
@@ -57,6 +57,11 @@
 # @Copyright@
 #
 # $Log: welcome_gui.py,v $
+# Revision 1.11  2009/03/21 22:22:55  bruno
+#  - lights-out install of VM frontends with new node_rolls table
+#  - nuked 'site' columns and tables from database
+#  - worked through some bugs regarding entities
+#
 # Revision 1.10  2009/03/04 01:32:12  bruno
 # attributes work for frontend installs
 #
@@ -227,20 +232,8 @@ class WelcomeWindow(InstallWindow):
 			
 		os.environ['PYTHONPATH'] = ''
 
-		attrs = {}
-		if os.path.exists('/tmp/site.attrs'):
-			file = open('/tmp/site.attrs', 'r')
-			for line in file.readlines():
-				l = line.split(':', 1)
-				if len(l) == 2:
-					#
-					# key/value pairs
-					#
-					attrs[l[0]] = l[1][:-1]
-			file.close()
-		
-		cmd = '/opt/rocks/bin/rocks list node xml %s attrs="%s"' \
-			% (rootnode, attrs)
+		cmd = '/opt/rocks/bin/rocks list node xml %s ' % (rootnode)
+		cmd += 'attrs="/tmp/site.attrs" '
 		cmd += '| /opt/rocks/bin/rocks list host profile '
 		cmd += '| /opt/rocks/bin/rocks list host installfile '
 		cmd += 'section=kickstart > '

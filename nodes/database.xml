@@ -16,6 +16,11 @@
 
   <changelog>
   $Log: database.xml,v $
+  Revision 1.17  2009/03/21 22:22:55  bruno
+   - lights-out install of VM frontends with new node_rolls table
+   - nuked 'site' columns and tables from database
+   - worked through some bugs regarding entities
+
   Revision 1.16  2009/01/23 21:50:23  bruno
   var tags converted to entities
 
@@ -244,6 +249,16 @@
 <post arch="ia64">
 <!-- really, really make sure 'mx' is not installed -->
 rpm -e --nodeps mx
+</post>
+
+<post>
+
+<!--
+	set the hostname to the private name. this helps the rocks command
+	line find the host 'localhost' correctly
+-->
+/bin/hostname &Kickstart_PrivateHostname;
+
 </post>
 
 

@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.41 2009/03/19 21:37:02 mjk Exp $
+# $Id: __init__.py,v 1.42 2009/03/21 22:22:55 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,11 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.42  2009/03/21 22:22:55  bruno
+#  - lights-out install of VM frontends with new node_rolls table
+#  - nuked 'site' columns and tables from database
+#  - worked through some bugs regarding entities
+#
 # Revision 1.41  2009/03/19 21:37:02  mjk
 # attrs can also be the pathname of the site.attrs file
 #
@@ -329,7 +334,7 @@ class Command(rocks.commands.list.command):
 			except:
 				attrs = {}
 				if os.path.exists(attributes):
-					file = open('attributes', 'r')
+					file = open(attributes, 'r')
 					for line in file.readlines():
 						l = line.split(':', 1)
 						if len(l) == 2:

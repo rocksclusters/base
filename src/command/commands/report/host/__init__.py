@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.5 2009/03/13 17:28:50 bruno Exp $
+# $Id: __init__.py,v 1.6 2009/03/21 22:22:55 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,11 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.6  2009/03/21 22:22:55  bruno
+#  - lights-out install of VM frontends with new node_rolls table
+#  - nuked 'site' columns and tables from database
+#  - worked through some bugs regarding entities
+#
 # Revision 1.5  2009/03/13 17:28:50  bruno
 # make a class that can be inherited by lower commands
 #
@@ -130,11 +135,10 @@ class Command(command):
 		domain = self.db.getHostAttr('localhost',
 			'Kickstart_PrivateDNSDomain')
 
-		self.db.execute('select n.id, n.rack, n.rank, a.name '
-			     'from nodes n, appliances a, memberships m '
-			     'where n.membership=m.id and '
-			     'm.appliance=a.id and n.site=0 '
-			     'order by n.id')
+		self.db.execute("""select n.id, n.rack, n.rank, a.name
+			     from nodes n, appliances a, memberships m 
+			     where n.membership=m.id and 
+			     m.appliance=a.id order by n.id""")
 
 		nodes=[]
 		for row in self.db.fetchall():

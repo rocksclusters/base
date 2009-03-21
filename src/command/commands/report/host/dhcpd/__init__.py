@@ -1,5 +1,5 @@
 #
-# $Id: __init__.py,v 1.10 2009/03/06 21:21:13 bruno Exp $
+# $Id: __init__.py,v 1.11 2009/03/21 22:22:55 bruno Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,11 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.11  2009/03/21 22:22:55  bruno
+#  - lights-out install of VM frontends with new node_rolls table
+#  - nuked 'site' columns and tables from database
+#  - worked through some bugs regarding entities
+#
 # Revision 1.10  2009/03/06 21:21:13  bruno
 # updated for host attributes
 #
@@ -217,7 +222,7 @@ class Command(rocks.commands.HostArgumentProcessor,
 		self.db.execute("""select nodes.id, nodes.name, nodes.rack,
 			nodes.rank from nodes, appliances, memberships where
 			nodes.membership=memberships.id and 
-			memberships.appliance=appliances.id and nodes.site=0
+			memberships.appliance=appliances.id
 			order by nodes.id""")
 
 		for row in self.db.fetchall():

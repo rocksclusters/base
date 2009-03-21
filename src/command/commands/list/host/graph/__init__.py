@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.13 2009/01/08 23:36:01 mjk Exp $
+# $Id: __init__.py,v 1.14 2009/03/21 22:22:55 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,11 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.14  2009/03/21 22:22:55  bruno
+#  - lights-out install of VM frontends with new node_rolls table
+#  - nuked 'site' columns and tables from database
+#  - worked through some bugs regarding entities
+#
 # Revision 1.13  2009/01/08 23:36:01  mjk
 # - rsh edge is conditional (no more uncomment crap)
 # - add global_attribute commands (list, set, remove, dump)
@@ -222,7 +227,8 @@ class Command(rocks.commands.list.host.command):
 					graphdir)
 
 			parser  = make_parser()
-			handler = rocks.profile.GraphHandler({})
+			attrs = self.db.getHostAttrs(host)
+			handler = rocks.profile.GraphHandler(attrs)
 
 			for file in os.listdir(graphdir):
 				root, ext = os.path.splitext(file)
