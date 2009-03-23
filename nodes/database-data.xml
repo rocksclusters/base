@@ -16,6 +16,9 @@
 
   <changelog>
   $Log: database-data.xml,v $
+  Revision 1.38  2009/03/23 23:03:57  bruno
+  can build frontends and computes
+
   Revision 1.37  2009/03/21 22:22:55  bruno
    - lights-out install of VM frontends with new node_rolls table
    - nuked 'site' columns and tables from database
@@ -355,8 +358,9 @@ if os.path.exists('/tmp/site.attrs'):
 			#
 			# key/value pairs
 			#
+			v = l[1].strip()
 			value = ''
-			for i in l[1][:-1]:
+			for i in v:
 				if i == "'":
 					value += "'"
 					value += '"'
@@ -367,7 +371,7 @@ if os.path.exists('/tmp/site.attrs'):
 					value += i
 			
 			os.system("/opt/rocks/bin/rocks set attr '%s' '%s'" %
-				(l[0], value))
+				(l[0].strip(), value))
 	file.close()
 
 </post>

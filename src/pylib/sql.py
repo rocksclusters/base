@@ -57,6 +57,9 @@
 # @Copyright@
 #
 # $Log: sql.py,v $
+# Revision 1.26  2009/03/23 23:03:57  bruno
+# can build frontends and computes
+#
 # Revision 1.25  2009/03/06 22:45:41  bruno
 # nuke 'dbreport access' and 'dbreport machines'
 #
@@ -393,7 +396,7 @@ class Application(rocks.app.Application):
     def __repr__(self):
         return string.join(self.report, '\n')
 
-    def getGlobalVar(self, service, component, site=0, node=0):
+    def getGlobalVar(self, service, component, node=0):
         cmd = '/opt/rocks/bin/rocks report host attr localhost '
         cmd += 'attr=%s_%s' % (service, component)
 
@@ -403,29 +406,7 @@ class Application(rocks.app.Application):
         return value.strip()
 
 	
-    def getSiteId(self, client):
-    	"""Returns a Site Id. Client can be an IP address
-	or site id. Returns 0 if site could not be found."""
-
-	if not client:
-		return 0
-	#
-	# Do we already have an ID?
-	#
-	try:
-		return int(client)
-	except:
-		pass
-
-	rows = self.execute('select id from sites where address="%s"'
-		% client)
-	if not rows:
-		return 0
-	else:
-		return self.fetchone()[0]
-
-
-    def getNodeId(self, host, site=0):
+    def getNodeId(self, host):
 	"""Lookup hostname in nodes table. Host may be a name
 	or an IP address. Returns None if not found."""
 
@@ -440,8 +421,8 @@ class Application(rocks.app.Application):
 
 	self.execute("""select networks.node from nodes,networks where
 		networks.node = nodes.id and networks.name = "%s" and
-		nodes.site = %d and (networks.device is NULL or
-		networks.device not like 'vlan%%') """ % (host,site))
+		(networks.device is NULL or
+		networks.device not like 'vlan%%') """ % (host))
 	try:
 		nodeid, = self.fetchone()
 		return nodeid
@@ -452,8 +433,8 @@ class Application(rocks.app.Application):
 	
 	self.execute("""select networks.node from nodes,networks where
 		networks.node = nodes.id and networks.ip ="%s" and
-		nodes.site = %d and (networks.device is NULL or
-		networks.device not like 'vlan%%') """ % (host,site))
+		(networks.device is NULL or
+		networks.device not like 'vlan%%') """ % (host))
 	try:
 		nodeid, = self.fetchone()
 		return nodeid

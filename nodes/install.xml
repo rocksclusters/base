@@ -18,6 +18,9 @@
 
   <changelog>
   $Log: install.xml,v $
+  Revision 1.26  2009/03/23 23:03:57  bruno
+  can build frontends and computes
+
   Revision 1.25  2009/03/21 22:22:55  bruno
    - lights-out install of VM frontends with new node_rolls table
    - nuked 'site' columns and tables from database
@@ -261,14 +264,13 @@ mv /tmp/hosts /etc/hosts
 
 <!-- set up the install directory so it can be served by the web -->
 (
-	cd /var/www/html;
+	cd /var/www/html ;
 	ln -s &Kickstart_DistroDir;/&Kickstart_PrivateKickstartBasedir; install;
+	cd install/sbin ;
+	ln -s . public ;
 ) 
 
-<!-- now add an entry in the cluster homepage -->
-<file name="/var/www/html/homepage/40-install.html">
-&lt;a href="install/"&gt;Cluster Distribution&lt;/a&gt;
-</file>
+
 
 </post>
 

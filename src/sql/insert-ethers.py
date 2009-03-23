@@ -58,6 +58,9 @@
 # @Copyright@
 #
 # $Log: insert-ethers.py,v $
+# Revision 1.45  2009/03/23 23:03:57  bruno
+# can build frontends and computes
+#
 # Revision 1.44  2009/03/06 22:45:41  bruno
 # nuke 'dbreport access' and 'dbreport machines'
 #
@@ -798,10 +801,6 @@ class InsertEthers(GUI):
 	def setMax(self, max):
 		self.maxNew = max
 
-	def setSite(self, client):
-		"Set the site client IP. Later we find the ID"
-		self.client = client
-		
 	def setOSName(self, osname):
 		self.osname = osname
 
@@ -923,10 +922,9 @@ class InsertEthers(GUI):
 		# catch later.
 		nodename = self.getNodename()
 
-		siteid = self.sql.getSiteId(self.client)
 		self.clusterdb.insert(nodename, self.membership, 
 			self.cabinet, self.rank, self.mac, self.ipaddr, 
-			self.netmask, self.subnet, self.osname, siteid)
+			self.netmask, self.subnet, self.osname)
 
 		# Execute any plugins when adding hosts via
 		# command-line parameters
@@ -938,22 +936,19 @@ class InsertEthers(GUI):
 
 	def dumpCommands(self):
 
-		siteid = self.sql.getSiteId(self.client)
-
 		query = 'select nodes.name, nodes.rack, nodes.rank, '\
 			'nodes.cpus, memberships.name, '\
 			'networks.mac, networks.device, networks.module, '\
 			'networks.IP, networks.netmask ' \
 			'from nodes,memberships,networks,subnets where '\
 			'nodes.membership = memberships.ID and '\
-			'nodes.id = networks.node and nodes.site = %d and ' \
+			'nodes.id = networks.node and and ' \
 			'subnets.name="%s" and networks.subnet=subnets.id ' \
 			'order by memberships.name,nodes.rack,nodes.rank' \
-				% (siteid,self.subnet)
+				% (self.subnet)
 
 		if self.sql.execute(query) == 0:
-			msg = _("Could not find any nodes in database (site %d)")\
-				% siteid
+			msg = _("Could not find any nodes in database")
 			raise dumpError, msg
 		for row in self.sql.fetchall():
 			(name,rack,rank,cpus,membership,mac,device,\
@@ -1041,7 +1036,7 @@ class InsertEthers(GUI):
 		# rows, just like we want.
 		#
 		query = 'select rank,max(rank) from nodes where ' \
-			'site=0 and membership = %d and rack = %d ' \
+			'membership = %d and rack = %d ' \
 			'group by rack' % \
 				(self.membership, self.cabinet)
 
@@ -1603,7 +1598,6 @@ class App(rocks.sql.Application):
 			('remove=', 'hostname'),
 			('public-mode', 'dont listen'),
 			('max-new=', 'exit after N nodes'),
-			('site=', 'client ip or site id'),
 			('os=', 'the OS to install on the machines'),
 			('dump'),
 			('batch'),
@@ -1665,8 +1659,6 @@ class App(rocks.sql.Application):
 			self.insertor.dump = 'true' 
 		elif c[0] == '--staticip':
 			self.insertor.setStatic()
-		elif c[0] == '--site':
-			self.insertor.setSite(c[1])
 		elif c[0] == '--batch':
 			self.batch = 1
 		return 0

@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: pssh.py,v $
+# Revision 1.16  2009/03/23 23:03:57  bruno
+# can build frontends and computes
+#
 # Revision 1.15  2008/10/18 00:56:02  mjk
 # copyright 5.1
 #
@@ -191,7 +194,7 @@ class ClusterFork(rocks.sql.Application):
 			+ "nodes.membership=memberships.id and " 
 			+ "memberships.compute='yes' and " 
 			+ "subnets.name='private' and "
-			+ "networks.subnet=subnets.id and nodes.site=0 " 
+			+ "networks.subnet=subnets.id " 
 			+ "order by nodes.rack,nodes.rank")
 		self.nodes = []
 

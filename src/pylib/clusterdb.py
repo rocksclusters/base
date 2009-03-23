@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: clusterdb.py,v $
+# Revision 1.18  2009/03/23 23:03:57  bruno
+# can build frontends and computes
+#
 # Revision 1.17  2008/10/18 00:56:02  mjk
 # copyright 5.1
 #
@@ -130,23 +133,23 @@ class Nodes:
 		return self.nodeid
 		
 	def insert(self, name, mid, rack, rank, mac=None, ip=None,
-			netmask=None, subnet='private', osname='linux', site=0):
+			netmask=None, subnet='private', osname='linux'):
 
 		"""Inserts a new node into the database. Optionally inserts
 		networking information as well."""
 
-		self.checkName(name, site)
+		self.checkName(name)
 		self.checkMembership(mid)
 		self.checkMAC(mac)
-		self.checkIP(ip, site)
+		self.checkIP(ip)
 		self.checkSubnet(subnet)
 		
 		#
 		# create a new row in nodes table
 		#
-		insert = ('insert into nodes (name,membership,site,rack,rank,os) '
-			'values ("%s", %d, %d, %d, %d, "%s") ' %
-			(name, mid, site, rack, rank, osname))
+		insert = ('insert into nodes (name,membership,rack,rank,os) '
+			'values ("%s", %d, %d, %d, "%s") ' %
+			(name, mid, rack, rank, osname))
 
 		self.sql.execute(insert)
 
@@ -185,10 +188,10 @@ class Nodes:
 		self.nodeid = nodeid
 			
 
-	def checkName(self, checkname, site=0):
+	def checkName(self, checkname):
 		"Check to make sure we don't insert a duplicate node name"
 
-		host = self.sql.getNodeId(checkname, site)
+		host = self.sql.getNodeId(checkname)
 		if host:
 			msg = 'Node %s already exists.\n' % checkname 
 			msg += 'Select a different hostname, cabinet '
@@ -204,13 +207,13 @@ class Nodes:
 			raise KeyError, msg
 			return
 
-	def checkIP(self, ipaddr, site=0):
+	def checkIP(self, ipaddr):
 		"Check if the address is already in the database"
 		
 		if ipaddr is None:
 			return
 		
-		nodeid = self.sql.getNodeId(ipaddr, site)
+		nodeid = self.sql.getNodeId(ipaddr)
 
 		if nodeid:
 			msg = "Duplicate IP '%s' Specified" % ipaddr
