@@ -16,6 +16,9 @@
 
   <changelog>
   $Log: database.xml,v $
+  Revision 1.18  2009/03/24 22:24:55  bruno
+  got rid of the last dbreport - dbreport is now dead.
+
   Revision 1.17  2009/03/21 22:22:55  bruno
    - lights-out install of VM frontends with new node_rolls table
    - nuked 'site' columns and tables from database
@@ -233,17 +236,12 @@
   </changelog>
 
   <package>rocks-sql</package>
-  <package>rocks-dbreport</package>
   <package>mysql</package>
   <package>mysql-server</package>
   <package>mysql-devel</package>
   <package>MySQL-python</package>
   <package>php-mysql</package>
   <package>phpMyAdmin</package>
-
-
-  <!-- on itaniums, the mx package causes dbreport to seg fault -->
-  <package disable="1" arch="ia64">mx</package>
 
 
 <post arch="ia64">
