@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.3 2008/12/23 00:14:05 mjk Exp $
+# $Id: __init__.py,v 1.4 2009/03/24 18:50:21 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.4  2009/03/24 18:50:21  bruno
+# fixes for new database schema
+#
 # Revision 1.3  2008/12/23 00:14:05  mjk
 # - moved build and eval of cond strings into cond.py
 # - added dump appliance,host attrs (and plugins)
@@ -95,30 +98,25 @@ class Command(command):
 
 	def run(self, params, args):
 		for app in self.getApplianceNames(args):
-			self.db.execute("""select 
-				shortname, graph, node from appliances
+			self.db.execute("""select graph, node from appliances
 				where name='%s'""" % app)
 
-			(shortname, graph, node) = self.db.fetchone()
+			(graph, node) = self.db.fetchone()
 
-			self.db.execute("""select m.name, m.compute, m.public
+			self.db.execute("""select m.name, m.public
 				from memberships m, appliances a where
 				m.appliance = a.id and a.name = '%s'""" % (app))
 
-			(mem, compute, pub) = self.db.fetchone()
+			(mem, pub) = self.db.fetchone()
 
 			str = "add appliance %s " % app
 
-			if shortname and shortname != 'NULL':
-				str += "short-name='%s' " % shortname
 			if graph and graph != 'NULL':
 				str += "graph='%s' " % graph
 			if node and node != 'NULL':
 				str += "node='%s' " % node
 			if mem:
 				str += "membership='%s' " % mem
-			if compute:
-				str += "compute='%s' " % compute
 			if pub:
 				str += "public='%s' " % pub
 				
