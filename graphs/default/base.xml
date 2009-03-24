@@ -4,6 +4,9 @@
 
 	<changelog>
 	$Log: base.xml,v $
+	Revision 1.49  2009/03/24 22:09:02  bruno
+	nuke labels
+	
 	Revision 1.48  2009/03/21 22:22:54  bruno
 	 - lights-out install of VM frontends with new node_rolls table
 	 - nuked 'site' columns and tables from database
@@ -342,7 +345,6 @@
 		<to>411-server</to>
 		<to>dhcp-server</to>
 		<to>dns-server</to>
-		<to>labels</to>
 		<to>mail-server</to>
 		<to>rocks-devel</to>
 		<to>syslog-server</to>
