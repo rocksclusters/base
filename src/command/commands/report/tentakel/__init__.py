@@ -1,7 +1,4 @@
-#!/opt/rocks/bin/python
-#
-# $RCSfile: tentakel.py,v $
-# $Id: tentakel.py,v 1.5 2008/10/18 00:56:03 mjk Exp $
+# $Id: __init__.py,v 1.1 2009/03/24 22:24:04 bruno Exp $
 #
 # @Copyright@
 # 
@@ -56,62 +53,25 @@
 # 
 # @Copyright@
 #
-# $Log: tentakel.py,v $
-# Revision 1.5  2008/10/18 00:56:03  mjk
-# copyright 5.1
+# $Log: __init__.py,v $
+# Revision 1.1  2009/03/24 22:24:04  bruno
+# moved 'dbreport tentakel' to rocks command line
 #
-# Revision 1.4  2008/08/27 02:38:58  anoop
-# Complete overhaul to the process of generation of the tentakel
-# configuration. Now, the tentakel configuration is OS aware,
-# and nodes are grouped by OS, rack, and appliance type
-#
-# Revision 1.3  2008/03/06 23:41:46  mjk
-# copyright storm on
-#
-# Revision 1.2  2008/01/25 19:37:30  bruno
-# only put nodes that are managed by rocks in /etc/tentakel.conf.
-# a managed rocks node is one that has an entry in the 'node' column of
-# the appliances table.
-#
-# also, when getting the name of frontend, don't use the hardcoded value of 1.
-# look for the membership name 'Frontend'.
-#
-# Revision 1.1  2008/01/04 22:44:44  bruno
-# moved tentakel from the hpc to the base roll
-#
-# Revision 1.6  2007/06/23 04:03:45  mjk
-# mars hill copyright
-#
-# Revision 1.5  2006/09/11 22:48:56  mjk
-# monkey face copyright
-#
-# Revision 1.4  2006/08/10 00:11:00  mjk
-# 4.2 copyright
-#
-# Revision 1.3  2006/01/16 06:49:12  mjk
-# fix python path for source built foundation python
-#
-# Revision 1.2  2005/12/30 05:58:31  mjk
-# added insert-ethers plugin
-#
-# Revision 1.1  2005/12/29 23:21:56  mjk
-# possible cluster-fork replacement
 #
 
-import os
-import socket
-import string
-import rocks.reports.base
+import rocks.commands.report
 
-
-class Report(rocks.reports.base.ReportBase):
-
-	def run(self):
-		# print the dbreport header
-		print self.getHeader()
-		print 
-		print 'set method="rocks"'
-		print 
+class Command(rocks.commands.report.command):
+	"""
+        Create a report that can be used to configure tentakel.
+        
+        <example cmd='report tentakel'>                
+        Create a tentakel configuration file.
+        </example>
+	"""
+	
+	def run(self, params, args):
+		self.addText('set method="rocks"\n\n')
 
 		# The groups dictionary that is used to form
 		# the entire tree of groups
@@ -125,17 +85,18 @@ class Report(rocks.reports.base.ReportBase):
 		# appliance_type and OS with which they've
 		# been provisioned. This information is used to
 		# classify the nodes.
-		sql_cmd = "select n.name, n.os, n.rack, a.name " +\
-			"from nodes n, appliances a, memberships m "+\
-			"where n.membership = m.id and "	 +\
-			"m.appliance = a.id and a.name != 'frontend'"
 
-		self.execute(sql_cmd)
+		self.db.execute("""select n.name, n.os, n.rack, a.name
+			from nodes n, appliances a, memberships m
+			where n.membership = m.id and
+			m.appliance = a.id and a.name != 'frontend' """)
 
 		# The classification of nodes is done as follows.
 		# The groups are 
-		# 1. Default group, which is a metagroup containing OS metagroups
-		# 2. OS metagroups containing groups classified as (appliance & os)
+		# 1. Default group, which is a metagroup containing OS
+		#    metagroups
+		# 2. OS metagroups containing groups classified as
+		#    (appliance & os)
 		# 3. appliance metagroup containing groups of (appliance & os)
 		# 4. rack metagroup containing groups of rack & os
 		# 5. appliance & os group containing nodes which belong 
@@ -145,7 +106,7 @@ class Report(rocks.reports.base.ReportBase):
 		# Logically, the OS metagroup and the appliance metagroup
 		# are the same
 
-		for (node, osname, rack, appliance) in self.fetchall():
+		for (node, osname, rack, appliance) in self.db.fetchall():
 			if not groups.has_key(osname):
 				groups[osname] = []
 			if '@' + osname not in groups['default']:
@@ -176,22 +137,21 @@ class Report(rocks.reports.base.ReportBase):
 
 		# Create a frontend group, containing only the frontend
 		# This will not be a part of the default group
-		sql_cmd = "select n.name, a.name from nodes n, " +\
-			"appliances a, memberships m where "	 +\
-			"n.membership = m.id and "	+\
-			"m.appliance = a.id and a.name = 'frontend'"
 
-		self.execute(sql_cmd)
-		frontend_name, frontend_group = self.fetchone()
+		self.db.execute("""select n.name, a.name from nodes n, 
+			appliances a, memberships m where
+			n.membership = m.id and
+			m.appliance = a.id and a.name = 'frontend' """)
+
+		frontend_name, frontend_group = self.db.fetchone()
 		groups[frontend_group] = []
 		groups[frontend_group].append(frontend_name)
 
-
 		# Start creating the output. First the default group
-		print "group default ()"
+		self.addText('group default ()\n')
 		for group in groups.pop('default'):
-			print "\t%s" % group
-		print '\n'
+			self.addText('\t%s\n' % group)
+		self.addText('\n')
 
 		# Get a list of all the remaining groups and 
 		# print them out in the format that tentakel will
@@ -200,10 +160,11 @@ class Report(rocks.reports.base.ReportBase):
 		# tentakel uses a lex parses and need all group names
 		# to be standard c-tokens 
 		for group in groups:
-			print "group %s ()" % group
+			self.addText('group %s ()\n' % group)
 			for i in groups[group]:
 				if i.startswith('@'):
-					print '\t%s' % i
+					self.addText('\t%s\n' % i)
 				else:
-					print '\t+%s' % i
-			print '\n'
+					self.addText('\t+%s\n' % i)
+			self.addText('\n')
+

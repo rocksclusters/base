@@ -1,4 +1,4 @@
-# $Id: tentakel.py,v 1.3 2008/10/18 00:56:03 mjk Exp $
+# $Id: tentakel.py,v 1.4 2009/03/24 22:24:04 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: tentakel.py,v $
+# Revision 1.4  2009/03/24 22:24:04  bruno
+# moved 'dbreport tentakel' to rocks command line
+#
 # Revision 1.3  2008/10/18 00:56:03  mjk
 # copyright 5.1
 #
@@ -83,7 +86,7 @@ import os
 import rocks.sql
 
 class Plugin(rocks.sql.InsertEthersPlugin):
-	"DNS (nameserver) and /etc/hosts plugin for Insert Ethers"
+	"tentakel plugin for Insert Ethers"
 
 	def added(self, nodename, id):
 		self.update()
@@ -92,6 +95,7 @@ class Plugin(rocks.sql.InsertEthersPlugin):
 		self.update()
 
 	def update(self):
-		cmd = '/opt/rocks/bin/dbreport tentakel > /etc/tentakel.conf'
+		cmd = '/opt/rocks/bin/rocks report tentakel '
+		cmd += '> /etc/tentakel.conf'
 		os.system(cmd)
 
