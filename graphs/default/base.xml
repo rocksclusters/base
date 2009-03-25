@@ -4,6 +4,9 @@
 
 	<changelog>
 	$Log: base.xml,v $
+	Revision 1.50  2009/03/25 17:55:40  bruno
+	add yum to client nodes
+	
 	Revision 1.49  2009/03/24 22:09:02  bruno
 	nuke labels
 	
@@ -382,6 +385,7 @@
 		<to>client-firewall</to>
 		<to>partitions-save</to>
 		<to>routes-client</to>
+		<to>yum</to>
 	</edge>
 
 	<edge from="security-client">

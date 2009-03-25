@@ -15,6 +15,9 @@ Configure yum
 
 <changelog>
 $Log: yum.xml,v $
+Revision 1.9  2009/03/25 17:55:40  bruno
+add yum to client nodes
+
 Revision 1.8  2009/01/23 23:19:31  mjk
 tweaks on the entities
 
@@ -63,7 +66,7 @@ assumeyes=1
 
 [base]
 name=Rocks &version;
-baseurl=http://&Kickstart_PrivateHostname;/install/&distribution;
+baseurl=http://&Kickstart_PrivateAddress;/install/&distribution;/&arch;
 </file>
 
 </post>
