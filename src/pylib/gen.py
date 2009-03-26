@@ -54,6 +54,12 @@
 # @Copyright@
 #
 # $Log: gen.py,v $
+# Revision 1.40  2009/03/26 23:57:35  anoop
+# Cleaned up finish script generation for Solaris
+# Modified RCS support for Linux and Solaris by using
+# gawk instead of awk, and full paths for "co" and "ci"
+# commands
+#
 # Revision 1.39  2009/01/29 01:28:13  anoop
 # Better support for package clusters in solaris
 #
@@ -384,10 +390,10 @@ class Generator:
 		l.append('	mkdir %s' % rcsdir)
 		l.append('fi')
 		l.append('if [ ! -f %s,v ]; then' % rcsfile)
-		l.append('	echo "initial checkin" | ci %s' % file)
+		l.append('	echo "initial checkin" | /opt/rocks/bin/ci %s' % file)
 		l.append('fi')
 		l.append('')
-		l.append('co -f -l %s' % file)
+		l.append('/opt/rocks/bin/co -f -l %s' % file)
 		l.append('')
 
 		return '%s\n' % string.join(l, '\n')
@@ -406,7 +412,7 @@ class Generator:
 		# file to be checked in.  This way the delta is always
 		# newer than the last revision.
 		l.append('cat %s,v | '
-			'awk -v date=`date -u +%%Y.%%m.%%d.%%H.%%M.%%S` '
+			'/opt/rocks/bin/gawk -v date=`date -u +%%Y.%%m.%%d.%%H.%%M.%%S` '
 			'\'/^date/ { '
 				'if (found == 0) { '
 					'printf "date\\t%%s;\\tauthor %%s\\tstate Exp;", '
@@ -430,8 +436,8 @@ class Generator:
 
 		# Now just check it in as we did before
 
-		l.append('echo "%s" | ci %s' % (self.rcsComment, file))
-		l.append('co -f %s' % file)
+		l.append('echo "%s" | /opt/rocks/bin/ci %s' % (self.rcsComment, file))
+		l.append('/opt/rocks/bin/co -f %s' % file)
 		return '%s\n' % string.join(l, '\n')
 	
 	def order(self, node):
@@ -1354,14 +1360,8 @@ class Generator_sunos(Generator):
 		list += self.ks['finish']
 
 		# Generate and add the services section to the finish
-		# script. The way to do this is to copy the service manifest
-		# xml file to /var/svc/manifest/ which should be done by
-		# an explicit cp command in the post section. Then enable
-		# these services by adding them to the site.xml command
-		# on the target machine.
-		list.append("cat > /a/var/svc/profile/site.xml << '_xml_eof_'")
+		# script. 
 		list += self.generate_services()
-		list.append('_xml_eof_')
 		# And we're done
 		
 		return list
@@ -1407,12 +1407,22 @@ class Generator_sunos(Generator):
 		return list
 
 	def generate_services(self):
+
 		# Generates an XML file with a list of 
 		# all enabled and disabled services. This
 		# is going to be used when assembling services
 		# on compute nodes.
+		# The way to do this is to copy the service manifest
+		# xml file to /var/svc/manifest/ which should be done by
+		# an explicit cp command in the post section. Then enable
+		# these services by adding them to the site.xml command
+		# on the target machine.
+
+		if len(self.service_instances) == 0:
+			return []
 		list= []
 
+		list.append("cat > /a/var/svc/profile/site.xml << '_xml_eof_'")
 		# XML Headers, and doctype
 		list.append("<?xml version='1.0'?>")
 		list.append("<!DOCTYPE service_bundle SYSTEM "
@@ -1431,11 +1441,6 @@ class Generator_sunos(Generator):
 
 		# End Service bundle
 		list.append("</service_bundle>")
+		list.append('_xml_eof_')
 
 		return list
-			
-	def rcsBegin(self, filename):
-		return ''
-	
-	def rcsEnd(self, filename):
-		return ''
