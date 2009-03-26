@@ -1,5 +1,5 @@
 #
-# $Id: __init__.py,v 1.3 2008/10/18 00:55:56 mjk Exp $
+# $Id: __init__.py,v 1.4 2009/03/26 23:58:16 anoop Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.4  2009/03/26 23:58:16  anoop
+# "rocks report script" now supports Solaris
+#
 # Revision 1.3  2008/10/18 00:55:56  mjk
 # copyright 5.1
 #
@@ -106,7 +109,11 @@ class Command(rocks.commands.report.command):
 		list = []
 
 		self.generator.parse(xml)
-		list += self.generator.generate('post')
+		section_name = 'post'
+		if self.os == 'sunos':
+			section_name = 'finish'
+
+		list += self.generator.generate(section_name)
 			
 		for line in list:
 			if line[0:5] == '%post':
@@ -127,17 +134,24 @@ class Command(rocks.commands.report.command):
 		self.generator.setOS(self.os)
 		self.generator.setRCSComment('rocks report script')
 
+		starter_tag = 'kickstart'
+		if self.os == 'sunos':
+			starter_tag = 'jumpstart'
+
 		self.beginOutput()
 
 		xml = '<?xml version="1.0" standalone="no"?>\n'
-		xml += '<kickstart>\n'
-		xml += '<post>\n'
+		xml += '<%s>\n' % starter_tag
+		if self.os == 'sunos':
+			xml += '<post chroot="no">\n'
+		else:
+			xml += '<post>\n'
 
 		for line in sys.stdin.readlines():
 			xml += line
 
 		xml += '</post>\n'
-		xml += '</kickstart>\n'
+		xml += '</%s>\n' % starter_tag
 
 		self.runXML(self.scrub(xml))
 
