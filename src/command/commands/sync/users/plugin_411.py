@@ -1,4 +1,4 @@
-# $Id: plugin_411.py,v 1.7 2009/02/24 00:53:04 bruno Exp $
+# $Id: plugin_411.py,v 1.8 2009/03/28 01:29:34 anoop Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: plugin_411.py,v $
+# Revision 1.8  2009/03/28 01:29:34  anoop
+# Differentiate between Solaris and Linux nodes when
+# restarting autofs service through "rocks sync users"
+#
 # Revision 1.7  2009/02/24 00:53:04  bruno
 # add the flag 'managed_only' to getHostnames(). if managed_only is true and
 # if no host names are provide to getHostnames(), then only machines that
@@ -111,9 +115,18 @@ class Plugin(rocks.commands.Plugin, rocks.commands.HostArgumentProcessor):
 		# restart autofs on all known hosts
 		#
 		hosts = self.getHostnames(managed_only=1)
+		sunos_hosts = []
+		linux_hosts = []
+		for hostname in hosts:
+			if self.db.getHostAttr(hostname, "os") == "sunos":
+				sunos_hosts.append(hostname)
+			else:
+				linux_hosts.append(hostname)
 		
 		self.owner.command('run.host',
-			hosts + [ ' "/sbin/service autofs stop" '])
+			linux_hosts + [ ' "/sbin/service autofs stop" '])
 		self.owner.command('run.host',
-			hosts + [ ' "/sbin/service autofs start" '])
+			linux_hosts + [ ' "/sbin/service autofs start" '])
 
+		self.owner.command('run.host',
+			sunos_hosts + [' "/usr/sbin/svcadm restart autofs"'])
