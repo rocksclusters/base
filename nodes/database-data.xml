@@ -16,6 +16,11 @@
 
   <changelog>
   $Log: database-data.xml,v $
+  Revision 1.40  2009/03/28 01:28:10  anoop
+  Change the way managed_only flag is determined.
+  Instead of hardcoding appliances to determine
+  managed_only, use appliance and host attributes.
+
   Revision 1.39  2009/03/24 22:08:49  bruno
   not all entities should be added to a frontend VM
 
@@ -404,6 +409,17 @@ if os.path.exists('/tmp/site.attrs'):
 /opt/rocks/bin/rocks add appliance network  membership='Ethernet Switch'
 /opt/rocks/bin/rocks add appliance power    membership='Power Distribution Unit'
 /opt/rocks/bin/rocks add appliance ipmi     membership=IPMI
+
+<!--	Set managed attribute for appliances.
+	This determines whether the appliances
+	can be ssh'ed into for running management
+	commands -->
+/opt/rocks/bin/rocks set appliance attr frontend managed false
+/opt/rocks/bin/rocks set appliance attr network	 managed false
+/opt/rocks/bin/rocks set appliance attr power	 managed false
+/opt/rocks/bin/rocks set appliance attr ipmi	 managed false
+/opt/rocks/bin/rocks set appliance attr compute	 managed true
+/opt/rocks/bin/rocks set appliance attr nas	 managed true
 
 <!-- networks -->
 

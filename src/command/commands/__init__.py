@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.68 2009/03/13 19:44:09 mjk Exp $
+# $Id: __init__.py,v 1.69 2009/03/28 01:28:10 anoop Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,11 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.69  2009/03/28 01:28:10  anoop
+# Change the way managed_only flag is determined.
+# Instead of hardcoding appliances to determine
+# managed_only, use appliance and host attributes.
+#
 # Revision 1.68  2009/03/13 19:44:09  mjk
 # - added add.appliance.route
 # - added add.os.route
@@ -556,19 +561,19 @@ class HostArgumentProcessor:
 		
 		list = []
 		if not names:
-			if managed_only:
-				query = """select n.name from nodes n,
-					memberships m where
-					n.membership = m.id and
-					(m.name != "Ethernet Switches" and
-					m.name != "Power Units" and
-					m.name != "Remote Management") """
-			else:
-				query = 'select name from nodes'
+			query = 'select name from nodes'
 
 			self.db.execute(query)
 			for host, in self.db.fetchall():
 				list.append(host)
+			# If we're looking for managed nodes only, filter out
+			# the unmanaged ones using host attributes
+			if managed_only:
+				managed_list = []
+				for hostname in list:
+					if self.db.getHostAttr(hostname, 'managed') == 'true':
+						managed_list.append(hostname)
+				return managed_list
 			return list
 
 	
