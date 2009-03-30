@@ -11,6 +11,10 @@
 
   <changelog>
   $Log: 411-base.xml,v $
+  Revision 1.2  2009/03/30 19:29:50  anoop
+  Merging xml files from Solaris Roll to the Linux roll.
+  More files to follow
+
   Revision 1.1  2007/12/10 21:28:33  bruno
   the base roll now contains several elements from the HPC roll, thus
   making the HPC roll optional.
@@ -51,8 +55,13 @@
 
   </changelog>
 
-  <package>rocks-411</package>
-  <package>openssl</package>
+  <package os='linux'>rocks-411</package>
+  <package os='linux'>openssl</package>
+
+  <package os='sunos'>ROCKSrocks-411</package>
+  <package os='sunos'>SUNWopenssl-commands</package>
+  <package os='sunos'>SUNWopenssl-libraries</package>
+  <package os='sunos'>SUNWopensslr</package>
+  <package os='sunos'>SUNWopenssl-man</package>
 
 </kickstart> 
-

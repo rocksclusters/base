@@ -9,6 +9,10 @@ Client node firewall rules
 
 <changelog>
 $Log: client-firewall.xml,v $
+Revision 1.2  2009/03/30 19:29:50  anoop
+Merging xml files from Solaris Roll to the Linux roll.
+More files to follow
+
 Revision 1.1  2007/12/10 21:28:33  bruno
 the base roll now contains several elements from the HPC roll, thus
 making the HPC roll optional.
@@ -18,7 +22,7 @@ this also includes changes to help build and configure VMs for V.
 </changelog>
 
 
-<post>
+<post os='linux'>
 	
 <file name="/etc/sysconfig/iptables">
 *filter

@@ -15,6 +15,10 @@
 
   <changelog>
   $Log: apache.xml,v $
+  Revision 1.12  2009/03/30 19:29:50  anoop
+  Merging xml files from Solaris Roll to the Linux roll.
+  More files to follow
+
   Revision 1.11  2009/01/23 23:19:31  mjk
   tweaks on the entities
 
@@ -207,19 +211,21 @@
 
   </changelog>
 
-  <package>httpd</package>
-  <package>httpd-devel</package>
-  <package>mod_ssl</package>
-  <package>libxml2</package>
-  <package>php</package>
-  <package>curl</package>
+  <package os='linux'>httpd</package>
+  <package os='linux'>httpd-devel</package>
+  <package os='linux'>mod_ssl</package>
+  <package os='linux'>libxml2</package>
+  <package os='linux'>php</package>
+  <package os='linux'>curl</package>
 
-<!-- RHEL 3
-  <package>pspell</package>
--->
+  <package os='sunos'>SUNWapch2r</package>
+  <package os='sunos'>SUNWapch2u</package>
+  <package os='sunos'>ROCKSphp</package>
+  <package os='sunos'>ROCKSpcre</package>
+  <package os='sunos'>SUNWgcmn</package>
+  <package os='sunos'>SFWcurl</package>
 
-<post>
-
+<post os='linux'>
 /sbin/chkconfig httpd on
 
 <!-- create a link for /proc -->
@@ -303,6 +309,100 @@ Include conf.d/rocks.conf
 &lt;/TABLE&gt;
 </file>
 
+<file name="/etc/php.d/mysql.ini" mode="append">
+mysql.default_socket = /var/lib/mysql/mysql.sock
+</file>
+
+</post>
+
+<post os='sunos'>
+<service name="network/http" instance="apache2" enabled="yes"/>
+cp /etc/apache2/httpd.conf.php /etc/apache2/httpd.conf
+
+<!-- create a link for /proc -->
+ln -sf /proc /var/apache2/htdocs/ 
+
+<!-- add an entry into the cluster homepage for the proc filesystem. -->
+<file name="/var/apache2/htdocs/homepage/30-proc.html">
+&lt;a href="proc/"&gt;Proc filesystem&lt;/a&gt;
+</file>
+
+<!-- move default index.html out of the way -->
+mv /var/apache2/htdocs/index.html /var/apache2/htdocs/index.orig.html
+
+
+<file name="/etc/apache2/rocks.conf">
+#
+# Rocks Specific Apache configuration. 
+# Generated automatically by the apache.xml node.
+#
+&lt;IfModule mod_mime.c&gt;
+	AddHandler cgi-script .cgi
+&lt;/IfModule&gt;
+
+UseCanonicalName Off
+ServerName &Kickstart_PublicHostname;
+
+DirectoryIndex index.cgi
+
+&lt;Directory "/var/apache2/htdocs"&gt;
+	Options FollowSymLinks Indexes ExecCGI
+	AllowOverride None
+	Order allow,deny
+	Allow from all
+&lt;/Directory&gt;
+
+&lt;Directory "/var/apache2/htdocs/proc"&gt;
+	Options FollowSymLinks Indexes ExecCGI
+	AllowOverride None
+	Order deny,allow
+	Allow from &Kickstart_PrivateNetwork;/&Kickstart_PrivateNetmask;
+	Allow from 127.0.0.1
+	Deny from all
+&lt;/Directory&gt;
+
+&lt;Directory "/var/apache2/htdocs/pxelinux"&gt;
+	Options FollowSymLinks Indexes ExecCGI
+	AllowOverride None
+	Order deny,allow
+	Allow from &Kickstart_PrivateNetwork;/&Kickstart_PrivateNetmask;
+	Allow from 127.0.0.1
+	Deny from all
+&lt;/Directory&gt;
+
+</file>
+
+<!-- This should be done automatically by httpd.conf, but isn't for 
+	some reason. -->
+<file name="/etc/apache2/httpd.conf" mode="append">
+Include /etc/apache2/rocks.conf
+</file>
+
+<!-- Create the header.html file for the cluster homepage. -->
+<file name="/var/apache2/htdocs/homepage/02-header.html">
+&lt;html&gt;
+&lt;head&gt;
+&lt;title&gt;&Info_ClusterName; Cluster&lt;/title&gt;
+&lt;/head&gt;
+&lt;body bgcolor=white&gt;
+
+&lt;TABLE WIDTH=100% CELLSPACING=10&gt;
+ &lt;TR&gt;
+   &lt;TD ALIGN=left&gt;
+    &lt;H1&gt;&Info_ClusterName; Cluster&lt;/H1&gt;
+   &lt;/TD&gt;
+   &lt;TD ALIGN=right&gt;
+    &lt;A HREF="http://www.rocksclusters.org/"&gt;
+    &lt;IMG SRC="homepage/built-with-rocks.png" ALT="Built With Rocks" HEIGHT=120 WIDTH=100 BORDER=0&gt;&lt;/A&gt; &lt;BR&gt;
+	v &version; (&release;)
+   &lt;/TD&gt;
+ &lt;/TR&gt;
+&lt;/TABLE&gt;
+</file>
+</post>
+
+
+<post>
 <!-- Make some changes to the PHP engine configuration. -->
 <file name="/etc/php.ini" mode="append">
 memory_limit = 64M
@@ -311,12 +411,107 @@ memory_limit = 64M
 log_errors = Off
 </file>
 
-<file name="/etc/php.d/mysql.ini" mode="append">
-mysql.default_socket = /var/lib/mysql/mysql.sock
-</file>
-
-
 </post>
 
 </kickstart> 
+<!--
+These variables need to be attributes that are accessible
+during frontend installation, and present in the database
+in the os_attributes table once the frontend has been installed.
+HttpRoot - Linux:/var/www/html Sunos:/var/apache2/htdocs
+HttpConfigDirExt - Linux:/etc/httpd/conf.d Sunos:/etc/apache2
+HttpConf - Linux:/etc/httpd/conf Sunos:/etc/apache2
+-->
 
+<!-- create a link for /proc -->
+<!--
+ln -sf /proc &HttpRoot;
+mkdir -p &HttpRoot;/homepage
+-->
+<!-- add an entry into the cluster homepage for the proc filesystem. -->
+<!--
+<file name="&HttpRoot;/homepage/30-proc.html">
+&lt;a href="proc/"&gt;Proc filesystem&lt;/a&gt;
+</file>
+-->
+
+<!-- move default index.html out of the way -->
+<!--
+mv &HttpRoot;/index.html &HttpRoot;/index.orig.html
+
+
+<file name="&HttpConfigDirExt;/rocks.conf">
+#
+# Rocks Specific Apache configuration. 
+# Generated automatically by the apache.xml node.
+#
+&lt;IfModule mod_mime.c&gt;
+	AddHandler cgi-script .cgi
+&lt;/IfModule&gt;
+
+UseCanonicalName Off
+ServerName &Kickstart_PublicHostname;
+
+DirectoryIndex index.cgi
+
+&lt;Directory "&HttpRoot;"&gt;
+	Options FollowSymLinks Indexes ExecCGI
+	AllowOverride None
+	Order allow,deny
+	Allow from all
+&lt;/Directory&gt;
+
+&lt;Directory "&HttpRoot;/proc"&gt;
+	Options FollowSymLinks Indexes ExecCGI
+	AllowOverride None
+	Order deny,allow
+	Allow from &Kickstart_PrivateNetwork;/&Kickstart_PrivateNetmask;
+	Allow from 127.0.0.1
+	Deny from all
+&lt;/Directory&gt;
+
+&lt;Directory "&HttpRoot;/pxelinux"&gt;
+	Options FollowSymLinks Indexes ExecCGI
+	AllowOverride None
+	Order deny,allow
+	Allow from &Kickstart_PrivateNetwork;/&Kickstart_PrivateNetmask;
+	Allow from 127.0.0.1
+	Deny from all
+&lt;/Directory&gt;
+
+</file>
+-->
+
+<!-- 
+This should be done automatically by httpd.conf,
+but isn't for some reason.
+-->
+<!-- 
+<file name="&HttpConf;/httpd.conf" mode="append">
+Include &HttpConfigDirExt;/rocks.conf
+</file>
+-->
+
+<!-- Create the header.html file for the cluster homepage. -->
+<!-- 
+<file name="&HttpRoot;/homepage/02-header.html">
+&lt;html&gt;
+&lt;head&gt;
+&lt;title&gt;&Info_ClusterName; Cluster&lt;/title&gt;
+&lt;/head&gt;
+&lt;body bgcolor=white&gt;
+
+&lt;TABLE WIDTH=100% CELLSPACING=10&gt;
+ &lt;TR&gt;
+   &lt;TD ALIGN=left&gt;
+    &lt;H1&gt;&Info_ClusterName; Cluster&lt;/H1&gt;
+   &lt;/TD&gt;
+   &lt;TD ALIGN=right&gt;
+    &lt;A HREF="http://www.rocksclusters.org/"&gt;
+    &lt;IMG SRC="homepage/built-with-rocks.png" ALT="Built With Rocks" HEIGHT=120 WIDTH=100 BORDER=0&gt;&lt;/A&gt; &lt;BR&gt;
+	v &version; (&release;)
+   &lt;/TD&gt;
+ &lt;/TR&gt;
+&lt;/TABLE&gt;
+</file>
+-->

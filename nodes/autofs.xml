@@ -18,6 +18,10 @@
 
   <changelog>
   $Log: autofs.xml,v $
+  Revision 1.5  2009/03/30 19:29:50  anoop
+  Merging xml files from Solaris Roll to the Linux roll.
+  More files to follow
+
   Revision 1.4  2008/10/18 00:55:45  mjk
   copyright 5.1
 
@@ -47,7 +51,10 @@
 
   </changelog>
 
-  <package>autofs</package>
+  <package os='linux'>autofs</package>
+
+  <package os='sunos'>SUNWatfsr</package>
+  <package os='sunos'>SUNWatfsu</package>
 
 </kickstart> 
 

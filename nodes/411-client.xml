@@ -19,6 +19,10 @@
 
   <changelog>
   $Log: 411-client.xml,v $
+  Revision 1.6  2009/03/30 19:29:50  anoop
+  Merging xml files from Solaris Roll to the Linux roll.
+  More files to follow
+
   Revision 1.5  2009/01/23 23:19:31  mjk
   tweaks on the entities
 
@@ -122,13 +126,13 @@
 mkdir -p /etc/411-security
 
 <!-- Only root can read the 411 shared key. -->
-<file name="/etc/411-security/shared.key" owner="root.root" perms="0400">
+<file name="/etc/411-security/shared.key" owner="root:root" perms="0400">
 <eval shell="sh">
 /opt/rocks/sbin/read-411-shared-key
 </eval>
 </file>
 
-<file name="/etc/411-security/master.pub" owner="root.root" perms="0444">
+<file name="/etc/411-security/master.pub" owner="root:root" perms="0444">
 <eval shell="sh">
 cat /etc/411-security/master.pub
 </eval>
@@ -168,11 +172,10 @@ for m in os.listdir(base411):
 		pass
 	print
 </eval>
-
 </post>
 
 <!-- Decrypt 411 msgs on compute node -->
-<post arg="--interpreter=/opt/rocks/bin/python">
+<post arg="--interpreter=/opt/rocks/bin/python" interpreter="/opt/rocks/bin/python">
 import os
 import rocks.service411
 
@@ -200,4 +203,3 @@ rm -rf /tmp/411.d
 </post>
 
 </kickstart> 
-

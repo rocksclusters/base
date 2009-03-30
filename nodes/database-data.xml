@@ -16,6 +16,10 @@
 
   <changelog>
   $Log: database-data.xml,v $
+  Revision 1.41  2009/03/30 19:29:50  anoop
+  Merging xml files from Solaris Roll to the Linux roll.
+  More files to follow
+
   Revision 1.40  2009/03/28 01:28:10  anoop
   Change the way managed_only flag is determined.
   Instead of hardcoding appliances to determine
@@ -345,7 +349,7 @@
   </changelog>
 
 
-<post arg="--nochroot">
+<post arg="--nochroot" os='linux'>
 
 cp /tmp/site.attrs /mnt/sysimage/tmp
 chmod 400 /mnt/sysimage/tmp/site.attrs
@@ -353,8 +357,15 @@ cp /tmp/rolls.xml /mnt/sysimage/tmp
 
 </post>
 
+<post chroot='no' os='sunos'>
 
-<post arg="--interpreter /opt/rocks/bin/python">
+cp /tmp/site.attrs /a/tmp
+chmod 400 /a/tmp/site.attrs
+cp /tmp/rolls.xml /a/tmp
+
+</post>
+
+<post arg="--interpreter /opt/rocks/bin/python" interpreter='/opt/rocks/bin/python'>
 
 import os.path
 
@@ -470,11 +481,11 @@ if os.path.exists('/tmp/site.attrs'):
 </post>
 
 
-<post arg="--nochroot">
+<post os='linux' arg="--nochroot">
 cp /tmp/interfaces /mnt/sysimage/tmp
 </post>
 
-<post arg="--interpreter /opt/rocks/bin/python">
+<post os='linux' arg="--interpreter /opt/rocks/bin/python">
 import sys
 import os
 import string
@@ -544,7 +555,8 @@ confignetworks.assignDeviceNames()
 <post>
 
 <!-- Password Access for the apache  and root user  Create Password -->
-export clupass=`/bin/date +%N`
+clupass=`/bin/date +%d%m%y%H%M%S`
+export clupass
 
 <!-- now password protect the root user and apache user in database --> 
 <file name="/tmp/perms2.sql" perms="0400">
@@ -554,8 +566,6 @@ update mysql.user set \
 </file>
 echo "set password for apache@localhost=PASSWORD(\"$clupass\");" &gt;&gt; /tmp/perms2.sql
 echo "set password for apache@&Kickstart_PrivateHostname;=PASSWORD(\"$clupass\");" &gt;&gt; /tmp/perms2.sql
-
-/usr/bin/mysql &lt; /tmp/perms2.sql
 
 <!-- create the /root/.my.cnf file so that when root does  
 "mysql -u apache cluster", everything works -->
@@ -570,6 +580,30 @@ echo "password=$clupass" &gt;&gt; /root/.my.cnf
 <file name="/etc/my.cnf" perms="644" expr="cat /tmp/my.cnf"/>
 rm /tmp/my.cnf
 
+</post>
+
+<post os='linux'>
+/usr/bin/mysql &lt; /tmp/perms2.sql
+</post>
+
+<post os='sunos'>
+/opt/rocks/bin/mysql &lt; /tmp/perms2.sql
+</post>
+
+<post>
+<!-- 
+Enter information for HttpRoot, HttpConf, and HttpConfigDirExt
+for Linux and Solaris. This controls the Http Configuration files
+and directories on the two OSes. These values are used in apache.xml
+-->
+/opt/rocks/bin/rocks set os attr linux HttpRoot "/var/www/html"
+/opt/rocks/bin/rocks set os attr sunos HttpRoot "/var/apache2/htdocs"
+
+/opt/rocks/bin/rocks set os attr linux HttpConf "/etc/httpd/conf"
+/opt/rocks/bin/rocks set os attr sunos HttpConf "/etc/apache2"
+
+/opt/rocks/bin/rocks set os attr linux HttpConfigDirExt "/etc/httpd/conf.d"
+/opt/rocks/bin/rocks set os attr sunos HttpConfigDirExt "/etc/apache2"
 </post>
 
 </kickstart>

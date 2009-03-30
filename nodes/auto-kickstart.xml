@@ -11,6 +11,10 @@
 
   <changelog>
   $Log: auto-kickstart.xml,v $
+  Revision 1.3  2009/03/30 19:29:50  anoop
+  Merging xml files from Solaris Roll to the Linux roll.
+  More files to follow
+
   Revision 1.2  2008/09/08 19:14:47  bruno
   need xen install kernels too
 
@@ -40,11 +44,7 @@
 
   </changelog>
 
-
-  <package>rocks-boot-auto</package>
-  <package>rocks-boot-xen</package>
-
+  <package os='linux'>rocks-boot-auto</package>
+  <package os='linux'>rocks-boot-xen</package>
 
 </kickstart> 
-
-
