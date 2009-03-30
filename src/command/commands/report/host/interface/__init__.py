@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.4 2009/03/13 00:02:59 mjk Exp $
+# $Id: __init__.py,v 1.5 2009/03/30 20:03:05 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,11 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.5  2009/03/30 20:03:05  bruno
+# first check if the vm_nodes table exists -- it may be the case that someone
+# wants to set up vlans on physical hosts *and* they don't have the xen roll
+# installed.
+#
 # Revision 1.4  2009/03/13 00:02:59  mjk
 # - checkpoint for route commands
 # - gateway is dead (now a default route)
@@ -100,17 +105,27 @@ class Command(rocks.commands.HostArgumentProcessor,
 		#
 		# determine if this is 'physical' machine, that is, not a VM.
 		#
-		rows = self.db.execute("""select vn.id from vm_nodes vn, nodes n
-			where n.name = '%s' and vn.node = n.id""" % (host))
+		rows = self.db.execute("""show tables like 'vm_nodes' """)
 
 		if rows == 0:
 			#
-			# this host is *not* in the VM nodes table, so it is
-			# a physical host
+			# the Xen roll is not installed, so all hosts are
+			# physical hosts
 			#
 			retval = 1
 		else:
-			retval = 0
+			rows = self.db.execute("""select vn.id from
+				vm_nodes vn, nodes n where
+				n.name = '%s' and vn.node = n.id""" % (host))
+
+			if rows == 0:
+				#
+				# this host is *not* in the VM nodes table, so
+				# it is a physical host
+				#
+				retval = 1
+			else:
+				retval = 0
 
 		return retval
 
