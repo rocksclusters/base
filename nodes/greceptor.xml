@@ -15,6 +15,9 @@
 
   <changelog>
   $Log: greceptor.xml,v $
+  Revision 1.2  2009/03/31 00:23:29  anoop
+  Merged the remainder of the solaris XML files to the base roll
+
   Revision 1.1  2007/12/10 21:28:33  bruno
   the base roll now contains several elements from the HPC roll, thus
   making the HPC roll optional.
@@ -32,14 +35,18 @@
 
   </changelog>
 
-  <package>ganglia-receptor</package>
-  <package>ganglia-pylib</package>
+  <package os='linux'>ganglia-receptor</package>
+  <package os='linux'>ganglia-pylib</package>
 
-<post>
+  <package os='sunos'>ROCKSganglia-receptor</package>
+  <package os='sunos'>ROCKSganglia-pylib</package>
 
+<post os='linux'>
 /sbin/chkconfig --add greceptor
+</post>
 
+<post os='sunos'>
+<service name="network/greceptor" enabled="true"/>
 </post>
 
 </kickstart> 
-

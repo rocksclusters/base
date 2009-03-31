@@ -17,6 +17,9 @@
 
   <changelog>
   $Log: ip-diag.xml,v $
+  Revision 1.5  2009/03/31 00:23:29  anoop
+  Merged the remainder of the solaris XML files to the base roll
+
   Revision 1.4  2008/10/18 00:55:45  mjk
   copyright 5.1
 
@@ -46,8 +49,11 @@
 
   </changelog>
 
-  <package>tcpdump</package>
-  <package>iputils</package>
+  <package os='linux'>tcpdump</package>
+  <package os='linux'>iputils</package>
+
+  <package os='sunos'>SFWtdmp</package>
+  <package os='sunos'>SUNWbip</package>
 
 </kickstart> 
 

@@ -16,6 +16,9 @@
 
 	<changelog>
 	$Log: foundation-base.xml,v $
+	Revision 1.16  2009/03/31 00:23:29  anoop
+	Merged the remainder of the solaris XML files to the base roll
+	
 	Revision 1.15  2009/03/03 22:20:29  mjk
 	added python-xml (own package now)
 	
@@ -63,23 +66,35 @@
 	
 	</changelog>
 
-	<package>foundation-redhat</package>
-	<package>foundation-python</package>
-	<package>foundation-python-extras</package>
-	<package>foundation-python-xml</package>
-	<package>foundation-perl</package>
-	<package>foundation-perl-tk</package>
-	<package>foundation-graphviz</package>
-	<package>foundation-coreutils</package>
-	<package>foundation-rcs</package>
-	<package>foundation-cvs</package>
-	<package>foundation-gawk</package>
-	<package>foundation-readline</package>
-	<package>foundation-mysql</package>
-	<package>foundation-libxml2</package>
-	<package>foundation-wget</package>
-	<package>foundation-ant</package>
-	<package>foundation-mercurial</package>
+	<package os='linux'>foundation-redhat</package>
+	<package os='linux'>foundation-python</package>
+	<package os='linux'>foundation-python-extras</package>
+	<package os='linux'>foundation-python-xml</package>
+	<package os='linux'>foundation-perl</package>
+	<package os='linux'>foundation-perl-tk</package>
+	<package os='linux'>foundation-graphviz</package>
+	<package os='linux'>foundation-coreutils</package>
+	<package os='linux'>foundation-rcs</package>
+	<package os='linux'>foundation-cvs</package>
+	<package os='linux'>foundation-gawk</package>
+	<package os='linux'>foundation-readline</package>
+	<package os='linux'>foundation-mysql</package>
+	<package os='linux'>foundation-libxml2</package>
+	<package os='linux'>foundation-wget</package>
+	<package os='linux'>foundation-ant</package>
+	<package os='linux'>foundation-mercurial</package>
+
+	<package os='sunos'>ROCKSfoundation-python</package>
+	<package os='sunos'>ROCKSfoundation-python-extras</package>
+	<package os='sunos'>ROCKSfoundation-perl</package>
+	<package os='sunos'>ROCKSfoundation-perl-tk</package>
+	<package os='sunos'>ROCKSfoundation-graphviz</package>
+	<package os='sunos'>ROCKSfoundation-coreutils</package>
+	<package os='sunos'>ROCKSfoundation-rcs</package>
+	<package os='sunos'>ROCKSfoundation-gawk</package>
+	<package os='sunos'>ROCKSfoundation-readline</package>
+	<package os='sunos'>ROCKSfoundation-libxml2</package>
+	<package os='sunos'>ROCKSfoundation-wget</package>
 
 <post>
 

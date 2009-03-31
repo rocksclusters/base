@@ -16,6 +16,9 @@
 
   <changelog>
   $Log: database.xml,v $
+  Revision 1.19  2009/03/31 00:23:29  anoop
+  Merged the remainder of the solaris XML files to the base roll
+
   Revision 1.18  2009/03/24 22:24:55  bruno
   got rid of the last dbreport - dbreport is now dead.
 
@@ -235,19 +238,23 @@
 
   </changelog>
 
-  <package>rocks-sql</package>
-  <package>mysql</package>
-  <package>mysql-server</package>
-  <package>mysql-devel</package>
-  <package>MySQL-python</package>
-  <package>php-mysql</package>
-  <package>phpMyAdmin</package>
+  <package os='linux'>rocks-sql</package>
+  <package os='linux'>mysql</package>
+  <package os='linux'>mysql-server</package>
+  <package os='linux'>mysql-devel</package>
+  <package os='linux'>MySQL-python</package>
+  <package os='linux'>php-mysql</package>
+  <package os='linux'>phpMyAdmin</package>
 
+  <package os="sunos">ROCKSrocks-dbreport</package>
+  <package os="sunos">ROCKSfoundation-mysql</package>
+  <package os="sunos">ROCKSphpMyAdmin</package>
 
+<!-- ia64 no longer relevant
 <post arch="ia64">
-<!-- really, really make sure 'mx' is not installed -->
-rpm -e --nodeps mx
+rpm -e \-\-nodeps mx
 </post>
+-->
 
 <post>
 
@@ -260,7 +267,7 @@ rpm -e --nodeps mx
 </post>
 
 
-<post>
+<post os='linux'>
 
 
 <!-- tweak permissions so apache can contact the local mysql server -->
@@ -290,7 +297,6 @@ while [ $? -eq 1 ]; do
 	sleep 1
 	/usr/bin/mysqladmin -s ping > /dev/null
 done
-
 
 <!-- Make our Rocks phpMyAdmin config file. -->
 <file name="/var/www/html/admin/phpMyAdmin/rocks.conf">
@@ -362,6 +368,108 @@ chown -R apache /var/www/html/labels/
 
 </post>
 
+<post os='sunos'>
+
+<!-- tweak permissions so apache can contact the local mysql server -->
+groupadd -g 403 rocksdb
+if [ -d /var/opt/rocks/mysql ]; then
+	chgrp -R rocksdb /var/opt/rocks/mysql
+	chmod -R g+rwx /var/opt/rocks/mysql
+fi
+
+useradd -u 403 -g rocksdb \
+	-d /var/opt/rocks/mysql \
+	-m -s /bin/false	\
+	rocksdb
+
+chown -R rocksdb /var/opt/rocks/mysql
+chmod a+rx /var/opt/rocks/mysql
+
+/opt/rocks/bin/mysql_install_db --user=rocksdb
+<!-- start database and wait for it to come up -->
+
+/lib/svc/method/mysqld start
+
+/opt/rocks/bin/mysqladmin -s ping > /dev/null
+while [ $? -eq 1 ]; do
+	sleep 1
+	/opt/rocks/bin/mysqladmin -s ping > /dev/null
+done
+
+cp -f /opt/rocks/share/mysql/mysql-server.xml \
+	/var/svc/manifest/network/mysql-server.xml
+<service name='network/mysql' enabled='yes'/>
+
+<!-- Make our Rocks phpMyAdmin config file. -->
+<file name="/var/apache2/htdocs/admin/phpMyAdmin/rocks.conf">
+&lt;?php
+#
+# The rw Rocks PhpMyAdmin configuration file.
+# Assumes apache user has rw access.
+#  
+$cfg['PmaAbsoluteUri_DisableWarning'] = 'TRUE';
+$cfg['Servers'][1]['user'] = 'nobody';
+$cfg['Servers'][1]['host'] = 'localhost'; 
+$cfg['Servers'][1]['only_db'] = 'cluster';
+$cfg['MaxRows'] = 150;
+?&gt;
+</file>
+
+<!-- Append our Rocks config file to the default config file. -->
+<file name="/var/apache2/htdocs/admin/phpMyAdmin/config.inc.php">
+&lt;?php include_once "rocks.conf"; ?&gt;
+</file>
+
+<!-- For Read-Only database view. -->
+cp -r /var/apache2/htdocs/admin/phpMyAdmin /var/apache2/htdocs/
+
+<file name="/var/apache2/htdocs/phpMyAdmin/rocks.conf">
+&lt;?php
+#
+# The read-only Rocks PhpMyAdmin configuration file.
+# Assumes 'nobody' user has only select access.
+#  
+$cfg['PmaAbsoluteUri_DisableWarning'] = 'TRUE';
+$cfg['Servers'][1]['user'] = 'nobody';
+$cfg['Servers'][1]['host'] = 'localhost'; 
+$cfg['Servers'][1]['only_db'] = 'cluster';
+$cfg['MaxRows'] = 150;
+?&gt;
+</file>
+
+<!-- Password for web admin access -->
+<file name="/etc/apache2/passwd-mysql" perms="0440" owner="root:webservd">
+root:<var name="Kickstart_PrivateRootPassword"/>
+</file>
+
+<!-- Apache configuration -->
+<file name="/etc/apache2/myadmin.conf">
+
+&lt;Directory "/var/apache2/htdocs/admin/phpMyAdmin"&gt;
+	SSLRequireSSL
+	Options FollowSymLinks Indexes ExecCGI
+	AllowOverride None
+	AuthName "Cluster Database"
+	AuthType Basic
+	AuthUserFile /etc/apache2/passwd-mysql
+	Require user root
+&lt;/Directory&gt;
+&lt;Directory "/var/apache2/htdocs/phpMyAdmin"&gt;
+	Options FollowSymLinks Indexes ExecCGI
+	AllowOverride None
+	Order deny,allow
+	Allow from <var name="Kickstart_PrivateNetwork"/>/<var name="Kickstart_PrivateNetmask"/>
+	Allow from 127.0.0.1
+	Deny from all
+&lt;/Directory&gt;
+</file>
+
+<file name="/etc/apache2/httpd.conf" mode="append">
+
+Include /etc/apache2/myadmin.conf
+</file>
+</post>
+
 <post>
 
 <!-- Read/Write access to apache user, read-only for other normal users -->
@@ -371,9 +479,14 @@ grant select,update,insert,delete,lock tables on cluster.* to apache@localhost;
 grant select,update,insert,delete,lock tables on cluster.* to apache@"&Kickstart_PrivateHostname;";
 grant select on cluster.* to ''@localhost;
 </file>
+</post>
 
+<post os='linux'>
 /usr/bin/mysql mysql &lt; /tmp/perms.sql
+</post>
 
+<post os='sunos'>
+/opt/rocks/bin/mysql mysql &lt; /tmp/perms.sql
 </post>
 
 </kickstart> 

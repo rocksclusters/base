@@ -17,6 +17,9 @@
 
   <changelog>
   $Log: syslog.xml,v $
+  Revision 1.7  2009/03/31 00:23:29  anoop
+  Merged the remainder of the solaris XML files to the base roll
+
   Revision 1.6  2008/10/18 00:55:46  mjk
   copyright 5.1
 
@@ -68,8 +71,7 @@
   </changelog>
 
 
-<post>
-
+<post os='linux'>
 <file name="/etc/syslog.conf">
 *.err		/var/log/messages
 auth.info	/var/log/auth
@@ -92,14 +94,44 @@ local6.*	/var/log/local6
 local7.*	/var/log/local7
 </file>
 
-
 <!-- logrotate thinks the following files should exist -->
-
 <file name="/var/log/boot.log"/>
 
 /sbin/chkconfig rocks-dmesg on
-
 </post>
 
+<post os='sunos'>
+touch /var/log/cron
+touch /var/log/messages
+touch /var/log/daemon
+touch /var/log/kern
+touch /var/log/user
+touch /var/log/local0
+touch /var/log/local1
+touch /var/log/local2
+touch /var/log/local3
+touch /var/log/local4
+touch /var/log/local5
+touch /var/log/local6
+touch /var/log/local7
 
+<file name="/etc/syslog.conf">
+*.err		/var/log/messages
+auth.info	/var/log/authlog
+cron.err	/var/log/cron
+daemon.info	/var/log/daemon
+kern.err	/var/log/kern
+syslog.err	/var/log/syslog
+user.err	/var/log/user
+local0.debug	/var/log/local0
+local1.debug	/var/log/local1
+local2.debug	/var/log/local2
+local3.debug	/var/log/local3
+local4.debug	/var/log/local4
+local5.debug	/var/log/local5
+local6.debug	/var/log/local6
+local7.debug	/var/log/local7
+</file>
+
+</post>
 </kickstart> 

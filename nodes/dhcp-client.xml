@@ -16,6 +16,9 @@
 
   <changelog>
   $Log: dhcp-client.xml,v $
+  Revision 1.5  2009/03/31 00:23:29  anoop
+  Merged the remainder of the solaris XML files to the base roll
+
   Revision 1.4  2008/10/18 00:55:45  mjk
   copyright 5.1
 
@@ -59,15 +62,7 @@
 
   </changelog>
 
-  <package>dhclient</package>
+  <package os='linux'>dhclient</package>
 
 
 </kickstart> 
-
-
-
-
-
-
-
-

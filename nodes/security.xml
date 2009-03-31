@@ -16,6 +16,9 @@ Security parent node for common security elements.
 
   <changelog>
   $Log: security.xml,v $
+  Revision 1.6  2009/03/31 00:23:29  anoop
+  Merged the remainder of the solaris XML files to the base roll
+
   Revision 1.5  2008/10/18 00:55:46  mjk
   copyright 5.1
 
@@ -55,7 +58,7 @@ Security parent node for common security elements.
 
   </changelog>
 
-<post arg="--nochroot">
+<post os='linux' arg="--nochroot">
 
 <!-- Place certificates and keys from our parent. -->
 
@@ -70,6 +73,25 @@ then
 
 	mv /tmp/security/cluster-ca.crt /mnt/sysimage/etc/security/
 	chmod 0444 /mnt/sysimage/etc/security/cluster-ca.crt
+fi
+
+</post>
+
+<post os='sunos' chroot="no">
+
+<!-- Place certificates and keys from our parent. -->
+
+<!-- Kickstart -->
+if [ -f /tmp/security/cluster-cert.key ]
+then
+	mv /tmp/security/cluster-cert.key /a/etc/security/
+	chmod 0400 /a/etc/security/cluster-cert.key
+
+	mv /tmp/security/cluster-cert.crt /a/etc/security/
+	chmod 0444 /a/etc/security/cluster-cert.crt
+
+	mv /tmp/security/cluster-ca.crt /a/etc/security/
+	chmod 0444 /a/etc/security/cluster-ca.crt
 fi
 
 </post>

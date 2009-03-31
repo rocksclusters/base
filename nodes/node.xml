@@ -17,6 +17,9 @@
 
   <changelog>
   $Log: node.xml,v $
+  Revision 1.17  2009/03/31 00:23:29  anoop
+  Merged the remainder of the solaris XML files to the base roll
+
   Revision 1.16  2009/01/23 21:50:23  bruno
   var tags converted to entities
 
@@ -298,14 +301,17 @@
 
   </changelog>
 
-  <main>
+  <main os='linux'>
     <rootpw>--iscrypted &Kickstart_PrivateRootPassword;</rootpw>
   </main>
 
-  <package>rocks-config</package>
-  <package>sudo</package>
+  <package os='linux'>rocks-config</package>
+  <package os='linux'>sudo</package>
 
-<post>
+  <package os='sunos'>ROCKSrocks-config</package>
+  <package os='sunos'>SFWsudo</package>
+
+<post os='linux'>
 for i in gpm kudzu keytable cups apmd linuxconf identd pcmcia rhnsd xfs \
 	lpd restorecond mcstrans bluetooth hidd yum-updatesd avahi-daemon \
 	pcscd ; do
@@ -337,7 +343,7 @@ fi
 
 </post>
 
-<post arch="x86_64">
+<post arch="x86_64" os='linux'>
 
 <!-- This should be done automatically, but isn't. -->
 <file name="/etc/ld.so.conf" mode="append">
@@ -354,5 +360,9 @@ fi
 
 </post>
 
+<post os='sunos'>
+<!-- configure IP forwarding -->
+ndd -set /dev/ip ip_forwarding 1
+</post>
 
 </kickstart> 

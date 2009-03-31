@@ -17,6 +17,9 @@
 
   <changelog>
   $Log: database-schema.xml,v $
+  Revision 1.35  2009/03/31 00:23:29  anoop
+  Merged the remainder of the solaris XML files to the base roll
+
   Revision 1.34  2009/03/21 22:22:55  bruno
    - lights-out install of VM frontends with new node_rolls table
    - nuked 'site' columns and tables from database
@@ -265,8 +268,6 @@
 
 <post>
 
-/usr/bin/mysqladmin create cluster
-
 <file name="/tmp/tables.sql">
 <!-- Aliases -->
 
@@ -511,8 +512,16 @@ CREATE TABLE bootflags (
 ) TYPE=MyISAM;
 
 </file>
-
-/usr/bin/mysql cluster &lt; /tmp/tables.sql
-
 </post>
+
+<post os='linux'>
+/usr/bin/mysqladmin create cluster
+/usr/bin/mysql cluster &lt; /tmp/tables.sql
+</post>
+
+<post os='sunos'>
+/opt/rocks/bin/mysqladmin create cluster
+/opt/rocks/bin/mysql cluster &lt; /tmp/tables.sql
+</post>
+
 </kickstart>

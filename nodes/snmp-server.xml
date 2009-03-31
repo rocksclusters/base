@@ -16,6 +16,9 @@
 
   <changelog>
   $Log: snmp-server.xml,v $
+  Revision 1.7  2009/03/31 00:23:29  anoop
+  Merged the remainder of the solaris XML files to the base roll
+
   Revision 1.6  2009/01/23 21:50:23  bruno
   var tags converted to entities
 
@@ -67,10 +70,17 @@
 
   </changelog>
 
-  <package>net-snmp</package>
+  <package os='linux'>net-snmp</package>
 
+  <package os='sunos'>SUNWsmmgr</package>
+  <package os='sunos'>SUNWsadmi</package>
+  <package os='sunos'>SUNWmibii</package>
+  <package os='sunos'>SUNWsasnm</package>
+  <package os='sunos'>SUNWsmagt</package>
+  <package os='sunos'>SUNWsacom</package>
+  <package os='sunos'>SUNWsmcmd</package>
 
-<post>
+<post os='linux'>
 /sbin/chkconfig snmpd on
 
 <file name="/etc/snmp/snmpd.conf">
@@ -87,5 +97,23 @@ syscontact "&Info_ClusterContact;"
 
 </post>
 
-</kickstart> 
+<post os='sunos'>
+	<service name="application/management/seaport"/>
+	<service name="application/management/dmi"/>
+	<service name="application/management/snmpdx"/>
 
+<file name="/etc/snmp/conf/snmpd.conf">
+com2sec	notConfigUser	default		public
+group	notConfigGroup	v1		notConfigUser
+group	notConfigGroup	v2c		notConfigUser
+view    all             included        .1             80
+
+access  notConfigGroup  "" any noauth exact all all all
+
+syslocation "&Info_CertificateLocality;, &Info_CertificateState;, &Info_CertificateCountry;"
+syscontact "&Info_ClusterContact;"
+</file>
+
+</post>
+
+</kickstart> 

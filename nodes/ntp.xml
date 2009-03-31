@@ -17,6 +17,9 @@
 
   <changelog>
   $Log: ntp.xml,v $
+  Revision 1.7  2009/03/31 00:23:29  anoop
+  Merged the remainder of the solaris XML files to the base roll
+
   Revision 1.6  2008/10/18 00:55:45  mjk
   copyright 5.1
 
@@ -75,16 +78,17 @@
 
   </changelog>
 
-  <package>ntp</package>
-  <package>rdate</package> <!-- used to slam the clock -->
-  <package>libcap</package>
+  <package os='linux'>ntp</package>
+  <package os='linux'>rdate</package> <!-- used to slam the clock -->
+  <package os='linux'>libcap</package>
 
-<post>
+  <package os='sunos'>SUNWntpr</package>
+  <package os='sunos'>SUNWntpu</package>
+  <package os='sunos'>SUNWrcmdc</package> <!-- used to slam the clock -->
 
+<post os='linux'>
 <!-- Turn on the service -->
-
 /sbin/chkconfig ntpd on 
-
 
 <!-- NTP needs a kick in the pants every so often -->
 
@@ -99,8 +103,22 @@ fi
 OPTIONS="-A -u ntp:ntp -p /var/run/ntpd.pid"
 </file>
 
+</post>
 
+<post os='sunos'>
+<!-- Turn on the service -->
+<service name="network/ntp" enabled="yes"/>
+
+<!-- NTP needs a kick in the pants every so often -->
+mkdir -p /etc/cron.hourly
+<file name="/etc/cron.hourly/ntp" perms="0755">
+<![CDATA[
+#!/bin/sh
+if ! ( /usr/sbin/ntpq -pn 2> /dev/null | grep -e '^\*' > /dev/null ); then
+	svcadm restart network/ntp > /dev/null 2>&1 
+fi
+]]>
+</file>
 </post>
 
 </kickstart> 
-

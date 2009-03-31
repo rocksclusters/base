@@ -13,6 +13,9 @@
 
 	<changelog>
 	$Log: routes-client.xml,v $
+	Revision 1.8  2009/03/31 00:23:29  anoop
+	Merged the remainder of the solaris XML files to the base roll
+	
 	Revision 1.7  2009/03/23 23:03:57  bruno
 	can build frontends and computes
 	
@@ -22,8 +25,7 @@
 	
 	</changelog>  
 
-
-<post>
+<post os='linux'>
 
 <file name="/etc/sysconfig/static-routes">
 <eval shell="sh">
@@ -34,4 +36,3 @@
 </post>
 
 </kickstart> 
-

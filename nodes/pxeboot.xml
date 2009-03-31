@@ -13,6 +13,9 @@ PXE first configuration for client nodes
 
 <changelog>
 $Log: pxeboot.xml,v $
+Revision 1.9  2009/03/31 00:23:29  anoop
+Merged the remainder of the solaris XML files to the base roll
+
 Revision 1.8  2009/01/23 21:50:23  bruno
 var tags converted to entities
 
@@ -40,25 +43,21 @@ more pxe first support
 
 </changelog>
 
-<post>
+<post os='linux'>
 
 <file name="/boot/kickstart/cluster-kickstart-pxe"
-				perms="u+rwxs,g+rx,o-rwx" owner="root.wheel">
+	perms="u+rwxs,g+rx,o-rwx" owner="root.wheel">
 #!/bin/bash
 
 touch /boot/grub/pxe-install
 
 /etc/rc.d/init.d/rocks-grub start
 
-/usr/bin/wget --quiet --no-check-certificate -O /dev/null https://&Kickstart_PrivateAddress;/install/sbin/public/setPxeboot.cgi?action="install"
+/usr/bin/wget --quiet --no-check-certificate -O /dev/null \
+	https://&Kickstart_PrivateAddress;/install/sbin/public/setPxeboot.cgi?action="install"
 
 /boot/kickstart/cluster-kickstart
 </file>
-
-</post>
-
-
-<post>
 
 <!-- set the node to boot from local disk on the next reboot -->
 /usr/bin/wget --no-check-certificate -O /dev/null \
@@ -66,6 +65,16 @@ touch /boot/grub/pxe-install
 
 </post>
 
+<post os='sunos' chroot="no">
+
+<!-- set the node to boot from local disk on the next reboot -->
+/opt/rocks/bin/wget --no-check-certificate -O - -o /dev/null \
+	https://<var name="Kickstart_PrivateAddress"/>/install/sbin/public/setPxeboot.cgi
+
+<![CDATA[
+cd /a/tmp && tar -cf /a/var/sadm/system/logs/finish.tar post_section_*
+#/tmp/root/usr/bin/bash
+]]>
+</post>
 
 </kickstart> 
-

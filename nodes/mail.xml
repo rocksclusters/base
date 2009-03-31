@@ -11,6 +11,9 @@
 
   <changelog>
   $Log: mail.xml,v $
+  Revision 1.2  2009/03/31 00:23:29  anoop
+  Merged the remainder of the solaris XML files to the base roll
+
   Revision 1.1  2007/12/10 21:28:33  bruno
   the base roll now contains several elements from the HPC roll, thus
   making the HPC roll optional.
@@ -48,21 +51,35 @@
 
   </changelog>
 
-  <package>postfix</package>
+  <package os='linux'>postfix</package>
+  <package os='sunos'>ROCKSpostfix</package>
 
-<post>
+<post os='linux'>
 
 /sbin/chkconfig sendmail off
-/sbin/chkconfig postfix on
+ln -sf /usr/sbin/sendmail.postfix /etc/alternatives/mta
 
+/sbin/chkconfig postfix on
+</post>
+
+<post os='sunos'>
+
+<service name="network/smtp" instance="sendmail" enabled="no"/>
+<service name="network/smtp" instance="postfix" enabled="yes"/>
+groupadd postdrop
+useradd -g daemon -s /bin/true -d /var/spool/postfix postfix
+chown -R postfix:postdrop /var/lib/postfix
+chown -R postfix:postdrop /var/spool/postfix
+
+</post>
+
+<post>
 <!-- Dont complain about aliases -->
 rm -f /etc/postfix/aliases.db
 
 <!-- Send root mail to root -->
 sed -e '/^root:/d' /etc/postfix/aliases &gt; /tmp/aliases
 mv /tmp/aliases /etc/postfix/aliases
-
-ln -sf /usr/sbin/sendmail.postfix /etc/alternatives/mta
 
 </post>
 

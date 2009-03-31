@@ -15,6 +15,9 @@
 
   <changelog>
   $Log: ssl-client.xml,v $
+  Revision 1.9  2009/03/31 00:23:29  anoop
+  Merged the remainder of the solaris XML files to the base roll
+
   Revision 1.8  2009/01/24 02:04:28  mjk
   - more ROCKDEBUG stuff (now to stderr)
   - os attr commands (still incomplete)
@@ -53,7 +56,7 @@
 
   </changelog>
 
-<post>
+<post os='linux'>
 
 <!-- Make a Certificate for Mod_SSL -->
 <eval shell="bash" mode="xml">
@@ -90,11 +93,49 @@ cd /etc/security/ca; \
 echo "&lt;file name='/etc/pki/tls/certs/localhost.crt' perms='0444'&gt;"
 cat $cert/crt
 echo "&lt;/file&gt;"
-
 rm -rf $cert
 </eval>
+</post>
 
+<post os='sunos'>
+
+<!-- Make a Certificate for Mod_SSL -->
+<eval shell="/bin/bash" mode='xml'>
+
+cert=`mktemp -dq /etc/security/ca/new-certs/cert.XXXXXX`
+
+(
+cd /etc/security/ca; \
+/usr/bin/openssl req -new -nodes -config ca.cfg \
+	-keyout $cert/key \
+	-subj "\
+/C=&Info_CertificateCountry;/\
+ST=&Info_CertificateState;/\
+L=&Info_CertificateLocality;/\
+O=&Info_CertificateOrganization;/\
+OU=&Info_ClusterName;/\
+CN=&hostname;.&Kickstart_PrivateDNSDomain;" \
+	&gt; $cert/csr 2&gt;/dev/null
+)
+
+echo "&lt;file name='/etc/sfw/openssl/private/localhost.key' perms='0400'&gt;"
+cat $cert/key
+echo "&lt;/file&gt;"
+
+<!-- Sign the Request with our CA-->
+(
+cd /etc/security/ca; \
+/usr/bin/openssl x509 -req -days 1000 \
+	-CA ca.crt -CAkey ca.key -CAserial ca.serial \
+	&lt; $cert/csr \
+	&gt; $cert/crt 2&gt;/dev/null
+)
+
+echo "&lt;file name='/etc/sfw/openssl/certs/localhost.crt' perms='0444'&gt;"
+cat $cert/crt
+echo "&lt;/file&gt;"
+rm -rf $cert
+</eval>
 </post>
 
 </kickstart> 
-

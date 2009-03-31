@@ -16,6 +16,9 @@
 
   <changelog>
   $Log: ssh.xml,v $
+  Revision 1.10  2009/03/31 00:23:29  anoop
+  Merged the remainder of the solaris XML files to the base roll
+
   Revision 1.9  2008/10/18 00:55:46  mjk
   copyright 5.1
 
@@ -122,15 +125,23 @@
   </changelog>
 
 
-  <package>openssh</package>
-  <package>openssh-clients</package>
-  <package>openssh-server</package>
-  <package>openssh-askpass</package>
+  <package os='linux'>openssh</package>
+  <package os='linux'>openssh-clients</package>
+  <package os='linux'>openssh-server</package>
+  <package os='linux'>openssh-askpass</package>
 
-  <package>xorg-x11-xauth</package>
+  <package os='linux'>xorg-x11-xauth</package>
+
+  <package os='sunos'>SUNWsshcu</package>
+  <package os='sunos'>SUNWsshdr</package>
+  <package os='sunos'>SUNWsshdu</package>
+  <package os='sunos'>SUNWsshr</package>
+  <package os='sunos'>SUNWsshu</package>
+  <package os='sunos'>SUNWspnego</package>
+  <package os='sunos'>SUNWgssdh</package>
+  <package os='sunos'>SUNWrsg</package>
 
 <post>
-
 <file name="/etc/ssh/ssh_config">
 Host *
 	CheckHostIP             no
@@ -138,9 +149,12 @@ Host *
 	ForwardAgent		yes
 	StrictHostKeyChecking   no
 	UsePrivilegedPort       no
+	FallBackToRsh		no
 	Protocol		2,1
 </file>
+</post>
 
+<post os='linux'>
 <!--
 change permissions on /root/ and /root/.ssh/ directories so
 cluster-dist can read root's 'id_rsa.pub' when it's run by a
@@ -159,6 +173,23 @@ sed -e 's/#PermitUserEnvironment no/PermitUserEnvironment yes/' \
 
 </post>
 
+<post os='sunos'>
+
+<service name="network/ssh" enabled="yes"/>
+
+<!--
+change permissions on /root/ and /root/.ssh/ directories so
+cluster-dist can read root's 'id_rsa.pub' when it's run by a
+non-root user
+-->
+
+mkdir -p /.ssh
+chmod a+rx /.ssh
+
+<!-- Turn off challenge-response so we get normal passwd auth. -->
+sed -e '/PermitRootLogin/s/no/yes/g' /etc/ssh/sshd_config > /tmp/sshd_config
+mv /tmp/sshd_config /etc/ssh/sshd_config
+
+</post>
 
 </kickstart> 
-

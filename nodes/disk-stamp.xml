@@ -17,6 +17,9 @@ disk (because the stamp isn't there).
 
 <changelog>
 $Log: disk-stamp.xml,v $
+Revision 1.7  2009/03/31 00:23:29  anoop
+Merged the remainder of the solaris XML files to the base roll
+
 Revision 1.6  2009/01/23 23:19:31  mjk
 tweaks on the entities
 
@@ -80,12 +83,13 @@ initial release
 Rocks release &version; (&release;)
 </file>
 
+</post>
+
+<post os='linux'>
 sed "s/redhat-release/rocks-release/" /etc/rc.sysinit &gt; /tmp/rc.sysinit
 cp /tmp/rc.sysinit /etc/rc.sysinit
 rm /tmp/rc.sysinit
 
 </post>
 
-
 </kickstart> 
-

@@ -17,6 +17,9 @@
 
   <changelog>
   $Log: ntp-client.xml,v $
+  Revision 1.7  2009/03/31 00:23:29  anoop
+  Merged the remainder of the solaris XML files to the base roll
+
   Revision 1.6  2009/01/23 21:50:23  bruno
   var tags converted to entities
 
@@ -79,7 +82,7 @@
   </changelog>
 
 
-<post>
+<post os='linux'>
 
 <!-- Configure NTP to use an external server -->
 
@@ -87,7 +90,18 @@
 server &Kickstart_PrivateNTPHost;
 driftfile /var/lib/ntp/drift
 </file>
+</post>
 
+<post os='sunos'>
+
+<!-- Configure NTP to use an external server -->
+<file name="/etc/inet/ntp.conf">
+server &Kickstart_PrivateNTPHost;
+driftfile /var/ntp/drift
+</file>
+</post>
+
+<post>
 <!-- Force the clock to be set to the server upon reboot -->
 
 /bin/mkdir -p /etc/ntp
@@ -99,15 +113,10 @@ driftfile /var/lib/ntp/drift
 <!-- Force the clock to be set to the server right now -->
 
 /usr/sbin/ntpdate &Kickstart_PrivateNTPHost;
+</post>
+
+<post os='linux'>
 /sbin/hwclock --systohc
 </post>
 
 </kickstart> 
-
-
-
-
-
-
-
-

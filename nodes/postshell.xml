@@ -17,6 +17,9 @@ is removed interactively.
 
 <changelog>
 $Log: postshell.xml,v $
+Revision 1.5  2009/03/31 00:23:29  anoop
+Merged the remainder of the solaris XML files to the base roll
+
 Revision 1.4  2008/10/18 00:55:45  mjk
 copyright 5.1
 
@@ -34,8 +37,7 @@ interactively by the user
 
 </changelog>
 
-<post>
-
+<post os='linux'>
 
 grep -q "postshell" /proc/cmdline
 if [ $? -eq 0 ]; then
@@ -45,6 +47,4 @@ fi
 
 </post>
 
-
 </kickstart> 
-

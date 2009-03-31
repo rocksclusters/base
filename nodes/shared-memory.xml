@@ -9,6 +9,9 @@ Configure the maximum size of a shared memory segment to be 3/4 of main memory
 
 <changelog>
 $Log: shared-memory.xml,v $
+Revision 1.2  2009/03/31 00:23:29  anoop
+Merged the remainder of the solaris XML files to the base roll
+
 Revision 1.1  2007/12/10 21:28:33  bruno
 the base roll now contains several elements from the HPC roll, thus
 making the HPC roll optional.
@@ -45,8 +48,7 @@ initial release
 
 </changelog>
 
-
-<post>
+<post os='linux'>
 SHMSIZE=`gawk '/MemTotal:/ { printf("(%s/4) * (3 * 1024)\n", $2); }' \
 	/proc/meminfo | bc`
 
@@ -56,5 +58,39 @@ then
 fi
 </post>
 
-</kickstart> 
+<post os='sunos' chroot="no">
+<![CDATA[
+# Get the memory size from prtconf
+echo `prtconf | awk '/Memory size/{ print $3 }'` > /a/tmp/memsize
+]]>
+</post>
 
+<post os='sunos'>
+<![CDATA[
+# Set max shared memory to 3/4 the total memory
+# Get value in hex
+MEMSIZE=`cat /tmp/memsize`
+SHMSIZE=`echo "obase=16;$MEMSIZE*3*1024*1024/4;" | bc `
+
+# If we've got no answer, exit.
+if [ -z ${SHMSIZE} ]; then
+	exit 0;
+fi
+
+# Check to see if max shared memory is already set
+# If it is change it. If not add it anew
+
+grep "shmsys:shminfo_shmmax" /etc/system
+if [ \$? -eq 0 ]; then
+	sed '/shmsys\:shminfo_shmmax/c\
+set shmsys:shminfo_shmmax="0x${SHMSIZE}"'\
+	/etc/system > /tmp/etc.system
+	mv /tmp/etc.system /etc/system
+else
+	echo "set shmsys:shminfo_shmmax=0x${SHMSIZE}" \
+	>> /etc/system
+fi
+]]>	
+</post>
+
+</kickstart> 
