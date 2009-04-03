@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.12 2009/02/10 20:11:20 mjk Exp $
+# $Id: __init__.py,v 1.13 2009/04/03 22:47:57 mjk Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.13  2009/04/03 22:47:57  mjk
+# quote dump lines for the bash shell (bruno's magic from database-data.xml)
+#
 # Revision 1.12  2009/02/10 20:11:20  mjk
 # os attr stuff for anoop
 #
@@ -112,14 +115,34 @@
 # - more flexible hostname lookup for the command line
 #
 
+import string
 import rocks.commands
 
 class command(rocks.commands.Command):
 	MustBeRoot = 0
 	
 	def dump(self, line):
-		self.addText('/opt/rocks/bin/rocks %s\n' % line)
-		
+
+		# Make sure we quote everything so it's safe for the shell.
+		# This is done mainly for the attributes (copied from 
+		# database-data.xml).  But it's good to do for everything
+		# we dump.
+
+		args = []
+		for word in line.strip().split():
+			s = ''
+			for char in word:
+				if char == "'":
+                        		s += "'"
+                                	s += '"'
+                                	s += "\\'"
+                                	s += '"'
+                                	s += "'"
+                        	else:
+                        		s += char
+			args.append("'%s'" % s)
+
+		self.addText('/opt/rocks/bin/rocks %s\n' % string.join(args))
 
 	
 class Command(command):
