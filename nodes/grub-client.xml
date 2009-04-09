@@ -15,6 +15,9 @@
 
   <changelog>
   $Log: grub-client.xml,v $
+  Revision 1.14  2009/04/09 20:28:40  bruno
+  tweak
+
   Revision 1.13  2009/03/31 00:23:29  anoop
   Merged the remainder of the solaris XML files to the base roll
 
@@ -80,20 +83,8 @@
 
   </changelog>
 
-<!-- Setup /boot/grub/rocks.conf file -->
-<post os='linux' arg="--interpreter /opt/rocks/bin/python">
-import os
-import rocks.grub
 
-args = "ks selinux=0"
-makegrub = rocks.grub.App()
-makegrub.run(args)
-
-</post>
-
-
-<!-- apply the kernel boot flags for this node -->
-<post os='linux' arg="--interpreter /opt/rocks/bin/python">
+<post arg="--interpreter /opt/rocks/bin/python">
 import os
 import os.path
 import rocks.grub
@@ -108,40 +99,56 @@ for mods in os.popen(detectXen1).readlines():
 for devs in os.popen(detectXen2).readlines():
 	isXen = False
 
-makegrub = rocks.grub.App()
-
 if isXen:
 	#
 	# reinstall a virtual machine
 	#
-	args = "ks initrd=initrd.img-&version;-&arch; pxe selinux=0 "
-	args += "noipv6 lang= devfs=nomount"
 	makegrub = rocks.grub.App()
+
 	makegrub.setBootTitle('Rocks Reinstall Xen')
 	makegrub.setInstallKernel(
 		'kickstart/xen/vmlinuz-&version;-&arch;')
 	makegrub.setInstallRamdisk(
 		'kickstart/xen/initrd-xen.iso.gz-&version;-&arch;')
+
+	args = "ks initrd=initrd.img-&version;-&arch; pxe selinux=0 "
+	args += "noipv6 lang= devfs=nomount"
+
 	makegrub.run(args)
 else:
 	#
 	# reinstall a physical machine
+	#
+	makegrub = rocks.grub.App()
+
+	makegrub.setInstallKernel(
+		'kickstart/default/vmlinuz-&version;-&arch;')
+	makegrub.setInstallRamdisk(
+		'kickstart/default/initrd.img-&version;-&arch;')
+
+	args = "ks selinux=0"
+	makegrub.run(args)
+
+	newmakegrub = rocks.grub.App()
+
+	#
+	# and set the boot flags for a physical machine
 	#
 	<eval mode="xml">
 	BOOTFLAGS=`/opt/rocks/bin/rocks report host bootflags &hostname;`
 	echo "args = \"$BOOTFLAGS\""
 	</eval>
 
-	makegrub.setBootTitle('title')
+	newmakegrub.setBootTitle('title')
 
 	#
 	# set the bootflags for both the grub.conf and grub-orig.conf files
 	#
-	makegrub.setFilename('grub.conf')
-	makegrub.append(args)
+	newmakegrub.setFilename('grub.conf')
+	newmakegrub.append(args)
 
-	makegrub.setFilename('grub-orig.conf')
-	makegrub.append(args)
+	newmakegrub.setFilename('grub-orig.conf')
+	newmakegrub.append(args)
 </post>
 
 </kickstart> 
