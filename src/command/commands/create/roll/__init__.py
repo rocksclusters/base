@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.27 2008/10/18 00:55:48 mjk Exp $
+# $Id: __init__.py,v 1.28 2009/04/09 20:29:16 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.28  2009/04/09 20:29:16  bruno
+# much simplier way in which to write out a minimal kickstart file for
+# bootable rolls
+#
 # Revision 1.27  2008/10/18 00:55:48  mjk
 # copyright 5.1
 #
@@ -516,34 +520,26 @@ class RollBuilder_linux(Builder, rocks.dist.Arch):
 			'rocks-dist-bootable')
 		dist.generate('--notorrent')
 		
-		#
-		# now set some other values so when the roll is booted, it
-		# can find its *.img files on the local media
-		#
-		os.environ['Kickstart_PrivateKickstartHost'] = '127.0.0.1'
-		os.environ['Kickstart_PrivateKickstartBasedir'] = 'mnt/cdrom'
-
-		ks = rocks.roll.KickstartFile(dist)
-
-		#
-		# output all sections but the 'pre' section. this is
-		# because it would include root's ssh public key from the
-		# host that rocks-roll is being executed on
-		#
-		ks.setKgenFlags('--section="main packages post"')
-
-		localrolldir = os.path.join(self.config.getRollName(), 
-			self.config.getRollVersion(), self.config.getRollArch())
-
-		ks.setKppFlags('--distribution="%s"' % (localrolldir))
+		# 
+		# create a minimal kickstart file. this will get us to the
+		# rocks screens.
+		# 
+		distdir = os.path.join('mnt/cdrom', self.config.getRollName(),
+			self.config.getRollVersion(),
+			self.config.getRollArch())
 
 		fout = open(os.path.join('disk1', 'ks.cfg'), 'w')
-		for line in ks.generate('server'):
-			if line[0:6] != 'rootpw':
-				fout.write('%s\n' % line)
+		fout.write('url --url http://127.0.0.1/%s\n' % distdir)
+		fout.write('lang en_US\n')
+		fout.write('keyboard us\n')
+		fout.write('interactive\n')
+		fout.write('install\n')
 		fout.close()
 
 		import rocks.bootable
+
+		localrolldir = os.path.join(self.config.getRollName(), 
+			self.config.getRollVersion(), self.config.getRollArch())
 
 		rolldir = os.path.join(os.getcwd(), 'disk1', localrolldir)
 
