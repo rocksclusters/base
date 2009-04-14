@@ -1,4 +1,4 @@
-# $Id: linux.mk,v 1.16 2008/10/18 00:55:47 mjk Exp $
+# $Id: linux.mk,v 1.17 2009/04/14 16:12:16 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: linux.mk,v $
+# Revision 1.17  2009/04/14 16:12:16  bruno
+# push towards chimmy beta
+#
 # Revision 1.16  2008/10/18 00:55:47  mjk
 # copyright 5.1
 #
@@ -130,10 +133,11 @@ SRCDIRS = `find . -type d -maxdepth 1 \
 	-not -name kudzu \
 	-not -name rocks-pxe \
 	-not -name updates.img \
-	-not -name anaconda	\
-	-not -name devel-env	\
-	-not -name pcre		\
-	-not -name php		\
+	-not -name anaconda \
+	-not -name devel-env \
+	-not -name pcre \
+	-not -name php \
+	-not -name rocks-security \
 	-not -name postfix`
 
 #

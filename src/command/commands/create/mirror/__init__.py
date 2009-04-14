@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.18 2008/10/18 00:55:48 mjk Exp $
+# $Id: __init__.py,v 1.19 2009/04/14 16:12:16 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.19  2009/04/14 16:12:16  bruno
+# push towards chimmy beta
+#
 # Revision 1.18  2008/10/18 00:55:48  mjk
 # copyright 5.1
 #
@@ -134,9 +137,6 @@ import sys
 import string
 import rocks
 import rocks.commands
-import rocks.reports.base
-import rocks.ip
-import rocks.util
 
 
 class Command(rocks.commands.create.command):

@@ -312,11 +312,12 @@ def checkDasdFmt(disk, intf):
     if intf:
         try:
             devs = isys.getDasdDevPort()
-            dev = "/dev/%s (%s)" %(disk.dev.path[5:], devs[device])
+            devnode = disk.dev.path[5:]
+            dev = "/dev/%s (%s)" % (devnode, devs[devnode],)
         except Exception, e:
             log.critical("exception getting dasd dev ports: %s" %(e,))
             dev = "/dev/%s" %(disk.dev.path[5:],)
-        
+
         rc = intf.messageWindow(_("Warning"),
                        _("The device %s is LDL formatted instead of "
                          "CDL formatted.  LDL formatted DASDs are not "
@@ -333,7 +334,7 @@ def checkDasdFmt(disk, intf):
             return -1
     else:
         return 1
-    
+
 
 def checkDiskLabel(disk, intf):
     """Check that the disk label on disk is valid for this machine type."""
@@ -484,7 +485,12 @@ def sniffFilesystemType(device):
     # ext2 check
     if struct.unpack("<H", buf[1080:1082]) == (0xef53,):
         if isys.ext2HasJournal(dev, makeDevNode = 0):
-            return "ext3"
+            if fsset.ext4devFileSystem.probe(dev):
+                return "ext4dev"
+            elif fsset.ext4FileSystem.probe(dev):
+                return "ext4"
+            else:
+                return "ext3"
         else:
             return "ext2"
 
@@ -550,21 +556,10 @@ def productMatches(oldproduct, newproduct):
         return 1
 
     productUpgrades = {
-        "Red Hat Enterprise Linux AS": ("Red Hat Linux Advanced Server", ),
-        "Red Hat Enterprise Linux WS": ("Red Hat Linux Advanced Workstation",),
-        # FIXME: this probably shouldn't be in a release...
-        "Red Hat Enterprise Linux": ("Red Hat Linux Advanced Server",
-                                     "Red Hat Linux Advanced Workstation",
-                                     "Red Hat Enterprise Linux AS",
-                                     "Red Hat Enterprise Linux ES",
-                                     "Red Hat Enterprise Linux WS"),
-        "Red Hat Enterprise Linux Server": ("Red Hat Enterprise Linux AS",
-                                            "Red Hat Enterprise Linux ES",
-                                            "Red Hat Enterprise Linux WS",
-                                            "Red Hat Enterprise Linux"),
-        "Red Hat Enterprise Linux Client": ("Red Hat Enterprise Linux WS",
-                                            "Red Hat Desktop",
-                                            "Red Hat Enterprise Linux"),
+        "Red Hat Enterprise Linux Server": ("Red Hat Enterprise Linux Client release 5",
+                                            "Red Hat Enterprise Linux Server release 5"),
+        "Red Hat Enterprise Linux Client": ("Red Hat Enterprise Linux Client release 5",
+                                            "Red Hat Enterprise Linux Server release 5"),
         "Fedora Core": ("Red Hat Linux",)
         }
 
@@ -583,6 +578,7 @@ class DiskSet:
     """The disks in the system."""
 
     skippedDisks = []
+    exclusiveDisks = []
     mdList = []
     dmList = None
     mpList = None
@@ -695,6 +691,11 @@ class DiskSet:
     def getLabels(self):
         """Return a list of all of the labels used on partitions."""
         labels = {}
+
+        try:
+            encryptedDevices = self.anaconda.id.partitions.encryptedDevices
+        except:
+            encryptedDevices = {}
         
         drives = self.disks.keys()
         drives.sort()
@@ -709,9 +710,20 @@ class DiskSet:
             parts = filter_partitions(disk, func)
             for part in parts:
                 node = get_partition_name(part)
-                label = isys.readFSLabel(node)
+                crypto = encryptedDevices.get(node)
+                mknode = 1
+                prefix = ""
+                if crypto and not crypto.openDevice():
+                    node = crypto.getDevice()
+                    mknode = 0
+                    prefix = "/dev/"
+
+                label = isys.readFSLabel(prefix + node, makeDevNode = mknode)
                 if label:
                     labels[node] = label
+
+                if crypto:
+                    crypto.closeDevice()
 
         # not doing this right now, because we should _always_ have a
         # partition table of some kind on dmraid.
@@ -722,9 +734,20 @@ class DiskSet:
                     labels[rs.name] = label
 
         for dev, devices, level, numActive in DiskSet.mdList:
-            label = isys.readFSLabel(dev)
+            crypto = encryptedDevices.get(dev)
+            mknode = 1
+            prefix = ""
+            if crypto and not crypto.openDevice():
+                dev = crypto.getDevice()
+                mknode = 0
+                prefix = "/dev/"
+
+            label = isys.readFSLabel(prefix + dev, makeDevNode = mknode)
             if label:
                 labels[dev] = label
+
+            if crypto:
+                crypto.closeDevice()
 
         return labels
 
@@ -736,15 +759,28 @@ class DiskSet:
         self.startDmRaid()
         self.startMdRaid()
 
+        for dev, crypto in self.anaconda.id.partitions.encryptedDevices.items():
+            # FIXME: order these so LVM and RAID always work on the first try
+            if crypto.openDevice():
+                log.error("failed to open encrypted device %s" % (dev,))
+
         if flags.cmdline.has_key("upgradeany"):
             upgradeany = 1
 
         for dev, devices, level, numActive in self.mdList:
             (errno, msg) = (None, None)
             found = 0
-            for fs in fsset.getFStoTry(dev):
+            theDev = "/dev/%s" % (dev,)
+            crypto = self.anaconda.id.partitions.encryptedDevices.get(dev)
+            if crypto and not crypto.openDevice():
+                theDev = "/dev/%s" % (crypto.getDevice(),)
+            elif crypto:
+                log.error("failed to open encrypted device %s" % dev)
+                crypto = None
+
+            for fs in fsset.getFStoTry(theDev):
                 try:
-                    isys.mount(dev, self.anaconda.rootPath, fs, readOnly = 1)
+                    isys.mount(theDev, self.anaconda.rootPath, fs, readOnly = 1)
                     found = 1
                     break
                 except SystemError, (errno, msg):
@@ -757,25 +793,38 @@ class DiskSet:
                     if ((upgradeany == 1) or
                         (productMatches(relstr, productName))):
                         try:
-                            label = isys.readFSLabel(dev, makeDevNode=0)
+                            label = isys.readFSLabel(theDev, makeDevNode=0)
                         except:
                             label = None
             
-                        rootparts.append ((dev, fs, relstr, label))
+                        rootparts.append ((theDev, fs, relstr, label))
                 isys.umount(self.anaconda.rootPath)
 
         # now, look for candidate lvm roots
 	lvm.vgscan()
 	lvm.vgactivate()
 
+        for dev, crypto in self.anaconda.id.partitions.encryptedDevices.items():
+            # FIXME: order these so LVM and RAID always work on the first try
+            if crypto.openDevice():
+                log.error("failed to open encrypted device %s" % (dev,))
+
         for (vg, lv, size, lvorigin) in lvm.lvlist():
             if lvorigin:
                 continue
-            dev = "/dev/%s/%s" %(vg, lv)
+            theDev = "/dev/%s/%s" %(vg, lv)
             found = 0
-            for fs in fsset.getFStoTry(dev):
+            dmnode = "mapper/%s-%s" % (vg, lv)
+            crypto = self.anaconda.id.partitions.encryptedDevices.get(dmnode)
+            if crypto and not crypto.openDevice():
+                theDev = "/dev/%s" % (crypto.getDevice(),)
+            elif crypto:
+                log.error("failed to open encrypted device %s" % dev)
+                crypto = None
+
+            for fs in fsset.getFStoTry(theDev):
                 try:
-                    isys.mount(dev, self.anaconda.rootPath, fs, readOnly = 1)
+                    isys.mount(theDev, self.anaconda.rootPath, fs, readOnly = 1)
                     found = 1
                     break
                 except SystemError:
@@ -788,11 +837,11 @@ class DiskSet:
                     if ((upgradeany == 1) or
                         (productMatches(relstr, productName))):
                         try:
-                            label = isys.readFSLabel(dev, makeDevNode=0)
+                            label = isys.readFSLabel(theDev, makeDevNode=0)
                         except:
                             label = None
             
-                        rootparts.append ((dev, fs, relstr, label))
+                        rootparts.append ((theDev, fs, relstr, label))
                 isys.umount(self.anaconda.rootPath)
 
 	lvm.vgdeactivate()
@@ -807,25 +856,43 @@ class DiskSet:
             disk = self.disks[drive]
             part = disk.next_partition ()
             while part:
+                node = get_partition_name(part)
+                crypto = self.anaconda.id.partitions.encryptedDevices.get(node)
                 if (part.is_active()
                     and (part.get_flag(parted.PARTITION_RAID)
                          or part.get_flag(parted.PARTITION_LVM))):
                     pass
-                elif (part.fs_type and
-                      part.fs_type.name in fsset.getUsableLinuxFs()):
-                    node = get_partition_name(part)
+                elif part.fs_type or crypto:
+                    theDev = node
+                    if part.fs_type:
+                        fstype = part.fs_type.name
+
+                    # parted doesn't tell ext4/ext4dev from ext3 for us
+                    if fstype == "ext3": 
+                        fstype = sniffFilesystemType("/dev/%s" % theDev)
+
+                    if crypto and not crypto.openDevice():
+                        theDev = crypto.getDevice()
+                        fstype = sniffFilesystemType("/dev/%s" % theDev)
+                    elif crypto:
+                        log.error("failed to open encrypted device %s" % node)
+                        crypto = None
+
+                    if not fstype or fstype not in fsset.getUsableLinuxFs():
+                        part = disk.next_partition(part)
+                        continue
 
                     # In hard drive ISO method, don't try to mount the
                     # protected partitions because that'll throw up a
                     # useless error message.
                     protected = self.anaconda.method.protectedPartitions()
 
-                    if protected and node in protected:
+                    if protected and theDev in protected:
                         part = disk.next_partition(part)
                         continue
 
 		    try:
-			isys.mount(node, self.anaconda.rootPath, part.fs_type.name)
+			isys.mount(theDev, self.anaconda.rootPath, fstype)
 		    except SystemError, (errno, msg):
                         part = disk.next_partition(part)
 			continue
@@ -835,11 +902,11 @@ class DiskSet:
                         if ((upgradeany == 1) or
                             (productMatches(relstr, productName))):
                             try:
-                                label = isys.readFSLabel("/dev/%s" % node, makeDevNode=0)
+                                label = isys.readFSLabel("/dev/%s" % theDev, makeDevNode=0)
                             except:
                                 label = None
             
-                            rootparts.append ((node, part.fs_type.name,
+                            rootparts.append ((theDev, fstype,
                                                relstr, label))
 		    isys.umount(self.anaconda.rootPath)
                     
@@ -933,6 +1000,29 @@ class DiskSet:
             #self.disks[drive].close()
             self._removeDisk(drive, addSkip=False)
 
+    def isDisciplineFBA (self, drive):
+        if rhpl.getArch() != "s390":
+            return False
+
+        drive = drive.replace('/dev/', '')
+
+        if drive.startswith("dasd"):
+            discipline = "/sys/block/%s/device/discipline" % (drive,)
+            if os.path.isfile(discipline):
+                try:
+                    fp = open(discipline, "r")
+                    lines = fp.readlines()
+                    fp.close()
+
+                    if len(lines) == 1:
+                        if lines[0].strip() == "FBA":
+                            return True
+                except:
+                    log.error("failed to check discipline of %s" % (drive,))
+                    pass
+
+        return False
+
     def dasdFmt (self, drive = None):
         """Format dasd devices (s390)."""
 
@@ -1019,20 +1109,13 @@ class DiskSet:
         # XXX FIXME this test is terrible.
         if self.anaconda is not None:
             rc = 0
-            if ks and (drive in clearDevs) and initAll:
+            if (ks and (drive in clearDevs) and initAll) or \
+                self.isDisciplineFBA(drive):
                 rc = 1
             else:
                 if not intf:
                     self._removeDisk(drive)
                     return False
-                msg = _("The partition table on device %s was unreadable. "
-                        "To create new partitions it must be initialized, "
-                        "causing the loss of ALL DATA on this drive.\n\n"
-                        "This operation will override any previous "
-                        "installation choices about which drives to "
-                        "ignore.\n\n"
-                        "Would you like to initialize this drive, "
-                        "erasing ALL DATA?") % (drive,)
 
                 if rhpl.getArch() == "s390" \
                         and drive[:4] == "dasd" \
@@ -1047,6 +1130,19 @@ class DiskSet:
                        "ignore.\n\n"
                        "Would you like to initialize this drive, "
                        "erasing ALL DATA?") % (drive, devs[drive])
+
+                else:
+                    deviceFile = isys.makeDevInode(drive, "/dev/" + drive)
+                    dev = parted.PedDevice.get(deviceFile)
+
+                    msg = _("The partition table on device %s (%s %-0.f MB) was unreadable.\n"
+                            "To create new partitions it must be initialized, "
+                            "causing the loss of ALL DATA on this drive.\n\n"
+                            "This operation will override any previous "
+                            "installation choices about which drives to "
+                            "ignore.\n\n"
+                            "Would you like to initialize this drive, "
+                            "erasing ALL DATA?") % (drive, dev.model, getDeviceSizeMB (dev),)
 
                 rc = intf.messageWindow(_("Warning"), msg, type="yesno")
 
@@ -1064,10 +1160,11 @@ class DiskSet:
         try:
             try:
                 # FIXME: need the right fix for z/VM formatted dasd
-                if rhpl.getArch() == "s390" \
-                        and drive[:4] == "dasd":
+                if rhpl.getArch() == "s390" and drive[:4] == "dasd" and \
+                   not self.isDisciplineFBA(drive):
                     if self.dasdFmt(drive):
                         raise LabelError, drive
+
                     dev = parted.PedDevice.get(deviceFile)
                     disk = parted.PedDisk.new(dev)
                 else:
@@ -1078,7 +1175,6 @@ class DiskSet:
         except:
             self._removeDisk(drive)
             raise LabelError, drive
-
 
         self._addDisk(drive, disk)
         return disk, dev
@@ -1100,7 +1196,7 @@ class DiskSet:
 
         for drive in self.driveList():
             # ignoredisk takes precedence over clearpart (#186438).
-            if drive in DiskSet.skippedDisks:
+            if (DiskSet.exclusiveDisks != [] and drive not in DiskSet.exclusiveDisks) or drive in DiskSet.skippedDisks:
                 continue
             deviceFile = isys.makeDevInode(drive, "/dev/" + drive)
             if not isys.mediaPresent(drive):
@@ -1377,4 +1473,5 @@ max_logical_partition_count = {
     "ida/": 11,
     "sx8/": 11,
     "xvd": 11,
+    "vd": 11,
 }

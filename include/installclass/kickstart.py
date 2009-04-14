@@ -59,9 +59,13 @@ class AnacondaKSScript(Script):
         else:
             messages = "/dev/tty3"
 
+        if intf:
+            intf.suspend()
         rc = iutil.execWithRedirect(self.interp, ["/tmp/%s" % os.path.basename(path)],
                                     stdin = messages, stdout = messages, stderr = messages,
                                     root = scriptRoot)
+        if intf:
+            intf.resume()
 
         # Always log an error.  Only fail if we have a handle on the
         # windowing system and the kickstart file included --erroronfail.
@@ -113,6 +117,10 @@ class AnacondaKSHandlers(KickstartHandlers):
         # sets up default autopartitioning.  use clearpart separately
         # if you want it
         self.id.instClass.setDefaultPartitioning(self.id, doClear = 0)
+
+        if self.ksdata.encrypted:
+            self.id.partitions.autoEncrypt = True
+            self.id.partitions.encryptionPassphrase = self.ksdata.passphrase
 
         self.skipSteps.extend(["partition", "zfcpconfig", "parttype"])
 
@@ -174,13 +182,31 @@ class AnacondaKSHandlers(KickstartHandlers):
 
     def doIgnoreDisk(self, args):
 	KickstartHandlers.doIgnoreDisk(self, args)
-        self.id.instClass.setIgnoredDisks(self.id, self.ksdata.ignoredisk)
+        self.id.instClass.setIgnoredDisks(self.id, 
+                                          self.ksdata.ignoredisk["drives"])
+        self.id.instClass.setExclusiveDisks(self.id,
+                                            self.ksdata.ignoredisk["onlyuse"])
 
     def doIscsi(self, args):
         KickstartHandlers.doIscsi(self, args)
 
         for target in self.ksdata.iscsi:
-            if self.id.iscsi.addTarget(target.ipaddr, target.port, target.user, target.password):
+            kwargs = {
+                'ipaddr': target.ipaddr,
+                'port': target.port,
+                }
+            if target.user and target.password:
+                kwargs.update({
+                    'user': target.user,
+                    'pw': target.password
+                    })
+            if target.user_in and target.password_in:
+                kwargs.update({
+                    'user_in': target.user_in,
+                    'pw_in': target.password_in
+                    })
+
+            if self.id.iscsi.addTarget(**kwargs):
                 log.info("added iscsi target: %s" %(target.ipaddr,))
 
         # FIXME: flush the drive dict so we figure drives out again
@@ -190,6 +216,7 @@ class AnacondaKSHandlers(KickstartHandlers):
         KickstartHandlers.doIscsiName(self, args)
         self.id.iscsi.initiator = self.ksdata.iscsiname
 
+        self.id.iscsi.startIBFT()
         self.id.iscsi.startup()
         # FIXME: flush the drive dict so we figure drives out again        
         isys.flushDriveDict()
@@ -276,6 +303,17 @@ class AnacondaKSHandlers(KickstartHandlers):
 
 	if lvd.fsopts != "":
             request.fsopts = lvd.fsopts
+
+        if lvd.encrypted:
+            try:
+                passphrase = lvd.passphrase
+            except AttributeError:
+                passphrase = ""
+
+            if passphrase and not self.id.partitions.encryptionPassphrase:
+                self.id.partitions.encryptionPassphrase = passphrase
+
+            request.encryption = cryptodev.LUKSDevice(passphrase=passphrase, format=lvd.format)
 
         self.id.instClass.addPartRequest(self.id.partitions, request)
         self.skipSteps.extend(["partition", "zfcpconfig", "parttype"])
@@ -406,6 +444,9 @@ class AnacondaKSHandlers(KickstartHandlers):
             
             if self.ksRaidMapping.has_key(pd.mountpoint):
                 raise KickstartValueError, formatErrorMsg(self.lineno, msg="Defined RAID partition multiple times")
+
+            if pd.encrypted:
+                raise KickstartValueError, formatErrorMsg(self.lineno, msg="Software RAID partitions cannot be encrypted")
             
             # get a sort of hackish id
             uniqueID = self.ksID
@@ -472,6 +513,17 @@ class AnacondaKSHandlers(KickstartHandlers):
 
         if pd.fsopts != "":
             request.fsopts = pd.fsopts
+
+        if pd.encrypted:
+            try:
+                passphrase = pd.passphrase
+            except AttributeError:
+                passphrase = ""
+
+            if passphrase and not self.id.partitions.encryptionPassphrase:
+                self.id.partitions.encryptionPassphrase = passphrase
+
+            request.encryption = cryptodev.LUKSDevice(passphrase=passphrase, format=pd.format)
 
         self.id.instClass.addPartRequest(self.id.partitions, request)
         self.skipSteps.extend(["partition", "zfcpconfig", "parttype"])
@@ -543,6 +595,17 @@ class AnacondaKSHandlers(KickstartHandlers):
         if rd.fsopts != "":
             request.fsopts = rd.fsopts
 
+        if rd.encrypted:
+            try:
+                passphrase = rd.passphrase
+            except AttributeError:
+                passphrase = ""
+
+            if passphrase and not self.id.partitions.encryptionPassphrase:
+                self.id.partitions.encryptionPassphrase = passphrase
+
+            request.encryption = cryptodev.LUKSDevice(passphrase=passphrase, format=rd.format)
+
         self.id.instClass.addPartRequest(self.id.partitions, request)
         self.skipSteps.extend(["partition", "zfcpconfig", "parttype"])
 
@@ -569,6 +632,10 @@ class AnacondaKSHandlers(KickstartHandlers):
     def doTimezone(self, args):
         KickstartHandlers.doTimezone(self, args)
         dict = self.ksdata.timezone
+        tzfile = "/usr/share/zoneinfo/" + dict["timezone"]
+        if not os.access(tzfile, os.R_OK):
+            log.warning("Can't read timezone file set in kickstart, will ask")
+            return
 
 	self.id.instClass.setTimezoneInfo(self.id, dict["timezone"], dict["isUtc"])
 	self.skipSteps.append("timezone")
@@ -631,11 +698,15 @@ class AnacondaKSHandlers(KickstartHandlers):
         isys.flushDriveDict()
 
 class VNCHandlers(KickstartHandlers):
-    # We're only interested in the handler for the VNC command.
+    # We're only interested in the handler for the VNC command and display modes.
     def __init__ (self, ksdata):
         KickstartHandlers.__init__(self, ksdata)
         self.resetHandlers()
         self.handlers["vnc"] = self.doVnc
+        
+        self.handlers["text"] = self.doDisplayMode
+        self.handlers["cmdline"] = self.doDisplayMode
+        self.handlers["graphical"] = self.doDisplayMode
 
 class KickstartPreParser(KickstartParser):
     def __init__ (self, ksdata, kshandlers):
@@ -924,7 +995,7 @@ class Kickstart(cobject):
 
         # Only skip the network screen if there are no devices that used
         # network --bootproto=query.
-        if len(filter(lambda nd: nd.bootProto == "query", self.ksdata.network)) == 0:
+        if not self.id.network.query:
             dispatch.skipStep("network")
 
         # Don't show confirmation screens on non-interactive installs.

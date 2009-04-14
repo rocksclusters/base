@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.9 2008/10/18 00:55:57 mjk Exp $
+# $Id: __init__.py,v 1.10 2009/04/14 16:12:16 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.10  2009/04/14 16:12:16  bruno
+# push towards chimmy beta
+#
 # Revision 1.9  2008/10/18 00:55:57  mjk
 # copyright 5.1
 #
@@ -131,7 +134,6 @@ class Command(rocks.commands.set.host.command):
 	
 	<related>set host interface iface</related>
 	<related>set host interface ip</related>
-	<related>set host interface gateway</related>
 	<related>set host interface module</related>
 	<related>add host</related>
 	"""

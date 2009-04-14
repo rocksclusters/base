@@ -1,5 +1,5 @@
 # --------------------------------------------------- -*- Makefile -*- --
-# $Id: Makefile,v 1.5 2008/10/18 00:56:03 mjk Exp $
+# $Id: Makefile,v 1.6 2009/04/14 16:12:17 bruno Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.6  2009/04/14 16:12:17  bruno
+# push towards chimmy beta
+#
 # Revision 1.5  2008/10/18 00:56:03  mjk
 # copyright 5.1
 #
@@ -105,22 +108,22 @@ build:
 	( 								\
 		cd $(NAME)-$(VERSION);					\
 		export PYTHON=$(PY.PATH);				\
-		$(MAKE);							\
+		$(MAKE);						\
 	)
 
 install::
 	mkdir -p $(ROOT)/etc
 	mkdir -p $(ROOT)/$(PKGROOT)/bin
-	mkdir -p $(ROOT)/$(PY.ROCKS)/rocks/reports
+	# mkdir -p $(ROOT)/$(PY.ROCKS)/rocks/reports
 	mkdir -p $(ROOT)/$(PKGROOT)/var/plugins/insertethers
-	$(INSTALL) -m0444 rocks/reports/$(NAME).py 				\
-		$(ROOT)/$(PY.ROCKS)/rocks/reports/
-	$(INSTALL) -m0444 rocks/insertethers/$(NAME).py 			\
+	#$(INSTALL) -m0444 rocks/reports/$(NAME).py 			\
+		#$(ROOT)/$(PY.ROCKS)/rocks/reports/
+	$(INSTALL) -m0444 rocks/insertethers/$(NAME).py			\
 		$(ROOT)/$(PKGROOT)/var/plugins/insertethers/
 	( 								\
 		cd $(NAME)-$(VERSION);					\
 		export PYTHON=$(PY.PATH);				\
-		$(MAKE) PREFIX=$(ROOT)/$(PKGROOT) install;			\
+		$(MAKE) PREFIX=$(ROOT)/$(PKGROOT) install;		\
 	)
 
 clean::

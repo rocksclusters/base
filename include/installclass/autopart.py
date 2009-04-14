@@ -21,6 +21,7 @@ import lvm
 import logging
 import rhpl
 from anaconda_log import logger, logFile
+import cryptodev
 from partitioning import *
 import partedUtils
 import partRequests
@@ -773,7 +774,7 @@ def growParts(diskset, requests, newParts):
                     imposedMax = 1
 
                 maxfree = largestFree[drive]
-                if maxsect > largestFree[drive]:
+                if maxsect > maxfree + startSize:
                     maxsect = long(maxfree) + startSize
                     imposedMax = 1
 
@@ -1381,6 +1382,13 @@ def doAutoPartition(anaconda):
 
             if req.type == REQUEST_NEW and not req.drive:
                 req.drive = drives
+
+            # this is kind of a hack, but if we're doing autopart encryption
+            # and the request is a PV, encrypt it
+            if partitions.autoEncrypt and req.type == REQUEST_NEW and \
+               isinstance(req.fstype, fsset.lvmPhysicalVolumeDummyFileSystem):
+                req.encryption = cryptodev.LUKSDevice(passphrase=partitions.encryptionPassphrase, format=1)
+
             # if this is a multidrive request, we need to create one per drive
             if req.type == REQUEST_NEW and req.multidrive:
                 if not req.drive:
@@ -1388,6 +1396,7 @@ def doAutoPartition(anaconda):
                     
                 for drive in req.drive:
                     r = copy.copy(req)
+                    r.encryption = copy.deepcopy(req.encryption)
                     r.drive = [ drive ]
                     partitions.addRequest(r)
                 continue
@@ -1597,6 +1606,7 @@ def autoCreateLVMPartitionRequests(autoreq):
                                     grow = 1,
                                     format = 1,
                                     multidrive = 1)
+
     requests.append(nr)
     nr = partRequests.VolumeGroupRequestSpec(fstype = None,
                                              vgname = "lvm",
@@ -1671,20 +1681,16 @@ def queryAutoPartitionOK(anaconda):
 
     drives.sort()
     width = 44
-    str = ""
-    maxlen = 0
     for drive in drives:
-         if (len(drive) > maxlen):
-             maxlen = len(drive)
-    maxlen = maxlen + 8   # 5 for /dev/, 3 for spaces
-    for drive in drives:
-        if (len(str) + maxlen <= width):
-             str = str + "%-*s" % (maxlen, "/dev/"+drive)
+        deviceFile = isys.makeDevInode(drive, "/dev/" + drive)
+        dev = parted.PedDevice.get(deviceFile)
+        str = "%s (%s %-0.f MB)" % (drive, dev.model, partedUtils.getDeviceSizeMB (dev))
+        if len (str) <= width:
+            drvstr = drvstr + str + "\n"
         else:
-             drvstr = drvstr + str + "\n"
-             str = ""
-             str = "%-*s" % (maxlen, "/dev/"+drive)
-    drvstr = drvstr + str + "\n"
+            while len (str) > 0:
+               drvstr = drvstr + str[:width] + "\n"
+               str = str[width:]
     
     rc = anaconda.intf.messageWindow(_("Warning"), _(msg) % drvstr, type="yesno", default="no", custom_icon ="warning")
 

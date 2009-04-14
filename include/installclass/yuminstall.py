@@ -582,7 +582,7 @@ class AnacondaYum(YumSorter):
             repo.disable()
             self.repos.add(repo)
 
-        if self.anaconda.id.extraModules:
+        if self.anaconda.id.extraModules or flags.dlabel:
             for d in glob.glob("/tmp/ramfs/DD-*/rpms"):
                 dirname = os.path.basename(os.path.dirname(d))
                 rid = "anaconda-%s" % dirname
@@ -596,7 +596,7 @@ class AnacondaYum(YumSorter):
                     self.repos.add(repo)
                     log.info("added repository %s with source URL %s" % (repo.name, repo.baseurl))
                 except yum.Errors.DuplicateRepoError, e:
-                    log.warning("ignoring duplicate repository %s with source URL %s" % (ksrepo.name, ksrepo.baseurl or ksrepo.mirrorlist))
+                    log.warning("ignoring duplicate repository %s with source URL %s" % (repo.name, repo.baseurl or repo.mirrorlist))
 
         if self.anaconda.isKickstart:
             for ksrepo in self.anaconda.id.ksdata.repoList:
@@ -891,15 +891,12 @@ class YumBackend(AnacondaBackend):
     def doGroupSetup(self):
         self.ayum.doGroupSetup()
         # FIXME: this is a bad hack to remove support for xen on xen (#179387)
-        if os.path.exists("/proc/xen"):
-            if self.ayum.comps._groups.has_key("virtualization"):
-                del self.ayum.comps._groups["virtualization"]
-
         # FIXME: and another bad hack since our xen kernel is PAE
-        if rpmUtils.arch.getBaseArch() == "i386" and "pae" not in iutil.cpuFeatureFlags():
+        # FIXME: and yet another for vmware.
+        if iutil.inXen() or iutil.inVmware() or \
+                (rpmUtils.arch.getBaseArch() == "i386" and "pae" not in iutil.cpuFeatureFlags()):
             if self.ayum.comps._groups.has_key("virtualization"):
                 del self.ayum.comps._groups["virtualization"]
-                
 
     def doRepoSetup(self, anaconda, thisrepo = None, fatalerrors = True):
         # We want to call ayum.doRepoSetup one repo at a time so we have
@@ -1032,9 +1029,9 @@ class YumBackend(AnacondaBackend):
 
         for (path, name) in anaconda.id.extraModules:
             if ext != "":
-                moduleProvides = "kmod-%s-%s" % (name, ext)
+                moduleProvides = "dud-%s-%s" % (name, ext)
             else:
-                moduleProvides = "%s-kmod" % name
+                moduleProvides = "dud-%s" % name
 
             pkgs = self.ayum.returnPackagesByDep(moduleProvides)
 
@@ -1042,16 +1039,9 @@ class YumBackend(AnacondaBackend):
                 log.warning("Didn't find any package providing module %s" % name)
 
             for pkg in pkgs:
-                if ext == "" and pkg.name == "kmod-"+name:
-                    log.info("selecting package %s for module %s" % (pkg.name, name))
-                    self.ayum.install(po=pkg)
-                    self._installedDriverModules.append((path, name))
-                elif ext != "" and pkg.name.find("-"+ext) != -1:
-                    log.info("selecting package %s for module %s" % (pkg.name, name))
-                    self.ayum.install(po=pkg)
-                    self._installedDriverModules.append((path, name))
-                else:
-                    continue
+                log.info("selecting package %s for module %s" % (pkg.name, name))
+                self.ayum.install(po=pkg)
+                self._installedDriverModules.append((path, name))
 
     def copyExtraModules(self, anaconda, modulesList):
         kernelVersions = self.kernelVersionList()
@@ -1148,7 +1138,7 @@ class YumBackend(AnacondaBackend):
                     log.debug("selecting %s-devel" % k)
                     self.selectPackage("%s-devel.%s" % (k, kpkg.arch))
 
-        if not foundkernel and os.path.exists("/proc/xen"):
+        if not foundkernel and iutil.inXen():
             try:
                 kxen = getBestKernelByArch("kernel-xen", self.ayum)
                 log.info("selecting kernel-xen package for kernel")
@@ -1437,6 +1427,7 @@ class YumBackend(AnacondaBackend):
             anaconda.id.network.write(anaconda.rootPath)
             anaconda.id.iscsi.write(anaconda.rootPath)
             anaconda.id.zfcp.write(anaconda.rootPath)
+            anaconda.id.keyboard.write(anaconda.rootPath)
 
         # make a /etc/mtab so mkinitrd can handle certain hw (usb) correctly
         f = open(anaconda.rootPath + "/etc/mtab", "w+")
@@ -1664,7 +1655,7 @@ class YumBackend(AnacondaBackend):
             # blacklist all device types
             f.write('\nblacklist {\n')
             f.write('        devnode "^(ram|raw|loop|fd|md|dm-|sr|scd|st)[0-9]*"\n')
-            f.write('        devnode "^(hd|xvd)[a-z]*"\n')
+            f.write('        devnode "^(hd|xvd|vd)[a-z]*"\n')
             f.write('        wwid "*"\n')
             f.write('}\n')
 
@@ -1855,7 +1846,7 @@ class YumBackend(AnacondaBackend):
         except yum.Errors.InstallError:
             log.debug("no package matching %s" %(pkg,))
             return 0
-        
+
     def deselectPackage(self, pkg, *args):
         sp = pkg.rsplit(".", 2)
         txmbrs = []
@@ -1863,12 +1854,24 @@ class YumBackend(AnacondaBackend):
             txmbrs = self.ayum.tsInfo.matchNaevr(name=sp[0], arch=sp[1])
 
         if len(txmbrs) == 0:
-            txmbrs = self.ayum.tsInfo.matchNaevr(name=pkg)
+            exact, match, unmatch = yum.packages.parsePackages(self.ayum.pkgSack.returnPackages(), [pkg], casematch=1)
+            for p in exact + match:
+                txmbrs.append(p)
 
         if len(txmbrs) > 0:
-            map(lambda x: self.ayum.tsInfo.remove(x.pkgtup), txmbrs)
+            for x in txmbrs:
+                self.ayum.tsInfo.remove(x.pkgtup)
+                # we also need to remove from the conditionals
+                # dict so that things don't get pulled back in as a result
+                # of them.  yes, this is ugly.  conditionals should die.
+                for req, pkgs in self.ayum.tsInfo.conditionals.iteritems():
+                    if x in pkgs:
+                        pkgs.remove(x)
+                        self.ayum.tsInfo.conditionals[req] = pkgs
+            return len(txmbrs)
         else:
-            log.debug("no such package %s" %(pkg,))
+            log.debug("no such package %s to remove" %(pkg,))
+            return 0
 
     def upgradeFindPackages(self):
         # check the installed system to see if the packages just

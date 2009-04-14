@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.5 2008/10/18 00:55:57 mjk Exp $
+# $Id: __init__.py,v 1.6 2009/04/14 16:12:17 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.6  2009/04/14 16:12:17  bruno
+# push towards chimmy beta
+#
 # Revision 1.5  2008/10/18 00:55:57  mjk
 # copyright 5.1
 #
@@ -115,7 +118,6 @@ class Command(rocks.commands.set.host.command):
 	<!-- cross refs do not exist yet
 	<related>set host interface iface</related>
 	<related>set host interface ip</related>
-	<related>set host interface gateway</related>
 	<related>set host interface module</related>
 	-->
 	<related>add host</related>
