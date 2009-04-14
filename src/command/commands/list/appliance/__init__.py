@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.16 2008/12/20 01:06:15 mjk Exp $
+# $Id: __init__.py,v 1.17 2009/04/14 19:19:14 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.17  2009/04/14 19:19:14  bruno
+# no more shortname
+#
 # Revision 1.16  2008/12/20 01:06:15  mjk
 # - added appliance_attributes
 # - attributes => node_attributes
@@ -157,11 +160,9 @@ class Command(command):
 		
 		self.beginOutput()
 		for app in self.getApplianceNames(args):
-			self.db.execute("""select 
-				shortname, graph, node from appliances
+			self.db.execute("""select graph, node from appliances
 				where name='%s'""" % app)
 			row = self.db.fetchone()
 			self.addOutput(app, row)
 			
-		self.endOutput(header=['appliance', 'shortname', 
-			'graph', 'node'])
+		self.endOutput(header=['appliance', 'graph', 'node'])
