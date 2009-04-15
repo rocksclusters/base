@@ -1,4 +1,4 @@
-# $Id: sunos.mk,v 1.9 2008/12/10 23:19:05 anoop Exp $
+# $Id: sunos.mk,v 1.10 2009/04/15 20:58:02 anoop Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: sunos.mk,v $
+# Revision 1.10  2009/04/15 20:58:02  anoop
+# Added foundation-python-xml to the mix
+#
 # Revision 1.9  2008/12/10 23:19:05  anoop
 # Bug fixes for sun build
 #
@@ -135,7 +138,7 @@ SRCDIRS = foundation-coreutils foundation-gawk	\
 	  foundation-python-extras php postfix	\
 	  foundation-perl-tk foundation-ant	\
 	  foundation-cvs foundation-gd		\
-	  phpMyAdmin				\
+	  foundation-python-xml phpMyAdmin	\
 	  foundation-graphviz foundation-rcs	\
 	  foundation-mercurial devel		\
 	  pcre pylib command dbreport 411	\
