@@ -16,6 +16,9 @@
 
   <changelog>
   $Log: grub-server.xml,v $
+  Revision 1.14  2009/04/16 20:42:29  mjk
+  remove central ftp.rocksclusters.org stuff
+
   Revision 1.13  2009/01/23 21:50:23  bruno
   var tags converted to entities
 
@@ -76,21 +79,13 @@
 
 <!-- Setup /boot/grub/rocks.conf file -->
 <post arg="--interpreter /opt/rocks/bin/python">
-import os
-import sys
 import rocks.grub
-
-central = '&Kickstart_PublicKickstartHost;'
-
-if central == 'ftp.rocksclusters.org':
-	# Do nothing fancy.
-	os.system('cp /boot/grub/grub-orig.conf /boot/grub/rocks.conf')
-	sys.exit(0)
 
 makegrub=rocks.grub.App()
 args = 'frontend ksdevice=eth1 lang= devfs=nomount ekv central=%s ' \
 	'ip=%s gateway=%s netmask=%s dns=%s selinux=0 dropcert' \
-		% (central,
+		% (
+		'&Kickstart_PublicKickstartHost;',
 		'&Kickstart_PublicAddress;',
 		'&Kickstart_PublicGateway;',
 		'&Kickstart_PublicNetmask;',
