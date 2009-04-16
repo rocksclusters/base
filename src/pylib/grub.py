@@ -57,6 +57,9 @@
 # @Copyright@
 #
 # $Log: grub.py,v $
+# Revision 1.15  2009/04/16 20:41:58  mjk
+# block until grub file non-zero length
+#
 # Revision 1.14  2008/10/22 19:34:57  bruno
 # fix setting bootflags. the bootflags now survive through reboots.
 #
@@ -156,6 +159,14 @@ class App:
 		original = '/boot/grub/grub-orig.conf'
 		if not os.path.exists(original):
 			original = '/boot/grub/grub.conf'
+
+		while True:
+			try:
+				if os.stat(original)[6] > 0:
+					break
+			except:
+				pass
+				
 		file = open(original, 'r')
 		outfile = open(self.filename, 'w')
 
@@ -170,7 +181,9 @@ class App:
 				kernelflags = string.join(tokens[2:])
 			elif tokens[0] == 'root':
 				root = line
-			elif tokens[0] != 'title' and tokens[0] != 'initrd' and tokens[0] != 'module':
+			elif tokens[0] != 'title' and 
+				tokens[0] != 'initrd' and 
+				tokens[0] != 'module':
 				# Write the header
 				outfile.write(line)
 
