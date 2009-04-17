@@ -16,6 +16,9 @@
 
   <changelog>
   $Log: grub-server.xml,v $
+  Revision 1.15  2009/04/17 19:42:26  bruno
+  'frontend' is now 'build'
+
   Revision 1.14  2009/04/16 20:42:29  mjk
   remove central ftp.rocksclusters.org stuff
 
@@ -82,7 +85,7 @@
 import rocks.grub
 
 makegrub=rocks.grub.App()
-args = 'frontend ksdevice=eth1 lang= devfs=nomount ekv central=%s ' \
+args = 'build ksdevice=eth1 lang= devfs=nomount ekv central=%s ' \
 	'ip=%s gateway=%s netmask=%s dns=%s selinux=0 dropcert' \
 		% (
 		'&Kickstart_PublicKickstartHost;',
