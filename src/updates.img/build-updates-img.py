@@ -1,6 +1,6 @@
 #!/opt/rocks/usr/bin/python
 #
-# $Id: build-updates-img.py,v 1.9 2009/03/04 01:32:13 bruno Exp $
+# $Id: build-updates-img.py,v 1.10 2009/04/17 21:45:13 bruno Exp $
 #
 # @Copyright@
 # 
@@ -56,6 +56,9 @@
 # @Copyright@
 #
 # $Log: build-updates-img.py,v $
+# Revision 1.10  2009/04/17 21:45:13  bruno
+# rocks-dbreport package no longer exists
+#
 # Revision 1.9  2009/03/04 01:32:13  bruno
 # attributes work for frontend installs
 #
@@ -242,7 +245,6 @@ class App(rocks.app.Application):
 			'keyutils-libs-devel',
 			'rocks-bittorrent',
 			'rocks-command',
-			'rocks-dbreport',
 			'rocks-ekv',
 			'rocks-kickstart', 
 			'rocks-kpp',            
