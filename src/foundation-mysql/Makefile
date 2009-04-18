@@ -1,5 +1,5 @@
 # --------------------------------------------------- -*- Makefile -*- --
-# $Id: Makefile,v 1.20 2008/10/18 00:55:59 mjk Exp $
+# $Id: Makefile,v 1.21 2009/04/18 00:40:34 mjk Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,10 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.21  2009/04/18 00:40:34  mjk
+# - checkpoint still broken
+# - running on different port and mostly different my.cnf
+#
 # Revision 1.20  2008/10/18 00:55:59  mjk
 # copyright 5.1
 #
@@ -175,13 +179,12 @@ build:
 		./configure --prefix=$(PKGROOT)				\
 			--localstatedir=$(PKGVAR)			\
 			--with-unix-socket-path=$(PKGVAR)/mysql.sock	\
-			--with-tcp-port=3307				\
+			--with-tcp-port=40000				\
 			--with-mysqld-user=rocksdb			\
 			--enable-thread-safe-client			\
-			--with-yassl					\
+			--with-ssl					\
 			--without-bench					\
 			--without-debug					\
-			LDFLAGS=$(MYSQL_LDFLAGS) CFLAGS=$(MYSQL_CFLAGS)	\
 			;						\
 		$(MAKE);						\
 	)
@@ -193,9 +196,8 @@ install::
 	(								\
 		cd mysql-$(VERSION);					\
 		$(MAKE) prefix=$(ROOT)/$(PKGROOT) install;		\
-		$(INSTALL) -m 0644 support-files/my-medium.cnf		\
-			 $(ROOT)/$(PKGROOT)/etc/my.cnf;			\
 	)
+	$(INSTALL) -m 0644 my.cnf $(ROOT)/$(PKGROOT)/etc/my.cnf;
 	echo "#!/bin/bash"				>  $(ROOT)/$(INSTALLDB)
 	echo "$(PKGROOT)/bin/mysql_install_db \\" 	>> $(ROOT)/$(INSTALLDB)
 	echo "	--basedir=$(PKGROOT) \\" 		>> $(ROOT)/$(INSTALLDB)

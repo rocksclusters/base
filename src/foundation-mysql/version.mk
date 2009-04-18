@@ -1,3 +1,3 @@
 NAME	= foundation-mysql
-VERSION = 5.0.41
+VERSION = 5.1.33
 RELEASE = 0
