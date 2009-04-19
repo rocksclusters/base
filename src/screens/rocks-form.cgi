@@ -75,9 +75,21 @@ class App(rocks.sql.Application):
 				partfile = open('/tmp/user_partition_info', 'w')
 				partfile.write('rocks %s\n' % xmlvalue)
 				partfile.close()
+			elif xmlname == 'Kickstart_PrivateHostname':
+				#
+				# need to set the 'hostname' attribute
+				#
+				file.write('hostname:%s\n' % (xmlvalue))
 
 			str = '%s:%s' % (xmlname, xmlvalue)
 			file.write('%s\n' % (str))
+
+		#
+		# add the rocks_version attribute
+		#
+		cmd = '/opt/rocks/bin/rocks report version'
+		for line in os.popen(cmd).readlines():
+			file.write('rocks_version:%s\n' % line[:-1])
 
 		file.close()
 		return
