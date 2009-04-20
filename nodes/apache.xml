@@ -15,6 +15,9 @@
 
   <changelog>
   $Log: apache.xml,v $
+  Revision 1.15  2009/04/20 22:57:09  anoop
+  Comment the uncommented comment
+
   Revision 1.14  2009/04/20 22:51:12  bruno
   cleanup dead code
 
@@ -365,6 +368,7 @@ HttpConf - Linux:/etc/httpd/conf Sunos:/etc/apache2
 -->
 
 
+<!--
 <file name="&HttpConfigDirExt;/rocks.conf">
 #
 # Rocks Specific Apache configuration. 
