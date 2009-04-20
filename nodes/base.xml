@@ -20,6 +20,9 @@
 
   <changelog>
   $Log: base.xml,v $
+  Revision 1.40  2009/04/20 21:56:16  bruno
+  nuke dead fonts
+
   Revision 1.39  2009/01/24 00:13:22  mjk
   add arch to url
 
@@ -531,19 +534,6 @@ chmod o+t /state/partition*
 </file>
 
 </post>
-
-<post>
-<!--
-	create metadata in some font directories. we need this to ensure
-	that the default 'fixed' font is found by xfs
--->
-for i in misc 75dpi 100dpi
-do
-	/usr/X11R6/bin/mkfontdir /usr/X11R6/lib/X11/fonts/$i
-done
-
-</post>
-
 
 </kickstart> 
 
