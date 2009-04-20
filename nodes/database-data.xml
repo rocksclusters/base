@@ -16,6 +16,9 @@
 
   <changelog>
   $Log: database-data.xml,v $
+  Revision 1.42  2009/04/20 22:51:12  bruno
+  cleanup dead code
+
   Revision 1.41  2009/03/30 19:29:50  anoop
   Merging xml files from Solaris Roll to the Linux roll.
   More files to follow
@@ -565,7 +568,7 @@ update mysql.user set \
 	where user='root';
 </file>
 echo "set password for apache@localhost=PASSWORD(\"$clupass\");" &gt;&gt; /tmp/perms2.sql
-echo "set password for apache@&Kickstart_PrivateHostname;=PASSWORD(\"$clupass\");" &gt;&gt; /tmp/perms2.sql
+echo "set password for apache@\"&Kickstart_PrivateHostname;\"=PASSWORD(\"$clupass\");" &gt;&gt; /tmp/perms2.sql
 
 <!-- create the /root/.my.cnf file so that when root does  
 "mysql -u apache cluster", everything works -->

@@ -15,6 +15,9 @@
 
   <changelog>
   $Log: apache.xml,v $
+  Revision 1.14  2009/04/20 22:51:12  bruno
+  cleanup dead code
+
   Revision 1.13  2009/04/20 20:16:32  bruno
   cleanup old homepage stuff
 
@@ -231,9 +234,6 @@
 <post os='linux'>
 /sbin/chkconfig httpd on
 
-<!-- move default index.html out of the way -->
-mv /var/www/html/index.html /var/www/html/index.orig.html
-
 
 <file name="/etc/httpd/conf.d/rocks.conf">
 #
@@ -291,9 +291,6 @@ mysql.default_socket = /var/lib/mysql/mysql.sock
 <post os='sunos'>
 <service name="network/http" instance="apache2" enabled="yes"/>
 cp /etc/apache2/httpd.conf.php /etc/apache2/httpd.conf
-
-<!-- move default index.html out of the way -->
-mv /var/apache2/htdocs/index.html /var/apache2/htdocs/index.orig.html
 
 
 <file name="/etc/apache2/rocks.conf">
@@ -366,10 +363,6 @@ HttpRoot - Linux:/var/www/html Sunos:/var/apache2/htdocs
 HttpConfigDirExt - Linux:/etc/httpd/conf.d Sunos:/etc/apache2
 HttpConf - Linux:/etc/httpd/conf Sunos:/etc/apache2
 -->
-
-<!-- move default index.html out of the way -->
-<!--
-mv &HttpRoot;/index.html &HttpRoot;/index.orig.html
 
 
 <file name="&HttpConfigDirExt;/rocks.conf">
