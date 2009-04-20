@@ -15,6 +15,9 @@
 
   <changelog>
   $Log: apache.xml,v $
+  Revision 1.13  2009/04/20 20:16:32  bruno
+  cleanup old homepage stuff
+
   Revision 1.12  2009/03/30 19:29:50  anoop
   Merging xml files from Solaris Roll to the Linux roll.
   More files to follow
@@ -228,14 +231,6 @@
 <post os='linux'>
 /sbin/chkconfig httpd on
 
-<!-- create a link for /proc -->
-ln -sf /proc /var/www/html/ 
-
-<!-- add an entry into the cluster homepage for the proc filesystem. -->
-<file name="/var/www/html/homepage/30-proc.html">
-&lt;a href="proc/"&gt;Proc filesystem&lt;/a&gt;
-</file>
-
 <!-- move default index.html out of the way -->
 mv /var/www/html/index.html /var/www/html/index.orig.html
 
@@ -287,28 +282,6 @@ DirectoryIndex index.cgi
 Include conf.d/rocks.conf
 </file>
 
-<!-- Create the header.html file for the cluster homepage. -->
-<file name="/var/www/html/homepage/02-header.html">
-&lt;html&gt;
-&lt;head&gt;
-&lt;title&gt;&Info_ClusterName; Cluster&lt;/title&gt;
-&lt;/head&gt;
-&lt;body bgcolor=white&gt;
-
-&lt;TABLE WIDTH=100% CELLSPACING=10&gt;
- &lt;TR&gt;
-   &lt;TD ALIGN=left&gt;
-    &lt;H1&gt;&Info_ClusterName; Cluster&lt;/H1&gt;
-   &lt;/TD&gt;
-   &lt;TD ALIGN=right&gt;
-    &lt;A HREF="http://www.rocksclusters.org/"&gt;
-    &lt;IMG SRC="homepage/built-with-rocks.png" ALT="Built With Rocks" HEIGHT=120 WIDTH=100 BORDER=0&gt;&lt;/A&gt; &lt;BR&gt;
-	v &version; (&release;)
-   &lt;/TD&gt;
- &lt;/TR&gt;
-&lt;/TABLE&gt;
-</file>
-
 <file name="/etc/php.d/mysql.ini" mode="append">
 mysql.default_socket = /var/lib/mysql/mysql.sock
 </file>
@@ -318,14 +291,6 @@ mysql.default_socket = /var/lib/mysql/mysql.sock
 <post os='sunos'>
 <service name="network/http" instance="apache2" enabled="yes"/>
 cp /etc/apache2/httpd.conf.php /etc/apache2/httpd.conf
-
-<!-- create a link for /proc -->
-ln -sf /proc /var/apache2/htdocs/ 
-
-<!-- add an entry into the cluster homepage for the proc filesystem. -->
-<file name="/var/apache2/htdocs/homepage/30-proc.html">
-&lt;a href="proc/"&gt;Proc filesystem&lt;/a&gt;
-</file>
 
 <!-- move default index.html out of the way -->
 mv /var/apache2/htdocs/index.html /var/apache2/htdocs/index.orig.html
@@ -378,27 +343,6 @@ DirectoryIndex index.cgi
 Include /etc/apache2/rocks.conf
 </file>
 
-<!-- Create the header.html file for the cluster homepage. -->
-<file name="/var/apache2/htdocs/homepage/02-header.html">
-&lt;html&gt;
-&lt;head&gt;
-&lt;title&gt;&Info_ClusterName; Cluster&lt;/title&gt;
-&lt;/head&gt;
-&lt;body bgcolor=white&gt;
-
-&lt;TABLE WIDTH=100% CELLSPACING=10&gt;
- &lt;TR&gt;
-   &lt;TD ALIGN=left&gt;
-    &lt;H1&gt;&Info_ClusterName; Cluster&lt;/H1&gt;
-   &lt;/TD&gt;
-   &lt;TD ALIGN=right&gt;
-    &lt;A HREF="http://www.rocksclusters.org/"&gt;
-    &lt;IMG SRC="homepage/built-with-rocks.png" ALT="Built With Rocks" HEIGHT=120 WIDTH=100 BORDER=0&gt;&lt;/A&gt; &lt;BR&gt;
-	v &version; (&release;)
-   &lt;/TD&gt;
- &lt;/TR&gt;
-&lt;/TABLE&gt;
-</file>
 </post>
 
 
@@ -421,18 +365,6 @@ in the os_attributes table once the frontend has been installed.
 HttpRoot - Linux:/var/www/html Sunos:/var/apache2/htdocs
 HttpConfigDirExt - Linux:/etc/httpd/conf.d Sunos:/etc/apache2
 HttpConf - Linux:/etc/httpd/conf Sunos:/etc/apache2
--->
-
-<!-- create a link for /proc -->
-<!--
-ln -sf /proc &HttpRoot;
-mkdir -p &HttpRoot;/homepage
--->
-<!-- add an entry into the cluster homepage for the proc filesystem. -->
-<!--
-<file name="&HttpRoot;/homepage/30-proc.html">
-&lt;a href="proc/"&gt;Proc filesystem&lt;/a&gt;
-</file>
 -->
 
 <!-- move default index.html out of the way -->
@@ -492,26 +424,3 @@ Include &HttpConfigDirExt;/rocks.conf
 </file>
 -->
 
-<!-- Create the header.html file for the cluster homepage. -->
-<!-- 
-<file name="&HttpRoot;/homepage/02-header.html">
-&lt;html&gt;
-&lt;head&gt;
-&lt;title&gt;&Info_ClusterName; Cluster&lt;/title&gt;
-&lt;/head&gt;
-&lt;body bgcolor=white&gt;
-
-&lt;TABLE WIDTH=100% CELLSPACING=10&gt;
- &lt;TR&gt;
-   &lt;TD ALIGN=left&gt;
-    &lt;H1&gt;&Info_ClusterName; Cluster&lt;/H1&gt;
-   &lt;/TD&gt;
-   &lt;TD ALIGN=right&gt;
-    &lt;A HREF="http://www.rocksclusters.org/"&gt;
-    &lt;IMG SRC="homepage/built-with-rocks.png" ALT="Built With Rocks" HEIGHT=120 WIDTH=100 BORDER=0&gt;&lt;/A&gt; &lt;BR&gt;
-	v &version; (&release;)
-   &lt;/TD&gt;
- &lt;/TR&gt;
-&lt;/TABLE&gt;
-</file>
--->
