@@ -11,6 +11,9 @@
 
   <changelog>
   $Log: dhcp-server.xml,v $
+  Revision 1.5  2009/04/20 21:57:24  bruno
+  dhcpd.leases file is now correctly created
+
   Revision 1.4  2008/05/22 21:02:06  bruno
   rocks-dist is dead!
 
@@ -93,9 +96,6 @@ awk ' \
 	} ' /etc/sysconfig/dhcpd &gt; /tmp/dhcpd
 
 mv /tmp/dhcpd /etc/sysconfig/dhcpd
-
-<!-- dhcpd rpm was written by monkeys, add this missing file -->
-<file name="/var/lib/dhcp/dhcpd.leases"/>
 
 <!-- turn me on dead man -->
 /sbin/chkconfig dhcpd on
