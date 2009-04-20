@@ -57,6 +57,9 @@
 # @Copyright@
 #
 # $Log: grub.py,v $
+# Revision 1.16  2009/04/20 21:57:51  bruno
+# fix syntax error and stop all the ci/co stuff.
+#
 # Revision 1.15  2009/04/16 20:41:58  mjk
 # block until grub file non-zero length
 #
@@ -181,10 +184,12 @@ class App:
 				kernelflags = string.join(tokens[2:])
 			elif tokens[0] == 'root':
 				root = line
-			elif tokens[0] != 'title' and 
-				tokens[0] != 'initrd' and 
-				tokens[0] != 'module':
+			elif tokens[0] != 'title' and \
+				tokens[0] != 'initrd' and tokens[0] != 'module':
+
+				#
 				# Write the header
+				#
 				outfile.write(line)
 
 			if tokens[0] == 'title':

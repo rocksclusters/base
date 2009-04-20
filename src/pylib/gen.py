@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: gen.py,v $
+# Revision 1.41  2009/04/20 21:57:51  bruno
+# fix syntax error and stop all the ci/co stuff.
+#
 # Revision 1.40  2009/03/26 23:57:35  anoop
 # Cleaned up finish script generation for Solaris
 # Modified RCS support for Linux and Solaris by using
@@ -378,67 +381,84 @@ class Generator:
 		return 0
 	
 	def rcsBegin(self, file):
-		l = []
-		rcsdir  = os.path.join(os.path.dirname(file), 'RCS')
-		rcsfile = os.path.join(rcsdir, os.path.basename(file))
-		
-		#
-		# do the initial checkin, if necessary
-		#
-		l.append('touch %s' % file)
-		l.append('if [ ! -d %s ]; then' % rcsdir)
-		l.append('	mkdir %s' % rcsdir)
-		l.append('fi')
-		l.append('if [ ! -f %s,v ]; then' % rcsfile)
-		l.append('	echo "initial checkin" | /opt/rocks/bin/ci %s' % file)
-		l.append('fi')
-		l.append('')
-		l.append('/opt/rocks/bin/co -f -l %s' % file)
-		l.append('')
+		if 0:
+			#
+			# this code needs to be revisited
+			#
 
-		return '%s\n' % string.join(l, '\n')
+			l = []
+			rcsdir  = os.path.join(os.path.dirname(file), 'RCS')
+			rcsfile = os.path.join(rcsdir, os.path.basename(file))
+			
+			#
+			# do the initial checkin, if necessary
+			#
+			l.append('touch %s' % file)
+			l.append('if [ ! -d %s ]; then' % rcsdir)
+			l.append('	mkdir %s' % rcsdir)
+			l.append('fi')
+			l.append('if [ ! -f %s,v ]; then' % rcsfile)
+			l.append('	echo "initial checkin" | /opt/rocks/bin/ci %s' % file)
+			l.append('fi')
+			l.append('')
+			l.append('/opt/rocks/bin/co -f -l %s' % file)
+			l.append('')
+
+			return '%s\n' % string.join(l, '\n')
+		else:
+			return ''
+
 		
 	def rcsEnd(self, file):
-		l = []
-		l.append('')
+		if 0:
+			#
+			# this code needs to be revisited
+			#
 
-		rcsdir  = os.path.join(os.path.dirname(file), 'RCS')
-		rcsfile = os.path.join(rcsdir, os.path.basename(file))
+			l = []
+			l.append('')
 
-		# If NTP changes the clock on us this can break RCS which
-		# has a bunch of timestamp optimizations...
-		# This code will replace the timestamp of the last
-		# revision with the current clock and then touch the
-		# file to be checked in.  This way the delta is always
-		# newer than the last revision.
-		l.append('cat %s,v | '
-			'/opt/rocks/bin/gawk -v date=`date -u +%%Y.%%m.%%d.%%H.%%M.%%S` '
-			'\'/^date/ { '
-				'if (found == 0) { '
-					'printf "date\\t%%s;\\tauthor %%s\\tstate Exp;", '
-					'date, $4; '
-					'found = 1; '
-				'} else { '
-					'print $0; '
+			rcsdir  = os.path.join(os.path.dirname(file), 'RCS')
+			rcsfile = os.path.join(rcsdir, os.path.basename(file))
+
+			# If NTP changes the clock on us this can break RCS
+			# which has a bunch of timestamp optimizations...
+			# This code will replace the timestamp of the last
+			# revision with the current clock and then touch the
+			# file to be checked in.  This way the delta is always
+			# newer than the last revision.
+			l.append('cat %s,v | '
+				'/opt/rocks/bin/gawk -v date=`date -u +%%Y.%%m.%%d.%%H.%%M.%%S` '
+				'\'/^date/ { '
+					'if (found == 0) { '
+						'printf "date\\t%%s;\\tauthor %%s\\tstate Exp;", '
+						'date, $4; '
+						'found = 1; '
+					'} else { '
+						'print $0; '
+					'} '
+					'next; '
 				'} '
-				'next; '
-			'} '
-			'{ print; }'
-			'\' > %s.bak' % (rcsfile, rcsfile))
+				'{ print; }'
+				'\' > %s.bak' % (rcsfile, rcsfile))
+				
+			# Do a copy/rm rather than a mv to preserve perms on
+			# the RCS file.
+				
+			l.append('cp %s.bak %s,v' % (rcsfile, rcsfile))
+			l.append('rm -f %s.bak' % rcsfile)
 			
-		# Do a copy/rm rather than a mv to preserve perms on the 
-		# RCS file.
-			
-		l.append('cp %s.bak %s,v' % (rcsfile, rcsfile))
-		l.append('rm -f %s.bak' % rcsfile)
-		
-		l.append('touch %s' % file)
+			l.append('touch %s' % file)
 
-		# Now just check it in as we did before
+			# Now just check it in as we did before
 
-		l.append('echo "%s" | /opt/rocks/bin/ci %s' % (self.rcsComment, file))
-		l.append('/opt/rocks/bin/co -f %s' % file)
-		return '%s\n' % string.join(l, '\n')
+			l.append('echo "%s" | /opt/rocks/bin/ci %s'
+				% (self.rcsComment, file))
+			l.append('/opt/rocks/bin/co -f %s' % file)
+			return '%s\n' % string.join(l, '\n')
+		else:
+			return ''
+
 	
 	def order(self, node):
 		"""
