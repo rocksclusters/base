@@ -16,6 +16,9 @@
 
   <changelog>
   $Log: database.xml,v $
+  Revision 1.22  2009/04/21 23:59:55  mjk
+  start foundation-mysql
+
   Revision 1.21  2009/04/21 23:04:08  mjk
   - start the foundation-mysql DB and put tables there also
   - move sunos stuff out to generic
@@ -282,6 +285,18 @@ useradd -u 403 -g rocksdb -d /var/opt/rocks/mysql -m -s /bin/false rocksdb
 chgrp -R rocksdb /var/opt/rocks/mysql
 chmod -R g+rwx   /var/opt/rocks/mysql
 
+if [ -f /lib/svc/method/mysqld ]; then
+	/lib/svc/method/mysqld start
+else
+	/etc/rc.d/init.d/foundation-mysqld start
+fi
+
+/opt/rocks/bin/mysqladmin -s ping > /dev/null
+while [ $? -eq 1 ]; do
+        sleep 1
+        /opt/rocks/bin/mysqladmin -s ping > /dev/null
+done
+
 </post>
 
 
@@ -321,18 +336,9 @@ chown -R apache /var/www/html/labels/
 
 <post os='sunos'>
 
-<!-- start database and wait for it to come up -->
-
-/lib/svc/method/mysqld start
-
-/opt/rocks/bin/mysqladmin -s ping > /dev/null
-while [ $? -eq 1 ]; do
-	sleep 1
-	/opt/rocks/bin/mysqladmin -s ping > /dev/null
-done
-
 cp -f /opt/rocks/share/mysql/mysql-server.xml \
 	/var/svc/manifest/network/mysql-server.xml
+
 <service name='network/mysql' enabled='yes'/>
 
 </post>
@@ -346,6 +352,7 @@ grant select,update,insert,delete,lock tables on cluster.* to apache@localhost;
 grant select,update,insert,delete,lock tables on cluster.* to apache@"&Kickstart_PrivateHostname;";
 grant select on cluster.* to ''@localhost;
 </file>
+
 </post>
 
 <post os='linux'>
