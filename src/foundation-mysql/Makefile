@@ -1,5 +1,5 @@
 # --------------------------------------------------- -*- Makefile -*- --
-# $Id: Makefile,v 1.21 2009/04/18 00:40:34 mjk Exp $
+# $Id: Makefile,v 1.22 2009/04/21 23:08:54 mjk Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,10 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.22  2009/04/21 23:08:54  mjk
+# - runs on linux now
+# - solaris is broken until linux work is complete
+#
 # Revision 1.21  2009/04/18 00:40:34  mjk
 # - checkpoint still broken
 # - running on different port and mostly different my.cnf
@@ -198,8 +202,12 @@ install::
 		$(MAKE) prefix=$(ROOT)/$(PKGROOT) install;		\
 	)
 	$(INSTALL) -m 0644 my.cnf $(ROOT)/$(PKGROOT)/etc/my.cnf;
+	rm -rf $(ROOT)/$(PKGROOT)/mysql-test
+	rm -rf $(ROOT)/$(PKGROOT)/sql-bench
+	rm -rf $(ROOT)/var/opt/rocks/mysql
 	echo "#!/bin/bash"				>  $(ROOT)/$(INSTALLDB)
 	echo "$(PKGROOT)/bin/mysql_install_db \\" 	>> $(ROOT)/$(INSTALLDB)
+	echo "  --defaults-file=$(PKGROOT)/etc/my.cnf\\">> $(ROOT)/$(INSTALLDB)
 	echo "	--basedir=$(PKGROOT) \\" 		>> $(ROOT)/$(INSTALLDB)
 	echo "	--datadir=$(PKGVAR)  \\"		>> $(ROOT)/$(INSTALLDB)
 	echo "	--user=rocksdb"				>> $(ROOT)/$(INSTALLDB)
