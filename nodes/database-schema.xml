@@ -17,6 +17,13 @@
 
   <changelog>
   $Log: database-schema.xml,v $
+  Revision 1.36  2009/04/21 23:04:08  mjk
+  - start the foundation-mysql DB and put tables there also
+  - move sunos stuff out to generic
+  - kill phpmyadmin stuff
+  - next step is to move to foundation-mysql for the rocks command line
+  - original mysql DB is still used and works for now
+
   Revision 1.35  2009/03/31 00:23:29  anoop
   Merged the remainder of the solaris XML files to the base roll
 
@@ -519,7 +526,7 @@ CREATE TABLE bootflags (
 /usr/bin/mysql cluster &lt; /tmp/tables.sql
 </post>
 
-<post os='sunos'>
+<post>
 /opt/rocks/bin/mysqladmin create cluster
 /opt/rocks/bin/mysql cluster &lt; /tmp/tables.sql
 </post>

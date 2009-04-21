@@ -16,6 +16,13 @@
 
   <changelog>
   $Log: database-data.xml,v $
+  Revision 1.43  2009/04/21 23:04:08  mjk
+  - start the foundation-mysql DB and put tables there also
+  - move sunos stuff out to generic
+  - kill phpmyadmin stuff
+  - next step is to move to foundation-mysql for the rocks command line
+  - original mysql DB is still used and works for now
+
   Revision 1.42  2009/04/20 22:51:12  bruno
   cleanup dead code
 
@@ -577,6 +584,7 @@ echo "set password for apache@\"&Kickstart_PrivateHostname;\"=PASSWORD(\"$clupas
 </file>
 
 echo "password=$clupass" &gt;&gt; /root/.my.cnf
+echo "password=$clupass" &gt;&gt; /opt/rocks/etc/my.cnf
 
 <!-- use long passwords in the database -->
 <file name="/tmp/my.cnf" expr="grep -v '^old_passwords' /etc/my.cnf"/>
@@ -589,7 +597,7 @@ rm /tmp/my.cnf
 /usr/bin/mysql &lt; /tmp/perms2.sql
 </post>
 
-<post os='sunos'>
+<post>
 /opt/rocks/bin/mysql &lt; /tmp/perms2.sql
 </post>
 

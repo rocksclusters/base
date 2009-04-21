@@ -16,6 +16,13 @@
 
   <changelog>
   $Log: database.xml,v $
+  Revision 1.21  2009/04/21 23:04:08  mjk
+  - start the foundation-mysql DB and put tables there also
+  - move sunos stuff out to generic
+  - kill phpmyadmin stuff
+  - next step is to move to foundation-mysql for the rocks command line
+  - original mysql DB is still used and works for now
+
   Revision 1.20  2009/04/20 21:50:53  bruno
   labels are dead
 
@@ -247,17 +254,10 @@
   <package os='linux'>mysql-devel</package>
   <package os='linux'>MySQL-python</package>
   <package os='linux'>php-mysql</package>
-  <package os='linux'>phpMyAdmin</package>
+  <package os='linux'>foundation-mysql</package>
 
   <package os="sunos">ROCKSrocks-dbreport</package>
   <package os="sunos">ROCKSfoundation-mysql</package>
-  <package os="sunos">ROCKSphpMyAdmin</package>
-
-<!-- ia64 no longer relevant
-<post arch="ia64">
-rpm -e \-\-nodeps mx
-</post>
--->
 
 <post>
 
@@ -270,8 +270,22 @@ rpm -e \-\-nodeps mx
 </post>
 
 
-<post os='linux'>
+<post>
 
+<!-- start the foundation-mysql database -->
+
+groupadd -g 403 rocksdb
+useradd -u 403 -g rocksdb -d /var/opt/rocks/mysql -m -s /bin/false rocksdb
+
+/opt/rocks/bin/mysql-install-db
+
+chgrp -R rocksdb /var/opt/rocks/mysql
+chmod -R g+rwx   /var/opt/rocks/mysql
+
+</post>
+
+
+<post os='linux'>
 
 <!-- tweak permissions so apache can contact the local mysql server -->
 
@@ -290,7 +304,6 @@ if [ -f /etc/rc.d/init.d/mysqld ]; then
 	/sbin/chkconfig mysqld on
 fi
 
-
 <!-- start database and wait for it to come up -->
 
 /etc/rc.d/init.d/mysqld restart
@@ -301,90 +314,13 @@ while [ $? -eq 1 ]; do
 	/usr/bin/mysqladmin -s ping > /dev/null
 done
 
-<!-- Make our Rocks phpMyAdmin config file. -->
-<file name="/var/www/html/admin/phpMyAdmin/rocks.conf">
-&lt;?php
-#
-# The rw Rocks PhpMyAdmin configuration file.
-# Assumes apache user has rw access.
-#  
-$cfg['PmaAbsoluteUri_DisableWarning'] = 'TRUE';
-$cfg['Servers'][1]['user'] = 'nobody';
-$cfg['Servers'][1]['host'] = 'localhost'; 
-$cfg['Servers'][1]['only_db'] = 'cluster';
-$cfg['MaxRows'] = 150;
-?&gt;
-</file>
-
-<!-- Append our Rocks config file to the default config file. -->
-<file name="/var/www/html/admin/phpMyAdmin/config.inc.php">
-&lt;?php include_once "rocks.conf"; ?&gt;
-</file>
-
-<!-- For Read-Only database view. -->
-cp -r /var/www/html/admin/phpMyAdmin /var/www/html/
-
-<file name="/var/www/html/phpMyAdmin/rocks.conf">
-&lt;?php
-#
-# The read-only Rocks PhpMyAdmin configuration file.
-# Assumes 'nobody' user has only select access.
-#  
-$cfg['PmaAbsoluteUri_DisableWarning'] = 'TRUE';
-$cfg['Servers'][1]['user'] = 'nobody';
-$cfg['Servers'][1]['host'] = 'localhost'; 
-$cfg['Servers'][1]['only_db'] = 'cluster';
-$cfg['MaxRows'] = 150;
-?&gt;
-</file>
-
-<!-- Password for web admin access -->
-<file name="/etc/httpd/conf/passwd-mysql" perms="0440" owner="root.apache">
-root:&Kickstart_PrivateRootPassword;
-</file>
-
-<!-- Apache configuration -->
-<file name="/etc/httpd/conf.d/myadmin.conf">
-
-&lt;Directory "/var/www/html/admin/phpMyAdmin"&gt;
-	SSLRequireSSL
-	Options FollowSymLinks Indexes ExecCGI
-	AllowOverride None
-	AuthName "Cluster Database"
-	AuthType Basic
-	AuthUserFile /etc/httpd/conf/passwd-mysql
-	Require user root
-&lt;/Directory&gt;
-&lt;Directory "/var/www/html/phpMyAdmin"&gt;
-	Options FollowSymLinks Indexes ExecCGI
-	AllowOverride None
-	Order deny,allow
-	Allow from &Kickstart_PrivateNetwork;/&Kickstart_PrivateNetmask;
-	Allow from 127.0.0.1
-	Deny from all
-&lt;/Directory&gt;
-</file>
+<!-- Change the permission of /var/www/html/labels/ to be owned by apache -->
+chown -R apache /var/www/html/labels/
 
 </post>
 
 <post os='sunos'>
 
-<!-- tweak permissions so apache can contact the local mysql server -->
-groupadd -g 403 rocksdb
-if [ -d /var/opt/rocks/mysql ]; then
-	chgrp -R rocksdb /var/opt/rocks/mysql
-	chmod -R g+rwx /var/opt/rocks/mysql
-fi
-
-useradd -u 403 -g rocksdb \
-	-d /var/opt/rocks/mysql \
-	-m -s /bin/false	\
-	rocksdb
-
-chown -R rocksdb /var/opt/rocks/mysql
-chmod a+rx /var/opt/rocks/mysql
-
-/opt/rocks/bin/mysql_install_db --user=rocksdb
 <!-- start database and wait for it to come up -->
 
 /lib/svc/method/mysqld start
@@ -399,74 +335,6 @@ cp -f /opt/rocks/share/mysql/mysql-server.xml \
 	/var/svc/manifest/network/mysql-server.xml
 <service name='network/mysql' enabled='yes'/>
 
-<!-- Make our Rocks phpMyAdmin config file. -->
-<file name="/var/apache2/htdocs/admin/phpMyAdmin/rocks.conf">
-&lt;?php
-#
-# The rw Rocks PhpMyAdmin configuration file.
-# Assumes apache user has rw access.
-#  
-$cfg['PmaAbsoluteUri_DisableWarning'] = 'TRUE';
-$cfg['Servers'][1]['user'] = 'nobody';
-$cfg['Servers'][1]['host'] = 'localhost'; 
-$cfg['Servers'][1]['only_db'] = 'cluster';
-$cfg['MaxRows'] = 150;
-?&gt;
-</file>
-
-<!-- Append our Rocks config file to the default config file. -->
-<file name="/var/apache2/htdocs/admin/phpMyAdmin/config.inc.php">
-&lt;?php include_once "rocks.conf"; ?&gt;
-</file>
-
-<!-- For Read-Only database view. -->
-cp -r /var/apache2/htdocs/admin/phpMyAdmin /var/apache2/htdocs/
-
-<file name="/var/apache2/htdocs/phpMyAdmin/rocks.conf">
-&lt;?php
-#
-# The read-only Rocks PhpMyAdmin configuration file.
-# Assumes 'nobody' user has only select access.
-#  
-$cfg['PmaAbsoluteUri_DisableWarning'] = 'TRUE';
-$cfg['Servers'][1]['user'] = 'nobody';
-$cfg['Servers'][1]['host'] = 'localhost'; 
-$cfg['Servers'][1]['only_db'] = 'cluster';
-$cfg['MaxRows'] = 150;
-?&gt;
-</file>
-
-<!-- Password for web admin access -->
-<file name="/etc/apache2/passwd-mysql" perms="0440" owner="root:webservd">
-root:<var name="Kickstart_PrivateRootPassword"/>
-</file>
-
-<!-- Apache configuration -->
-<file name="/etc/apache2/myadmin.conf">
-
-&lt;Directory "/var/apache2/htdocs/admin/phpMyAdmin"&gt;
-	SSLRequireSSL
-	Options FollowSymLinks Indexes ExecCGI
-	AllowOverride None
-	AuthName "Cluster Database"
-	AuthType Basic
-	AuthUserFile /etc/apache2/passwd-mysql
-	Require user root
-&lt;/Directory&gt;
-&lt;Directory "/var/apache2/htdocs/phpMyAdmin"&gt;
-	Options FollowSymLinks Indexes ExecCGI
-	AllowOverride None
-	Order deny,allow
-	Allow from <var name="Kickstart_PrivateNetwork"/>/<var name="Kickstart_PrivateNetmask"/>
-	Allow from 127.0.0.1
-	Deny from all
-&lt;/Directory&gt;
-</file>
-
-<file name="/etc/apache2/httpd.conf" mode="append">
-
-Include /etc/apache2/myadmin.conf
-</file>
 </post>
 
 <post>
@@ -484,7 +352,7 @@ grant select on cluster.* to ''@localhost;
 /usr/bin/mysql mysql &lt; /tmp/perms.sql
 </post>
 
-<post os='sunos'>
+<post>
 /opt/rocks/bin/mysql mysql &lt; /tmp/perms.sql
 </post>
 
