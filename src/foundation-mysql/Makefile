@@ -1,5 +1,5 @@
 # --------------------------------------------------- -*- Makefile -*- --
-# $Id: Makefile,v 1.22 2009/04/21 23:08:54 mjk Exp $
+# $Id: Makefile,v 1.23 2009/04/21 23:57:20 anoop Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.23  2009/04/21 23:57:20  anoop
+# Minor modification to Makefile to enable Solaris build
+#
 # Revision 1.22  2009/04/21 23:08:54  mjk
 # - runs on linux now
 # - solaris is broken until linux work is complete
@@ -189,6 +192,7 @@ build:
 			--with-ssl					\
 			--without-bench					\
 			--without-debug					\
+			LDFLAGS=$(MYSQL_LDFLAGS) CFLAGS=$(MYSQL_CFLAGS)	\
 			;						\
 		$(MAKE);						\
 	)

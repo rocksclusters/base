@@ -1,4 +1,4 @@
-# $Id: sunos.mk,v 1.5 2008/10/18 00:55:59 mjk Exp $
+# $Id: sunos.mk,v 1.6 2009/04/21 23:57:20 anoop Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: sunos.mk,v $
+# Revision 1.6  2009/04/21 23:57:20  anoop
+# Minor modification to Makefile to enable Solaris build
+#
 # Revision 1.5  2008/10/18 00:55:59  mjk
 # copyright 5.1
 #
@@ -97,9 +100,7 @@
 #
 
 build:
-VERSION	= 5.0.41
 MYSQL_LDFLAGS	= "-L/opt/SUNWspro/lib -lCstd -lCrun"
-#MYSQL_CFLAGS	= "-lCrun -lCstd"
 
 install::
 	mkdir -p $(ROOT)/$(PKGROOT)/share/mysql/
@@ -108,5 +109,5 @@ install::
 	(							\
 		cd mysql-$(VERSION);				\
 		$(INSTALL) -m 0744 support-files/mysql.server	\
-			$(ROOT)/$(INIT_SCRIPTS_DIR)/mysqld;		\
+			$(ROOT)/$(INIT_SCRIPTS_DIR)/mysqld;	\
 	)
