@@ -16,6 +16,10 @@
 
   <changelog>
   $Log: database.xml,v $
+  Revision 1.24  2009/04/22 20:25:55  bruno
+  - fix name to foundation mysql init script
+  - labels are dead
+
   Revision 1.23  2009/04/22 17:02:32  bruno
   update path
 
@@ -291,7 +295,7 @@ chmod -R g+rwx   /var/opt/rocks/mysql
 if [ -f /lib/svc/method/mysqld ]; then
 	/lib/svc/method/mysqld start
 else
-	/etc/rc.d/init.d/foundation-mysqld start
+	/etc/rc.d/init.d/foundation-mysql start
 fi
 
 /opt/rocks/bin/mysqladmin -s ping > /dev/null
@@ -331,9 +335,6 @@ while [ $? -eq 1 ]; do
 	sleep 1
 	/usr/bin/mysqladmin -s ping > /dev/null
 done
-
-<!-- Change the permission of /var/www/html/labels/ to be owned by apache -->
-chown -R apache /var/www/html/labels/
 
 </post>
 
