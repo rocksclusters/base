@@ -191,11 +191,11 @@ Here's an example script:
 </para>
 
 <screen>
-for i in `df | awk '{print $6}'`
+for file in $(mount | awk '{print $3}')
 do
-	if [ -f $i/.rocks-release ]
+	if [ -f $file/.rocks-release ]
 	then
-		rm -f $i/.rocks-release 
+		rm -f $file/.rocks-release
 	fi
 done
 </screen>
@@ -275,11 +275,11 @@ Here's an example script:
 </para>
 
 <screen>
-for i in `df | awk '{print $6}'`
+for file in $(mount | awk '{print $3}')
 do
-	if [ -f $i/.rocks-release ]
+	if [ -f $file/.rocks-release ]
 	then
-		rm -f $i/.rocks-release 
+		rm -f $file/.rocks-release
 	fi
 done
 </screen>
@@ -684,11 +684,11 @@ Here's an example script:
 </para>
 
 <screen>
-for i in `df | awk '{print $6}'`
+for file in $(mount | awk '{print $3}')
 do
-	if [ -f $i/.rocks-release ]
+	if [ -f $file/.rocks-release ]
 	then
-		rm -f $i/.rocks-release 
+		rm -f $file/.rocks-release
 	fi
 done
 </screen>
