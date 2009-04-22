@@ -54,6 +54,15 @@
 # @Copyright@
 #
 # $Log: gen.py,v $
+# Revision 1.43  2009/04/22 22:15:31  mjk
+# - rcs co/ci is complete
+# - first modification triggers a ci of the file
+# - top of the boot-pre section ci/co all modified files
+# - no ci/co nonsense in between the above events
+# - boot pre/post files generated in /etc/sysconfig
+# - still needs rc.d scripts to trigger everything
+# - solaris?
+#
 # Revision 1.42  2009/04/22 21:30:54  mjk
 # - new take on the rcs ci/co stuff
 # - added <boot> section
@@ -376,7 +385,7 @@ class Generator:
 		# do the initial checkin
 
 		l.append('')
-		l.append('if [ ! -f %s/%s,v ]; then' % (rcsdir, file))
+		l.append('if [ ! -f %s/%s,v ]; then' % (rcsdir, os.path.basename(file)))
 		l.append('	touch %s;' % file)
 		l.append('	if [ ! -d %s ]; then' % rcsdir)
 		l.append('		mkdir %s' % rcsdir)
@@ -384,8 +393,9 @@ class Generator:
 		l.append('	echo "original" | /opt/rocks/bin/ci %s;' % file)
 		l.append('	/opt/rocks/bin/co -f -l %s;' % file)
 		l.append('fi')
+		l.append('')
 
-		return l
+		return string.join(l, '\n')
 	
 	def order(self, node):
 		"""
@@ -451,9 +461,11 @@ class Generator:
 
 		if fileName:
 		
-			if filename not in self.rcsFiles:
-				self.rcsFiles.append(filename)
-				self.rcsBegin(fileName)
+			if fileName not in self.rcsFiles:
+				self.rcsFiles.append(fileName)
+				s = self.rcsBegin(fileName)
+			else:
+				s = ''
 
 			if fileMode == 'append':
 				gt = '>>'
@@ -882,7 +894,7 @@ class Generator_linux(Generator):
 	def generate_boot(self):
 		list = []
 		list.append('')
-		list.append('%%post')
+		list.append('%post')
 		
 		# Boot PRE
 		#	- check in/out all modified files
@@ -892,9 +904,12 @@ class Generator_linux(Generator):
 		list.append('cat >> /etc/sysconfig/rocks-pre << EOF')
 
 		for file in self.getRCSFiles():
-			list.append('echo "rocks" | /opt/rocks/bin/ci %s'
+			list.append('if [ -f %s ]; then' % file)
+			list.append('\techo "rocks" | /opt/rocks/bin/ci %s;' 
 				% file)
-			list.append('/opt/rocks/bin/co -f %s' % file)
+			list.append('\t/opt/rocks/bin/co -f %s;' % file)
+			list.append('fi')
+		list.append('')
 
 		for l in self.ks['boot-pre']:
 			list.append(string.join(l, '\n'))
