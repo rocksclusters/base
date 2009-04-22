@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.16 2008/10/18 00:55:50 mjk Exp $
+# $Id: __init__.py,v 1.17 2009/04/22 21:31:35 mjk Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.17  2009/04/22 21:31:35  mjk
+# added boot section
+#
 # Revision 1.16  2008/10/18 00:55:50  mjk
 # copyright 5.1
 #
@@ -167,9 +170,6 @@ class Command(rocks.commands.list.host.command):
 		"""Reads the XML host profile and outputs a RedHat 
 		Kickstart file."""
 
-		#r, w = popen2.popen2('/opt/rocks/sbin/kgen')
-		#w.write(xml)
-		#w.close()
 		list = []
 		self.generator.parse(xml)
 		for section in [
@@ -179,7 +179,8 @@ class Command(rocks.commands.list.host.command):
 			'packages',
 			'pre',
 			'post',
-			'installclass'
+			'boot'
+			'installclass',
 			]:
 			list += self.generator.generate(section)
 			
