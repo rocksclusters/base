@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.17 2009/04/22 21:31:35 mjk Exp $
+# $Id: __init__.py,v 1.18 2009/04/22 22:13:40 mjk Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.18  2009/04/22 22:13:40  mjk
+# - boot section works
+# - still needs rc.d scripts to trigger the code
+#
 # Revision 1.17  2009/04/22 21:31:35  mjk
 # added boot section
 #
@@ -179,8 +183,8 @@ class Command(rocks.commands.list.host.command):
 			'packages',
 			'pre',
 			'post',
-			'boot'
-			'installclass',
+			'boot',
+			'installclass'
 			]:
 			list += self.generator.generate(section)
 			
@@ -257,7 +261,6 @@ class Command(rocks.commands.list.host.command):
 		self.generator = c_gen()
 		self.generator.setArch(self.arch)
 		self.generator.setOS(self.os)
-		self.generator.setRCSComment('rocks list host profile')
 
 		self.beginOutput()
 		
