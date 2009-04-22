@@ -1,4 +1,4 @@
-# $Id: plugin_physical_host.py,v 1.3 2009/03/04 21:31:44 bruno Exp $
+# $Id: plugin_physical_host.py,v 1.4 2009/04/22 02:27:19 anoop Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: plugin_physical_host.py,v $
+# Revision 1.4  2009/04/22 02:27:19  anoop
+# Moved solaris dbreport to rocks command line
+#
 # Revision 1.3  2009/03/04 21:31:44  bruno
 # convert all getGlobalVar to getHostAttr
 #
@@ -245,7 +248,7 @@ class Plugin(rocks.commands.Plugin):
 			if action == 'os':
 				os.unlink(grub_conf_file)
 			if action == 'install':
-				os.system('/opt/rocks/bin/dbreport grub_menu %s > ' %(host) +
+				os.system('/opt/rocks/bin/rocks report grub %s > ' %(host) +
 					'%s 2> /dev/null' % (grub_conf_file))
 				os.system('chown root.apache %s' % (grub_conf_file))
 				os.system('chmod 664 %s' % (grub_conf_file))
@@ -305,10 +308,7 @@ class Plugin(rocks.commands.Plugin):
 					physnode = 0
 
 			if physnode:
-				self.db.execute("""select os from nodes where
-					nodes.name = '%s' """ % host)
-
-				node_os, = self.db.fetchone()
+				node_os = self.db.getHostAttr(host, "os")
 				if node_os == 'sunos':
 					self.writePxegrub(host, nodeid)
 
