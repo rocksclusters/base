@@ -54,6 +54,11 @@
 # @Copyright@
 #
 # $Log: gen.py,v $
+# Revision 1.42  2009/04/22 21:30:54  mjk
+# - new take on the rcs ci/co stuff
+# - added <boot> section
+# - not tested yet
+#
 # Revision 1.41  2009/04/20 21:57:51  bruno
 # fix syntax error and stop all the ci/co stuff.
 #
@@ -332,9 +337,7 @@ class Generator:
 	def __init__(self):
 		self.attrs	= {}
 		self.arch	= None
-		self.rcsComment = 'ROCKS'
-		self.rcsTag	= 'ROCKS'
-		self.rcsEpoch	= int(time.time())
+		self.rcsFiles	= []
 
 	def setArch(self, arch):
 		self.arch = arch
@@ -348,23 +351,8 @@ class Generator:
 	def getOS(self):
 		return self.os
 
-	def setRCSComment(self, s):
-		self.rcsComment = s
-		
-	def getRCSComment(self):
-		return self.rcsComment
-		
-	def setRCSTag(self, s):
-		self.rcsTag = s
-		
-	def getRCSTag(self):
-		return self.rcsTag
-		
-	def setRCSEpoch(self, n):
-		self.rcsEpoch = n
-		
-	def getRCSEpoch(self):
-		return self.rcsEpoch
+	def getRCSFiles(self):
+		return self.rcsFiles
 				
 	def isDisabled(self, node):
 		return node.attributes.getNamedItem((None, 'disable'))
@@ -381,84 +369,23 @@ class Generator:
 		return 0
 	
 	def rcsBegin(self, file):
-		if 0:
-			#
-			# this code needs to be revisited
-			#
+		l = []
 
-			l = []
-			rcsdir  = os.path.join(os.path.dirname(file), 'RCS')
-			rcsfile = os.path.join(rcsdir, os.path.basename(file))
-			
-			#
-			# do the initial checkin, if necessary
-			#
-			l.append('touch %s' % file)
-			l.append('if [ ! -d %s ]; then' % rcsdir)
-			l.append('	mkdir %s' % rcsdir)
-			l.append('fi')
-			l.append('if [ ! -f %s,v ]; then' % rcsfile)
-			l.append('	echo "initial checkin" | /opt/rocks/bin/ci %s' % file)
-			l.append('fi')
-			l.append('')
-			l.append('/opt/rocks/bin/co -f -l %s' % file)
-			l.append('')
-
-			return '%s\n' % string.join(l, '\n')
-		else:
-			return ''
-
+		rcsdir  = os.path.join(os.path.dirname(file), 'RCS')
 		
-	def rcsEnd(self, file):
-		if 0:
-			#
-			# this code needs to be revisited
-			#
+		# do the initial checkin
 
-			l = []
-			l.append('')
+		l.append('')
+		l.append('if [ ! -f %s/%s,v ]; then' % (rcsdir, file))
+		l.append('	touch %s;' % file)
+		l.append('	if [ ! -d %s ]; then' % rcsdir)
+		l.append('		mkdir %s' % rcsdir)
+		l.append('	fi;')
+		l.append('	echo "original" | /opt/rocks/bin/ci %s;' % file)
+		l.append('	/opt/rocks/bin/co -f -l %s;' % file)
+		l.append('fi')
 
-			rcsdir  = os.path.join(os.path.dirname(file), 'RCS')
-			rcsfile = os.path.join(rcsdir, os.path.basename(file))
-
-			# If NTP changes the clock on us this can break RCS
-			# which has a bunch of timestamp optimizations...
-			# This code will replace the timestamp of the last
-			# revision with the current clock and then touch the
-			# file to be checked in.  This way the delta is always
-			# newer than the last revision.
-			l.append('cat %s,v | '
-				'/opt/rocks/bin/gawk -v date=`date -u +%%Y.%%m.%%d.%%H.%%M.%%S` '
-				'\'/^date/ { '
-					'if (found == 0) { '
-						'printf "date\\t%%s;\\tauthor %%s\\tstate Exp;", '
-						'date, $4; '
-						'found = 1; '
-					'} else { '
-						'print $0; '
-					'} '
-					'next; '
-				'} '
-				'{ print; }'
-				'\' > %s.bak' % (rcsfile, rcsfile))
-				
-			# Do a copy/rm rather than a mv to preserve perms on
-			# the RCS file.
-				
-			l.append('cp %s.bak %s,v' % (rcsfile, rcsfile))
-			l.append('rm -f %s.bak' % rcsfile)
-			
-			l.append('touch %s' % file)
-
-			# Now just check it in as we did before
-
-			l.append('echo "%s" | /opt/rocks/bin/ci %s'
-				% (self.rcsComment, file))
-			l.append('/opt/rocks/bin/co -f %s' % file)
-			return '%s\n' % string.join(l, '\n')
-		else:
-			return ''
-
+		return l
 	
 	def order(self, node):
 		"""
@@ -524,7 +451,9 @@ class Generator:
 
 		if fileName:
 		
-			s = self.rcsBegin(fileName)
+			if filename not in self.rcsFiles:
+				self.rcsFiles.append(filename)
+				self.rcsBegin(fileName)
 
 			if fileMode == 'append':
 				gt = '>>'
@@ -548,8 +477,6 @@ class Generator:
 				if fileText[-1] != '\n':
 					s += '\n'
 				s += 'EOF\n'
-
-			s += self.rcsEnd(fileName)
 
 			if fileOwner:
 				s += "chown %s %s\n" % (fileOwner, fileName)
@@ -705,6 +632,8 @@ class Generator_linux(Generator):
 		self.ks['rpms-off']	= []
 		self.ks['pre' ]         = []
 		self.ks['post']         = []
+		self.ks['boot-pre']	= []
+		self.ks['boot-post']	= []
 
 	
 	##
@@ -899,6 +828,17 @@ class Generator_linux(Generator):
 		list.append(arg)
 		list.append(self.getChildText(node))
 		self.ks['post'].append(list)
+		
+	# <boot>
+	
+	def handle_boot(self, node):
+		attr = node.attributes
+		if attr.getNamedItem((None, 'order')):
+			order = attr.getNamedItem((None, 'order')).value
+		else:
+			order = 'pre'
+
+		self.ks['boot-%s' % order].append(self.getChildText(node))
 
 
 	def generate_main(self):
@@ -937,6 +877,43 @@ class Generator_linux(Generator):
 			post_list.append(string.join(list[1:], '\n'))
 			
 		return post_list
+
+
+	def generate_boot(self):
+		list = []
+		list.append('')
+		list.append('%%post')
+		
+		# Boot PRE
+		#	- check in/out all modified files
+		#	- write the <boot order="pre"> text
+		
+		list.append('')
+		list.append('cat >> /etc/sysconfig/rocks-pre << EOF')
+
+		for file in self.getRCSFiles():
+			list.append('echo "rocks" | /opt/rocks/bin/ci %s'
+				% file)
+			list.append('/opt/rocks/bin/co -f %s' % file)
+
+		for l in self.ks['boot-pre']:
+			list.append(string.join(l, '\n'))
+
+		list.append('EOF')
+
+		# Boot POST
+		#	- write the <boot order="post"> text
+		
+		list.append('')
+		list.append('cat >> /etc/sysconfig/rocks-post << EOF')
+
+		for l in self.ks['boot-post']:
+			list.append(string.join(l, '\n'))
+
+		list.append('EOF')
+		
+			
+		return list
 
 		
 class MainNodeFilter_sunos(NodeFilter):
