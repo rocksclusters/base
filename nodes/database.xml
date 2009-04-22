@@ -16,6 +16,9 @@
 
   <changelog>
   $Log: database.xml,v $
+  Revision 1.23  2009/04/22 17:02:32  bruno
+  update path
+
   Revision 1.22  2009/04/21 23:59:55  mjk
   start foundation-mysql
 
@@ -280,7 +283,7 @@
 groupadd -g 403 rocksdb
 useradd -u 403 -g rocksdb -d /var/opt/rocks/mysql -m -s /bin/false rocksdb
 
-/opt/rocks/bin/mysql-install-db
+/opt/rocks/sbin/mysql-install-db
 
 chgrp -R rocksdb /var/opt/rocks/mysql
 chmod -R g+rwx   /var/opt/rocks/mysql
