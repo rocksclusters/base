@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.5 2009/04/23 17:12:29 bruno Exp $
+# $Id: __init__.py,v 1.6 2009/04/23 17:17:21 bruno Exp $
 #
 # This file was authored by Brandon Davidson from the University of Oregon.
 # The Rocks Developers thank Brandon for his contribution.
@@ -57,6 +57,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.6  2009/04/23 17:17:21  bruno
+# remove the entry in the node_rolls table when a roll is removed
+#
 # Revision 1.5  2009/04/23 17:12:29  bruno
 # cleanup 'rocks remove host' command
 #
@@ -160,14 +163,11 @@ class Command(rocks.commands.RollArgumentProcessor,
 		#
 		# remove the roll from 'node_rolls'
 		#
-		rows = self.db.execute("""select id from rolls where
-			name = '%s' and version = '%s' and arch = '%s' """ %
+		self.db.execute("""delete from node_rolls where
+			rollid = (select id from rolls where name = '%s' and
+			version = '%s' and arch = '%s') """ %
 			(roll, version, arch))
 
-		for id, in self.db.fetchall():
-			self.db.execute("""delete from node_rolls
-				where rollid = '%s' """ (id))
-		
 		# Remove roll from database as well
 		self.db.execute("""delete from rolls
 			where name = '%s' and
