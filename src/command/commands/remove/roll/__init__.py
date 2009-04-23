@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.4 2008/10/18 00:55:56 mjk Exp $
+# $Id: __init__.py,v 1.5 2009/04/23 17:12:29 bruno Exp $
 #
 # This file was authored by Brandon Davidson from the University of Oregon.
 # The Rocks Developers thank Brandon for his contribution.
@@ -57,6 +57,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.5  2009/04/23 17:12:29  bruno
+# cleanup 'rocks remove host' command
+#
 # Revision 1.4  2008/10/18 00:55:56  mjk
 # copyright 5.1
 #
@@ -132,8 +135,10 @@ class Command(rocks.commands.RollArgumentProcessor,
 				where name like '%s' and 
 				version like '%s' and
 				arch like '%s'""" % (roll, version, arch))
+
 			if rows == 0: # empty table is OK
 				continue
+
 			# Remove each arch's instance of this roll version
 			for (thisarch,) in self.db.fetchall():
 				self.clean_roll(roll, version, thisarch)
@@ -151,6 +156,17 @@ class Command(rocks.commands.RollArgumentProcessor,
 		# path differences. Proper DB use should fix this.
 		clean_rolldir = getattr(self, 'clean_rolldir_%s' % self.os)
 		clean_rolldir(roll, version, arch)
+
+		#
+		# remove the roll from 'node_rolls'
+		#
+		rows = self.db.execute("""select id from rolls where
+			name = '%s' and version = '%s' and arch = '%s' """ %
+			(roll, version, arch))
+
+		for id, in self.db.fetchall():
+			self.db.execute("""delete from node_rolls
+				where rollid = '%s' """ (id))
 		
 		# Remove roll from database as well
 		self.db.execute("""delete from rolls

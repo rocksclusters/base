@@ -1,4 +1,4 @@
-# $Id: plugin_interface.py,v 1.4 2009/03/13 22:19:56 mjk Exp $
+# $Id: plugin_interface.py,v 1.5 2009/04/23 17:12:29 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: plugin_interface.py,v $
+# Revision 1.5  2009/04/23 17:12:29  bruno
+# cleanup 'rocks remove host' command
+#
 # Revision 1.4  2009/03/13 22:19:56  mjk
 # - route commands done
 # - cleanup of rocks.host plugins
@@ -77,8 +80,10 @@ class Plugin(rocks.commands.Plugin):
 		return 'interface'
 
 	def requires(self):
-		return [ 'pxeboot' ]
+		return [ 'boot' ]
 		
 	def run(self, host):
-		self.owner.command('remove.host.interface', [ host ])
-		
+		self.owner.db.execute("""delete from networks where 
+			node = (select id from nodes where name = '%s')""" %
+			host)
+

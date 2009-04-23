@@ -1,4 +1,4 @@
-# $Id: plugin_boot.py,v 1.2 2009/03/13 22:19:56 mjk Exp $
+# $Id: plugin_boot.py,v 1.3 2009/04/23 17:12:29 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: plugin_boot.py,v $
+# Revision 1.3  2009/04/23 17:12:29  bruno
+# cleanup 'rocks remove host' command
+#
 # Revision 1.2  2009/03/13 22:19:56  mjk
 # - route commands done
 # - cleanup of rocks.host plugins
@@ -79,8 +82,8 @@ import rocks.commands
 class Plugin(rocks.commands.Plugin):
 
 	def provides(self):
-		return 'pxeboot'
+		return 'boot'
 
 	def run(self, host):
 		self.owner.command('remove.host.boot', [ host ])
-		
+

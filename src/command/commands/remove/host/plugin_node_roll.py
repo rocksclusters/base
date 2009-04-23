@@ -1,4 +1,4 @@
-# $Id: plugin_attr.py,v 1.2 2009/04/23 17:12:29 bruno Exp $
+# $Id: plugin_node_roll.py,v 1.1 2009/04/23 17:12:29 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -53,19 +53,10 @@
 # 
 # @Copyright@
 #
-# $Log: plugin_attr.py,v $
-# Revision 1.2  2009/04/23 17:12:29  bruno
+# $Log: plugin_node_roll.py,v $
+# Revision 1.1  2009/04/23 17:12:29  bruno
 # cleanup 'rocks remove host' command
 #
-# Revision 1.1  2009/03/13 22:19:56  mjk
-# - route commands done
-# - cleanup of rocks.host plugins
-#
-# Revision 1.2  2009/03/06 21:28:12  bruno
-# need to look at node_attributes table.
-#
-# Revision 1.1  2008/12/18 20:01:33  mjk
-# attribute commands
 #
 
 import rocks.commands
@@ -73,10 +64,10 @@ import rocks.commands
 class Plugin(rocks.commands.Plugin):
 
 	def provides(self):
-		return 'attr'
+		return 'node_rolls'
 
 	def run(self, host):
-		self.owner.db.execute("""delete from node_attributes where 
-			node = (select id from nodes where name = '%s')""" %
-			host)
+		self.owner.db.execute("""delete from node_rolls where
+			node = (select id from nodes where name = '%s') """ %
+			(host))
 
