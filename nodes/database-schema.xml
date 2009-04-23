@@ -17,6 +17,9 @@
 
   <changelog>
   $Log: database-schema.xml,v $
+  Revision 1.37  2009/04/23 23:46:11  mjk
+  new foundation mysql needs --password flag
+
   Revision 1.36  2009/04/21 23:04:08  mjk
   - start the foundation-mysql DB and put tables there also
   - move sunos stuff out to generic
@@ -527,8 +530,8 @@ CREATE TABLE bootflags (
 </post>
 
 <post>
-/opt/rocks/bin/mysqladmin create cluster
-/opt/rocks/bin/mysql cluster &lt; /tmp/tables.sql
+/opt/rocks/bin/mysqladmin --user=root --password='' create cluster
+/opt/rocks/bin/mysql --user=root --password='' cluster &lt; /tmp/tables.sql
 </post>
 
 </kickstart>

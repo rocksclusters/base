@@ -16,6 +16,9 @@
 
   <changelog>
   $Log: database-data.xml,v $
+  Revision 1.44  2009/04/23 23:46:11  mjk
+  new foundation mysql needs --password flag
+
   Revision 1.43  2009/04/21 23:04:08  mjk
   - start the foundation-mysql DB and put tables there also
   - move sunos stuff out to generic
@@ -598,7 +601,7 @@ rm /tmp/my.cnf
 </post>
 
 <post>
-/opt/rocks/bin/mysql &lt; /tmp/perms2.sql
+/opt/rocks/bin/mysql --user=root --password='' &lt; /tmp/perms2.sql
 </post>
 
 <post>
