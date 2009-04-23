@@ -1,5 +1,5 @@
 # --------------------------------------------------- -*- Makefile -*- --
-# $Id: Makefile,v 1.8 2008/10/18 00:55:59 mjk Exp $
+# $Id: Makefile,v 1.9 2009/04/23 19:29:23 bruno Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.9  2009/04/23 19:29:23  bruno
+# fix formatting
+#
 # Revision 1.8  2008/10/18 00:55:59  mjk
 # copyright 5.1
 #
@@ -130,14 +133,14 @@ build:
 	( 								\
 		cd gawk-$(VERSION);					\
 		./configure --prefix=$(PKGROOT);			\
-		$(MAKE);							\
+		$(MAKE);						\
 	)
 	
 install::
 	mkdir -p $(ROOT)/$(PKGROOT)
 	(								\
 		cd gawk-$(VERSION);					\
-		$(MAKE) prefix=$(ROOT)/$(PKGROOT) install;			\
+		$(MAKE) prefix=$(ROOT)/$(PKGROOT) install;		\
 	)
 
 clean::
