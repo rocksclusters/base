@@ -20,6 +20,9 @@
 
   <changelog>
   $Log: base.xml,v $
+  Revision 1.41  2009/04/24 19:48:00  mjk
+  chkconfig rocks-pre/post on
+
   Revision 1.40  2009/04/20 21:56:16  bruno
   nuke dead fonts
 
@@ -472,6 +475,11 @@ cp -r pixmaps /tmp/product/
 
 </pre>
 
+
+<post os='linux'>
+/sbin/chkconfig rocks-pre on
+/sbin/chkconfig rocks-post on
+</post>
 
 <post>
 
