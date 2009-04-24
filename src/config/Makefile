@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.16 2008/10/18 00:55:58 mjk Exp $
+# $Id: Makefile,v 1.17 2009/04/24 19:45:27 mjk Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.17  2009/04/24 19:45:27  mjk
+# added rocks-pre/post init scripts
+#
 # Revision 1.16  2008/10/18 00:55:58  mjk
 # copyright 5.1
 #
@@ -482,7 +485,9 @@ install::
 	$(INSTALL) -m755 etc/profile.d/*sh $(ROOT)/etc/profile.d/
 
 	mkdir -p $(ROOT)/etc/rc.d/init.d
-	$(INSTALL) -m700 init.d/rocks-dmesg $(ROOT)/etc/rc.d/init.d/
+	$(INSTALL) -m755 init.d/rocks-dmesg	$(ROOT)/etc/rc.d/init.d/
+	$(INSTALL) -m755 init.d/rocks-pre	$(ROOT)/etc/rc.d/init.d/
+	$(INSTALL) -m755 init.d/rocks-post	$(ROOT)/etc/rc.d/init.d/
 
 clean::
 	-rm -f *.spec
