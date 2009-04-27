@@ -1,6 +1,6 @@
 #! @PYTHON@
 #
-# $Id: kgen.py,v 1.18 2008/10/18 00:56:01 mjk Exp $
+# $Id: kgen.py,v 1.19 2009/04/27 18:03:33 bruno Exp $
 #
 # @Copyright@
 # 
@@ -56,6 +56,9 @@
 # @Copyright@
 #
 # $Log: kgen.py,v $
+# Revision 1.19  2009/04/27 18:03:33  bruno
+# remove dead setRCS* and getRCS* functions
+#
 # Revision 1.18  2008/10/18 00:56:01  mjk
 # copyright 5.1
 #
@@ -448,8 +451,6 @@ class App(rocks.app.Application):
 		else:
 			file = sys.stdin
 		
-		self.generator.setRCSTag('KGEN_INSTALL')
-		self.generator.setRCSComment(self.usage_name)	
 		self.generator.parse(file.read())
 
 		print '#'

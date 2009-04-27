@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: gen.py,v $
+# Revision 1.44  2009/04/27 18:03:34  bruno
+# remove dead setRCS* and getRCS* functions
+#
 # Revision 1.43  2009/04/22 22:15:31  mjk
 # - rcs co/ci is complete
 # - first modification triggers a ci of the file
@@ -1033,7 +1036,6 @@ class Generator_sunos(Generator):
 					     # encountered
 					     
 		self.service_instances	= {}
-		self.setRCSTag('JGEN')
 						
 
 	def parse(self, xml_string):

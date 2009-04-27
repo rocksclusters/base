@@ -1,6 +1,6 @@
 #! @PYTHON@
 #
-# $Id: kroll.py,v 1.16 2009/01/08 01:20:58 bruno Exp $
+# $Id: kroll.py,v 1.17 2009/04/27 18:03:33 bruno Exp $
 #
 # @Copyright@
 # 
@@ -56,6 +56,9 @@
 # @Copyright@
 #
 # $Log: kroll.py,v $
+# Revision 1.17  2009/04/27 18:03:33  bruno
+# remove dead setRCS* and getRCS* functions
+#
 # Revision 1.16  2009/01/08 01:20:58  bruno
 # for anoop
 #
@@ -375,9 +378,6 @@ class App(rocks.kickstart.Application):
 		self.generator.setArch(self.arch)
 		self.generator.setRolls(rolls)
 		self.generator.setRPMS(self.dist.getRPMS())
-		self.generator.setRCSTag('ROLL_INSTALL')
-		self.generator.setRCSComment(self.usage_name)
-		self.generator.setRCSComment('Roll Installation')
 		self.generator.parse(doc)
 
 		print '#!/bin/sh'		

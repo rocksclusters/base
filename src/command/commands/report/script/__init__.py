@@ -1,5 +1,5 @@
 #
-# $Id: __init__.py,v 1.4 2009/03/26 23:58:16 anoop Exp $
+# $Id: __init__.py,v 1.5 2009/04/27 18:03:33 bruno Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.5  2009/04/27 18:03:33  bruno
+# remove dead setRCS* and getRCS* functions
+#
 # Revision 1.4  2009/03/26 23:58:16  anoop
 # "rocks report script" now supports Solaris
 #
@@ -132,7 +135,6 @@ class Command(rocks.commands.report.command):
 		self.generator = c_gen()
 		self.generator.setArch(self.arch)
 		self.generator.setOS(self.os)
-		self.generator.setRCSComment('rocks report script')
 
 		starter_tag = 'kickstart'
 		if self.os == 'sunos':
