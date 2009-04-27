@@ -16,6 +16,9 @@
 
 	<changelog>
 	$Log: foundation-server.xml,v $
+	Revision 1.7  2009/04/27 19:43:42  mjk
+	no lib64 in foundation
+	
 	Revision 1.6  2008/10/18 00:55:45  mjk
 	copyright 5.1
 	
@@ -38,15 +41,9 @@
 
 
 
-<post arch="i386,ia64">
+<post>
 <file name="/etc/ld.so.conf.d/foundation-mysql.conf">
 /opt/rocks/lib/mysql
-</file>
-</post>
-
-<post arch="x86_64">
-<file name="/etc/ld.so.conf.d/foundation-mysql.conf">
-/opt/rocks/lib64/mysql
 </file>
 </post>
 
