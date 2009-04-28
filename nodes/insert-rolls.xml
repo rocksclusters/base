@@ -15,6 +15,9 @@ Populates the frontend database with initially selected rolls.
 
   <changelog>
   $Log: insert-rolls.xml,v $
+  Revision 1.15  2009/04/28 00:02:35  bruno
+  katz don't kut (and paste like he used to).
+
   Revision 1.14  2009/04/23 23:46:11  mjk
   new foundation mysql needs --password flag
 
@@ -115,7 +118,7 @@ fi
 
 
 if [ -f "/opt/rocks/etc/my.cnf" ]; then
-	clupass=`/bin/awk -F= '/password/{print $2}' /opt/rocks/etc/my.cnf
+	clupass=`/bin/awk -F= '/password/{print $2}' /opt/rocks/etc/my.cnf`
 fi
 
 if [ "x$clupass" != "x" ]; then 
