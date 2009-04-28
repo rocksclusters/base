@@ -15,6 +15,11 @@ Configure yum
 
 <changelog>
 $Log: yum.xml,v $
+Revision 1.10  2009/04/28 20:59:01  bruno
+configure yum on all nodes.
+
+the yum repository is the frontend
+
 Revision 1.9  2009/03/25 17:55:40  bruno
 add yum to client nodes
 
@@ -64,10 +69,12 @@ tolerant=1
 exactarch=1
 assumeyes=1
 
-[base]
+[Rocks-&version;]
 name=Rocks &version;
 baseurl=http://&Kickstart_PrivateAddress;/install/&distribution;/&arch;
 </file>
+
+rm -f /etc/yum.repos.d/*repo
 
 </post>
 
