@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: gen.py,v $
+# Revision 1.47  2009/04/28 19:48:54  mjk
+# - better exception handling for generate_ lookups, don't catch f() throws
+# - rocks-post ci/co stuff is being written again
+#
 # Revision 1.46  2009/04/28 18:49:37  mjk
 # fix syntax errors
 #
@@ -424,7 +428,7 @@ class Generator:
 
 		return string.join(l, '\n')
 
-	def rcsEnd(file, owner, perms):
+	def rcsEnd(self, file, owner, perms):
 		"""
 		Run the final ci/co of a <file>.  The ownership of both the
 		file and rcs file are changed to match the last requested
@@ -438,11 +442,12 @@ class Generator:
 		rcsfile = '%s,v' % os.path.join(rcsdir, os.path.basename(file))
 		l	= []
 
-		list.append('')
-		list.append('if [ -f %s ]; then' % file)
-		list.append('\techo "rocks" | /opt/rocks/bin/ci %s;' % file)
-		list.append('\t/opt/rocks/bin/co -f -l %s;' % file)
-		list.append('fi')		
+		l.append('')
+		l.append('if [ -f %s ]; then' % file)
+		l.append('\techo "rocks" | /opt/rocks/bin/ci %s;' % file)
+		l.append('\t/opt/rocks/bin/co -f -l %s;' % file)
+		l.append('fi')		
+
 		if owner:
 			l.append('chown %s %s' % (owner, file))
 			l.append('chown %s %s' % (owner, rcsfile))
@@ -576,9 +581,10 @@ class Generator:
 		list = []
 		try:
 			f = getattr(self, "generate_%s" % section)
+		except AttributeError:
+			f = None
+		if f:
 			list += f()
-		except:
-			pass
 		return list
 		
 	def generate_order(self):
@@ -950,7 +956,8 @@ class Generator_linux(Generator):
 		list.append('cat >> /etc/sysconfig/rocks-pre << EOF')
 
 		for (file, (owner, perms)) in self.rcsFiles.items():
-		     list.append(self.rcsEnd(file, owner, perms))
+			s = self.rcsEnd(file, owner, perms)
+			list.append(s)
 
 		for l in self.ks['boot-pre']:
 			list.append(string.join(l, '\n'))
@@ -968,7 +975,6 @@ class Generator_linux(Generator):
 
 		list.append('EOF')
 		
-			
 		return list
 
 		
