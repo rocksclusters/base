@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: rocks.py,v $
+# Revision 1.21  2009/04/28 22:00:33  mjk
+# use foundation db
+#
 # Revision 1.20  2008/10/18 00:55:47  mjk
 # copyright 5.1
 #
@@ -148,7 +151,7 @@ syslog.openlog('rockscommand', syslog.LOG_PID, syslog.LOG_LOCAL0)
 ### First try to read the cluster password (for apache)
 clupass=''
 try:
-	file=open('/root/.my.cnf','r')
+	file=open('/opt/rocks/etc/my.cnf','r')
 	for line in file.readlines():
 		l=string.split(line[:-1],'=')
 		if len(l) > 1 and l[0] == "password" :
@@ -172,7 +175,7 @@ try:
 		host='localhost',
 		user=username,
 		passwd='%s' % clupass,
-		unix_socket='/var/lib/mysql/mysql.sock')
+		unix_socket='/var/opt/rocks/mysql/mysql.sock')
 except ImportError:
 	Database = None
 except OperationalError:
