@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: gen.py,v $
+# Revision 1.46  2009/04/28 18:49:37  mjk
+# fix syntax errors
+#
 # Revision 1.45  2009/04/28 17:58:10  mjk
 # - UNTESTED BEWARE
 # - rcsFiles now tracks (owner, perms)
@@ -383,7 +386,7 @@ class Generator:
 			return 1
 		return 0
 	
-	def rcsBegin(self, file):
+	def rcsBegin(self, file, owner, perms):
 		"""
 		If the is the first time we've seen a file ci/co it.  Otherwise
 		just track the ownership and perms from the <file> tag .
@@ -396,7 +399,7 @@ class Generator:
 		l.append('')
 
 		if file not in self.rcsFiles:
-			l.append('if [ ! -f %s/%s,v ]; then' % rcsfile)
+			l.append('if [ ! -f %s ]; then' % rcsfile)
 			l.append('\tif [ ! -f %s ]; then' % file)
 			l.append('\t\ttouch %s;' % file)
 			l.append('\tfi')
@@ -539,12 +542,6 @@ class Generator:
 					s += '\n'
 				s += 'EOF\n'
 
-			if fileOwner:
-				s += "chown %s %s\n" % (fileOwner, fileName)
-			if filePerms:
-				s += "chmod %s %s\n" % (filePerms, fileName)
-			
-			
 		return s
 	
 	# <*>
@@ -952,7 +949,7 @@ class Generator_linux(Generator):
 		list.append('')
 		list.append('cat >> /etc/sysconfig/rocks-pre << EOF')
 
-		for (file, (owner, perms) in self.rcsFiles.items():
+		for (file, (owner, perms)) in self.rcsFiles.items():
 		     list.append(self.rcsEnd(file, owner, perms))
 
 		for l in self.ks['boot-pre']:
