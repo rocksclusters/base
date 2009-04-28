@@ -54,6 +54,12 @@
 # @Copyright@
 #
 # $Log: gen.py,v $
+# Revision 1.45  2009/04/28 17:58:10  mjk
+# - UNTESTED BEWARE
+# - rcsFiles now tracks (owner, perms)
+# - last ci/co (rcsEnd) lays down the correct ower and perms
+# - list co is a "co -l"
+#
 # Revision 1.44  2009/04/27 18:03:34  bruno
 # remove dead setRCS* and getRCS* functions
 #
@@ -349,7 +355,7 @@ class Generator:
 	def __init__(self):
 		self.attrs	= {}
 		self.arch	= None
-		self.rcsFiles	= []
+		self.rcsFiles	= {}
 
 	def setArch(self, arch):
 		self.arch = arch
@@ -363,9 +369,6 @@ class Generator:
 	def getOS(self):
 		return self.os
 
-	def getRCSFiles(self):
-		return self.rcsFiles
-				
 	def isDisabled(self, node):
 		return node.attributes.getNamedItem((None, 'disable'))
 
@@ -381,24 +384,71 @@ class Generator:
 		return 0
 	
 	def rcsBegin(self, file):
-		l = []
-
-		rcsdir  = os.path.join(os.path.dirname(file), 'RCS')
+		"""
+		If the is the first time we've seen a file ci/co it.  Otherwise
+		just track the ownership and perms from the <file> tag .
+		"""
 		
-		# do the initial checkin
+		rcsdir	= os.path.join(os.path.dirname(file), 'RCS')
+		rcsfile = '%s,v' % os.path.join(rcsdir, os.path.basename(file))
+		l	= []
 
 		l.append('')
-		l.append('if [ ! -f %s/%s,v ]; then' % (rcsdir, os.path.basename(file)))
-		l.append('	touch %s;' % file)
-		l.append('	if [ ! -d %s ]; then' % rcsdir)
-		l.append('		mkdir %s' % rcsdir)
-		l.append('	fi;')
-		l.append('	echo "original" | /opt/rocks/bin/ci %s;' % file)
-		l.append('	/opt/rocks/bin/co -f -l %s;' % file)
-		l.append('fi')
+
+		if file not in self.rcsFiles:
+			l.append('if [ ! -f %s/%s,v ]; then' % rcsfile)
+			l.append('\tif [ ! -f %s ]; then' % file)
+			l.append('\t\ttouch %s;' % file)
+			l.append('\tfi')
+			l.append('\tif [ ! -d %s ]; then' % rcsdir)
+			l.append('\t\tmkdir %s' % rcsdir)
+		 	l.append('\tfi;')
+			l.append('\techo "original" | /opt/rocks/bin/ci %s;' %
+			 	file)
+			l.append('\t/opt/rocks/bin/co -f -l %s;' % file)
+			l.append('fi')
+
+		self.rcsFiles[file] = (owner, perms)
+		
+		if owner:
+			l.append('chown %s %s' % (owner, file))
+			l.append('chown %s %s' % (owner, rcsfile))
+
+		if perms:
+			l.append('chmod %s %s' % (perms, file))
+
 		l.append('')
 
 		return string.join(l, '\n')
+
+	def rcsEnd(file, owner, perms):
+		"""
+		Run the final ci/co of a <file>.  The ownership of both the
+		file and rcs file are changed to match the last requested
+		owner in the file tag.  The perms of the file (not the file
+		file) are also modified.
+
+		The file is checked out locked, which is why we don't modify
+		the perms of the RCS file itself.
+		"""
+		rcsdir	= os.path.join(os.path.dirname(file), 'RCS')
+		rcsfile = '%s,v' % os.path.join(rcsdir, os.path.basename(file))
+		l	= []
+
+		list.append('')
+		list.append('if [ -f %s ]; then' % file)
+		list.append('\techo "rocks" | /opt/rocks/bin/ci %s;' % file)
+		list.append('\t/opt/rocks/bin/co -f -l %s;' % file)
+		list.append('fi')		
+		if owner:
+			l.append('chown %s %s' % (owner, file))
+			l.append('chown %s %s' % (owner, rcsfile))
+
+		if perms:
+			l.append('chmod %s %s' % (perms, file))
+
+		return string.join(l, '\n')
+
 	
 	def order(self, node):
 		"""
@@ -464,11 +514,7 @@ class Generator:
 
 		if fileName:
 		
-			if fileName not in self.rcsFiles:
-				self.rcsFiles.append(fileName)
-				s = self.rcsBegin(fileName)
-			else:
-				s = ''
+			s = self.rcsBegin(fileName, fileOwner, filePerms)
 
 			if fileMode == 'append':
 				gt = '>>'
@@ -906,13 +952,8 @@ class Generator_linux(Generator):
 		list.append('')
 		list.append('cat >> /etc/sysconfig/rocks-pre << EOF')
 
-		for file in self.getRCSFiles():
-			list.append('if [ -f %s ]; then' % file)
-			list.append('\techo "rocks" | /opt/rocks/bin/ci %s;' 
-				% file)
-			list.append('\t/opt/rocks/bin/co -f %s;' % file)
-			list.append('fi')
-		list.append('')
+		for (file, (owner, perms) in self.rcsFiles.items():
+		     list.append(self.rcsEnd(file, owner, perms))
 
 		for l in self.ks['boot-pre']:
 			list.append(string.join(l, '\n'))
