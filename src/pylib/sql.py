@@ -57,6 +57,9 @@
 # @Copyright@
 #
 # $Log: sql.py,v $
+# Revision 1.27  2009/04/29 00:52:24  bruno
+# make sure legacy apps (insert-ethers) can connect to the new database
+#
 # Revision 1.26  2009/03/23 23:03:57  bruno
 # can build frontends and computes
 #
@@ -303,7 +306,7 @@ class Application(rocks.app.Application):
 	if len(rval) > 0:
 		return rval
 	try:
-		file=open('/root/.my.cnf','r')
+		file=open('/opt/rocks/etc/my.cnf','r')
 		for line in file.readlines():
 			l=string.split(line[:-1],'=')
 			if len(l) > 1 and l[0] == "password" :
@@ -355,7 +358,7 @@ class Application(rocks.app.Application):
 				user='%s' % self.getUsername(),\
                                 db='%s' % self.getDatabase(),\
 				passwd='%s' % self.getPassword(),\
-				unix_socket='/var/lib/mysql/mysql.sock')
+				unix_socket='/var/opt/rocks/mysql/mysql.sock')
 
             # Get a database cursor which is used to manage the context of
             # a fetch operation
