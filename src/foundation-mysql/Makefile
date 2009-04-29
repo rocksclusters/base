@@ -1,5 +1,5 @@
 # --------------------------------------------------- -*- Makefile -*- --
-# $Id: Makefile,v 1.23 2009/04/21 23:57:20 anoop Exp $
+# $Id: Makefile,v 1.24 2009/04/29 22:21:51 bruno Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.24  2009/04/29 22:21:51  bruno
+# set the permissions so apache can read the mysql socket
+#
 # Revision 1.23  2009/04/21 23:57:20  anoop
 # Minor modification to Makefile to enable Solaris build
 #
@@ -201,6 +204,7 @@ install::
 	mkdir -p $(ROOT)/$(PKGROOT)/etc/
 	mkdir -p $(ROOT)/$(PKGROOT)/sbin/
 	mkdir -p $(ROOT)/$(PKGVAR)
+	chmod a+rx $(ROOT)/$(PKGVAR)
 	(								\
 		cd mysql-$(VERSION);					\
 		$(MAKE) prefix=$(ROOT)/$(PKGROOT) install;		\
