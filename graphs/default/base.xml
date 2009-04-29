@@ -4,6 +4,9 @@
 
 	<changelog>
 	$Log: base.xml,v $
+	Revision 1.52  2009/04/29 23:34:57  bruno
+	gettin' close
+	
 	Revision 1.51  2009/04/28 20:59:01  bruno
 	configure yum on all nodes.
 	
@@ -396,7 +399,6 @@
 	<edge from="security-client">
 		<to>ssl-client</to>
 		<to>ssh-client</to>
-		<to>cert</to>
 	</edge>
 
 	<edge from="security-server">
