@@ -17,6 +17,9 @@
 
   <changelog>
   $Log: database-schema.xml,v $
+  Revision 1.38  2009/04/29 20:12:53  mjk
+  don't create cluster DB on OS mysql
+
   Revision 1.37  2009/04/23 23:46:11  mjk
   new foundation mysql needs --password flag
 
@@ -520,18 +523,12 @@ CREATE TABLE bootflags (
   Flags         varchar(256) default NULL,
   PRIMARY KEY (ID)
 ) TYPE=MyISAM;
-
 </file>
-</post>
 
-<post os='linux'>
-/usr/bin/mysqladmin create cluster
-/usr/bin/mysql cluster &lt; /tmp/tables.sql
-</post>
 
-<post>
 /opt/rocks/bin/mysqladmin --user=root --password='' create cluster
 /opt/rocks/bin/mysql --user=root --password='' cluster &lt; /tmp/tables.sql
+
 </post>
 
 </kickstart>
