@@ -16,6 +16,9 @@
 
   <changelog>
   $Log: database.xml,v $
+  Revision 1.26  2009/04/29 20:17:18  mjk
+  open perm so everyone can connect to mysql.sock
+
   Revision 1.25  2009/04/23 23:46:11  mjk
   new foundation mysql needs --password flag
 
@@ -294,6 +297,7 @@ useradd -u 403 -g rocksdb -d /var/opt/rocks/mysql -m -s /bin/false rocksdb
 
 chgrp -R rocksdb /var/opt/rocks/mysql
 chmod -R g+rwx   /var/opt/rocks/mysql
+chmod a+rx /var/opt/rocks/mysql
 
 if [ -f /lib/svc/method/mysqld ]; then
 	/lib/svc/method/mysqld start
