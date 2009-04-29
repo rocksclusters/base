@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: 05-dns.py,v $
+# Revision 1.16  2009/04/29 00:37:24  bruno
+# dbreport is dead
+#
 # Revision 1.15  2008/10/18 00:56:03  mjk
 # copyright 5.1
 #
@@ -134,6 +137,6 @@ class Plugin(rocks.sql.InsertEthersPlugin):
 			return
 
 		os.system('/opt/rocks/bin/rocks sync dns')
-		os.system('/opt/rocks/bin/dbreport hosts > /etc/hosts ' +
+		os.system('/opt/rocks/bin/rocks report host > /etc/hosts ' +
 			  '2> /dev/null')
 
