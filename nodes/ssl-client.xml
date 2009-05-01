@@ -9,12 +9,16 @@
   </description>
 
         <copyright>
-        Copyright (c) 2000 - 2008 The Regents of the University of California.
-        All rights reserved. Rocks(r) v5.1 www.rocksclusters.org
+        Copyright (c) 2000 - 2009 The Regents of the University of California.
+        All rights reserved. Rocks(r) v5.2 www.rocksclusters.org
+        
         </copyright>
 
   <changelog>
   $Log: ssl-client.xml,v $
+  Revision 1.10  2009/05/01 19:06:48  mjk
+  chimi con queso
+
   Revision 1.9  2009/03/31 00:23:29  anoop
   Merged the remainder of the solaris XML files to the base roll
 

@@ -1,12 +1,12 @@
-# $Id: plugin_unix.py,v 1.1 2009/02/10 20:41:46 bruno Exp $
+# $Id: plugin_unix.py,v 1.2 2009/05/01 19:07:04 mjk Exp $
 # 
 # @Copyright@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		           version 5.1  (VI)
+# 		       version 5.2 (Chimichanga)
 # 
-# Copyright (c) 2000 - 2008 The Regents of the University of California.
+# Copyright (c) 2000 - 2009 The Regents of the University of California.
 # All rights reserved.	
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: plugin_unix.py,v $
+# Revision 1.2  2009/05/01 19:07:04  mjk
+# chimi con queso
+#
 # Revision 1.1  2009/02/10 20:41:46  bruno
 # change the root password for various cluster services
 #

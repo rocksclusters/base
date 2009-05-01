@@ -1,12 +1,12 @@
-# $Id: sunos.mk,v 1.10 2009/04/15 20:58:02 anoop Exp $
+# $Id: sunos.mk,v 1.11 2009/05/01 19:06:49 mjk Exp $
 #
 # @Copyright@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		           version 5.1  (VI)
+# 		       version 5.2 (Chimichanga)
 # 
-# Copyright (c) 2000 - 2008 The Regents of the University of California.
+# Copyright (c) 2000 - 2009 The Regents of the University of California.
 # All rights reserved.	
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: sunos.mk,v $
+# Revision 1.11  2009/05/01 19:06:49  mjk
+# chimi con queso
+#
 # Revision 1.10  2009/04/15 20:58:02  anoop
 # Added foundation-python-xml to the mix
 #

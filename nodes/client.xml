@@ -11,12 +11,16 @@ This file is used as a connection point for other XML configuration nodes.
 </description>
 
         <copyright>
-        Copyright (c) 2000 - 2008 The Regents of the University of California.
-        All rights reserved. Rocks(r) v5.1 www.rocksclusters.org
+        Copyright (c) 2000 - 2009 The Regents of the University of California.
+        All rights reserved. Rocks(r) v5.2 www.rocksclusters.org
+        
         </copyright>
 
 <changelog>
 $Log: client.xml,v $
+Revision 1.11  2009/05/01 19:06:48  mjk
+chimi con queso
+
 Revision 1.10  2009/01/23 21:50:23  bruno
 var tags converted to entities
 

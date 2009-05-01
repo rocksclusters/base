@@ -4,9 +4,9 @@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		           version 5.1  (VI)
+# 		       version 5.2 (Chimichanga)
 # 
-# Copyright (c) 2000 - 2008 The Regents of the University of California.
+# Copyright (c) 2000 - 2009 The Regents of the University of California.
 # All rights reserved.	
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: gen.py,v $
+# Revision 1.48  2009/05/01 19:07:08  mjk
+# chimi con queso
+#
 # Revision 1.47  2009/04/28 19:48:54  mjk
 # - better exception handling for generate_ lookups, don't catch f() throws
 # - rocks-post ci/co stuff is being written again

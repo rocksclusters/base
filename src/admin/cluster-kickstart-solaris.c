@@ -1,4 +1,4 @@
-/* static char rcsid[] = "$Id: cluster-kickstart-solaris.c,v 1.4 2008/10/18 00:55:47 mjk Exp $"; */
+/* static char rcsid[] = "$Id: cluster-kickstart-solaris.c,v 1.5 2009/05/01 19:06:50 mjk Exp $"; */
 /* -----------------------------------------------------------------------
  *
  * $RCSfile: cluster-kickstart-solaris.c,v $
@@ -15,9 +15,9 @@
  * 
  * 				Rocks(r)
  * 		         www.rocksclusters.org
- * 		           version 5.1  (VI)
+ * 		       version 5.2 (Chimichanga)
  * 
- * Copyright (c) 2000 - 2008 The Regents of the University of California.
+ * Copyright (c) 2000 - 2009 The Regents of the University of California.
  * All rights reserved.	
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -65,6 +65,9 @@
  * @Copyright@
  *
  * $Log: cluster-kickstart-solaris.c,v $
+ * Revision 1.5  2009/05/01 19:06:50  mjk
+ * chimi con queso
+ *
  * Revision 1.4  2008/10/18 00:55:47  mjk
  * copyright 5.1
  *

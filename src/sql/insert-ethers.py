@@ -8,9 +8,9 @@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		           version 5.1  (VI)
+# 		       version 5.2 (Chimichanga)
 # 
-# Copyright (c) 2000 - 2008 The Regents of the University of California.
+# Copyright (c) 2000 - 2009 The Regents of the University of California.
 # All rights reserved.	
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -58,6 +58,9 @@
 # @Copyright@
 #
 # $Log: insert-ethers.py,v $
+# Revision 1.46  2009/05/01 19:07:09  mjk
+# chimi con queso
+#
 # Revision 1.45  2009/03/23 23:03:57  bruno
 # can build frontends and computes
 #

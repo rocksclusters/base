@@ -4,9 +4,9 @@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		           version 5.1  (VI)
+# 		       version 5.2 (Chimichanga)
 # 
-# Copyright (c) 2000 - 2008 The Regents of the University of California.
+# Copyright (c) 2000 - 2009 The Regents of the University of California.
 # All rights reserved.	
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -92,6 +92,9 @@
 # Original author: Federico Sacerdoti <fds@sdsc.edu> (2002).
 #
 # $Log: encoder.py,v $
+# Revision 1.4  2009/05/01 19:07:07  mjk
+# chimi con queso
+#
 # Revision 1.3  2008/10/18 00:56:00  mjk
 # copyright 5.1
 #

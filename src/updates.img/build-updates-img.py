@@ -1,14 +1,14 @@
 #!/opt/rocks/usr/bin/python
 #
-# $Id: build-updates-img.py,v 1.10 2009/04/17 21:45:13 bruno Exp $
+# $Id: build-updates-img.py,v 1.11 2009/05/01 19:07:10 mjk Exp $
 #
 # @Copyright@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		           version 5.1  (VI)
+# 		       version 5.2 (Chimichanga)
 # 
-# Copyright (c) 2000 - 2008 The Regents of the University of California.
+# Copyright (c) 2000 - 2009 The Regents of the University of California.
 # All rights reserved.	
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -56,6 +56,9 @@
 # @Copyright@
 #
 # $Log: build-updates-img.py,v $
+# Revision 1.11  2009/05/01 19:07:10  mjk
+# chimi con queso
+#
 # Revision 1.10  2009/04/17 21:45:13  bruno
 # rocks-dbreport package no longer exists
 #

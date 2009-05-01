@@ -1,15 +1,15 @@
 #
 # insert-ethers plugin module for generating pxelinux cfg files
 
-# $Id: 00-pxecfg.py,v 1.6 2008/12/17 00:19:21 anoop Exp $
+# $Id: 00-pxecfg.py,v 1.7 2009/05/01 19:07:09 mjk Exp $
 # 
 # @Copyright@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		           version 5.1  (VI)
+# 		       version 5.2 (Chimichanga)
 # 
-# Copyright (c) 2000 - 2008 The Regents of the University of California.
+# Copyright (c) 2000 - 2009 The Regents of the University of California.
 # All rights reserved.	
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -57,6 +57,9 @@
 # @Copyright@
 #
 # $Log: 00-pxecfg.py,v $
+# Revision 1.7  2009/05/01 19:07:09  mjk
+# chimi con queso
+#
 # Revision 1.6  2008/12/17 00:19:21  anoop
 # insert-ethers plugin now uses rocks add host bootaction instead of pxeaction
 #

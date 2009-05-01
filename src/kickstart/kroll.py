@@ -1,14 +1,14 @@
 #! @PYTHON@
 #
-# $Id: kroll.py,v 1.17 2009/04/27 18:03:33 bruno Exp $
+# $Id: kroll.py,v 1.18 2009/05/01 19:07:07 mjk Exp $
 #
 # @Copyright@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		           version 5.1  (VI)
+# 		       version 5.2 (Chimichanga)
 # 
-# Copyright (c) 2000 - 2008 The Regents of the University of California.
+# Copyright (c) 2000 - 2009 The Regents of the University of California.
 # All rights reserved.	
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -56,6 +56,9 @@
 # @Copyright@
 #
 # $Log: kroll.py,v $
+# Revision 1.18  2009/05/01 19:07:07  mjk
+# chimi con queso
+#
 # Revision 1.17  2009/04/27 18:03:33  bruno
 # remove dead setRCS* and getRCS* functions
 #
