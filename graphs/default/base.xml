@@ -4,6 +4,10 @@
 
 	<changelog>
 	$Log: base.xml,v $
+	Revision 1.53  2009/05/01 23:11:46  bruno
+	make sure path to foundation mysql libraries is laid down before the foundation
+	mysql functions are called
+	
 	Revision 1.52  2009/04/29 23:34:57  bruno
 	gettin' close
 	
@@ -219,9 +223,12 @@
 
 	<order head="syslog" tail="syslog-client"/>
 
+	<order head="foundation-server">
+		<tail>database</tail>
+	</order>
+
 	<order head="database">
 		<tail>database-schema</tail>
-		<tail>foundation-server</tail>
 	</order>
 
 	<order head="database-schema">
