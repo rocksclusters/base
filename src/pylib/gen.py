@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: gen.py,v $
+# Revision 1.50  2009/05/01 23:18:28  bruno
+# change log file
+#
 # Revision 1.49  2009/05/01 23:07:37  bruno
 # log output of pre and post scripts
 #
@@ -704,6 +707,7 @@ class Generator_linux(Generator):
 		self.ks['post']         = []
 		self.ks['boot-pre']	= []
 		self.ks['boot-post']	= []
+		self.log		= '/var/log/rocks-install.log'
 
 	
 	##
@@ -933,8 +937,8 @@ class Generator_linux(Generator):
 		pre_list.append('')
 
 		for list in self.ks['pre']:
-			pre_list.append('%%pre --log=/tmp/ks-script.log %s' %
-				list[0])
+			pre_list.append('%%pre --log=%s %s' %
+				(self.log, list[0]))
 			pre_list.append(string.join(list[1:], '\n'))
 			
 		return pre_list
@@ -944,8 +948,8 @@ class Generator_linux(Generator):
 		post_list.append('')
 
 		for list in self.ks['post']:
-			post_list.append('%%post --log=/tmp/ks-script.log %s' %
-				list[0])
+			post_list.append('%%post --log=%s %s' %
+				(self.log, list[0]))
 			post_list.append(string.join(list[1:], '\n'))
 			
 		return post_list
@@ -954,7 +958,7 @@ class Generator_linux(Generator):
 	def generate_boot(self):
 		list = []
 		list.append('')
-		list.append('%post --log=/tmp/ks-script.log')
+		list.append('%post --log=%s' % self.log)
 		
 		# Boot PRE
 		#	- check in/out all modified files
