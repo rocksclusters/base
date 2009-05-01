@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: gen.py,v $
+# Revision 1.49  2009/05/01 23:07:37  bruno
+# log output of pre and post scripts
+#
 # Revision 1.48  2009/05/01 19:07:08  mjk
 # chimi con queso
 #
@@ -930,7 +933,8 @@ class Generator_linux(Generator):
 		pre_list.append('')
 
 		for list in self.ks['pre']:
-			pre_list.append('%%pre %s' % list[0])
+			pre_list.append('%%pre --log=/tmp/ks-script.log %s' %
+				list[0])
 			pre_list.append(string.join(list[1:], '\n'))
 			
 		return pre_list
@@ -940,7 +944,8 @@ class Generator_linux(Generator):
 		post_list.append('')
 
 		for list in self.ks['post']:
-			post_list.append('%%post %s' % list[0])
+			post_list.append('%%post --log=/tmp/ks-script.log %s' %
+				list[0])
 			post_list.append(string.join(list[1:], '\n'))
 			
 		return post_list
@@ -949,7 +954,7 @@ class Generator_linux(Generator):
 	def generate_boot(self):
 		list = []
 		list.append('')
-		list.append('%post')
+		list.append('%post --log=/tmp/ks-script.log')
 		
 		# Boot PRE
 		#	- check in/out all modified files
