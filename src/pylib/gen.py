@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: gen.py,v $
+# Revision 1.51  2009/05/02 22:40:42  bruno
+# fix
+#
 # Revision 1.50  2009/05/01 23:18:28  bruno
 # change log file
 #
@@ -958,7 +961,7 @@ class Generator_linux(Generator):
 	def generate_boot(self):
 		list = []
 		list.append('')
-		list.append('%post --log=%s' % self.log)
+		list.append('%%post --log=%s' % self.log)
 		
 		# Boot PRE
 		#	- check in/out all modified files
