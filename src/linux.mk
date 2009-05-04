@@ -1,4 +1,4 @@
-# $Id: linux.mk,v 1.18 2009/05/01 19:06:49 mjk Exp $
+# $Id: linux.mk,v 1.19 2009/05/04 21:52:58 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: linux.mk,v $
+# Revision 1.19  2009/05/04 21:52:58  bruno
+# nuke rocks-security
+#
 # Revision 1.18  2009/05/01 19:06:49  mjk
 # chimi con queso
 #
@@ -140,7 +143,6 @@ SRCDIRS = `find . -type d -maxdepth 1 \
 	-not -name devel-env \
 	-not -name pcre \
 	-not -name php \
-	-not -name rocks-security \
 	-not -name postfix`
 
 #

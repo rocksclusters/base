@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: gen.py,v $
+# Revision 1.52  2009/05/04 21:52:58  bruno
+# nuke rocks-security
+#
 # Revision 1.51  2009/05/02 22:40:42  bruno
 # fix
 #
@@ -940,8 +943,8 @@ class Generator_linux(Generator):
 		pre_list.append('')
 
 		for list in self.ks['pre']:
-			pre_list.append('%%pre --log=%s %s' %
-				(self.log, list[0]))
+			pre_list.append('%%pre --log=/tmp/ks-pre.log %s' %
+				list[0])
 			pre_list.append(string.join(list[1:], '\n'))
 			
 		return pre_list
