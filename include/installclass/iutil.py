@@ -40,11 +40,19 @@ def execWithRedirect(command, argv, stdin = 0, stdout = 1, stderr = 2,
     if type(stdout) == type("string"):
         # ROCKS
         #stdout = open(stdout, "w")
+        dir = os.path.dirname(stdout)
+        if not os.path.exists(dir):
+            os.makedirs(dir)
+
         stdout = open(stdout, "a")
         # ROCKS
     if type(stderr) == type("string"):
         # ROCKS
         #stderr = open(stderr, "w")
+        dir = os.path.dirname(stderr)
+        if not os.path.exists(dir):
+            os.makedirs(dir)
+
         stderr = open(stderr, "a")
         # ROCKS
 

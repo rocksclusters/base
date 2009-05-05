@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: gen.py,v $
+# Revision 1.53  2009/05/05 21:01:36  bruno
+# better logging from post scripts
+#
 # Revision 1.52  2009/05/04 21:52:58  bruno
 # nuke rocks-security
 #
@@ -713,7 +716,8 @@ class Generator_linux(Generator):
 		self.ks['post']         = []
 		self.ks['boot-pre']	= []
 		self.ks['boot-post']	= []
-		self.log		= '/var/log/rocks-install.log'
+
+		self.log = '/mnt/sysimage/var/log/rocks-install.log'
 
 	
 	##
