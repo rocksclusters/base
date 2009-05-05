@@ -14,6 +14,9 @@ PXE first configuration for client nodes
 
 <changelog>
 $Log: pxeboot.xml,v $
+Revision 1.11  2009/05/05 22:34:19  bruno
+fix for 'noop dog.
+
 Revision 1.10  2009/05/01 19:06:48  mjk
 chimi con queso
 
@@ -73,7 +76,7 @@ touch /boot/grub/pxe-install
 
 <!-- set the node to boot from local disk on the next reboot -->
 /opt/rocks/bin/wget --no-check-certificate -O - -o /dev/null \
-	https://<var name="Kickstart_PrivateAddress"/>/install/sbin/public/setPxeboot.cgi
+	https://&Kickstart_PrivateAddress;/install/sbin/public/setPxeboot.cgi
 
 <![CDATA[
 cd /a/tmp && tar -cf /a/var/sadm/system/logs/finish.tar post_section_*
