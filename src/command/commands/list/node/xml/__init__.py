@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.43 2009/05/01 19:06:59 mjk Exp $
+# $Id: __init__.py,v 1.44 2009/05/07 01:06:41 mjk Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,16 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.44  2009/05/07 01:06:41  mjk
+# Bug Fix
+#
+# A failed edge conditional with a passed ordering included the node.
+# Fix was to make sure the nodeHash is either missing the node in the first
+# place (previous code) OR the value is None, meaning it failed the
+# conditional test.  We've had this bug for years!
+#
+# Anoop found the bug but I still have CVS access
+#
 # Revision 1.43  2009/05/01 19:06:59  mjk
 # chimi con queso
 #
@@ -450,7 +460,7 @@ class Command(rocks.commands.list.command):
 				depsHash[node.name] = None
 
 		for dep,gen in deps:
-			if not nodesHash.has_key(dep.name):
+			if not nodesHash.get(dep.name):
 				depsHash[dep.name] = None
 
 		for node,cond in nodes:
