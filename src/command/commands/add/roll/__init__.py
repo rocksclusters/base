@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.37 2009/05/01 19:06:55 mjk Exp $
+# $Id: __init__.py,v 1.38 2009/05/07 18:23:18 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.38  2009/05/07 18:23:18  bruno
+# support foreign rolls
+#
 # Revision 1.37  2009/05/01 19:06:55  mjk
 # chimi con queso
 #
@@ -469,12 +472,76 @@ class RollHandler:
 		"""Copy a Linux OS CD. This is when the CD is a standard CentOS
 		RHEL or Scientific Linux CD"""
 
-		# For now just call the rocks-dist command. This needs to
-		# change in the future.
-		args = ''
-		if clean:
-			args = '--clean'
-		os.system('rocks-dist %s copyroll' % args)
+		disc_info_file = os.path.join(self.cdrom_mount, '.discinfo')
+		if not os.path.exists(disc_info_file):
+			self.abort('Cannot read disk information')
+
+		file = open(disc_info_file, 'r')
+		t = file.readline()
+		n = file.readline()
+		a = file.readline()
+		d = file.readline()
+		file.close()
+
+		timestamp = t[:-1]
+		roll_name = n[:-1].replace(' ', '_')
+		roll_arch = a[:-1]
+		diskid = d[:-1]
+
+		roll_vers = rocks.version
+		roll_os = 'linux'
+
+		dst = os.path.join(self.db.getHostAttr('',
+			'Kickstart_DistroDir'),
+			self.db.getHostAttr('',
+			'Kickstart_PrivateKickstartBasedir'), 'rolls')
+
+		roll_dir = os.path.join(dst, roll_name, roll_vers, roll_arch)
+		destdir = os.path.join(roll_dir, 'RedHat', 'RPMS')
+
+		if os.path.exists(roll_dir):
+			str = 'Cleaning %s version %s ' % \
+				(roll_name, roll_vers)
+			str += 'for %s from Rolls directory' % roll_arch
+			print str
+
+			self.clean_dir(roll_dir)
+			os.makedirs(roll_dir)
+
+		print 'Copying "%s" (%s,%s) roll...' % (roll_name,
+			roll_vers, roll_arch)
+		if not os.path.exists(destdir):
+			os.makedirs(destdir)
+
+		cdtree = rocks.file.Tree(self.cdrom_mount)
+		for dir in cdtree.getDirs():
+			for file in cdtree.getFiles(dir):
+				if not file.getName().endswith('.rpm'):
+					continue
+				if file.getPackageArch() != 'src' and \
+					file.getBaseName() != 'comps' and \
+					file.getName() != 'comps.rpm' and \
+					file.getBaseName() != 'anaconda' and \
+					file.getBaseName() != 'anaconda-runtime' \
+					and not (roll_arch == 'i386' and \
+					re.match('^kudzu.*', file.getBaseName())):
+						os.system('cp -p %s %s' % (
+							file.getFullName(), 
+							destdir))
+
+		# Add roll information to the database
+		rows = self.db.execute(
+			"select * from rolls where"
+			" name='%s' and Arch='%s' and OS='%s' and version='%s'"
+			% (roll_name, roll_arch, roll_os, roll_vers))
+		if rows:
+			pass
+		else:
+			self.db.execute("""insert into rolls (name, arch, os,
+				version, enabled) values ('%s','%s','%s',
+				'%s', 'no')""" % (roll_name, roll_arch,
+				roll_os, roll_vers))
+
 
 	def copy_foreign_cd_sunos(self, clean):
 		"""Copy a standard Solaris CD"""
