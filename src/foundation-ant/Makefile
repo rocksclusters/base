@@ -1,5 +1,5 @@
 # --------------------------------------------------- -*- Makefile -*- --
-# $Id: Makefile,v 1.10 2009/05/01 19:07:05 mjk Exp $
+# $Id: Makefile,v 1.11 2009/05/07 01:49:22 mjk Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.11  2009/05/07 01:49:22  mjk
+# base roll is special and needs ROCKSROOT defined
+#
 # Revision 1.10  2009/05/01 19:07:05  mjk
 # chimi con queso
 #
@@ -125,7 +128,7 @@
 
 PKGROOT		= /opt/rocks
 REDHAT.ROOT	= $(CURDIR)/../../
-
+ROCKSROOT       = ../../../../..
 -include $(ROCKSROOT)/etc/Rules.mk
 include Rules.mk
 
