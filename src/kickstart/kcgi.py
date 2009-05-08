@@ -1,6 +1,6 @@
 #! /opt/rocks/bin/python
 #
-# $Id: kcgi.py,v 1.33 2009/05/01 19:07:07 mjk Exp $
+# $Id: kcgi.py,v 1.34 2009/05/08 02:35:20 bruno Exp $
 #
 # @Copyright@
 # 
@@ -56,6 +56,9 @@
 # @Copyright@
 #
 # $Log: kcgi.py,v $
+# Revision 1.34  2009/05/08 02:35:20  bruno
+# need a couple more attributes to build a frontend VM
+#
 # Revision 1.33  2009/05/01 19:07:07  mjk
 # chimi con queso
 #
@@ -865,8 +868,6 @@ class App(rocks.kickstart.Application):
 	def wanKickstart(self):
 		"""Sends a minimal kickstart file for wide-area installs."""
 		# Default distribution name.
-		file = open('/tmp/ks.wan.debug', 'a')
-
 		if self.form.has_key('arch'):
 			self.arch = self.form['arch'].value
 		if self.form.has_key('os'):
@@ -874,13 +875,25 @@ class App(rocks.kickstart.Application):
 		else:
 			OS = 'linux' # should aways come from loader
 
-		cmd = '/opt/rocks/bin/rocks list node xml wan '
-		cmd += 'arch=%s os=%s' % (self.arch, OS)
+		#
+		# get the minimal attributes
+		#
+		attrs = {}
 
+		for i in [ 'Kickstart_Lang', 'Kickstart_Keyboard',
+				'Kickstart_PublicHostname',
+				'Kickstart_PrivateKickstartBasedir' ]:
+
+			cmd = '/opt/rocks/bin/rocks list attr | '
+			cmd += "grep %s: | awk '{print $2}'" % i
+			for line in os.popen(cmd).readlines():
+				var = line[:-1]
+			attrs[i] = var.strip()
+
+		cmd = '/opt/rocks/bin/rocks list node xml wan '
+		cmd += 'arch=%s os=%s attrs="%s"' % (self.arch, OS, attrs)
 		for line in os.popen(cmd).readlines():
 			self.report.append(line[:-1])
-
-		file.close()
 
 
 	def proxyKickstart(self):
