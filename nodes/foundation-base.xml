@@ -17,6 +17,9 @@
 
 	<changelog>
 	$Log: foundation-base.xml,v $
+	Revision 1.18  2009/05/08 22:13:17  anoop
+	added ROCKSfoundation-python-xml
+	
 	Revision 1.17  2009/05/01 19:06:48  mjk
 	chimi con queso
 	
@@ -89,6 +92,7 @@
 	<package os='linux'>foundation-mercurial</package>
 
 	<package os='sunos'>ROCKSfoundation-python</package>
+	<package os='sunos'>ROCKSfoundation-python-xml</package>
 	<package os='sunos'>ROCKSfoundation-python-extras</package>
 	<package os='sunos'>ROCKSfoundation-perl</package>
 	<package os='sunos'>ROCKSfoundation-perl-tk</package>
