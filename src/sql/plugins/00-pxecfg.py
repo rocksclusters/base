@@ -1,7 +1,7 @@
 #
 # insert-ethers plugin module for generating pxelinux cfg files
 
-# $Id: 00-pxecfg.py,v 1.7 2009/05/01 19:07:09 mjk Exp $
+# $Id: 00-pxecfg.py,v 1.8 2009/05/08 22:20:05 anoop Exp $
 # 
 # @Copyright@
 # 
@@ -57,6 +57,11 @@
 # @Copyright@
 #
 # $Log: 00-pxecfg.py,v $
+# Revision 1.8  2009/05/08 22:20:05  anoop
+# uses the node_attributes table to determine the OS to be installed on the
+# node, instead of the nodes table.
+# Also uses the new command line tools
+#
 # Revision 1.7  2009/05/01 19:07:09  mjk
 # chimi con queso
 #
@@ -88,25 +93,31 @@ import os
 import sys
 import string
 import rocks.sql
+import popen2
 
 class Plugin(rocks.sql.InsertEthersPlugin):
 	"Controls the PXE configuration when nodes are added and removed."
 
 	def added(self, nodename, id):
-		sql_q  = "select os from nodes where " +\
-			"name='%s'" % (nodename)
-		self.app.execute(sql_q)
-		osname = self.app.fetchone()[0].strip()
+		cmd = ("/opt/rocks/bin/rocks report "
+			"host attr %s | grep os\: | "
+			"cut -f2 -d:" %(nodename))
+		r,w = popen2.popen2(cmd)
+		w.close()
+		osname = r.read().strip()
 		if osname == 'sunos':
-			for action in [ 'install', 'install headless',
-				'rescue' ]:
-
-				cmd = "/opt/rocks/bin/rocks add host "
-				cmd += "bootaction %s action='%s' " % \
-					(nodename, action)
-				cmd += "kernel='kernel pxegrub.0'"
+			for action in [ 'install_sol', 'rescue_sol' ]:
+				cmd = ("/opt/rocks/bin/rocks add "
+					"bootaction action='%s' " 
+					"kernel='kernel pxegrub.0'"
+					%(action))
 
 				os.system(cmd)
+
+			cmd  = ('/opt/rocks/bin/rocks set '
+				'host installaction '
+				'%s install_sol'% (nodename))
+			os.system(cmd)
 
 		os.system("/opt/rocks/bin/rocks set host boot " + \
 			"%s action=%s" % (nodename, "install"))
