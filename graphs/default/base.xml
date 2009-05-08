@@ -4,6 +4,9 @@
 
 	<changelog>
 	$Log: base.xml,v $
+	Revision 1.54  2009/05/08 22:12:31  anoop
+	Yum, and grub-client should be linux only
+	
 	Revision 1.53  2009/05/01 23:11:46  bruno
 	make sure path to foundation mysql libraries is laid down before the foundation
 	mysql functions are called
@@ -338,7 +341,7 @@
 		<to>greceptor</to>
 		<to>mail</to>
 		<to>partition</to>
-		<to>yum</to>
+		<to os="linux">yum</to>
 	</edge>
 
 	<edge from="client" to="x11" cond="x11"/>
@@ -390,7 +393,7 @@
 		<to>ntp-client</to>
 		<to>syslog-client</to>
 		<to>autofs-client</to>
-		<to>grub-client</to>
+		<to os="linux">grub-client</to>
 		<to>pxeboot</to>
 		<to>networking-client</to>
 		<to>411-client</to>
