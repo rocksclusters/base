@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: gen.py,v $
+# Revision 1.54  2009/05/08 22:15:39  anoop
+# Use the isMeta() function to determine meta packages in solaris
+#
 # Revision 1.53  2009/05/05 21:01:36  bruno
 # better logging from post scripts
 #
@@ -1335,10 +1338,7 @@ class Generator_sunos(Generator):
 	
 	def handle_package(self, node):
 		attr = node.attributes
-		type = None
-		if attr.getNamedItem((None, 'type')):
-			type = attr.getNamedItem((None, 'type'))
-		if  type is 'meta':
+		if self.isMeta(node):
 			key = "pkgcl"
 		else:
 			key = "pkg"
