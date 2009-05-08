@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: clusterdb.py,v $
+# Revision 1.20  2009/05/08 22:14:34  anoop
+# Add os attribute to the node_attributes table
+#
 # Revision 1.19  2009/05/01 19:07:08  mjk
 # chimi con queso
 #
@@ -189,7 +192,13 @@ class Nodes:
 
 		self.sql.execute(insert)
 		self.nodeid = nodeid
-			
+
+		# Set the value of the OS in the host attributes table
+		db_cmd = ('insert into node_attributes '
+			'(node, attr, value) '
+			'values (%d, "%s","%s")' % (nodeid, 'os', osname))
+
+		self.sql.execute(db_cmd)
 
 	def checkName(self, checkname):
 		"Check to make sure we don't insert a duplicate node name"
