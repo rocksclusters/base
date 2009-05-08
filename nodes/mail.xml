@@ -11,6 +11,9 @@
 
   <changelog>
   $Log: mail.xml,v $
+  Revision 1.4  2009/05/08 22:20:58  anoop
+  postfix user given a userid
+
   Revision 1.3  2009/04/20 22:51:12  bruno
   cleanup dead code
 
@@ -69,8 +72,9 @@ ln -sf /usr/sbin/sendmail.postfix /etc/alternatives/mta
 
 <service name="network/smtp" instance="sendmail" enabled="no"/>
 <service name="network/smtp" instance="postfix" enabled="yes"/>
+pwconv
 groupadd postdrop
-useradd -g daemon -s /bin/true -d /var/spool/postfix postfix
+useradd -u 420 -g daemon -s /bin/true -d /var/spool/postfix postfix
 chown -R postfix:postdrop /var/lib/postfix
 chown -R postfix:postdrop /var/spool/postfix
 
