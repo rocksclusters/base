@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: gen.py,v $
+# Revision 1.55  2009/05/09 23:00:55  mjk
+# - added <boot> to list of processed tags (linux)
+# - tested and works on viz roll
+#
 # Revision 1.54  2009/05/08 22:15:39  anoop
 # Use the isMeta() function to determine meta packages in solaris
 #
@@ -695,7 +699,8 @@ class OtherNodeFilter_linux(NodeFilter):
 			'description',
 			'package',
 			'pre', 
-			'post'
+			'post',
+			'boot'
 			]:
 			return self.FILTER_SKIP
 			
@@ -985,7 +990,7 @@ class Generator_linux(Generator):
 			list.append(s)
 
 		for l in self.ks['boot-pre']:
-			list.append(string.join(l, '\n'))
+			list.append(l)
 
 		list.append('EOF')
 
@@ -996,9 +1001,10 @@ class Generator_linux(Generator):
 		list.append('cat >> /etc/sysconfig/rocks-post << EOF')
 
 		for l in self.ks['boot-post']:
-			list.append(string.join(l, '\n'))
+			list.append(l)
 
 		list.append('EOF')
+		list.append('')
 		
 		return list
 
