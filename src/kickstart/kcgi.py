@@ -1,6 +1,6 @@
 #! /opt/rocks/bin/python
 #
-# $Id: kcgi.py,v 1.34 2009/05/08 02:35:20 bruno Exp $
+# $Id: kcgi.py,v 1.35 2009/05/09 16:06:38 bruno Exp $
 #
 # @Copyright@
 # 
@@ -56,6 +56,9 @@
 # @Copyright@
 #
 # $Log: kcgi.py,v $
+# Revision 1.35  2009/05/09 16:06:38  bruno
+# support for lights out frontend installs
+#
 # Revision 1.34  2009/05/08 02:35:20  bruno
 # need a couple more attributes to build a frontend VM
 #
@@ -889,6 +892,8 @@ class App(rocks.kickstart.Application):
 			for line in os.popen(cmd).readlines():
 				var = line[:-1]
 			attrs[i] = var.strip()
+
+		attrs['hostname'] = self.clientList[0]
 
 		cmd = '/opt/rocks/bin/rocks list node xml wan '
 		cmd += 'arch=%s os=%s attrs="%s"' % (self.arch, OS, attrs)
