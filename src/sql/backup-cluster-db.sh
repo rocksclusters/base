@@ -57,6 +57,9 @@
 # @Copyright@
 #
 # $Log: backup-cluster-db.sh,v $
+# Revision 1.12  2009/05/14 23:41:12  bruno
+# change the database backup to use the foundation
+#
 # Revision 1.11  2009/05/01 19:07:09  mjk
 # chimi con queso
 #
@@ -99,7 +102,7 @@
 export HOME=/root
 cd /var/db
 
-mysqldump -u apache --opt cluster > mysql-backup-cluster
+/opt/rocks/bin/mysqldump -u apache --opt cluster > mysql-backup-cluster
 
 # To check in multiple versions, you need to have a lock on the
 # file. RCS will automatically ignore checkins for unchanged files.

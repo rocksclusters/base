@@ -1,4 +1,4 @@
-# $Id: linux.mk,v 1.8 2009/05/01 19:07:09 mjk Exp $
+# $Id: linux.mk,v 1.9 2009/05/14 23:41:12 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: linux.mk,v $
+# Revision 1.9  2009/05/14 23:41:12  bruno
+# change the database backup to use the foundation
+#
 # Revision 1.8  2009/05/01 19:07:09  mjk
 # chimi con queso
 #
@@ -81,5 +84,4 @@
 
 RPM.REQUIRES	= rocks-pylib
 RPM.ARCH	= noarch
-RPM.PREFIX	= /opt/rocks
 
