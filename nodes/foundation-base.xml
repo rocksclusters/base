@@ -17,6 +17,9 @@
 
 	<changelog>
 	$Log: foundation-base.xml,v $
+	Revision 1.19  2009/05/15 01:05:21  anoop
+	*** empty log message ***
+	
 	Revision 1.18  2009/05/08 22:13:17  anoop
 	added ROCKSfoundation-python-xml
 	
@@ -90,6 +93,7 @@
 	<package os='linux'>foundation-wget</package>
 	<package os='linux'>foundation-ant</package>
 	<package os='linux'>foundation-mercurial</package>
+	<package os='linux'>libdnet</package>
 
 	<package os='sunos'>ROCKSfoundation-python</package>
 	<package os='sunos'>ROCKSfoundation-python-xml</package>
@@ -103,6 +107,7 @@
 	<package os='sunos'>ROCKSfoundation-readline</package>
 	<package os='sunos'>ROCKSfoundation-libxml2</package>
 	<package os='sunos'>ROCKSfoundation-wget</package>
+	<package os='sunos'>ROCKSlibdnet</package>
 
 <post>
 
