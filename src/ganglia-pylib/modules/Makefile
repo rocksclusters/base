@@ -1,5 +1,5 @@
 # --------------------------------------------------- -*- Makefile -*- --
-# $Id: Makefile,v 1.5 2009/05/01 19:07:07 mjk Exp $
+# $Id: Makefile,v 1.6 2009/05/15 00:34:24 anoop Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.6  2009/05/15 00:34:24  anoop
+# Added some solaris support to ganglia-pylib
+#
 # Revision 1.5  2009/05/01 19:07:07  mjk
 # chimi con queso
 #
@@ -158,6 +161,8 @@ PY_INCLUDE = /opt/rocks/include/python$(PY.VERSION)
 
 SRCDIRS = `find * -prune -type d ! -name "CVS" ! -name "."`
 
+include $(OS).mk
+
 modules:: these_modules
 	for i in $(SRCDIRS) ; do \
 		(cd $$i; $(MAKE) PY_INCLUDE=$(PY_INCLUDE) $@) ; \
@@ -167,8 +172,8 @@ modules:: these_modules
 these_modules: $(MODULES:.c=.so)
 
 %.so: %.c $(HEADERS)
-	gcc -fPIC -g -I$(PY_INCLUDE) -c $<
-	gcc -shared -Wl -o $@ $(<:.c=.o)
+	$(CC) $(CCOPTS) -g -I$(PY_INCLUDE) -c $<
+	$(CC) -shared -o $@ $(<:.c=.o) -L/opt/rocks/lib -ldnet
 
 
 clean::

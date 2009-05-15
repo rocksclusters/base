@@ -1,0 +1,1 @@
+CCOPTS = -KPIC

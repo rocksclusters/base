@@ -395,7 +395,7 @@ ps (PyObject *self, PyObject *args)
 static PyObject *
 cpus (PyObject *self, PyObject *args)
 {
-    return Py_BuildValue("i", get_nprocs());
+    return Py_BuildValue("i", sysconf( _SC_NPROCESSORS_ONLN));
 }
 
 static PyObject *

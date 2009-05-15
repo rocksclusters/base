@@ -53,6 +53,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.6  2009/05/15 00:34:24  anoop
+# Added some solaris support to ganglia-pylib
+#
 # Revision 1.5  2009/05/01 19:07:07  mjk
 # chimi con queso
 #
@@ -205,7 +208,7 @@ include python.mk
 
 .PHONY: modules
 modules:
-	$(MAKE) -C modules PY.VERSION=$(PY.VERSION)
+	$(MAKE) -C modules PY.VERSION=$(PY.VERSION) OS=$(OS)
 
 
 build: modules
@@ -213,13 +216,13 @@ build: modules
 
 install::
 	mkdir -p $(ROOT)/$(PY.ROCKS)/gmon
-	$(INSTALL) -ma+r $(PYLIB)	   $(ROOT)/$(PY.ROCKS)/gmon/
+	$(INSTALL) -ma+r $(PYLIB) $(ROOT)/$(PY.ROCKS)/gmon/
 	$(INSTALL) -ma+rx $(MODULES) $(ROOT)/$(PY.ROCKS)/gmon/
 
 
 clean::
 	rm -f $(SCRIPTS)
 	rm -f *.pyc gmon/*.pyc
-	$(MAKE) -C modules clean
+	$(MAKE) -C modules clean OS=$(OS)
 	rm -f $(NAME).spec.in
 

@@ -1,5 +1,5 @@
 # --------------------------------------------------- -*- Makefile -*- --
-# $Id: Makefile,v 1.4 2009/05/01 19:07:07 mjk Exp $
+# $Id: Makefile,v 1.5 2009/05/15 00:34:24 anoop Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.5  2009/05/15 00:34:24  anoop
+# Added some solaris support to ganglia-pylib
+#
 # Revision 1.4  2009/05/01 19:07:07  mjk
 # chimi con queso
 #
@@ -126,18 +129,17 @@ SRCS = intf.c addr.c addr-util.c strlcpy.c
 OBJS = $(SRCS:.c=.o)
 
 # Our parent makefile provides PY_INCLUDE.
+include $(OS).mk
 
 modules: $(MODULES:.c=.so)
 	cp *.so ../
 
 %.o: %.c
-	gcc -fPIC -o $@ -c $<
+	$(CC) $(CCOPTS) -o $@ -c $<
 
 %.so: %.c $(HEADERS) $(OBJS)
-	gcc -fPIC -g -I$(PY_INCLUDE) -c $<
-	gcc -shared -Wl -o $@ $(<:.c=.o) $(OBJS)
+	$(CC) $(CCOPTS) -g -I$(PY_INCLUDE) -c $<
+	$(CC) -shared -o $@ $(<:.c=.o) $(OBJS) -L/opt/rocks/lib -ldnet
 
 clean::
 	rm -f *.o *.so
-
-
