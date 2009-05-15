@@ -1,4 +1,4 @@
-# $Id: sunos.mk,v 1.11 2009/05/01 19:06:49 mjk Exp $
+# $Id: sunos.mk,v 1.12 2009/05/15 00:38:11 anoop Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: sunos.mk,v $
+# Revision 1.12  2009/05/15 00:38:11  anoop
+# Adding libdnet to the mix
+#
 # Revision 1.11  2009/05/01 19:06:49  mjk
 # chimi con queso
 #
@@ -145,5 +148,5 @@ SRCDIRS = foundation-coreutils foundation-gawk	\
 	  foundation-graphviz foundation-rcs	\
 	  foundation-mercurial devel		\
 	  pcre pylib command dbreport 411	\
-	  411-master bittorrent tentakel	\
+	  411-master bittorrent tentakel dnet	\
 	  ganglia-pylib receptor ssl

@@ -2,7 +2,7 @@
 #
 # This file should remain OS independent
 #
-# $Id: bootstrap.sh,v 1.14 2009/05/01 19:06:47 mjk Exp $
+# $Id: bootstrap.sh,v 1.15 2009/05/15 00:38:11 anoop Exp $
 #
 # @Copyright@
 # 
@@ -58,6 +58,9 @@
 # @Copyright@
 #
 # $Log: bootstrap.sh,v $
+# Revision 1.15  2009/05/15 00:38:11  anoop
+# Adding libdnet to the mix
+#
 # Revision 1.14  2009/05/01 19:06:47  mjk
 # chimi con queso
 #
@@ -154,6 +157,9 @@ install rocks-roll
 
 compile command
 install rocks-command
+
+compile dnet
+install libdnet
 
 if [ `./_os` == "linux" ]; then
 	ignore_os_package ntp
