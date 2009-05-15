@@ -4,7 +4,7 @@
 # multicast channel for specific metrics. Allows for immediate event-based
 # ganglia triggers.
 #
-# $Id: reporter.py,v 1.4 2009/05/01 19:07:09 mjk Exp $
+# $Id: reporter.py,v 1.5 2009/05/15 00:32:53 anoop Exp $
 #
 # @Copyright@
 # 
@@ -60,6 +60,9 @@
 # @Copyright@
 #
 # $Log: reporter.py,v $
+# Revision 1.5  2009/05/15 00:32:53  anoop
+# Bug fix to make reporter work on Solaris
+#
 # Revision 1.4  2009/05/01 19:07:09  mjk
 # chimi con queso
 #
@@ -171,9 +174,9 @@ class Reporter(ReceptorThread):
 		self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
 		self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-		self.sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 1)
+		self.sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, '1')
 		# Listen to loopback interface too
-		self.sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_LOOP, 1)
+		self.sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_LOOP, '1')
 		
 		# Join multicast group. Matching 'struct ip_mreq' C structure.
 		mreq = struct.pack("4sL", socket.inet_aton(self.tx.getChannel()), 
