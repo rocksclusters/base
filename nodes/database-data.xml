@@ -17,6 +17,17 @@
 
   <changelog>
   $Log: database-data.xml,v $
+  Revision 1.46  2009/05/16 02:10:50  anoop
+  Moved from RedHat MySQL to Rocks foundation-mysql
+  rather forcefully.
+
+  Turned off RedHat MySQL and cleanup of node xml files
+  to remove all access to RedHat MySQL.
+
+  Wordpress data and generic php mysql accesses are now
+  directed to foundation-mysql. Here's hoping we got all
+  of it.
+
   Revision 1.45  2009/05/01 19:06:48  mjk
   chimi con queso
 
@@ -374,12 +385,16 @@ cp /tmp/rolls.xml /mnt/sysimage/tmp
 
 </post>
 
-<post chroot='no' os='sunos'>
-
-cp /tmp/site.attrs /a/tmp
-chmod 400 /a/tmp/site.attrs
-cp /tmp/rolls.xml /a/tmp
-
+<!--
+	Solaris specific. This will populate the database
+	attributes table from the attributes table on the
+	frontend. Since we don't do Solaris frontends yet
+	we can get away with this.
+-->
+<post os='sunos'>
+<file name='/tmp/site.attrs'>
+<eval>/opt/rocks/bin/rocks report host attr &hostname;</eval>
+</file>
 </post>
 
 <post arg="--interpreter /opt/rocks/bin/python" interpreter='/opt/rocks/bin/python'>
@@ -456,7 +471,9 @@ if os.path.exists('/tmp/site.attrs'):
 
 /opt/rocks/bin/rocks add network public \
 	&Kickstart_PublicNetwork; &Kickstart_PublicNetmask;
+</post>
 
+<post os='linux'>	
 <!-- frontend host -->
 
 /opt/rocks/bin/rocks add host &Kickstart_PrivateHostname; \
@@ -482,8 +499,7 @@ if os.path.exists('/tmp/site.attrs'):
 /opt/rocks/bin/rocks add route &Kickstart_PublicAddress; \
 	&Kickstart_PrivateAddress; netmask=255.255.255.255
 	
-<!-- fronend eth0 -->
-	
+<!-- frontend eth0 -->
 /opt/rocks/bin/rocks add host interface &Kickstart_PrivateHostname; eth0
 
 /opt/rocks/bin/rocks set host interface subnet &Kickstart_PrivateHostname; \
@@ -553,8 +569,7 @@ confignetworks.assignDeviceNames()
 </post>
 
 
-<post>
-
+<post os='linux'>
 <!-- now assign public network info to eth1 -->
 /opt/rocks/bin/rocks add host interface &Kickstart_PrivateHostname; eth1
 
@@ -566,11 +581,9 @@ confignetworks.assignDeviceNames()
 
 /opt/rocks/bin/rocks set host interface name  &Kickstart_PrivateHostname; eth1 \
 	&Kickstart_PublicHostname;
-
 </post>
 
 <post>
-
 <!-- Password Access for the apache  and root user  Create Password -->
 clupass=`/bin/date +%d%m%y%H%M%S`
 export clupass
@@ -584,13 +597,6 @@ update mysql.user set \
 echo "set password for apache@localhost=PASSWORD(\"$clupass\");" &gt;&gt; /tmp/perms2.sql
 echo "set password for apache@\"&Kickstart_PrivateHostname;\"=PASSWORD(\"$clupass\");" &gt;&gt; /tmp/perms2.sql
 
-<!-- create the /root/.my.cnf file so that when root does  
-"mysql -u apache cluster", everything works -->
-<file name="/root/.my.cnf" perms="0440" owner="root.apache">
-[client]
-</file>
-
-echo "password=$clupass" &gt;&gt; /root/.my.cnf
 echo "password=$clupass" &gt;&gt; /opt/rocks/etc/my.cnf
 
 <!-- use long passwords in the database -->
@@ -598,10 +604,6 @@ echo "password=$clupass" &gt;&gt; /opt/rocks/etc/my.cnf
 <file name="/etc/my.cnf" perms="644" expr="cat /tmp/my.cnf"/>
 rm /tmp/my.cnf
 
-</post>
-
-<post os='linux'>
-/usr/bin/mysql &lt; /tmp/perms2.sql
 </post>
 
 <post>
@@ -622,6 +624,9 @@ and directories on the two OSes. These values are used in apache.xml
 
 /opt/rocks/bin/rocks set os attr linux HttpConfigDirExt "/etc/httpd/conf.d"
 /opt/rocks/bin/rocks set os attr sunos HttpConfigDirExt "/etc/apache2"
+
+/opt/rocks/bin/rocks set os attr linux RootDir "/root"
+/opt/rocks/bin/rocks set os attr sunos RootDir "/"
 </post>
 
 </kickstart>

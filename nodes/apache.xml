@@ -16,6 +16,17 @@
 
   <changelog>
   $Log: apache.xml,v $
+  Revision 1.17  2009/05/16 02:10:50  anoop
+  Moved from RedHat MySQL to Rocks foundation-mysql
+  rather forcefully.
+
+  Turned off RedHat MySQL and cleanup of node xml files
+  to remove all access to RedHat MySQL.
+
+  Wordpress data and generic php mysql accesses are now
+  directed to foundation-mysql. Here's hoping we got all
+  of it.
+
   Revision 1.16  2009/05/01 19:06:48  mjk
   chimi con queso
 
@@ -290,7 +301,7 @@ Include conf.d/rocks.conf
 </file>
 
 <file name="/etc/php.d/mysql.ini" mode="append">
-mysql.default_socket = /var/lib/mysql/mysql.sock
+mysql.default_socket = /var/opt/rocks/mysql/mysql.sock
 </file>
 
 </post>

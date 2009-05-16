@@ -17,6 +17,17 @@
 
   <changelog>
   $Log: database.xml,v $
+  Revision 1.28  2009/05/16 02:10:50  anoop
+  Moved from RedHat MySQL to Rocks foundation-mysql
+  rather forcefully.
+
+  Turned off RedHat MySQL and cleanup of node xml files
+  to remove all access to RedHat MySQL.
+
+  Wordpress data and generic php mysql accesses are now
+  directed to foundation-mysql. Here's hoping we got all
+  of it.
+
   Revision 1.27  2009/05/01 19:06:48  mjk
   chimi con queso
 
@@ -276,7 +287,6 @@
   <package os='linux'>php-mysql</package>
   <package os='linux'>foundation-mysql</package>
 
-  <package os="sunos">ROCKSrocks-dbreport</package>
   <package os="sunos">ROCKSfoundation-mysql</package>
 
 <post>
@@ -285,15 +295,14 @@
 	set the hostname to the private name. this helps the rocks command
 	line find the host 'localhost' correctly
 -->
-/bin/hostname &Kickstart_PrivateHostname;
+/bin/hostname &hostname;
 
-</post>
-
-
-<post>
-
-<!-- start the foundation-mysql database -->
-
+<!--
+	Add the rocksdb user and group to the system.
+	This is the user that will run the Rocks database.
+	Also setup the correct directories and their
+	permissions for running the database
+-->
 groupadd -g 403 rocksdb
 useradd -u 403 -g rocksdb -d /var/opt/rocks/mysql -m -s /bin/false rocksdb
 
@@ -302,81 +311,42 @@ useradd -u 403 -g rocksdb -d /var/opt/rocks/mysql -m -s /bin/false rocksdb
 chgrp -R rocksdb /var/opt/rocks/mysql
 chmod -R g+rwx   /var/opt/rocks/mysql
 chmod a+rx /var/opt/rocks/mysql
+</post>
 
-if [ -f /lib/svc/method/mysqld ]; then
-	/lib/svc/method/mysqld start
-else
-	/etc/rc.d/init.d/foundation-mysql start
-fi
+<!--
+	Setup foundation-mysql to startup at boot
+	and start foundation-mysql database
+-->
+<post os='sunos'>
+cp -f /opt/rocks/share/mysql/mysql-server.xml \
+	/var/svc/manifest/network/mysql-server.xml
+<service name='network/mysql' enabled='yes'/>
 
+/lib/svc/method/mysqld start
+</post>
+
+<post os='linux'>
+/sbin/chkconfig foundation-mysql on
+/etc/rc.d/init.d/foundation-mysql start
+</post>
+
+<!--
+	Make sure that the mysql database is
+	up and running
+-->
+<post>
 /opt/rocks/bin/mysqladmin -s ping > /dev/null
 while [ $? -eq 1 ]; do
         sleep 1
         /opt/rocks/bin/mysqladmin -s ping > /dev/null
 done
 
-</post>
-
-
-<post os='linux'>
-
-<!-- tweak permissions so apache can contact the local mysql server -->
-
-if [ -d /var/lib/mysql ]; then
-	chmod a+rx /var/lib/mysql
-fi
-
-<!-- fixup mysqld init file -->
-
-if [ -f /etc/rc.d/init.d/mysqld ]; then
-	sed -e "s%\/etc\/init.d%\/etc\/rc.d\/init.d%" \
-		/etc/rc.d/init.d/mysqld > /tmp/mysqld
-
-	mv /tmp/mysqld /etc/rc.d/init.d/
-	chmod 755 /etc/rc.d/init.d/mysqld
-	/sbin/chkconfig mysqld on
-fi
-
-<!-- start database and wait for it to come up -->
-
-/etc/rc.d/init.d/mysqld restart
-
-/usr/bin/mysqladmin -s ping > /dev/null
-while [ $? -eq 1 ]; do
-	sleep 1
-	/usr/bin/mysqladmin -s ping > /dev/null
-done
-
-</post>
-
-<post os='sunos'>
-
-cp -f /opt/rocks/share/mysql/mysql-server.xml \
-	/var/svc/manifest/network/mysql-server.xml
-
-<service name='network/mysql' enabled='yes'/>
-
-</post>
-
-<post>
-
-<!-- Read/Write access to apache user, read-only for other normal users -->
-
 <file name="/tmp/perms.sql" perms="0400">
 grant select,update,insert,delete,lock tables on cluster.* to apache@localhost;
 grant select,update,insert,delete,lock tables on cluster.* to apache@"&Kickstart_PrivateHostname;";
 grant select on cluster.* to ''@localhost;
 </file>
-
-</post>
-
-<post os='linux'>
-/usr/bin/mysql mysql &lt; /tmp/perms.sql
-</post>
-
-<post>
 /opt/rocks/bin/mysql --user=root --password='' mysql &lt; /tmp/perms.sql
-/sbin/chkconfig foundation-mysql on
 </post>
 
 </kickstart> 
