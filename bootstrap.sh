@@ -2,7 +2,7 @@
 #
 # This file should remain OS independent
 #
-# $Id: bootstrap.sh,v 1.15 2009/05/15 00:38:11 anoop Exp $
+# $Id: bootstrap.sh,v 1.16 2009/05/16 02:16:02 anoop Exp $
 #
 # @Copyright@
 # 
@@ -58,6 +58,9 @@
 # @Copyright@
 #
 # $Log: bootstrap.sh,v $
+# Revision 1.16  2009/05/16 02:16:02  anoop
+# Removed out-dated utils from bootstrap process
+#
 # Revision 1.15  2009/05/15 00:38:11  anoop
 # Adding libdnet to the mix
 #
@@ -139,21 +142,6 @@ compile_and_install foundation-rcs
 
 compile pylib
 install rocks-pylib
-
-compile dbreport
-install rocks-dbreport
-
-compile dist
-install rocks-dist
-
-compile kpp
-install rocks-kpp
-
-compile kickstart
-install rocks-kickstart
-
-compile roll
-install rocks-roll
 
 compile command
 install rocks-command
