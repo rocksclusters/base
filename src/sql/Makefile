@@ -1,5 +1,5 @@
 # --------------------------------------------------- -*- Makefile -*- --
-# $Id: Makefile,v 1.24 2009/05/14 23:41:12 bruno Exp $
+# $Id: Makefile,v 1.25 2009/05/18 20:19:56 anoop Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.25  2009/05/18 20:19:56  anoop
+# Bug fix. Everything in the base roll requires ROCKSROOT to be set.
+#
 # Revision 1.24  2009/05/14 23:41:12  bruno
 # change the database backup to use the foundation
 #
@@ -379,6 +382,7 @@ PLUGINS   = $(wildcard plugins/*py)
 PLUGINDIR = $(PKGROOT)/var/plugins/insertethers
 
 REDHAT.ROOT     = $(CURDIR)/../../
+ROCKSROOT	= ../../../../..
 -include $(ROCKSROOT)/etc/Rules.mk
 include Rules.mk
 
