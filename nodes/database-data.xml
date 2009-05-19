@@ -17,6 +17,9 @@
 
   <changelog>
   $Log: database-data.xml,v $
+  Revision 1.47  2009/05/19 20:09:26  bruno
+  only need to indicate 'interpreter' once
+
   Revision 1.46  2009/05/16 02:10:50  anoop
   Moved from RedHat MySQL to Rocks foundation-mysql
   rather forcefully.
@@ -397,7 +400,7 @@ cp /tmp/rolls.xml /mnt/sysimage/tmp
 </file>
 </post>
 
-<post arg="--interpreter /opt/rocks/bin/python" interpreter='/opt/rocks/bin/python'>
+<post arg="--interpreter /opt/rocks/bin/python">
 
 import os.path
 

@@ -19,6 +19,9 @@
 
   <changelog>
   $Log: 411-client.xml,v $
+  Revision 1.7  2009/05/19 20:09:26  bruno
+  only need to indicate 'interpreter' once
+
   Revision 1.6  2009/03/30 19:29:50  anoop
   Merging xml files from Solaris Roll to the Linux roll.
   More files to follow
@@ -175,7 +178,7 @@ for m in os.listdir(base411):
 </post>
 
 <!-- Decrypt 411 msgs on compute node -->
-<post arg="--interpreter=/opt/rocks/bin/python" interpreter="/opt/rocks/bin/python">
+<post arg="--interpreter=/opt/rocks/bin/python">
 import os
 import rocks.service411
 
