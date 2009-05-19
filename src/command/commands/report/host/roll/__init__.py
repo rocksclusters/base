@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.3 2009/05/01 19:18:49 bruno Exp $
+# $Id: __init__.py,v 1.4 2009/05/19 20:12:54 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.4  2009/05/19 20:12:54  bruno
+# get attributes from the host, not just the localhost
+#
 # Revision 1.3  2009/05/01 19:18:49  bruno
 # point to the kickstart host
 #
@@ -94,9 +97,9 @@ class Command(rocks.commands.HostArgumentProcessor,
 
 			self.addOutput(host, '<rolls>')
 
-			public_hostname = self.db.getHostAttr('localhost',
+			public_hostname = self.db.getHostAttr(host, 
 				'Kickstart_PublicKickstartHost')
-			basedir = self.db.getHostAttr('localhost', 
+			basedir = self.db.getHostAttr(host,
 				'Kickstart_PrivateKickstartBasedir')
 
 			rows = self.db.execute("""
