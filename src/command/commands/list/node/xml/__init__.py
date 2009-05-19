@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.44 2009/05/07 01:06:41 mjk Exp $
+# $Id: __init__.py,v 1.45 2009/05/19 20:10:49 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.45  2009/05/19 20:10:49  bruno
+# escape XML characters from the site attributes
+#
 # Revision 1.44  2009/05/07 01:06:41  mjk
 # Bug Fix
 #
@@ -359,6 +362,16 @@ class Command(rocks.commands.list.command):
 				file.close()
 		else:
 			attrs = {}
+
+		#
+		# make sure all the attributes are XML escaped
+		#
+		for key in attrs.keys():
+			try:
+				a = saxutils.escape(attrs[key])
+			except:
+				a = attrs[key]
+			attrs[key] = a
 
 		if 'os' not in attrs:
 			attrs['os'] = self.os
