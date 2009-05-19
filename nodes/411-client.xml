@@ -19,6 +19,9 @@
 
   <changelog>
   $Log: 411-client.xml,v $
+  Revision 1.8  2009/05/19 21:57:17  anoop
+  Use the "interpreter" attribute instead of arg="--interpreter"
+
   Revision 1.7  2009/05/19 20:09:26  bruno
   only need to indicate 'interpreter' once
 
@@ -178,7 +181,7 @@ for m in os.listdir(base411):
 </post>
 
 <!-- Decrypt 411 msgs on compute node -->
-<post arg="--interpreter=/opt/rocks/bin/python">
+<post interpreter="/opt/rocks/bin/python">
 import os
 import rocks.service411
 

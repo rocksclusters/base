@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: gen.py,v $
+# Revision 1.56  2009/05/19 21:57:17  anoop
+# Use the "interpreter" attribute instead of arg="--interpreter"
+#
 # Revision 1.55  2009/05/09 23:00:55  mjk
 # - added <boot> to list of processed tags (linux)
 # - tested and works on viz roll
@@ -912,12 +915,21 @@ class Generator_linux(Generator):
 	
 	def handle_post(self, node):
 		attr = node.attributes
+		# Parse the interpreter attribute
+		if attr.getNamedItem((None, 'interpreter')):
+			interpreter = '--interpreter ' + \
+				attr.getNamedItem((None, 'interpreter')).value
+		else:
+			interpreter = ''
+		# Parse any additional arguments to the interpreter
+		# or to the post section
 		if attr.getNamedItem((None, 'arg')):
 			arg = attr.getNamedItem((None, 'arg')).value
 		else:
 			arg = ''
 		list = []
-		list.append(arg)
+		# Add the interpreter and args to the %post line
+		list.append(string.strip(string.join([interpreter, arg])))
 		list.append(self.getChildText(node))
 		self.ks['post'].append(list)
 		
