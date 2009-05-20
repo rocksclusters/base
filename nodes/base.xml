@@ -21,6 +21,9 @@
 
   <changelog>
   $Log: base.xml,v $
+  Revision 1.43  2009/05/20 12:19:21  mjk
+  rocks command goes everywhere
+
   Revision 1.42  2009/05/01 19:06:48  mjk
   chimi con queso
 
@@ -410,6 +413,7 @@
   <package>libobjc</package>
 
   <package>tentakel</package>
+  <package>rocks-command</package>
 
 <pre>
 
