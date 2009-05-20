@@ -2,7 +2,7 @@
 #
 # This file should remain OS independent
 #
-# $Id: bootstrap.sh,v 1.16 2009/05/16 02:16:02 anoop Exp $
+# $Id: bootstrap.sh,v 1.17 2009/05/20 01:48:58 anoop Exp $
 #
 # @Copyright@
 # 
@@ -58,6 +58,9 @@
 # @Copyright@
 #
 # $Log: bootstrap.sh,v $
+# Revision 1.17  2009/05/20 01:48:58  anoop
+# Add foundation-python-xml to bootstrapping procedure of the base roll
+#
 # Revision 1.16  2009/05/16 02:16:02  anoop
 # Removed out-dated utils from bootstrap process
 #
@@ -137,6 +140,7 @@ compile_and_install foundation-mysql
 compile_and_install foundation-python
 compile_and_install foundation-perl
 compile_and_install foundation-libxml2
+compile_and_install foundation-python-xml
 compile_and_install foundation-python-extras
 compile_and_install foundation-rcs
 
