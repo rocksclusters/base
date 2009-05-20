@@ -17,6 +17,9 @@
 
 	<changelog>
 	$Log: foundation-server.xml,v $
+	Revision 1.9  2009/05/20 12:12:00  mjk
+	nodes have RO access to DB
+	
 	Revision 1.8  2009/05/01 19:06:48  mjk
 	chimi con queso
 	
@@ -43,17 +46,6 @@
 	
 	</changelog>
 
-
-
-<post>
-<file name="/etc/ld.so.conf.d/foundation-mysql.conf">
-/opt/rocks/lib/mysql
-</file>
-</post>
-
-<post>
-/sbin/ldconfig
-</post>
 
 </kickstart> 
 

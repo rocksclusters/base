@@ -17,6 +17,9 @@
 
 	<changelog>
 	$Log: foundation-base.xml,v $
+	Revision 1.20  2009/05/20 12:12:00  mjk
+	nodes have RO access to DB
+	
 	Revision 1.19  2009/05/15 01:05:21  anoop
 	*** empty log message ***
 	
@@ -110,6 +113,10 @@
 	<package os='sunos'>ROCKSlibdnet</package>
 
 <post>
+
+<file name="/etc/ld.so.conf.d/foundation-mysql.conf">
+/opt/rocks/lib/mysql
+</file>
 
 <!-- graphviz requires this to create its config file -->
 
