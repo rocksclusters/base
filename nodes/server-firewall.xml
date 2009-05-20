@@ -9,6 +9,9 @@ Server node firewall rules
 
 <changelog>
 $Log: server-firewall.xml,v $
+Revision 1.5  2009/05/20 12:35:42  mjk
+block foundation-mysql port as well
+
 Revision 1.4  2009/01/23 21:50:23  bruno
 var tags converted to entities
 
@@ -62,8 +65,8 @@ COMMIT
 # Block incoming ganglia packets on public interface.
 -A INPUT -p udp --dport 8649 -j REJECT
 # Block mysql
--A INPUT -p udp --dport 3306 -j REJECT
--A INPUT -p tcp --dport 3306 -j REJECT
+-A INPUT -p tcp --dport 3306  -j REJECT
+-A INPUT -p tcp --dport 40000 -j REJECT
 
 # For a draconian "drop-all" firewall, uncomment the line below.
 #-A INPUT -j DROP
