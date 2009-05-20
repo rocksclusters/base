@@ -1,5 +1,5 @@
 # --------------------------------------------------- -*- Makefile -*- --
-# $Id: Makefile,v 1.25 2009/05/18 20:19:56 anoop Exp $
+# $Id: Makefile,v 1.26 2009/05/20 16:38:39 bruno Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.26  2009/05/20 16:38:39  bruno
+# more dead code nukage
+#
 # Revision 1.25  2009/05/18 20:19:56  anoop
 # Bug fix. Everything in the base roll requires ROCKSROOT to be set.
 #
@@ -377,7 +380,7 @@
 
 
 PKGROOT	  = /opt/rocks
-SCRIPTS   = insert-ethers add-extra-nic
+SCRIPTS   = insert-ethers
 PLUGINS   = $(wildcard plugins/*py)
 PLUGINDIR = $(PKGROOT)/var/plugins/insertethers
 
@@ -386,8 +389,7 @@ ROCKSROOT	= ../../../../..
 -include $(ROCKSROOT)/etc/Rules.mk
 include Rules.mk
 
-RCFILES = add-new-appliancerc staterc \
-	add-extra-nicrc insert-ethersrc
+RCFILES = staterc insert-ethersrc
 	
 po ::
 	$(MAKE) -C po
@@ -412,5 +414,4 @@ install:: build
 clean::
 	rm -f $(SCRIPTS)
 	rm -f $(NAME).spec.in
-
 
