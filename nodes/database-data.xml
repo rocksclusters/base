@@ -17,6 +17,11 @@
 
   <changelog>
   $Log: database-data.xml,v $
+  Revision 1.51  2009/05/20 23:50:38  anoop
+  Re-Lockdown database access. But this time allow apache
+  to access. Slightly better approach than my preceding
+  boneheaded knee-jerk reaction.
+
   Revision 1.50  2009/05/20 23:32:44  anoop
   Too much lockdown can be a bad thing. If apache can't read my.cnf
   then kickstart files won't get generated.
@@ -611,8 +616,8 @@ echo "set password for apache@localhost=PASSWORD(\"$clupass\");" &gt;&gt; /tmp/p
 echo "set password for apache@\"&Kickstart_PrivateHostname;\"=PASSWORD(\"$clupass\");" &gt;&gt; /tmp/perms2.sql
 
 echo "password=$clupass" &gt;&gt; /opt/rocks/etc/my.cnf
-chmod go-wx /opt/rocks/etc/my.cnf
-chmod a+r /opt/rocks/etc/my.cnf
+chmod o-rwx /opt/rocks/etc/my.cnf
+chgrp apache /opt/rocks/etc/my.cnf
 
 <!-- use long passwords in the database -->
 <file name="/tmp/my.cnf" expr="grep -v '^old_passwords' /etc/my.cnf"/>
