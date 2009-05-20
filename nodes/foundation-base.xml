@@ -17,6 +17,12 @@
 
 	<changelog>
 	$Log: foundation-base.xml,v $
+	Revision 1.21  2009/05/20 23:00:29  anoop
+	Bug fix. ldconfig needed to be run before any mysql commands
+	Otherwise the database accesses would fail, no data would ever
+	be put into the database, and the frontend installation would
+	fail spectacularly.
+	
 	Revision 1.20  2009/05/20 12:12:00  mjk
 	nodes have RO access to DB
 	
@@ -113,10 +119,6 @@
 	<package os='sunos'>ROCKSlibdnet</package>
 
 <post>
-
-<file name="/etc/ld.so.conf.d/foundation-mysql.conf">
-/opt/rocks/lib/mysql
-</file>
 
 <!-- graphviz requires this to create its config file -->
 

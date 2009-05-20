@@ -17,6 +17,12 @@
 
   <changelog>
   $Log: database.xml,v $
+  Revision 1.30  2009/05/20 23:00:29  anoop
+  Bug fix. ldconfig needed to be run before any mysql commands
+  Otherwise the database accesses would fail, no data would ever
+  be put into the database, and the frontend installation would
+  fail spectacularly.
+
   Revision 1.29  2009/05/20 12:12:00  mjk
   nodes have RO access to DB
 
@@ -331,6 +337,13 @@ cp -f /opt/rocks/share/mysql/mysql-server.xml \
 <post os='linux'>
 /sbin/chkconfig foundation-mysql on
 /etc/rc.d/init.d/foundation-mysql start
+
+<file name="/etc/ld.so.conf.d/foundation-mysql.conf">
+/opt/rocks/lib/mysql
+</file>
+
+/sbin/ldconfig
+
 </post>
 
 <!--
