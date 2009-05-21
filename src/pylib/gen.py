@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: gen.py,v $
+# Revision 1.57  2009/05/21 21:15:59  bruno
+# make sure only root can checkout files from RCS repositories created with
+# the 'file' tag
+#
 # Revision 1.56  2009/05/19 21:57:17  anoop
 # Use the "interpreter" attribute instead of arg="--interpreter"
 #
@@ -436,7 +440,8 @@ class Generator:
 			l.append('\t\ttouch %s;' % file)
 			l.append('\tfi')
 			l.append('\tif [ ! -d %s ]; then' % rcsdir)
-			l.append('\t\tmkdir %s' % rcsdir)
+			l.append('\t\tmkdir --mode=700 %s' % rcsdir)
+			l.append('\t\tchown 0.0 %s' % rcsdir)
 		 	l.append('\tfi;')
 			l.append('\techo "original" | /opt/rocks/bin/ci %s;' %
 			 	file)
