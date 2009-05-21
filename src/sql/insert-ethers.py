@@ -58,6 +58,9 @@
 # @Copyright@
 #
 # $Log: insert-ethers.py,v $
+# Revision 1.47  2009/05/21 21:16:26  bruno
+# nuke nutty flags
+#
 # Revision 1.46  2009/05/01 19:07:09  mjk
 # chimi con queso
 #
@@ -1422,7 +1425,8 @@ class InsertEthers(GUI):
 		self.startGUI()
 
 		#
-		# make sure 'rocks create distro' is not still building the distro
+		# make sure 'rocks create distro' is not still building the
+		# distro
 		#
 		if self.distDone() == 0:
 			self.endGUI()
@@ -1585,27 +1589,15 @@ class App(rocks.sql.Application):
 			('baseip=', 'ip address'),
 			('basename=', 'basename'),
 			('hostname=', 'hostname'),
-			('cpus=', 'number'),
-			('device=', 'kickstart IF'),
-			('module=', 'ethernet module'),
-			('mac=', 'mac address | "None"'),
 			('ipaddr=', 'ip address'),
-			('netmask=', 'netmask'),
-			('broadcast=', 'broadcast'),
-			('appliance=', 'appliance type'),
 			('cabinet=', 'number'),
 			('rack=', 'number'),
 			('inc=', 'number'),
 			('rank=', 'number'),
 			('replace=', 'hostname'),
 			('remove=', 'hostname'),
-			('public-mode', 'dont listen'),
-			('max-new=', 'exit after N nodes'),
 			('os=', 'the OS to install on the machines'),
-			('dump'),
-			('batch'),
 			('update'),
-			('norestart'),
 			('staticip')
 		])
 
@@ -1617,52 +1609,28 @@ class App(rocks.sql.Application):
 			self.ipBaseAddress = c[1]
 		elif c[0] == '--basename':
 			self.insertor.setBasename(c[1])
-		elif c[0] == '--mac':
-			self.insertor.setMac(c[1])
-			# only do one insert, don't restart services
-			self.insertor.setMax(1)
-			self.insertor.doRestart = 0
 		elif c[0] == '--hostname':
 			self.insertor.setHostname(c[1])
 			self.insertor.setMax(1)
-		elif c[0] == '--module':
-			self.insertor.setModule(c[1])
-		elif c[0] == '--device':
-			self.insertor.setDevice(c[1])
-		elif c[0] == '--cpus':
-			self.insertor.setCpus(int(c[1]))
 		elif c[0] == '--ipaddr':
 			self.insertor.setIPaddr(c[1])
 			self.insertor.setMax(1)
-		elif c[0] == '--netmask':
-			self.insertor.setNetmask(c[1])
-		elif c[0] == '--appliance':
-			self.insertor.setApplianceName(c[1])
 		elif c[0] in ('--cabinet','--rack'):
 			self.insertor.setCabinet(int(c[1]))
 		elif c[0] == '--os':
 			self.insertor.setOSName(c[1])
 		elif c[0] == '--inc':
 			self.ipIncrement = int(c[1])
-		elif c[0] == '--public-mode':
-			self.doPublicMode = 1
 		elif c[0] == '--rank':
 			self.insertor.setRank(int(c[1]))
 		elif c[0] == '--replace':
 			self.insertor.setReplace(c[1])
 		elif c[0] == '--remove':
 			self.insertor.setRemove(c[1])
-		elif c[0] == '--max-new':
-			self.insertor.setMax(int(c[1]))
 		elif c[0] == '--update':
 			self.doUpdate = 1
-		elif c[0] == '--norestart':
-			self.insertor.doRestart = 0
-		elif c[0] == '--dump':
-			self.insertor.dump = 'true' 
 		elif c[0] == '--staticip':
 			self.insertor.setStatic()
-		elif c[0] == '--batch':
 			self.batch = 1
 		return 0
 
