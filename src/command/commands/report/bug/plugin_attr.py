@@ -1,4 +1,4 @@
-# $Id: plugin_attr.py,v 1.2 2009/05/01 19:07:01 mjk Exp $
+# $Id: plugin_attr.py,v 1.3 2009/05/26 23:42:15 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: plugin_attr.py,v $
+# Revision 1.3  2009/05/26 23:42:15  bruno
+# don't print encrypted passwords
+#
 # Revision 1.2  2009/05/01 19:07:01  mjk
 # chimi con queso
 #
@@ -71,7 +74,16 @@ class Plugin(rocks.commands.Plugin):
 		
 	def run(self, args):
 		self.owner.addText('<attr><![CDATA[\n')
-		self.owner.addText(self.owner.command('list.attr',[]))
+		output = self.owner.command('list.attr',[])
+		for line in output.split('\n'):
+			
+			if 'Kickstart_PrivatePortableRootPassword' in line or \
+				'Kickstart_PrivateRootPassword' in line or \
+				'Kickstart_PrivateSHARootPassword' in line:
+
+				continue
+
+			self.owner.addText(line + '\n')
 		self.owner.addText(']]></attr>\n')
 
                 self.owner.addText('<appliance-attr><![CDATA[\n')
