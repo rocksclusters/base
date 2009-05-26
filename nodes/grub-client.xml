@@ -16,6 +16,9 @@
 
   <changelog>
   $Log: grub-client.xml,v $
+  Revision 1.16  2009/05/26 23:04:42  bruno
+  mo' bugs
+
   Revision 1.15  2009/05/01 19:06:48  mjk
   chimi con queso
 
@@ -88,7 +91,7 @@
   </changelog>
 
 
-<post arg="--interpreter /opt/rocks/bin/python">
+<post interpreter="/opt/rocks/bin/python">
 import os
 import os.path
 import rocks.grub

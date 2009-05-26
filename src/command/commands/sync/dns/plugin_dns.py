@@ -1,4 +1,4 @@
-# $Id: plugin_dns.py,v 1.14 2009/05/26 21:36:48 bruno Exp $
+# $Id: plugin_dns.py,v 1.15 2009/05/26 23:04:42 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: plugin_dns.py,v $
+# Revision 1.15  2009/05/26 23:04:42  bruno
+# mo' bugs
+#
 # Revision 1.14  2009/05/26 21:36:48  bruno
 # fix from scott hamilton for subnets that have prefixes larger than 24 bits.
 #
@@ -180,29 +183,31 @@ class Plugin(rocks.commands.Plugin):
 				if subnet not in node.names:
 					node.names[subnet] = []
 
-				# Canotical names get an address too.
+				# This interface has a name and IP
 				node.names[subnet].append( (hostname, ip) )
 
-			# Append names from the Aliases table.
+			# Append canonical names from the Aliases table.
 			self.db.execute('select name from aliases '
 				     'where node = %d' % (node.id))
 			for alias, in self.db.fetchall():
-				node.names['private'].append(alias)
+				node.names['private'].append( (alias, None) )
 			
 			# Talk DNS language. 
 			for subnets, names in node.names.items():
+				#
+				# Address records have an IP - canonical names
+				# do not
+				#
+				for a in names:
+					name, addr = a
+					alias = self.hostonly(name)
+					if (addr is not None):
+						file.write('%s A %s\n' %
+							(name, addr))
+					elif (alias != cname):
+						file.write('%s CNAME %s\n' %
+							(alias, cname))
 
-				# The canotical name is first
-				name, addr = names[0]
-				cname = self.hostonly(name)
-				file.write('%s A %s\n' % (cname, addr))
-
-				for a in names[1:]:
-					alias = self.hostonly(a)
-					if alias == cname:
-						continue
-					file.write('%s CNAME %s\n' %
-						(alias, cname))
 			file.write('\n')
 				
 

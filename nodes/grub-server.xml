@@ -17,6 +17,9 @@
 
   <changelog>
   $Log: grub-server.xml,v $
+  Revision 1.17  2009/05/26 23:04:42  bruno
+  mo' bugs
+
   Revision 1.16  2009/05/01 19:06:48  mjk
   chimi con queso
 
@@ -85,7 +88,7 @@
 
 
 <!-- Setup /boot/grub/rocks.conf file -->
-<post arg="--interpreter /opt/rocks/bin/python">
+<post interpreter="/opt/rocks/bin/python">
 import rocks.grub
 
 makegrub=rocks.grub.App()
