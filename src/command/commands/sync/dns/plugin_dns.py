@@ -1,4 +1,4 @@
-# $Id: plugin_dns.py,v 1.13 2009/05/01 19:07:04 mjk Exp $
+# $Id: plugin_dns.py,v 1.14 2009/05/26 21:36:48 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: plugin_dns.py,v $
+# Revision 1.14  2009/05/26 21:36:48  bruno
+# fix from scott hamilton for subnets that have prefixes larger than 24 bits.
+#
 # Revision 1.13  2009/05/01 19:07:04  mjk
 # chimi con queso
 #
@@ -223,8 +226,15 @@ class Plugin(rocks.commands.Plugin):
 		addr.reverse()
 
 		clip = mask/8
-		if (mask % 8):
+		if mask % 8:
 			clip += 1
+
+		#
+		# this is needed if the subnet is prefix is larger than 24.
+		# thanks to Scott Hamilton for the fix.
+		# 
+		if clip == 4:
+			clip = 3
 
 		# Only show the host portion of the address.
 		addr = addr[:-clip]
