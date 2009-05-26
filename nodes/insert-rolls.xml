@@ -16,6 +16,9 @@ Populates the frontend database with initially selected rolls.
 
   <changelog>
   $Log: insert-rolls.xml,v $
+  Revision 1.17  2009/05/26 22:26:37  bruno
+  nuked dead code
+
   Revision 1.16  2009/05/01 19:06:48  mjk
   chimi con queso
 
@@ -108,17 +111,6 @@ for name, version, arch, url, diskid in generator.rolls:
 		'values ("%s","%s","%s","yes");' % (name,version,arch))
 </eval>
 </file>
-
-
-if [ -f "/root/.my.cnf" ]; then
-	clupass=`/bin/awk -F= '/password/{print $2}' /root/.my.cnf`
-fi
-
-if [ "x$clupass" != "x" ]; then 
-	/usr/bin/mysql -u apache -p$clupass cluster &lt; /tmp/insert-rolls.sql
-else
-	/usr/bin/mysql cluster &lt; /tmp/insert-rolls.sql
-fi
 
 
 if [ -f "/opt/rocks/etc/my.cnf" ]; then
