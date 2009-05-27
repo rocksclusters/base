@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.5 2009/05/01 19:07:02 mjk Exp $
+# $Id: __init__.py,v 1.6 2009/05/27 20:15:28 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.6  2009/05/27 20:15:28  bruno
+# add 'managed' flag
+#
 # Revision 1.5  2009/05/01 19:07:02  mjk
 # chimi con queso
 #
@@ -116,6 +119,11 @@ class Command(command):
 	The command to run on the list of hosts.
 	</arg>
 
+	<arg type='boolean' name='managed'>
+	Run the command only on 'managed' hosts, that is, hosts that generally
+	have an ssh login. Default is 'yes'.
+	</arg>
+
 	<param type='string' name='command'>
 	Can be used in place of the 'command' argument.
 	</param>
@@ -135,7 +143,9 @@ class Command(command):
 		if not command:
 			self.abort('must supply a command')
 
-		hosts = self.getHostnames(args)
+		managed = self.fillParams( [('managed', 'y')] )
+
+		hosts = self.getHostnames(args, managed_only = managed)
 
 		conf = config.ConfigBase()
 		f = open('/etc/tentakel.conf')
