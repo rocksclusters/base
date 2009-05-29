@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.6 2009/05/01 19:07:04 mjk Exp $
+# $Id: __init__.py,v 1.7 2009/05/29 16:51:42 phil Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.7  2009/05/29 16:51:42  phil
+# Eliminate the 2+ second hole where named was down. Replace service restart with service reload.
+#
 # Revision 1.6  2009/05/01 19:07:04  mjk
 # chimi con queso
 #
@@ -174,5 +177,5 @@ class Command(rocks.commands.sync.command):
 	def run(self, params, args):
 		self.runPlugins()
 
-		os.system('/sbin/service named restart > /dev/null 2>&1')
+		os.system('/sbin/service named reload > /dev/null 2>&1')
 
