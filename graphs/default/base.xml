@@ -4,6 +4,9 @@
 
 	<changelog>
 	$Log: base.xml,v $
+	Revision 1.55  2009/06/01 21:33:52  bruno
+	moved apache from 'base' to 'server'
+	
 	Revision 1.54  2009/05/08 22:12:31  anoop
 	Yum, and grub-client should be linux only
 	
@@ -324,7 +327,6 @@
 		<to>snmp-server</to>
 		<to>syslog</to>
 		<to>security</to>
-		<to>apache</to>
 		<to>disk-stamp</to>
 		<to>grub</to>
 		<to>ip-diag</to>
@@ -347,6 +349,7 @@
 	<edge from="client" to="x11" cond="x11"/>
 
 	<edge from="server">
+		<to>apache</to>
 		<to>foundation-server</to>
 		<to>base</to>
 		<to>devel</to>
