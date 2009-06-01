@@ -1,6 +1,6 @@
 #! @PYTHON@
 #
-# $Id: cluster-fork.py,v 1.12 2009/05/01 19:06:50 mjk Exp $
+# $Id: cluster-fork.py,v 1.13 2009/06/01 23:54:20 bruno Exp $
 #
 # start a generic executable on cluster nodes
 #
@@ -58,6 +58,9 @@
 # @Copyright@
 #
 # $Log: cluster-fork.py,v $
+# Revision 1.13  2009/06/01 23:54:20  bruno
+# cluster-fork is dead!
+#
 # Revision 1.12  2009/05/01 19:06:50  mjk
 # chimi con queso
 #
@@ -135,18 +138,5 @@
 #
 #
 
-import sys
-import rocks.pssh
-
-class App(rocks.pssh.ClusterFork):
-
-	def __init__(self, argv):
-		rocks.pssh.ClusterFork.__init__(self, argv)
-		self.usage_name		= 'Cluster Fork'
-		self.usage_version	= '@VERSION@'
-
-app = App(sys.argv)
-app.parseArgs()
-app.run()
-
+print 'cluster-fork has been replaced with "rocks run host"'
 
