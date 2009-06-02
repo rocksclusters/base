@@ -1,5 +1,5 @@
 #
-# $Id: welcome_gui.py,v 1.12 2009/05/01 19:06:48 mjk Exp $
+# $Id: welcome_gui.py,v 1.13 2009/06/02 00:54:57 bruno Exp $
 #
 # Our patch to redhat's installer
 #
@@ -57,6 +57,9 @@
 # @Copyright@
 #
 # $Log: welcome_gui.py,v $
+# Revision 1.13  2009/06/02 00:54:57  bruno
+# suppress an error message when building frontends
+#
 # Revision 1.12  2009/05/01 19:06:48  mjk
 # chimi con queso
 #
@@ -236,12 +239,13 @@ class WelcomeWindow(InstallWindow):
 		os.environ['PYTHONPATH'] = ''
 
 		cmd = '/opt/rocks/bin/rocks list node xml %s ' % (rootnode)
-		cmd += 'attrs="/tmp/site.attrs" '
+		cmd += 'attrs="/tmp/site.attrs" 2> /dev/null'
 		cmd += '| /opt/rocks/bin/rocks list host profile '
 		cmd += '| /opt/rocks/bin/rocks list host installfile '
 		cmd += 'section=kickstart > '
 		cmd += '/tmp/ks.cfg 2> /tmp/ks.cfg.debug'
 		os.system(cmd)
+
 		return
 
 
