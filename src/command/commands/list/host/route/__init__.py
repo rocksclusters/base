@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.2 2009/05/01 19:06:58 mjk Exp $
+# $Id: __init__.py,v 1.3 2009/06/02 17:28:12 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.3  2009/06/02 17:28:12  bruno
+# added all missing doc strings
+#
 # Revision 1.2  2009/05/01 19:06:58  mjk
 # chimi con queso
 #
@@ -72,6 +75,17 @@ import rocks.commands
 import string
 
 class Command(rocks.commands.list.host.command):
+	"""
+	List the static routes that are assigned to a host.
+
+	<arg optional='1' type='string' name='host'>
+	Host name of machine
+	</arg>
+	
+	<example cmd='list host route compute-0-0'>
+	List the static routes assigned to compute-0-0.
+	</example>
+	"""
 
 	def run(self, params, args):
 

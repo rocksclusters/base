@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.3 2009/05/01 19:07:01 mjk Exp $
+# $Id: __init__.py,v 1.4 2009/06/02 17:28:12 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.4  2009/06/02 17:28:12  bruno
+# added all missing doc strings
+#
 # Revision 1.3  2009/05/01 19:07:01  mjk
 # chimi con queso
 #
@@ -67,6 +70,21 @@
 import rocks.commands
 
 class Command(rocks.commands.remove.command):
+	"""
+	Remove a global static route.
+
+	<arg type='string' name='address'>
+	The address of the static route to remove. This argument is required.
+	</arg>
+
+	<param type='string' name='address'>
+	Can be used in place of the 'address' argument.
+	</param>
+
+	<example cmd='remove route 1.2.3.4'>
+	Remove the global static route that has the network address '1.2.3.4'.
+	</example>
+	"""
 
 
 	def run(self, params, args):

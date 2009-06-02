@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.2 2009/05/01 19:07:02 mjk Exp $
+# $Id: __init__.py,v 1.3 2009/06/02 17:28:12 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.3  2009/06/02 17:28:12  bruno
+# added all missing doc strings
+#
 # Revision 1.2  2009/05/01 19:07:02  mjk
 # chimi con queso
 #
@@ -72,6 +75,17 @@ import string
 
 class Command(rocks.commands.HostArgumentProcessor,
 	rocks.commands.report.command):
+	"""
+	Create a report that contains the static routes for a host.
+
+	<arg optional='0' type='string' name='host'>
+	Host name of machine
+	</arg>
+	
+	<example cmd='report host route compute-0-0'>
+	Create a report of the static routes assigned to compute-0-0.
+	</example>
+	"""
 
 	def getRoute(self, network, netmask, gateway):
 
