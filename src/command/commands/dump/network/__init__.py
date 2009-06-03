@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.3 2009/05/01 19:06:57 mjk Exp $
+# $Id: __init__.py,v 1.4 2009/06/03 21:28:52 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.4  2009/06/03 21:28:52  bruno
+# add MTU to the subnets table
+#
 # Revision 1.3  2009/05/01 19:06:57  mjk
 # chimi con queso
 #
@@ -94,10 +97,11 @@ class Command(command):
 
 	def run(self, params, args):
 		for net in self.getNetworkNames(args):
-			self.db.execute("""select subnet, netmask from
+			self.db.execute("""select subnet, netmask, mtu from
 				subnets where name='%s'""" % net)
 
-			for (subnet, netmask) in self.db.fetchall():
-				self.dump('add network %s subnet=%s netmask=%s'
-					% (net, subnet, netmask))
+			for (subnet, netmask, mtu) in self.db.fetchall():
+				self.dump('add network %s ' % (net) +
+					'subnet=%s netmask=%s mtu=%s' % \
+					(subnet,netmask,mtu))
 

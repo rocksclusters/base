@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.9 2009/06/03 21:28:52 bruno Exp $
+# $Id: __init__.py,v 1.1 2009/06/03 21:28:52 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,31 +54,42 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
-# Revision 1.9  2009/06/03 21:28:52  bruno
+# Revision 1.1  2009/06/03 21:28:52  bruno
 # add MTU to the subnets table
 #
-# Revision 1.8  2009/05/01 19:06:59  mjk
+# Revision 1.10  2009/05/01 19:07:03  mjk
 # chimi con queso
 #
-# Revision 1.7  2008/10/18 00:55:54  mjk
+# Revision 1.9  2008/10/18 00:55:58  mjk
 # copyright 5.1
 #
-# Revision 1.6  2008/03/06 23:41:38  mjk
+# Revision 1.8  2008/03/06 23:41:40  mjk
 # copyright storm on
 #
-# Revision 1.5  2007/07/04 01:47:38  mjk
+# Revision 1.7  2007/07/04 01:47:40  mjk
 # embrace the anger
 #
-# Revision 1.4  2007/06/28 19:51:42  bruno
-# help for 'rocks list network'
-#
-# Revision 1.3  2007/06/19 16:42:42  mjk
+# Revision 1.6  2007/06/19 16:42:43  mjk
 # - fix add host interface docstring xml
 # - update copyright
 #
-# Revision 1.2  2007/06/12 01:33:40  mjk
-# - added NetworkArgumentProcessor
-# - updated rocks list network
+# Revision 1.5  2007/06/16 02:39:51  mjk
+# - added list roll commands (used for docbook)
+# - docstrings should now be XML
+# - added parser for docstring to ASCII or DocBook
+# - ditched Phil's Network regex stuff (will come back later)
+# - updated several docstrings
+#
+# Revision 1.4  2007/06/13 21:47:47  phil
+# 1. allow wildcarded network names
+# 2. only return those names actually found in the database
+#
+# Revision 1.3  2007/06/13 20:50:33  phil
+# Reverse order of arguments. Document on next checkin
+#
+# Revision 1.2  2007/06/12 19:15:11  mjk
+# - simpler set network commands
+# - added remove network
 #
 # Revision 1.1  2007/06/12 01:10:42  mjk
 # - 'rocks add subnet' is now 'rocks add network'
@@ -86,43 +97,57 @@
 # - added list network
 # - other cleanup
 #
+# Revision 1.2  2007/06/07 21:23:03  mjk
+# - command derive from verb.command class
+# - default is MustBeRoot
+# - list.command / dump.command set MustBeRoot = 0
+# - removed plugin non-bugfix
+#
+# Revision 1.1  2007/05/30 20:10:53  anoop
+# Added rocks add subnet - Command adds a subnet to the subnets table
+# in the database. Is currently beta
 
-
-import os
-import stat
-import time
-import sys
-import string
 import rocks.commands
 
 
 class Command(rocks.commands.NetworkArgumentProcessor,
-	rocks.commands.list.command):
+	rocks.commands.set.command):
 	"""
-	List the defined networks for this system.
+	Sets the MTU for one or more named networks.
 
-	<arg optional='1' type='string' name='network' repeat='1'>
-	Zero, one or more network names. If no network names are supplied,
-	info about all the known networks is listed.
+	<arg type='string' name='network' repeat='1'> 
+	One or more named networks that should have the defined MTU.
 	</arg>
 	
-	<example cmd='list network private'>
-	List network info for the network named 'private'.
-	</example>
+	<arg type='string' name='mtu'>
+	MTU that named networks should have.
+	</arg>
+	
+	<param type='string' name='mtu'>
+	Can be used in place of 'mtu' argument.
+	</param>
 
-	<example cmd='list network'>
-	List info for all defined networks.
+	<example cmd='set network mtu optiputer 9000'>
+	Sets the "optiputer" MTU address to 9000.
 	</example>
+	
+	<example cmd='set network mtu optiputer mtu=9000'>
+	Same as above.
+	</example>
+	
+	<related>add network</related>
+	<related>set network netmask</related>
 	"""
+                
+        def run(self, flags, args):
+        	(args, mtu) = self.fillPositionalArgs(('mtu',))
+        	
+        	if not len(args):
+        		self.abort('must supply network')
+		if not mtu:
+			self.abort('must supply mtu')
+			        	
+        	for network in self.getNetworkNames(args):
+			self.db.execute("""update subnets set mtu=%s where
+				subnets.name='%s'""" % (mtu, network))
 
-	def run(self, params, args):
-		
-		self.beginOutput()
-		
-		for net in self.getNetworkNames(args):
-			self.db.execute("""select subnet, netmask, mtu from
-				subnets where name='%s'""" % net)
-			for row in self.db.fetchall():
-				self.addOutput(net, row)
-			
-		self.endOutput(header=['network', 'subnet', 'netmask', 'mtu'])

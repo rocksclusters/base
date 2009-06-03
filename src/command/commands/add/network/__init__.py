@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.10 2009/05/01 19:06:55 mjk Exp $
+# $Id: __init__.py,v 1.11 2009/06/03 21:28:52 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.11  2009/06/03 21:28:52  bruno
+# add MTU to the subnets table
+#
 # Revision 1.10  2009/05/01 19:06:55  mjk
 # chimi con queso
 #
@@ -126,6 +129,10 @@ class Command(rocks.commands.add.command):
 	The IP network mask for the new network.
 	</arg>
 
+	<arg type='string' name='mtu'>
+	The MTU for the new network. Default is 1500.
+	</arg>
+
 	<param type='string' name='subnet'>
 	Can be used in place of the subnet argument.
 	</param>
@@ -134,19 +141,23 @@ class Command(rocks.commands.add.command):
 	Can be used in place of the netmask argument.
 	</param>
 	
+	<param type='string' name='mtu'>
+	Can be used in place of the mtu argument.
+	</param>
+	
 	<example cmd='add network optiputer 192.168.1.0 255.255.255.0'>
 	Adds the optiputer network address of 192.168.1.0/255.255.255.0.
 	</example>
 
-	<example cmd='add network optiputer subnet=192.168.1.0 netmask=255.255.255.0'>
-	Same as above.
+	<example cmd='add network optiputer subnet=192.168.1.0 netmask=255.255.255.0 mtu=9000'>
+	Same as above, but set the MTU to 9000.
 	</example>
 	"""
 
         def run(self, params, args):
         	
-        	(args, subnet, netmask) = self.fillPositionalArgs(
-        		('subnet', 'netmask'))
+        	(args, subnet, netmask, mtu) = self.fillPositionalArgs(
+        		('subnet', 'netmask', 'mtu'))
 
         	if len(args) != 1:
         		self.abort('must supply one network')
@@ -156,6 +167,8 @@ class Command(rocks.commands.add.command):
                         self.abort('subnet not specified')
 		if not netmask:
                         self.abort('netmask not specified')
+		if not mtu:
+			mtu = '1500'
 
 		# Insert the name of the new network into the subnets
 		# table if it does not already exist
@@ -165,6 +178,7 @@ class Command(rocks.commands.add.command):
 		if rows > 0:
 			self.abort('network "%s" exists' % name)
 		
-		self.db.execute("""insert into subnets (name, subnet, netmask)
-			values ('%s', '%s', '%s')""" % (name, subnet, netmask))
+		self.db.execute("""insert into subnets (name, subnet, netmask,
+			mtu) values ('%s', '%s', '%s', %s)""" % (name, subnet,
+			netmask, mtu))
 

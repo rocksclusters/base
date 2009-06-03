@@ -18,6 +18,9 @@
 
   <changelog>
   $Log: database-schema.xml,v $
+  Revision 1.40  2009/06/03 21:28:51  bruno
+  add MTU to the subnets table
+
   Revision 1.39  2009/05/01 19:06:48  mjk
   chimi con queso
 
@@ -427,6 +430,7 @@ CREATE TABLE subnets (
 	name		varchar(32)	NOT NULL,
 	subnet		varchar(32)	NOT NULL,
 	netmask		varchar(32)	NOT NULL,
+	mtu		int(11)		default '1500',
 	PRIMARY KEY(ID)
 ) TYPE=MyISAM;
 

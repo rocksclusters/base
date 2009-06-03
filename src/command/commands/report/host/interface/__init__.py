@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.6 2009/05/01 19:07:02 mjk Exp $
+# $Id: __init__.py,v 1.7 2009/06/03 21:28:52 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.7  2009/06/03 21:28:52  bruno
+# add MTU to the subnets table
+#
 # Revision 1.6  2009/05/01 19:07:02  mjk
 # chimi con queso
 #
@@ -133,7 +136,7 @@ class Command(rocks.commands.HostArgumentProcessor,
 		return retval
 
 
-	def writeConfig(self, host, mac, ip, device, netmask, vlanid):
+	def writeConfig(self, host, mac, ip, device, netmask, vlanid, mtu):
 		configured = 0
 
 		self.addOutput(host, 'DEVICE=%s' % device)
@@ -156,6 +159,9 @@ class Command(rocks.commands.HostArgumentProcessor,
 		if not configured:
 			self.addOutput(host, 'BOOTPROTO=none')
 			self.addOutput(host, 'ONBOOT=no')
+
+		if mtu:
+			self.addOutput(host, 'MTU=%s' % mtu)
 		
 
 	def writeModprobe(self, host, device, module):
@@ -205,14 +211,14 @@ class Command(rocks.commands.HostArgumentProcessor,
 		self.db.execute("""select distinctrow 
 			net.mac, net.ip, net.device,
 			if(net.subnet, s.netmask, NULL), net.vlanid,
-			net.subnet, net.module from
+			net.subnet, net.module, s.mtu from
 			networks net, nodes n, subnets s where net.node = n.id
 			and if(net.subnet, net.subnet = s.id, true) and
 			n.name = "%s" order by net.id""" % (host))
 
 
 		for row in self.db.fetchall():
-			mac,ip,device,netmask,vlanid,subnetid,module = row
+			mac,ip,device,netmask,vlanid,subnetid,module,mtu = row
 
 			if device and device[0:4] != 'vlan':
 				#
@@ -244,7 +250,7 @@ class Command(rocks.commands.HostArgumentProcessor,
 			if self.iface:
 				if self.iface == device:
 					self.writeConfig(host, mac, ip, device,
-						netmask, vlanid)
+						netmask, vlanid, mtu)
 			else:
 				s = '<file name="'
 				s += '/etc/sysconfig/network-scripts/ifcfg-'
@@ -252,6 +258,6 @@ class Command(rocks.commands.HostArgumentProcessor,
 
 				self.addOutput(host, s)
 				self.writeConfig(host, mac, ip, device,
-					netmask, vlanid)
+					netmask, vlanid, mtu)
 				self.addOutput(host, '</file>')
 
