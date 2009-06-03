@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.6 2009/05/27 20:15:28 bruno Exp $
+# $Id: __init__.py,v 1.7 2009/06/03 18:53:43 mjk Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,11 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.7  2009/06/03 18:53:43  mjk
+# - sudo support for ubuntu boy (this is cool)
+# - connect to DB over the network socket not the UNIX domain socket
+# - added x11 param to rocks.run.host to disable x11forwarding
+#
 # Revision 1.6  2009/05/27 20:15:28  bruno
 # add 'managed' flag
 #
@@ -76,6 +81,7 @@
 #
 #
 
+import os
 import rocks.commands
 
 import lekatnet.config as config
@@ -143,9 +149,22 @@ class Command(command):
 		if not command:
 			self.abort('must supply a command')
 
-		managed = self.fillParams( [('managed', 'y')] )
+		(managed, x11) = self.fillParams([
+			('managed', 'y'),
+			('x11', 'y')
+			])
+
 
 		hosts = self.getHostnames(args, managed_only = managed)
+		
+		# This is the same as doing -x using ssh.  Might be useful
+		# for the common case, but required for the Viz Roll.
+
+		if not self.str2bool(x11):
+			try:
+				del os.environ['DISPLAY']
+			except KeyError:
+				pass
 
 		conf = config.ConfigBase()
 		f = open('/etc/tentakel.conf')

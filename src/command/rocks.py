@@ -54,6 +54,11 @@
 # @Copyright@
 #
 # $Log: rocks.py,v $
+# Revision 1.23  2009/06/03 18:53:43  mjk
+# - sudo support for ubuntu boy (this is cool)
+# - connect to DB over the network socket not the UNIX domain socket
+# - added x11 param to rocks.run.host to disable x11forwarding
+#
 # Revision 1.22  2009/05/01 19:06:50  mjk
 # chimi con queso
 #
@@ -151,21 +156,27 @@ syslog.openlog('rockscommand', syslog.LOG_PID, syslog.LOG_LOCAL0)
 # a database connection, if it fails it is not considered an error.
 
 
-### First try to read the cluster password (for apache)
-clupass=''
+# First try to read the cluster password (for apache)
+
 try:
 	file=open('/opt/rocks/etc/my.cnf','r')
 	for line in file.readlines():
 		l=string.split(line[:-1],'=')
-		if len(l) > 1 and l[0] == "password" :
+		if len(l) > 1 and l[0] == "password":
 
-			clupass=l[1]	
+			passwd = l[1]	
 			break
 	file.close()
 except:
-	pass
+	passwd = ''
 
-### Now make the connection to the DB
+try:
+	host = rocks.DatabaseHost
+except:
+	host = 'localhost'
+
+# Now make the connection to the DB
+
 try:
 	from MySQLdb import *
 
@@ -175,10 +186,10 @@ try:
 		username = pwd.getpwuid(os.geteuid())[0]
 
 	Database = connect(db='cluster',
-		host='localhost',
+		host='%s' % host,
 		user=username,
-		passwd='%s' % clupass,
-		unix_socket='/var/opt/rocks/mysql/mysql.sock')
+		passwd='%s' % passwd,
+		port=40000)
 except ImportError:
 	Database = None
 except OperationalError:
@@ -229,12 +240,15 @@ except AttributeError:
 	print help.getText()
 	sys.exit(-1)
 
-command.runWrapper(name, args[i:])
-text = command.getText()
-if len(text) > 0:
-	print text,
-	if text[len(text)-1] != '\n':
-		print
+if command.MustBeRoot and not (command.isRootUser() or command.isApacheUser()):
+	os.system('sudo %s' % string.join(sys.argv,' '))
+else:
+	command.runWrapper(name, args[i:])
+	text = command.getText()
+	if len(text) > 0:
+		print text,
+		if text[len(text)-1] != '\n':
+			print
 
 
 syslog.closelog()

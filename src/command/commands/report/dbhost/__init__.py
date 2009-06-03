@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.1 2009/05/20 10:05:25 mjk Exp $
+# $Id: __init__.py,v 1.2 2009/06/03 18:53:43 mjk Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,11 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.2  2009/06/03 18:53:43  mjk
+# - sudo support for ubuntu boy (this is cool)
+# - connect to DB over the network socket not the UNIX domain socket
+# - added x11 param to rocks.run.host to disable x11forwarding
+#
 # Revision 1.1  2009/05/20 10:05:25  mjk
 # *** empty log message ***
 #
@@ -68,19 +73,20 @@ class Command(rocks.commands.report.command):
 
 	def run(self, param, args):
 
-		self.beginOutput()
-
 		# If we already know the rocks.DatabaseHost just report
 		# that.  Otherwise we assume we are on the database
 		# host and we report the name of the private interface.
 
 		try:
 			host = rocks.DatabaseHost
-			self.addOutput('', 'DatabaseHost = "%s"' % host)
 		except:
 			host = self.db.getHostname()
-			self.addOutput('', 'DatabaseHost = "%s"' % host)
-		
+
+		self.beginOutput()
+		self.addOutput('', '<file name="%s/__init__.py" mode="append">'
+			% rocks.__path__[0])
+		self.addOutput('', 'DatabaseHost = "%s"' % host)
+		self.addOutput('', '</file>')
 		self.endOutput(padChar='')
 
 
