@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.70 2009/05/01 19:06:50 mjk Exp $
+# $Id: __init__.py,v 1.71 2009/06/04 19:24:44 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.71  2009/06/04 19:24:44  bruno
+# fixing bugs with mason -- extreme programming!
+#
 # Revision 1.70  2009/05/01 19:06:50  mjk
 # chimi con queso
 #
@@ -1192,7 +1195,10 @@ class DatabaseConnection:
 		try:
 			addr = socket.gethostbyname(hostname)
 		except:
-			addr = None
+			if hostname == 'localhost':
+				addr = '127.0.0.1'
+			else:
+				addr = None
 
 		if not addr:
 			if self.link:
@@ -1207,7 +1213,20 @@ class DatabaseConnection:
 				self.link.execute("""select nodes.name from
 					networks,nodes where
 					nodes.id = networks.node and
-					mac = '%s' """ % (hostname))
+					networks.mac = '%s' """ % (hostname))
+				try:
+					hostname, = self.link.fetchone()
+					return hostname
+				except:
+					pass
+
+				#
+				# see if this is a FQDN
+				#
+				self.link.execute("""select nodes.name from
+					networks,nodes where
+					nodes.id = networks.node and
+					networks.name = '%s' """ % (hostname))
 				try:
 					hostname, = self.link.fetchone()
 					return hostname
