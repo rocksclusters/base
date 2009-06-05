@@ -17,6 +17,9 @@
 
   <changelog>
   $Log: database-data.xml,v $
+  Revision 1.52  2009/06/05 19:57:16  bruno
+  fix another 'interpreter' flag
+
   Revision 1.51  2009/05/20 23:50:38  anoop
   Re-Lockdown database access. But this time allow apache
   to access. Slightly better approach than my preceding
@@ -455,7 +458,6 @@ if os.path.exists('/tmp/site.attrs'):
 
 </post>
 
-
 <post>
 
 <!-- insert the base distributions into the database -->
@@ -489,6 +491,7 @@ if os.path.exists('/tmp/site.attrs'):
 
 /opt/rocks/bin/rocks add network public \
 	&Kickstart_PublicNetwork; &Kickstart_PublicNetmask;
+
 </post>
 
 <post os='linux'>	
@@ -531,12 +534,11 @@ if os.path.exists('/tmp/site.attrs'):
 
 </post>
 
-
 <post os='linux' arg="--nochroot">
 cp /tmp/interfaces /mnt/sysimage/tmp
 </post>
 
-<post os='linux' arg="--interpreter /opt/rocks/bin/python">
+<post os='linux' interpreter="/opt/rocks/bin/python">
 import sys
 import os
 import string
