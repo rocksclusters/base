@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: rocks.py,v $
+# Revision 1.24  2009/06/05 18:35:54  mjk
+# Try UNIX socket first, then network socket for DB connect
+#
 # Revision 1.23  2009/06/03 18:53:43  mjk
 # - sudo support for ubuntu boy (this is cool)
 # - connect to DB over the network socket not the UNIX domain socket
@@ -185,11 +188,22 @@ try:
 	else:
 		username = pwd.getpwuid(os.geteuid())[0]
 
-	Database = connect(db='cluster',
-		host='%s' % host,
-		user=username,
-		passwd='%s' % passwd,
-		port=40000)
+	# Connect over UNIX socket if it exists, otherwise go over the
+	# network.
+
+	if os.path.exists('/var/opt/rocks/mysql/mysql.sock'):
+		Database = connect(db='cluster',
+			host='localhost',
+			user=username,
+			passwd='%s' % passwd,
+			unix_socket='/var/opt/rocks/mysql/mysql.sock')
+	else:
+		Database = connect(db='cluster',
+			host='%s' % host,
+			user=username,
+			passwd='%s' % passwd,
+			port=40000)
+
 except ImportError:
 	Database = None
 except OperationalError:
