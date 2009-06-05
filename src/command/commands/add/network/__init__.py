@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.11 2009/06/03 21:28:52 bruno Exp $
+# $Id: __init__.py,v 1.12 2009/06/05 19:56:25 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.12  2009/06/05 19:56:25  bruno
+# make mtu optional
+#
 # Revision 1.11  2009/06/03 21:28:52  bruno
 # add MTU to the subnets table
 #
@@ -129,10 +132,6 @@ class Command(rocks.commands.add.command):
 	The IP network mask for the new network.
 	</arg>
 
-	<arg type='string' name='mtu'>
-	The MTU for the new network. Default is 1500.
-	</arg>
-
 	<param type='string' name='subnet'>
 	Can be used in place of the subnet argument.
 	</param>
@@ -142,7 +141,7 @@ class Command(rocks.commands.add.command):
 	</param>
 	
 	<param type='string' name='mtu'>
-	Can be used in place of the mtu argument.
+	The MTU for the new network. Default is 1500.
 	</param>
 	
 	<example cmd='add network optiputer 192.168.1.0 255.255.255.0'>
@@ -156,8 +155,10 @@ class Command(rocks.commands.add.command):
 
         def run(self, params, args):
         	
-        	(args, subnet, netmask, mtu) = self.fillPositionalArgs(
-        		('subnet', 'netmask', 'mtu'))
+        	(args, subnet, netmask) = self.fillPositionalArgs(
+        		('subnet', 'netmask'))
+
+		(mtu,) = self.fillParams([('mtu', '1500')])
 
         	if len(args) != 1:
         		self.abort('must supply one network')
@@ -167,8 +168,6 @@ class Command(rocks.commands.add.command):
                         self.abort('subnet not specified')
 		if not netmask:
                         self.abort('netmask not specified')
-		if not mtu:
-			mtu = '1500'
 
 		# Insert the name of the new network into the subnets
 		# table if it does not already exist

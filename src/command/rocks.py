@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: rocks.py,v $
+# Revision 1.25  2009/06/05 19:56:25  bruno
+# make mtu optional
+#
 # Revision 1.24  2009/06/05 18:35:54  mjk
 # Try UNIX socket first, then network socket for DB connect
 #
@@ -161,17 +164,18 @@ syslog.openlog('rockscommand', syslog.LOG_PID, syslog.LOG_LOCAL0)
 
 # First try to read the cluster password (for apache)
 
+passwd = ''
+
 try:
 	file=open('/opt/rocks/etc/my.cnf','r')
 	for line in file.readlines():
 		l=string.split(line[:-1],'=')
 		if len(l) > 1 and l[0] == "password":
-
 			passwd = l[1]	
 			break
 	file.close()
 except:
-	passwd = ''
+	pass
 
 try:
 	host = rocks.DatabaseHost
