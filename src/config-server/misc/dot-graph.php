@@ -1,5 +1,5 @@
 <?php
-/* $Id: dot-graph.php,v 1.5 2009/05/01 19:07:05 mjk Exp $ */
+/* $Id: dot-graph.php,v 1.6 2009/06/11 02:40:39 anoop Exp $ */
 #
 # Dynamically creates an image of the Rocks Cluster Appliance
 # graph.
@@ -66,8 +66,15 @@ if($command)
 		exit();
 	 }
 
-$landscape = escapeshellcmd(rawurldecode($HTTP_GET_VARS["landscape"]));
-$size = escapeshellcmd(rawurldecode($HTTP_GET_VARS["size"]));
+if(!$_SERVER['SERVER_NAME']){
+	$server = "localhost";
+	printf("%s", $server);
+	}
+else
+	$server = $_SERVER['SERVER_NAME'];
+$landscape = escapeshellcmd(rawurldecode($_GET["landscape"]));
+$size = escapeshellcmd(rawurldecode($_GET["size"]));
+
 if (!$size) {
 	$size = "66,58";
 }
@@ -75,13 +82,13 @@ if (!$size) {
 
 $format = "jpeg";
 
-$command = "cd /export/rocks/install/; /opt/rocks/bin/rocks-dist ";
-$command .= "--graph-draw-format $format --graph-draw-size $size --graph-draw-key ";
+$command = "/opt/rocks/bin/rocks list host graph $server";
 if ($landscape)
-	$command .= "--graph-draw-landscape ";
-$command .= "graph ";
-
+	$command .= " landscape=y";
+$command .= " size=$size";
+$command .= " | /opt/rocks/bin/dot -T$format";
 # For debugging.
+#$debug=true;
 #echo "Command: $command<br>";
 
 # Did we generate a command? Run it.

@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.15 2009/05/01 19:06:58 mjk Exp $
+# $Id: __init__.py,v 1.16 2009/06/11 02:40:39 anoop Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.16  2009/06/11 02:40:39  anoop
+# - frontend "os" attribute missing. This can cause problems
+# - fixed graph generation
+#
 # Revision 1.15  2009/05/01 19:06:58  mjk
 # chimi con queso
 #
@@ -195,16 +199,19 @@ class Command(rocks.commands.list.host.command):
 		# When this happens we can do a db lookup instead of using
 		# a flag and defaulting to the host architecture.
 
-		(arch, basedir) = self.fillParams(
+		(arch, basedir, landscape, size) = self.fillParams(
 			[('arch', self.arch),
-			('basedir', )])
+			('basedir', ),
+			('landscape', 'n'),
+			('size','100,100'),
+			])
 
 		self.beginOutput()
 		
 		self.drawOrder		= 0
 		self.drawKey		= 1
-		self.drawLandscape	= 0
-		self.drawSize		= '10,10'
+		self.drawLandscape	= self.str2bool(landscape)
+		self.drawSize		= size
 		
 		for host in self.getHostnames(args):
 			self.db.execute("""select d.name, a.graph from
@@ -259,8 +266,10 @@ class Command(rocks.commands.list.host.command):
 		dot = []
 		dot.append('digraph rocks {')
 		dot.append('\tsize="%s";' % self.drawSize)
-		dot.append('\trankdir=LR;')
-
+		if self.drawLandscape:
+			dot.append('\trankdir=TB;')
+		else:
+			dot.append('\trankdir=LR;')
 		# Key
 		
 		dot.append('\tsubgraph clusterkey {')

@@ -17,6 +17,10 @@
 
   <changelog>
   $Log: database-data.xml,v $
+  Revision 1.53  2009/06/11 02:40:39  anoop
+  - frontend "os" attribute missing. This can cause problems
+  - fixed graph generation
+
   Revision 1.52  2009/06/05 19:57:16  bruno
   fix another 'interpreter' flag
 
@@ -499,6 +503,9 @@ if os.path.exists('/tmp/site.attrs'):
 
 /opt/rocks/bin/rocks add host &Kickstart_PrivateHostname; \
 	membership=Frontend rack=0 rank=0
+
+/opt/rocks/bin/rocks set host attr &Kickstart_PrivateHostname; \
+	attr='os' value='linux'
 
 <!-- routes
 	multicast (bottom 255 addresses only)
