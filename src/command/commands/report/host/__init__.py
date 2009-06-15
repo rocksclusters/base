@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.7 2009/05/01 19:07:01 mjk Exp $
+# $Id: __init__.py,v 1.8 2009/06/15 23:48:35 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.8  2009/06/15 23:48:35  bruno
+# if a host has an IP address and name (but no device) make sure it shows up
+# in /etc/hosts
+#
 # Revision 1.7  2009/05/01 19:07:01  mjk
 # chimi con queso
 #
@@ -157,7 +161,8 @@ class Command(command):
 				networks.node = %d and
 				subnets.name = "private" and
 				networks.subnet = subnets.id and
-				networks.device not like 'vlan%%' """ %
+				(networks.device not like 'vlan%%' or
+				networks.device is NULL)""" %
 				(node.id))
 
 			row = self.db.fetchone()
