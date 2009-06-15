@@ -56,6 +56,9 @@
 # @Copyright@
 #
 # $Log: gmetric.py,v $
+# Revision 1.5  2009/06/15 23:46:30  bruno
+# have gmetric point to new ganglia configuration file
+#
 # Revision 1.4  2009/05/01 19:07:09  mjk
 # chimi con queso
 #
@@ -114,19 +117,32 @@ class Tx:
 		self.port = 8649
 		# Read channel from gmond config
 		try:
-			g=open('/etc/gmond.conf','r')
+			insection = 0
+			g = open('/etc/ganglia/gmond.conf', 'r')
 			for line in g.readlines():
 				tokens = line.split()
-				if tokens[0] == "mcast_channel":
-					self.chan=tokens[1]
-					if self.chan[0] == '"':
-						self.chan = self.chan[1:-1]
-				elif tokens[0] == "mcast_port":
-					self.port=int(tokens[1])
+				if len(tokens) < 2:
+					continue
+				if tokens[0] == "udp_send_channel":
+					insection = 1
+					continue
+
+				if len(tokens) < 3:
+					continue
+
+				if insection:
+					if tokens[0] == "mcast_join":
+						self.chan = tokens[2]
+						if self.chan[0] == '"':
+							self.chan = \
+								self.chan[1:-1]
+					elif tokens[0] == "port":
+						self.port = int(tokens[2])
+						insection = 0
 			g.close()
+
 		except:
 			pass
-
 
 	def setChannel(self, channel):
 		self.chan = socket.gethostbyname(channel)
