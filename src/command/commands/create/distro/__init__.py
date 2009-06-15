@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.7 2009/05/01 19:06:56 mjk Exp $
+# $Id: __init__.py,v 1.8 2009/06/15 23:47:47 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.8  2009/06/15 23:47:47  bruno
+# atomically create distros
+#
 # Revision 1.7  2009/05/01 19:06:56  mjk
 # chimi con queso
 #
@@ -85,6 +88,8 @@
 
 import os
 import os.path
+import tempfile
+import shutil
 import rocks
 import rocks.commands
 import rocks.dist
@@ -178,9 +183,6 @@ class Command(rocks.commands.create.command):
 			('root', '/export/rocks/install'),
 			('dist', 'rocks-dist') ])
 
-		lockFile = '/var/lock/rocks-dist'
-		os.system('touch %s' % (lockFile))
-
 		rolls = []
 		if withrolls == None:
 			if self.db:
@@ -200,7 +202,13 @@ class Command(rocks.commands.create.command):
 
 		distro = rocks.dist.Distribution(mirrors, version)
 		distro.setRoot(os.getcwd())
-		distro.setDist(dist)
+
+		#
+		# build the new distro in a temporary directory
+		#
+		tempdist = tempfile.mkdtemp(dir="")
+		distro.setDist(tempdist)
+
 		distro.setLocal('/usr/src/redhat')
 		distro.setContrib(os.path.join(mirror.getRootPath(), 'contrib',
 			version))
@@ -220,8 +228,27 @@ class Command(rocks.commands.create.command):
 		os.system('find %s -type d ' % (fullmirror) + \
 			'-exec chmod -R 0755 {} \;')
 
+		#
+		# now move the previous distro into a temporary directory
+		#
+		prevdist = tempfile.mkdtemp(dir="")
 		try:
-			os.unlink(lockFile)
+			shutil.move(dist, prevdist)
+		except:
+			pass
+
+		#
+		# rename the temporary distro (the one we just built) to the
+		# 'official' name and make sure the permissions are correct
+		#
+		shutil.move(tempdist, dist)
+		os.system('chmod 755 %s' % dist)
+
+		#
+		# nuke the previous distro
+		#
+		try:
+			shutil.rmtree(prevdist)
 		except:
 			pass
 
