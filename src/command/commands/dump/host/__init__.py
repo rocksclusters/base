@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.8 2009/05/01 19:06:57 mjk Exp $
+# $Id: __init__.py,v 1.9 2009/06/16 21:45:38 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.9  2009/06/16 21:45:38  bruno
+# no need to use double quotes
+#
 # Revision 1.8  2009/05/01 19:06:57  mjk
 # chimi con queso
 #
@@ -131,7 +134,7 @@ class Command(command):
 				n.membership=m.id and n.name='%s'""" % host)
 			(cpus, rack, rank, membership) = self.db.fetchone()
 			self.dump('add host %s cpus=%s rack=%s rank=%s '
-				'membership="%s"' %
+				'membership=%s' %
 				(host, cpus, rack, rank, membership))
 
 
