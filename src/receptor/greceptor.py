@@ -59,6 +59,9 @@
 # @Copyright@
 #
 # $Log: greceptor.py,v $
+# Revision 1.6  2009/06/17 22:15:04  bruno
+# fix an exception that caused greceptor from receiving 411 alerts
+#
 # Revision 1.5  2009/05/01 19:07:09  mjk
 # chimi con queso
 #
@@ -271,7 +274,7 @@ class App(rocks.app.Application):
 		was thrown."""
 
 		lines=[]
-		lines.append('greceptor: ' + msg)
+		lines.append('greceptor: %s' % msg)
 		if showtraceback:
 			lines.append("------greceptor last traceback----")
 			lines.extend(apply(traceback.format_exception,
