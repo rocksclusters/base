@@ -35,7 +35,7 @@ Go to the directory which holds the device driver code:
 </para>
 
 <screen>
-# cd /export/rocks-&document_version;/rocks/src/roll/kernel/src/rocks-boot/enterprise/5/images/drivers
+# cd /export/rocks-&document_version;/src/roll/kernel/src/rocks-boot/enterprise/5/images/drivers
 </screen>
 </listitem>
 
@@ -126,7 +126,7 @@ Build the <emphasis>rocks-boot</emphasis> package:
 </para>
 
 <screen>
-# cd /export/rocks-&document_version;/rocks/src/roll/kernel/src/rocks-boot
+# cd /export/rocks-&document_version;/src/roll/kernel/src/rocks-boot
 # make rpm
 </screen>
 </listitem>
@@ -139,7 +139,7 @@ and include them:
 </para>
 
 <screen>
-# cp /export/rocks-&document_version;/rocks/src/roll/kernel/RPMS/x86_64/rocks-boot* \
+# cp /export/rocks-&document_version;/src/roll/kernel/RPMS/x86_64/rocks-boot* \
 	/export/rocks/install/contrib/&document_version;/x86_64/RPMS/
 </screen>
 
@@ -203,7 +203,7 @@ files.
 
 <para>
 For help on how to populate your new driver directory, see:
-/export/rocks-&document_version;/rocks/src/roll/kernel/src/rocks-boot/enterprise/5/images/drivers/INSTALL.
+/export/rocks-&document_version;/src/roll/kernel/src/rocks-boot/enterprise/5/images/drivers/INSTALL.
 </para>
 
 <para>
