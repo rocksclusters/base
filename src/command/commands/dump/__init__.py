@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.15 2009/06/19 21:07:26 mjk Exp $
+# $Id: __init__.py,v 1.16 2009/06/19 22:43:43 mjk Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.16  2009/06/19 22:43:43  mjk
+# forgot about wildcards
+#
 # Revision 1.15  2009/06/19 21:07:26  mjk
 # - added dumpHostname to dump commands (use localhost for frontend)
 # - added add commands for attrs
@@ -132,18 +135,24 @@ import rocks.commands
 class command(rocks.commands.Command):
 	MustBeRoot = 0
 
+	safe_chars = [
+		'@', '%', '^', '-', '_', '=', '+', 
+		'[', '{', ']', '}',
+		':', 
+		',', '.', '/'
+		]
+		
 	def quote(self, string):
 		s = ''
 		for c in string:
-			if c in [ '"', "'", '\\', ' ', 
-				'`', '$', '<', '>', '&' ]:
-				s += '\\%s' % c
-			else:
+			if c.isalnum() or c in self.safe_chars:
 				s += c
+			else:
+				s += '\\%s' % c
 		return s
 
 	def dump(self, line):
-		self.addText('/opt/rocks/bin/rocks %s\n' % line)
+		self.addText('./q.py /opt/rocks/bin/rocks %s\n' % line)
 
 	
 class Command(command):
