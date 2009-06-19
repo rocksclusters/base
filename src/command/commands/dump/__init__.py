@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.17 2009/06/19 22:44:30 mjk Exp $
+# $Id: __init__.py,v 1.18 2009/06/19 23:11:20 mjk Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.18  2009/06/19 23:11:20  mjk
+# one more time with feeling
+# quote {} and [] also
+#
 # Revision 1.17  2009/06/19 22:44:30  mjk
 # remove dbg stuff
 #
@@ -140,7 +144,6 @@ class command(rocks.commands.Command):
 
 	safe_chars = [
 		'@', '%', '^', '-', '_', '=', '+', 
-		'[', '{', ']', '}',
 		':', 
 		',', '.', '/'
 		]
