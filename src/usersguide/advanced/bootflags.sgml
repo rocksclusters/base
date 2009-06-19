@@ -4,7 +4,7 @@
 <para>
 There are two scenarios in which you need to add extra kernel boot parameters:
 1) during installation, and 2) during normal boot.
-For both scenarios, will use the example of adding the kernel boot
+For both scenarios, we will use the example of adding the kernel boot
 parameter: "ucsd=rocks".
 </para>
 
@@ -22,8 +22,9 @@ PXE boot:
 <screen>
 # rocks list host boot
 HOST         ACTION
-olympic:     ------
-compute-0-0: os
+vi-2:        ------
+compute-0-0: os    
+compute-0-1: os
 </screen>
 
 <para>
@@ -34,18 +35,18 @@ installation kernel and install itself on the node's next PXE boot.
 </para>
 
 <para>
-To list all the possible boot actions for a compute node, execute:
+To list all the possible boot actions for a node, execute:
 </para>
 
 <screen>
-# rocks list host bootaction compute-0-0
-ACTION           COMMAND               ARGS
-install          kernel vmlinuz        append ks initrd=initrd.img ramdisk_size=150000 lang= devfs=nomount pxe kssendmac selinux=0 noipv6
-install headless kernel vmlinuz        append ks initrd=initrd.img ramdisk_size=150000 lang= devfs=nomount pxe kssendmac selinux=0 noipv6 headless vnc
-memtest          kernel memtest        ----------------------------------------------------------------------
-os               localboot 0           ----------------------------------------------------------------------
-pxeflash         kernel memdisk bigraw append initrd=pxeflash.img keeppxe
-rescue           kernel vmlinuz        append ks initrd=initrd.img ramdisk_size=150000 lang= devfs=nomount pxe kssendmac selinux=0 noipv6 rescue
+# rocks list bootaction
+ACTION            KERNEL                RAMDISK             ARGS                                                                                  
+install:          vmlinuz-5.2-i386      initrd.img-5.2-i386 ks ramdisk_size=150000 lang= devfs=nomount pxe kssendmac selinux=0 noipv6             
+install headless: vmlinuz-5.2-i386      initrd.img-5.2-i386 ks ramdisk_size=150000 lang= devfs=nomount pxe kssendmac selinux=0 noipv6 headless vnc
+memtest:          kernel memtest        ------------------- --------------------------------------------------------------------------------------
+os:               localboot 0           ------------------- --------------------------------------------------------------------------------------
+pxeflash:         kernel memdisk bigraw pxeflash.img        keeppxe                                                                               
+rescue:           vmlinuz-5.2-i386      initrd.img-5.2-i386 ks ramdisk_size=150000 lang= devfs=nomount pxe kssendmac selinux=0 noipv6 rescue
 </screen>
 
 <para>
@@ -61,23 +62,23 @@ Then we see that correct boot action has been applied:
 </para>
 
 <screen>
-# rocks list host boot            
+# rocks list host boot
 HOST         ACTION 
-olympic:     -------
+vi-2:        -------
 compute-0-0: install
+compute-0-1: os
 </screen>
 
 <para>
-Now to add or change the kernel boot parameters for the installing kernel,
-we'll need to add or modify an action.
+Now to change the kernel boot parameters for the installing kernel,
+we'll need to add an action.
 We'll create a new action called "install ucsd" and add our boot flag
 "ucsd=rocks" to the end of the kernel boot parameters:
 </para>
 
 <screen>
-# rocks add host action action="install ucsd" command="kernel vmlinuz \
-  args="append ks initrd=initrd.img ramdisk_size=150000 lang= devfs=nomount \
-  pxe kssendmac selinux=0 noipv6 ucsd=rocks"
+# rocks add bootaction action="install ucsd" kernel="vmlinuz-5.2-i386" ramdisk="initrd.img-5.2-i386" \
+args="ks ramdisk_size=150000 lang= devfs=nomount pxe kssendmac selinux=0 noipv6 ucsd=rocks"
 </screen>
 
 <para>
@@ -85,41 +86,41 @@ We now see that "install ucsd" is an available action:
 </para>
 
 <screen>
-# rocks list host pxeaction compute-0-0
-ACTION           COMMAND               ARGS
-install          kernel vmlinuz        append ks initrd=initrd.img ramdisk_size=150000 lang= devfs=nomount pxe kssendmac selinux=0 noipv6
-install headless kernel vmlinuz        append ks initrd=initrd.img ramdisk_size=150000 lang= devfs=nomount pxe kssendmac selinux=0 noipv6 headless vnc
-install ucsd     kernel vmlinuz        append ks initrd=initrd.img ramdisk_size=150000 lang= devfs=nomount pxe kssendmac selinux=0 noipv6 ucsd=rocks
-memtest          kernel memtest        ---------------------------------------------------------------
-os               localboot 0           ---------------------------------------------------------------
-pxeflash         kernel memdisk bigraw append initrd=pxeflash.img keeppxe
-rescue           kernel vmlinuz        append ks initrd=initrd.img ramdisk_size=150000 lang= devfs=nomount pxe kssendmac selinux=0 noipv6 rescue
+rocks list bootaction
+ACTION            KERNEL                RAMDISK             ARGS                                                                                  
+install:          vmlinuz-5.2-i386      initrd.img-5.2-i386 ks ramdisk_size=150000 lang= devfs=nomount pxe kssendmac selinux=0 noipv6             
+install headless: vmlinuz-5.2-i386      initrd.img-5.2-i386 ks ramdisk_size=150000 lang= devfs=nomount pxe kssendmac selinux=0 noipv6 headless vnc
+install ucsd:     vmlinuz-5.2-i386      initrd.img-5.2-i386 ks ramdisk_size=150000 lang= devfs=nomount pxe kssendmac selinux=0 noipv6 ucsd=rocks  
+memtest:          kernel memtest        ------------------- --------------------------------------------------------------------------------------
+os:               localboot 0           ------------------- --------------------------------------------------------------------------------------
+pxeflash:         kernel memdisk bigraw pxeflash.img        keeppxe                                                                               
+rescue:           vmlinuz-5.2-i386      initrd.img-5.2-i386 ks ramdisk_size=150000 lang= devfs=nomount pxe kssendmac selinux=0 noipv6 rescue
 </screen>
 
 <para>
-We can add an action to only one node by including the node name in the
-"rocks add host pxeaction" command line.
-For example, here's how to apply the "install ucsd" action only to compute-0-0:
+To set the install action for compute-0-0 to "install ucsd", execute:
 </para>
 
 <screen>
-# rocks add host pxeaction compute-0-0 action="install ucsd" \
-  command="kernel vmlinuz \
-  args="append ks initrd=initrd.img ramdisk_size=150000 lang= devfs=nomount \
-  pxe kssendmac selinux=0 noipv6 ucsd=rocks"
+# rocks set host installaction compute-0-0 action="install ucsd"
 </screen>
 
 <para>
-Also, you can override a global action by simply replacing the "args".
-For example, here's how to override the global "install" action:
+Then we see that correct boot action has been applied:
 </para>
 
 <screen>
-# rocks add host pxeaction compute-0-0 action="install" \
-  command="kernel vmlinuz \
-  args="append ks initrd=initrd.img ramdisk_size=150000 lang= devfs=nomount \
-  pxe kssendmac selinux=0 noipv6 ucsd=rocks"
+# rocks list host
+HOST         MEMBERSHIP CPUS RACK RANK RUNACTION INSTALLACTION
+vi-2:        Frontend   1    0    0    os        install      
+compute-0-0: Compute    2    0    0    os        install ucsd 
+compute-0-1: Compute    2    0    1    os        install 
 </screen>
+
+<para>
+The next time compute-0-0 is installed, it will use the "install ucsd"
+profile.
+</para>
 
 </section>
 

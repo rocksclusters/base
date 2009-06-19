@@ -7,18 +7,11 @@ A Central Server is a Rocks Frontend node that can kickstart other frontends and
 
 <para>
 The standard Rocks distribution (located under /export/rocks/install) contains
-a distro suitable for WAN kickstart.
+a distribution suitable for WAN kickstart.
 The only steps you must take is to open "www" and "https" access on your
 frontend for the purpose of RPM package transfer.
 See <xref linkend="enable-www">.
 </para>
-
-<note>
-<para>
-Ensure that the hostname on central is fully qualified. Specifically, the "PublicHostname" value in the <literal>app_globals</literal> table of the database must be correct and reachable from the outside world.
-</para>
-</note>
-
 
 
 <section>
@@ -26,7 +19,8 @@ Ensure that the hostname on central is fully qualified. Specifically, the "Publi
 
 <para>
 You may wish to serve rolls from your central server that you have not
-installed during installation.
+installed on your central server when the central server was initially
+installed.
 All frontends will serve the rolls they were built with to client frontends,
 but often it is advantageous to serve other rolls as well.
 </para>

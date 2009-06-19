@@ -78,18 +78,6 @@ or viz tile node) by using the Rocks command line and PXE.
 
 <listitem>
 	<para>
-	Before flashing the client node, on the frontend, reset the PXE action
-	so the client boots the OS from local disk:
-	</para>
-
-<screen>
-# rocks set host boot &lt;hostname&gt; action=os
-</screen>
-
-</listitem>
-
-<listitem>
-	<para>
 	On the client, execute the BIOS flash program.
 	</para>
 
@@ -97,6 +85,19 @@ or viz tile node) by using the Rocks command line and PXE.
 	In our example, we executed the program
 	<computeroutput>DME521-010111.EXE</computeroutput>.
 	</para>
+</listitem>
+
+<listitem>
+	<para>
+	When the BIOS flash program completes and before you reboot the
+	client, on the frontend, reset the PXE action
+	so when the client reboots, it will boot the OS from local disk:
+	</para>
+
+<screen>
+# rocks set host boot &lt;hostname&gt; action=os
+</screen>
+
 </listitem>
 
 <listitem>
