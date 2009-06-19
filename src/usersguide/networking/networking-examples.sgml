@@ -1,5 +1,5 @@
 <!-- 
-$Id: networking-examples.sgml,v 1.1 2008/09/14 04:59:11 phil Exp $
+$Id: networking-examples.sgml,v 1.2 2009/06/19 00:44:52 bruno Exp $
 
 Administration guide
 
@@ -7,6 +7,9 @@ Administration guide
 @Copyright@
 
 $Log: networking-examples.sgml,v $
+Revision 1.2  2009/06/19 00:44:52  bruno
+touch up
+
 Revision 1.1  2008/09/14 04:59:11  phil
 Added some adminstrative examples. Needs more.
 
@@ -15,8 +18,7 @@ Added some adminstrative examples. Needs more.
 
 <section><title>Networking Configuration Examples</title> 
 <para>
-In this section, we describe some common networking configurations and how to use Rocks commands
-to set up various networking scenarios
+In this section, we describe some common networking configurations and how to use Rocks commands to set up various networking scenarios.
 </para>
 
 <section>
@@ -25,15 +27,15 @@ to set up various networking scenarios
 Often, owners want the second ethernet adapter to be on the public network and for the default routing to
 be in the public network. Assuming that the public network is 1.2.3.0/255.255.255.0 and the default
 gateway for that network is 1.2.3.1, the following set of commands define the second interface of a compute
-to have address 1.2.3.25 with name mypublic.myuniversity.edu, update all required configruation files on the
+to have address 1.2.3.25 with name mypublic.myuniversity.edu, update all required configuration files on the
 frontend, update all required configuration files on the node compute-0-0 and restart the network on compute-0-0.
 </para>
 <screen>
-rocks set host interface ip  compute-0-0 iface=eth1 ip=1.2.3.25 
-rocks set host interface gateway  compute-0-0 iface=eth1 ip=1.2.3.1 
-rocks set host interface name  compute-0-0 iface=eth1 name=mypublic.myuniversity.edu
-rocks sync config
-rocks sync network compute-0-0 
+# rocks set host interface ip  compute-0-0 iface=eth1 ip=1.2.3.25 
+# rocks set host interface gateway  compute-0-0 iface=eth1 ip=1.2.3.1 
+# rocks set host interface name  compute-0-0 iface=eth1 name=mypublic.myuniversity.edu
+# rocks sync config
+# rocks sync network compute-0-0 
 </screen>
 </section>
 
@@ -41,8 +43,8 @@ rocks sync network compute-0-0
 <section>
 <title>Adding an IP network for  local message passing. </title>
 <para>
-Often, users will want to use the second ethernet device for a messaging passing. In this example, 
-we illustrate creating a named subnet work and then scripting IP assignment for a rack of 32 nodes
+Often, users will want to use the second ethernet device for messaging passing. In this example, 
+we illustrate creating a named subnet and then scripting the IP assignment for a rack of 32 nodes
 with IP range of 192.168.1.10 ... 192.168.1.41. 
 </para>
 <screen>
@@ -62,7 +64,7 @@ rocks sync network compute
 </screen>
 <para>
 The above will add the named subnet called "fast", assign IP addresses sequentially, name the eth1
-interface on each node, rewrite DNS configuration (sync config) and finally rewrite and then restart the network
+interface on each node, rewrite the DNS configuration (sync config) and finally rewrite and restart the network
 configuration on each compute appliance. This additional network configuration is persistent across 
 re-installation of nodes.
 </para>

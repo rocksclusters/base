@@ -64,7 +64,7 @@ input <emphasis>XFree86-100dpi-fonts</emphasis> as the package name in
 <para>
 If you have multiple packages you'd like to add, you'll need a separate
 <computeroutput>&lt;package&gt</computeroutput> tag for each.
-For example, to add both the 100 and 75 dpi fonts, the 
+For example, to add both the 100 and 75 dpi fonts, 
 the following lines should be in
 <computeroutput>extend-compute.xml</computeroutput>:
 </para>

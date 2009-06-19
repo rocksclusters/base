@@ -25,11 +25,11 @@ Base and Web-Server Rolls.
 </para>
 
 <para>
-Additionally, the official Red Hat Enterprise Linux 5 update 1 CDs can be
+Additionally, the official Red Hat Enterprise Linux 5 update 3 CDs can be
 substituted for the OS Rolls.
-Also, any <emphasis>true</emphasis> rebuild of RHEL 5 update 1 can be
-used -- distributions known to work are: CentOS 5 update 1 and
-Scientific Linux 5 update 1.
+Also, any <emphasis>true</emphasis> rebuild of RHEL 5 update 3 can be
+used -- distributions known to work are: CentOS 5 update 3 and
+Scientific Linux 5 update 3.
 If you substitute the OS Rolls with one of the above distributions, you
 must supply <emphasis>all</emphasis> the CDs from the distribution (which
 usually is 6 or 7 CDs).
@@ -49,7 +49,7 @@ usually is 6 or 7 CDs).
 	<para>
 	For the remainder of this section, we'll use the example of installing
 	a <emphasis>bare-bones</emphasis> frontend, that is, we'll be using
-	using the Kernel/Boot Roll, Core Roll, OS - Disk 1 Roll and the
+	the Kernel/Boot Roll, Core Roll, OS - Disk 1 Roll and the
 	OS - Disk 2 Roll.
 	</para>
 	</note>
@@ -307,13 +307,7 @@ build
 	hostname is changed after the frontend is installed,
 	several cluster services will no longer be able to
 	find the frontend machine.  Some of these services include:
-	SGE, Globus, NFS, AutoFS, and Apache.
-	</para>
-
-	<para>
-	If you plan on adding
-	the Grid Roll (or other Globus PKI services) the hostname must
-	be the primary FQDN for your host.
+	SGE, NFS, AutoFS, and Apache.
 	</para>
 	</note>
 

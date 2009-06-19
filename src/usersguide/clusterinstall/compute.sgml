@@ -91,14 +91,13 @@
 
 	<note>
 	<para>
-	The BIOS boot order of your compute nodes should be: PXE (Network
-	Boot), CD, Hard Disk.
+	The BIOS boot order of your compute nodes should be: CD,
+	PXE (Network Boot), Hard Disk.
 	</para>
 
 	<para>
-	If you can't configure PXE to be the first boot device on your compute
-	nodes, then you'll need to boot your compute nodes with the
-	Kernel Roll CD.
+	If your compute nodes don't support PXE,
+	then you'll need to boot your compute nodes with the Kernel Roll CD.
 	</para>
 
 	<para>

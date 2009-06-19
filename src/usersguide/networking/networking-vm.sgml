@@ -1,5 +1,5 @@
 <!-- 
-$Id: networking-vm.sgml,v 1.1 2008/09/13 05:52:23 phil Exp $
+$Id: networking-vm.sgml,v 1.2 2009/06/19 00:44:52 bruno Exp $
 
 Administration guide
 
@@ -7,6 +7,9 @@ Administration guide
 @Copyright@
 
 $Log: networking-vm.sgml,v $
+Revision 1.2  2009/06/19 00:44:52  bruno
+touch up
+
 Revision 1.1  2008/09/13 05:52:23  phil
 First edition of Networking Docs
 
@@ -32,7 +35,7 @@ a compatible IP address
                 </imageobject>
 		<caption>
 			<para> FIGURE: The Virtual machine is bridged to eth0. In this case eth0 of the
-			VM is in the same subnet (with a compatible IP) address. The VM and the Container 
+			VM is in the same subnet (with a compatible IP) address. The VM and the container 
 			will be able to ping each other. This was the only configuration supported in Rocks
 			5.0 
 			</para>
@@ -40,8 +43,8 @@ a compatible IP address
         </mediaobject>
 </para>
 <para>
-Use the following example shows this most basic of bridging scenarios. The guest (compute-0-0-1) and the
-container (vm-container-0-0)  are in the same IP subnet ans will be able to ping each other. 
+The following example shows this most basic of bridging scenarios. The guest (compute-0-0-1) and the
+container (vm-container-0-0)  are in the same IP subnet and will be able to ping each other. 
 </para>
 <screen>
 [root@tranquil images]# rocks list host interface vm-container-0-0 compute-0-0-1
@@ -65,7 +68,7 @@ network.
                 <imagedata fileref="images/VlanVMBridging.png" scale=50>
                 </imageobject>
 		<caption>
-			<para> FIGURE: Guest VM is bridged through a logical VLAN devices. 
+			<para> FIGURE: Guest VM is bridged through a logical VLAN device. 
 			</para>
 		</caption>
         </mediaobject>
@@ -79,11 +82,11 @@ vm-container-0-0: private vlan2 ----------------- -------------- --------- -----
 </screen>
 <para> 
 In the above configuration, Logical VLAN device vlan2 (with tag=2) will be on the physical network eth0 on
-vm-container-0-0.  The hosted-vm-0-0 (a Rocks "appliance" that simply holds a generic VM guest) will have
+vm-container-0-0.  The hosted-vm-0-0-0 (a Rocks "appliance" that simply holds a generic VM guest) will have
 have its interface on VLANID=2.  The physical machine must have a Logical vlan device with the same tag. 
 </para>
 <para> 
-Below we, give a more complicated configuration and walk through exactly what is bridged where. 
+Below we give a more complicated configuration and walk through exactly what is bridged where. 
 </para>
 <screen>
 [root@rocks ~]# rocks list host interface vm-container-0-0
@@ -101,11 +104,10 @@ SUBNET IFACE MAC               IP NETMASK GATEWAY MODULE NAME            VLANID
 <para>
 In the above scenario, if hosted-vm-0-0-0 (Xen guest, DomU)  were to be booted on physical host 
 vm-container-0-0 (Dom0), The packets from the guest on eth0 will be tagged with VLANID=2, and eth1 with
-VLANID=100.  The host machine, must have Logical VLAN interfaces called "vlan*.".  To make the proper
+VLANID=100.  The host machine must have Logical VLAN interfaces called "vlan*.".  To make the proper
 bridge configuration, Rocks will match the VLANIDs of the guest interfaces to the VLANIDs on the host. 
 On the host, logical interface vlan2 is labeled as being on the private network (eth0) and logical vlan100
 is labeled as being on the net10 network (eth1).
-on 
 </para>
 </section>
 <section id="networking-vm-cluster">
@@ -115,7 +117,7 @@ on
                 <imagedata fileref="images/MultipleVMsVlanBridging.png" scale=50>
                 </imageobject>
 		<caption>
-			<para> FIGURE: Multiple VMS communicating on a Logical VLAN interface.
+			<para> FIGURE: Multiple VMs communicating on a Logical VLAN interface.
 			</para>
 		</caption>
         </mediaobject>

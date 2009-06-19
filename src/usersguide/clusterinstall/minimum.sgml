@@ -63,7 +63,7 @@ Compute Node
 	<listitem>
 		<para>
 		<emphasis role=strong>BIOS Boot Order:</emphasis>
-		PXE (Network Boot), CD, Hard Disk
+		CD, PXE (Network Boot), Hard Disk
 		</para>
 	</listitem>
 	</itemizedlist>

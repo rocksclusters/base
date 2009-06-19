@@ -6,7 +6,7 @@
 <para>
 For compute nodes, Rocks uses the first ethernet interface
 (<computeroutput>eth0</computeroutput>) for management (e.g., reinstallation),
-monitoring (e.g., Ganglia) and message passing (e.g., MPICH over ethernet).
+monitoring (e.g., Ganglia) and message passing (e.g., OpenMPI over ethernet).
 
 Often, compute nodes have more than one ethernet interface.
 
@@ -74,9 +74,13 @@ public  eth1  00:30:1b:b2:ea:61 192.168.1.1    255.255.255.0 192.168.1.254 tg3  
 </screen>
 
 <para>
-After specifying new network settings to a node, you will need to reinstall
-the node in order for the changes to take effect.
+After specifying new network settings to a compute-1-1, execute the following
+command to apply the settings:
 </para>
+
+<screen>
+# rocks sync host network compute-1-1
+</screen>
 
 </section>
 

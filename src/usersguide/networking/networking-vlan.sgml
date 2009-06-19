@@ -1,5 +1,5 @@
 <!-- 
-$Id: networking-vlan.sgml,v 1.2 2008/09/13 04:38:20 phil Exp $
+$Id: networking-vlan.sgml,v 1.3 2009/06/19 00:44:52 bruno Exp $
 
 Administration guide
 
@@ -7,6 +7,9 @@ Administration guide
 @Copyright@
 
 $Log: networking-vlan.sgml,v $
+Revision 1.3  2009/06/19 00:44:52  bruno
+touch up
+
 Revision 1.2  2008/09/13 04:38:20  phil
 VLAN interfaces, Logical and Physical.
 
@@ -21,13 +24,13 @@ Linux supports VLAN tagging on virtual interfaces (i.e. IEEE 802.1Q).  For examp
 physical interface eth0 (untagged), then the kernel can send and receive a tagged packets if a properly 
 defined interface named eth0.&lt;vlanid&gt; has been created and properly configured. Tagging allows the same 
 physical network to be partitioned into many different networks. A key feature of VLAN tagging is that
-a broadcast packet (e.g. a DHCPDISCOVER Packet) only broadcasts on the tagged VLAN in which is was initially 
+a broadcast packet (e.g. a DHCPDISCOVER packet) only broadcasts on the tagged VLAN in which is was initially 
 sent.
 </para>
 <para>
 Rocks supports two types of VLAN interfaces - the first is an explicit device name like eth0.10 that is defined
-on a particular physical interface. The second is a logical device name of the form "vlan*".  In rocks, the physical VLAN device can also have an IP address associated with it, however a logical VLAN device cannot.  
-We use the logical VLAN to construct bridges suitable that are suitable for virtual machines. 
+on a particular physical interface. The second is a logical device name of the form "vlan*".  In Rocks, the physical VLAN device can also have an IP address associated with it, however a logical VLAN device cannot.  
+We use logical VLANs to construct bridges suitable for virtual clusters. 
 </para>
 <note>
 	<orderedlist>
@@ -44,8 +47,8 @@ We use the logical VLAN to construct bridges suitable that are suitable for virt
 <section id="networking-physical-vlan">
 <title>Physical VLAN Devices</title>
 <para>
-Physical VLAN devices are interfaces associated with a specific physical interfaces. While eth0 is used as
-and example, any physical IP interface can have a VLAN associated with it.
+Physical VLAN devices are interfaces associated with specific physical interfaces. While eth0 is used as
+an example, any physical IP interface can have a VLAN associated with it.
 </para>
 <para>
         <mediaobject>
@@ -62,7 +65,7 @@ and example, any physical IP interface can have a VLAN associated with it.
         </mediaobject>
 </para>
 <para>
-Use the following example to add a physical VLAN device, Assign a tag, and an IP address
+Use the following example to add a physical VLAN device, assign a tag, and an IP address:
 </para>
 <screen>
 [root@rocks ~]# rocks add host interface compute-0-0-1 iface=eth0.2 subnet=net2 ip=10.2.1.10
@@ -77,9 +80,10 @@ net2    eth0.2 ----------------- 10.2.1.10      255.255.255.0 ------- ------ ---
 <section id="networking-logical-vlan">
 <title>Logical VLAN Devices</title>
 <para>
-The second kind of VLAN interface that Rocks supports is a what we term as Logical VLAN device. The Virtual
+The second kind of VLAN interface that Rocks supports is what we call a
+<emphasis>logical VLAN device</emphasis>. The Virtual
 VLAN gives the ability of having a raw interface with no IP address assigned that is generally used as a bridge
-for virtual machine guests. Virtual VLAN devices have their subnet=&lt;subnet of physical&gt;
+for virtual machines. Virtual VLAN devices have their subnet=&lt;subnet of physical&gt;
 </para>
 
 <para>
@@ -88,8 +92,9 @@ for virtual machine guests. Virtual VLAN devices have their subnet=&lt;subnet of
                 <imagedata fileref="images/LogicalVlans.png" scale=50>
                 </imageobject>
 		<caption>
-			<para> FIGURE: Virtual VLAN devices called vlan2 and vlan3. These types of  devices 
-			may be NOT have an IP address (This is a Rocks-specific construction). 
+			<para> FIGURE: Virtual VLAN devices called vlan2 and
+			vlan3. These types of devices may NOT have an IP
+			address (This is a Rocks-specific construction). 
 			</para>
 		</caption>
         </mediaobject>
@@ -129,7 +134,7 @@ private vlan3 ----------------- -------------- ------------- ------- ------ ----
 			<para> FIGURE: Virtual VLAN devices called vlan2 and vlan3 are associated
 			with the physical device that is desigated as subnet private.  Notice, that 
 			no netmask is associated with the vlan2 and vlan3 devices. These are raw, tagged
-			packet interfaces and are of most use for bridges when hosting VMs.  
+			packet interfaces and are mostly used for bridges when hosting VMs.  
 			</para>
 		</caption>
         </mediaobject>

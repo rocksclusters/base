@@ -21,19 +21,34 @@ cluster more prone to malicious attacks and breakins.
 <orderedlist>
 <listitem>
 <para>
-Edit the <filename>/etc/sysconfig/iptables</filename> file. Uncomment the lines
-as indicated in the file.
+Edit the <filename>/etc/sysconfig/iptables</filename> file and open up
+https and www traffic by changing the section:
 </para>
 
 <para>
 <screen>
 ...
-# Uncomment the lines below to activate web access to the cluster.
-#-A INPUT -m state --state NEW -p tcp --dport https -j ACCEPT
-#-A INPUT -m state --state NEW -p tcp --dport www -j ACCEPT
+# http and https is allowed for all nodes on the public subnet
+-A INPUT -m state --state NEW -p tcp --dport https --source XXX.XXX.XXX.0/255.255.255.0 -j ACCEPT
+-A INPUT -m state --state NEW -p tcp --dport www --source XXX.XXX.XXX.0/255.255.255.0 -j ACCEPT
 ... other firewall directives ...
 </screen>
 </para>
+
+<para>
+to:
+</para>
+
+<para>
+<screen>
+...
+# http and https is allowed for all nodes on the public subnet
+-A INPUT -m state --state NEW -p tcp --dport https -j ACCEPT
+-A INPUT -m state --state NEW -p tcp --dport www -j ACCEPT
+... other firewall directives ...
+</screen>
+</para>
+
 </listitem>
 
 <listitem>
@@ -43,7 +58,7 @@ Restart the iptables service. You must execute this command as the root user.
 
 <para>
 <userinput>
-$ service iptables restart
+# service iptables restart
 </userinput>
 </para>
 </listitem>
