@@ -1,5 +1,5 @@
 <!-- 
-$Id: admin-examples.sgml,v 1.11 2009/06/19 02:42:07 bruno Exp $
+$Id: admin-examples.sgml,v 1.12 2009/06/19 15:29:02 bruno Exp $
 
 Administration guide
 
@@ -7,6 +7,9 @@ Administration guide
 @Copyright@
 
 $Log: admin-examples.sgml,v $
+Revision 1.12  2009/06/19 15:29:02  bruno
+touch up chapter 6
+
 Revision 1.11  2009/06/19 02:42:07  bruno
 more touch ups
 
@@ -318,7 +321,10 @@ Boot node compute-1-1 by power cycle or other means.
 <listitem>
 <para>
 After compute-1-1 has successfully started the diagnostic, reset the runaction
-parameter
+parameter:
+</para>
+
+<para>
 <computeroutput># rocks set host runaction compute-1-1 action=os</computeroutput>
 </para>
 </listitem>
@@ -343,12 +349,12 @@ illustation. To list the ethernet interfaces do the following:
 <screen>
 # rocks list host interface jeebs
 
-SUBNET  IFACE MAC               IP             NETMASK       GATEWAY      MODULE NAME                   
-private eth0  00:0e:0c:a7:57:d7 10.1.1.1       255.0.0.0     ------------ e1000  jeebs                  
-public  eth1  00:19:b9:21:b8:b6 172.19.119.241 255.255.255.0 172.19.119.1 tg3    jeebs.rocksclusters.org
+SUBNET  IFACE MAC               IP             NETMASK       MODULE NAME                    VLANID 
+private eth0  00:0e:0c:a7:57:d7 10.1.1.1       255.0.0.0     e1000  jeebs                   ------ 
+public  eth1  00:19:b9:21:b8:b6 172.19.119.241 255.255.255.0 tg3    jeebs.rocksclusters.org ------
 </screen>
 <para> This describes the two interfaces, eth0 and eth1. Suppose that it is
-desired to swap these two interfaces. That is is we would want to associate
+desired to swap these two interfaces. That is we would want to associate
 the mac address 00:0e:0c:a7:57:d7 with eth1. To do this we must also associate
 the correct module. The following will change the information only in the database. This uses the <computeroutput>rocks set host interface</computeroutput> 
 group of commands.
@@ -365,15 +371,15 @@ Then the updated database configuration is as follows
 </para>
 <screen>
 # rocks list host interface jeebs
-SUBNET  IFACE MAC               IP             NETMASK       GATEWAY      MODULE NAME                   
-private eth0  00:19:b9:21:b8:b6 10.1.1.1       255.0.0.0     ------------ tg3    jeebs                  
-public  eth1  00:0e:0c:a7:57:d7 172.19.119.241 255.255.255.0 172.19.119.1 e1000  jeebs.rocksclusters.org
+SUBNET  IFACE MAC               IP             NETMASK       MODULE NAME                    VLANID
+private eth0  00:19:b9:21:b8:b6 10.1.1.1       255.0.0.0     tg3    jeebs                   ------ 
+public  eth1  00:0e:0c:a7:57:d7 172.19.119.241 255.255.255.0 e1000  jeebs.rocksclusters.org ------
 </screen>
 <note>
 <para>
 After any such database change, always run 
 <computeroutput>rocks sync config</computeroutput>. This will update service
-configuration files (like dhcpd). Reinstalling a node will apply these types of changes to the node.
+configuration files (like dhcpd).
 </para>
 </note>
 
@@ -416,7 +422,7 @@ Set compute-0-2.local for Reinstallation
 For each compute node, the script submits a high-priority reinstall job.
 The reinstall jobs will move ahead of the currently queued jobs (running
 jobs will not be disturbed).
-When a busy compute node become free, the next job submitted to it will be
+When a busy compute node becomes free, the next job submitted to it will be
 the reinstall job.
 All remaining jobs will remain queued until the node completes its
 installation, after which SGE will recognize the node as up and then submit
