@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.3 2009/06/19 21:07:34 mjk Exp $
+# $Id: __init__.py,v 1.1 2009/06/19 21:07:20 mjk Exp $
 #
 # @Copyright@
 # 
@@ -54,7 +54,7 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
-# Revision 1.3  2009/06/19 21:07:34  mjk
+# Revision 1.1  2009/06/19 21:07:20  mjk
 # - added dumpHostname to dump commands (use localhost for frontend)
 # - added add commands for attrs
 # - dump uses add for attr (does not overwrite installer set attrs)A
@@ -62,28 +62,81 @@
 # - do not dump os/arch host attributes
 # - fix various self.about() -> self.abort()
 #
-# Revision 1.2  2009/05/01 19:06:57  mjk
-# chimi con queso
-#
-# Revision 1.1  2009/03/13 21:10:49  mjk
-# - added dump route commands
-#
 
 
+import os
+import stat
+import time
+import sys
+import string
 import rocks.commands
 
-
-class Command(rocks.commands.dump.host.command):
+class Command(rocks.commands.add.appliance.command):
 	"""
+	Adds an attribute to an appliance and sets the associated values 
+
+	<arg type='string' name='appliance'>
+	Name of appliance
+	</arg>
+	
+	<arg type='string' name='attr'>
+	Name of the attribute
+	</arg>
+
+	<arg type='string' name='value'>
+	Value of the attribute
+	</arg>
+	
+	<param type='string' name='attr'>
+	same as attr argument
+	</param>
+
+	<param type='string' name='value'>
+	same as value argument
+	</param>
+
+	<example cmd='add appliance attr compute sge False'>
+	Sets the sge attribution to False for compute appliances
+	</example>
+
+	<example cmd='add appliance attr compute sge attr=cpus value=2'>
+	same as above
+	</example>
+	
+	<related>list appliance attr</related>
+	<related>remove appliance attr</related>
+	<related>set host attr</related>
+	<related>list host attr</related>
+	<related>remove host attr</related>
 	"""
 
 	def run(self, params, args):
-		for host in self.getHostnames(args):
+
+		(args, attr, value) = self.fillPositionalArgs(('attr', 'value'))
+		appliances = self.getApplianceNames(args)
+		
+		if not attr:
+			self.abort('missing attribute name')
+		if not value:
+			self.about('missing value of attribute')
+
+		for appliance in appliances:
+			self.checkApplianceAttr(appliance, attr, value)
+		for appliance in appliances:
 			self.db.execute("""
-				select r.network, r.netmask, r.gateway from
-				node_routes r, nodes n where
-				r.node=n.id and n.name='%s'""" % host)
-			for n, m, g in self.db.fetchall():
-				self.dump('add host route %s %s %s netmask=%s'
-					% (self.dumpHostname(host), n, g, m))
+				insert into appliance_attributes values 
+				((select id from appliances where name='%s'), 
+				'%s', '%s')
+				""" % (appliance, attr, value))
+			
+	def checkApplianceAttr(self, appliance, attr, value):
+		rows = self.db.execute("""
+			select * from appliance_attributes where
+			appliance=
+			(select id from appliances where name='%s') and
+			attr='%s'
+			""" % (appliance, attr))
+		if rows:
+			self.abort('attr "%s" exists for appliance "%s" ' % 
+				(attr, appliance))
 

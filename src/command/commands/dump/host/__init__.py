@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.9 2009/06/16 21:45:38 bruno Exp $
+# $Id: __init__.py,v 1.10 2009/06/19 21:07:30 mjk Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,14 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.10  2009/06/19 21:07:30  mjk
+# - added dumpHostname to dump commands (use localhost for frontend)
+# - added add commands for attrs
+# - dump uses add for attr (does not overwrite installer set attrs)A
+# - do not dump public or private interfaces for the frontend
+# - do not dump os/arch host attributes
+# - fix various self.about() -> self.abort()
+#
 # Revision 1.9  2009/06/16 21:45:38  bruno
 # no need to use double quotes
 #
@@ -102,7 +110,13 @@ import rocks.commands
 
 class command(rocks.commands.HostArgumentProcessor,
 	rocks.commands.dump.command):
-	pass
+
+	def dumpHostname(self, hostname):
+		if hostname == self.db.getHostname():
+			return 'localhost'
+		else:
+			return hostname
+
 	
 class Command(command):
 	"""
@@ -133,8 +147,16 @@ class Command(command):
 				from nodes n, memberships m where
 				n.membership=m.id and n.name='%s'""" % host)
 			(cpus, rack, rank, membership) = self.db.fetchone()
+
+			# do not dump the localhost since the installer
+			# will add the host for us
+
+			if self.db.getHostname() == host:
+				continue
+
 			self.dump('add host %s cpus=%s rack=%s rank=%s '
 				'membership=%s' %
-				(host, cpus, rack, rank, membership))
+				(host, cpus, rack, rank, 
+				self.quote(membership)))
 
 

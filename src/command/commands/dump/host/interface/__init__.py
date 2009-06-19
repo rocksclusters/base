@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.16 2009/05/01 19:06:57 mjk Exp $
+# $Id: __init__.py,v 1.17 2009/06/19 21:07:32 mjk Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,14 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.17  2009/06/19 21:07:32  mjk
+# - added dumpHostname to dump commands (use localhost for frontend)
+# - added add commands for attrs
+# - dump uses add for attr (does not overwrite installer set attrs)A
+# - do not dump public or private interfaces for the frontend
+# - do not dump os/arch host attributes
+# - fix various self.about() -> self.abort()
+#
 # Revision 1.16  2009/05/01 19:06:57  mjk
 # chimi con queso
 #
@@ -184,9 +192,27 @@ class Command(rocks.commands.dump.host.command):
 						iface = mac
 					else:
 						continue # nothing to dump
-		
-				self.dump('add host interface %s %s' % 
-					(host, iface))
+
+				# If this is the frontend (localhost) do
+				# not dump anything for the public and
+				# private subnets.  For the extra frontend
+				# interfaces do not dump the mac or
+				# module.
+
+				host = self.dumpHostname(host)
+				if host == 'localhost':
+					mac    = None
+					module = None
+					if subnet in [ 'public', 'private' ]:
+						ip     = None
+						name   = None
+						subnet = None
+						vlan   = None
+						iface  = None
+
+				if iface:
+					self.dump('add host interface %s %s' % 
+						(host, iface))
 
 				set = 'set host interface %%s %s %s %%s' % \
 					(host, iface)

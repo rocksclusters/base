@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.2 2009/05/01 19:07:02 mjk Exp $
+# $Id: __init__.py,v 1.3 2009/06/19 21:07:36 mjk Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,14 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.3  2009/06/19 21:07:36  mjk
+# - added dumpHostname to dump commands (use localhost for frontend)
+# - added add commands for attrs
+# - dump uses add for attr (does not overwrite installer set attrs)A
+# - do not dump public or private interfaces for the frontend
+# - do not dump os/arch host attributes
+# - fix various self.about() -> self.abort()
+#
 # Revision 1.2  2009/05/01 19:07:02  mjk
 # chimi con queso
 #
@@ -117,7 +125,7 @@ class Command(rocks.commands.set.command):
 		if not attr:
 			self.abort('missing attribute name')
 		if not value:
-			self.about('missing value of attribute')
+			self.abort('missing value of attribute')
 
 		rows = self.db.execute("""select * from global_attributes
 			where attr='%s'""" % attr)

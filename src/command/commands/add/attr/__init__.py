@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.3 2009/06/19 21:07:34 mjk Exp $
+# $Id: __init__.py,v 1.1 2009/06/19 21:07:21 mjk Exp $
 #
 # @Copyright@
 # 
@@ -54,7 +54,7 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
-# Revision 1.3  2009/06/19 21:07:34  mjk
+# Revision 1.1  2009/06/19 21:07:21  mjk
 # - added dumpHostname to dump commands (use localhost for frontend)
 # - added add commands for attrs
 # - dump uses add for attr (does not overwrite installer set attrs)A
@@ -62,28 +62,56 @@
 # - do not dump os/arch host attributes
 # - fix various self.about() -> self.abort()
 #
-# Revision 1.2  2009/05/01 19:06:57  mjk
-# chimi con queso
-#
-# Revision 1.1  2009/03/13 21:10:49  mjk
-# - added dump route commands
-#
 
-
+import stat
+import time
+import sys
+import string
 import rocks.commands
 
-
-class Command(rocks.commands.dump.host.command):
+class Command(rocks.commands.add.command):
 	"""
+	Adds a global attribute for all nodes
+
+	<arg type='string' name='attr'>
+	Name of the attribute
+	</arg>
+
+	<arg type='string' name='value'>
+	Value of the attribute
+	</arg>
+	
+	<param type='string' name='attr'>
+	same as attr argument
+	</param>
+
+	<param type='string' name='value'>
+	same as value argument
+	</param>
+
+	<example cmd='add appliance attr sge False'>
+	Adds the sge attribution to False
+	</example>
+
+	<related>list attr</related>
+	<related>remove attr</related>
 	"""
 
 	def run(self, params, args):
-		for host in self.getHostnames(args):
-			self.db.execute("""
-				select r.network, r.netmask, r.gateway from
-				node_routes r, nodes n where
-				r.node=n.id and n.name='%s'""" % host)
-			for n, m, g in self.db.fetchall():
-				self.dump('add host route %s %s %s netmask=%s'
-					% (self.dumpHostname(host), n, g, m))
+
+		(args, attr, value) = self.fillPositionalArgs(('attr', 'value'))
+		if not attr:
+			self.abort('missing attribute name')
+		if not value:
+			self.abort('missing value of attribute')
+
+		rows = self.db.execute("""select * from global_attributes
+			where attr='%s'""" % attr)
+		if rows:
+			self.abort('attribute "%s" exists' % attr)
+
+		self.db.execute("""insert into global_attributes
+			values ('%s', '%s')""" % (attr, value))
+
+
 

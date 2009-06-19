@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.2 2009/05/01 19:06:55 mjk Exp $
+# $Id: __init__.py,v 1.3 2009/06/19 21:07:25 mjk Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,14 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.3  2009/06/19 21:07:25  mjk
+# - added dumpHostname to dump commands (use localhost for frontend)
+# - added add commands for attrs
+# - dump uses add for attr (does not overwrite installer set attrs)A
+# - do not dump public or private interfaces for the frontend
+# - do not dump os/arch host attributes
+# - fix various self.about() -> self.abort()
+#
 # Revision 1.2  2009/05/01 19:06:55  mjk
 # chimi con queso
 #
@@ -99,7 +107,7 @@ class Command(rocks.commands.add.command):
 		rows = self.db.execute("""select * from global_routes
 			where network='%s'""" % address)
 		if rows:
-			self.about('route exists')
+			self.abort('route exists')
 			
 		self.db.execute("""insert into global_routes
                                 values ('%s', '%s', '%s')""" %

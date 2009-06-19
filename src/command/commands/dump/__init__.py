@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.14 2009/05/01 19:06:56 mjk Exp $
+# $Id: __init__.py,v 1.15 2009/06/19 21:07:26 mjk Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,14 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.15  2009/06/19 21:07:26  mjk
+# - added dumpHostname to dump commands (use localhost for frontend)
+# - added add commands for attrs
+# - dump uses add for attr (does not overwrite installer set attrs)A
+# - do not dump public or private interfaces for the frontend
+# - do not dump os/arch host attributes
+# - fix various self.about() -> self.abort()
+#
 # Revision 1.14  2009/05/01 19:06:56  mjk
 # chimi con queso
 #
@@ -123,29 +131,19 @@ import rocks.commands
 
 class command(rocks.commands.Command):
 	MustBeRoot = 0
-	
+
+	def quote(self, string):
+		s = ''
+		for c in string:
+			if c in [ '"', "'", '\\', ' ', 
+				'`', '$', '<', '>', '&' ]:
+				s += '\\%s' % c
+			else:
+				s += c
+		return s
+
 	def dump(self, line):
-
-		# Make sure we quote everything so it's safe for the shell.
-		# This is done mainly for the attributes (copied from 
-		# database-data.xml).  But it's good to do for everything
-		# we dump.
-
-		args = []
-		for word in line.strip().split():
-			s = ''
-			for char in word:
-				if char == "'":
-                        		s += "'"
-                                	s += '"'
-                                	s += "\\'"
-                                	s += '"'
-                                	s += "'"
-                        	else:
-                        		s += char
-			args.append("'%s'" % s)
-
-		self.addText('/opt/rocks/bin/rocks %s\n' % string.join(args))
+		self.addText('/opt/rocks/bin/rocks %s\n' % line)
 
 	
 class Command(command):

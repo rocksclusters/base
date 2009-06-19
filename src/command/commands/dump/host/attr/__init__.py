@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.2 2009/05/01 19:06:57 mjk Exp $
+# $Id: __init__.py,v 1.3 2009/06/19 21:07:31 mjk Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,14 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.3  2009/06/19 21:07:31  mjk
+# - added dumpHostname to dump commands (use localhost for frontend)
+# - added add commands for attrs
+# - dump uses add for attr (does not overwrite installer set attrs)A
+# - do not dump public or private interfaces for the frontend
+# - do not dump os/arch host attributes
+# - fix various self.about() -> self.abort()
+#
 # Revision 1.2  2009/05/01 19:06:57  mjk
 # chimi con queso
 #
@@ -92,5 +100,14 @@ class Command(rocks.commands.dump.host.command):
 				a.node=n.id and n.name='%s'
 				""" % host)
 			for (key, value) in self.db.fetchall():
-				self.dump('set host attr %s %s %s' %
-					  (host, key, value))
+				host = self.dumpHostname(host)
+				
+				# Do not record the os or arch attributes
+				# since kickstart sets them
+
+				if key in [ 'os', 'arch' ]:
+					continue
+
+				self.dump('add host attr %s %s %s' %
+					(self.dumpHostname(host), 
+					key, self.quote(value)))

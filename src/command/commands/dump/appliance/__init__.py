@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.5 2009/05/01 19:06:56 mjk Exp $
+# $Id: __init__.py,v 1.6 2009/06/19 21:07:27 mjk Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,14 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.6  2009/06/19 21:07:27  mjk
+# - added dumpHostname to dump commands (use localhost for frontend)
+# - added add commands for attrs
+# - dump uses add for attr (does not overwrite installer set attrs)A
+# - do not dump public or private interfaces for the frontend
+# - do not dump os/arch host attributes
+# - fix various self.about() -> self.abort()
+#
 # Revision 1.5  2009/05/01 19:06:56  mjk
 # chimi con queso
 #
@@ -115,13 +123,13 @@ class Command(command):
 			str = "add appliance %s " % app
 
 			if graph and graph != 'NULL':
-				str += "graph='%s' " % graph
+				str += "graph=%s " % graph
 			if node and node != 'NULL':
-				str += "node='%s' " % node
+				str += "node=%s " % node
 			if mem:
-				str += "membership='%s' " % mem
+				str += "membership=%s " % self.quote(mem)
 			if pub:
-				str += "public='%s' " % pub
+				str += "public=%s" % pub
 				
 			self.dump(str)
 

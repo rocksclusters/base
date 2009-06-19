@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.2 2009/05/01 19:06:56 mjk Exp $
+# $Id: __init__.py,v 1.3 2009/06/19 21:07:28 mjk Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,14 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.3  2009/06/19 21:07:28  mjk
+# - added dumpHostname to dump commands (use localhost for frontend)
+# - added add commands for attrs
+# - dump uses add for attr (does not overwrite installer set attrs)A
+# - do not dump public or private interfaces for the frontend
+# - do not dump os/arch host attributes
+# - fix various self.about() -> self.abort()
+#
 # Revision 1.2  2009/05/01 19:06:56  mjk
 # chimi con queso
 #
@@ -92,6 +100,6 @@ class Command(rocks.commands.dump.appliance.command):
 				attr.appliance=a.id and a.name='%s'
 				""" % appliance)
 			for row in self.db.fetchall():
-				self.dump('set appliance attr %s %s %s' %
-					(appliance, row[0], row[1]))
+				self.dump('add appliance attr %s %s %s' %
+					(appliance, row[0], self.quote(row[1])))
 

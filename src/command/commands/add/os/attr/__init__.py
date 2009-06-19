@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.3 2009/06/19 21:07:34 mjk Exp $
+# $Id: __init__.py,v 1.1 2009/06/19 21:07:24 mjk Exp $
 #
 # @Copyright@
 # 
@@ -54,7 +54,7 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
-# Revision 1.3  2009/06/19 21:07:34  mjk
+# Revision 1.1  2009/06/19 21:07:24  mjk
 # - added dumpHostname to dump commands (use localhost for frontend)
 # - added add commands for attrs
 # - dump uses add for attr (does not overwrite installer set attrs)A
@@ -62,28 +62,64 @@
 # - do not dump os/arch host attributes
 # - fix various self.about() -> self.abort()
 #
-# Revision 1.2  2009/05/01 19:06:57  mjk
-# chimi con queso
-#
-# Revision 1.1  2009/03/13 21:10:49  mjk
-# - added dump route commands
-#
 
 
+import os
+import stat
+import time
+import sys
+import string
 import rocks.commands
 
-
-class Command(rocks.commands.dump.host.command):
+class Command(rocks.commands.add.os.command):
 	"""
+	Adds an attribute to an os and sets the associated values 
+
+	<arg type='string' name='os'>
+	Name of os
+	</arg>
+	
+	<arg type='string' name='attr'>
+	Name of the attribute
+	</arg>
+
+	<arg type='string' name='value'>
+	Value of the attribute
+	</arg>
+	
+	<param type='string' name='attr'>
+	same as attr argument
+	</param>
+
+	<param type='string' name='value'>
+	same as value argument
+	</param>
+
+	<example cmd='add os attr linux sge False'>
+	Sets the sge attribution to False for linux nodes
+	</example>
+
 	"""
 
 	def run(self, params, args):
-		for host in self.getHostnames(args):
-			self.db.execute("""
-				select r.network, r.netmask, r.gateway from
-				node_routes r, nodes n where
-				r.node=n.id and n.name='%s'""" % host)
-			for n, m, g in self.db.fetchall():
-				self.dump('add host route %s %s %s netmask=%s'
-					% (self.dumpHostname(host), n, g, m))
+
+		(args, attr, value) = self.fillPositionalArgs(('attr', 'value'))
+		oses = self.getOSNames(args)
+		
+		if not attr:
+			self.abort('missing attribute name')
+		if not value:
+			self.about('missing value of attribute')
+
+		for os in oses:
+			self.checkOSAttr(os, attr, value)
+		for os in oses:
+			self.db.execute("""insert into os_attributes values 
+				('%s', '%s', '%s')""" % (os, attr, value))
+			
+	def checkOSAttr(self, os, attr, value):
+		rows = self.db.execute("""select * from os_attributes where
+			os='%s' and attr='%s'""" % (os, attr))
+		if rows:
+			self.abort('attr "%s" exists for os "%s"' % (attr, os))
 

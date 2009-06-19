@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.2 2009/05/01 19:06:57 mjk Exp $
+# $Id: __init__.py,v 1.3 2009/06/19 21:07:36 mjk Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,14 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.3  2009/06/19 21:07:36  mjk
+# - added dumpHostname to dump commands (use localhost for frontend)
+# - added add commands for attrs
+# - dump uses add for attr (does not overwrite installer set attrs)A
+# - do not dump public or private interfaces for the frontend
+# - do not dump os/arch host attributes
+# - fix various self.about() -> self.abort()
+#
 # Revision 1.2  2009/05/01 19:06:57  mjk
 # chimi con queso
 #
@@ -84,6 +92,6 @@ class Command(rocks.commands.dump.os.command):
 			self.db.execute("""select attr, value from 
 				os_attributes where os='%s'""" % (os))
 			for row in self.db.fetchall():
-				self.dump('set os attr %s %s %s' % 
-					(os, row[0], row[1]))
+				self.dump('add os attr %s %s %s' % 
+					(os, row[0], self.quote(row[1])))
 
