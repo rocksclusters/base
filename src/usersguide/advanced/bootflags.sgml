@@ -86,7 +86,7 @@ We now see that "install ucsd" is an available action:
 </para>
 
 <screen>
-rocks list bootaction
+# rocks list bootaction
 ACTION            KERNEL                RAMDISK             ARGS                                                                                  
 install:          vmlinuz-5.2-i386      initrd.img-5.2-i386 ks ramdisk_size=150000 lang= devfs=nomount pxe kssendmac selinux=0 noipv6             
 install headless: vmlinuz-5.2-i386      initrd.img-5.2-i386 ks ramdisk_size=150000 lang= devfs=nomount pxe kssendmac selinux=0 noipv6 headless vnc
