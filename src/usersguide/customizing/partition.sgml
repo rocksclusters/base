@@ -529,7 +529,6 @@ This procedure describes how to force all the disks connected to
 a compute node back to the default
 Rocks partitioning scheme regardless of the current state of the disk
 drive on the compute node.
-the Rocks compute node default partitioning scheme.
 </para>
 
 <para>

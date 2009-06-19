@@ -19,63 +19,29 @@ not mean it is as secure as ssh.
 </para></warning>
 
 <para>
-Enabling rsh is done by modifying the default kickstart graph.
-First copy the default <computeroutput>rsh.xml</computeroutput> into
-the site customization directory:
+Enabling rsh is done by setting an <emphasis>attribute</emphasis>.
+To enable rsh on all compute nodes, execute:
 </para>
 
 <screen>
-# cp /export/rocks/install/rocks-dist/<emphasis>arch</emphasis>/build/graphs/default/base-rsh.xml \
-	/export/rocks/install/site-profiles/&document_version;/graphs/default/
+# rocks set appliance attr compute rsh true
 </screen>
 
 <para>
-Where <emphasis>arch</emphasis> is your architecture ("i386" or "x86_64").
+To apply this configuration change to the compute nodes, reinstall all
+your compute nodes.
 </para>
 
 <para>
-Now edit
-<computeroutput>/export/rocks/install/site-profiles/&document_version;/graphs/default/base-rsh.xml</computeroutput>
-and change the following:
-</para>
-
-<screen>
-        &lt;!-- Uncomment to enable RSH on your cluster
-
-        &lt;edge from="client"&gt;
-                &lt;to&gt;xinetd&lt;/to&gt;
-                &lt;to&gt;rsh&lt;/to&gt;
-        &lt;/edge&gt;
-
-        --&gt;
-</screen>
-
-<para>
-Follow the instruction and uncomment this block.  This will force
-all appliance types that reference the client class (compute
-nodes, NAS nodes, ...) to enable an rsh service that trusts all hosts
-on the private side network.  This uncommented block should look like
-this:
+If you only want to enable rsh on a specific node (e.g., compute-0-0), execute:
 </para>
 
 <screen>
-        &lt;edge from="client"&gt;
-                &lt;to&gt;xinetd&lt;/to&gt;
-                &lt;to&gt;rsh&lt;/to&gt;
-        &lt;/edge&gt;
+# rocks set host attr compute-0-0 rsh true
 </screen>
 
 <para>
-To apply this configuration to the compute nodes, rebuild the distribution:
-</para>
-
-<screen>
-# cd /export/rocks/install
-# rocks create distro
-</screen>
-
-<para>
-Then, reinstall your compute nodes.
+To apply this configuration change to compute-0-0, reinstall compute-0-0.
 </para>
 
 </section>

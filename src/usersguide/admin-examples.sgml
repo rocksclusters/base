@@ -1,5 +1,5 @@
 <!-- 
-$Id: admin-examples.sgml,v 1.10 2009/03/04 23:31:09 bruno Exp $
+$Id: admin-examples.sgml,v 1.11 2009/06/19 02:42:07 bruno Exp $
 
 Administration guide
 
@@ -7,6 +7,9 @@ Administration guide
 @Copyright@
 
 $Log: admin-examples.sgml,v $
+Revision 1.11  2009/06/19 02:42:07  bruno
+more touch ups
+
 Revision 1.10  2009/03/04 23:31:09  bruno
 nuked 'dbreport ifcfg'
 
@@ -60,7 +63,7 @@ and behaviour. Wherever possible, Rocks uses a SQL database (MySQL currently)
 to hold information about nodes, partitioning information, boot parameters
 and other information. Based on information in the database, various configuration files are rewritten.  The re-generation of configuration files occurs 
 everytime a node is added or deleted from the cluster. The re-generation of
-configuration files can also be forced.  A large fraction of rocks commands
+configuration files can also be forced.  A large fraction of Rocks commands
 manipulate data held in the configuration database. In general, the process
 of changing configuration is a two-step process: 
 </para>
@@ -119,17 +122,17 @@ A user would have to intercept the boot sequence (often by hitting the
 F12 key on an attached keyboard) to force a network boot.  Rocks also provided
 a small utility on each node
 (<computeroutput>/boot/kickstart/cluster-kickstart-pxe</computeroutput>) that would manipulate the two-bytes on the local hard disk to force BIOS to bypass
-booting from the local disk and try the next device on the boot list.  When
-boot order was set as above, the node would pxe boot and therefore re-install. 
+booting from the local disk and try the next device on the boot list.  When the
+boot order was set as above, the node would PXE boot and therefore re-install. 
 </para>
 <para>
 The logic for this structure was that a frontend did not need to know the state
 of node (whether it had failed and should be reinstalled or had some other 
-intermediate state). Also it is not required that a frontend by up for a node
+intermediate state). Also it is not required that a frontend be up for a node
 to reboot itself. Another practical issue arises for PXE booting large 
 clusters. Since the PXE client is in NIC firmware, no assumptions about 
 timeouts, retries or other elements that figure into robustness could be made. 
-Large cluster reinstalls (or reboots) for a kernel the comes over PXE would
+Large cluster reinstalls (or reboots) for a kernel that comes over PXE would
 often result in hung nodes because of the low level of robustness of TFTP
 (the underlying protocol used to transfer initial kernel and ramdisk image
 for nodes booting over the network). For wholesale re-installation of large
@@ -142,7 +145,7 @@ on a local node will cause that node to re-install itself by using a local (hard
 <para>
 The above boot order and behaviour continues to be supported in Rocks 4.3. 
 That is, existing rocks clusters can be upgraded without requiring the cluster
-owner to change any BIOS setting.
+owner to change any BIOS settings.
 </para>
 </note>
 </section>
@@ -164,7 +167,7 @@ local hard disk.  In particular the boot order in BIOS should be set as
 The default PXE "action" is to simply pass to the next device down on
 the BIOS boot list. In the usual case, this is to the local hard disk.
 Most of the time decision to boot or reinstall is still left to the local node
-and frontend does not need to know which state the node desires.  If booting
+and the frontend does not need to know which state the node desires.  If booting
 into re-installation (e.g. the node either did not shut down properly, or
 <computeroutput>/boot/kickstart/cluster-kickstart</computeroutput> was called
 locally) that will proceed as expected.   However, it is possible to change
@@ -176,7 +179,7 @@ this action on a per-node basis.
 <para> Starting with Rocks 4.3, the frontend must be configured
 to tell a node to re-install at the next PXE boot. This action is controllable
 on a per-node basis.  At the end of successful installation, the node requests
-the frontend to set its pxe boot to <emphasis>os</emphasis>.  To re-install
+the frontend to set its PXE boot to <emphasis>os</emphasis>.  To re-install
 a node using PXE (e.g. compute-0-0), then do the following:
 </para>
 <screen>
@@ -185,7 +188,7 @@ a node using PXE (e.g. compute-0-0), then do the following:
 </screen>
 <note>
 <para>
-If the boot order has not been set to pxe first, you can force a pxe boot with
+If the boot order has not been set to PXE first, you can force a PXE boot with
 the local keyboard, or by calling <computeroutput>/boot/kickstart/cluster-kickstart-pxe</computeroutput> on the local node.
 </para>
 </note>
@@ -194,35 +197,36 @@ the local keyboard, or by calling <computeroutput>/boot/kickstart/cluster-kickst
 <section><title>Inspecting and Changing PXE Behaviour</title>
 <para> 
 There are two parts to the Rocks database for modifying PXE behaviour:
-<emphasis>pxeboot</emphasis> and
-<emphasis>pxeaction</emphasis>.  The pxeboot part determines which logical
-action should be performed. The base roll ships with three logical actions: "os", "install", and "memtest".  The second table in the pxeaction table. The associates a logical action with specific tftp configuration.  The pxeaction table
-supports a default configuration for an action and it supports a per-node 
-override of the default configuration. 
+<emphasis>boot</emphasis> and
+<emphasis>bootaction</emphasis>.  The "boot" part determines which logical
+action should be performed. The two common actions are "os" and "install."
+The second table is the bootaction table.
+This associates a logical action with a specific TFTP configuration.
 </para> 
 
 <warning>
 <para>
-It is possible to have commands affect all nodes. In this case use '%' as the host wildcard.  For example <computeroutput>rocks set host boot % action=install </computeroutput> will cause ALL nodes to reinstall at next pxeboot. 
+It is possible to have commands affect all nodes. In this case use '%' as the host wildcard.  For example <computeroutput>rocks set host boot % action=install </computeroutput> will cause ALL nodes to reinstall the next time they boot.
 </para>
 </warning>
 
 <note>
 <para>
 For commands that take lists of hosts, it is possible to use an appliance type
-for the host(s) argument. <computeroutput>rocks list appliance</computeroutput> are the list of valid appliance types. To set the pxeaction of all compute appliances to be install, use
-<computeroutput>rocks set host boot compute action=install </computeroutput>
+for the host(s) argument. <computeroutput>rocks list appliance</computeroutput>
+are the list of valid appliance types.
+To set the boot action of all compute appliances to be
+<emphasis>install</emphasis>, use
+<computeroutput>rocks set host boot compute action=install</computeroutput>.
 </para>
 </note>
-
-
 
 <para>
 The following illustrates how to inspect the current action of nodes and then the specifics of each action.
 </para>
 
 <screen>
-[root@vizzy ~]# rocks list host boot
+# rocks list host boot
 HOST         ACTION 
 vizzy:       os     
 compute-0-0: os     
@@ -233,72 +237,55 @@ compute-2-0: os
 compute-2-1: os 
 
 
-[root@vizzy ~]# rocks list host pxeaction compute-1-1
-ACTION           COMMAND        ARGS
-install          kernel vmlinuz append ks initrd=initrd.img ramdisk_size=150000
-                                lang= devfs=nomount pxe kssendmac selinux=0
-install headless kernel vmlinuz append ks initrd=initrd.img ramdisk_size=150000
-                                lang= devfs=nomount pxe kssendmac selinux=0 headless vnc
-memtest          kernel memtest -------------------------------------------------
-os               localboot 0    -----------------------------------------------
-[root@vizzy ~]# 
+# rocks list bootaction output-col=action,kernel     
+ACTION               KERNEL                                     
+install:             vmlinuz-5.2-i386                           
+install headless:    vmlinuz-5.2-i386                           
+memtest:             kernel memtest                             
+os:                  localboot 0                                
+pxeflash:            kernel memdisk bigraw                      
+rescue:              vmlinuz-5.2-i386
 </screen>
-<para> In the above, all nodes are set to pxeboot the "os", except for node compute-1-1. That node will call the pxeboot named "install".  In the case the tftp configuration file contain the details arguments of the listed in the install
-action.  The command <computeroutput>rocks list host pxeaction compute-1-1
-</computeroutput> shows the details of each logical action.
+
+<para> In the above, all nodes are set to boot the "os", except for node compute-1-1. That node will call the boot action named "install".  In the case the TFTP configuration file contain the details arguments of the listed in the install
+action.
+The command <computeroutput>rocks list bootaction</computeroutput> shows the
+details of each logical action.
 </para>
+
 <section><title>Changing a logical PXE action</title>
 <para>
 It is possible to override the details of a logical action on a per-node
 basis. Suppose that we wanted to make the logical action of "install" for
-compute-1-1 to be headless and to set a flag <computeroutput>acpi=off</computeroutput>.  Then the following will accomplish this using a Rocks add command. 
+compute-1-1 to be headless and to set a flag <computeroutput>acpi=off</computeroutput>.  Then the following will accomplish this:
 </para>
-<screen>
-[root@vizzy ~]# rocks add host pxeaction compute-1-1 action=install command="kernel vmlinuz" \
-args="append ks initrd=initrd.img ramdisk_size=150000 lang= devfs=nomount pxe kssendmac selinux=0 headless vnc acpi=off" 
 
+<screen>
+# rocks add bootaction action="install headless noacpi" kernel="vmlinuz-5.2-i386" ramdisk="initrd.img-5.2-i386" \
+args="ks ramdisk_size=150000 lang= devfs=nomount pxe kssendmac selinux=0 noipv6 headless vnc acpi=off"
+
+# rocks set host installaction compute-1-1 action="install headless noacpi"
 </screen>
+
 <para>
 To inspect that the change is indeed specific to just compute-1-1, then do
 the following
 </para>
+
 <screen>
-[root@vizzy ~]# rocks list host pxeaction compute-1-1
-ACTION           COMMAND        ARGS
-install          kernel vmlinuz append ks initrd=initrd.img ramdisk_size=150000
-                                lang= devfs=nomount pxe kssendmac selinux=0 headless vnc acpi=off
-install headless kernel vmlinuz append ks initrd=initrd.img ramdisk_size=150000
-                                lang= devfs=nomount pxe kssendmac selinux=0 headless vnc         
-memtest          kernel memtest ------------------------------------------------
-os               localboot 0    ------------------------------------------------
+# rocks list host compute-1-1
+MEMBERSHIP   CPUS RACK RANK RUNACTION INSTALLACTION          
+Compute      2    0    0    os        install headless noacpi
 
-[root@vizzy ~]# rocks list host pxeaction compute-1-0 
-ACTION           COMMAND        ARGS
-install          kernel vmlinuz append ks initrd=initrd.img ramdisk_size=150000
-                                lang= devfs=nomount pxe kssendmac selinux=0
-install headless kernel vmlinuz append ks initrd=initrd.img ramdisk_size=150000
-                                lang= devfs=nomount pxe kssendmac selinux=0 headless vnc
-memtest          kernel memtest ------------------------------------------------
-os               localboot 0    ------------------------------------------------
+# rocks list host compute-1-0
+MEMBERSHIP   CPUS RACK RANK RUNACTION INSTALLACTION
+Compute      8    0    1    os        install
 </screen>
-<para> In the above, compute-1-1 has a specific override for its install
-pxeaction. compute-1-0 still retains the default install action. 
-</para>
 
-<warning>
 <para>
-Manipulating the pxeaction does NOT update the actual tftp configuration file.
-You must use <computeroutput>rocks set pxeboot action=&lt;action&gt; hostname
-</computeroutput> to actually write the specific tftp configuration file
+In the above, compute-1-1 has a specific override for its install action, where
+compute-1-0 still retains the default install action. 
 </para>
-</warning>
-
-<note> 
-<para> To remove a specific override of a pxeaction for a node use
-<computeroutput>rocks remove host pxeaction action=&lt;action&gt; hostname</computeroutput> 
-</para>
-</note>
-
 
 </section>
 
@@ -315,7 +302,10 @@ for host compute-1-1)
 
 <listitem>
 <para>
-<computeroutput># rocks set host boot compute-1-1 action=memtest</computeroutput>
+<computeroutput># rocks set host runaction compute-1-1 action=memtest</computeroutput>
+</para>
+<para>
+<computeroutput># rocks set host boot compute-1-1 action=os</computeroutput>
 </para>
 </listitem>
 
@@ -327,9 +317,9 @@ Boot node compute-1-1 by power cycle or other means.
 
 <listitem>
 <para>
-After compute-1-1 has successfully started the diagnostic, reset the pxeboot
+After compute-1-1 has successfully started the diagnostic, reset the runaction
 parameter
-<computeroutput># rocks set host boot compute-1-1 action=os</computeroutput>
+<computeroutput># rocks set host runaction compute-1-1 action=os</computeroutput>
 </para>
 </listitem>
 

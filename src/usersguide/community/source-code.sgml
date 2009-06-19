@@ -15,7 +15,7 @@ In the context of Rocks this means individual Roll developers can independently 
 </para>
 
 <para>
-To check out the current source code you will first need to clone master Rocks read-only repository as follows.  This operation will take several minutes (if not hours) and unlike a CVS checkout it may appear to hang, be patient.
+To check out the current source code you will first need to clone the master Rocks read-only repository as follows.  This operation will take several minutes (if not hours) and unlike a CVS checkout it may appear to hang, be patient.
 </para>
 
 <screen>
