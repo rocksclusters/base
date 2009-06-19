@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.16 2009/06/19 22:43:43 mjk Exp $
+# $Id: __init__.py,v 1.17 2009/06/19 22:44:30 mjk Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.17  2009/06/19 22:44:30  mjk
+# remove dbg stuff
+#
 # Revision 1.16  2009/06/19 22:43:43  mjk
 # forgot about wildcards
 #
@@ -152,7 +155,7 @@ class command(rocks.commands.Command):
 		return s
 
 	def dump(self, line):
-		self.addText('./q.py /opt/rocks/bin/rocks %s\n' % line)
+		self.addText('/opt/rocks/bin/rocks %s\n' % line)
 
 	
 class Command(command):
