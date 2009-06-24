@@ -1,5 +1,5 @@
 #
-# $Id: Makefile,v 1.14 2009/05/01 19:07:09 mjk Exp $
+# $Id: Makefile,v 1.15 2009/06/24 04:46:13 bruno Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.15  2009/06/24 04:46:13  bruno
+# restore roll tweaks
+#
 # Revision 1.14  2009/05/01 19:07:09  mjk
 # chimi con queso
 #
@@ -137,7 +140,7 @@ ROCKSROOT       = ../../../../..
 -include $(ROCKSROOT)/etc/Rules.mk
 include Rules.mk
 
-SCRIPTS		= rocks-buildscreens rocks-getroll.cgi
+SCRIPTS		= rocks-buildscreens rocks-getroll.cgi sitexml2entities
 
 
 build:

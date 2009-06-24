@@ -18,6 +18,9 @@
 
   <changelog>
   $Log: rocks-dist.xml,v $
+  Revision 1.25  2009/06/24 04:46:11  bruno
+  restore roll tweaks
+
   Revision 1.24  2009/05/20 12:19:21  mjk
   rocks command goes everywhere
 
@@ -125,7 +128,7 @@ then
 	rpm --import /opt/rocks/etc/ROCKS-GPG-KEY
 fi
 
-<file name="/etc/rc.d/rocksconfig.d/post-01-rocks-dist" perms="755">
+<file name="/etc/rc.d/rocksconfig.d/post-02-rocks-dist" perms="755">
 #!/bin/bash
 
 #
@@ -141,7 +144,7 @@ cd &Kickstart_DistroDir;/&Kickstart_PrivateKickstartBasedir;
 rm -rf rocks-dist
 rocks create distro
 
-rm -f /etc/rc.d/rocksconfig.d/post-01-rocks-dist
+rm -f /etc/rc.d/rocksconfig.d/post-02-rocks-dist
 </file>
 
 </post>

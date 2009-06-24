@@ -102,6 +102,23 @@ class App(rocks.sql.Application):
 		builddir = '%s/rocks-dist/%s/build' % (distrodir, nativearch)
 
 		isbasicSiteAttrs = 0
+
+		if os.path.exists('%s/nodes/site.xml' % (builddir)):
+			#
+			# convert site.xml to site.attrs
+			#
+			cmd = 'cat %s/nodes/site.xml | ' % builddir
+			cmd += '/opt/rocks/screens/sitexml2entities '
+			cmd += '> %s/nodes/site.attrs' % builddir
+			os.system(cmd)
+
+			#
+			# force manual partitioning
+			#
+			cmd = 'echo "Server_Partitioning:manual" '
+			cmd += '>> %s/nodes/site.attrs' % builddir
+			os.system(cmd)
+
 		if os.path.exists('%s/nodes/site.attrs' % (builddir)):
 			#
 			# if the user supplied the restore roll, then grab the

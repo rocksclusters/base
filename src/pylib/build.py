@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: build.py,v $
+# Revision 1.38  2009/06/24 04:46:12  bruno
+# restore roll tweaks
+#
 # Revision 1.37  2009/05/01 19:07:08  mjk
 # chimi con queso
 #
@@ -1298,8 +1301,8 @@ class DistributionBuilder(Builder):
         reloc = os.system("rpm -q --queryformat '%{prefixes}\n' -p " +
                         rpm.getFullName() + "| grep none > /dev/null")
 
-	cmd = 'rpm -i --nomd5 --force --nodeps --ignorearch --dbpath %s ' \
-		% dbdir
+	cmd = 'rpm -i --ignoresize --nomd5 --force --nodeps --ignorearch '
+	cmd += '--dbpath %s ' % dbdir
         if reloc:
 	    cmd = cmd + '--prefix %s %s %s' % (root, flags,
 					       rpm.getFullName())
