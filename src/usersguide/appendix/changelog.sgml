@@ -2,6 +2,204 @@
 	<title>Release Notes</title>
 
 <section>
+<title>Release 5.2 - changes from 5.1</title>
+
+<section>
+	<title> New Features </title>
+
+<itemizedlist>
+
+<listitem>
+	<para>Solaris support for client nodes</para>
+
+	<para>
+	With the new JumpStart Roll, one can now install and configure a
+	Linux-based Rocks frontend to "JumpStart" Solaris-based back-end
+	machines.
+	</para>
+</listitem>
+
+<listitem>
+	<para>Attributes</para>
+
+	<para>
+	Can assign "attributes" to nodes at four levels: global, appliance
+	type, OS (e.g., Linux or SunOS), and host.
+	An attribute can be accessed in an XML node as an entity.
+	For example, if you assign the attribute "foo" with the value "123" 
+	to compute-0-0 (i.e., with the command, "rocks set host attr foo 123"), 
+	then in an XML node file, you can access the value of the attribute foo 
+	with "&amp;foo;".
+	</para>
+
+	<para>
+	Attributes also enable "conditionals".
+	Using the example above, a "post" section can be optionally executed
+	based on the value of an attribute.
+	For example, if a post section is defined as:
+	&lt;post cond="foo='123'"&gt; then this post section will only be
+	executed
+	if the attribute "foo" is set to "123" for the installing host.
+	</para>
+</listitem>
+
+</itemizedlist>
+
+</section>
+
+<section>
+	<title> Enhancements </title>
+
+	<para>OS: Based on CentOS release 5/update 3 and all updates as of
+	June 22, 2009.</para>
+
+	<para>Base: Anaconda installer updated to v11.1.2.168.</para>
+
+	<para>Base: Isolated MySQL for the Rocks database under
+	/opt/rocks.</para>
+
+	<para>Base: Converted all 'dbreports' to the Rocks command line.</para>
+
+	<para>Base: Configure 'MTU' for networks through the Rocks command
+	line.</para>
+
+	<para>Base: Configure network routes through the Rocks command
+	line.</para>
+
+	<para>Base: Configure host aliases through the Rocks command
+	line.</para>
+
+	<para>Base: Added '/var/log/authpriv' to log rotate list.</para>
+
+	<para>Base: Added 'iburst' flag to NTP configuration on frontend.</para>
+
+	<para>Base: Added version and release info to vmlinuz and initrd.img
+	to enable cross-kickstarting via PXE and making it easier to host
+	different Rocks VMs on a physical system.</para>
+
+	<para>Base: Added a YUM configuration file to each node that points
+	to the distribution on the frontend.</para>
+
+	<para>Bio: Updated biopython to v1.50.</para>
+
+	<para>Bio: Updated clustalw to v2.0.11.</para>
+
+	<para>Bio: Updated fasta to v35.4.7.</para>
+
+	<para>Bio: Updated fftw to v3.2.1.</para>
+
+	<para>Bio: Updated elph archive in glimmer to v1.0.1.</para>
+
+	<para>Bio: Updated gromacs to v4.0.1.</para>
+
+	<para>Bio: Updated perl-Data-Stag to v0.11.</para>
+
+	<para>Bio: Updated perl-Digest-MD5 to v2.38.</para>
+
+	<para>Bio: Updated perl-File-Temp to v0.21.</para>
+
+	<para>Bio: Updated perl-GD to v2.41.</para>
+
+	<para>Bio: Updated perl-GD-SVG to v0.33.</para>
+
+	<para>Bio: Updated perl-Graph to v0.91.</para>
+
+	<para>Bio: Updated perl-HTML-Parser to v3.60.</para>
+
+	<para>Bio: Updated perl-HTML-Tagset to v3.20.</para>
+
+	<para>Bio: Updated perl-PathTools to v3.30.</para>
+
+	<para>Bio: Updated perl-SOAP-Lite to v0.710.08.</para>
+
+	<para>Bio: Updated perl-SVG to v2.49.</para>
+
+	<para>Bio: Updated perl-SVG-Graph to v0.02.</para>
+
+	<para>Bio: Updated perl-Scalar-List-Utils to v1.21.</para>
+
+	<para>Bio: Updated perl-Storable to v2.20.</para>
+
+	<para>Bio: Updated perl-Text-Iconv to v1.7.</para>
+
+	<para>Bio: Updated perl-URI to v1.38.</para>
+
+	<para>Bio: Updated perl-XML-Parser to v2.36.</para>
+
+	<para>Bio: Updated perl-XML-Twig to v3.32.</para>
+
+	<para>Bio: Updated perl-XML-Writer to v0.606.</para>
+
+	<para>Bio: Updated perl-bioperl to v1.6.0.</para>
+
+	<para>Bio: Updated perl-libnet to v1.22.</para>
+
+	<para>Bio: Updated perl-libwww-perl to v5.826.</para>
+
+	<para>Bio: Updated phylip to v3.68.</para>
+
+	<para>Bio: Updated reportlab to v2.3.</para>
+
+	<para>Bio: Updated t_coffee to v7.81.</para>
+
+	<para>Ganglia: Updated to v3.1.2.</para>
+
+	<para>HPC: Updated OpenMPI to v1.3.2.</para>
+
+	<para>HPC: Updated MPICH2 to v1.0.8p1.</para>
+
+	<para>HPC: Updated stream to v5.9.</para>
+
+	<para>Java: Updated java to v1.6.0_13.</para>
+
+	<para>Java: Updated jdk to v6 update 13.</para>
+
+	<para>Java: Updated antlr to v3.1.</para>
+
+	<para>Java: Updated jboss to v5.0.1.GA.</para>
+
+	<para>Java: Updated jogl to v1.1.1.</para>
+
+	<para>SGE: Updated to v6.2 update 1.</para>
+
+	<para>Viz: Support for single, dual and quad display nodes.</para>
+
+	<para>Viz: Chromium support for 32-bit and 64-bit applications.</para>
+
+	<para>Viz: Added CUDA driver. Users can optionally run CUDA programs
+	on the tiled-display nodes.</para>
+
+	<para>Viz: User updatable nVidia driver. Makes it easy for users to
+	refresh the nVidia driver without having to wait for an updated Viz
+	Roll.</para>
+
+	<para>Xen: Using libvirt instead of 'xm' command line programs to
+	start/stop VMs.</para>
+
+	<para>Xen: Allow VM disk to be backed by a physical disk
+	partition.</para>
+
+	<para>Xen: Use threading in the 'rocks add cluster' command to
+	decrease the time to add a virtual cluster.</para>
+</section>
+
+<section>
+	<title> Bug Fixes </title>
+
+	<para>Base: Fix for software RAID partitioning.</para>
+
+	<para>Base: Increase timeout for package downloads when on slow networks (e.g., 100 or 10 Mbit).</para>
+
+	<para>Xen: Fix to ensure all routes are active after Xen is
+	started.</para>
+
+	<para>Xen: Fix 'rocks set host vm' command to allow users to resize a
+	VM's disk.</para>
+</section>
+
+</section>
+
+<section>
 <title>Release 5.1 - changes from 5.0</title>
 
 <section>
@@ -176,8 +374,6 @@
 	<para>
 	SGE: Added a script to reinstall a cluster by submitting an SGE job.
 	</para>
-
-
 </section>
 
 <section>
