@@ -1,4 +1,4 @@
-# $Id: plugin_dns.py,v 1.15 2009/05/26 23:04:42 bruno Exp $
+# $Id: plugin_dns.py,v 1.16 2009/06/26 19:02:15 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,11 @@
 # @Copyright@
 #
 # $Log: plugin_dns.py,v $
+# Revision 1.16  2009/06/26 19:02:15  bruno
+# alias fix.
+#
+# thanks to Mike Hallock of UIUC for the fix.
+#
 # Revision 1.15  2009/05/26 23:04:42  bruno
 # mo' bugs
 #
@@ -198,6 +203,7 @@ class Plugin(rocks.commands.Plugin):
 				# Address records have an IP - canonical names
 				# do not
 				#
+				cname, addr = names[0]
 				for a in names:
 					name, addr = a
 					alias = self.hostonly(name)
