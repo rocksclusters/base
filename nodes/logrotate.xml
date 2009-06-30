@@ -17,6 +17,9 @@ Append rules to logrotate to prune files in /var/log
 <changelog>
 
 $Log: logrotate.xml,v $
+Revision 1.8  2009/06/30 15:55:15  bruno
+fix pathname to authpriv
+
 Revision 1.7  2009/05/01 19:06:48  mjk
 chimi con queso
 
@@ -96,7 +99,7 @@ initial release
 			2&gt; /dev/null || true
 	endscript
 }
-var/log/authpriv {
+/var/log/authpriv {
 	size=100M
 	postrotate
 		/bin/kill -HUP `cat /var/run/syslogd.pid 2&gt; /dev/null` \
