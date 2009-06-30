@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.2 2009/05/01 19:07:03 mjk Exp $
+# $Id: __init__.py,v 1.3 2009/06/30 18:48:01 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.3  2009/06/30 18:48:01  bruno
+# rewrite the pxelinux.cfg files after setting the run/install action in
+# the nodes table
+#
 # Revision 1.2  2009/05/01 19:07:03  mjk
 # chimi con queso
 #
@@ -116,4 +120,10 @@ class Command(rocks.commands.set.host.command):
 		for host in self.getHostnames(args):
 			self.db.execute("""update nodes set runaction=%s
 				where name='%s'""" % (runaction, host))
+
+		#
+		# regenerate all the pxe boot configuration files for the
+		# hosts specified in this command
+		#
+		self.command('set.host.boot', self.getHostnames())
 		
