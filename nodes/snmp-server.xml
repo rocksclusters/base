@@ -17,6 +17,9 @@
 
   <changelog>
   $Log: snmp-server.xml,v $
+  Revision 1.9  2009/07/01 21:27:30  mjk
+  i love google reader
+
   Revision 1.8  2009/05/01 19:06:48  mjk
   chimi con queso
 
@@ -117,6 +120,13 @@ access  notConfigGroup  "" any noauth exact all all all
 syslocation "&Info_CertificateLocality;, &Info_CertificateState;, &Info_CertificateCountry;"
 syscontact "&Info_ClusterContact;"
 </file>
+
+<!-- CentOS Team says do this to make syslog shutup -->
+
+<file name="/etc/sysconfig/snmpd.options">
+OPTIONS="-LS4d -Lf /dev/null -p /var/run/snmpd.pid"
+</file>
+
 
 </post>
 
