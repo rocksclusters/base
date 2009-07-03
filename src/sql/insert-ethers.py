@@ -58,6 +58,9 @@
 # @Copyright@
 #
 # $Log: insert-ethers.py,v $
+# Revision 1.48  2009/07/03 00:39:26  bruno
+# fix replace code
+#
 # Revision 1.47  2009/05/21 21:16:26  bruno
 # nuke nutty flags
 #
@@ -1017,8 +1020,26 @@ class InsertEthers(GUI):
 
 	def replaceNode(self):
 		if self.replace:
+			#
+			# need to get cabinet/rank from previous host before
+			# removing it
+			#
+			query = """select rack,rank from nodes where
+				name = "%s" """ % (self.replace)
+			
+			if self.sql.execute(query) > 0:	
+				(self.cabinet, self.rank) = self.sql.fetchone()
+
+			#
+			# need to temporarily remove the lock file, otherwise
+			# 'rocks sync config' won't update /etc/dhcpd.conf
+			# and the other configuration files
+			#
+			lockFile = '/var/lock/insert-ethers'
+			os.unlink(lockFile)
 			os.system('/opt/rocks/bin/rocks remove host %s' %
 				(self.replace))
+			os.system('touch %s' % lockFile)
 
 
 	def initializeRank(self):
@@ -1142,8 +1163,6 @@ class InsertEthers(GUI):
 		network_ip = rocks.ip.IPAddr(network)
 		bcast_ip = rocks.ip.IPAddr(network_ip | rocks.ip.IPAddr(~mask_ip))
 		bcast = "%s" % (bcast_ip)
-		self.log("broadcast = %s" % bcast)
-		self.log("netmask = %s" % mask)
 		
 		if self.ipaddr is not None :
 			return self.ipaddr
