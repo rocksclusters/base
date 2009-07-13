@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.7 2009/06/03 18:53:43 mjk Exp $
+# $Id: __init__.py,v 1.8 2009/07/13 19:34:31 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.8  2009/07/13 19:34:31  bruno
+# fix 'managed' flag
+#
 # Revision 1.7  2009/06/03 18:53:43  mjk
 # - sudo support for ubuntu boy (this is cool)
 # - connect to DB over the network socket not the UNIX domain socket
@@ -130,6 +133,11 @@ class Command(command):
 	have an ssh login. Default is 'yes'.
 	</arg>
 
+	<arg type='boolean' name='x11'>
+	If 'no', disable X11 forwarding when connecting to hosts.
+	Default is 'yes'.
+	</arg>
+
 	<param type='string' name='command'>
 	Can be used in place of the 'command' argument.
 	</param>
@@ -154,8 +162,9 @@ class Command(command):
 			('x11', 'y')
 			])
 
+		managed_only = self.str2bool(managed)
 
-		hosts = self.getHostnames(args, managed_only = managed)
+		hosts = self.getHostnames(args, managed_only)
 		
 		# This is the same as doing -x using ssh.  Might be useful
 		# for the common case, but required for the Viz Roll.
