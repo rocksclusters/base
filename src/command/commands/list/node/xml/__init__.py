@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.45 2009/05/19 20:10:49 bruno Exp $
+# $Id: __init__.py,v 1.46 2009/07/16 22:37:11 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.46  2009/07/16 22:37:11  bruno
+# cleanup help info
+#
 # Revision 1.45  2009/05/19 20:10:49  bruno
 # escape XML characters from the site attributes
 #
@@ -264,40 +267,9 @@ class Command(rocks.commands.list.command):
 	pre-processor pass on the configuration graph, performs all
 	variable substitutions, and runs all eval sections.
 
-	<arg type='string' name='node'>
-	The XML node file that the graph traversal will begin. This should be
-	the basename of the XML file (e.g., 'compute' and not 'compute.xml').
-	</arg>
-
-	<param type='string' name='arch'>
-	Traverse the graph with the 'arch' parameter set to 
-	the supplied value. If not specified, then 'arch' defaults to this
-	host's architecture.
-	</param>
-
 	<param type='string' name='attrs'>
 	A list of attributes. This list must be in python dictionary form,
 	e.g., attrs="{ 'os': 'linux', 'arch' : 'x86_64' }"
-	</param>
-
-	<param type='string' name='host'>
-	Primary name of host. If not supplied, then the name of
-	this host is used.
-	</param>
-
-	<param type='string' name='addr'>
-	Primary address of host. If not supplied, then the loopback
-	IP address is used.
-	</param>
-
-	<param type='string' name='graph'>
-	Name of the graph to traverse. If not supplied, then the
-	graph named 'default' is traversed.
-	</param>
-
-	<param type='string' name='dist'>
-	Name of the distribution. If not supplied, then the
-	distribution named 'rocks-dist' is used.
 	</param>
 
 	<param type='string' name='roll'>
