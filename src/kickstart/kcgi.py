@@ -1,6 +1,6 @@
 #! /opt/rocks/bin/python
 #
-# $Id: kcgi.py,v 1.35 2009/05/09 16:06:38 bruno Exp $
+# $Id: kcgi.py,v 1.36 2009/07/16 22:46:28 bruno Exp $
 #
 # @Copyright@
 # 
@@ -56,6 +56,9 @@
 # @Copyright@
 #
 # $Log: kcgi.py,v $
+# Revision 1.36  2009/07/16 22:46:28  bruno
+# support for cross-kickstarting
+#
 # Revision 1.35  2009/05/09 16:06:38  bruno
 # support for lights out frontend installs
 #
@@ -894,9 +897,11 @@ class App(rocks.kickstart.Application):
 			attrs[i] = var.strip()
 
 		attrs['hostname'] = self.clientList[0]
+		attrs['arch'] = self.arch
+		attrs['os'] = OS
 
 		cmd = '/opt/rocks/bin/rocks list node xml wan '
-		cmd += 'arch=%s os=%s attrs="%s"' % (self.arch, OS, attrs)
+		cmd += 'attrs="%s"' % (attrs)
 		for line in os.popen(cmd).readlines():
 			self.report.append(line[:-1])
 
