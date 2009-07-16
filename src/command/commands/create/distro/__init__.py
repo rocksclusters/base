@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.8 2009/06/15 23:47:47 bruno Exp $
+# $Id: __init__.py,v 1.9 2009/07/16 23:07:46 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.9  2009/07/16 23:07:46  bruno
+# cross-kickstarting fixes
+#
 # Revision 1.8  2009/06/15 23:47:47  bruno
 # atomically create distros
 #
@@ -229,26 +232,38 @@ class Command(rocks.commands.create.command):
 			'-exec chmod -R 0755 {} \;')
 
 		#
-		# now move the previous distro into a temporary directory
+		# if we are cross-kickstarting, and if there already is
+		# a distro directory, then just move the architecture
+		# directory into the existing distro
 		#
-		prevdist = tempfile.mkdtemp(dir="")
-		try:
-			shutil.move(dist, prevdist)
-		except:
-			pass
+		if self.arch != arch and os.path.exists(dist):
+			shutil.move(os.path.join(tempdist, arch),
+				os.path.join(dist, arch))
+			shutil.rmtree(tempdist)
+		else:
+			#
+			# now move the previous distro into a temporary
+			# directory
+			#
+			prevdist = tempfile.mkdtemp(dir="")
+			try:
+				shutil.move(dist, prevdist)
+			except:
+				pass
 
-		#
-		# rename the temporary distro (the one we just built) to the
-		# 'official' name and make sure the permissions are correct
-		#
-		shutil.move(tempdist, dist)
-		os.system('chmod 755 %s' % dist)
+			#
+			# rename the temporary distro (the one we just built)
+			# to the 'official' name and make sure the permissions
+			# are correct
+			#
+			shutil.move(tempdist, dist)
+			os.system('chmod 755 %s' % dist)
 
-		#
-		# nuke the previous distro
-		#
-		try:
-			shutil.rmtree(prevdist)
-		except:
-			pass
+			#
+			# nuke the previous distro
+			#
+			try:
+				shutil.rmtree(prevdist)
+			except:
+				pass
 
