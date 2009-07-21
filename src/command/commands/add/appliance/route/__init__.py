@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.2 2009/05/01 19:06:54 mjk Exp $
+# $Id: __init__.py,v 1.3 2009/07/21 21:50:51 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.3  2009/07/21 21:50:51  bruno
+# fix help
+#
 # Revision 1.2  2009/05/01 19:06:54  mjk
 # chimi con queso
 #
@@ -67,7 +70,7 @@ import rocks.commands
 
 class Command(rocks.commands.add.appliance.command):
 	"""
-	Add a route for all machine in the cluster
+	Add a route for an appliance type in the cluster
 	
 	<arg type='string' name='address'>
 	Host or network address

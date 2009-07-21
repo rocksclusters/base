@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.3 2009/06/19 21:07:25 mjk Exp $
+# $Id: __init__.py,v 1.4 2009/07/21 21:50:51 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.4  2009/07/21 21:50:51  bruno
+# fix help
+#
 # Revision 1.3  2009/06/19 21:07:25  mjk
 # - added dumpHostname to dump commands (use localhost for frontend)
 # - added add commands for attrs
@@ -78,7 +81,7 @@ import rocks.commands
 
 class Command(rocks.commands.add.command):
 	"""
-	Add a route for all machine in the cluster
+	Add a route for all hosts in the cluster
 	
 	<arg type='string' name='address'>
 	Host or network address
