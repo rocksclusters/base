@@ -1,5 +1,5 @@
 <!-- 
-$Id: networking-vlan.sgml,v 1.3 2009/06/19 00:44:52 bruno Exp $
+$Id: networking-vlan.sgml,v 1.4 2009/07/21 23:48:03 bruno Exp $
 
 Administration guide
 
@@ -7,6 +7,9 @@ Administration guide
 @Copyright@
 
 $Log: networking-vlan.sgml,v $
+Revision 1.4  2009/07/21 23:48:03  bruno
+add info about how to set a gateway with 'rocks add host route'
+
 Revision 1.3  2009/06/19 00:44:52  bruno
 touch up
 
@@ -71,9 +74,9 @@ Use the following example to add a physical VLAN device, assign a tag, and an IP
 [root@rocks ~]# rocks add host interface compute-0-0-1 iface=eth0.2 subnet=net2 ip=10.2.1.10
 [root@rocks ~]# rocks set host interface vlan compute-0-0-1 iface=eth0.2 vlanid=2 
 [root@rocks ~]# rocks list host interface compute-0-0-1
-SUBNET  IFACE  MAC               IP             NETMASK       GATEWAY MODULE NAME          VLANID
-private eth0   00:16:3e:00:00:11 172.16.254.192 255.255.255.0 ------- xennet compute-0-0-1 ------
-net2    eth0.2 ----------------- 10.2.1.10      255.255.255.0 ------- ------ ------------- 2   
+SUBNET  IFACE  MAC               IP             NETMASK       MODULE NAME          VLANID
+private eth0   00:16:3e:00:00:11 172.16.254.192 255.255.255.0 xennet compute-0-0-1 ------
+net2    eth0.2 ----------------- 10.2.1.10      255.255.255.0 ------ ------------- 2   
 </screen>
 </section>
 
@@ -105,10 +108,10 @@ for virtual machines. Virtual VLAN devices have their subnet=&lt;subnet of physi
 [root@rocks ~]# rocks set host interface vlan compute-0-0-1 vlan2 2
 [root@rocks ~]# rocks set host interface vlan compute-0-0-1 vlan3 3
 [root@rocks ~]# rocks list host interface compute-0-0-1
-SUBNET  IFACE MAC               IP             NETMASK       GATEWAY MODULE NAME          VLANID
-private eth0  00:16:3e:00:00:11 172.16.254.192 255.255.255.0 ------- xennet compute-0-0-1 ------
-------- vlan2 ----------------- -------------- ------------- ------- ------ ------------- 2     
-------- vlan3 ----------------- -------------- ------------- ------- ------ ------------- 3     
+SUBNET  IFACE MAC               IP             NETMASK       MODULE NAME          VLANID
+private eth0  00:16:3e:00:00:11 172.16.254.192 255.255.255.0 xennet compute-0-0-1 ------
+------- vlan2 ----------------- -------------- ------------- ------ ------------- 2     
+------- vlan3 ----------------- -------------- ------------- ------ ------------- 3     
 </screen>
 <para> 
 At this stage, the vlan interfaces are not currently associated with any physical network device.  Linux
@@ -119,10 +122,10 @@ example, we can associate both vlan2 and vlan3 to be tagged packet interfaces on
 [root@tranquil ~]# rocks set host interface subnet compute-0-0-1 vlan2 subnet=private
 [root@tranquil ~]# rocks set host interface subnet compute-0-0-1 vlan3 subnet=private
 [root@tranquil ~]# rocks list host interface compute-0-0-1 
-SUBNET  IFACE MAC               IP             NETMASK       GATEWAY MODULE NAME          VLANID
-private eth0  00:16:3e:00:00:11 172.16.254.192 255.255.255.0 ------- xennet compute-0-0-1 ------
-private vlan2 ----------------- -------------- ------------- ------- ------ ------------- 2     
-private vlan3 ----------------- -------------- ------------- ------- ------ ------------- 3     
+SUBNET  IFACE MAC               IP             NETMASK       MODULE NAME          VLANID
+private eth0  00:16:3e:00:00:11 172.16.254.192 255.255.255.0 xennet compute-0-0-1 ------
+private vlan2 ----------------- -------------- ------------- ------ ------------- 2     
+private vlan3 ----------------- -------------- ------------- ------ ------------- 3     
 </screen>
 </para>
 

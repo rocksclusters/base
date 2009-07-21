@@ -1,5 +1,5 @@
 <!-- 
-$Id: networking-examples.sgml,v 1.2 2009/06/19 00:44:52 bruno Exp $
+$Id: networking-examples.sgml,v 1.3 2009/07/21 23:48:03 bruno Exp $
 
 Administration guide
 
@@ -7,6 +7,9 @@ Administration guide
 @Copyright@
 
 $Log: networking-examples.sgml,v $
+Revision 1.3  2009/07/21 23:48:03  bruno
+add info about how to set a gateway with 'rocks add host route'
+
 Revision 1.2  2009/06/19 00:44:52  bruno
 touch up
 
@@ -31,9 +34,9 @@ to have address 1.2.3.25 with name mypublic.myuniversity.edu, update all require
 frontend, update all required configuration files on the node compute-0-0 and restart the network on compute-0-0.
 </para>
 <screen>
-# rocks set host interface ip  compute-0-0 iface=eth1 ip=1.2.3.25 
-# rocks set host interface gateway  compute-0-0 iface=eth1 ip=1.2.3.1 
-# rocks set host interface name  compute-0-0 iface=eth1 name=mypublic.myuniversity.edu
+# rocks set host interface ip compute-0-0 iface=eth1 ip=1.2.3.25 
+# rocks set host interface name compute-0-0 iface=eth1 name=mypublic.myuniversity.edu
+# rocks add host route compute-0-0 1.2.3.0 eth1 netmask=255.255.255.0
 # rocks sync config
 # rocks sync network compute-0-0 
 </screen>

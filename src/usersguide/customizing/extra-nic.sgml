@@ -32,10 +32,10 @@ unconfigured network (eth1):
 </para>
 
 <screen>
-# rocks list host interface compute-1-1 
-SUBNET  IFACE MAC               IP             NETMASK   GATEWAY MODULE NAME
-private eth0  00:0e:0c:5d:7e:5e 10.255.255.251 255.0.0.0 ------- e1000  compute-1-1
-------- eth1  00:30:1b:b2:ea:61 -------------- --------- ------- tg3    -----------
+# rocks list host interface compute-0-0
+SUBNET  IFACE MAC               IP           NETMASK     MODULE NAME        VLANID
+private eth0  00:1e:4f:b0:74:ef 10.1.255.254 255.255.0.0 tg3    compute-0-0 ------
+------- eth1  00:10:18:31:74:43 ------------ ----------- tg3    ----------- ------
 </screen>
 
 <para>
@@ -45,21 +45,47 @@ eth1 with the public subnet:
 
 <itemizedlist>
 <listitem>
+	<para> Name = fast-0-0 </para>
+</listitem>
+<listitem>
 	<para> IP address = 192.168.1.1 </para>
-</listitem>
-<listitem>
-	<para> Gateway = 192.168.1.254 </para>
-</listitem>
-<listitem>
-	<para> Name = fast-1-1 </para>
 </listitem>
 </itemizedlist>
 
 <screen>
-# rocks set host interface ip compute-1-1 eth1 192.168.1.1
-# rocks set host interface gateway compute-1-1 eth1 192.168.1.254
-# rocks set host interface name compute-1-1 eth1 fast-1-1     
-# rocks set host interface subnet compute-1-1 eth1 public       
+# rocks set host interface ip compute-0-0 eth1 192.168.1.1
+# rocks set host interface name compute-0-0 eth1 fast-0-0     
+</screen>
+
+<para>
+Now we'll create a new 'network' and associate it with the new interface:
+</para>
+
+<screen>
+# rocks add network fast 192.168.1.0 255.255.255.0
+</screen>
+
+<para>
+And then we'll check our work:
+</para>
+
+<screen>
+# rocks list network
+NETWORK  SUBNET        NETMASK       MTU  
+private: 10.1.0.0      255.255.0.0   1500 
+public:  137.110.119.0 255.255.255.0 1500 
+fast:    192.168.1.0   255.255.255.0 1500
+</screen>
+
+<para>
+</para>
+
+<para>
+Now associate the new network to eth1.
+</para>
+
+<screen>
+# rocks set host interface subnet compute-0-0 eth1 fast
 </screen>
 
 <para>
@@ -67,20 +93,38 @@ The interface eth1 is now configured:
 </para>
 
 <screen>
-# rocks list host interface compute-1-1
-SUBNET  IFACE MAC               IP             NETMASK       GATEWAY       MODULE NAME       
-private eth0  00:0e:0c:5d:7e:5e 10.255.255.251 255.0.0.0     ------------- e1000  compute-1-1
-public  eth1  00:30:1b:b2:ea:61 192.168.1.1    255.255.255.0 192.168.1.254 tg3    fast-1-1 
+# rocks list host interface compute-0-0
+SUBNET  IFACE MAC               IP           NETMASK       MODULE NAME        VLANID
+private eth0  00:1e:4f:b0:74:ef 10.1.255.254 255.255.0.0   tg3    compute-0-0 ------
+fast    eth1  00:10:18:31:74:43 192.168.1.1  255.255.255.0 tg3    fast-0-0    ------
 </screen>
 
 <para>
-After specifying new network settings to a compute-1-1, execute the following
+After specifying new network settings to a compute-0-0, execute the following
 command to apply the settings:
 </para>
 
 <screen>
-# rocks sync host network compute-1-1
+# rocks sync config
+# rocks sync host network compute-0-0
 </screen>
+
+<note>
+<para>
+If you configuring the interface to another public network, you can set
+the gateway for the interface with the
+<computeroutput>rocks add host route</computeroutput> command.
+</para>
+
+<para>
+For example, to set the route for the 192.168.1.0 network to 192.168.1.254
+for compute-0-0, you'd execute:
+</para>
+
+<screen>
+# rocks add host route compute-0-0 192.168.1.0 192.168.1.254 netmask=255.255.255.0
+</screen>
+</note>
 
 </section>
 
