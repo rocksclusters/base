@@ -1,4 +1,4 @@
-# $Id: plugin_attr.py,v 1.2 2009/05/01 19:06:59 mjk Exp $
+# $Id: plugin_attr.py,v 1.3 2009/07/27 21:42:07 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: plugin_attr.py,v $
+# Revision 1.3  2009/07/27 21:42:07  bruno
+# fix for 'rocks remove appliance'
+#
 # Revision 1.2  2009/05/01 19:06:59  mjk
 # chimi con queso
 #
@@ -76,5 +79,5 @@ class Plugin(rocks.commands.Plugin):
 		return 'attr'
 
 	def run(self, appliance):
-		self.owner.command('remove.appliance.attribute', [ appliance ])
+		self.owner.command('remove.appliance.attr', [ appliance ])
 
