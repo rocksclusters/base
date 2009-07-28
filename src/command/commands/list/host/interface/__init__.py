@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.17 2009/05/01 19:06:58 mjk Exp $
+# $Id: __init__.py,v 1.18 2009/07/28 17:52:19 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.18  2009/07/28 17:52:19  bruno
+# be consistent -- all references to 'vlanid' should be 'vlan'
+#
 # Revision 1.17  2009/05/01 19:06:58  mjk
 # chimi con queso
 #
@@ -195,5 +198,5 @@ class Command(rocks.commands.list.host.command):
 					self.addOutput(host, row )
 
 		self.endOutput(header=['host', 'subnet', 'iface', 'mac', 
-			'ip', 'netmask', 'module', 'name', 'vlanid'])
+			'ip', 'netmask', 'module', 'name', 'vlan'])
 

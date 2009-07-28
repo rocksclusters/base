@@ -1,5 +1,5 @@
 <!-- 
-$Id: networking-vlan.sgml,v 1.4 2009/07/21 23:48:03 bruno Exp $
+$Id: networking-vlan.sgml,v 1.5 2009/07/28 17:52:20 bruno Exp $
 
 Administration guide
 
@@ -7,6 +7,9 @@ Administration guide
 @Copyright@
 
 $Log: networking-vlan.sgml,v $
+Revision 1.5  2009/07/28 17:52:20  bruno
+be consistent -- all references to 'vlanid' should be 'vlan'
+
 Revision 1.4  2009/07/21 23:48:03  bruno
 add info about how to set a gateway with 'rocks add host route'
 
@@ -25,7 +28,7 @@ First crack at networking section (incomplete).
 <para>
 Linux supports VLAN tagging on virtual interfaces (i.e. IEEE 802.1Q).  For example, if a host  has
 physical interface eth0 (untagged), then the kernel can send and receive a tagged packets if a properly 
-defined interface named eth0.&lt;vlanid&gt; has been created and properly configured. Tagging allows the same 
+defined interface named eth0.&lt;vlan&gt; has been created and properly configured. Tagging allows the same 
 physical network to be partitioned into many different networks. A key feature of VLAN tagging is that
 a broadcast packet (e.g. a DHCPDISCOVER packet) only broadcasts on the tagged VLAN in which is was initially 
 sent.
@@ -38,7 +41,7 @@ We use logical VLANs to construct bridges suitable for virtual clusters.
 <note>
 	<orderedlist>
 		<listitem><para>
-			Explicit VLAN Devices of the form &lt;interface&gt;.&lt;vlanid&gt; 
+			Explicit VLAN Devices of the form &lt;interface&gt;.&lt;vlan&gt; 
 			can have IP addresses assigned
 		</para></listitem>
 		<listitem><para>
@@ -62,7 +65,7 @@ an example, any physical IP interface can have a VLAN associated with it.
 			<para> FIGURE: Physical VLAN device called eth0.2. This device may be assigned an
 			IP and a network name (e.g. "net") that is unrelated to the network name of the 
 			physical device (eth0).  All packets sent on this interface will be tagged
-			with VLANID=2. Multiple Physical VLAN devices can be defined. 
+			with VLAN=2. Multiple Physical VLAN devices can be defined. 
 			</para>
 		</caption>
         </mediaobject>
@@ -72,9 +75,9 @@ Use the following example to add a physical VLAN device, assign a tag, and an IP
 </para>
 <screen>
 [root@rocks ~]# rocks add host interface compute-0-0-1 iface=eth0.2 subnet=net2 ip=10.2.1.10
-[root@rocks ~]# rocks set host interface vlan compute-0-0-1 iface=eth0.2 vlanid=2 
+[root@rocks ~]# rocks set host interface vlan compute-0-0-1 iface=eth0.2 vlan=2 
 [root@rocks ~]# rocks list host interface compute-0-0-1
-SUBNET  IFACE  MAC               IP             NETMASK       MODULE NAME          VLANID
+SUBNET  IFACE  MAC               IP             NETMASK       MODULE NAME          VLAN
 private eth0   00:16:3e:00:00:11 172.16.254.192 255.255.255.0 xennet compute-0-0-1 ------
 net2    eth0.2 ----------------- 10.2.1.10      255.255.255.0 ------ ------------- 2   
 </screen>
@@ -108,7 +111,7 @@ for virtual machines. Virtual VLAN devices have their subnet=&lt;subnet of physi
 [root@rocks ~]# rocks set host interface vlan compute-0-0-1 vlan2 2
 [root@rocks ~]# rocks set host interface vlan compute-0-0-1 vlan3 3
 [root@rocks ~]# rocks list host interface compute-0-0-1
-SUBNET  IFACE MAC               IP             NETMASK       MODULE NAME          VLANID
+SUBNET  IFACE MAC               IP             NETMASK       MODULE NAME          VLAN
 private eth0  00:16:3e:00:00:11 172.16.254.192 255.255.255.0 xennet compute-0-0-1 ------
 ------- vlan2 ----------------- -------------- ------------- ------ ------------- 2     
 ------- vlan3 ----------------- -------------- ------------- ------ ------------- 3     
@@ -122,7 +125,7 @@ example, we can associate both vlan2 and vlan3 to be tagged packet interfaces on
 [root@tranquil ~]# rocks set host interface subnet compute-0-0-1 vlan2 subnet=private
 [root@tranquil ~]# rocks set host interface subnet compute-0-0-1 vlan3 subnet=private
 [root@tranquil ~]# rocks list host interface compute-0-0-1 
-SUBNET  IFACE MAC               IP             NETMASK       MODULE NAME          VLANID
+SUBNET  IFACE MAC               IP             NETMASK       MODULE NAME          VLAN
 private eth0  00:16:3e:00:00:11 172.16.254.192 255.255.255.0 xennet compute-0-0-1 ------
 private vlan2 ----------------- -------------- ------------- ------ ------------- 2     
 private vlan3 ----------------- -------------- ------------- ------ ------------- 3     

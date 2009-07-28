@@ -33,7 +33,7 @@ unconfigured network (eth1):
 
 <screen>
 # rocks list host interface compute-0-0
-SUBNET  IFACE MAC               IP           NETMASK     MODULE NAME        VLANID
+SUBNET  IFACE MAC               IP           NETMASK     MODULE NAME        VLAN
 private eth0  00:1e:4f:b0:74:ef 10.1.255.254 255.255.0.0 tg3    compute-0-0 ------
 ------- eth1  00:10:18:31:74:43 ------------ ----------- tg3    ----------- ------
 </screen>
@@ -94,7 +94,7 @@ The interface eth1 is now configured:
 
 <screen>
 # rocks list host interface compute-0-0
-SUBNET  IFACE MAC               IP           NETMASK       MODULE NAME        VLANID
+SUBNET  IFACE MAC               IP           NETMASK       MODULE NAME        VLAN
 private eth0  00:1e:4f:b0:74:ef 10.1.255.254 255.255.0.0   tg3    compute-0-0 ------
 fast    eth1  00:10:18:31:74:43 192.168.1.1  255.255.255.0 tg3    fast-0-0    ------
 </screen>

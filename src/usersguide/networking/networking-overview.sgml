@@ -1,5 +1,5 @@
 <!-- 
-$Id: networking-overview.sgml,v 1.5 2009/07/21 23:48:03 bruno Exp $
+$Id: networking-overview.sgml,v 1.6 2009/07/28 17:52:20 bruno Exp $
 
 Administration guide
 
@@ -7,6 +7,9 @@ Administration guide
 @Copyright@
 
 $Log: networking-overview.sgml,v $
+Revision 1.6  2009/07/28 17:52:20  bruno
+be consistent -- all references to 'vlanid' should be 'vlan'
+
 Revision 1.5  2009/07/21 23:48:03  bruno
 add info about how to set a gateway with 'rocks add host route'
 
@@ -106,13 +109,13 @@ named "myri0" with IP address 192.168.1.10 on the logical subnet "fast":
 <screen>
 [root@rocks ~]# rocks add host interface compute-0-0-1 iface=myri0 subnet=fast ip=192.168.1.10
 [root@rocks ~]# rocks list host interface compute-0-0-1
-SUBNET  IFACE MAC               IP             NETMASK       MODULE NAME          VLANID
+SUBNET  IFACE MAC               IP             NETMASK       MODULE NAME          VLAN
 private eth0  00:16:3e:00:00:11 172.16.254.192 255.255.255.0 xennet compute-0-0-1 ------
 fast    myri0 ----------------- 192.168.1.10   255.255.255.0 ------ ------------- ------
 </screen>
 <para>
 You can also set other fields for a host interface (if the field is one of
-[mac, ip, gateway, module, name, vlanid]) with 
+[mac, ip, gateway, module, name, vlan]) with 
 the command <computeroutput>rocks set host interface &lt;field&gt; &lt;host&gt; iface=&lt;iface&gt; value</computeroutput>.
 To set the name associated with the myri0 interface to compute-myri-0-0-1 on
 the node compute-0-0-1, execute:
@@ -121,7 +124,7 @@ the node compute-0-0-1, execute:
 <screen>
 [root@rocks ~]# rocks set host interface name compute-0-0-1 iface=myri0 compute-myri-0-0-1
 [root@rocks ~]# rocks list host interface compute-0-0-1
-SUBNET  IFACE MAC               IP             NETMASK       MODULE NAME               VLANID
+SUBNET  IFACE MAC               IP             NETMASK       MODULE NAME               VLAN
 private eth0  00:16:3e:00:00:11 172.16.254.192 255.255.255.0 xennet compute-0-0-1      ------
 fast    myri0 ----------------- 192.168.1.10   255.255.255.0 ------ compute-myri-0-0-1 ------
 </screen>

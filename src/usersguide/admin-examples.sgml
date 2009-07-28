@@ -1,5 +1,5 @@
 <!-- 
-$Id: admin-examples.sgml,v 1.12 2009/06/19 15:29:02 bruno Exp $
+$Id: admin-examples.sgml,v 1.13 2009/07/28 17:52:20 bruno Exp $
 
 Administration guide
 
@@ -7,6 +7,9 @@ Administration guide
 @Copyright@
 
 $Log: admin-examples.sgml,v $
+Revision 1.13  2009/07/28 17:52:20  bruno
+be consistent -- all references to 'vlanid' should be 'vlan'
+
 Revision 1.12  2009/06/19 15:29:02  bruno
 touch up chapter 6
 
@@ -349,7 +352,7 @@ illustation. To list the ethernet interfaces do the following:
 <screen>
 # rocks list host interface jeebs
 
-SUBNET  IFACE MAC               IP             NETMASK       MODULE NAME                    VLANID 
+SUBNET  IFACE MAC               IP             NETMASK       MODULE NAME                    VLAN 
 private eth0  00:0e:0c:a7:57:d7 10.1.1.1       255.0.0.0     e1000  jeebs                   ------ 
 public  eth1  00:19:b9:21:b8:b6 172.19.119.241 255.255.255.0 tg3    jeebs.rocksclusters.org ------
 </screen>
@@ -371,7 +374,7 @@ Then the updated database configuration is as follows
 </para>
 <screen>
 # rocks list host interface jeebs
-SUBNET  IFACE MAC               IP             NETMASK       MODULE NAME                    VLANID
+SUBNET  IFACE MAC               IP             NETMASK       MODULE NAME                    VLAN
 private eth0  00:19:b9:21:b8:b6 10.1.1.1       255.0.0.0     tg3    jeebs                   ------ 
 public  eth1  00:0e:0c:a7:57:d7 172.19.119.241 255.255.255.0 e1000  jeebs.rocksclusters.org ------
 </screen>

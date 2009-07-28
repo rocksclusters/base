@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.4 2009/05/01 19:07:03 mjk Exp $
+# $Id: __init__.py,v 1.5 2009/07/28 17:52:20 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.5  2009/07/28 17:52:20  bruno
+# be consistent -- all references to 'vlanid' should be 'vlan'
+#
 # Revision 1.4  2009/05/01 19:07:03  mjk
 # chimi con queso
 #
@@ -84,24 +87,24 @@ class Command(rocks.commands.set.host.command):
  	the mac address of the interface.
  	</arg>
 
-	<arg type='string' name='vlanid'>
+	<arg type='string' name='vlan'>
 	The VLAN ID that should be updated. This must be an integer and the
-	pair 'subnet/vlanid' must be defined in the VLANs table.
+	pair 'subnet/vlan' must be defined in the VLANs table.
  	</arg>
  	
 	<param type='string' name='iface'>
 	Can be used in place of the iface argument.
 	</param>
 
-	<param type='string' name='vlanid'>
-	Can be used in place of the vlanid argument.
+	<param type='string' name='vlan'>
+	Can be used in place of the vlan argument.
 	</param>
 
 	<example cmd='set host interface vlan compute-0-0-0 eth0 3'>
 	Sets compute-0-0-0's private interface to VLAN ID 3.
 	</example>
 
-	<example cmd='set host interface vlan compute-0-0-0 subnet=eth0 vlanid=3
+	<example cmd='set host interface vlan compute-0-0-0 subnet=eth0 vlan=3
 '>
 	Same as above.
 	</example>
@@ -112,7 +115,7 @@ class Command(rocks.commands.set.host.command):
 	def run(self, params, args):
 
 		(args, iface, vid) = self.fillPositionalArgs(
-			('iface', 'vlanid'))
+			('iface', 'vlan'))
 
 		if not len(args):
 			self.abort('must supply host')
@@ -121,12 +124,12 @@ class Command(rocks.commands.set.host.command):
 			self.abort('must supply iface')
 
 		if not vid:
-			self.abort('must supply vlanid')
+			self.abort('must supply vlan')
 		else:
 			try:
 				vlanid = int(vid)
 			except:
-				self.abort('vlanid "%s" must be an integer' %
+				self.abort('vlan "%s" must be an integer' %
 					(vid))
 
 		for host in self.getHostnames(args):

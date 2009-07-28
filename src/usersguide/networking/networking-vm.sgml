@@ -1,5 +1,5 @@
 <!-- 
-$Id: networking-vm.sgml,v 1.3 2009/07/21 23:48:03 bruno Exp $
+$Id: networking-vm.sgml,v 1.4 2009/07/28 17:52:20 bruno Exp $
 
 Administration guide
 
@@ -7,6 +7,9 @@ Administration guide
 @Copyright@
 
 $Log: networking-vm.sgml,v $
+Revision 1.4  2009/07/28 17:52:20  bruno
+be consistent -- all references to 'vlanid' should be 'vlan'
+
 Revision 1.3  2009/07/21 23:48:03  bruno
 add info about how to set a gateway with 'rocks add host route'
 
@@ -51,7 +54,7 @@ container (vm-container-0-0)  are in the same IP subnet and will be able to ping
 </para>
 <screen>
 [root@tranquil images]# rocks list host interface vm-container-0-0 compute-0-0-1
-HOST              SUBNET    IFACE    MAC               IP             NETMASK       MODULE NAME             VLANID
+HOST              SUBNET    IFACE    MAC               IP             NETMASK       MODULE NAME             VLAN
 compute-0-0-1:    private   eth0     00:16:3e:00:00:11 172.16.254.192 255.255.255.0 xennet compute-0-0-1    ------
 vm-container-0-0: private   eth0     00:09:6b:89:39:68 172.16.254.238 255.255.255.0 e1000  vm-container-0-0 ------
 
@@ -78,7 +81,7 @@ network.
 </para>
 <screen>
 [root@rocks ~]# rocks list host interface vm-container-0-0 hosted-vm-0-0-0
-HOST              SUBNET  IFACE MAC               IP             NETMASK   MODULE NAME             VLANID
+HOST              SUBNET  IFACE MAC               IP             NETMASK   MODULE NAME             VLAN
 hosted-vm-0-0-0:  ------- eth0  00:16:3e:00:00:05 -------------- --------- ------ hosted-vm-0-0-0  2    
 vm-container-0-0: private eth0  00:0e:0c:5d:7e:5e 10.255.255.254 255.0.0.0 e1000  vm-container-0-0 ------
 vm-container-0-0: private vlan2 ----------------- -------------- --------- ------ ---------------- 2    
@@ -86,29 +89,29 @@ vm-container-0-0: private vlan2 ----------------- -------------- --------- -----
 <para> 
 In the above configuration, Logical VLAN device vlan2 (with tag=2) will be on the physical network eth0 on
 vm-container-0-0.  The hosted-vm-0-0-0 (a Rocks "appliance" that simply holds a generic VM guest) will have
-have its interface on VLANID=2.  The physical machine must have a Logical vlan device with the same tag. 
+have its interface on VLAN=2.  The physical machine must have a Logical vlan device with the same tag. 
 </para>
 <para> 
 Below we give a more complicated configuration and walk through exactly what is bridged where. 
 </para>
 <screen>
 [root@rocks ~]# rocks list host interface vm-container-0-0
-SUBNET  IFACE   MAC               IP             NETMASK       MODULE NAME             VLANID
+SUBNET  IFACE   MAC               IP             NETMASK       MODULE NAME             VLAN
 private eth0    00:0e:0c:5d:7e:5e 10.255.255.254 255.0.0.0     e1000  vm-container-0-0 ------
 net10   eth1    00:10:18:31:74:84 192.168.1.10   255.255.255.0 tg3    vm-net10-0-0     ------
 net10   vlan100 ----------------- -------------- ------------- ------ ---------------- 100   
 private vlan2   ----------------- -------------- ------------- ------ ---------------- 2    
 
 [root@rocks ~]# rocks list host interface hosted-vm-0-0-0
-SUBNET IFACE MAC               IP NETMASK MODULE NAME            VLANID
+SUBNET IFACE MAC               IP NETMASK MODULE NAME            VLAN
 ------ eth0  00:16:3e:00:00:05 -- ------- ------ hosted-vm-0-0-0 2    
 ------ eth1  00:16:3e:00:00:80 -- ------- ------ --------------- 100   
 </screen>
 <para>
 In the above scenario, if hosted-vm-0-0-0 (Xen guest, DomU)  were to be booted on physical host 
-vm-container-0-0 (Dom0), The packets from the guest on eth0 will be tagged with VLANID=2, and eth1 with
-VLANID=100.  The host machine must have Logical VLAN interfaces called "vlan*.".  To make the proper
-bridge configuration, Rocks will match the VLANIDs of the guest interfaces to the VLANIDs on the host. 
+vm-container-0-0 (Dom0), The packets from the guest on eth0 will be tagged with VLAN=2, and eth1 with
+VLAN=100.  The host machine must have Logical VLAN interfaces called "vlan*.".  To make the proper
+bridge configuration, Rocks will match the VLANs of the guest interfaces to the VLANs on the host. 
 On the host, logical interface vlan2 is labeled as being on the private network (eth0) and logical vlan100
 is labeled as being on the net10 network (eth1).
 </para>
