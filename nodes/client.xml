@@ -18,6 +18,9 @@ This file is used as a connection point for other XML configuration nodes.
 
 <changelog>
 $Log: client.xml,v $
+Revision 1.13  2009/07/31 01:50:40  anoop
+rocks report dbhost outputs xml
+
 Revision 1.12  2009/05/20 12:28:41  mjk
 *** empty log message ***
 
@@ -102,7 +105,7 @@ touch /tmp/rocks-skip-welcome
 </file>
 
 <!-- get the name of the database host into the rocks command line -->
-<eval>
+<eval mode="xml">
 /opt/rocks/bin/rocks report dbhost
 </eval>
 
