@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.7 2009/06/03 21:28:52 bruno Exp $
+# $Id: __init__.py,v 1.8 2009/07/31 01:05:20 anoop Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.8  2009/07/31 01:05:20  anoop
+# Bug fix. We should not get the OS of a node from the nodes table. It should
+# always key off of the node_attributes table
+#
 # Revision 1.7  2009/06/03 21:28:52  bruno
 # add MTU to the subnets table
 #
@@ -182,9 +186,7 @@ class Command(rocks.commands.HostArgumentProcessor,
 		self.beginOutput()
 
                 for host in self.getHostnames(args):
-			self.db.execute("select os from nodes where " +\
-					"name='%s'" % (host))
-			osname, = self.db.fetchone()
+			osname = self.db.getHostAttr(host, 'os')
 			f = getattr(self, 'run_%s' % (osname))
 			f(host)
 
