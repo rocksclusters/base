@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.17 2009/05/01 19:06:58 mjk Exp $
+# $Id: __init__.py,v 1.18 2009/08/11 21:10:22 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.18  2009/08/11 21:10:22  bruno
+# set the membership attribute when building kickstart files
+#
 # Revision 1.17  2009/05/01 19:06:58  mjk
 # chimi con queso
 #
@@ -159,12 +162,12 @@ class Command(rocks.commands.list.host.command):
 
 			# Find the node, dist, and graph for the host
 			
-			self.db.execute("""select d.name,a.graph,a.node from
-				appliances a, nodes n, 
+			self.db.execute("""select d.name,a.graph,a.node,m.name
+				from appliances a, nodes n, 
 				memberships m, distributions d where
 				m.distribution=d.id and m.id=n.membership and
 				a.id=m.appliance and n.name='%s'""" % host)
-			(dist, graph, node) = self.db.fetchone()
+			(dist, graph, node, membership) = self.db.fetchone()
 			
 			# Call "rocks list node xml" with attrs{} dictionary
 			# set from the database.
@@ -177,6 +180,7 @@ class Command(rocks.commands.list.host.command):
 			attrs['hostaddr']	= address
 			attrs['distribution']	= dist
 			attrs['graph']		= graph
+			attrs['membership']	= membership
 
 			args = [ node ]
 			args.append('attrs=%s' % attrs)
