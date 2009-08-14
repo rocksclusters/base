@@ -1,5 +1,5 @@
 #
-# $Id: __init__.py,v 1.12 2009/05/01 19:07:02 mjk Exp $
+# $Id: __init__.py,v 1.13 2009/08/14 20:40:48 bruno Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.13  2009/08/14 20:40:48  bruno
+# put double quotes around domain name. bug reported by Yu Fu.
+#
 # Revision 1.12  2009/05/01 19:07:02  mjk
 # chimi con queso
 #
@@ -140,7 +143,7 @@ class Command(rocks.commands.HostArgumentProcessor,
 			(prefix, self.db.getHostAttr('localhost',
 				'Kickstart_PrivateNetmask')))
 
-		self.addOutput('', '%soption domain-name %s;' %
+		self.addOutput('', '%soption domain-name "%s";' %
 			(prefix, self.db.getHostAttr('localhost',
 				'Kickstart_PrivateDNSDomain')))
 
