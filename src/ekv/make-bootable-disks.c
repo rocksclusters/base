@@ -1,6 +1,6 @@
 /* -----------------------------------------------------------------------
  *
- * $Id: make-bootable-disks.c,v 1.12 2009/05/01 19:07:05 mjk Exp $
+ * $Id: make-bootable-disks.c,v 1.13 2009/08/14 21:04:06 bruno Exp $
  *
  * @Copyright@
  * 
@@ -56,6 +56,9 @@
  * @Copyright@
  *
  * $Log: make-bootable-disks.c,v $
+ * Revision 1.13  2009/08/14 21:04:06  bruno
+ * fixes to handle partitioning for HP smart array controllers.
+ *
  * Revision 1.12  2009/05/01 19:07:05  mjk
  * chimi con queso
  *
@@ -140,10 +143,10 @@ bootable(char *device, int major, int minor)
 	mode_t		mode;
 	struct stat	statbuf;
 	int		fd;
-	char		devicepath[128];
+	char		*devicepath;
 	char		buf[2];
 
-	sprintf(devicepath, "/tmp/rocks-%s", device);
+	devicepath = tempnam("/tmp", "roxdv");
 
 	if (stat(devicepath, &statbuf) == 0) {
 		/*
@@ -158,12 +161,14 @@ bootable(char *device, int major, int minor)
 
 	if (mknod(devicepath, mode, makedev(major, minor)) < 0) {
 		perror("bootable:mknod failed");
+		free(devicepath);
 		return;
 	}
 
 	if ((fd = open(devicepath, O_WRONLY)) < 0) {
 		perror("bootable:open failed");
 		unlink(devicepath);
+		free(devicepath);
 		return;
 	}
 
@@ -185,6 +190,7 @@ bootable(char *device, int major, int minor)
 
 	close(fd);
 	unlink(devicepath);
+	free(devicepath);
 	return;
 }
 

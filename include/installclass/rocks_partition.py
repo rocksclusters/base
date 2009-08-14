@@ -193,6 +193,13 @@ class RocksPartition:
 			if len(l) > 2 and re.match('[0-9]+', l[0]):
 				if devname[0:2] == 'md':
 					device = devname
+				elif len(devname) > 4 and \
+						devname[0:5] == 'cciss':
+					#
+					# special case for HP smart array
+					# controllers
+					#
+					device = devname + 'p' + l[0]
 				else:
 					device = devname + l[0]
 				isDisk = 1
@@ -327,14 +334,9 @@ class RocksPartition:
 
 			if foundparts == 0:
 				continue
-
-			#
-			# XXX - look for 'spare' for the 'state' entry.
-			# how should we handle 'spare' drives?
-			#
-			if len(l) > 0:
-				part = l[-1].split('/')
-				parts.append('raid.%s' % part[-1])
+			
+			part = l[-1].split('/')
+			parts.append('raid.%s' % part[-1])
 
 		return ' '.join(parts)
 
@@ -436,6 +438,13 @@ class RocksPartition:
 				partnumber = int(l[0])
 
 			if partnumber > 0:
+				if len(disk) > 4 and disk[0:5] == 'cciss':
+					#
+					# special case for HP smart array
+					# controllers
+					#
+					disk = disk + 'p'
+
 				list.append('%s%d' % (disk, partnumber))
 
 		return list
