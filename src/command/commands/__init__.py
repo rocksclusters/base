@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.71 2009/06/04 19:24:44 bruno Exp $
+# $Id: __init__.py,v 1.72 2009/08/17 21:24:24 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.72  2009/08/17 21:24:24  bruno
+# nuke the 'site' references
+#
 # Revision 1.71  2009/06/04 19:24:44  bruno
 # fixing bugs with mason -- extreme programming!
 #
@@ -646,11 +649,10 @@ class AppGlobalsHandler(handler.ContentHandler,
 	handler.EntityResolver,
 	handler.ErrorHandler):
 	
-	def __init__(self, db, host, site):
+	def __init__(self, db, host):
 		handler.ContentHandler.__init__(self)
 		self.db		= db
 		self.host	= host
-		self.site	= site
 		self.parser = make_parser()
 		self.parser.setContentHandler(self)
 
@@ -659,15 +661,14 @@ class AppGlobalsHandler(handler.ContentHandler,
 			'nodes,app_globals where ' \
 			'app_globals.service="%s" and ' \
 			'app_globals.component="%s" and ' \
-			'app_globals.site=%d and ' \
 			'nodes.name="%s" and ' \
 			'nodes.membership=app_globals.membership' \
-			% (service, component, self.site, self.host)
+			% (service, component, self.host)
 			
 		default = 'select value from app_globals where ' \
 			'service="%s" and component="%s" and ' \
-			'membership=0 and site=%d' \
-			% (service, component, self.site)
+			'membership=0' \
+			% (service, component)
 				
 		rows = self.db.execute(nodespec)
 		if not rows:
@@ -1136,7 +1137,7 @@ class DatabaseConnection:
 
 		
 
-	def getGlobalVars(self, service, hostname='', site=0):
+	def getGlobalVars(self, service, hostname=''):
 		"""Returns a dictionary of COMPONENT x VALUES for all
 		component of the provided service.  This is useful to
 		resolve entire service without having to know all the
@@ -1152,10 +1153,10 @@ class DatabaseConnection:
 		for component, in self.link.fetchall():
 			if not dict.has_key(component):
 				dict[component] = self.getGlobalVar(service,
-					component, hostname, site)
+					component, hostname)
 		return dict
 	
-	def getGlobalVar(self, service, component, hostname='', site=0):
+	def getGlobalVar(self, service, component, hostname=''):
 		"""Returns the value of the SERVICE x COMPONENT in from the
 		app_globals tables.  If a hostname is provided the membership
 		specific value will be found (if it exists), otherwise the
@@ -1168,7 +1169,7 @@ class DatabaseConnection:
 			hostname = socket.gethostname()	
 
 		if self.link:
-			handler = AppGlobalsHandler(self.link, hostname, site)
+			handler = AppGlobalsHandler(self.link, hostname)
 			return handler.lookup(service, component)
 		else:
 			return None
