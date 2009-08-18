@@ -1,5 +1,6 @@
 <section id="cross" xreflabel="Cross Kickstarting">
-<title> Cross Kickstarting </title>
+
+	<title> Cross Kickstarting </title>
 
 <para>
 Rocks supports heterogeneous clusters that contain nodes of different hardware
@@ -15,15 +16,22 @@ or <xref linkend="upgrade-frontend">. Follow the instructions below for every
 desired architecture. 
 </para>
 
+
+<section id="cross-i386" xreflabel="Cross Kickstarting x86_64 Compute Nodes with a i386 Frontend">
+
+<title> Cross Kickstarting x86_64 Compute Nodes with a i386 Frontend </title>
+
 <para>
-For this example, we assume the frontend is an x86 (32-bit) and the
+For this example, we assume the frontend is an i386 (32-bit) and the
 compute nodes are x86_64 CPUs (64-bit).
 </para>
 
 <orderedlist>
 <listitem>
 <para>
-Retrieve the required Rocks rolls for x86_64 (and optional rolls as desired)
+Download the x86_64 Rocks rolls.
+At a minimum, you'll need to download the x86_64 versions of the Base, Kernel,
+Web Server and OS disk 1 and OS disk 2 rolls.
 </para>
 
 <para>
@@ -38,7 +46,7 @@ For each roll, add it to the frontend's roll repository:
 
 <listitem>
 <para>
-Rebuild your distribution for the new architecture with the following flags. 
+Rebuild your distribution:
 </para>
 
 <screen>
@@ -46,11 +54,101 @@ Rebuild your distribution for the new architecture with the following flags.
 # rocks create distro
 # rocks create distro arch=x86_64
 </screen>
+</listitem>
+
+<listitem>
+<para>
+To prepare the frontend to cross-kickstart compute nodes via PXE, you
+first need to add the <computeroutput>rocks-boot</computeroutput> package from
+the x86_64 architecture:
+</para>
+
+<screen>
+# rpm -i --force /export/rocks/install/rocks-dist/x86_64/RedHat/RPMS/rocks-boot-&document_version;-1.x86_64.rpm
+</screen>
+</listitem>
+
+<listitem>
+<para>
+Then you need to add a new <computeroutput>bootaction</computeroutput>:
+</para>
+
+<screen>
+# rocks add bootaction action="install x86_64" kernel="vmlinuz-&document_version;-x86_64" \
+  ramdisk="initrd.img-&document_version;-x86_64" \
+  args="ks ramdisk_size=150000 lang= devfs=nomount pxe kssendmac selinux=0 noipv6"
+</screen>
+</listitem>
+
+<listitem>
+<para>
+The next step requires you to PXE boot the cross-kickstarted node twice: the
+first is to discover the node, and a second time to install it.
+</para>
 
 <para>
-The above assumes your frontend is running the i386 version of Rocks.
-If your frontend is running the x86_64 version of Rocks and you want to support
-i386-based nodes with the frontend, you'll execute:
+On the frontend, run insert-ethers to discover the compute node:
+</para>
+
+<screen>
+# insert-ethers
+</screen>
+
+<para>
+Then, PXE boot the compute node. 
+After the compute node is discovered by insert-ethers, kill insert-ethers (by
+hitting the F9 key), then turn off the compute node.
+</para>
+
+<para>
+Now instruct the node to use the "install x86_64" profile when it PXE boots (the
+command below assumes the compute node's name is compute-0-0):
+</para>
+
+<screen>
+# rocks set host installaction compute-0-0 action="install x86_64"
+</screen>
+
+<para>
+Now PXE boot the compute node again.
+The compute node will now install itself with the x86_64 distribution.
+</para>
+</listitem>
+
+</orderedlist>
+</section>
+
+
+<section id="cross-x86_64" xreflabel="Cross Kickstarting i386 Compute Nodes with a x86_64 Frontend">
+
+<title> Cross Kickstarting i386 Compute Nodes with a x86_64 Frontend </title>
+
+<para>
+For this example, we assume the frontend is a x86_64 (64-bit) and the
+compute nodes are i386 CPUs (32-bit).
+</para>
+
+<orderedlist>
+<listitem>
+<para>
+Download the i386 Rocks rolls.
+At a minimum, you'll need to download the i386 versions of the Base, Kernel,
+Web Server and OS disk 1 and OS disk 2 rolls.
+</para>
+
+<para>
+For each roll, add it to the frontend's roll repository:
+</para>
+
+<screen>
+# rocks add roll &lt;roll-name&gt;.iso
+</screen>
+
+</listitem>
+
+<listitem>
+<para>
+Rebuild your distribution:
 </para>
 
 <screen>
@@ -58,26 +156,69 @@ i386-based nodes with the frontend, you'll execute:
 # rocks create distro
 # rocks create distro arch=i386
 </screen>
+</listitem>
 
+<listitem>
+<para>
+To prepare the frontend to cross-kickstart compute nodes via PXE, you
+first need to add the <computeroutput>rocks-boot</computeroutput> package from
+the i386 architecture:
+</para>
+
+<screen>
+# rpm -i --force /export/rocks/install/rocks-dist/i386/RedHat/RPMS/rocks-boot-&document_version;-1.i386.rpm
+</screen>
+</listitem>
+
+<listitem>
+<para>
+Then you need to add a new <computeroutput>bootaction</computeroutput>:
+</para>
+
+<screen>
+# rocks add bootaction action="install i386" kernel="vmlinuz-&document_version;-i386" \
+  ramdisk="initrd.img-&document_version;-i386" \
+  args="ks ramdisk_size=150000 lang= devfs=nomount pxe kssendmac selinux=0 noipv6"
+</screen>
+</listitem>
+
+<listitem>
+<para>
+The next step requires you to PXE boot the cross-kickstarted node twice: the
+first is to discover the node, and a second time to install it.
+</para>
+
+<para>
+On the frontend, run insert-ethers to discover the compute node:
+</para>
+
+<screen>
+# insert-ethers
+</screen>
+
+<para>
+Then, PXE boot the compute node. 
+After the compute node is discovered by insert-ethers, kill insert-ethers (by
+hitting the F9 key), then turn off the compute node.
+</para>
+
+<para>
+Now instruct the node to use the "install i386" profile when it PXE boots (the
+command below assumes the compute node's name is compute-0-0):
+</para>
+
+<screen>
+# rocks set host installaction compute-0-0 action="install i386"
+</screen>
+
+<para>
+Now PXE boot the compute node again.
+The compute node will now install itself with the i386 distribution.
+</para>
 </listitem>
 
 </orderedlist>
-
-<para>
-Now your frontend is prepared to cross-kickstart compute nodes and other
-cluster appliances of different architectures.
-</para>
-
-<caution>
-<para>
-Rocks does not currently support PXE cross-kickstart installs; you must boot
-non-native compute nodes from a native-architecture Rocks CD that
-contains the Kernel Roll.
-In the above example you must install a x86_64 compute node from an
-x86_64 boot media instead of PXE.
-</para>
-
-</caution>
+</section>
 
 </section>
 

@@ -1,5 +1,5 @@
 <!-- 
-$Id: networking-vm.sgml,v 1.4 2009/07/28 17:52:20 bruno Exp $
+$Id: networking-vm.sgml,v 1.5 2009/08/18 17:58:44 bruno Exp $
 
 Administration guide
 
@@ -7,8 +7,11 @@ Administration guide
 @Copyright@
 
 $Log: networking-vm.sgml,v $
+Revision 1.5  2009/08/18 17:58:44  bruno
+how to cross-kickstart with PXE
+
 Revision 1.4  2009/07/28 17:52:20  bruno
-be consistent -- all references to 'vlanid' should be 'vlan'
+be consistent: all references to 'vlanid' should be 'vlan'
 
 Revision 1.3  2009/07/21 23:48:03  bruno
 add info about how to set a gateway with 'rocks add host route'
