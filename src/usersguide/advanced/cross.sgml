@@ -40,6 +40,7 @@ For each roll, add it to the frontend's roll repository:
 
 <screen>
 # rocks add roll &lt;roll-name&gt;.iso
+# rocks enable roll &lt;roll-name&gt;
 </screen>
 
 </listitem>
@@ -142,6 +143,7 @@ For each roll, add it to the frontend's roll repository:
 
 <screen>
 # rocks add roll &lt;roll-name&gt;.iso
+# rocks enable roll &lt;roll-name&gt;
 </screen>
 
 </listitem>
