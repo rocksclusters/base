@@ -65,7 +65,9 @@ the x86_64 architecture:
 </para>
 
 <screen>
-# rpm -i --force /export/rocks/install/rocks-dist/x86_64/RedHat/RPMS/rocks-boot-&document_version;-1.x86_64.rpm
+# rpm -i --force --ignorearch /export/rocks/install/rocks-dist/x86_64/RedHat/RPMS/rocks-boot-&document_version;-1.x86_64.rpm
+# cp /boot/kickstart/default/vmlinuz-&document_version;-x86_64 /tftpboot/pxelinux
+# cp /boot/kickstart/default/initrd.img-&document_version;-x86_64 /tftpboot/pxelinux
 </screen>
 </listitem>
 
@@ -169,6 +171,8 @@ the i386 architecture:
 
 <screen>
 # rpm -i --force /export/rocks/install/rocks-dist/i386/RedHat/RPMS/rocks-boot-&document_version;-1.i386.rpm
+# cp /boot/kickstart/default/vmlinuz-&document_version;-i386 /tftpboot/pxelinux
+# cp /boot/kickstart/default/initrd.img-&document_version;-i386 /tftpboot/pxelinux
 </screen>
 </listitem>
 
