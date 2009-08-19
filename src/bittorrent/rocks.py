@@ -1,6 +1,6 @@
 #! /opt/rocks/bin/python
 #
-# $Id: rocks.py,v 1.6 2007/12/10 21:28:34 bruno Exp $
+# $Id: rocks.py,v 1.7 2009/08/19 18:45:29 bruno Exp $
 #
 # library routines to interact with a BitTorrent infrastructure
 #
@@ -9,6 +9,14 @@
 # @COPYRIGHT@
 #
 # $Log: rocks.py,v $
+# Revision 1.7  2009/08/19 18:45:29  bruno
+# add support for 'avalanche groups'.
+#
+# if there are multiple peers that are caching a requested package, then
+# attempt to get the package from a peer that has the same group id as you.
+#
+# group ids are set with the 'avalanche-group' attribute.
+#
 # Revision 1.6  2007/12/10 21:28:34  bruno
 # the base roll now contains several elements from the HPC roll, thus
 # making the HPC roll optional.
@@ -70,13 +78,40 @@ def getPeerId():
 		l = string.split(line)
 
 		if len(l) > 3 and l[0] == 'eth0' and l[3] == 'HWaddr':
-			p = l[4]
+			p = ''.join(l[4].split(':'))
 			break
 
 	p += '-'
+
+	#
+	# get the group id
+	#
+	rackid = ''
+	if os.path.exists('/tmp/avalanche-group'):
+		file = open('/tmp/avalanche-group', 'r')
+		for line in file.readlines():
+			l = line.split()
+			if len(l) > 0:
+				rackid = l[0]
+				break
+
+	p += rackid
+
 	for i in range(len(p),20):
 		p += 'x'
+
 	return p[:20]
+
+
+def getGroupId(peerid):
+	a = peerid.split('-')
+
+	if len(a) == 2:
+		mygroupid = a[1]
+	else:
+		mygroupid = ''
+
+	return mygroupid
 
 
 def sendToTracker(metainfo, peerid, msg, outputfile='/dev/null'):

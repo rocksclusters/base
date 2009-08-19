@@ -1,11 +1,19 @@
 #!/opt/rocks/bin/python
 #
-# $Id: rocks-bt.py,v 1.14 2008/10/28 20:16:42 bruno Exp $
+# $Id: rocks-bt.py,v 1.15 2009/08/19 18:45:29 bruno Exp $
 #
 # @COPYRIGHT@
 # @COPYRIGHT@
 #
 # $Log: rocks-bt.py,v $
+# Revision 1.15  2009/08/19 18:45:29  bruno
+# add support for 'avalanche groups'.
+#
+# if there are multiple peers that are caching a requested package, then
+# attempt to get the package from a peer that has the same group id as you.
+#
+# group ids are set with the 'avalanche-group' attribute.
+#
 # Revision 1.14  2008/10/28 20:16:42  bruno
 # check if anancoda has asked for a package two times in a row. if so, we
 # assume the package is corrupted and we instruct the node to get the package
@@ -189,6 +197,32 @@ f.write('%s' % filename)
 f.close()
 
 #
+# put the peers that are from the same avalanche group as this node in
+# the front of the list
+#
+mygroupid = BitTorrent.rocks.getGroupId(mypeerid)
+
+file.write('peers before: %s\n' % peers)
+
+group = []
+notgroup = []
+for peer in peers:
+	if peer.has_key('peer id') and \
+		mygroupid == BitTorrent.rocks.getGroupId(peer['peer id']):
+
+		group.append(peer)
+	else:
+		notgroup.append(peer)
+	
+#
+# put the two groups together and append the kickstart host ip to the
+# end of the list
+#
+peers = group + notgroup + [ {'ip' : host} ]
+
+file.write('peers after: %s\n' % peers)
+
+#
 # optimization -- if mypeerid is in the list of peers, that means we already
 # have the RPM, just serve it from the local copy
 #
@@ -202,10 +236,7 @@ for peer in peers:
 		break
 
 if havefile == 0:
-	#
-	# append the kickstart host ip to the end of the list
-	#
-	for peer in peers + [ {'ip' : host} ]:
+	for peer in peers:
 		#
 		# get the RPM
 		#
