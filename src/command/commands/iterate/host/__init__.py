@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.1 2009/06/10 17:40:26 mjk Exp $
+# $Id: __init__.py,v 1.2 2009/08/20 17:16:17 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.2  2009/08/20 17:16:17  bruno
+# fix help
+#
 # Revision 1.1  2009/06/10 17:40:26  mjk
 # - new verb interate
 # - every object should have an iterate (right now just host)
@@ -89,11 +92,11 @@ class Command(command):
         Can be used in place of the command argument.
         </param>
 
-	<example cmd='iter host compute "scp file %:/tmp/"'>
+	<example cmd='iterate host compute "scp file %:/tmp/"'>
 	Copies file to the /tmp directory of every compute node
 	</example>
 
-	<example cmd='iter host compute command="scp file %:/tmp/"'>
+	<example cmd='iterate host compute command="scp file %:/tmp/"'>
 	Same as above
 	</example>
 	"""
