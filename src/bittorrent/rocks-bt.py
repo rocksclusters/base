@@ -1,11 +1,14 @@
 #!/opt/rocks/bin/python
 #
-# $Id: rocks-bt.py,v 1.15 2009/08/19 18:45:29 bruno Exp $
+# $Id: rocks-bt.py,v 1.16 2009/08/23 20:19:22 mjk Exp $
 #
-# @COPYRIGHT@
-# @COPYRIGHT@
+# @Copyright@
+# @Copyright@
 #
 # $Log: rocks-bt.py,v $
+# Revision 1.16  2009/08/23 20:19:22  mjk
+# might be better
+#
 # Revision 1.15  2009/08/19 18:45:29  bruno
 # add support for 'avalanche groups'.
 #
@@ -89,7 +92,24 @@ import sha
 import BitTorrent.bencode
 import BitTorrent.rocks
 
-file = open('/tmp/rocks-bt.log', 'a')
+def HasTorrent(filename):
+	files = [ 
+		'images/product.img',
+		'images/stage2.img',
+		'images/updates.img',
+		'repodata/comps.xml',
+		'repodata/filelists.xml.gz',
+		'repodata/other.xml.gz',
+		'repodata/primary.xml.gz',
+		'repodata/repomd.xml',
+		'.rpm'
+		]
+	for file in files:
+		if filename.rfind(file) != -1:
+			return True
+	return False
+
+file = open('/tmp/rocks-bt.log', 'a') # open log file
 
 if os.path.exists('/tmp/updates/rocks/bin/wget'):
 	wget = '/tmp/updates/rocks/bin/wget'
@@ -99,7 +119,8 @@ else:
 #
 # set some wget flags
 #
-wget += ' --dns-timeout=3 --connect-timeout=3 --read-timeout=10 --tries=3'
+wget += ' --dns-timeout=3 --connect-timeout=3 ' \
+	'--read-timeout=10 --tries=1 -nv -a/tmp/wget.log'
 
 form = cgi.FieldStorage()
 if form.has_key('filename'):
@@ -147,7 +168,24 @@ mypeerid = BitTorrent.rocks.getPeerId()
 #
 cmd = '%s http://%s/%s.torrent --output-document=/tmp/torrent 2> /dev/null' % \
 	(wget, host, filename)
-status = os.system(cmd)
+
+backoff = 1
+if HasTorrent(filename):
+	tries = 10
+	file.write('assume torrent exist for file (%s)\n' % (filename))
+else:
+	tries = 1
+while True:
+	file.write('attempt to get torrent file for file (%s)\n' % (filename))
+	status = os.system(cmd)
+	if status == 0:
+		break # got the file
+	tries -= 1
+	if tries:
+		sleep(backoff)
+		backoff += 1
+	else:
+		break
 
 if status != 0:
 	file.write('failed to get torrent file for file (%s)\n' % (filename))
@@ -244,6 +282,7 @@ if havefile == 0:
 
 		cmd = '%s http://%s/%s -O %s' % (wget, peer['ip'], filename,
 			tempfile)
+
 		status = os.system(cmd)
 
 		#
