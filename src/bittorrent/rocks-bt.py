@@ -1,11 +1,14 @@
 #!/opt/rocks/bin/python
 #
-# $Id: rocks-bt.py,v 1.20 2009/08/24 19:15:01 bruno Exp $
+# $Id: rocks-bt.py,v 1.21 2009/08/24 23:55:35 bruno Exp $
 #
 # @Copyright@
 # @Copyright@
 #
 # $Log: rocks-bt.py,v $
+# Revision 1.21  2009/08/24 23:55:35  bruno
+# untar the torrent files
+#
 # Revision 1.20  2009/08/24 19:15:01  bruno
 # more
 #
@@ -156,13 +159,18 @@ if form.has_key('serverip'):
 if os.path.exists('/mnt/sysimage'):
 	savefile = '/mnt/sysimage/'
 	
-	#if not os.path.exists('/mnt/sysimage/install'):
-		#cmd = 'rm -rf /install'
-		#os.system(cmd)
-		#cmd = 'mkdir -p /mnt/sysimage/install'
-		#os.system(cmd)
-		#cmd = 'ln -s /mnt/sysimage/install /install'
-		#os.system(cmd)
+	if not os.path.exists('/mnt/sysimage/install'):
+		cmd = 'rm -rf /install'
+		os.system(cmd)
+		cmd = 'mkdir -p /mnt/sysimage/install'
+		os.system(cmd)
+		cmd = 'ln -s /mnt/sysimage/install /install'
+		os.system(cmd)
+
+		cmd = 'cd / && tar zfxm /tmp/master-torrent.tar.gz' 
+		os.system(cmd)
+		cmd = 'rm -f /tmp/master-torrent.tar.gz'
+		os.system(cmd)
 else:
 	savefile = '/'
 
