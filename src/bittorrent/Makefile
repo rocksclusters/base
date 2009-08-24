@@ -1,10 +1,13 @@
 #
-# $Id: Makefile,v 1.8 2006/12/06 00:20:20 anoop Exp $
+# $Id: Makefile,v 1.9 2009/08/24 14:53:58 bruno Exp $
 #
 # @COPYRIGHT@
 # @COPYRIGHT@
 #
 # $Log: Makefile,v $
+# Revision 1.9  2009/08/24 14:53:58  bruno
+# more
+#
 # Revision 1.8  2006/12/06 00:20:20  anoop
 # All the Makefiles get a bit of an overhaul
 #
@@ -54,7 +57,6 @@
 #
 
 REDHAT.ROOT     = $(CURDIR)/../../
-ROCKSROOT       = ../../../../..
 
 -include $(ROCKSROOT)/etc/Rules.mk
 include Rules.mk

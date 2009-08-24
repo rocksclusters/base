@@ -1,11 +1,14 @@
 #!/opt/rocks/bin/python
 #
-# $Id: rocks-bt.py,v 1.17 2009/08/24 14:23:33 mjk Exp $
+# $Id: rocks-bt.py,v 1.18 2009/08/24 14:53:58 bruno Exp $
 #
 # @Copyright@
 # @Copyright@
 #
 # $Log: rocks-bt.py,v $
+# Revision 1.18  2009/08/24 14:53:58  bruno
+# more
+#
 # Revision 1.17  2009/08/24 14:23:33  mjk
 # log with timestamp
 #
@@ -115,12 +118,13 @@ def HasTorrent(filename):
 
 def Log(file, s):
 	tm = time.strftime('%d/%b/%Y:%H:%M:%S', time.gmtime())
-	file.write('%s - %s\n' % (tm, s)
-
+	file.write('%s - %s\n' % (tm, s))
 
 	
-
-file = open('/tmp/rocks-bt.log', 'a') # open log file
+#
+# open log file
+#
+file = open('/tmp/rocks-bt.log', 'a')
 Log(file, 'STARTED')
 
 if os.path.exists('/tmp/updates/rocks/bin/wget'):
@@ -184,11 +188,11 @@ cmd = '%s http://%s/%s.torrent --output-document=/tmp/torrent 2> /dev/null' % \
 backoff = 1
 if HasTorrent(filename):
 	tries = 10
-	Log('assume torrent exist for file (%s)\n' % (filename))
+	Log(file, 'assume torrent exist for file (%s)\n' % (filename))
 else:
 	tries = 1
 while True:
-	Log('attempt to get torrent file for file (%s)\n' % (filename))
+	Log(file, 'attempt to get torrent file for file (%s)\n' % (filename))
 	status = os.system(cmd)
 	if status == 0:
 		break # got the file
@@ -200,7 +204,7 @@ while True:
 		break
 
 if status != 0:
-        Log('failed to get torrent file for file (%s)\n' % (filename))
+        Log(file, 'failed to get torrent file for file (%s)\n' % (filename))
 
 	#
 	# failed to get the torrent file. just set the peers to the empty
@@ -218,7 +222,9 @@ else:
 	# peer_id, event, port and left are phony values in order to fake out
 	# the tracker
 	#
-	peers = BitTorrent.rocks.getPeers(torrentinfo, mypeerid)
+	bogus = mypeerid[0:13] + 'snooped'
+	peers = BitTorrent.rocks.getPeers(torrentinfo, bogus)
+	BitTorrent.rocks.sendToTracker(torrentinfo, bogus, 'done')
 
 #
 # if the same file is asked for two times in a row, we assume that anaconda
@@ -252,17 +258,19 @@ f.close()
 #
 mygroupid = BitTorrent.rocks.getGroupId(mypeerid)
 
-Log('peers before: %s\n' % peers)
+Log(file, 'peers before: %s\n' % peers)
 
 group = []
 notgroup = []
 for peer in peers:
-	if peer.has_key('peer id') and \
-		mygroupid == BitTorrent.rocks.getGroupId(peer['peer id']):
+	if peer.has_key('peer id'):
+		if peer['peer id'][13:] == 'snooped':
+			continue
 
-		group.append(peer)
-	else:
-		notgroup.append(peer)
+		elif mygroupid == BitTorrent.rocks.getGroupId(peer['peer id']):
+			group.append(peer)
+		else:
+			notgroup.append(peer)
 	
 #
 # put the two groups together and append the kickstart host ip to the
@@ -270,20 +278,18 @@ for peer in peers:
 #
 peers = group + notgroup + [ {'ip' : host} ]
 
-Log('peers after: %s\n' % peers)
+Log(file, 'peers after: %s\n' % peers)
 
 #
 # optimization -- if mypeerid is in the list of peers, that means we already
 # have the RPM, just serve it from the local copy
 #
-Log('filename: %s\n' % filename)
+Log(file, 'filename: %s\n' % filename)
 havefile = 0
-for peer in peers:
-	if peer.has_key('peer id') and peer['peer id'] == mypeerid:
-		havefile = 1
-		Log('havefile: %s\n' % filename)
-		status = 0
-		break
+if os.path.exists(os.path.join('/', filename)):
+	havefile = 1
+	Log(file, 'havefile: %s\n' % filename)
+	status = 0
 
 if havefile == 0:
 	for peer in peers:
@@ -300,7 +306,7 @@ if havefile == 0:
 		#
 		# output the request to a log file
 		#
-		Log('http://%s/%s : status %d\n' %
+		Log(file, 'http://%s/%s : status %d\n' %
 						(peer['ip'], filename, status))
 
 		if status == 0:
