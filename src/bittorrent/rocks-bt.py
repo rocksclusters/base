@@ -1,11 +1,14 @@
 #!/opt/rocks/bin/python
 #
-# $Id: rocks-bt.py,v 1.18 2009/08/24 14:53:58 bruno Exp $
+# $Id: rocks-bt.py,v 1.19 2009/08/24 16:40:23 bruno Exp $
 #
 # @Copyright@
 # @Copyright@
 #
 # $Log: rocks-bt.py,v $
+# Revision 1.19  2009/08/24 16:40:23  bruno
+# lots o' loggin'
+#
 # Revision 1.18  2009/08/24 14:53:58  bruno
 # more
 #
@@ -174,121 +177,139 @@ dir = os.path.dirname(savefile)
 if not os.path.exists(dir):
 	os.system('mkdir -p %s' % (dir))
 	
+Log(file, 'getPeerId:before')
+
 #
 # construct a peerid that will be used to talk to the tracker
 #
 mypeerid = BitTorrent.rocks.getPeerId()
 
-#
-# get the torrent file for this file
-#
-cmd = '%s http://%s/%s.torrent --output-document=/tmp/torrent 2> /dev/null' % \
-	(wget, host, filename)
-
-backoff = 1
-if HasTorrent(filename):
-	tries = 10
-	Log(file, 'assume torrent exist for file (%s)\n' % (filename))
-else:
-	tries = 1
-while True:
-	Log(file, 'attempt to get torrent file for file (%s)\n' % (filename))
-	status = os.system(cmd)
-	if status == 0:
-		break # got the file
-	tries -= 1
-	if tries:
-		sleep(backoff)
-		backoff += 1
-	else:
-		break
-
-if status != 0:
-        Log(file, 'failed to get torrent file for file (%s)\n' % (filename))
-
-	#
-	# failed to get the torrent file. just set the peers to the empty
-	# list and let the loop below append the name of the frontend to
-	# the list. that is, we'll just go to the frontend for the file
-	#
-	peers = []
-	torrentinfo = None
-else:
-	torrentfile = open('/tmp/torrent', 'r')
-	torrentinfo = BitTorrent.bencode.bdecode(torrentfile.read())
-	torrentfile.close()
-
-	#
-	# peer_id, event, port and left are phony values in order to fake out
-	# the tracker
-	#
-	bogus = mypeerid[0:13] + 'snooped'
-	peers = BitTorrent.rocks.getPeers(torrentinfo, bogus)
-	BitTorrent.rocks.sendToTracker(torrentinfo, bogus, 'done')
-
-#
-# if the same file is asked for two times in a row, we assume that anaconda
-# found something wrong with the file (e.g., checksum error).
-#
-# we will tell the tracker that we are no longer a peer for the file and
-# we'll ask for the file directly from the frontend -- we'll do that by
-# clearing out the list of peers.
-#
-if os.path.exists('/tmp/rocks-bt-last-request'):
-	f = open('/tmp/rocks-bt-last-request', 'r')
-	last_request = f.readline()
-	f.close()
-else:
-	last_request = ''
-
-if last_request == filename:
-	BitTorrent.rocks.sendToTracker(torrentinfo, mypeerid, 'done')
-	peers = []
-
-#
-# save the name of the current requested file.
-#
-f = open('/tmp/rocks-bt-last-request', 'w')
-f.write('%s' % filename)
-f.close()
-
-#
-# put the peers that are from the same avalanche group as this node in
-# the front of the list
-#
-mygroupid = BitTorrent.rocks.getGroupId(mypeerid)
-
-Log(file, 'peers before: %s\n' % peers)
-
-group = []
-notgroup = []
-for peer in peers:
-	if peer.has_key('peer id'):
-		if peer['peer id'][13:] == 'snooped':
-			continue
-
-		elif mygroupid == BitTorrent.rocks.getGroupId(peer['peer id']):
-			group.append(peer)
-		else:
-			notgroup.append(peer)
-	
-#
-# put the two groups together and append the kickstart host ip to the
-# end of the list
-#
-peers = group + notgroup + [ {'ip' : host} ]
-
-Log(file, 'peers after: %s\n' % peers)
+Log(file, 'getPeerId:after')
 
 #
 # optimization -- if mypeerid is in the list of peers, that means we already
 # have the RPM, just serve it from the local copy
 #
-Log(file, 'filename: %s\n' % filename)
+Log(file, 'filename: %s' % filename)
 havefile = 0
 if os.path.exists(os.path.join('/', filename)):
 	havefile = 1
-	Log(file, 'havefile: %s\n' % filename)
+	Log(file, 'havefile: %s' % filename)
+else:
+	#
+	# get the torrent file for this file
+	#
+	cmd = '%s http://%s/%s.torrent --output-document=/tmp/torrent 2> /dev/null' % \
+		(wget, host, filename)
+	
+	backoff = 1
+	if HasTorrent(filename):
+		tries = 10
+		Log(file, 'assume torrent exist for file (%s)' % (filename))
+	else:
+		tries = 1
+	
+	while True:
+		Log(file, 'attempt to get torrent file for file (%s)' % (filename))
+		status = os.system(cmd)
+		Log(file, 'torrent file attempt done')
+	
+		if status == 0:
+			break # got the file
+		tries -= 1
+		if tries:
+			sleep(backoff)
+			backoff += 1
+		else:
+			break
+	
+	if status != 0:
+	        Log(file, 'failed to get torrent file for file (%s)' % (filename))
+	
+		#
+		# failed to get the torrent file. just set the peers to the empty
+		# list and let the loop below append the name of the frontend to
+		# the list. that is, we'll just go to the frontend for the file
+		#
+		peers = []
+		torrentinfo = None
+	else:
+		Log(file, 'torrent decode start')
+	
+		torrentfile = open('/tmp/torrent', 'r')
+		torrentinfo = BitTorrent.bencode.bdecode(torrentfile.read())
+		torrentfile.close()
+	
+		Log(file, 'torrent decode done')
+	
+		#
+		# peer_id, event, port and left are phony values in order to fake out
+		# the tracker
+		#
+		bogus = mypeerid[0:13] + 'snooped'
+		Log(file, 'bogus start')
+		peers = BitTorrent.rocks.getPeers(torrentinfo, bogus)
+		Log(file, 'bogus middle')
+		BitTorrent.rocks.sendToTracker(torrentinfo, bogus, 'done')
+		Log(file, 'bogus done')
+	
+	#
+	# if the same file is asked for two times in a row, we assume that anaconda
+	# found something wrong with the file (e.g., checksum error).
+	#
+	# we will tell the tracker that we are no longer a peer for the file and
+	# we'll ask for the file directly from the frontend -- we'll do that by
+	# clearing out the list of peers.
+	#
+	if os.path.exists('/tmp/rocks-bt-last-request'):
+		f = open('/tmp/rocks-bt-last-request', 'r')
+		last_request = f.readline()
+		f.close()
+	else:
+		last_request = ''
+	
+	if last_request == filename:
+		Log(file, 'corner case 1 start')
+		BitTorrent.rocks.sendToTracker(torrentinfo, mypeerid, 'done')
+		Log(file, 'corner case 1 end')
+		peers = []
+	
+	#
+	# save the name of the current requested file.
+	#
+	f = open('/tmp/rocks-bt-last-request', 'w')
+	f.write('%s' % filename)
+	f.close()
+	
+	#
+	# put the peers that are from the same avalanche group as this node in
+	# the front of the list
+	#
+	mygroupid = BitTorrent.rocks.getGroupId(mypeerid)
+	
+	Log(file, 'peers before: %s' % peers)
+	
+	group = []
+	notgroup = []
+	for peer in peers:
+		if peer.has_key('peer id'):
+			if peer['peer id'][13:] == 'snooped':
+				continue
+	
+			elif mygroupid == BitTorrent.rocks.getGroupId(peer['peer id']):
+				group.append(peer)
+			else:
+				notgroup.append(peer)
+		
+	#
+	# put the two groups together and append the kickstart host ip to the
+	# end of the list
+	#
+	peers = group + notgroup + [ {'ip' : host} ]
+	
+	Log(file, 'peers after: %s' % peers)
+
+if havefile:
 	status = 0
 
 if havefile == 0:
@@ -298,15 +319,19 @@ if havefile == 0:
 		#
 		tempfile = '/install/' + os.path.basename(savefile)
 
+		Log(file, 'getting RPM start')
+
 		cmd = '%s http://%s/%s -O %s' % (wget, peer['ip'], filename,
 			tempfile)
 
 		status = os.system(cmd)
 
+		Log(file, 'getting RPM end')
+
 		#
 		# output the request to a log file
 		#
-		Log(file, 'http://%s/%s : status %d\n' %
+		Log(file, 'http://%s/%s : status %d' %
 						(peer['ip'], filename, status))
 
 		if status == 0:
@@ -314,8 +339,10 @@ if havefile == 0:
 			# save the file so another installing node can
 			# download it from us
 			#
+			Log(file, 'mv start')
 			cmd = 'mv %s %s' % (tempfile, savefile)
 			os.system(cmd)
+			Log(file, 'mv end')
 			break
 		else:
 			#
@@ -333,8 +360,10 @@ if havefile == 0:
 			#
 			# in this case, remove the zero-length file
 			#
+			Log(file, 'status non-zero start')
 			cmd = 'rm -f %s' % (tempfile)
 			os.system(cmd)
+			Log(file, 'status non-zero end')
 
 if status == 0:
 	#
@@ -344,6 +373,7 @@ if status == 0:
 	# bytes
 	#
 	if os.environ.has_key('HTTP_RANGE'):
+		Log(file, 'HTTP_RANGE start')
 		bytes = string.split(os.environ['HTTP_RANGE'], '=')
 		if len(bytes) > 1:
 			range = string.split(bytes[1], '-')
@@ -359,9 +389,12 @@ if status == 0:
 					last = os.stat(savefile)[stat.ST_SIZE]
 
 				filesize = last - offset + 1
+		Log(file, 'HTTP_RANGE end')
 
 	else:
+		Log(file, 'full file start')
 		filesize = os.stat(savefile)[stat.ST_SIZE]
+		Log(file, 'full file end')
 
 	#
 	# output the file to the requesting local web server
@@ -375,17 +408,21 @@ if status == 0:
 	fd = os.open(savefile, os.O_RDONLY)
 
 	if os.environ.has_key('HTTP_RANGE'):
+		Log(file, 'HTTP_RANGE file output start')
 		os.lseek(fd, offset, 0)
 		buf = os.read(fd, filesize)
 		sys.stdout.write(buf)
+		Log(file, 'HTTP_RANGE file output end')
 	else:
 		#
 		# output the entire file
 		#
+		Log(file, 'full file output start')
 		buf = os.read(fd, 131072)
 		while len(buf) > 0:
 			sys.stdout.write(buf)
 			buf = os.read(fd, 131072)
+		Log(file, 'full file output end')
 
 	os.close(fd)
 
@@ -393,14 +430,18 @@ if status == 0:
 		#
 		# now tell the tracker that we have the file
 		#
+		Log(file, 'mv-2 start')
 		cmd = 'mv /tmp/torrent %s.torrent' % (savefile)
 		os.system(cmd)
+		Log(file, 'mv-2 end')
 
+		Log(file, 'tell tracker "started" start')
 		BitTorrent.rocks.sendToTracker(torrentinfo, mypeerid, 'started')
+		Log(file, 'tell tracker "started" end')
 	else:
 		cmd = 'rm -f /tmp/torrent'
 		os.system(cmd)
 
-Log(file, 'END')
+Log(file, 'END\n')
 file.close()
 
