@@ -1,11 +1,14 @@
 #!/opt/rocks/bin/python
 #
-# $Id: rocks-bt.py,v 1.16 2009/08/23 20:19:22 mjk Exp $
+# $Id: rocks-bt.py,v 1.17 2009/08/24 14:23:33 mjk Exp $
 #
 # @Copyright@
 # @Copyright@
 #
 # $Log: rocks-bt.py,v $
+# Revision 1.17  2009/08/24 14:23:33  mjk
+# log with timestamp
+#
 # Revision 1.16  2009/08/23 20:19:22  mjk
 # might be better
 #
@@ -87,6 +90,7 @@ import os.path
 import getopt
 import cgi
 import string
+import time
 
 import sha
 import BitTorrent.bencode
@@ -109,7 +113,15 @@ def HasTorrent(filename):
 			return True
 	return False
 
+def Log(file, s):
+	tm = time.strftime('%d/%b/%Y:%H:%M:%S', time.gmtime())
+	file.write('%s - %s\n' % (tm, s)
+
+
+	
+
 file = open('/tmp/rocks-bt.log', 'a') # open log file
+Log(file, 'STARTED')
 
 if os.path.exists('/tmp/updates/rocks/bin/wget'):
 	wget = '/tmp/updates/rocks/bin/wget'
@@ -172,11 +184,11 @@ cmd = '%s http://%s/%s.torrent --output-document=/tmp/torrent 2> /dev/null' % \
 backoff = 1
 if HasTorrent(filename):
 	tries = 10
-	file.write('assume torrent exist for file (%s)\n' % (filename))
+	Log('assume torrent exist for file (%s)\n' % (filename))
 else:
 	tries = 1
 while True:
-	file.write('attempt to get torrent file for file (%s)\n' % (filename))
+	Log('attempt to get torrent file for file (%s)\n' % (filename))
 	status = os.system(cmd)
 	if status == 0:
 		break # got the file
@@ -188,7 +200,7 @@ while True:
 		break
 
 if status != 0:
-	file.write('failed to get torrent file for file (%s)\n' % (filename))
+        Log('failed to get torrent file for file (%s)\n' % (filename))
 
 	#
 	# failed to get the torrent file. just set the peers to the empty
@@ -240,7 +252,7 @@ f.close()
 #
 mygroupid = BitTorrent.rocks.getGroupId(mypeerid)
 
-file.write('peers before: %s\n' % peers)
+Log('peers before: %s\n' % peers)
 
 group = []
 notgroup = []
@@ -258,18 +270,18 @@ for peer in peers:
 #
 peers = group + notgroup + [ {'ip' : host} ]
 
-file.write('peers after: %s\n' % peers)
+Log('peers after: %s\n' % peers)
 
 #
 # optimization -- if mypeerid is in the list of peers, that means we already
 # have the RPM, just serve it from the local copy
 #
-file.write('filename: %s\n' % filename)
+Log('filename: %s\n' % filename)
 havefile = 0
 for peer in peers:
 	if peer.has_key('peer id') and peer['peer id'] == mypeerid:
 		havefile = 1
-		file.write('havefile: %s\n' % filename)
+		Log('havefile: %s\n' % filename)
 		status = 0
 		break
 
@@ -288,7 +300,7 @@ if havefile == 0:
 		#
 		# output the request to a log file
 		#
-		file.write('http://%s/%s : status %d\n' %
+		Log('http://%s/%s : status %d\n' %
 						(peer['ip'], filename, status))
 
 		if status == 0:
@@ -383,5 +395,6 @@ if status == 0:
 		cmd = 'rm -f /tmp/torrent'
 		os.system(cmd)
 
+Log(file, 'END')
 file.close()
 
