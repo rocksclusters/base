@@ -1,11 +1,14 @@
 #!/opt/rocks/bin/python
 #
-# $Id: rocks-bt.py,v 1.19 2009/08/24 16:40:23 bruno Exp $
+# $Id: rocks-bt.py,v 1.20 2009/08/24 19:15:01 bruno Exp $
 #
 # @Copyright@
 # @Copyright@
 #
 # $Log: rocks-bt.py,v $
+# Revision 1.20  2009/08/24 19:15:01  bruno
+# more
+#
 # Revision 1.19  2009/08/24 16:40:23  bruno
 # lots o' loggin'
 #
@@ -153,13 +156,13 @@ if form.has_key('serverip'):
 if os.path.exists('/mnt/sysimage'):
 	savefile = '/mnt/sysimage/'
 	
-	if not os.path.exists('/mnt/sysimage/install'):
-		cmd = 'rm -rf /install'
-		os.system(cmd)
-		cmd = 'mkdir -p /mnt/sysimage/install'
-		os.system(cmd)
-		cmd = 'ln -s /mnt/sysimage/install /install'
-		os.system(cmd)
+	#if not os.path.exists('/mnt/sysimage/install'):
+		#cmd = 'rm -rf /install'
+		#os.system(cmd)
+		#cmd = 'mkdir -p /mnt/sysimage/install'
+		#os.system(cmd)
+		#cmd = 'ln -s /mnt/sysimage/install /install'
+		#os.system(cmd)
 else:
 	savefile = '/'
 
@@ -192,36 +195,43 @@ Log(file, 'getPeerId:after')
 #
 Log(file, 'filename: %s' % filename)
 havefile = 0
+havetorrent = 0
 if os.path.exists(os.path.join('/', filename)):
 	havefile = 1
 	Log(file, 'havefile: %s' % filename)
 else:
-	#
-	# get the torrent file for this file
-	#
-	cmd = '%s http://%s/%s.torrent --output-document=/tmp/torrent 2> /dev/null' % \
-		(wget, host, filename)
-	
-	backoff = 1
-	if HasTorrent(filename):
-		tries = 10
-		Log(file, 'assume torrent exist for file (%s)' % (filename))
+	torrent_filename = os.path.join('/', filename + '.torrent')
+	if os.path.exists(torrent_filename):
+		havetorrent = 1
+		os.system('cp %s /tmp/torrent' % torrent_filename)
+		status = 0
 	else:
-		tries = 1
+		#
+		# get the torrent file for this file
+		#
+		cmd = '%s http://%s/%s.torrent --output-document=/tmp/torrent 2> /dev/null' % \
+			(wget, host, filename)
 	
-	while True:
-		Log(file, 'attempt to get torrent file for file (%s)' % (filename))
-		status = os.system(cmd)
-		Log(file, 'torrent file attempt done')
-	
-		if status == 0:
-			break # got the file
-		tries -= 1
-		if tries:
-			sleep(backoff)
-			backoff += 1
+		backoff = 1
+		if HasTorrent(filename):
+			tries = 10
+			Log(file, 'assume torrent exist for file (%s)' % (filename))
 		else:
-			break
+			tries = 1
+	
+		while True:
+			Log(file, 'attempt to get torrent file for file (%s)' % (filename))
+			status = os.system(cmd)
+			Log(file, 'torrent file attempt done')
+		
+			if status == 0:
+				break # got the file
+			tries -= 1
+			if tries:
+				sleep(backoff)
+				backoff += 1
+			else:
+				break
 	
 	if status != 0:
 	        Log(file, 'failed to get torrent file for file (%s)' % (filename))
@@ -430,10 +440,11 @@ if status == 0:
 		#
 		# now tell the tracker that we have the file
 		#
-		Log(file, 'mv-2 start')
-		cmd = 'mv /tmp/torrent %s.torrent' % (savefile)
-		os.system(cmd)
-		Log(file, 'mv-2 end')
+		if not havetorrent:
+			Log(file, 'mv-2 start')
+			cmd = 'mv /tmp/torrent %s.torrent' % (savefile)
+			os.system(cmd)
+			Log(file, 'mv-2 end')
 
 		Log(file, 'tell tracker "started" start')
 		BitTorrent.rocks.sendToTracker(torrentinfo, mypeerid, 'started')
