@@ -309,6 +309,13 @@ class AnacondaYumRepo(YumRepository):
                 #
                 # add 'timeout' parameter
                 #
+		import time
+		if self.timeout < 150.0:
+			self.timeout = 150.0
+
+		file = open('/tmp/anaconda-http.log', 'a')
+		file.write('%s: %s start\n' % (time.time(), relative))
+
                 result = self.grab.urlgrab(relative, local,
                                            keepalive = False,
                                            text = text,
@@ -319,12 +326,15 @@ class AnacondaYumRepo(YumRepository):
                                            http_headers=headers,
                                            timeout=self.timeout,
                                            )
+
+		file.write('%s: %s end\n' % (time.time(), relative))
+		file.close()
                 # ROCKS
 
             except URLGrabError, e:
                 # ROCKS
                 # slowly increase the timeout by 30 second increments
-                self.timeout += 30.0
+		self.timeout += 30.0
                 # ROCKS
 
                 errstr = "failure: %s from %s: %s" % (relative, self.id, e)
