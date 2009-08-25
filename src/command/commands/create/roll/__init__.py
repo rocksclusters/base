@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.29 2009/05/01 19:06:56 mjk Exp $
+# $Id: __init__.py,v 1.30 2009/08/25 21:45:51 anoop Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,12 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.30  2009/08/25 21:45:51  anoop
+# More patching support for Solaris.
+#   - support for including patches during creation of Rolls
+#   - support for parsing <patch> tags
+#   - support for contrib patches
+#
 # Revision 1.29  2009/05/01 19:06:56  mjk
 # chimi con queso
 #
@@ -838,6 +844,18 @@ class RollBuilder_sunos(Builder, rocks.dist.Arch):
 			(os.path.join(self.tmp_dir,'PKGS'),
 			 self.prod_dir))
 
+		# Look for the patches directory. Some Solaris packages,
+		# such as Sun Studio 12u1 will need to patch Solaris 10.
+		# Such patches can come from within Rolls
+		src_patch_dir = os.path.join(self.tmp_dir, 'PATCHES')
+		if os.path.exists(src_patch_dir) and len(os.listdir(src_patch_dir)) > 0:
+			self.patch_dir = os.path.join(self.arch_dir,
+				'Solaris_10', 'Patches')
+			os.makedirs(self.patch_dir)
+			cwd = os.getcwd()
+			os.chdir('PATCHES')
+			os.system('find . | cpio -mpud %s' % self.patch_dir)
+			os.chdir(cwd)
 		# Copy the roll-rollname.xml  file
 		shutil.copy(os.path.join(self.tmp_dir, self.xml_file),
 			os.path.join(self.arch_dir,self.xml_file))

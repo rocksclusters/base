@@ -54,6 +54,12 @@
 # @Copyright@
 #
 # $Log: gen.py,v $
+# Revision 1.59  2009/08/25 21:45:51  anoop
+# More patching support for Solaris.
+#   - support for including patches during creation of Rolls
+#   - support for parsing <patch> tags
+#   - support for contrib patches
+#
 # Revision 1.58  2009/06/02 17:22:25  anoop
 # use unix-generic options and not linux specific ones
 #
@@ -1093,6 +1099,7 @@ class OtherNodeFilter_sunos(NodeFilter):
 		if node.nodeName not in [
 			'cluster',
 			'package',
+			'patch',
 			'pre',
 			'post',
 			]:
@@ -1122,6 +1129,7 @@ class Generator_sunos(Generator):
 		self.ks['pkg_off']	= [] # Deselected Packages
 		self.ks['pkgcl_on']	= [] # Selected Package Clusters
 		self.ks['pkgcl_off']	= [] # Deselected Package Clusters
+		self.ks['patch']	= [] # List of patches
 		self.ks['begin']	= [] # Begin Section
 		self.ks['finish']	= [] # Finish Section
 		self.ks['service_on']	= [] # Enabled Services section
@@ -1376,6 +1384,10 @@ class Generator_sunos(Generator):
 
 		self.ks[key].append(self.getChildText(node).strip())
 		
+	# patch
+	def handle_patch(self, node):
+		attr = node.attributes
+		self.ks['patch'].append(self.getChildText(node))
 	# <pre>
 		
 	def handle_pre(self, node):
@@ -1499,6 +1511,9 @@ class Generator_sunos(Generator):
 			list.append('package\t%s\tadd' % i)
 		for i in self.ks['pkg_off']:
 			list.append('package\t%s\tdelete' % i)
+		if len(self.ks['patch']) > 0:
+			patch_list = string.join(self.ks['patch'],',')
+			list.append('patch %s local_file /cdrom/Solaris_10/Patches' % patch_list)
 
 		return list
 		
