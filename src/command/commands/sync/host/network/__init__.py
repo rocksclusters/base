@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.8 2009/05/01 19:07:04 mjk Exp $
+# $Id: __init__.py,v 1.9 2009/08/28 19:54:47 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.9  2009/08/28 19:54:47  bruno
+# also update the static routes file when syncing the network
+#
 # Revision 1.8  2009/05/01 19:07:04  mjk
 # chimi con queso
 #
@@ -128,7 +131,12 @@ class Command(rocks.commands.sync.host.command):
 			cmd = '/opt/rocks/bin/rocks report host interface '
 			cmd += '%s | ' % host
 			cmd += '/opt/rocks/bin/rocks report script | '
-			cmd += 'ssh %s bash > /dev/null 2>&1' % host
+			cmd += 'ssh %s bash > /dev/null 2>&1 ' % host
+
+			cmd += '; /opt/rocks/bin/rocks report host route '
+			cmd += '%s | ssh %s ' % (host, host)
+			cmd += '"cat > /etc/sysconfig/static-routes" '
+			cmd += '2> /dev/null'
 
 			p = Parallel(cmd)
 			threads.append(p)
