@@ -1,5 +1,5 @@
 # --------------------------------------------------- -*- Makefile -*- --
-# $Id: Makefile,v 1.9 2009/05/01 19:07:05 mjk Exp $
+# $Id: Makefile,v 1.10 2009/08/28 20:57:11 bruno Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.10  2009/08/28 20:57:11  bruno
+# make 80 column pretty
+#
 # Revision 1.9  2009/05/01 19:07:05  mjk
 # chimi con queso
 #
@@ -127,14 +130,14 @@ build:
 	( 								\
 		cd cvs-$(VERSION);					\
 		./configure --prefix=$(PKGROOT);			\
-		$(MAKE);							\
+		$(MAKE);						\
 	)
 	
 install::
 	mkdir -p $(ROOT)/$(PKGROOT)
 	(								\
 		cd cvs-$(VERSION);					\
-		$(MAKE) prefix=$(ROOT)/$(PKGROOT) install;			\
+		$(MAKE) prefix=$(ROOT)/$(PKGROOT) install;		\
 	)
 
 clean::
