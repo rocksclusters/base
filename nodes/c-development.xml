@@ -17,6 +17,9 @@
 
   <changelog>
   $Log: c-development.xml,v $
+  Revision 1.12  2009/08/28 21:49:53  bruno
+  the start of the "most scalable installer in the universe!"
+
   Revision 1.11  2009/05/01 19:06:48  mjk
   chimi con queso
 
@@ -173,6 +176,7 @@
   <package>rpm-devel</package>
   <package>elfutils-libelf-devel</package>
   <package>elfutils-devel</package>
+  <package>curl-devel</package>
 
   <!-- For makedepend -->
   <package>xorg-x11-devel</package>
