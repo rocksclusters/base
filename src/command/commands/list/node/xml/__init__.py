@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.46 2009/07/16 22:37:11 bruno Exp $
+# $Id: __init__.py,v 1.47 2009/09/03 05:12:27 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.47  2009/09/03 05:12:27  bruno
+# added 'var' support back
+#
 # Revision 1.46  2009/07/16 22:37:11  bruno
 # cleanup help info
 #
@@ -390,10 +393,21 @@ class Command(rocks.commands.list.command):
 		else:
 			os.chdir(basedir)
 
+		# Load the entities from the database
+		# get all the unique service types
+		rows = self.db.execute("""select distinctrow service from
+			app_globals""");
+
+		entities = {}
+		if rows > 0:
+			for service, in self.db.fetchall():
+				entities.update(self.db.getGlobalVars(service,
+					attrs['hostname']))
+
 		# Parse the XML graph files in the chosen directory
 
 		parser  = make_parser()
-		handler = rocks.profile.GraphHandler(attrs)
+		handler = rocks.profile.GraphHandler(attrs, entities)
 
 		graphDir = os.path.join('graphs', attrs['graph'])
 		if not os.path.exists(graphDir):

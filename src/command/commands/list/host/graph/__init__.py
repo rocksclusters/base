@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.16 2009/06/11 02:40:39 anoop Exp $
+# $Id: __init__.py,v 1.17 2009/09/03 05:12:26 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.17  2009/09/03 05:12:26  bruno
+# added 'var' support back
+#
 # Revision 1.16  2009/06/11 02:40:39  anoop
 # - frontend "os" attribute missing. This can cause problems
 # - fixed graph generation
@@ -238,7 +241,7 @@ class Command(rocks.commands.list.host.command):
 
 			parser  = make_parser()
 			attrs = self.db.getHostAttrs(host)
-			handler = rocks.profile.GraphHandler(attrs)
+			handler = rocks.profile.GraphHandler(attrs, {})
 
 			for file in os.listdir(graphdir):
 				root, ext = os.path.splitext(file)

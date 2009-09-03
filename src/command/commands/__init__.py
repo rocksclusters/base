@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.72 2009/08/17 21:24:24 bruno Exp $
+# $Id: __init__.py,v 1.73 2009/09/03 05:12:26 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.73  2009/09/03 05:12:26  bruno
+# added 'var' support back
+#
 # Revision 1.72  2009/08/17 21:24:24  bruno
 # nuke the 'site' references
 #
@@ -1151,8 +1154,9 @@ class DatabaseConnection:
 			'where service="%s"' % service)
 		dict = {}
 		for component, in self.link.fetchall():
-			if not dict.has_key(component):
-				dict[component] = self.getGlobalVar(service,
+			key = '%s_%s' % (service, component)
+			if not dict.has_key(key):
+				dict[key] = self.getGlobalVar(service,
 					component, hostname)
 		return dict
 	
