@@ -61,7 +61,6 @@ typedef struct {
 	tracker_header_t	header;
 	uint32_t		numhashes;
 	tracker_info_t		info[0];
-						/* this really is an array */
 } tracker_register_t;
 
 /* there is no response to a 'register' message */
@@ -78,12 +77,23 @@ typedef struct {
 	tracker_header_t	header;
 	uint32_t		numhashes;
 	tracker_info_t		info[0];
-						/* this really is an array */
 } tracker_unregister_t;
 
 typedef struct {
 	tracker_header_t	header;
 } tracker_unregister_resp_t;
+
+/*
+ * hash table to hold the order in which files are requested
+ */
+#define	HASH_TABLE_ENTRIES	128
+
+typedef struct {
+	uint32_t	head;
+	uint32_t	tail;
+	uint32_t	size;
+	tracker_info_t	entry[0];
+} hash_table_t;
 
 
 /*
