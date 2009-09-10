@@ -42,15 +42,6 @@ lookup(int sockfd, in_addr_t *tracker, char *file, tracker_info_t **info)
 	recvbytes = tracker_recv(sockfd, (void *)buf, sizeof(buf),
 		(struct sockaddr *)&recv_addr, &recv_addr_len);
 
-{
-	int	i;
-
-	for (i = 0; i < recvbytes; ++i) {
-		fprintf(stderr, "%02x ", (unsigned char)buf[i]);
-	}
-	fprintf(stderr, "\n");
-}
-
 	if (recvbytes > 0) {
 		tracker_lookup_resp_t	*resp;
 
@@ -85,6 +76,7 @@ lookup(int sockfd, in_addr_t *tracker, char *file, tracker_info_t **info)
 
 		memcpy(*info, resp->info, infosize);
 		retval = resp->numhashes;
+fprintf(stderr, "lookup:retval (%d)\n", retval);
 	} else {
 		retval = 0;
 	}
@@ -104,19 +96,17 @@ get(in_addr_t *ip, char *filename)
 }
 
 int
-register_hash(int sockfd, in_addr_t *ip, tracker_info_t *info)
+register_hash(int sockfd, in_addr_t *ip, uint32_t numhashes,
+	tracker_info_t *info)
 {
 	struct sockaddr_in	send_addr;
 	tracker_register_t	*req;
 	struct in_addr		in;
-	int			len;
-
-fprintf(stderr, "here:1\n");
+	int			len, infolen;
+	int			i;
 
 	bzero(&send_addr, sizeof(send_addr));
 	send_addr.sin_family = AF_INET;
-
-fprintf(stderr, "here:2\n");
 
 	/*
 	 * the ip address is already in network byte order
@@ -124,37 +114,39 @@ fprintf(stderr, "here:2\n");
 	send_addr.sin_addr.s_addr = *ip;
 	send_addr.sin_port = htons(TRACKER_PORT);
 
-fprintf(stderr, "here:3\n");
-	len = sizeof(tracker_register_t) + sizeof(tracker_info_t) +
-		(info->numpeers * sizeof(*info->peers));
-		
+	infolen = 0;
+	for (i = 0 ; i < numhashes ; ++i) {
+		infolen += sizeof(tracker_info_t) +
+			(info[i].numpeers * sizeof(*(info[i].peers)));
+	}
+
+	len = sizeof(tracker_register_t) + infolen;
+
 	if ((req = (tracker_register_t *)malloc(len)) == NULL) {
 		fprintf(stderr, "register_hash:malloc failed\n");
 		return(-1);
 	}
-fprintf(stderr, "here:4\n");
 
 	bzero(req, len);
 	req->header.op = REGISTER;
 	req->header.length = len;
 
-fprintf(stderr, "here:5\n");
-	req->numhashes = 1;
-fprintf(stderr, "infolen (%d)\n", (info->numpeers * sizeof(*info->peers)));
-	memcpy(req->info, info, (info->numpeers * sizeof(*info->peers)));
+	req->numhashes = numhashes;
 
-fprintf(stderr, "here:6\n");
-	tracker_send(sockfd, (void *)&req, len, 
+fprintf(stderr, "infolen (%d)\n", infolen);
+
+	memcpy(req->info, info, infolen);
+
+	tracker_send(sockfd, (void *)req, len, 
 		(struct sockaddr *)&send_addr, sizeof(send_addr));
 
-fprintf(stderr, "here:7\n");
 	in.s_addr = *ip;
-	printf("register: registered hash (0x%lx) with tracker (%s)\n",
+	printf("register: registered hash (0x%016lx) with tracker (%s)\n",
 		info->hash, inet_ntoa(in));
 
+	free(req);
 	return(0);
 }
-
 
 int
 init(uint16_t *num_trackers, in_addr_t **trackers, uint16_t *maxpeers,
@@ -203,12 +195,13 @@ init(uint16_t *num_trackers, in_addr_t **trackers, uint16_t *maxpeers,
 int
 main(int argc, char **argv)
 {
+	uint64_t	hash;
 	uint16_t	num_trackers;
 	in_addr_t	*trackers;
 	uint16_t	maxpeers;
 	uint16_t	num_pkg_servers;
 	in_addr_t	*pkg_servers;
-	uint16_t	i, j;
+	uint16_t	i;
 	tracker_info_t	*tracker_info, *infoptr;
 	int		sockfd;
 	int		info_count;
@@ -221,6 +214,7 @@ main(int argc, char **argv)
 	}
 
 	file = argv[1];
+	hash = hashit(file);
 
 	if (init(&num_trackers, &trackers, &maxpeers, &num_pkg_servers,
 			&pkg_servers) != 0) {
@@ -233,6 +227,7 @@ main(int argc, char **argv)
 		exit(-1);
 	}
 
+	tracker_info = NULL;
 	for (i = 0 ; i < num_trackers; ++i) {
 		struct in_addr	in;
 
@@ -244,17 +239,48 @@ main(int argc, char **argv)
 			break;
 		}
 
-/*
- * XXX - need to free tracker_info
- */
-
+		/*
+		 * lookup() mallocs space for 'tracker_info', so need to
+		 * free it here since we'll call lookup() again in the
+		 * next iteration
+		 */
+		if (tracker_info != NULL) {
+			free(tracker_info);
+			tracker_info = NULL;
+		}
 	}
 
 	success = 0;
-	if (info_count == 0) {
+	if ((info_count > 0) && (tracker_info[0].hash == hash)) {
+		infoptr = &tracker_info[0];
+
+		fprintf(stderr, "info:hash (0x%x)\n", infoptr->hash);
+		fprintf(stderr, "info:numpeers (%lld)\n", infoptr->numpeers);
+
+		fprintf(stderr, "info:peers: ");
+
+		for (i = 0 ; i < infoptr->numpeers; ++i) {
+			struct in_addr	in;
+
+			in.s_addr = infoptr->peers[i];
+			fprintf(stderr, "%s\n", inet_ntoa(in));
+		}
+
+		for (i = 0 ; i < infoptr->numpeers; ++i) {
+			if (get(&infoptr->peers[i], file) == 0) {
+				/*
+				 * successful download, exit this loop
+				 */
+				success = 1;
+				break;
+			}
+		}
+	}
+
+	if (!success) {
 		/*
-		 * this file is not being tracked, need to get it from one
-		 * of the package servers
+		 * unable to download the file from a peer, need to get it
+		 * from one of the package servers
 		 */
 		for (i = 0 ; i < num_pkg_servers ; ++i) {
 			if (get(&pkg_servers[i], file) == 0) {
@@ -262,63 +288,26 @@ main(int argc, char **argv)
 				break;
 			}
 		}
-	} else {
-		for (i = 0 ; i < info_count && !success; ++i) {
-			infoptr = &tracker_info[i];
-
-fprintf(stderr, "info:hash (0x%x)\n", infoptr->hash);
-fprintf(stderr, "info:numpeers (%lld)\n", infoptr->numpeers);
-
-fprintf(stderr, "info:peers: ");
-
-			for (j = 0 ; j < infoptr->numpeers; ++j) {
-				struct in_addr	in;
-
-				in.s_addr = infoptr->peers[j];
-
-fprintf(stderr, "%s\n", inet_ntoa(in));
-
-				if (get(&infoptr->peers[j], file) == 0) {
-					/*
-					 * successful download, exit this loop
-					 */
-					success = 1;
-					break;
-				}
-			}
-		}
 	}
 
 	if (success) {
-
-/*
- * XXX - what to do here about getting a temp 'info' structure in order
- * to register the hash
- */
-
-		tracker_info_t	*info;
+		tracker_info_t	info[1];
 		int		len;
 
-		len = sizeof(tracker_info_t) + sizeof(in_addr_t);
-
-		if ((info = (tracker_info_t *)malloc(len)) == NULL) {
-			fprintf(stderr, "main:malloc failed\n");
-			abort();
-		}
-
-		info->hash = 
+		info[0].hash = hashit(file);
+		info[0].numpeers = 0;
 
 		for (i = 0 ; i < num_trackers; ++i) {
-			register_hash(sockfd, &trackers[i], infoptr);
+			register_hash(sockfd, &trackers[i], 1, info);
 		}
-
-		free(info);
 	}
 
 	/*
 	 * lookup() malloc'ed tracker_info
 	 */
-	free(tracker_info);
+	if (tracker_info != NULL) {
+		free(tracker_info);
+	}	
 
 	free(trackers);
 	return(0);

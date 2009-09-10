@@ -27,12 +27,25 @@ hashit(char *ptr)
 	return hash;
 }
 
+void
+dumpbuf(char *buf, int len)
+{
+	int	i;
+
+	for (i = 0; i < len; ++i) {
+		fprintf(stderr, "%02x ", (unsigned char)buf[i]);
+	}
+	fprintf(stderr, "\n");
+}
+
 int
 tracker_send(int sockfd, void *buf, size_t len, struct sockaddr *to,
 	socklen_t tolen)
 {
 	int	flags = 0;
 
+	fprintf(stderr, "send buf: ");
+	dumpbuf(buf, len);
 	sendto(sockfd, buf, len, flags, (struct sockaddr *)to, tolen);
 
 	return(0);
@@ -42,9 +55,17 @@ ssize_t
 tracker_recv(int sockfd, void *buf, size_t len, struct sockaddr *from,
 	socklen_t *fromlen)
 {
+	ssize_t	size;
 	int	flags = 0;
 
-	return(recvfrom(sockfd, buf, len, flags, from, fromlen));
+	size = recvfrom(sockfd, buf, len, flags, from, fromlen);
+
+	if (size > 0) {
+		fprintf(stderr, "recv buf: ");
+		dumpbuf(buf, size);
+	}
+
+	return(size);
 }
 
 int
