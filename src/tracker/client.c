@@ -3,7 +3,6 @@
 #include <stdint.h>
 #include <string.h>
 #include <strings.h>
-#include <netinet/in.h>
 #include "tracker.h"
 
 #include <sys/socket.h>
@@ -90,7 +89,8 @@ get(in_addr_t *ip, char *filename)
 	struct in_addr	in;
 
 	in.s_addr = *ip;
-	printf("get: get file (%s) from (%s)\n", filename, inet_ntoa(in));
+	fprintf(stderr, "get: get file (%s) from (%s)\n", filename,
+		inet_ntoa(in));
 
 	return(0);
 }
@@ -141,7 +141,8 @@ fprintf(stderr, "infolen (%d)\n", infolen);
 		(struct sockaddr *)&send_addr, sizeof(send_addr));
 
 	in.s_addr = *ip;
-	printf("register: registered hash (0x%016lx) with tracker (%s)\n",
+	fprintf(stderr,
+		"register: registered hash (0x%016lx) with tracker (%s)\n",
 		info->hash, inet_ntoa(in));
 
 	free(req);
@@ -192,6 +193,7 @@ init(uint16_t *num_trackers, in_addr_t **trackers, uint16_t *maxpeers,
 	return(0);
 }
 
+#ifdef	WORKS
 int
 main(int argc, char **argv)
 {
@@ -312,4 +314,4 @@ main(int argc, char **argv)
 	free(trackers);
 	return(0);
 }
-
+#endif
