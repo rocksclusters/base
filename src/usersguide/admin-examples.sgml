@@ -1,5 +1,5 @@
 <!-- 
-$Id: admin-examples.sgml,v 1.14 2009/08/18 17:58:44 bruno Exp $
+$Id: admin-examples.sgml,v 1.15 2009/09/17 18:57:35 bruno Exp $
 
 Administration guide
 
@@ -7,6 +7,9 @@ Administration guide
 @Copyright@
 
 $Log: admin-examples.sgml,v $
+Revision 1.15  2009/09/17 18:57:35  bruno
+take out hard coding of rocks 4.3 version
+
 Revision 1.14  2009/08/18 17:58:44  bruno
 how to cross-kickstart with PXE
 
@@ -161,7 +164,7 @@ owner to change any BIOS settings.
 
 <section><title>Support for PXE First</title>
 
-<para>Rocks 4.3 supports a network device first (or PXE first)
+<para>Rocks supports a network device first (or PXE first)
  BIOS-defined boot order. It is now  
 <emphasis>recommended</emphasis> that a network boot (known as PXE) come before 
 local hard disk.  In particular the boot order in BIOS should be set as
@@ -303,8 +306,8 @@ compute-1-0 still retains the default install action.
 <indexterm><primary>memtest86</primary></indexterm>
 It is often useful to run the memory testing tool
 <ulink url="http://www.memtest.org"> memtest86+ </ulink> to determine
-if memory is valid. The straightforward way to accomplish this in
-Rocks 4.3 is to apply the following procedure (in our example case
+if memory is valid. The straightforward way to accomplish this 
+is to apply the following procedure (in our example case
 for host compute-1-1) 
 </para>
 <orderedlist>
