@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.73 2009/09/03 05:12:26 bruno Exp $
+# $Id: __init__.py,v 1.74 2009/09/17 22:31:08 mjk Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,11 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.74  2009/09/17 22:31:08  mjk
+# Abort when trying to process a valid hostname that is not part
+# of the cluster (e.g. "rocks list host yahoo.com")
+# Bug reported by Daniel Hansen
+#
 # Revision 1.73  2009/09/03 05:12:26  bruno
 # added 'var' support back
 #
@@ -1249,8 +1254,7 @@ class DatabaseConnection:
 			try:
 				hostname, = self.link.fetchone()
 			except TypeError:
-				pass
-
+				Abort('host "%s" is not in cluster')
 
 		return hostname
 
