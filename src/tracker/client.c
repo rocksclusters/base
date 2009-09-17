@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <strings.h>
+#include <time.h>
 #include "tracker.h"
 
 #include <sys/socket.h>
@@ -193,125 +194,29 @@ init(uint16_t *num_trackers, in_addr_t **trackers, uint16_t *maxpeers,
 	return(0);
 }
 
-#ifdef	WORKS
 int
-main(int argc, char **argv)
+shuffle(in_addr_t *peers, uint16_t numpeers)
 {
-	uint64_t	hash;
-	uint16_t	num_trackers;
-	in_addr_t	*trackers;
-	uint16_t	maxpeers;
-	uint16_t	num_pkg_servers;
-	in_addr_t	*pkg_servers;
-	uint16_t	i;
-	tracker_info_t	*tracker_info, *infoptr;
-	int		sockfd;
-	int		info_count;
-	char		success;
-	char		*file;
-
-	if (argc != 2) {
-		fprintf(stderr, "usage: %s <filename>\n", argv[0]);
-		exit(-1);
-	}
-
-	file = argv[1];
-	hash = hashit(file);
-
-	if (init(&num_trackers, &trackers, &maxpeers, &num_pkg_servers,
-			&pkg_servers) != 0) {
-		fprintf(stderr, "main:init failed\n");
-		exit(-1);
-	}
-
-	if ((sockfd = init_tracker_comm(0)) < 0) {
-		fprintf(stderr, "main:init_tracker_comm failed\n");
-		exit(-1);
-	}
-
-	tracker_info = NULL;
-	for (i = 0 ; i < num_trackers; ++i) {
-		struct in_addr	in;
-
-		in.s_addr = trackers[i];
-
-		info_count = lookup(sockfd, &trackers[i], file, &tracker_info);
-
-		if (info_count > 0) {
-			break;
-		}
-
+	in_addr_t	temp;
+	int		i, j;
+	
+	if (numpeers < 2) {
 		/*
-		 * lookup() mallocs space for 'tracker_info', so need to
-		 * free it here since we'll call lookup() again in the
-		 * next iteration
+		 * nothing to shuffle
 		 */
-		if (tracker_info != NULL) {
-			free(tracker_info);
-			tracker_info = NULL;
-		}
+		return(0);
 	}
 
-	success = 0;
-	if ((info_count > 0) && (tracker_info[0].hash == hash)) {
-		infoptr = &tracker_info[0];
+	srand(time(NULL));
 
-		fprintf(stderr, "info:hash (0x%x)\n", infoptr->hash);
-		fprintf(stderr, "info:numpeers (%lld)\n", infoptr->numpeers);
+	for (i = 0 ; i < numpeers - 1 ; ++i) {
+		j = i + rand() / (RAND_MAX / (numpeers - i) + 1);
 
-		fprintf(stderr, "info:peers: ");
-
-		for (i = 0 ; i < infoptr->numpeers; ++i) {
-			struct in_addr	in;
-
-			in.s_addr = infoptr->peers[i];
-			fprintf(stderr, "%s\n", inet_ntoa(in));
-		}
-
-		for (i = 0 ; i < infoptr->numpeers; ++i) {
-			if (get(&infoptr->peers[i], file) == 0) {
-				/*
-				 * successful download, exit this loop
-				 */
-				success = 1;
-				break;
-			}
-		}
+		temp = peers[j];
+		peers[j] = peers[i];
+		peers[i] = temp;
 	}
 
-	if (!success) {
-		/*
-		 * unable to download the file from a peer, need to get it
-		 * from one of the package servers
-		 */
-		for (i = 0 ; i < num_pkg_servers ; ++i) {
-			if (get(&pkg_servers[i], file) == 0) {
-				success = 1;
-				break;
-			}
-		}
-	}
-
-	if (success) {
-		tracker_info_t	info[1];
-		int		len;
-
-		info[0].hash = hashit(file);
-		info[0].numpeers = 0;
-
-		for (i = 0 ; i < num_trackers; ++i) {
-			register_hash(sockfd, &trackers[i], 1, info);
-		}
-	}
-
-	/*
-	 * lookup() malloc'ed tracker_info
-	 */
-	if (tracker_info != NULL) {
-		free(tracker_info);
-	}	
-
-	free(trackers);
 	return(0);
 }
-#endif
+

@@ -1,10 +1,16 @@
 #
-# $Id: Makefile,v 1.2 2009/09/15 21:52:13 bruno Exp $
+# $Id: Makefile,v 1.3 2009/09/17 20:12:49 bruno Exp $
 #
 # @COPYRIGHT@
 # @COPYRIGHT@
 #
 # $Log: Makefile,v $
+# Revision 1.3  2009/09/17 20:12:49  bruno
+# lots of good stuff:
+#  - expandable, circular hash table
+#  - clients randomly shuffle their peer list
+#  - skip to next peer if download of peer fails
+#
 # Revision 1.2  2009/09/15 21:52:13  bruno
 # closer
 #
@@ -21,11 +27,12 @@ include Rules.mk
 INCLUDE	= -I/usr/include/apr-1
 #LIBS	= -L/opt/rocks/lib -lcurl
 LIBS	= -lcurl
-#EXTRA	= -DDEBUG
+EXTRA	= -Wall
+#EXTRA	= -Wall -DDEBUG
 
-build:	tracker-client server
+build:	tracker-client.cgi server
 
-tracker-client:		tracker-client.c client.c lib.c
+tracker-client.cgi:	tracker-client.c client.c lib.c
 	cc $(INCLUDE) $(EXTRA) -o tracker-client.cgi tracker-client.c \
 		client.c lib.c $(LIBS)
 

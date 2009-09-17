@@ -101,11 +101,11 @@ typedef struct {
 /*
  * hash table to hold the order in which files are requested
  */
-#define	HASH_TABLE_ENTRIES	128
+#define	HASH_TABLE_ENTRIES	3
 
 typedef struct {
-	uint32_t	head;
-	uint32_t	tail;
+	int		head;
+	int		tail;
 	uint32_t	size;
 	hash_info_t	entry[0];
 } hash_table_t;

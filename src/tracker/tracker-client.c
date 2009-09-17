@@ -1,10 +1,16 @@
 /*
- * $Id: tracker-client.c,v 1.1 2009/09/15 21:52:13 bruno Exp $
+ * $Id: tracker-client.c,v 1.2 2009/09/17 20:12:49 bruno Exp $
  *
  * @COPYRIGHT@
  * @COPYRIGHT@
  *
  * $Log: tracker-client.c,v $
+ * Revision 1.2  2009/09/17 20:12:49  bruno
+ * lots of good stuff:
+ *  - expandable, circular hash table
+ *  - clients randomly shuffle their peer list
+ *  - skip to next peer if download of peer fails
+ *
  * Revision 1.1  2009/09/15 21:52:13  bruno
  * closer
  *
@@ -36,13 +42,18 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 
+extern int init(uint16_t *, in_addr_t **, uint16_t *, uint16_t *, in_addr_t **);
+extern int lookup(int, in_addr_t *, char *, tracker_info_t **);
+extern int register_hash(int, in_addr_t *, uint32_t, tracker_info_t *);
+extern int shuffle(in_addr_t *, uint16_t);
+
+
 int	status = HTTP_OK;
 
 int
 getargs(char *forminfo, char *filename, char *serverip)
 {
 	char	*ptr;
-	int	length;
 
 	/*
 	 * help out sscanf by putting in a blank for '&'
@@ -206,19 +217,20 @@ outputfile(char *filename, char *range)
 			/*
 			 * case 1
 			 */
-			sscanf(range, "-%d", &lastbyte);
+			sscanf(range, "-%d", (int *)&lastbyte);
 			offset = 0;
 		} else if (range[strlen(range) - 1] == '-') {
 			/*
 			 * case 2
 			 */
-			sscanf(range, "%d-", &offset);
+			sscanf(range, "%d-", (int *)&offset);
 			lastbyte = statbuf.st_size;
 		} else {
 			/*
 			 * case 3
 			 */
-			sscanf(range, "%d-%d", &offset, &lastbyte);
+			sscanf(range, "%d-%d", (int *)&offset,
+				(int *)&lastbyte);
 		}
 
 		totalbytes = (lastbyte - offset) + 1;
@@ -248,7 +260,7 @@ outputfile(char *filename, char *range)
 	}
 
 	printf("Content-Type: application/octet-stream\n");
-	printf("Content-Length: %d\n", totalbytes);
+	printf("Content-Length: %d\n", (int)totalbytes);
 	printf("\n");
 
 	bytesread = 0;
@@ -402,12 +414,10 @@ int
 getremote(char *filename, in_addr_t *ip, char *range)
 {
 	CURL		*curlhandle;
-	CURLoption	curloption;
 	CURLcode	curlcode;
 	struct in_addr	in;
 	struct stat	buf;
 	FILE		*file;
-	int		curlparameter;
 	char		url[PATH_MAX];
 	char		*dir;
 	char		*ptr;
@@ -543,8 +553,6 @@ trackfile(char *filename, char *range)
 	int		sockfd;
 	int		info_count;
 	char		success;
-	int		filenamelen;
-	char		*msg = NULL; 
 
 	hash = hashit(filename);
 
@@ -587,10 +595,29 @@ trackfile(char *filename, char *range)
 	if ((info_count > 0) && (tracker_info[0].hash == hash)) {
 		infoptr = &tracker_info[0];
 
-		fprintf(stderr, "info:hash (0x%x)\n", infoptr->hash);
-		fprintf(stderr, "info:numpeers (%lld)\n", infoptr->numpeers);
+		fprintf(stderr, "info:hash (0x%lx)\n", infoptr->hash);
+		fprintf(stderr, "info:numpeers (%d)\n", infoptr->numpeers);
 
 		fprintf(stderr, "info:peers: ");
+
+		for (i = 0 ; i < infoptr->numpeers; ++i) {
+			struct in_addr	in;
+
+			in.s_addr = infoptr->peers[i];
+			fprintf(stderr, "%s\n", inet_ntoa(in));
+		}
+
+		/*
+		 * randomly shuffle the peers
+		 */
+		if (shuffle(infoptr->peers, infoptr->numpeers) != 0) {
+			/*
+			 * not a critical error, but it should be logged
+			 */
+			fprintf(stderr, "trackfile:shuffle:failed\n");
+		}
+
+		fprintf(stderr, "info:peers:after shuffle: ");
 
 		for (i = 0 ; i < infoptr->numpeers; ++i) {
 			struct in_addr	in;
@@ -627,7 +654,8 @@ trackfile(char *filename, char *range)
 
 	if (success) {
 		tracker_info_t	info[1];
-		int		len;
+
+		bzero(info, sizeof(info));
 
 		info[0].hash = hash;
 		info[0].numpeers = 0;

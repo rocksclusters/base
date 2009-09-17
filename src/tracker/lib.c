@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <strings.h>
+#include <unistd.h>
 #include <netinet/in.h>
 #include "tracker.h"
 
@@ -20,7 +21,7 @@ hashit(char *ptr)
 	 * SDBM hash function
 	 */
 
-	while (c = *ptr++) {
+	while ((c = *ptr++) != '\0') {
 		hash = c + (hash << 6) + (hash << 16) - hash;
 	}
 
