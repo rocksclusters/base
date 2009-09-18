@@ -19,6 +19,14 @@
 
   <changelog>
   $Log: install.xml,v $
+  Revision 1.28  2009/09/18 20:18:50  bruno
+  don't copy over the rocks-cdrom block device file.
+
+  on normal systems, this worked just fine, but there are some systems where
+  this code would copy over the entire contents of the CD/DVD if the CD/DVD
+  was still in the tray (which is shouldn't be, because after the rolls are
+  copied to the frontend, the CD/DVD is umounted and ejected).
+
   Revision 1.27  2009/05/01 19:06:48  mjk
   chimi con queso
 
@@ -280,16 +288,6 @@ mv /tmp/hosts /etc/hosts
 
 
 <post arg="--nochroot">
-<!-- 
-	Create /dev/cdrom entry so insert-ethers can find the cds
--->
-if [ -e /tmp/rocks-cdrom ]; then
-	cp /tmp/rocks-cdrom /mnt/sysimage/dev/cdrom
-fi
-
-mkdir -p /mnt/sysimage/mnt/floppy
-mkdir -p /mnt/sysimage/mnt/cdrom
-
 <!--
 	Copy over rocks-distrc we used to build this node
 -->
