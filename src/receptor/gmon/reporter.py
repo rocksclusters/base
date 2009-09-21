@@ -4,7 +4,7 @@
 # multicast channel for specific metrics. Allows for immediate event-based
 # ganglia triggers.
 #
-# $Id: reporter.py,v 1.5 2009/05/15 00:32:53 anoop Exp $
+# $Id: reporter.py,v 1.6 2009/09/21 20:16:14 bruno Exp $
 #
 # @Copyright@
 # 
@@ -60,6 +60,9 @@
 # @Copyright@
 #
 # $Log: reporter.py,v $
+# Revision 1.6  2009/09/21 20:16:14  bruno
+# don't log error messages any more
+#
 # Revision 1.5  2009/05/15 00:32:53  anoop
 # Bug fix to make reporter work on Solaris
 #
@@ -202,7 +205,6 @@ class Reporter(ReceptorThread):
 			try:
 				metric = gmon.Gmetric.parse(msg)
 			except gmon.Gmetric.error, errmsg:
-				self.app.warning(errmsg)
 				continue
 
 			# Include the sending host's IP address.
