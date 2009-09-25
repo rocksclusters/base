@@ -18,6 +18,9 @@
 
   <changelog>
   $Log: ntp-client.xml,v $
+  Revision 1.9  2009/09/25 02:31:47  bruno
+  add --utc flag to hwclock. thanks to Tom Rockwell for the fix.
+
   Revision 1.8  2009/05/01 19:06:48  mjk
   chimi con queso
 
@@ -120,7 +123,7 @@ driftfile /var/ntp/drift
 </post>
 
 <post os='linux'>
-/sbin/hwclock --systohc
+/sbin/hwclock --systohc --utc
 </post>
 
 </kickstart> 

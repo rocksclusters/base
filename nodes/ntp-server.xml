@@ -18,6 +18,9 @@
 
   <changelog>
   $Log: ntp-server.xml,v $
+  Revision 1.9  2009/09/25 02:31:47  bruno
+  add --utc flag to hwclock. thanks to Tom Rockwell for the fix.
+
   Revision 1.8  2009/05/01 19:06:48  mjk
   chimi con queso
 
@@ -108,7 +111,7 @@ driftfile /var/lib/ntp/drift
 <!-- Force the clock to be set to the server right now -->
 
 /usr/sbin/ntpdate &Kickstart_PublicNTPHost;
-/sbin/hwclock --systohc
+/sbin/hwclock --systohc --utc
 
 </post>
 
