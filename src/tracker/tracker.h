@@ -6,7 +6,7 @@
  */
 
 #define	TRACKER_PORT	9632
-
+#define	PREDICTIONS	10
 
 /*
  * message structures
@@ -24,6 +24,7 @@ typedef struct {
 #define	LOOKUP		1
 #define	REGISTER	2
 #define	UNREGISTER	3
+#define	END		4
 
 
 /*
@@ -101,7 +102,7 @@ typedef struct {
 /*
  * hash table to hold the order in which files are requested
  */
-#define	HASH_TABLE_ENTRIES	3
+#define	HASH_TABLE_ENTRIES	256
 
 typedef struct {
 	int		head;

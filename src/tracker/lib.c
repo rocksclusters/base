@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdarg.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
@@ -45,8 +46,11 @@ tracker_send(int sockfd, void *buf, size_t len, struct sockaddr *to,
 {
 	int	flags = 0;
 
+#ifdef	DEBUG
 	fprintf(stderr, "send buf: ");
 	dumpbuf(buf, len);
+#endif
+
 	sendto(sockfd, buf, len, flags, (struct sockaddr *)to, tolen);
 
 	return(0);
@@ -61,10 +65,12 @@ tracker_recv(int sockfd, void *buf, size_t len, struct sockaddr *from,
 
 	size = recvfrom(sockfd, buf, len, flags, from, fromlen);
 
+#ifdef	DEBUG
 	if (size > 0) {
 		fprintf(stderr, "recv buf: ");
 		dumpbuf(buf, size);
 	}
+#endif
 
 	return(size);
 }
@@ -98,3 +104,19 @@ init_tracker_comm(int port)
 	return(sockfd);
 }
 
+void
+logmsg(const char *fmt, ...)
+{
+	FILE	*file;
+	va_list argptr;
+
+	if ((file = fopen("/tmp/tracker-client.debug", "a+")) != NULL) {
+		va_start(argptr, fmt);
+		vfprintf(file, fmt, argptr);
+		va_end(argptr);
+
+		fclose(file);
+	}
+
+	return;
+}

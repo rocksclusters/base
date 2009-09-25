@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdarg.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
@@ -9,6 +10,8 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+
+extern void logmsg(const char *, ...);
 
 int
 lookup(int sockfd, in_addr_t *tracker, char *file, tracker_info_t **info)
@@ -76,7 +79,9 @@ lookup(int sockfd, in_addr_t *tracker, char *file, tracker_info_t **info)
 
 		memcpy(*info, resp->info, infosize);
 		retval = resp->numhashes;
+#ifdef	DEBUG
 fprintf(stderr, "lookup:retval (%d)\n", retval);
+#endif
 	} else {
 		retval = 0;
 	}
@@ -84,17 +89,23 @@ fprintf(stderr, "lookup:retval (%d)\n", retval);
 	return(retval);
 }
 
+#ifdef	LATER
+
+	/* XXX - nuke this? */
+
 int
 get(in_addr_t *ip, char *filename)
 {
 	struct in_addr	in;
 
 	in.s_addr = *ip;
+
 	fprintf(stderr, "get: get file (%s) from (%s)\n", filename,
 		inet_ntoa(in));
 
 	return(0);
 }
+#endif
 
 int
 register_hash(int sockfd, in_addr_t *ip, uint32_t numhashes,
@@ -102,7 +113,6 @@ register_hash(int sockfd, in_addr_t *ip, uint32_t numhashes,
 {
 	struct sockaddr_in	send_addr;
 	tracker_register_t	*req;
-	struct in_addr		in;
 	int			len, infolen;
 	int			i;
 
@@ -134,17 +144,24 @@ register_hash(int sockfd, in_addr_t *ip, uint32_t numhashes,
 
 	req->numhashes = numhashes;
 
+#ifdef	DEBUG
 fprintf(stderr, "infolen (%d)\n", infolen);
+#endif
 
 	memcpy(req->info, info, infolen);
 
 	tracker_send(sockfd, (void *)req, len, 
 		(struct sockaddr *)&send_addr, sizeof(send_addr));
 
+#ifdef	DEBUG
+{
+	struct in_addr		in;
+
 	in.s_addr = *ip;
-	fprintf(stderr,
-		"register: registered hash (0x%016lx) with tracker (%s)\n",
+	logmsg("register: registered hash (0x%016lx) with tracker (%s)\n",
 		info->hash, inet_ntoa(in));
+}
+#endif
 
 	free(req);
 	return(0);
@@ -216,6 +233,34 @@ shuffle(in_addr_t *peers, uint16_t numpeers)
 		peers[j] = peers[i];
 		peers[i] = temp;
 	}
+
+	return(0);
+}
+
+int
+send_done(int sockfd, in_addr_t *ip)
+{
+	struct sockaddr_in	send_addr;
+	tracker_header_t	req;
+	int			len;
+
+	bzero(&send_addr, sizeof(send_addr));
+	send_addr.sin_family = AF_INET;
+
+	/*
+	 * the ip address is already in network byte order
+	 */
+	send_addr.sin_addr.s_addr = *ip;
+	send_addr.sin_port = htons(TRACKER_PORT);
+
+	len = sizeof(req);
+
+	bzero(&req, len);
+	req.op = END;
+	req.length = len;
+
+	tracker_send(sockfd, (void *)&req, len, 
+		(struct sockaddr *)&send_addr, sizeof(send_addr));
 
 	return(0);
 }

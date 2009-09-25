@@ -92,12 +92,14 @@ grow_hash_table(int size)
 
 	len = sizeof(hash_table_t) + (newsize * sizeof(hash_info_t));
 
+#ifdef	DEBUG
 fprintf(stderr, "grow_hash_table:enter:size (%d)\n", hash_table->size);
 fprintf(stderr, "grow_hash_table:enter:head (%d)\n", hash_table->head);
 fprintf(stderr, "grow_hash_table:enter:tail (%d)\n", hash_table->tail);
 
 fprintf(stderr, "grow_hash_table:before\n\n");
 print_hash_table();
+#endif
 
 	if ((hash_table = realloc(hash_table, len)) == NULL) {
 		perror("grow_hash_table:realloc failed:");
@@ -124,12 +126,14 @@ print_hash_table();
 	hash_table->size = newsize;
 	hash_table->tail = hash_table->tail + size;
 
+#ifdef	DEBUG
 fprintf(stderr, "grow_hash_table:exit:size (%d)\n", hash_table->size);
 fprintf(stderr, "grow_hash_table:exit:head (%d)\n", hash_table->head);
 fprintf(stderr, "grow_hash_table:exit:tail (%d)\n", hash_table->tail);
 
 fprintf(stderr, "grow_hash_table:after\n\n");
 print_hash_table();
+#endif
 
 	return(0);
 }
@@ -166,6 +170,7 @@ int
 addpeer(hash_info_t *hashinfo, in_addr_t *peer)
 {
 
+#ifdef	DEBUG
 {
 	struct in_addr	in;
 
@@ -173,6 +178,7 @@ addpeer(hash_info_t *hashinfo, in_addr_t *peer)
 	fprintf(stderr, "addpeer:adding peer (%s) for hash (0x%016lx)\n",
 		inet_ntoa(in), hashinfo->hash);
 }
+#endif
 
 	if (hashinfo == NULL) {
 		fprintf(stderr, "addpeer:hashinfo NULL\n");
@@ -199,23 +205,26 @@ addpeer(hash_info_t *hashinfo, in_addr_t *peer)
 	return(0);
 }
 
-
-/*
- * this assumes infoptr points to real storage
- */
 hash_info_t *
-getpeers(uint64_t hash)
+getpeers(uint64_t hash, int *index)
 {
 	int	i;
 
 	for (i = 0 ; i < hash_table->size; ++i) {
 
+#ifdef	DEBUG
 fprintf(stderr, "getpeers:entry [%i] hash (0x%016lx)\n", i,
 	hash_table->entry[i].hash);
+#endif
 
 		if (hash_table->entry[i].hash == hash) {
+#ifdef	DEBUG
 			fprintf(stderr, "getpeers:hash (0x%016lx) found\n",
 				hash);
+#endif
+			if (index != NULL) {
+				*index = i;
+			}
 			return(&hash_table->entry[i]);
 		}
 	}
@@ -223,7 +232,46 @@ fprintf(stderr, "getpeers:entry [%i] hash (0x%016lx)\n", i,
 	/*
 	 * the hash is not in the table
 	 */
+#ifdef	DEBUG
 fprintf(stderr, "getpeers:hash (0x%016lx) not found\n", hash);
+#endif
+	return(NULL);
+}
+
+hash_info_t *
+getnextpeers(uint64_t hash, int *index)
+{
+	int	i;
+	int	newindex = *index;
+
+	++newindex;
+
+	if (newindex >= hash_table->size) {
+		newindex = 0;
+	}
+
+	for (i = newindex ; i < hash_table->size ; ++i) {
+		if (hash_table->entry[i].hash != 0) {
+			*index = i;
+			return(&hash_table->entry[i]);
+		}
+	}
+
+	/*
+	 * edge case where *index points to the last entry in the table, which
+	 * means that the above loop already scanned all the entries
+	 */
+	if (*index == (hash_table->size - 1)) {
+		return(NULL);
+	}
+
+	for (i = 0 ; i < *index ; ++i) {
+		if (hash_table->entry[i].hash != 0) {
+			*index = i;
+			return(&hash_table->entry[i]);
+		}
+	}
+
 	return(NULL);
 }
 
@@ -234,11 +282,14 @@ dolookup(int sockfd, uint64_t hash, struct sockaddr_in *from_addr)
 	tracker_info_t		*respinfo;
 	hash_info_t		*hashinfo;
 	size_t			len;
-	int			i;
+	int			i, j;
 	int			flags;
+	int			index, next_index;
 	char			buf[64*1024];
 
+#ifdef	DEBUG
 fprintf(stderr, "dolookup:enter:hash (0x%lx)\n", hash);
+#endif
 
 	resp = (tracker_lookup_resp_t *)buf;
 	resp->header.op = LOOKUP;
@@ -248,7 +299,9 @@ fprintf(stderr, "dolookup:enter:hash (0x%lx)\n", hash);
 	 */
 	len = sizeof(tracker_lookup_resp_t);
 
+#ifdef	DEBUG
 fprintf(stderr, "len (%d)\n", (int)len);
+#endif
 
 	/*
 	 * look up info for this hash
@@ -258,9 +311,17 @@ fprintf(stderr, "len (%d)\n", (int)len);
 
 	len += sizeof(tracker_info_t);
 
+#ifdef	DEBUG
 fprintf(stderr, "len (%d)\n", (int)len);
+#endif
 
-	if ((hashinfo = getpeers(hash)) != NULL) {
+	/*
+	 * always send back at least one hash, even if it is empty (i.e.,
+	 * it has no peers.
+	 */
+	resp->numhashes = 1;
+
+	if ((hashinfo = getpeers(hash, &index)) != NULL) {
 		/*
 		 * copy the hash info into the response buffer
 		 */
@@ -279,44 +340,100 @@ fprintf(stderr, "len (%d)\n", (int)len);
 			++respinfo->numpeers;
 		}
 
+#ifdef	DEBUG
 fprintf(stderr, "resp info numpeers (%d)\n", respinfo->numpeers);
+#endif
 
 		len += (sizeof(respinfo->peers[0]) * respinfo->numpeers);
 
+		respinfo = (tracker_info_t *)
+			(&(respinfo->peers[respinfo->numpeers]));
+
+		/*
+		 * now get hash info for the "predicted" next file downloads
+		 */
+		next_index = index;
+		for (j = 0 ; j < PREDICTIONS ; ++j) {
+			if ((hashinfo = getnextpeers(hash, &next_index))
+					!= NULL) {
+				/*
+				 * copy the hash info into the response buffer
+				 */
+
+				if (index == next_index) {
+					/*
+					 * there are less than 'PREDICTIONS'
+					 * number of valid hash entries and
+					 * we've examined them all. break out
+					 * of this loop.
+					 */
+					break;
+				}
+
+#ifdef	DEBUG
+fprintf(stderr, "prediction:adding hash (0%016lx)\n", hashinfo->hash);
+#endif
+
+				respinfo->hash = hashinfo->hash;
+				respinfo->numpeers = 0;
+
+				for (i = 0 ; i < hashinfo->numpeers ; ++i) {
+					/*
+					 * don't copy in address of requestor
+					 */
+					if (hashinfo->peers[i] ==
+						from_addr->sin_addr.s_addr) {
+
+						continue;
+					}
+
+					respinfo->peers[i] = hashinfo->peers[i];
+					++respinfo->numpeers;
+				}
+			} else {
+				/*
+				 * no more valid hashes
+				 */
+				break;
+			}
+
+			len += sizeof(tracker_info_t) +
+				(sizeof(respinfo->peers[0]) *
+					respinfo->numpeers);
+
+			respinfo = (tracker_info_t *)
+				(&(respinfo->peers[respinfo->numpeers]));
+
+			++resp->numhashes;
+		}
+
+#ifdef	DEBUG
 fprintf(stderr, "len (%d)\n", (int)len);
+#endif
 
 	} else {
 		respinfo->numpeers = 0;
 	}
 
-	resp->numhashes = 1;
 
+#ifdef	DEBUG
 fprintf(stderr, "resp info numpeers (%d)\n", respinfo->numpeers);
-		
-#ifdef	LATER
-	/*
-	 * XXX - this is where we would fill in 'predictive' info
-	 */
-
-	/*
-	 * advance respinfo to the next 'hash' info
-	 */
-	respinfo = (tracker_info_t *)
-		(&(respinfo->peers[respinfo->numpeers]));
-
-	++resp->numhashes;
 #endif
-
+		
 	resp->header.length = len;
 
+#ifdef	DEBUG
 	fprintf(stderr, "send buf: ");
 	dumpbuf((char *)resp, len);
+#endif
 
 	flags = 0;
 	sendto(sockfd, buf, len, flags, (struct sockaddr *)from_addr,
 		sizeof(*from_addr));
 
+#ifdef	DEBUG
 fprintf(stderr, "dolookup:exit:hash (0x%lx)\n", hash);
+#endif
 
 	return;
 }
@@ -334,12 +451,14 @@ register_hash(char *buf, struct sockaddr_in *from_addr)
 
 	for (i = 0; i < req->numhashes; ++i) {
 		reqinfo = &req->info[i];
+#ifdef	DEBUG
 fprintf(stderr, "register_hash:enter:hash (0x%lx)\n", reqinfo->hash);
 
 if (hash_table->tail != -1) {
 	fprintf(stderr, "register_hash:hash_table:before\n\n");
 	print_hash_table();
 }
+#endif
 
 		if (reqinfo->numpeers == 0) {
 			/*
@@ -355,12 +474,14 @@ if (hash_table->tail != -1) {
 			peers = reqinfo->peers;
 		}
 
+#ifdef	DEBUG
 fprintf(stderr, "register_hash:numpeers:1 (0x%d)\n", numpeers);
+#endif
 
 		/*
 		 * scan the list for this hash.
 		 */
-		if ((hashinfo = getpeers(reqinfo->hash)) != NULL) {
+		if ((hashinfo = getpeers(reqinfo->hash, NULL)) != NULL) {
 			/*
 			 * this hash is already in the table, see if this peer
 			 * is already in the list
@@ -396,9 +517,11 @@ fprintf(stderr, "register_hash:numpeers:1 (0x%d)\n", numpeers);
 			}
 
 		}
+#ifdef	DEBUG
 fprintf(stderr, "register_hash:hash_table:after\n\n");
 print_hash_table();
 fprintf(stderr, "register_hash:exit:hash (0x%lx)\n", reqinfo->hash);
+#endif
 	}
 }
 
@@ -448,6 +571,10 @@ main()
 				break;
 
 			case UNREGISTER:
+				break;
+
+			case END:
+				done = 1;
 				break;
 
 			default:

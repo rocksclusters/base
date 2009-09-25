@@ -1,10 +1,13 @@
 /*
- * $Id: tracker-client.c,v 1.2 2009/09/17 20:12:49 bruno Exp $
+ * $Id: tracker-client.c,v 1.3 2009/09/25 21:02:04 bruno Exp $
  *
  * @COPYRIGHT@
  * @COPYRIGHT@
  *
  * $Log: tracker-client.c,v $
+ * Revision 1.3  2009/09/25 21:02:04  bruno
+ * got prediction code in
+ *
  * Revision 1.2  2009/09/17 20:12:49  bruno
  * lots of good stuff:
  *  - expandable, circular hash table
@@ -25,6 +28,7 @@
  */
 
 #include <stdio.h>
+#include <stdarg.h>
 #include <errno.h>
 #include <string.h>
 #include <strings.h>
@@ -46,7 +50,8 @@ extern int init(uint16_t *, in_addr_t **, uint16_t *, uint16_t *, in_addr_t **);
 extern int lookup(int, in_addr_t *, char *, tracker_info_t **);
 extern int register_hash(int, in_addr_t *, uint32_t, tracker_info_t *);
 extern int shuffle(in_addr_t *, uint16_t);
-
+extern int send_done(int, in_addr_t *);
+extern void logmsg(const char *, ...);
 
 int	status = HTTP_OK;
 
@@ -78,22 +83,6 @@ getargs(char *forminfo, char *filename, char *serverip)
 	return(0);
 }
 
-#ifdef	DEBUG
-void
-logdebug(char *msg)
-{
-	FILE	*file;
-
-	if ((file = fopen("/tmp/tracker-client.debug", "a+")) != NULL) {
-		fprintf(file, "%s", msg);
-		fclose(file);
-	}
-
-	return;
-}
-#endif
-
-
 size_t
 doheaders(void *ptr, size_t size, size_t nmemb, void *stream)
 {
@@ -116,8 +105,8 @@ doheaders(void *ptr, size_t size, size_t nmemb, void *stream)
 #endif
 
 #ifdef	DEBUG
-	logdebug("doheaders : ");
-	logdebug(ptr);
+	logmsg("doheaders : ");
+	logmsg(ptr);
 #endif
 	
 	return(size * nmemb);
@@ -265,6 +254,11 @@ outputfile(char *filename, char *range)
 
 	bytesread = 0;
 	done = 0;
+
+#ifdef	DEBUG
+	logmsg("outputfile:filename (%s)\n", filename);
+#endif
+
 	while (!done) {
 		ssize_t	i;
 
@@ -275,9 +269,7 @@ outputfile(char *filename, char *range)
 		}
 
 		if ((i = read(fd, buf, count)) < 0) {
-			/*
-			 * log an error
-			 */
+			logmsg("outputfile:read failed: errno (%d)\n", errno);
 			done = 1;
 			continue;
 		}
@@ -289,11 +281,17 @@ outputfile(char *filename, char *range)
 
 		bytesread += i;
 
+#ifdef	DEBUG
+		logmsg("outputfile:bytesread (%d), totalbytes (%d)\n",
+			bytesread, totalbytes);
+#endif
+
 		if (bytesread >= totalbytes) {
 			done = 1;
 		}
 	}
 
+	fflush(stdout);
 	close(fd);
 	return(0);
 }
@@ -311,9 +309,9 @@ downloadfile(CURL *curlhandle, char *url, char *range)
 	}
 
 #ifdef	DEBUG
-	logdebug("URL : ");
-	logdebug(url);
-	logdebug("\n");
+	logmsg("URL : ");
+	logmsg(url);
+	logmsg("\n");
 #endif
 
 	if (range != NULL) {
@@ -325,9 +323,9 @@ downloadfile(CURL *curlhandle, char *url, char *range)
 			return(-1);
 		}
 #ifdef	DEBUG
-		logdebug("HTTP RANGE: ");
-		logdebug(range);
-		logdebug("\n");
+		logmsg("HTTP RANGE: ");
+		logmsg(range);
+		logmsg("\n");
 #endif
 	}
 
@@ -397,6 +395,11 @@ getlocal(char *filename, char *range)
 	struct stat	buf;
 
 	if (stat(filename, &buf) == 0) {
+
+#ifdef	DEBUG
+		logmsg("getlocal:file (%s)\n", filename);
+#endif
+
 		status = HTTP_OK;
 
 		if (outputfile(filename, range) != 0) {
@@ -424,8 +427,9 @@ getremote(char *filename, in_addr_t *ip, char *range)
 
 	in.s_addr = *ip;
 
-fprintf(stderr, "getremote: get file (%s) from (%s)\n",
-	filename, inet_ntoa(in));
+#ifdef	DEBUG
+	logmsg("getremote: get file (%s) from (%s)\n", filename, inet_ntoa(in));
+#endif
 
 	status = HTTP_OK;
 
@@ -453,7 +457,7 @@ fprintf(stderr, "getremote: get file (%s) from (%s)\n",
 	 * make a 'http://' url and get the file.
 	 */
 	if ((file = fopen(filename, "w")) == NULL) {
-		fprintf(stderr, "getremote:fopen():failed\n");
+		logmsg("getremote:fopen():failed\n");
 		return(-1);
 	}
 
@@ -474,32 +478,29 @@ fprintf(stderr, "getremote: get file (%s) from (%s)\n",
 	 */
 	if ((curlcode = curl_easy_setopt(curlhandle, CURLOPT_WRITEDATA,
 			file)) != CURLE_OK) {
-		fprintf(stderr, "getremote:curl_easy_setopt():failed:(%d)\n",
-			curlcode);
+		logmsg("getremote:curl_easy_setopt():failed:(%d)\n", curlcode);
 		return(-1);
 	}
 
 	if ((curlcode = curl_easy_setopt(curlhandle, CURLOPT_HEADERFUNCTION,
 			doheaders)) != CURLE_OK) {
-		fprintf(stderr, "getremote:curl_easy_setopt():failed:(%d)\n",
-			curlcode);
+		logmsg("getremote:curl_easy_setopt():failed:(%d)\n", curlcode);
 		return(-1);
 	}
 
 	if ((curlcode = curl_easy_setopt(curlhandle, CURLOPT_WRITEFUNCTION,
 			dobody)) != CURLE_OK) {
-		fprintf(stderr, "getremote:curl_easy_setopt():failed:(%d)\n",
-			curlcode);
+		logmsg("getremote:curl_easy_setopt():failed:(%d)\n", curlcode);
 		return(-1);
 	}
 
 	if (makeurl("http://", filename, inet_ntoa(in), url, sizeof(url)) != 0){
-		fprintf(stderr, "getremote:makeurl():failed:(%d)", errno);
+		logmsg("getremote:makeurl():failed:(%d)", errno);
 		return(-1);
 	}
 
 	if (downloadfile(curlhandle, url, NULL) != 0) {
-		fprintf(stderr, "getremote:downloadfile():failed\n");
+		logmsg("getremote:downloadfile():failed\n");
 
 		/*
 		 * don't return on failure here. we still need
@@ -508,14 +509,17 @@ fprintf(stderr, "getremote: get file (%s) from (%s)\n",
 		status = HTTP_NOT_FOUND;
 	}
 
-	fclose(file);
-
-fprintf(stderr, "getremote:status (%d)\n", status);
-
 	/*
 	 * cleanup curl
 	 */
 	curl_easy_cleanup(curlhandle);
+
+	fflush(file);
+	fclose(file);
+
+#ifdef	DEBUG
+	logmsg("getremote:status (%d)\n", status);
+#endif
 
 	/*
 	 * we downloaded the file from a peer, so read it and output it
@@ -537,6 +541,135 @@ fprintf(stderr, "getremote:status (%d)\n", status);
 	}
 
 	return(0);
+}
+
+void
+write_prediction_info(tracker_info_t *infoptr, int info_count)
+{
+	FILE	*file;
+	int	len;
+	int	i;
+
+	/*
+	 * the first entry in the tracker info is the entry that we
+	 * explicitly asked for. all remaining entries are the predictions.
+	 */
+	if ((info_count <= 1) || (infoptr == NULL)) {
+		return;
+	}
+
+	if ((file = fopen("/tracker.predictions", "w")) == NULL) {
+		/*
+		 * don't worry if this fails. it is just prediction data, it
+		 * is not critical
+		 */
+		return;
+	}
+
+	/*
+	 * skip the first entry
+	 */
+	infoptr = (tracker_info_t *)((char *)infoptr + sizeof(tracker_info_t) +
+		(sizeof(infoptr->peers[0]) * infoptr->numpeers));
+
+	for (i = 1 ; i < info_count ; ++i) {
+
+#ifdef	DEBUG
+		logmsg("prediction info\n");
+		logmsg("info:hash (0x%lx)\n", infoptr->hash);
+		logmsg("info:numpeers (%d)\n", infoptr->numpeers);
+#endif
+		
+		len = sizeof(tracker_info_t) +
+			(sizeof(infoptr->peers[0]) * infoptr->numpeers);
+
+		if (fwrite(infoptr, 1, len, file) < len) {
+			logmsg("write_prediction_info:fwrite:errno (%d)\n",
+				errno);
+		}
+
+#ifdef	DEBUG
+		logmsg("info:peers:\n");
+
+		for (i = 0 ; i < infoptr->numpeers; ++i) {
+			struct in_addr	in;
+
+			in.s_addr = infoptr->peers[i];
+			logmsg("\t%s\n", inet_ntoa(in));
+		}
+#endif
+
+		/*
+		 * move the infoptr to the next entry
+		 */
+		infoptr = (tracker_info_t *)((char *)infoptr + len);
+	}
+
+	fclose(file);
+}
+
+int
+getprediction(uint64_t hash, tracker_info_t **info)
+{
+	FILE		*file;
+	struct stat	statbuf;
+	tracker_info_t	*p;
+	size_t		readbytes;
+	int		offset, size, len;
+	int		retval;
+	char		*buf;
+
+#ifdef	DEBUG
+	logmsg("getprediction:hash (0x%016lx)\n", hash);
+#endif
+
+	if (stat("/tracker.predictions", &statbuf) != 0) {
+		return(0);
+	}	
+
+	if ((file = fopen("/tracker.predictions", "r")) == NULL) {
+		return(0);
+	}
+
+	if ((buf = malloc(statbuf.st_size)) == NULL) {
+		fclose(file);
+		return(0);
+	}
+
+	if ((readbytes = fread(buf, 1, statbuf.st_size, file)) < len) {
+		free(buf);
+		fclose(file);
+		return(0);
+	}
+
+	offset = 0;
+	retval = 0;
+
+	while (offset < statbuf.st_size) {
+		p = (tracker_info_t *)((char *)buf + offset);	
+
+		size = sizeof(tracker_info_t) +
+			(sizeof(p->peers[0]) * p->numpeers);
+
+		if (p->hash == hash) {
+			/*
+			 * found a prediction for this hash
+			 */
+			if ((*info = (tracker_info_t *)malloc(size)) != NULL) {
+				memcpy(*info, p, size);
+				retval = 1;
+			}
+
+			break;
+		}
+
+		offset += size;
+	}
+
+	free(buf);
+	fclose(file);
+
+	return(retval);
 }
 
 int
@@ -567,46 +700,73 @@ trackfile(char *filename, char *range)
 		return(-1);
 	}
 
+	/*
+	 * see if there is a prediction for this file
+	 */
 	tracker_info = NULL;
-	for (i = 0 ; i < num_trackers; ++i) {
-		struct in_addr	in;
+	info_count = getprediction(hash, &tracker_info);
 
-		in.s_addr = trackers[i];
+#ifdef	DEBUG
+	if (info_count == 0) {
+		logmsg("trackfile:pred miss (0x%016lx)\n", hash);
+	} else {
+		logmsg("trackfile:pred hit (0x%016lx)\n", hash);
+	}
+#endif
 
-		info_count = lookup(sockfd, &trackers[i], filename,
-			&tracker_info);
+	if (info_count == 0) {
+		/*
+		 * no prediction. need to ask a tracker for peer info for
+		 * this file.
+		 */
+		for (i = 0 ; i < num_trackers; ++i) {
+#ifdef	DEBUG
+			struct in_addr	in;
 
-		if (info_count > 0) {
-			break;
+			in.s_addr = trackers[i];
+			logmsg("trackfile:sending lookup to tracker (%s)\n",
+				inet_ntoa(in));
+#endif
+			info_count = lookup(sockfd, &trackers[i], filename,
+				&tracker_info);
+
+			if (info_count > 0) {
+				break;
+			}
+
+			/*
+			 * lookup() mallocs space for 'tracker_info', so need to
+			 * free it here since we'll call lookup() again in the
+			 * next iteration
+			 */
+			if (tracker_info != NULL) {
+				free(tracker_info);
+				tracker_info = NULL;
+			}
 		}
 
 		/*
-		 * lookup() mallocs space for 'tracker_info', so need to
-		 * free it here since we'll call lookup() again in the
-		 * next iteration
+		 * write the prediction info to a file	
 		 */
-		if (tracker_info != NULL) {
-			free(tracker_info);
-			tracker_info = NULL;
-		}
+		write_prediction_info(tracker_info, info_count);
 	}
 
 	success = 0;
-	if ((info_count > 0) && (tracker_info[0].hash == hash)) {
-		infoptr = &tracker_info[0];
+	infoptr = tracker_info;
+	if ((info_count > 0) && (infoptr->hash == hash)) {
+#ifdef	DEBUG
+		logmsg("getfile:hash (0x%lx)\n", infoptr->hash);
+		logmsg("getfile:numpeers (%d)\n", infoptr->numpeers);
 
-		fprintf(stderr, "info:hash (0x%lx)\n", infoptr->hash);
-		fprintf(stderr, "info:numpeers (%d)\n", infoptr->numpeers);
-
-		fprintf(stderr, "info:peers: ");
+		logmsg("getfile:peers:\n");
 
 		for (i = 0 ; i < infoptr->numpeers; ++i) {
 			struct in_addr	in;
 
 			in.s_addr = infoptr->peers[i];
-			fprintf(stderr, "%s\n", inet_ntoa(in));
+			logmsg("\t%s\n", inet_ntoa(in));
 		}
-
+#endif
 		/*
 		 * randomly shuffle the peers
 		 */
@@ -614,10 +774,11 @@ trackfile(char *filename, char *range)
 			/*
 			 * not a critical error, but it should be logged
 			 */
-			fprintf(stderr, "trackfile:shuffle:failed\n");
+			fprintf(stderr, "getfile:shuffle:failed\n");
 		}
 
-		fprintf(stderr, "info:peers:after shuffle: ");
+#ifdef	DEBUG
+		fprintf(stderr, "getfile:peers:after shuffle: ");
 
 		for (i = 0 ; i < infoptr->numpeers; ++i) {
 			struct in_addr	in;
@@ -625,11 +786,10 @@ trackfile(char *filename, char *range)
 			in.s_addr = infoptr->peers[i];
 			fprintf(stderr, "%s\n", inet_ntoa(in));
 		}
-
+#endif
 		for (i = 0 ; i < infoptr->numpeers; ++i) {
 			if (getremote(filename, &infoptr->peers[i], range)
 					== 0) {
-
 				/*
 				 * successful download, exit this loop
 				 */
@@ -637,36 +797,37 @@ trackfile(char *filename, char *range)
 				break;
 			}
 		}
-	}
 
-	if (!success) {
-		/*
-		 * unable to download the file from a peer, need to get it
-		 * from one of the package servers
-		 */
-		for (i = 0 ; i < num_pkg_servers ; ++i) {
-			if (getremote(filename, &pkg_servers[i], range) == 0) {
-				success = 1;
-				break;
+		if (!success) {
+			/*
+			 * unable to download the file from a peer, need to
+			 * get it from one of the package servers
+			 */
+			for (i = 0 ; i < num_pkg_servers ; ++i) {
+				if (getremote(filename, &pkg_servers[i], range)
+						== 0) {
+					success = 1;
+					break;
+				}
+			}
+		}
+
+		if (success) {
+			tracker_info_t	info[1];
+
+			bzero(info, sizeof(info));
+
+			info[0].hash = infoptr->hash;
+			info[0].numpeers = 0;
+
+			for (i = 0 ; i < num_trackers; ++i) {
+				register_hash(sockfd, &trackers[i], 1, info);
 			}
 		}
 	}
 
-	if (success) {
-		tracker_info_t	info[1];
-
-		bzero(info, sizeof(info));
-
-		info[0].hash = hash;
-		info[0].numpeers = 0;
-
-		for (i = 0 ; i < num_trackers; ++i) {
-			register_hash(sockfd, &trackers[i], 1, info);
-		}
-	}
-
 	/*
-	 * lookup() mallocs tracker_info
+	 * lookup() and getprediction() mallocs tracker_info
 	 */
 	if (tracker_info != NULL) {
 		free(tracker_info);
@@ -713,6 +874,10 @@ main()
 		return(0);
 	}
 
+#ifdef	DEBUG
+	logmsg("main:getting file (%s)\n", filename);
+#endif
+
 	/*
 	 * if the file is local, just read it off the disk, otherwise, ask
 	 * the tracker where the file is
@@ -722,6 +887,10 @@ main()
 			senderror(404, "File not found", 0);
 		}
 	}
+
+#ifdef	DEBUG
+	logmsg("main:done:file (%s)\n\n", filename);
+#endif
 
 	return(0);
 }
