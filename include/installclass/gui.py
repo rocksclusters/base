@@ -210,7 +210,7 @@ def processEvents():
     while gtk.events_pending():
         gtk.main_iteration(False)
 
-def partedExceptionWindow(exc):
+def partedExceptionWindow(exc, anaconda):
     # if our only option is to cancel, let us handle the exception
     # in our code and avoid popping up the exception window here.
     if exc.options == parted.EXCEPTION_CANCEL:
@@ -222,6 +222,10 @@ def partedExceptionWindow(exc):
     # exception
     return parted.EXCEPTION_IGNORE
     # ROCKS
+
+    if anaconda.isKickstart and exc.type == parted.EXCEPTION_WARNING and \
+       exc.options in [parted.EXCEPTION_IGNORE, parted.EXCEPTION_OK]:
+        return 0
 
     print exc.type_string
     print exc.message
@@ -1105,7 +1109,7 @@ class InstallInterface:
         anaconda.id.fsset.registerProgressWindow(self.progressWindow)
         anaconda.id.fsset.registerWaitWindow(self.waitWindow)
 
-        parted.exception_set_handler(partedExceptionWindow)
+        parted.exception_set_handler(lambda exn: partedExceptionWindow(exn, self.anaconda))
 
         self.icw = InstallControlWindow (self.anaconda)
         self.icw.run (self.runres)

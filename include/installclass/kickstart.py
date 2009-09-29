@@ -27,6 +27,7 @@ import partRequests
 import urlgrabber.grabber as grabber
 import lvm
 import warnings
+import zonetab
 from pykickstart.constants import *
 from pykickstart.parser import *
 from pykickstart.data import *
@@ -215,11 +216,7 @@ class AnacondaKSHandlers(KickstartHandlers):
     def doIscsiName(self, args):
         KickstartHandlers.doIscsiName(self, args)
         self.id.iscsi.initiator = self.ksdata.iscsiname
-
-        self.id.iscsi.startIBFT()
         self.id.iscsi.startup()
-        # FIXME: flush the drive dict so we figure drives out again        
-        isys.flushDriveDict()
 
     def doKey(self, args):
         KickstartHandlers.doKey(self, args)
@@ -632,10 +629,11 @@ class AnacondaKSHandlers(KickstartHandlers):
     def doTimezone(self, args):
         KickstartHandlers.doTimezone(self, args)
         dict = self.ksdata.timezone
-        tzfile = "/usr/share/zoneinfo/" + dict["timezone"]
-        if not os.access(tzfile, os.R_OK):
-            log.warning("Can't read timezone file set in kickstart, will ask")
-            return
+        # check validity
+        tab = zonetab.ZoneTab()
+        if dict["timezone"] not in (entry.tz.replace(' ','_') for entry in
+                                 tab.getEntries()):
+            log.warning("Timezone %s set in kickstart is not valid." % (dict["timezone"],))
 
 	self.id.instClass.setTimezoneInfo(self.id, dict["timezone"], dict["isUtc"])
 	self.skipSteps.append("timezone")

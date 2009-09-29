@@ -291,6 +291,23 @@ def labelDisk(deviceFile, forceLabelType=None):
                 'gpt' in archLabels[rhpl.getArch()]:
             label = parted.disk_type_get('gpt')
 
+    # remove metadata from partitions
+    try:
+        disk = parted.PedDisk.new(dev)
+    except parted.error, msg:
+        log.debug("parted error: %s" % (msg,))
+    else:    
+        part = disk.next_partition()
+        while part:
+            if (not part.is_active() or (part.type == parted.PARTITION_EXTENDED) or
+               (part.disk.type.name == "mac" and part.num == 1 and part.get_name() == "Apple")):
+                part = disk.next_partition(part)
+                continue
+            device = fsset.PartedPartitionDevice(part).getDevice()
+            log.debug("removing lvm metadata from %s" %(device,))
+            lvm.pvremove("/dev/%s" % (device,))
+            part = disk.next_partition(part)
+
     disk = dev.disk_new_fresh(label)
     disk.commit()
     return disk
@@ -485,9 +502,7 @@ def sniffFilesystemType(device):
     # ext2 check
     if struct.unpack("<H", buf[1080:1082]) == (0xef53,):
         if isys.ext2HasJournal(dev, makeDevNode = 0):
-            if fsset.ext4devFileSystem.probe(dev):
-                return "ext4dev"
-            elif fsset.ext4FileSystem.probe(dev):
+            if fsset.ext4FileSystem.probe(dev):
                 return "ext4"
             else:
                 return "ext3"
@@ -867,7 +882,7 @@ class DiskSet:
                     if part.fs_type:
                         fstype = part.fs_type.name
 
-                    # parted doesn't tell ext4/ext4dev from ext3 for us
+                    # parted doesn't tell ext4 from ext3 for us
                     if fstype == "ext3": 
                         fstype = sniffFilesystemType("/dev/%s" % theDev)
 
@@ -959,7 +974,16 @@ class DiskSet:
     def savePartitions (self):
         """Write the partition tables out to the disks."""
         for disk in self.disks.values():
-            disk.commit()
+            log.info("disk.commit() for %s" % (disk.dev.path,))
+            try:
+                disk.commit()
+            except:
+                # if this fails, remove the disk so we don't use it later
+                # Basically if we get here, badness has happened and we want
+                # to prevent tracebacks from ruining the day any more.
+                del disk
+                continue
+
             # FIXME: this belongs in parted itself, but let's do a hack...
             if iutil.isMactel() and disk.type.name == "gpt" and \
                     os.path.exists("/usr/sbin/gptsync"):
@@ -1199,7 +1223,7 @@ class DiskSet:
             if (DiskSet.exclusiveDisks != [] and drive not in DiskSet.exclusiveDisks) or drive in DiskSet.skippedDisks:
                 continue
             deviceFile = isys.makeDevInode(drive, "/dev/" + drive)
-            if not isys.mediaPresent(drive):
+            if not isys.mediaPresent(drive) or isys.deviceIsReadOnly(drive):
                 self._removeDisk(drive)
                 continue
 
