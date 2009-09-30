@@ -1,6 +1,6 @@
 #! /opt/rocks/bin/python
 #
-# $Id: profile.py,v 1.28 2009/09/03 05:12:27 bruno Exp $
+# $Id: profile.py,v 1.29 2009/09/30 00:51:42 bruno Exp $
 #
 # @Copyright@
 # 
@@ -56,6 +56,9 @@
 # @Copyright@
 #
 # $Log: profile.py,v $
+# Revision 1.29  2009/09/30 00:51:42  bruno
+# thanks 'noop!
+#
 # Revision 1.28  2009/09/03 05:12:27  bruno
 # added 'var' support back
 #
@@ -268,7 +271,7 @@ class GraphHandler(handler.ContentHandler,
 		   handler.ErrorHandler,
 		   AttributeHandler):
 
-	def __init__(self, attrs, entities):
+	def __init__(self, attrs, entities={}):
 		handler.ContentHandler.__init__(self)
 		self.setAttributes(attrs)
 		self.graph			= rocks.util.Struct()
