@@ -1,4 +1,4 @@
-# $Id: plugin_mysql.py,v 1.2 2009/05/01 19:07:04 mjk Exp $
+# $Id: plugin_mysql.py,v 1.3 2009/09/30 19:44:05 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: plugin_mysql.py,v $
+# Revision 1.3  2009/09/30 19:44:05  bruno
+# make sure password changing code accesses the rocks foundation database
+#
 # Revision 1.2  2009/05/01 19:07:04  mjk
 # chimi con queso
 #
@@ -82,7 +85,7 @@ class Plugin(rocks.commands.Plugin):
 
 		link = MySQLdb.connect(host='localhost', user='root',
 			db='mysql', passwd='%s' % old_password,
-			unix_socket='/var/lib/mysql/mysql.sock')
+			unix_socket='/var/opt/rocks/mysql/mysql.sock')
 
 		cursor = link.cursor()
 
