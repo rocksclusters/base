@@ -21,6 +21,9 @@
 
   <changelog>
   $Log: base.xml,v $
+  Revision 1.44  2009/09/30 19:36:22  bruno
+  explicitly add the architecture-specfic nspr package to fix a yum bug on 64-bit
+
   Revision 1.43  2009/05/20 12:19:21  mjk
   rocks command goes everywhere
 
@@ -414,6 +417,9 @@
 
   <package>tentakel</package>
   <package>rocks-command</package>
+
+  <!-- to fix a yum bug on 64-bit -->
+  <package>nspr.&arch</package>
 
 <pre>
 
