@@ -21,6 +21,9 @@
 
   <changelog>
   $Log: base.xml,v $
+  Revision 1.45  2009/10/01 23:04:54  bruno
+  add java to base roll
+
   Revision 1.44  2009/09/30 19:36:22  bruno
   explicitly add the architecture-specfic nspr package to fix a yum bug on 64-bit
 
@@ -421,6 +424,8 @@
   <!-- to fix a yum bug on 64-bit -->
   <package>nspr.&arch</package>
 
+  <package os="linux">jdk</package>
+
 <pre>
 
 <!-- propagate root's public ssh key for ekv -->
@@ -556,6 +561,22 @@ chmod o+t /state/partition*
 </file>
 
 </post>
+
+
+<post os="linux">
+
+<!--
+	libgcj lays down a dummy 'java' executible, so let's nuke it.
+	this makes sure that the real java (included in this roll) is used
+-->
+rm -f /usr/bin/java
+
+<file name="/etc/man.config" mode="append">
+MANPATH /usr/java/jdk1.5/man
+</file>
+
+</post>
+
 
 </kickstart> 
 
