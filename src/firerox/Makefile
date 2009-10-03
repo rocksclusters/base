@@ -1,5 +1,5 @@
 # --------------------------------------------------- -*- Makefile -*- --
-# $Id: Makefile,v 1.12 2009/05/01 19:07:05 mjk Exp $
+# $Id: Makefile,v 1.13 2009/10/03 00:19:40 bruno Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.13  2009/10/03 00:19:40  bruno
+# can build compute nodes with RHEL 5.4
+#
 # Revision 1.12  2009/05/01 19:07:05  mjk
 # chimi con queso
 #
@@ -137,10 +140,10 @@ CHROMEDIR = $(PKGROOT)/lib/firefox-$(FIREFOX_VERSION)/defaults/profile/chrome
 
 
 build:
-	bunzip2 -c firefox-$(FIREFOX_VERSION)-source.tar.bz2 | $(TAR) -xf -
+	$(TAR) jfx firefox-$(FIREFOX_VERSION).source.tar.bz2
 	cd patch-files && find . -type f | grep -v CVS | cpio -pduv ../
 	( 								\
-		cd mozilla;						\
+		cd mozilla-$(MOZILLA_VERSION);				\
 		cp ../mozconfig .mozconfig;				\
 		$(MAKE) -f client.mk build;				\
 	)
@@ -148,7 +151,7 @@ build:
 install::
 	mkdir -p $(ROOT)/$(PKGROOT)
 	(								\
-		cd mozilla;						\
+		cd mozilla-$(MOZILLA_VERSION);				\
 		$(MAKE) prefix=$(ROOT)/$(PKGROOT) install;		\
 	)
 	cp userChrome.css $(ROOT)/$(CHROMEDIR);	
@@ -160,6 +163,6 @@ install::
 
 
 clean::
-	rm -rf mozilla
+	rm -rf mozilla-$(MOZILLA_VERSION)
 	rm -f $(NAME).spec.in
 

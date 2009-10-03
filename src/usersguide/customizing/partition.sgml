@@ -330,7 +330,7 @@ dynamically determine the name of the boot disk.
 import rocks_partition       
 
 membership = '<var name='Node_Membership'/>'
-nodename = '<var name="Node_Hostname"/>'
+nodename = '&hostname;'
 
 def doDisk(file, disk):
         file.write('clearpart --all --initlabel --drives=%s\n' % disk)
