@@ -21,6 +21,9 @@
 
   <changelog>
   $Log: base.xml,v $
+  Revision 1.46  2009/10/03 00:02:24  bruno
+  fix XML syntax error
+
   Revision 1.45  2009/10/01 23:04:54  bruno
   add java to base roll
 
@@ -422,7 +425,7 @@
   <package>rocks-command</package>
 
   <!-- to fix a yum bug on 64-bit -->
-  <package>nspr.&arch</package>
+  <package>nspr.&arch;</package>
 
   <package os="linux">jdk</package>
 
