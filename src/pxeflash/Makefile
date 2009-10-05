@@ -1,5 +1,5 @@
 # --------------------------------------------------- -*- Makefile -*- --
-# $Id: Makefile,v 1.4 2009/05/01 19:07:08 mjk Exp $
+# $Id: Makefile,v 1.5 2009/10/05 17:19:15 bruno Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,11 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.5  2009/10/05 17:19:15  bruno
+# need to rename LICENSE file to LICENSE.FreeDOS, otherwise, the automatic spec
+# file building code tried to include the contents of the LICENSE file which
+# caused the rpm building processes to fail.
+#
 # Revision 1.4  2009/05/01 19:07:08  mjk
 # chimi con queso
 #
@@ -99,7 +104,7 @@ install::
 	install -m644 Makefile.disk $(ROOT)/$(PKGROOT)/Makefile
 	install -m644 version.mk $(ROOT)/$(PKGROOT)/version.mk
 	install -m644 README $(ROOT)/$(PKGROOT)/README
-	install -m644 LICENSE $(ROOT)/$(PKGROOT)/LICENSE
+	install -m644 LICENSE.FreeDOS $(ROOT)/$(PKGROOT)/
 	$(TAR) cf - --exclude CVS addon | (cd $(ROOT)/$(PKGROOT); $(TAR) xvf - ) 
 
 	
