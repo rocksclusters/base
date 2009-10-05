@@ -1,5 +1,5 @@
 # --------------------------------------------------- -*- Makefile -*- --
-# $Id: Makefile,v 1.13 2009/10/03 00:19:40 bruno Exp $
+# $Id: Makefile,v 1.14 2009/10/05 21:29:41 bruno Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.14  2009/10/05 21:29:41  bruno
+# fixes to build new version of firefox
+#
 # Revision 1.13  2009/10/03 00:19:40  bruno
 # can build compute nodes with RHEL 5.4
 #
@@ -130,13 +133,11 @@
 # build python from source
 #
 
-PKGROOT		= /opt/rocks/firerox
+PKGROOT		= /opt/rocks
 REDHAT.ROOT     = $(CURDIR)/../../
 ROCKSROOT       = ../../../../..
 -include $(ROCKSROOT)/etc/Rules.mk
 include Rules.mk
-
-CHROMEDIR = $(PKGROOT)/lib/firefox-$(FIREFOX_VERSION)/defaults/profile/chrome
 
 
 build:
@@ -149,17 +150,19 @@ build:
 	)
 	
 install::
-	mkdir -p $(ROOT)/$(PKGROOT)
 	(								\
 		cd mozilla-$(MOZILLA_VERSION);				\
-		$(MAKE) prefix=$(ROOT)/$(PKGROOT) install;		\
+		$(MAKE) package;					\
 	)
-	cp userChrome.css $(ROOT)/$(CHROMEDIR);	
+	env
+	mkdir -p $(ROOT)/$(PKGROOT)
 	(								\
-		cd $(ROOT)/$(PKGROOT);					\
-		rm -rf include;						\
-		rm -rf share;						\
+		cd mozilla-$(MOZILLA_VERSION)/dist;			\
+		tar jxf firefox-$(FIREFOX_VERSION).en-US.linux-$(ARCH).tar.bz2 \
+			-C $(ROOT)/$(PKGROOT)/;				\
 	)
+	cp userChrome.css $(ROOT)/$(PKGROOT)/firefox/defaults/profile/chrome
+	mv $(ROOT)/$(PKGROOT)/firefox $(ROOT)/$(PKGROOT)/firerox
 
 
 clean::
