@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.2 2009/05/01 19:07:02 mjk Exp $
+# $Id: __init__.py,v 1.3 2009/10/06 22:42:42 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.3  2009/10/06 22:42:42  bruno
+# patch from anoop
+#
 # Revision 1.2  2009/05/01 19:07:02  mjk
 # chimi con queso
 #
@@ -89,10 +92,12 @@ class Command(rocks.commands.report.command):
 		# been provisioned. This information is used to
 		# classify the nodes.
 
-		self.db.execute("""select n.name, n.os, n.rack, a.name
-			from nodes n, appliances a, memberships m
-			where n.membership = m.id and
-			m.appliance = a.id and a.name != 'frontend' """)
+		self.db.execute("""select n.name, n_attr.value, n.rack, a.name
+				from nodes as n inner join (memberships m,
+				node_attributes n_attr, appliances a) on 
+				(n.membership=m.id and m.appliance=a.id 
+				and n.id=n_attr.node and n_attr.attr='os'
+				and a.name!='frontend')""")
 
 		# The classification of nodes is done as follows.
 		# The groups are 
