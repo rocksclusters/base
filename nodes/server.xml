@@ -52,6 +52,18 @@ mv /tmp/all-rocks.js /usr/lib/firefox-*/defaults/preferences/
 
 </post>
 
+<post>
+
+<file name="/etc/rc.d/rocksconfig.d/post-90-num-cpus" perms="755">
+#!/bin/bash
+#
+# set the correct number of CPUs for the frontend on each boot
+#
+/opt/rocks/bin/rocks set host cpu localhost \
+	`grep 'processor' /proc/cpuinfo | wc -l`
+</file>
+
+</post>
 
 </kickstart> 
 
