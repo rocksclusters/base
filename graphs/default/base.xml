@@ -4,6 +4,11 @@
 
 	<changelog>
 	$Log: base.xml,v $
+	Revision 1.56  2009/10/07 21:25:46  mjk
+	- added openipmi support
+	- from green roll (manual steps removed)
+	- default passwd is admin, user can change manually
+	
 	Revision 1.55  2009/06/01 21:33:52  bruno
 	moved apache from 'base' to 'server'
 	
@@ -321,6 +326,7 @@
 	</edge>
 
 	<edge from="base">
+		<to>ipmi-base</to>
 		<to>foundation-base</to>
 		<to>autofs</to>
 		<to>auto-kickstart</to>
@@ -349,6 +355,7 @@
 	<edge from="client" to="x11" cond="x11"/>
 
 	<edge from="server">
+		<to>ipmi-server</to>
 		<to>apache</to>
 		<to>foundation-server</to>
 		<to>base</to>
@@ -389,6 +396,7 @@
 	</edge>
 
 	<edge from="client">
+		<to>ipmi-client</to>
 		<to>foundation-client</to>
 		<to>dhcp-client</to>
 		<to>base</to>
@@ -451,6 +459,8 @@
 		<to>database-schema</to>
 		<to>database-data</to>
 	</edge>
+	
+
 
 	<edge from="wan" to="null"/>
 

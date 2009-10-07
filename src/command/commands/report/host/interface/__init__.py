@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.8 2009/07/31 01:05:20 anoop Exp $
+#$Id: __init__.py,v 1.9 2009/10/07 21:25:47 mjk Exp $
 # 
 # @Copyright@
 # 
@@ -54,9 +54,16 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
-# Revision 1.8  2009/07/31 01:05:20  anoop
-# Bug fix. We should not get the OS of a node from the nodes table. It should
-# always key off of the node_attributes table
+# Revision 1.9  2009/10/07 21:25:47  mjk
+# - added openipmi support
+# - from green roll (manual steps removed)
+# - default passwd is admin, user can change manually
+#
+# Revision 1.4  2009/09/04 22:13:13  phil
+# Really update for 5.2
+#
+# Revision 1.3  2009/09/04 21:48:37  phil
+# Update to Rocks5.2 compatible interface command.
 #
 # Revision 1.7  2009/06/03 21:28:52  bruno
 # add MTU to the subnets table
@@ -140,6 +147,23 @@ class Command(rocks.commands.HostArgumentProcessor,
 		return retval
 
 
+	def writeIPMI(self, host, ip, channel, netmask):
+		self.addOutput(host, '<file name="/etc/sysconfig/ipmi">')
+		self.addOutput(host, 'ipmitool lan set %s ipaddr %s'
+			% (channel, ip))
+		self.addOutput(host, 'ipmitool lan set %s netmask %s'
+			% (channel, netmask))
+		self.addOutput(host, 'ipmitool lan set %s arp respond on'
+			% (channel))
+		self.addOutput(host, 'ipmitool user set password 1 admin')
+		self.addOutput(host, 'ipmitool lan set %s access on'
+			% (channel))
+		self.addOutput(host, 'ipmitool lan set %s user'
+			% (channel))
+		self.addOutput(host, 'ipmitool lan set %s auth ADMIN PASSWORD'
+			% (channel))
+		self.addOutput(host, '</file>')
+
 	def writeConfig(self, host, mac, ip, device, netmask, vlanid, mtu):
 		configured = 0
 
@@ -186,7 +210,7 @@ class Command(rocks.commands.HostArgumentProcessor,
 		self.beginOutput()
 
                 for host in self.getHostnames(args):
-			osname = self.db.getHostAttr(host, 'os')
+			osname = self.db.getHostAttr(host, 'os')               
 			f = getattr(self, 'run_%s' % (osname))
 			f(host)
 
@@ -221,6 +245,10 @@ class Command(rocks.commands.HostArgumentProcessor,
 
 		for row in self.db.fetchall():
 			mac,ip,device,netmask,vlanid,subnetid,module,mtu = row
+
+
+			if device == 'ipmi':
+				self.writeIPMI(host, ip, module, netmask)
 
 			if device and device[0:4] != 'vlan':
 				#
@@ -262,4 +290,5 @@ class Command(rocks.commands.HostArgumentProcessor,
 				self.writeConfig(host, mac, ip, device,
 					netmask, vlanid, mtu)
 				self.addOutput(host, '</file>')
+
 
