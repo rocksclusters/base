@@ -1,4 +1,4 @@
-# $Id: rocks-ssh.py,v 1.4 2009/05/01 19:07:10 mjk Exp $
+# $Id: rocks-ssh.py,v 1.5 2009/10/07 18:13:36 bruno Exp $
 #
 # @Copyright@
 # 
@@ -77,6 +77,10 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 # $Log: rocks-ssh.py,v $
+# Revision 1.5  2009/10/07 18:13:36  bruno
+# make tentakel more resilient to hanging nodes. thanks to Roy Dragseth for
+# the fix.
+#
 # Revision 1.4  2009/05/01 19:07:10  mjk
 # chimi con queso
 #
@@ -118,6 +122,7 @@ import commands
 import socket
 import os
 import re
+import pexpect
 
 # The RocksSSH method ("rocks") is identical to the default SSHMethod
 # but we probe the machines with ping first to make sure they are online.
@@ -151,9 +156,21 @@ class RocksSSHRemoteCommand(RemoteCommand):
 
 		s = '%s %s@%s "%s"' % (self.sshpath, self.user,
 			self.destination, command)
-		status, output = commands.getstatusoutput(s)
+		try:
+			p = pexpect.spawn(s)
+			p.expect(pexpect.EOF)
+			output = p.before
+			status = 0
+		except pexpect.TIMEOUT, e:
+			output = "Remote command timed out on host %s" % \
+				self.destination
+			status = 1
+
+		p.close()
+
 		self.duration = time.time() - t1
 		return (status >> 8, output)
 
 
 registerRemoteCommandPlugin('rocks', RocksSSHRemoteCommand)
+
