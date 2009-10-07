@@ -1,5 +1,5 @@
 # --------------------------------------------------- -*- Makefile -*- --
-# $Id: Makefile,v 1.14 2009/10/05 21:29:41 bruno Exp $
+# $Id: Makefile,v 1.15 2009/10/07 17:41:47 bruno Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.15  2009/10/07 17:41:47  bruno
+# don't patch
+#
 # Revision 1.14  2009/10/05 21:29:41  bruno
 # fixes to build new version of firefox
 #
@@ -142,7 +145,7 @@ include Rules.mk
 
 build:
 	$(TAR) jfx firefox-$(FIREFOX_VERSION).source.tar.bz2
-	cd patch-files && find . -type f | grep -v CVS | cpio -pduv ../
+	# cd patch-files && find . -type f | grep -v CVS | cpio -pduv ../
 	( 								\
 		cd mozilla-$(MOZILLA_VERSION);				\
 		cp ../mozconfig .mozconfig;				\
