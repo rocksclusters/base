@@ -1,5 +1,5 @@
 #
-# $Id: welcome_gui.py,v 1.13 2009/06/02 00:54:57 bruno Exp $
+# $Id: welcome_gui.py,v 1.14 2009/10/07 00:02:38 bruno Exp $
 #
 # Our patch to redhat's installer
 #
@@ -57,6 +57,9 @@
 # @Copyright@
 #
 # $Log: welcome_gui.py,v $
+# Revision 1.14  2009/10/07 00:02:38  bruno
+# new path to firefox
+#
 # Revision 1.13  2009/06/02 00:54:57  bruno
 # suppress an error message when building frontends
 #
@@ -195,7 +198,7 @@ class WelcomeWindow(InstallWindow):
 		url = 'http://127.0.0.1'
 		url += '/tmp/updates/opt/rocks/screens/getrolls.html'
 
-		os.system('/opt/rocks/firerox/bin/firefox ' + url
+		os.system('/opt/rocks/firerox/firefox ' + url
 			+ ' > /tmp/firerox.debug 2>&1')
 
 		return
