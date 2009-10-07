@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.3 2009/10/06 22:42:42 bruno Exp $
+# $Id: __init__.py,v 1.4 2009/10/07 19:09:17 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.4  2009/10/07 19:09:17  bruno
+# throttle the number of concurrent connections. useful for large clusters.
+# thanks to Roy Dragseth for this fix.
+#
 # Revision 1.3  2009/10/06 22:42:42  bruno
 # patch from anoop
 #
@@ -77,7 +81,8 @@ class Command(rocks.commands.report.command):
 	"""
 	
 	def run(self, params, args):
-		self.addText('set method="rocks"\n\n')
+		self.addText('set method="rocks"\n')
+		self.addText('set maxparallel=100\n\n')
 
 		# The groups dictionary that is used to form
 		# the entire tree of groups
