@@ -141,7 +141,7 @@ part /mydata --size 1 --grow --ondisk hda" > /tmp/user_partition_info
 <para>
 The above example uses a bash script to populate 
 <computeroutput>/tmp/user_partition_info</computeroutput>.
-This will set up an 16 GB root partition, a 1 GB swap partition, and the
+This will set up an 8 GB root partition, a 1 GB swap partition, and the
 remainder of the drive
 will be set up as <computeroutput>/mydata</computeroutput>.
 Additional drives on your compute nodes can be setup in a similar manner
