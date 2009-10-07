@@ -1,4 +1,4 @@
-# $Id: plugin_411.py,v 1.9 2009/05/01 19:07:04 mjk Exp $
+# $Id: plugin_411.py,v 1.10 2009/10/07 19:34:36 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: plugin_411.py,v $
+# Revision 1.10  2009/10/07 19:34:36  bruno
+# more fixes from Roy Dragseth. many thanks, dude!
+#
 # Revision 1.9  2009/05/01 19:07:04  mjk
 # chimi con queso
 #
@@ -127,9 +130,9 @@ class Plugin(rocks.commands.Plugin, rocks.commands.HostArgumentProcessor):
 				linux_hosts.append(hostname)
 		
 		self.owner.command('run.host',
-			linux_hosts + [ ' "/sbin/service autofs stop" '])
-		self.owner.command('run.host',
-			linux_hosts + [ ' "/sbin/service autofs start" '])
+			linux_hosts + [ ' "/sbin/service autofs reload" '])
 
-		self.owner.command('run.host',
-			sunos_hosts + [' "/usr/sbin/svcadm restart autofs"'])
+		if sunos_hosts:
+			self.owner.command('run.host', sunos_hosts +
+				[' "/usr/sbin/svcadm restart autofs" '])
+
