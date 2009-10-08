@@ -1,5 +1,5 @@
 # --------------------------------------------------- -*- Makefile -*- --
-# $Id: Makefile,v 1.15 2009/10/07 17:41:47 bruno Exp $
+# $Id: Makefile,v 1.16 2009/10/08 20:55:41 bruno Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.16  2009/10/08 20:55:41  bruno
+# make prettier
+#
 # Revision 1.15  2009/10/07 17:41:47  bruno
 # don't patch
 #
@@ -165,6 +168,7 @@ install::
 			-C $(ROOT)/$(PKGROOT)/;				\
 	)
 	cp userChrome.css $(ROOT)/$(PKGROOT)/firefox/defaults/profile/chrome
+	cp prefs.js $(ROOT)/$(PKGROOT)/firefox/defaults/profile
 	mv $(ROOT)/$(PKGROOT)/firefox $(ROOT)/$(PKGROOT)/firerox
 
 
