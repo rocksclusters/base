@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.47 2009/09/03 05:12:27 bruno Exp $
+# $Id: __init__.py,v 1.48 2009/10/13 21:28:17 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.48  2009/10/13 21:28:17  bruno
+# solairs tweak
+#
 # Revision 1.47  2009/09/03 05:12:27  bruno
 # added 'var' support back
 #
@@ -387,11 +390,16 @@ class Command(rocks.commands.list.command):
 		kickstart_dir = self.command('report.distro').strip()
 
 		if not basedir:
-			os.chdir(os.path.join(os.sep, kickstart_dir,
-				attrs['distribution'], attrs['arch'],
-				'build'))
-		else:
-			os.chdir(basedir)
+			if attrs['os'] == 'sunos':
+				basedir = os.path.join(os.sep, kickstart_dir,
+					attrs['distribution'], attrs['os'],
+					'build')
+			else:
+				basedir = os.path.join(os.sep, kickstart_dir,
+					attrs['distribution'], attrs['arch'],
+					'build')
+
+		os.chdir(basedir)
 
 		# Load the entities from the database
 		# get all the unique service types
