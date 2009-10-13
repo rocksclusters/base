@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.38 2009/05/07 18:23:18 bruno Exp $
+# $Id: __init__.py,v 1.39 2009/10/13 19:09:58 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.39  2009/10/13 19:09:58  bruno
+# make sure the mount point exists
+#
 # Revision 1.38  2009/05/07 18:23:18  bruno
 # support foreign rolls
 #
@@ -237,16 +240,22 @@ import rocks.file
 import popen2
 
 class RollHandler:
-	def __init__(self, arch, os, db):
+	def __init__(self, arch, host_os, db):
 		# Setup the initial variables
-		self.host_os = os				# Host Operating System
-		self.host_arch = arch			# Host Architecture
-		self.db = db 					# Database Connection
+		self.host_os = host_os		# Host Operating System
+		self.host_arch = arch		# Host Architecture
+		self.db = db 			# Database Connection
 
 		self.cdrom_mount = '/mnt/cdrom'	# Default(Linux) mount point
-		if self.host_os == 'sunos':		# Solaris CDROM mount point
+		if self.host_os == 'sunos':	# Solaris CDROM mount point
 			self.cdrom_mount = '/cdrom'
 
+		#
+		# make sure the mount point exists
+		#
+		if not os.path.exists(self.cdrom_mount):
+			os.makedirs(self.cdrom_mount)
+		
 		self.roll_info = {}
 		
 	def mount_iso(self, iso):
