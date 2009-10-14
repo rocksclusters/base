@@ -21,6 +21,9 @@
 
   <changelog>
   $Log: base.xml,v $
+  Revision 1.47  2009/10/14 19:41:37  bruno
+  added shell profiles for java
+
   Revision 1.46  2009/10/03 00:02:24  bruno
   fix XML syntax error
 
@@ -576,6 +579,31 @@ rm -f /usr/bin/java
 
 <file name="/etc/man.config" mode="append">
 MANPATH /usr/java/jdk1.5/man
+</file>
+
+<file name="/etc/profile.d/java.sh" perms="0755">
+export JAVA_HOME=/usr/java/latest
+export PATH=$JAVA_HOME/bin:$PATH
+</file>
+
+<file name="/etc/profile.d/java.csh" perms="0755">
+setenv JAVA_HOME /usr/java/latest
+set path = ($JAVA_HOME/bin $path)
+</file>
+
+</post>
+
+
+<post os="sunos">
+
+<file name="/etc/profile.d/java.sh" perms="0755">
+export JAVA_HOME=/usr/java
+export PATH=$JAVA_HOME/bin:$PATH
+</file>
+
+<file name="/etc/profile.d/java.csh" perms="0755">
+setenv JAVA_HOME /usr/java
+set path = ($JAVA_HOME/bin $path)
 </file>
 
 </post>
