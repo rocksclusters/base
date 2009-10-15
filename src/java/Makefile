@@ -1,5 +1,5 @@
 # --------------------------------------------------- -*- Makefile -*- --
-# $Id: Makefile,v 1.1 2009/10/01 23:12:07 bruno Exp $
+# $Id: Makefile,v 1.2 2009/10/15 23:48:11 bruno Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.2  2009/10/15 23:48:11  bruno
+# use base build root
+#
 # Revision 1.1  2009/10/01 23:12:07  bruno
 # java is now in the base roll
 #
@@ -92,10 +95,16 @@
 # jdk refresh
 #
 
-REDHAT.ROOT	= $(PWD)/../../
+REDHAT.ROOT     = $(CURDIR)/../../
+ROCKSROOT       = ../../../../..
 MAKE.iscontrib	= 1
+
 -include $(ROCKSROOT)/etc/Rules.mk
 include Rules.mk
+
+-include $(ROCKSROOT)/etc/python.mk
+include python.mk
+
 
 rpm::	build
 	-cp *.$(ARCH).rpm $(REDHAT.RPMS)/$(ARCH)/
