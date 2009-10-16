@@ -1,5 +1,5 @@
 # --------------------------------------------------- -*- Makefile -*- --
-# $Id: Makefile,v 1.16 2009/10/08 20:55:41 bruno Exp $
+# $Id: Makefile,v 1.17 2009/10/16 17:15:47 bruno Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.17  2009/10/16 17:15:47  bruno
+# really get rid of the tab bar
+#
 # Revision 1.16  2009/10/08 20:55:41  bruno
 # make prettier
 #
@@ -148,7 +151,6 @@ include Rules.mk
 
 build:
 	$(TAR) jfx firefox-$(FIREFOX_VERSION).source.tar.bz2
-	# cd patch-files && find . -type f | grep -v CVS | cpio -pduv ../
 	( 								\
 		cd mozilla-$(MOZILLA_VERSION);				\
 		cp ../mozconfig .mozconfig;				\
