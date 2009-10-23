@@ -1,5 +1,5 @@
 #
-# $Id: __init__.py,v 1.13 2009/08/14 20:40:48 bruno Exp $
+# $Id: __init__.py,v 1.14 2009/10/23 17:21:44 bruno Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.14  2009/10/23 17:21:44  bruno
+# user-settable lease times. a feature submitted by Tim Carlson.
+#
 # Revision 1.13  2009/08/14 20:40:48  bruno
 # put double quotes around domain name. bug reported by Yu Fu.
 #
@@ -217,8 +220,18 @@ class Command(rocks.commands.HostArgumentProcessor,
 		self.addOutput('', 'subnet %s netmask %s {'
 			% (network, netmask))
 
-		self.addOutput('', '\tdefault-lease-time 1200;')
-		self.addOutput('', '\tmax-lease-time 1200;')
+		default_lease = self.db.getHostAttr('localhost',
+			'Kickstart_DefaultLeaseTime')
+		max_lease = self.db.getHostAttr('localhost',
+			'Kickstart_MaxLeaseTime')
+
+		if not default_lease:
+			default_lease = '1200'
+		if not max_lease:
+			max_lease = '1200'
+
+		self.addOutput('', '\tdefault-lease-time %s;' % default_lease)
+		self.addOutput('', '\tmax-lease-time %s;' % max_lease)
 
 		self.printOptions('\t')
 
