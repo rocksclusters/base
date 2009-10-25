@@ -1,5 +1,5 @@
 # --------------------------------------------------- -*- Makefile -*- --
-# $Id: Makefile,v 1.17 2009/10/16 17:15:47 bruno Exp $
+# $Id: Makefile,v 1.18 2009/10/25 18:36:38 bruno Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.18  2009/10/25 18:36:38  bruno
+# make sure firefox builds for i386 too
+#
 # Revision 1.17  2009/10/16 17:15:47  bruno
 # really get rid of the tab bar
 #
@@ -145,6 +148,8 @@
 PKGROOT		= /opt/rocks
 REDHAT.ROOT     = $(CURDIR)/../../
 ROCKSROOT       = ../../../../..
+NATIVEARCH	= $(shell /bin/arch)
+
 -include $(ROCKSROOT)/etc/Rules.mk
 include Rules.mk
 
@@ -162,15 +167,14 @@ install::
 		cd mozilla-$(MOZILLA_VERSION);				\
 		$(MAKE) package;					\
 	)
-	env
 	mkdir -p $(ROOT)/$(PKGROOT)
 	(								\
 		cd mozilla-$(MOZILLA_VERSION)/dist;			\
-		tar jxf firefox-$(FIREFOX_VERSION).en-US.linux-$(ARCH).tar.bz2 \
+		tar jxf 						\
+		 firefox-$(FIREFOX_VERSION).en-US.linux-$(NATIVEARCH).tar.bz2 \
 			-C $(ROOT)/$(PKGROOT)/;				\
 	)
 	cp userChrome.css $(ROOT)/$(PKGROOT)/firefox/defaults/profile/chrome
-	cp prefs.js $(ROOT)/$(PKGROOT)/firefox/defaults/profile
 	mv $(ROOT)/$(PKGROOT)/firefox $(ROOT)/$(PKGROOT)/firerox
 
 
