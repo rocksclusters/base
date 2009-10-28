@@ -1,5 +1,5 @@
 # --------------------------------------------------- -*- Makefile -*- --
-# $Id: Makefile,v 1.18 2009/10/25 18:36:38 bruno Exp $
+# $Id: Makefile,v 1.19 2009/10/28 22:28:03 bruno Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.19  2009/10/28 22:28:03  bruno
+# add user.js
+#
 # Revision 1.18  2009/10/25 18:36:38  bruno
 # make sure firefox builds for i386 too
 #
@@ -175,6 +178,7 @@ install::
 			-C $(ROOT)/$(PKGROOT)/;				\
 	)
 	cp userChrome.css $(ROOT)/$(PKGROOT)/firefox/defaults/profile/chrome
+	cp user.js $(ROOT)/$(PKGROOT)/firefox/defaults/profile
 	mv $(ROOT)/$(PKGROOT)/firefox $(ROOT)/$(PKGROOT)/firerox
 
 
