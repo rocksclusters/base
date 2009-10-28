@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.10 2009/06/19 21:07:30 mjk Exp $
+# $Id: __init__.py,v 1.11 2009/10/28 21:00:56 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.11  2009/10/28 21:00:56  bruno
+# capture the runaction and installaction from a 'rocks dump'
+#
 # Revision 1.10  2009/06/19 21:07:30  mjk
 # - added dumpHostname to dump commands (use localhost for frontend)
 # - added add commands for attrs
@@ -143,10 +146,12 @@ class Command(command):
 	def run(self, params, args):
 		for host in self.getHostnames(args):
 			self.db.execute("""select 
-				n.cpus, n.rack, n.rank, m.name 
+				n.cpus, n.rack, n.rank, m.name, 
+				n.runaction, n.installaction
 				from nodes n, memberships m where
 				n.membership=m.id and n.name='%s'""" % host)
-			(cpus, rack, rank, membership) = self.db.fetchone()
+			(cpus, rack, rank, membership, runaction,
+				installaction) = self.db.fetchone()
 
 			# do not dump the localhost since the installer
 			# will add the host for us
@@ -158,5 +163,15 @@ class Command(command):
 				'membership=%s' %
 				(host, cpus, rack, rank, 
 				self.quote(membership)))
+
+			#
+			# now set the runaction and installaction for each host
+			#
+			if runaction:
+				self.dump('set host runaction %s action=%s'
+					% (host, self.quote(runaction)))
+			if installaction:
+				self.dump('set host installaction %s action=%s'
+					% (host, self.quote(installaction)))
 
 
