@@ -1,4 +1,4 @@
-#$Id: __init__.py,v 1.9 2009/10/07 21:25:47 mjk Exp $
+#$Id: __init__.py,v 1.10 2009/10/28 07:03:49 mjk Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.10  2009/10/28 07:03:49  mjk
+# - fixes for ipmi init script change from RHEL 5.3
+# - use dmidecode to decide if we should start ipmi service
+#
 # Revision 1.9  2009/10/07 21:25:47  mjk
 # - added openipmi support
 # - from green roll (manual steps removed)
@@ -148,7 +152,8 @@ class Command(rocks.commands.HostArgumentProcessor,
 
 
 	def writeIPMI(self, host, ip, channel, netmask):
-		self.addOutput(host, '<file name="/etc/sysconfig/ipmi">')
+		self.addOutput(host,
+			'<file name="/etc/sysconfig/ipmi-settings">')
 		self.addOutput(host, 'ipmitool lan set %s ipaddr %s'
 			% (channel, ip))
 		self.addOutput(host, 'ipmitool lan set %s netmask %s'

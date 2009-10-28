@@ -14,7 +14,7 @@
 	</copyright>
 
 	<changelog>
-	$Id: ipmi-base.xml,v 1.1 2009/10/07 21:25:47 mjk Exp $
+	$Id: ipmi-base.xml,v 1.2 2009/10/28 07:03:48 mjk Exp $
 	</changelog>
 
 
@@ -27,7 +27,23 @@
 
 <post>
 
-/sbin/chkconfig ipmi on
+if /usr/sbin/dmidecode | fgrep IPMI
+then
+	/sbin/chkconfig ipmi on
+else
+	/sbin/chkconfig ipmi off
+fi
+
+
+<file name="/etc/sysconfig/network-scripts/network-functions" mode="append">
+
+# Load IPMI default settings only once, but keep a log of what we did.
+
+if [ -f /etc/sysconfig/ipmi-settings ]; then
+	. /etc/sysconfig/ipmi-settings
+	mv /etc/sysconfig/ipmi-settings /etc/sysconfig/ipmi-settings.bak
+fi
+</file>
 
 </post>
 

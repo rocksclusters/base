@@ -14,21 +14,9 @@
 	</copyright>
 
 	<changelog>
-	$Id: ipmi-client.xml,v 1.1 2009/10/07 21:25:47 mjk Exp $
+	$Id: ipmi-client.xml,v 1.2 2009/10/28 07:03:48 mjk Exp $
 	</changelog>
 
-<post>
 
-<file name="/etc/sysconfig/network-scripts/network-functions" mode="append">
-
-# Load IPMI default settings only once, but keep a log of what we did.
-
-if [ -f /etc/sysconfig/ipmi ]; then
-	. /etc/sysconfig/ipmi
-	mv /etc/sysconfig/ipmi /etc/sysconfig/ipmi.cfg
-fi
-</file>
-
-</post>
 </kickstart> 
 
