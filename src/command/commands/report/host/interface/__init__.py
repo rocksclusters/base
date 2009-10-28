@@ -1,4 +1,4 @@
-#$Id: __init__.py,v 1.10 2009/10/28 07:03:49 mjk Exp $
+#$Id: __init__.py,v 1.11 2009/10/28 21:45:56 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.11  2009/10/28 21:45:56  bruno
+# don't pad output
+#
 # Revision 1.10  2009/10/28 07:03:49  mjk
 # - fixes for ipmi init script change from RHEL 5.3
 # - use dmidecode to decide if we should start ipmi service
@@ -219,7 +222,7 @@ class Command(rocks.commands.HostArgumentProcessor,
 			f = getattr(self, 'run_%s' % (osname))
 			f(host)
 
-		self.endOutput()
+		self.endOutput(padChar = '')
 
 	def run_sunos(self, host):
 		self.db.execute("select networks.ip, networks.device " +\
