@@ -5,7 +5,7 @@
 
 <para>
 This section describes how to add a device driver to the installation
-environment (<emphasis>initrd.img</emphasis>).
+environment (<emphasis>initrd.img-&document_version;-&lt;arch&gt;</emphasis>).
 This enables the installation environment to use the new driver as well
 as installing the device driver into the running environment (that is,
 after the node has installed).
@@ -164,16 +164,18 @@ Rebuild the distro:
 
 <listitem>
 <para>
-Install the newly created <emphasis>initrd.img</emphasis> and its matching
-kernel <emphasis>vmlinuz</emphasis> so PXE booted nodes will get the new
-device drivers:
+Install the newly created
+<emphasis>initrd.img-&document_version;-&lt;arch&gt;</emphasis> and its
+matching kernel
+<emphasis>vmlinuz-&document_version;-&lt;arch&gt;</emphasis>
+so PXE booted nodes will get the new device drivers:
 </para>
 
 <screen>
 # cd /export/rocks/install
 # rpm -Uvh --force rocks-dist/x86_64/RedHat/RPMS/rocks-boot-5*.rpm
-# cp /boot/kickstart/default/initrd.img /tftpboot/pxelinux/
-# cp /boot/kickstart/default/vmlinuz /tftpboot/pxelinux/
+# cp /boot/kickstart/default/initrd.img-&document_version;-&lt;arch&gt; /tftpboot/pxelinux/
+# cp /boot/kickstart/default/vmlinuz-&document_version;-&lt;arch&gt; /tftpboot/pxelinux/
 </screen>
 </listitem>
 
