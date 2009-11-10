@@ -1,4 +1,4 @@
-# $Id: sunos.mk,v 1.12 2009/05/15 00:38:11 anoop Exp $
+# $Id: sunos.mk,v 1.13 2009/11/10 21:32:28 anoop Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,12 @@
 # @Copyright@
 #
 # $Log: sunos.mk,v $
+# Revision 1.13  2009/11/10 21:32:28  anoop
+# Install CPAN config files to help create RPM files from CPAN directly
+# Make sure to build and install rocks-cpan during bootstrap of the base roll
+# Include CPAN support on solaris as well. All CPAN files are only for
+# foundation-perl
+#
 # Revision 1.12  2009/05/15 00:38:11  anoop
 # Adding libdnet to the mix
 #
@@ -146,7 +152,7 @@ SRCDIRS = foundation-coreutils foundation-gawk	\
 	  foundation-cvs foundation-gd		\
 	  foundation-python-xml phpMyAdmin	\
 	  foundation-graphviz foundation-rcs	\
-	  foundation-mercurial devel		\
+	  foundation-mercurial devel cpan	\
 	  pcre pylib command dbreport 411	\
 	  411-master bittorrent tentakel dnet	\
 	  ganglia-pylib receptor ssl

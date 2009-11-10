@@ -2,7 +2,7 @@
 #
 # This file should remain OS independent
 #
-# $Id: bootstrap.sh,v 1.17 2009/05/20 01:48:58 anoop Exp $
+# $Id: bootstrap.sh,v 1.18 2009/11/10 21:32:28 anoop Exp $
 #
 # @Copyright@
 # 
@@ -58,6 +58,12 @@
 # @Copyright@
 #
 # $Log: bootstrap.sh,v $
+# Revision 1.18  2009/11/10 21:32:28  anoop
+# Install CPAN config files to help create RPM files from CPAN directly
+# Make sure to build and install rocks-cpan during bootstrap of the base roll
+# Include CPAN support on solaris as well. All CPAN files are only for
+# foundation-perl
+#
 # Revision 1.17  2009/05/20 01:48:58  anoop
 # Add foundation-python-xml to bootstrapping procedure of the base roll
 #
@@ -152,6 +158,9 @@ install rocks-command
 
 compile dnet
 install libdnet
+
+compile cpan
+install rocks-cpan
 
 if [ `./_os` == "linux" ]; then
 	ignore_os_package ntp
