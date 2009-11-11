@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.75 2009/09/17 22:33:29 mjk Exp $
+# $Id: __init__.py,v 1.76 2009/11/11 19:54:56 mjk Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,11 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.76  2009/11/11 19:54:56  mjk
+# - Adding the "rocks list host yahoo.com" bug back in
+# - The fix broke frontend installs when name not in DNS
+# - Need to rethink this one
+#
 # Revision 1.75  2009/09/17 22:33:29  mjk
 # fix bug fix
 #
@@ -1257,7 +1262,17 @@ class DatabaseConnection:
 			try:
 				hostname, = self.link.fetchone()
 			except TypeError:
-				Abort('host "%s" is not in cluster' % hostname)
+				pass
+				# This check is good but breaks when the
+				# hostname is not in DNS and we are doing
+				# a frontend installation
+				# Code needs to be aware if we are in the 
+				# installer or not.
+				# For anything other than the frontend
+				# the Abort is good fixes the
+				# rocks list host yahoo.com bug
+				#
+				# Abort('host "%s" is not in cluster' % hostname)
 
 		return hostname
 
