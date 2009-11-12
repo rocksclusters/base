@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.76 2009/11/11 19:54:56 mjk Exp $
+# $Id: __init__.py,v 1.77 2009/11/12 06:16:10 mjk Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.77  2009/11/12 06:16:10  mjk
+# dns owes me 2 days
+#
 # Revision 1.76  2009/11/11 19:54:56  mjk
 # - Adding the "rocks list host yahoo.com" bug back in
 # - The fix broke frontend installs when name not in DNS
@@ -1211,7 +1214,28 @@ class DatabaseConnection:
 		if not hostname:					
 			hostname = socket.gethostname()
 		try:
+
+			# Do a reverse lookup to get the IP address.
+			# Then do a forward lookup to verfiy the IP
+			# address is in DNS.  This is done to catch
+			# evil DNS servers (timewarner) that have a
+			# catchall address.  We've had several users
+			# complain about this one.  Had to be at home 
+			# to see it.
+			#
+			# For truly evil DNS (OpenDNS) that have catchall
+			# servers that are in DNS we make sure the hostname
+			# matches the primary or alias of the forward lookup
+			# Throw an Except, is the forward failed an exception
+			# was already thrown.
+			#
+			# Bad DNS, Bad Bad Bad
+
 			addr = socket.gethostbyname(hostname)
+			(name, aliases, addrs) = socket.gethostbyaddr(addr)
+			if hostname != name and hostname not in aliases:
+				raise NameError
+
 		except:
 			if hostname == 'localhost':
 				addr = '127.0.0.1'
@@ -1262,17 +1286,7 @@ class DatabaseConnection:
 			try:
 				hostname, = self.link.fetchone()
 			except TypeError:
-				pass
-				# This check is good but breaks when the
-				# hostname is not in DNS and we are doing
-				# a frontend installation
-				# Code needs to be aware if we are in the 
-				# installer or not.
-				# For anything other than the frontend
-				# the Abort is good fixes the
-				# rocks list host yahoo.com bug
-				#
-				# Abort('host "%s" is not in cluster' % hostname)
+				Abort('host "%s" is not in cluster' % hostname)
 
 		return hostname
 
