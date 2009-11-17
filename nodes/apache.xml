@@ -16,6 +16,9 @@
 
   <changelog>
   $Log: apache.xml,v $
+  Revision 1.18  2009/11/17 23:09:20  bruno
+  bump up the amount of memory php can use
+
   Revision 1.17  2009/05/16 02:10:50  anoop
   Moved from RedHat MySQL to Rocks foundation-mysql
   rather forcefully.
@@ -364,7 +367,7 @@ Include /etc/apache2/rocks.conf
 <post>
 <!-- Make some changes to the PHP engine configuration. -->
 <file name="/etc/php.ini" mode="append">
-memory_limit = 64M
+memory_limit = 256M
 
 ; turn off error logging. the ganglia web php code emits many errors
 log_errors = Off
