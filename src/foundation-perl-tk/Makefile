@@ -1,5 +1,5 @@
 # --------------------------------------------------- -*- Makefile -*- --
-# $Id: Makefile,v 1.10 2009/05/01 19:07:06 mjk Exp $
+# $Id: Makefile,v 1.11 2009/11/18 22:24:30 anoop Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.11  2009/11/18 22:24:30  anoop
+# Perl-TK now builds directly from CPAN.
+#
 # Revision 1.10  2009/05/01 19:07:06  mjk
 # chimi con queso
 #
@@ -120,24 +123,35 @@
 PKGROOT		= /opt/rocks
 REDHAT.ROOT     = $(CURDIR)/../../
 ROCKSROOT       = ../../../../..
+MAKE.iscontrib  = 1
 -include $(ROCKSROOT)/etc/Rules.mk
 include Rules.mk
 
+# We maintain a modules.ignore in CVS. modules.ignore contains
+# a list of all perl modules that must not be build by cpan2dist
+# This list is a list of perl modules provided by foundation-perl
+# and all the RPMS that get built using the cpan-support Makefile
+# All the resulting RPMS are then subjected to the command line
+# rpm -qp --provides <foundation-perl-module>.arch.rpm | grep ^perl\( | \
+# cut -f1 -d' ' | sed -e 's/^perl(/^/g' -e 's/)$/$/g' | sort |uniq
 
-build:
-	gunzip -c Tk-$(VERSION).tar.gz | $(TAR) -xf -
-	(								\
-		cd Tk-$(VERSION);					\
-		$(PERL) Makefile.PL;					\
-		$(MAKE);							\
-	)
+# Build Tk and create the RPM
+build::
+	/opt/rocks/bin/cpan2dist --format CPANPLUS::Dist::Rocks \
+	--ignorelist modules.ignore --force --buildprereq \
+	--verbose Tk < /dev/null
 
-install::
-	mkdir -p $(ROOT)
-	(								\
-		cd Tk-$(VERSION);					\
-		$(MAKE) install DESTDIR=$(ROOT);				\
-	)
+# Transfer all the RPMS to the Roll RPM  repository.
+rpm:: build
+	if [ ! -d $(REDHAT.ROOT)/RPMS ]; then mkdir -p $(REDHAT.ROOT)/RPMS; fi
+	for i in `find . -type f -name \*.rpm ! -name \*.src.rpm`; do \
+		rpmname=`basename $$i`; \
+		arch=`echo $$rpmname | awk -F. '{print $$(NF-1);}'`; \
+		echo $$arch; \
+		if [ ! -d $(REDHAT.ROOT)/RPMS/$$arch ]; then \
+			mkdir -p $(REDHAT.ROOT)/RPMS/$$arch; fi; \
+		cp -rvf $$i $(REDHAT.ROOT)/RPMS/$$arch; \
+	done
 
 clean::
-	rm -rf Tk-$(VERSION)
+	rm -rf Tk
