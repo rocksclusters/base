@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.2 2009/05/01 19:07:01 mjk Exp $
+# $Id: __init__.py,v 1.3 2009/11/18 23:34:49 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.3  2009/11/18 23:34:49  bruno
+# cleanup help section
+#
 # Revision 1.2  2009/05/01 19:07:01  mjk
 # chimi con queso
 #
@@ -65,10 +68,10 @@ import rocks.commands
 
 class Command(rocks.commands.remove.os.command):
 	"""
-	Remove an attribute for an appliance.
+	Remove an attribute for an OS.
 
-	<arg type='string' name='appliance'>
-	One or more appliances
+	<arg type='string' name='os'>
+	One or more OS specifications (e.g., 'linux').
 	</arg>
 	
 	<arg type='string' name='attr'>
@@ -79,11 +82,11 @@ class Command(rocks.commands.remove.os.command):
 	Can be used in place of the attr argument.
 	</param>
 
-	<example cmd='remove appliance attr compute sge'>
-	Removes the attribute sge for compute appliances
+	<example cmd='remove os attr linux sge'>
+	Removes the attribute sge for linux OS machines.
 	</example>
 
-	<example cmd='remove appliance attr ompute attr=sge'>
+	<example cmd='remove os attr linux attr=sge'>
 	Same as above.
 	</example>
 	"""

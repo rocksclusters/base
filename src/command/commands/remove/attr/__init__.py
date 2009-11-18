@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.2 2009/05/01 19:06:59 mjk Exp $
+# $Id: __init__.py,v 1.3 2009/11/18 23:34:49 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.3  2009/11/18 23:34:49  bruno
+# cleanup help section
+#
 # Revision 1.2  2009/05/01 19:06:59  mjk
 # chimi con queso
 #
@@ -70,12 +73,8 @@ import rocks.commands
 
 class Command(rocks.commands.remove.command):
 	"""
-	Remove an attribute for a host.
+	Remove a global attribute.
 
-	<arg type='string' name='host'>
-	One or more hosts
-	</arg>
-	
 	<arg type='string' name='attr'>
 	The attribute name that should be removed.
  	</arg>
@@ -84,11 +83,11 @@ class Command(rocks.commands.remove.command):
 	Can be used in place of the attr argument.
 	</param>
 
-	<example cmd='remove host attr compute-0-0 cpus'>
-	Removes the attribute cpus for host compute-0-0.
+	<example cmd='remove attr cpus'>
+	Removes the global attribute named 'cpus'.
 	</example>
 
-	<example cmd='remove host attr ompute-0-0 attr=c-0-0'>
+	<example cmd='remove attr attr=cpus'>
 	Same as above.
 	</example>
 	"""

@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.2 2009/05/01 19:06:57 mjk Exp $
+# $Id: __init__.py,v 1.3 2009/11/18 23:34:49 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.3  2009/11/18 23:34:49  bruno
+# cleanup help section
+#
 # Revision 1.2  2009/05/01 19:06:57  mjk
 # chimi con queso
 #
@@ -82,14 +85,10 @@ import string
 
 class Command(rocks.commands.list.command):
 	"""
-	Lists the set of attributes for appliances.
+	Lists the set of global attributes.
 
-	<arg optional='1' type='string' name='appliance'>
-	Name of appliance
-	</arg>
-	
-	<example cmd='list appliance attr compute'>
-	List the attributes for compute appliances
+	<example cmd='list attr'>
+	List the global attributes.
 	</example>
 	"""
 

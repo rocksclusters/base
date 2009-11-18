@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.1 2009/06/19 21:07:21 mjk Exp $
+# $Id: __init__.py,v 1.2 2009/11/18 23:34:49 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.2  2009/11/18 23:34:49  bruno
+# cleanup help section
+#
 # Revision 1.1  2009/06/19 21:07:21  mjk
 # - added dumpHostname to dump commands (use localhost for frontend)
 # - added add commands for attrs
@@ -89,8 +92,8 @@ class Command(rocks.commands.add.command):
 	same as value argument
 	</param>
 
-	<example cmd='add appliance attr sge False'>
-	Adds the sge attribution to False
+	<example cmd='add attr sge False'>
+	Adds the sge attribution and sets it to False.
 	</example>
 
 	<related>list attr</related>

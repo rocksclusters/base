@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.2 2009/05/01 19:06:59 mjk Exp $
+# $Id: __init__.py,v 1.3 2009/11/18 23:34:49 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.3  2009/11/18 23:34:49  bruno
+# cleanup help section
+#
 # Revision 1.2  2009/05/01 19:06:59  mjk
 # chimi con queso
 #
@@ -90,7 +93,7 @@ class Command(rocks.commands.remove.appliance.command):
 	Removes the attribute sge for compute appliances
 	</example>
 
-	<example cmd='remove appliance attr ompute attr=sge'>
+	<example cmd='remove appliance attr compute attr=sge'>
 	Same as above.
 	</example>
 	"""

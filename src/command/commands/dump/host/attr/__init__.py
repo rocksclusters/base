@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.3 2009/06/19 21:07:31 mjk Exp $
+# $Id: __init__.py,v 1.4 2009/11/18 23:34:49 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.4  2009/11/18 23:34:49  bruno
+# cleanup help section
+#
 # Revision 1.3  2009/06/19 21:07:31  mjk
 # - added dumpHostname to dump commands (use localhost for frontend)
 # - added add commands for attrs
@@ -86,7 +89,7 @@ class Command(rocks.commands.dump.host.command):
 	Host name of machine
 	</arg>
 	
-	<example cmd='list host attr compute-0-0'>
+	<example cmd='dump host attr compute-0-0'>
 	Dump the attributes for compute-0-0.
 	</example>
 	"""

@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.3 2009/05/01 19:07:00 mjk Exp $
+# $Id: __init__.py,v 1.4 2009/11/18 23:34:49 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.4  2009/11/18 23:34:49  bruno
+# cleanup help section
+#
 # Revision 1.3  2009/05/01 19:07:00  mjk
 # chimi con queso
 #
@@ -93,7 +96,7 @@ class Command(rocks.commands.remove.host.command):
 	Removes the attribute cpus for host compute-0-0.
 	</example>
 
-	<example cmd='remove host attr ompute-0-0 attr=c-0-0'>
+	<example cmd='remove host attr compute-0-0 attr=cpus'>
 	Same as above.
 	</example>
 	"""
