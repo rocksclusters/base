@@ -17,6 +17,14 @@
 
 	<changelog>
 	$Log: foundation-base.xml,v $
+	Revision 1.23  2009/11/18 22:16:56  anoop
+	- Big changes to rocks-cpan. Now more accurate.
+	- CPAN Support introduced. Builds and installs the
+	  necessary infrastucture to get CPANPLUS::Dist::Rocks
+	  to function correctly
+	- Changes to xml files to include CPAN packages and support
+	  infrastructure
+	
 	Revision 1.22  2009/11/10 21:32:28  anoop
 	Install CPAN config files to help create RPM files from CPAN directly
 	Make sure to build and install rocks-cpan during bootstrap of the base roll
@@ -109,7 +117,6 @@
 	<package os='linux'>foundation-ant</package>
 	<package os='linux'>foundation-mercurial</package>
 	<package os='linux'>libdnet</package>
-	<package os='linux'>rocks-cpan</package>
 
 	<package os='sunos'>ROCKSfoundation-python</package>
 	<package os='sunos'>ROCKSfoundation-python-xml</package>
@@ -124,7 +131,6 @@
 	<package os='sunos'>ROCKSfoundation-libxml2</package>
 	<package os='sunos'>ROCKSfoundation-wget</package>
 	<package os='sunos'>ROCKSlibdnet</package>
-	<package os='sunos'>ROCKSrocks-cpan</package>
 
 <post>
 
@@ -132,16 +138,7 @@
 
 /opt/rocks/bin/dot -c
 
-<!--	Create a cpan directory to house CPAN and CPANPLUS
-	build directories, These are required to build CPAN
-	modules and to convert CPAN modules to RPM files -->
-
-mkdir -p /export/cpan
-mkdir -p /export/cpanplus
-
 </post>
-
-
 
 </kickstart> 
 

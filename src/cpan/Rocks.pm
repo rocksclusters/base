@@ -241,7 +241,11 @@ sub install {
     my %opts = $self->_parse_args(@_);
 
     #my $rpm = $self->status->rpm;
-    my $rpmcmd = 'rpm -ivh ' . $self->status->rpmpath;
+    my $rpmcmd = 'rpm -Uvh ';
+    if ( $opts{force} ){
+	$rpmcmd = $rpmcmd . '--force --nodeps ';
+	}
+    $rpmcmd = $rpmcmd . $self->status->rpmpath;
 
     if ($EUID != 0) {
 
@@ -441,8 +445,12 @@ sub _buildreqs {
     # Handle build/test/requires
     my $buildreqs = $self->parent->status->prereqs;
 
-    $buildreqs->{'Module::Build::Compat'} = 0
-        if $self->_is_module_build_compat;
+    # Module::Build::Compat should not be a build
+    # requirement for anything. It's already present
+    # in perl-core, and should not be rebuilt for 
+    # every bloody package that requires it
+    #$buildreqs->{'Module::Build::Compat'} = 0
+    #    if $self->_is_module_build_compat;
 
     return $buildreqs;
 }
@@ -638,11 +646,11 @@ sub _module_description {
             my $pom  = $head1->content;
             my $text = $pom->present('Pod::POM::View::Text');
             
-            # limit to 3 paragraphs at the moment
-            my @paragraphs = (split /\n\n/, $text)[0..2]; 
+            # limit to a single paragraph at the moment
+            my $paragraph = (split /\n\n/, $text)[0]; 
             #$text = join "\n\n", @paragraphs;
             $text = q{};
-            for my $para (@paragraphs) { $text .= $para }
+	    $text = $paragraph;
 
             # autoformat and return...
             return autoformat $text, { all => 1 };
@@ -709,7 +717,11 @@ Summary:    [% status.summary %]
 Source:     http://search.cpan.org/CPAN/[% module.path %]/[% status.distname %]-%{version}.[% module.package_extension %] 
 Url:        http://search.cpan.org/dist/[% status.distname %]
 BuildRoot:  %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n) 
-Requires:   perl(:MODULE_COMPAT_%(eval "`%{__perl} -V:version`"; echo $version))
+%define __perl /opt/rocks/bin/perl
+%define _bindir /opt/rocks/bin
+%define _mandir /opt/rocks/share/man
+%define _docdir /opt/rocks/share/doc
+Requires:   foundation-perl
 [% IF status.is_noarch %]BuildArch:  noarch[% END %]
 
 [% brs = buildreqs; FOREACH br = brs.keys.sort -%]
@@ -717,10 +729,6 @@ BuildRequires: perl([% br %])[% IF (brs.$br != 0) %] >= [% brs.$br %][% END %]
 [% END -%]
 
 
-%define __perl /opt/rocks/bin/perl
-%define _bindir /opt/rocks/bin
-%define _mandir /opt/rocks/share/man
-%define _docdir /opt/rocks/share/doc
 
 %description
 [% status.description -%]
@@ -757,27 +765,18 @@ rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root,-)
-%doc [% docfiles %] 
-[% IF (status.is_noarch) -%]
-%{perl_sitelib}/*
-[% ELSE -%]
-%{perl_sitearch}/*
-%exclude %dir %{perl_sitearch}/auto
-[% END -%]
-[% FOREACH file = status.extra_files -%]
-[% file %]
-[% END -%]
+/*
 
 %changelog
 * [% date %] [% packager %] [% status.distvers %]-[% status.rpmvers %]
 - initial RPM packaging
-- generated with cpan2dist (CPANPLUS::Dist::RPM version [% packagervers %])
+- generated with cpan2dist (CPANPLUS::Dist::Rocks version [% packagervers %])
 
 __[ pod ]__
 
 =head1 NAME
 
-CPANPLUS::Dist::RPM - a CPANPLUS backend to build RPM
+CPANPLUS::Dist::Rocks - a CPANPLUS backend to build Rocks RPM
 
 
 =head1 SYNOPSIS

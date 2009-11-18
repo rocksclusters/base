@@ -2,7 +2,7 @@
 #
 # This file should remain OS independent
 #
-# $Id: bootstrap.sh,v 1.18 2009/11/10 21:32:28 anoop Exp $
+# $Id: bootstrap.sh,v 1.19 2009/11/18 22:16:56 anoop Exp $
 #
 # @Copyright@
 # 
@@ -58,6 +58,14 @@
 # @Copyright@
 #
 # $Log: bootstrap.sh,v $
+# Revision 1.19  2009/11/18 22:16:56  anoop
+# - Big changes to rocks-cpan. Now more accurate.
+# - CPAN Support introduced. Builds and installs the
+#   necessary infrastucture to get CPANPLUS::Dist::Rocks
+#   to function correctly
+# - Changes to xml files to include CPAN packages and support
+#   infrastructure
+#
 # Revision 1.18  2009/11/10 21:32:28  anoop
 # Install CPAN config files to help create RPM files from CPAN directly
 # Make sure to build and install rocks-cpan during bootstrap of the base roll
@@ -161,6 +169,8 @@ install libdnet
 
 compile cpan
 install rocks-cpan
+
+(cd src/cpan-support && make bootstrap)
 
 if [ `./_os` == "linux" ]; then
 	ignore_os_package ntp

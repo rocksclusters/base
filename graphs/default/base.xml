@@ -4,6 +4,14 @@
 
 	<changelog>
 	$Log: base.xml,v $
+	Revision 1.57  2009/11/18 22:16:56  anoop
+	- Big changes to rocks-cpan. Now more accurate.
+	- CPAN Support introduced. Builds and installs the
+	  necessary infrastucture to get CPANPLUS::Dist::Rocks
+	  to function correctly
+	- Changes to xml files to include CPAN packages and support
+	  infrastructure
+	
 	Revision 1.56  2009/10/07 21:25:46  mjk
 	- added openipmi support
 	- from green roll (manual steps removed)
@@ -351,6 +359,8 @@
 		<to>partition</to>
 		<to os="linux">yum</to>
 	</edge>
+
+	<edge from="foundation-base" to="foundation-cpan"/>
 
 	<edge from="client" to="x11" cond="x11"/>
 
