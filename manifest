@@ -12,7 +12,7 @@ foundation-libxml2
 foundation-mercurial
 foundation-mysql
 foundation-perl
-foundation-perl-tk
+foundation-perl-Tk
 foundation-python
 foundation-python-extras
 foundation-python-xml
