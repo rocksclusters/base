@@ -1,9 +1,12 @@
-# $Id: Makefile,v 1.1 2009/11/18 22:16:56 anoop Exp $
+# $Id: Makefile,v 1.2 2009/11/19 21:10:34 bruno Exp $
 
 # @Copyright@
 # @Copyright@
 
 # $Log: Makefile,v $
+# Revision 1.2  2009/11/19 21:10:34  bruno
+# patch from anoop
+#
 # Revision 1.1  2009/11/18 22:16:56  anoop
 # - Big changes to rocks-cpan. Now more accurate.
 # - CPAN Support introduced. Builds and installs the
@@ -37,10 +40,16 @@ build:
 
 # Use modules.build and modules.ignore to convert from CPAN to Rocks RPM
 install::
+	cp modules.ignore modules.ignore.tmp
 	cat modules.build | while read line; do \
 		/opt/rocks/bin/cpan2dist --format CPANPLUS::Dist::Rocks \
-		--ignorelist modules.ignore --force --buildprereq \
-		--install --verbose $$line < /dev/null; done
+		--ignorelist modules.ignore.tmp --force --buildprereq	\
+		--install --verbose $$line < /dev/null;			\
+		( find . -type f -name \*.rpm ! -name \*.src.rpm	\
+		  -exec rpm -qp --provides {} \; | grep ^perl\(		\
+		  | cut -f1 -d' ' | sed -e 's/^perl(/^/g' -e 's/)$$/$$/g' \
+		  && cat modules.ignore ) | sort | uniq > modules.ignore.tmp; \
+	done
 
 # Transfer all the RPMS to the Roll RPM  repository.
 rpm:: build install
