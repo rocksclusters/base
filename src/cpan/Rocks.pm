@@ -469,6 +469,10 @@ sub _docfiles {
 }
 
 sub _is_module_build_compat {
+    # Don't return anything. This just discourages the build
+    # process from listing Module::Build as a dependency.
+    # This way we disable Module::Build from being built.
+    return;
     my $self   = shift @_;
     my $module = shift @_ || $self->parent;
 
