@@ -17,6 +17,9 @@
 
 	<changelog>
 	$Log: foundation-base.xml,v $
+	Revision 1.24  2009/11/19 21:08:10  bruno
+	foundation-perl-tk is now named foundation-perl-Tk
+	
 	Revision 1.23  2009/11/18 22:16:56  anoop
 	- Big changes to rocks-cpan. Now more accurate.
 	- CPAN Support introduced. Builds and installs the
@@ -104,7 +107,7 @@
 	<package os='linux'>foundation-python-extras</package>
 	<package os='linux'>foundation-python-xml</package>
 	<package os='linux'>foundation-perl</package>
-	<package os='linux'>foundation-perl-tk</package>
+	<package os='linux'>foundation-perl-Tk</package>
 	<package os='linux'>foundation-graphviz</package>
 	<package os='linux'>foundation-coreutils</package>
 	<package os='linux'>foundation-rcs</package>
@@ -122,7 +125,7 @@
 	<package os='sunos'>ROCKSfoundation-python-xml</package>
 	<package os='sunos'>ROCKSfoundation-python-extras</package>
 	<package os='sunos'>ROCKSfoundation-perl</package>
-	<package os='sunos'>ROCKSfoundation-perl-tk</package>
+	<package os='sunos'>ROCKSfoundation-perl-Tk</package>
 	<package os='sunos'>ROCKSfoundation-graphviz</package>
 	<package os='sunos'>ROCKSfoundation-coreutils</package>
 	<package os='sunos'>ROCKSfoundation-rcs</package>
