@@ -2,7 +2,7 @@
 #
 # This file should remain OS independent
 #
-# $Id: bootstrap.sh,v 1.19 2009/11/18 22:16:56 anoop Exp $
+# $Id: bootstrap.sh,v 1.20 2009/11/20 23:38:38 bruno Exp $
 #
 # @Copyright@
 # 
@@ -58,6 +58,11 @@
 # @Copyright@
 #
 # $Log: bootstrap.sh,v $
+# Revision 1.20  2009/11/20 23:38:38  bruno
+# from anoop:
+# 	Disable building and installation of rocks-cpan and cpan-support on
+# 	Solaris. Will re-enable for next release after testing.
+#
 # Revision 1.19  2009/11/18 22:16:56  anoop
 # - Big changes to rocks-cpan. Now more accurate.
 # - CPAN Support introduced. Builds and installs the
@@ -167,10 +172,11 @@ install rocks-command
 compile dnet
 install libdnet
 
-compile cpan
-install rocks-cpan
-
-(cd src/cpan-support && make bootstrap)
+if [ `./_os` == "linux" ]; then
+	compile cpan
+	install rocks-cpan
+	(cd src/cpan-support && gmake bootstrap)
+fi
 
 if [ `./_os` == "linux" ]; then
 	ignore_os_package ntp

@@ -17,6 +17,11 @@
 
 	<changelog>
 	$Log: foundation-base.xml,v $
+	Revision 1.25  2009/11/20 23:38:38  bruno
+	from anoop:
+		Disable building and installation of rocks-cpan and cpan-support on
+		Solaris. Will re-enable for next release after testing.
+	
 	Revision 1.24  2009/11/19 21:08:10  bruno
 	foundation-perl-tk is now named foundation-perl-Tk
 	
@@ -125,7 +130,6 @@
 	<package os='sunos'>ROCKSfoundation-python-xml</package>
 	<package os='sunos'>ROCKSfoundation-python-extras</package>
 	<package os='sunos'>ROCKSfoundation-perl</package>
-	<package os='sunos'>ROCKSfoundation-perl-Tk</package>
 	<package os='sunos'>ROCKSfoundation-graphviz</package>
 	<package os='sunos'>ROCKSfoundation-coreutils</package>
 	<package os='sunos'>ROCKSfoundation-rcs</package>
@@ -144,4 +148,3 @@
 </post>
 
 </kickstart> 
-

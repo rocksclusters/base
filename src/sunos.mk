@@ -1,4 +1,4 @@
-# $Id: sunos.mk,v 1.13 2009/11/10 21:32:28 anoop Exp $
+# $Id: sunos.mk,v 1.14 2009/11/20 23:38:38 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,11 @@
 # @Copyright@
 #
 # $Log: sunos.mk,v $
+# Revision 1.14  2009/11/20 23:38:38  bruno
+# from anoop:
+# 	Disable building and installation of rocks-cpan and cpan-support on
+# 	Solaris. Will re-enable for next release after testing.
+#
 # Revision 1.13  2009/11/10 21:32:28  anoop
 # Install CPAN config files to help create RPM files from CPAN directly
 # Make sure to build and install rocks-cpan during bootstrap of the base roll
@@ -148,11 +153,11 @@ SRCDIRS = foundation-coreutils foundation-gawk	\
 	  foundation-mysql foundation-python	\
 	  foundation-perl foundation-libxml2	\
 	  foundation-python-extras php postfix	\
-	  foundation-perl-tk foundation-ant	\
+	  foundation-ant	\
 	  foundation-cvs foundation-gd		\
 	  foundation-python-xml phpMyAdmin	\
 	  foundation-graphviz foundation-rcs	\
 	  foundation-mercurial devel cpan	\
-	  pcre pylib command dbreport 411	\
+	  pcre pylib command 411	\
 	  411-master bittorrent tentakel dnet	\
 	  ganglia-pylib receptor ssl

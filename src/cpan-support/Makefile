@@ -1,9 +1,14 @@
-# $Id: Makefile,v 1.2 2009/11/19 21:10:34 bruno Exp $
+# $Id: Makefile,v 1.3 2009/11/20 23:38:38 bruno Exp $
 
 # @Copyright@
 # @Copyright@
 
 # $Log: Makefile,v $
+# Revision 1.3  2009/11/20 23:38:38  bruno
+# from anoop:
+# 	Disable building and installation of rocks-cpan and cpan-support on
+# 	Solaris. Will re-enable for next release after testing.
+#
 # Revision 1.2  2009/11/19 21:10:34  bruno
 # patch from anoop
 #
@@ -63,7 +68,8 @@ rpm:: build install
 		cp -rvf $$i $(REDHAT.ROOT)/RPMS/$$arch; \
 	done
 	
-# Clean out everything that's not Makefile or modules.build
+# Clean out everything that's not Makefile or modules.build or CVS
 clean::
-	find * -prune ! -name Makefile -a \
+	find * -prune ! -name CVS ! -name Makefile -a \
 		! -name modules.build  -exec rm -rf {} \;
+	-rm -rf .gnupg
