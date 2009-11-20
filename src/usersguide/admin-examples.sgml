@@ -1,5 +1,5 @@
 <!-- 
-$Id: admin-examples.sgml,v 1.15 2009/09/17 18:57:35 bruno Exp $
+$Id: admin-examples.sgml,v 1.16 2009/11/20 23:28:00 bruno Exp $
 
 Administration guide
 
@@ -7,6 +7,9 @@ Administration guide
 @Copyright@
 
 $Log: admin-examples.sgml,v $
+Revision 1.16  2009/11/20 23:28:00  bruno
+cleanup
+
 Revision 1.15  2009/09/17 18:57:35  bruno
 take out hard coding of rocks 4.3 version
 
@@ -384,13 +387,21 @@ SUBNET  IFACE MAC               IP             NETMASK       MODULE NAME        
 private eth0  00:19:b9:21:b8:b6 10.1.1.1       255.0.0.0     tg3    jeebs                   ------ 
 public  eth1  00:0e:0c:a7:57:d7 172.19.119.241 255.255.255.0 e1000  jeebs.rocksclusters.org ------
 </screen>
-<note>
+
 <para>
-After any such database change, always run 
-<computeroutput>rocks sync config</computeroutput>. This will update service
-configuration files (like dhcpd).
+To apply the changes to the frontend, execute:
+
+<screen>
+# rocks sync config
+# rocks sync host network localhost
+</screen>
 </para>
-</note>
+
+<para>
+The above commands will update some configuration files on the frontend
+(e.g., /etc/sysconfig/network-scripts/ifcfg-*), then restart the frontend's
+network.
+</para>
 
 </section>
 
