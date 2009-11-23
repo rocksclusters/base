@@ -1,4 +1,4 @@
-# $Id: linux.mk,v 1.19 2009/05/04 21:52:58 bruno Exp $
+# $Id: linux.mk,v 1.20 2009/11/23 20:33:41 anoop Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: linux.mk,v $
+# Revision 1.20  2009/11/23 20:33:41  anoop
+# JDK for SunOS in the base roll
+#
 # Revision 1.19  2009/05/04 21:52:58  bruno
 # nuke rocks-security
 #
@@ -143,6 +146,7 @@ SRCDIRS = `find . -type d -maxdepth 1 \
 	-not -name devel-env \
 	-not -name pcre \
 	-not -name php \
+	-not -name sun-java \
 	-not -name postfix`
 
 #

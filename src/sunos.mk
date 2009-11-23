@@ -1,4 +1,4 @@
-# $Id: sunos.mk,v 1.14 2009/11/20 23:38:38 bruno Exp $
+# $Id: sunos.mk,v 1.15 2009/11/23 20:33:41 anoop Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: sunos.mk,v $
+# Revision 1.15  2009/11/23 20:33:41  anoop
+# JDK for SunOS in the base roll
+#
 # Revision 1.14  2009/11/20 23:38:38  bruno
 # from anoop:
 # 	Disable building and installation of rocks-cpan and cpan-support on
@@ -153,7 +156,7 @@ SRCDIRS = foundation-coreutils foundation-gawk	\
 	  foundation-mysql foundation-python	\
 	  foundation-perl foundation-libxml2	\
 	  foundation-python-extras php postfix	\
-	  foundation-ant	\
+	  foundation-ant sun-java		\
 	  foundation-cvs foundation-gd		\
 	  foundation-python-xml phpMyAdmin	\
 	  foundation-graphviz foundation-rcs	\
