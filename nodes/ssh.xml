@@ -17,6 +17,9 @@
 
   <changelog>
   $Log: ssh.xml,v $
+  Revision 1.13  2009/11/30 17:24:10  bruno
+  takes care of a missing codeset issue
+
   Revision 1.12  2009/05/01 19:06:48  mjk
   chimi con queso
 
@@ -147,6 +150,7 @@
   <package os='sunos'>SUNWspnego</package>
   <package os='sunos'>SUNWgssdh</package>
   <package os='sunos'>SUNWrsg</package>
+  <package os='sunos'>SUNWuiu8</package>
 
 <post>
 <file name="/etc/ssh/ssh_config">
