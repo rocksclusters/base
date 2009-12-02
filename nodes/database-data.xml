@@ -17,6 +17,9 @@
 
   <changelog>
   $Log: database-data.xml,v $
+  Revision 1.55  2009/12/02 21:30:28  mjk
+  - Added ssh_use_dns attribute
+
   Revision 1.54  2009/08/28 21:00:33  bruno
   open the netmask up for multicast traffic
 
@@ -541,6 +544,11 @@ if os.path.exists('/tmp/site.attrs'):
 
 /opt/rocks/bin/rocks set host interface name &Kickstart_PrivateHostname; eth0 \
 	&Kickstart_PrivateHostname;
+
+<!-- SSH settings -->
+
+/opt/rocks/bin/rocks set attr ssh_use_dns true
+
 
 </post>
 

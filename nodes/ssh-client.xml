@@ -25,6 +25,9 @@ generate its own keypair.
 
   <changelog>
   $Log: ssh-client.xml,v $
+  Revision 1.6  2009/12/02 21:30:28  mjk
+  - Added ssh_use_dns attribute
+
   Revision 1.5  2009/05/01 19:06:48  mjk
   chimi con queso
 
@@ -111,6 +114,16 @@ cat /etc/ssh/ssh_host_dsa_key.pub
 </file>
 
 </post>
+
+<!-- ssh_use_dns is used to disable DNS lookups on ssh connections. -->
+<!-- This is useful for clusters not on the Internet. -->
+
+<post cond="not ssh_use_dns">
+<file name="/etc/ssh/sshd_config" mode="append">
+UseDNS no
+</file>
+</post>
+
 
 </kickstart>
 
