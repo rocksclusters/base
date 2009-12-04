@@ -17,6 +17,9 @@
 
 	<changelog>
 	$Log: foundation-base.xml,v $
+	Revision 1.27  2009/12/04 23:39:15  bruno
+	backout last update
+	
 	Revision 1.26  2009/12/04 22:43:39  bruno
 	make sure rocks services can find the libraries in /opt/rocks/lib
 	
@@ -147,15 +150,6 @@
 <!-- graphviz requires this to create its config file -->
 
 /opt/rocks/bin/dot -c
-
-</post>
-
-
-<post>
-
-<file name="/etc/ld.so.conf.d/foundation.conf">
-/opt/rocks/lib
-</file>
 
 </post>
 
