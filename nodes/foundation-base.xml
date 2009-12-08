@@ -17,6 +17,9 @@
 
 	<changelog>
 	$Log: foundation-base.xml,v $
+	Revision 1.28  2009/12/08 01:56:24  bruno
+	set the library path for foundation libraries in the base roll.
+	
 	Revision 1.27  2009/12/04 23:39:15  bruno
 	backout last update
 	
@@ -150,6 +153,19 @@
 <!-- graphviz requires this to create its config file -->
 
 /opt/rocks/bin/dot -c
+
+</post>
+
+
+<post>
+
+<file name="/etc/ld.so.conf.d/foundation.conf">
+/lib
+/lib64
+/usr/lib
+/usr/lib64
+/opt/rocks/lib
+</file>
 
 </post>
 
