@@ -13,6 +13,9 @@
 
 <changelog>
 $Log: screen-clusterinfo.xml,v $
+Revision 1.17  2009/12/09 22:27:29  bruno
+change default name to one that doesn't hose ganglia
+
 Revision 1.16  2009/05/01 19:06:48  mjk
 chimi con queso
 
@@ -104,7 +107,7 @@ first pass at new screens
 		<name>Info_ClusterName</name>
 		<type>string</type>
 		<size>40</size>
-		<default>Our Cluster</default>
+		<default>Rocks-Cluster</default>
 		<value>&Info_ClusterName;</value>
 		<help>The name of the cluster (optional).</help>
 		<validate>validate_cluster_name</validate>
