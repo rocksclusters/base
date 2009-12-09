@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.39 2009/10/13 19:09:58 bruno Exp $
+# $Id: __init__.py,v 1.40 2009/12/09 21:25:56 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.40  2009/12/09 21:25:56  bruno
+# only clean a foreign roll if the clean flag is set
+#
 # Revision 1.39  2009/10/13 19:09:58  bruno
 # make sure the mount point exists
 #
@@ -508,7 +511,7 @@ class RollHandler:
 		roll_dir = os.path.join(dst, roll_name, roll_vers, roll_arch)
 		destdir = os.path.join(roll_dir, 'RedHat', 'RPMS')
 
-		if os.path.exists(roll_dir):
+		if os.path.exists(roll_dir) and clean:
 			str = 'Cleaning %s version %s ' % \
 				(roll_name, roll_vers)
 			str += 'for %s from Rolls directory' % roll_arch
