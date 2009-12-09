@@ -1,4 +1,4 @@
-# $Id: sunos.mk,v 1.7 2009/05/01 19:07:06 mjk Exp $
+# $Id: sunos.mk,v 1.8 2009/12/09 22:21:28 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: sunos.mk,v $
+# Revision 1.8  2009/12/09 22:21:28  bruno
+# sun fix
+#
 # Revision 1.7  2009/05/01 19:07:06  mjk
 # chimi con queso
 #
@@ -103,7 +106,7 @@
 #
 
 build:
-MYSQL_LDFLAGS	= "-L/opt/SUNWspro/lib -lCstd -lCrun"
+MYSQL_LDFLAGS  = "-L/opt/sunstudio12.1/lib -lCstd -lCrun"
 
 install::
 	mkdir -p $(ROOT)/$(PKGROOT)/share/mysql/
