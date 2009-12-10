@@ -1,5 +1,5 @@
 <!-- 
-$Id: admin-examples.sgml,v 1.16 2009/11/20 23:28:00 bruno Exp $
+$Id: admin-examples.sgml,v 1.17 2009/12/10 23:33:24 mjk Exp $
 
 Administration guide
 
@@ -7,6 +7,9 @@ Administration guide
 @Copyright@
 
 $Log: admin-examples.sgml,v $
+Revision 1.17  2009/12/10 23:33:24  mjk
+tell user how to restart network
+
 Revision 1.16  2009/11/20 23:28:00  bruno
 cleanup
 
@@ -400,7 +403,11 @@ To apply the changes to the frontend, execute:
 <para>
 The above commands will update some configuration files on the frontend
 (e.g., /etc/sysconfig/network-scripts/ifcfg-*), then restart the frontend's
-network.
+network by either rebooting or running the following:
+
+<screen>
+# /sbin/service network restart
+</screen>
 </para>
 
 </section>
