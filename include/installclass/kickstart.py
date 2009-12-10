@@ -863,6 +863,7 @@ class Kickstart(cobject):
         ds = DiskSet(self.anaconda)
 	diskfile = open('/tmp/discovered.disks', 'w')
 	disks = ds.driveList()
+	ds.startMdRaid()
 	diskfile.write('disks: %s\n' % (' '.join(disks)))
 	swraid = []
 	for dev, devices, level, numActive in ds.mdList:
