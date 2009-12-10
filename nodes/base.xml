@@ -21,6 +21,10 @@
 
   <changelog>
   $Log: base.xml,v $
+  Revision 1.48  2009/12/10 21:00:11  bruno
+  make sure mdmonitor doesn't hang when trying to start as root and
+  if root's ssh keys have not been set up.
+
   Revision 1.47  2009/10/14 19:41:37  bruno
   added shell profiles for java
 
@@ -606,6 +610,16 @@ setenv JAVA_HOME /usr/java
 set path = ($JAVA_HOME/bin $path)
 </file>
 
+</post>
+
+<post>
+<file name="/tmp/mdmonitor"
+	expr="sed -e 's/--user=root//' /etc/rc.d/init.d/mdmonitor"/>
+
+<file name="/etc/rc.d/init.d/mdmonitor" perms="755"
+	expr="cat /tmp/mdmonitor"/>
+
+rm /tmp/mdmonitor
 </post>
 
 
