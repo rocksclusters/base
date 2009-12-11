@@ -419,6 +419,16 @@ parse_gmetric (PyObject *self, PyObject *args)
 
 	if (key)
 	{
+#ifdef SUNOS
+		/*
+		 * Solaris fails to decode any built-in ganglia metric. When a
+		 * built-in metric like "ps" comes in over the wire, greceptor
+		 * seg-faults. So for now if it's a built-in metric, just raise
+		 * a gmon.Gmetric.Error exception that will be silently dropped
+		 * by the reporter in reporter.py
+		 */
+		myerror("Cannot read built-in metric in Solaris");
+#endif
 		source = "gmond";
 
 		/*printf("Got a built-in metric %d\n", key);*/
