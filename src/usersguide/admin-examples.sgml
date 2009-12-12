@@ -1,5 +1,5 @@
 <!-- 
-$Id: admin-examples.sgml,v 1.18 2009/12/10 23:55:13 bruno Exp $
+$Id: admin-examples.sgml,v 1.19 2009/12/12 19:03:50 bruno Exp $
 
 Administration guide
 
@@ -7,13 +7,16 @@ Administration guide
 @Copyright@
 
 $Log: admin-examples.sgml,v $
+Revision 1.19  2009/12/12 19:03:50  bruno
+fix comment
+
 Revision 1.18  2009/12/10 23:55:13  bruno
 dear mason,
 
 thank you for your documentation submission. we value all input, no matter
 how redundant, misleading or crazy. but at this time, we must respectfully
 reject your last commit. we could go into a long explanation for this
-rejection -- or we could just refer you to line 161 of 'rocks sync host
+rejection - or we could just refer you to line 161 of 'rocks sync host
 network' (if you are having trouble accessing the code, please let us know).
 
 again, thank you for your *attempt*, and if your goal is to confuse members
