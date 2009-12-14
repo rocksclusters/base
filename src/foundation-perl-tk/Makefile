@@ -1,5 +1,5 @@
 # --------------------------------------------------- -*- Makefile -*- --
-# $Id: Makefile,v 1.11 2009/11/18 22:24:30 anoop Exp $
+# $Id: Makefile,v 1.12 2009/12/14 21:30:12 bruno Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.12  2009/12/14 21:30:12  bruno
+# build foundation perl Tk from a tarball
+#
 # Revision 1.11  2009/11/18 22:24:30  anoop
 # Perl-TK now builds directly from CPAN.
 #
@@ -138,8 +141,9 @@ include Rules.mk
 # Build Tk and create the RPM
 build::
 	/opt/rocks/bin/cpan2dist --format CPANPLUS::Dist::Rocks \
-	--ignorelist modules.ignore --force --buildprereq \
-	--verbose Tk < /dev/null
+	--ignorelist modules.ignore --force --buildprereq --skiptest \
+	--verbose --makefile --flushcache --archive \
+	$(NAME)-$(VERSION).tar.gz < /dev/null
 
 # Transfer all the RPMS to the Roll RPM  repository.
 rpm:: build
