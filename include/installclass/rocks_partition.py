@@ -334,6 +334,9 @@ class RocksPartition:
 
 			if foundparts == 0:
 				continue
+
+			if len(l) == 0:
+				continue
 			
 			part = l[-1].split('/')
 			parts.append('raid.%s' % part[-1])
