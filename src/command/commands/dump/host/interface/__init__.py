@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.17 2009/06/19 21:07:32 mjk Exp $
+# $Id: __init__.py,v 1.18 2009/12/16 18:30:07 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.18  2009/12/16 18:30:07  bruno
+# make sure to save the vlan configuration for the frontend
+#
 # Revision 1.17  2009/06/19 21:07:32  mjk
 # - added dumpHostname to dump commands (use localhost for frontend)
 # - added add commands for attrs
@@ -203,7 +206,15 @@ class Command(rocks.commands.dump.host.command):
 				if host == 'localhost':
 					mac    = None
 					module = None
-					if subnet in [ 'public', 'private' ]:
+
+					#
+					# special case: we need to save vlan
+					# configurations for the public and
+					# private networks on the frontend
+					#
+					if not vlan and subnet in \
+						[ 'public', 'private' ]:
+
 						ip     = None
 						name   = None
 						subnet = None
