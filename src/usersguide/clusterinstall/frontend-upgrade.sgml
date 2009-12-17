@@ -8,16 +8,23 @@ reconfigure your existing Rocks cluster.
 
 <warning>
 <para>
-If your Rocks frontend is running Rocks version 5.1 and you wish to
+If your frontend is running the i386 version of Rocks 5.2 and you wish to
 upgrade it to version &document_version;, you first need to perform the
 following procedure:
 </para>
 
 <screen>
-# cd /export/site-roll/rocks/src/roll/restore/bin/
-# mv backup-db.py* /tmp
-# wget http://www.rocksclusters.org/ftp-site/pub/rocks/rocks-5.1/upgrade/backup-db.py 
-# chmod a+x backup-db.py
+# rpm -i --force http://www.rocksclusters.org/ftp-site/pub/rocks/rocks-5.2/upgrade/rocks-command-5.3-1.i386.rpm
+</screen>
+
+<para>
+If your frontend is running the x86_64 version of Rocks 5.2 and you wish to
+upgrade it to version &document_version;, you first need to perform the
+following procedure:
+</para>
+
+<screen>
+# rpm -i --force http://www.rocksclusters.org/ftp-site/pub/rocks/rocks-5.2/upgrade/rocks-command-5.3-1.x86_64.rpm
 </screen>
 </warning>
 
