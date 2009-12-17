@@ -25,11 +25,11 @@ Base and Web-Server Rolls.
 </para>
 
 <para>
-Additionally, the official Red Hat Enterprise Linux 5 update 3 CDs can be
+Additionally, the official Red Hat Enterprise Linux 5 update 4 CDs can be
 substituted for the OS Rolls.
-Also, any <emphasis>true</emphasis> rebuild of RHEL 5 update 3 can be
-used -- distributions known to work are: CentOS 5 update 3 and
-Scientific Linux 5 update 3.
+Also, any <emphasis>true</emphasis> rebuild of RHEL 5 update 4 can be
+used -- distributions known to work are: CentOS 5 update 4 and
+Scientific Linux 5 update 4.
 If you substitute the OS Rolls with one of the above distributions, you
 must supply <emphasis>all</emphasis> the CDs from the distribution (which
 usually is 6 or 7 CDs).
