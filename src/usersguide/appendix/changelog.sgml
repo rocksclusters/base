@@ -2,6 +2,203 @@
 	<title>Release Notes</title>
 
 <section>
+<title>Release 5.3 - changes from 5.2</title>
+
+<section>
+	<title> Enhancements </title>
+
+	<para>OS: Based on CentOS release 5/update 4 and all updates as of
+	December 15, 2009.</para>
+
+	<para>Area51: chkrootkit updated to v0.49.</para>
+
+	<para>Base: Anaconda installer updated to v11.1.2.195.</para>
+
+	<para>Base: Added support HP's Smart Array controllers
+	(e.g., the 'cciss' driver) in the Rocks partitioning code.</para>
+
+	<para>Base: Moved JDK to the Base Roll (the Java Roll has been
+	discontinued).</para>
+
+	<para>Base: Added the 'ssh_use_dns' attribute (default setting is
+	'true'). If set to 'false', then DNS is not consulted when trying
+	to make an SSH connection. This speeds up SSH connections for
+	frontend's that don't have access to a functioning DNS server.
+	</para>
+
+	<para>Base: Added the 'Kickstart_DefaultLeaseTime' and
+	'Kickstart_MaxLeaseTime' attributes to give the user the ability to
+	control their own DHCP lease timeouts.
+	</para>
+
+	<para>Base: Added IMPI tools and configuration utilities.
+	</para>
+
+	<para>Base: Updated foundation-perl to v5.10.1.</para>
+
+	<para>Base: Updated foundation-perl-Tk to v804.028.</para>
+
+	<para>Base: Experimental CPAN support. This introduces a utility that
+	lets the user create Rocks RPMs directly from CPAN along with all
+	dependencies.
+	</para>
+
+	<para>Bio: Updated Emboss to v6.1.0.</para>
+
+	<para>Bio: Updated biopython to v1.52.</para>
+
+	<para>Bio: Updated clustalw to v2.0.12.</para>
+
+	<para>Bio: Updated fasta to v35.4.9.</para>
+
+	<para>Bio: Updated fftw to v3.2.2.</para>
+
+	<para>Bio: Updated gromacs to v4.0.5.</para>
+
+	<para>Bio: Updated iolib to v1.12.1.</para>
+
+	<para>Bio: Updated phylip to v3.69.</para>
+
+	<para>Bio: Updated t_coffee to v8.14.</para>
+
+	<para>Ganglia: Updated rrdtool to v1.3.8.</para>
+
+	<para>HPC: Updated iozone to v3.291.</para>
+
+	<para>HPC: Updated iperf to v2.0.4.</para>
+
+	<para>HPC: Updated MPICH2 to v1.1.1p1.</para>
+
+	<para>HPC: Updated OpenMPI to v1.3.3.</para>
+
+	<para>SGE: Updated to v6.2 update 4.</para>
+
+	<para>Viz: Updated nVidia driver to v190.42.</para>
+
+	<para>Web-server: Updated mediawiki to v1.15.1.</para>
+
+	<para>Web-server: Updated wordpress to v2.8.4.</para>
+
+</section>
+
+<section>
+	<title> Bug Fixes </title>
+
+	<para>Area51: tripwire is now correctly configured on the
+	frontend.</para>
+
+	<para>Base: Increase the amount of memory PHP can use from 64 MB
+	to 256 MB. This is essential for viewing Ganglia data for large
+	clusters.</para>
+
+	<para>Base: During installation, don't copy over the rocks-cdrom
+	block device file. On most systems, there is no issue, but there are
+	some systems where this code would copy over the entire contents of
+	the CD/DVD if the CD/DVD was still in the tray (which is shouldn't be,
+	because after the rolls are copied to the frontend, the CD/DVD is
+	umounted and ejected).
+	</para>
+
+	<para>Base: Set the '--utc' flag when hwclock is called. Without the
+	flag, the localtime is written to the hardware clock. Then, at first
+	boot, the system reads the hardware clock respecting the UTC settings
+	in /etc/sysconfig/clock. So the system time ends up being off by the
+	offset to UTC.
+	</para>
+
+	<para>Base: On first boot, Set the number of CPUs for the frontend in
+	the database to actual number of detected CPUs. In the past, this
+	value was hard-coded to 1.
+	</para>
+
+	<para>Base: Fix for frontend's that use DNS servers that are configured
+	to return a 'catch all' address for non-existant domain names. Do a
+	reverse lookup to get the IP address. In the previous release, one
+	would see an 'XXX' entry for the IP address of the frontend in
+	/etc/hosts.
+	</para>
+
+	<para>Base: Put double quotes around 'option domain-name', otherwise,
+	if the domain name was structured like xxx.yyy, then the DHCP service
+	would not start.
+	</para>
+
+	<para>Base: For tentakel, throttle the number of concurrent
+	connections to 100 (useful for large clusters).
+	</para>
+
+	<para>Base: Rewrite the pxelinux.cfg files after setting the
+	run/install action in the nodes table (e.g., 'rocks set host
+	installaction ...').
+	</para>
+
+	<para>Base: For 'rocks set password', make sure password changing
+	code accesses the Rocks foundation database.
+	</para>
+
+	<para>Base: For 'rocks sync host network', make sure to update the
+	static routes file.
+	</para>
+
+	<para>Base: Fixed 'insert-ethers --replace'. Before, it correctly
+	removed the node, but then readded it at 'the end' of namespace,
+	that is, it forgot the rack/rank of the replaced node.
+	</para>
+
+	<para>Base: Make tentakel more resilient to hanging nodes.
+	</para>
+
+	<para>Ganglia: Fix to save all RRD data on frontend shutdown.
+	</para>
+
+	<para>Ganglia: Fixes to physical views. Make sure all nodes are
+	positioned in rack/rank order.
+	</para>
+
+	<para>Ganglia: Fixes to rediscover all backend nodes after a
+	frontend reboot. Without this fix, if gmond was restarted on the
+	frontend, then it requires restarting gmond on all the compute nodes
+	in order to get metrics to report again.
+	</para>
+
+	<para>Kernel: Fixes to preserve the timestamp from RPMs on Rolls
+	that are installed via CD/DVD. Prior to this fix, all RPMS in Rolls
+	that were installed from CD/DVD would have the timestamp of the
+	time when the frontend was installed. This causes issues when trying
+	to update RPMs after the frontend was installed.
+	</para>
+
+	<para>SGE: When a host is removed (e.g., 'rocks remove host ...'),
+	make sure the queue associated with that node is also removed.
+	</para>
+
+	<para>SGE: Build the DRMAA library with Java support.
+	</para>
+
+	<para>Xen: Respect the MTU value of the physical interface when
+	bringing up Xen bridges.
+	</para>
+
+	<para>Xen: Fix to enable physical devices (partitions, LVM
+	partitions, etc.) to be used as devices for virtual disks.
+	</para>
+
+	<para>Xen: Fix to 'ip' address flag in 'rocks add host vm'. Without
+	the fix, if an IP address was specified on the command line, the
+	command would throw an exception.
+	</para>
+
+	<para>Xen: Fix to support for virtual compute nodes that are managed
+	by a physical frontend.
+	</para>
+
+</section>
+
+</section>
+
+
+
+<section>
 <title>Release 5.2 - changes from 5.1</title>
 
 <section>
