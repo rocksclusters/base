@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.77 2009/11/12 06:16:10 mjk Exp $
+# $Id: __init__.py,v 1.78 2010/01/13 23:01:13 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.78  2010/01/13 23:01:13  bruno
+# fix for '%' wildcard. thanks to Tom Rockwell for the fix.
+#
 # Revision 1.77  2009/11/12 06:16:10  mjk
 # dns owes me 2 days
 #
@@ -652,7 +655,7 @@ class HostArgumentProcessor:
 			elif name.find('%') >= 0:	# SQL % pattern
 				self.db.execute("""select name from nodes where
 					name like '%s'""" % name)
-				for h in self.db.fetchall():
+				for h, in self.db.fetchall():
 					dict[h] = 1
 			elif groups.has_key(name):	# group name
 				for host in groups[name]:
