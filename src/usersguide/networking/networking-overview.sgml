@@ -1,5 +1,5 @@
 <!-- 
-$Id: networking-overview.sgml,v 1.7 2009/08/18 17:58:44 bruno Exp $
+$Id: networking-overview.sgml,v 1.8 2010/01/14 23:49:12 bruno Exp $
 
 Administration guide
 
@@ -7,6 +7,9 @@ Administration guide
 @Copyright@
 
 $Log: networking-overview.sgml,v $
+Revision 1.8  2010/01/14 23:49:12  bruno
+no more 'gateway' command.
+
 Revision 1.7  2009/08/18 17:58:44  bruno
 how to cross-kickstart with PXE
 
@@ -118,7 +121,7 @@ fast    myri0 ----------------- 192.168.1.10   255.255.255.0 ------ ------------
 </screen>
 <para>
 You can also set other fields for a host interface (if the field is one of
-[mac, ip, gateway, module, name, vlan]) with 
+[mac, ip, module, name, vlan]) with 
 the command <computeroutput>rocks set host interface &lt;field&gt; &lt;host&gt; iface=&lt;iface&gt; value</computeroutput>.
 To set the name associated with the myri0 interface to compute-myri-0-0-1 on
 the node compute-0-0-1, execute:
