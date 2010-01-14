@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.5 2009/07/21 21:50:51 bruno Exp $
+# $Id: __init__.py,v 1.6 2010/01/14 23:42:30 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.6  2010/01/14 23:42:30  bruno
+# added 'host' argument to help section
+#
 # Revision 1.5  2009/07/21 21:50:51  bruno
 # fix help
 #
@@ -74,6 +77,10 @@ import rocks.commands
 class Command(rocks.commands.add.host.command):
 	"""
 	Add a route for a host
+
+	<arg type='string' name='host'>
+	Host name of machine
+	</arg>
 	
 	<arg type='string' name='address'>
 	Host or network address
