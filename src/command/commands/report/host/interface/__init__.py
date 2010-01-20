@@ -1,4 +1,4 @@
-#$Id: __init__.py,v 1.11 2009/10/28 21:45:56 bruno Exp $
+#$Id: __init__.py,v 1.12 2010/01/20 00:55:16 mjk Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.12  2010/01/20 00:55:16  mjk
+# for ipmi don't create the ifcfg-ipmi files
+#
 # Revision 1.11  2009/10/28 21:45:56  bruno
 # don't pad output
 #
@@ -257,6 +260,7 @@ class Command(rocks.commands.HostArgumentProcessor,
 
 			if device == 'ipmi':
 				self.writeIPMI(host, ip, module, netmask)
+				break # ipmi is special, skip the standard stuff
 
 			if device and device[0:4] != 'vlan':
 				#
