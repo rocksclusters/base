@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.8 2009/05/01 19:07:03 mjk Exp $
+# $Id: __init__.py,v 1.9 2010/01/20 21:49:13 mjk Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,11 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.9  2010/01/20 21:49:13  mjk
+# - generate a default name for the interface (enhancement)
+#   - hostname if private
+#   - hostname-subnet otherwise
+#
 # Revision 1.8  2009/05/01 19:07:03  mjk
 # chimi con queso
 #
@@ -141,11 +146,39 @@ class Command(rocks.commands.set.host.command):
 			self.abort('must supply subnet')
 
 		for host in self.getHostnames(args):
-			self.db.execute("""update networks, nodes 
-				set networks.subnet=
-				(select id from subnets where subnets.name='%s')
+			
+			# Check to see if this interface has a name yet.  If
+			# not label the private interace according to the
+			# hostname (in nodes table) and secondary networks
+			# are labeled hostname-subnet.
+			#
+			# This protects from the user forgetting to assign
+			# a name to each interface, since several commands
+			# assuming everything is named.
+
+			self.db.execute("""select net.name from
+				networks net, nodes n where
+				n.name='%s' and 
+				net.node=n.id and 
+				net.device='%s'""" % (host, iface))
+
+			name, = self.db.fetchone()
+			if not name:
+				if subnet == 'private':
+					name = host
+				else:
+					name = '%s-%s' % (host, subnet)
+
+			# Updates the subnet id and the name.  The name
+			# is updated even if it did not change (see above)
+
+			self.db.execute("""update networks net, nodes n 
+				set net.subnet=
+				(select id from subnets s where s.name='%s'),
+				net.name='%s'
 				where
-				nodes.name='%s' and networks.node=nodes.id and
-			 	(networks.device='%s' or networks.mac='%s')""" %
-				(subnet, host, iface, iface))
+				n.name='%s' and net.node=n.id and
+			 	(net.device='%s' or net.mac='%s')""" %
+				(subnet, name, host, iface, iface))
+
 
