@@ -1,4 +1,4 @@
-# $Id: rocks-ssh.py,v 1.5 2009/10/07 18:13:36 bruno Exp $
+# $Id: rocks-ssh.py,v 1.6 2010/01/29 19:55:27 bruno Exp $
 #
 # @Copyright@
 # 
@@ -77,6 +77,11 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 # $Log: rocks-ssh.py,v $
+# Revision 1.6  2010/01/29 19:55:27  bruno
+# it is not enough to just check if a process has port 22 open on a node, we
+# must also see if sshd is responding. we do that by trying to recv the
+# ssh banner after connecting to port 22.
+#
 # Revision 1.5  2009/10/07 18:13:36  bruno
 # make tentakel more resilient to hanging nodes. thanks to Roy Dragseth for
 # the fix.
@@ -146,7 +151,22 @@ class RocksSSHRemoteCommand(RemoteCommand):
 		sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		sock.settimeout(2)
 		try:
+			#
+			# this catches the case when the host is down and/or
+			# there is no ssh daemon running
+			#
 			sock.connect((self.destination, 22))
+
+			#
+			# this catches the case when the node is up, sshd
+			# is sitting on port 22, but it is not responding
+			# (e.g., the node is overloaded, sshd is hung, etc.)
+			#
+			# sock.recv() should return something like:
+			#
+			#	SSH-2.0-OpenSSH_4.3
+			#
+			buf = sock.recv(64)
 		except socket.error:
 			self.duration = time.time() - t1
 			return (-1, 'down')
