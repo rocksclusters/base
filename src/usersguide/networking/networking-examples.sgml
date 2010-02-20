@@ -1,5 +1,5 @@
 <!-- 
-$Id: networking-examples.sgml,v 1.3 2009/07/21 23:48:03 bruno Exp $
+$Id: networking-examples.sgml,v 1.4 2010/02/20 00:40:53 bruno Exp $
 
 Administration guide
 
@@ -7,6 +7,9 @@ Administration guide
 @Copyright@
 
 $Log: networking-examples.sgml,v $
+Revision 1.4  2010/02/20 00:40:53  bruno
+fix doc bugs
+
 Revision 1.3  2009/07/21 23:48:03  bruno
 add info about how to set a gateway with 'rocks add host route'
 
@@ -36,15 +39,16 @@ frontend, update all required configuration files on the node compute-0-0 and re
 <screen>
 # rocks set host interface ip compute-0-0 iface=eth1 ip=1.2.3.25 
 # rocks set host interface name compute-0-0 iface=eth1 name=mypublic.myuniversity.edu
+# rocks set host interface subnet compute-0-0 eth1 public
 # rocks add host route compute-0-0 1.2.3.0 eth1 netmask=255.255.255.0
 # rocks sync config
-# rocks sync network compute-0-0 
+# rocks sync host network compute-0-0 
 </screen>
 </section>
 
 
 <section>
-<title>Adding an IP network for  local message passing. </title>
+<title>Adding an IP network for local message passing. </title>
 <para>
 Often, users will want to use the second ethernet device for messaging passing. In this example, 
 we illustrate creating a named subnet and then scripting the IP assignment for a rack of 32 nodes
@@ -56,14 +60,15 @@ IP=10
 NNODES=32
 NODE=0
 while [ $NODE -lt $NNODES ]; then \
-	rocks set host interface ip  compute-0-$NODE iface=eth1 ip=192.168.1.$IP; \
-	rocks set host interface subnet  compute-0-$NODE iface=eth1 subnet=fast; \
-	rocks set host interface name  compute-0-$NODE iface=eth1 name=compute-fast-0-$NODE; \
+	rocks set host interface ip compute-0-$NODE iface=eth1 ip=192.168.1.$IP; \
+	rocks set host interface subnet compute-0-$NODE iface=eth1 subnet=fast; \
+	rocks set host interface name compute-0-$NODE iface=eth1 name=compute-fast-0-$NODE; \
+	rocks set host interface subnet compute-0-$NODE eth1 public
 	let IP++; \
 	let NODE++; \
 done
 rocks sync config
-rocks sync network compute
+rocks sync host network compute
 </screen>
 <para>
 The above will add the named subnet called "fast", assign IP addresses sequentially, name the eth1
