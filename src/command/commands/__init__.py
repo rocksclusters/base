@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.78 2010/01/13 23:01:13 bruno Exp $
+# $Id: __init__.py,v 1.79 2010/02/22 23:11:03 mjk Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,14 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.79  2010/02/22 23:11:03  mjk
+# - rocks iterface host using os.system not popen
+#   - can now be used like cluster-fork
+#   - rocks host iterate compute | ssh -f % cmd
+# - getHostname() now handles another f'd up case where DNS is correct (fw/bw)
+#   but the IP address is completely different.  This happens when the public
+#   name maps to a private address behind some insane firewall.
+#
 # Revision 1.78  2010/01/13 23:01:13  bruno
 # fix for '%' wildcard. thanks to Tom Rockwell for the fix.
 #
@@ -602,7 +610,8 @@ class HostArgumentProcessor:
 			if managed_only:
 				managed_list = []
 				for hostname in list:
-					if self.db.getHostAttr(hostname, 'managed') == 'true':
+					if self.db.getHostAttr(hostname, 
+						'managed') == 'true':
 						managed_list.append(hostname)
 				return managed_list
 			return list
@@ -1219,7 +1228,7 @@ class DatabaseConnection:
 		try:
 
 			# Do a reverse lookup to get the IP address.
-			# Then do a forward lookup to verfiy the IP
+			# Then do a forward lookup to verify the IP
 			# address is in DNS.  This is done to catch
 			# evil DNS servers (timewarner) that have a
 			# catchall address.  We've had several users
@@ -1229,7 +1238,7 @@ class DatabaseConnection:
 			# For truly evil DNS (OpenDNS) that have catchall
 			# servers that are in DNS we make sure the hostname
 			# matches the primary or alias of the forward lookup
-			# Throw an Except, is the forward failed an exception
+			# Throw an Except, if the forward failed an exception
 			# was already thrown.
 			#
 			# Bad DNS, Bad Bad Bad
@@ -1283,13 +1292,25 @@ class DatabaseConnection:
 			return self.getHostname()
 			
 		if self.link:
-			self.link.execute('select nodes.name from '
+			# Look up the IP address in the networks table
+			# to find the hostname (nodes table) of the node.
+			#
+			# If the IP address is not found also see if the
+			# hostname is in the networks table.  This last
+			# check handles the case where DNS is correct but
+			# the IP address used is different.
+			rows = self.link.execute('select nodes.name from '
 				'networks,nodes where '
 				'nodes.id=networks.node and ip="%s"' % (addr))
-			try:
-				hostname, = self.link.fetchone()
-			except TypeError:
-				Abort('host "%s" is not in cluster' % hostname)
+			if not rows:
+				rows = self.link.execute('select nodes.name ' 
+					'from networks,nodes where '
+					'nodes.id=networks.node and '
+					'networks.name="%s"' % (hostname))
+				if not rows:
+					Abort('host "%s" is not in cluster'
+						% hostname)
+			hostname, = self.link.fetchone()
 
 		return hostname
 

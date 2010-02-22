@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.2 2009/08/20 17:16:17 bruno Exp $
+# $Id: __init__.py,v 1.3 2010/02/22 23:11:03 mjk Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,14 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.3  2010/02/22 23:11:03  mjk
+# - rocks iterface host using os.system not popen
+#   - can now be used like cluster-fork
+#   - rocks host iterate compute | ssh -f % cmd
+# - getHostname() now handles another f'd up case where DNS is correct (fw/bw)
+#   but the IP address is completely different.  This happens when the public
+#   name maps to a private address behind some insane firewall.
+#
 # Revision 1.2  2009/08/20 17:16:17  bruno
 # fix help
 #
@@ -135,7 +143,8 @@ class Command(command):
 					s += curr
 				prev = curr
 
-			for line in os.popen(s).readlines():
-				self.addOutput(host, line[:-1])
+			os.system(s)
+#			for line in os.popen(s).readlines():
+#				self.addOutput(host, line[:-1])
 
 		self.endOutput(padChar='')
