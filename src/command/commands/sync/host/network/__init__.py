@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.9 2009/08/28 19:54:47 bruno Exp $
+# $Id: __init__.py,v 1.10 2010/02/22 21:32:48 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.10  2010/02/22 21:32:48  bruno
+# need to also update /etc/sysconfig/network
+#
 # Revision 1.9  2009/08/28 19:54:47  bruno
 # also update the static routes file when syncing the network
 #
@@ -129,6 +132,11 @@ class Command(rocks.commands.sync.host.command):
 					time.sleep(0.001)
 
 			cmd = '/opt/rocks/bin/rocks report host interface '
+			cmd += '%s | ' % host
+			cmd += '/opt/rocks/bin/rocks report script | '
+			cmd += 'ssh %s bash > /dev/null 2>&1 ' % host
+
+			cmd += '; /opt/rocks/bin/rocks report host network '
 			cmd += '%s | ' % host
 			cmd += '/opt/rocks/bin/rocks report script | '
 			cmd += 'ssh %s bash > /dev/null 2>&1 ' % host
