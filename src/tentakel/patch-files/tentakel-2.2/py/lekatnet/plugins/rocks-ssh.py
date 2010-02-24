@@ -1,4 +1,4 @@
-# $Id: rocks-ssh.py,v 1.6 2010/01/29 19:55:27 bruno Exp $
+# $Id: rocks-ssh.py,v 1.7 2010/02/24 22:04:25 bruno Exp $
 #
 # @Copyright@
 # 
@@ -77,6 +77,9 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 # $Log: rocks-ssh.py,v $
+# Revision 1.7  2010/02/24 22:04:25  bruno
+# added a 'timeout' parameter to 'rocks run host'. idea by Tim Carlson.
+#
 # Revision 1.6  2010/01/29 19:55:27  bruno
 # it is not enough to just check if a process has port 22 open on a node, we
 # must also see if sshd is responding. we do that by trying to recv the
@@ -139,6 +142,7 @@ class RocksSSHRemoteCommand(RemoteCommand):
 	def __init__(self, destination, params):
 		self.sshpath = params['ssh_path']
 		self.user = params['user']
+		self.timeout = params['timeout']
 		RemoteCommand.__init__(self, destination, params)
 
 	def _rexec(self, command):
@@ -178,7 +182,7 @@ class RocksSSHRemoteCommand(RemoteCommand):
 			self.destination, command)
 		try:
 			p = pexpect.spawn(s)
-			p.expect(pexpect.EOF)
+			p.expect(pexpect.EOF, self.timeout)
 			output = p.before
 			status = 0
 		except pexpect.TIMEOUT, e:

@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.8 2009/07/13 19:34:31 bruno Exp $
+# $Id: __init__.py,v 1.9 2010/02/24 22:04:25 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.9  2010/02/24 22:04:25  bruno
+# added a 'timeout' parameter to 'rocks run host'. idea by Tim Carlson.
+#
 # Revision 1.8  2009/07/13 19:34:31  bruno
 # fix 'managed' flag
 #
@@ -138,6 +141,12 @@ class Command(command):
 	Default is 'yes'.
 	</arg>
 
+	<arg type='string' name='timeout'>
+	Sets the maximum length of time (in seconds) that the command is
+	allowed to run.
+	Default is '30'.
+	</arg>
+
 	<param type='string' name='command'>
 	Can be used in place of the 'command' argument.
 	</param>
@@ -157,12 +166,21 @@ class Command(command):
 		if not command:
 			self.abort('must supply a command')
 
-		(managed, x11) = self.fillParams([
+		(managed, x11, t) = self.fillParams([
 			('managed', 'y'),
-			('x11', 'y')
+			('x11', 'y'),
+			('timeout', '30')
 			])
 
 		managed_only = self.str2bool(managed)
+
+		try:
+			timeout = int(t)
+		except:
+			self.abort('"timeout" must be an integer')
+
+		if timeout <= 0:
+			self.abort('"timeout" must be a postive integer')
 
 		hosts = self.getHostnames(args, managed_only)
 		
@@ -184,6 +202,7 @@ class Command(command):
 		dests.format = '%o\\n'
 
 		params = conf.getGroupParams('default')
+		params['timeout'] = timeout
 
 		for host in hosts:
 			dests.add(remote.remoteCommandFactory(host, params))
