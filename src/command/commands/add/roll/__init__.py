@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.40 2009/12/09 21:25:56 bruno Exp $
+# $Id: __init__.py,v 1.41 2010/03/01 18:40:21 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.41  2010/03/01 18:40:21  bruno
+# fix from Tim Carlson
+#
 # Revision 1.40  2009/12/09 21:25:56  bruno
 # only clean a foreign roll if the clean flag is set
 #
@@ -241,6 +244,7 @@ import string
 import rocks.commands
 import rocks.file
 import popen2
+import re
 
 class RollHandler:
 	def __init__(self, arch, host_os, db):
