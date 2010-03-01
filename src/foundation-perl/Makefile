@@ -1,5 +1,5 @@
 # --------------------------------------------------- -*- Makefile -*- --
-# $Id: Makefile,v 1.11 2009/05/01 19:07:06 mjk Exp $
+# $Id: Makefile,v 1.12 2010/03/01 20:24:11 anoop Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.12  2010/03/01 20:24:11  anoop
+# Added thread support for perl
+#
 # Revision 1.11  2009/05/01 19:07:06  mjk
 # chimi con queso
 #
@@ -135,15 +138,15 @@ build::
 		cd perl-$(VERSION);			\
 		rm -f config.sh Policy.sh;		\
 		echo | ./Configure -Dprefix=$(PKGROOT)	\
-			 $(BUILDOPTS) -de;		\
-		$(MAKE);							\
+			 $(BUILDOPTS) -Dusethreads -de;	\
+		$(MAKE);				\
 	)
 
 install::
 	mkdir -p $(ROOT)/
-	(								\
-		cd perl-$(VERSION);					\
-		$(MAKE) install DESTDIR=$(ROOT);				\
+	(						\
+		cd perl-$(VERSION);			\
+		$(MAKE) install DESTDIR=$(ROOT);	\
 	)
 
 clean::
