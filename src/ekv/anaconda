@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# $Id: anaconda,v 1.31 2009/05/01 19:07:05 mjk Exp $
+# $Id: anaconda,v 1.32 2010/03/03 22:00:34 bruno Exp $
 #
 # @Copyright@
 # 
@@ -56,6 +56,10 @@
 # @Copyright@
 #
 # $Log: anaconda,v $
+# Revision 1.32  2010/03/03 22:00:34  bruno
+# call 'peer-done' to tell the avalanche tracker that this node is no longer
+# available to serve files
+#
 # Revision 1.31  2009/05/01 19:07:05  mjk
 # chimi con queso
 #
@@ -534,20 +538,10 @@ client()
 	ekv /usr/bin/anaconda $PARAMS
 
 	#
-	# before exiting, tell the BitTorrent tracker that this node is no
+	# before exiting, tell the Avalanche tracker that this node is no
 	# longer serving files 
 	#
-	# we need one torrent file in order to find where the tracker is.
-	# we'll assume that we have a 'kernel*torrent' file.
-	#
-	# so, once we get one torrent file, send the 'done' message and then
-	# break
-	#
-	for i in `find /install/ -name "kernel*.torrent"`
-	do
-		PYTHONPATH=$FOUNDATION /opt/rocks/bittorrent/rocks-done.py $i
-		break
-	done
+	/tracker/peer-done
 }
 
 
