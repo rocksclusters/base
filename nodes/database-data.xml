@@ -17,6 +17,15 @@
 
   <changelog>
   $Log: database-data.xml,v $
+  Revision 1.56  2010/03/04 19:32:48  mjk
+  multicast is now just a class c (comments said so, but code did not)
+
+  lower 255 multicast address are not supposed to route so this is a good
+  choice as the default for the private network.  Other addresses can route
+  so we leave this unconfigured.
+
+  viz roll will need to add a route for cglx
+
   Revision 1.55  2009/12/02 21:30:28  mjk
   - Added ssh_use_dns attribute
 
@@ -520,7 +529,7 @@ if os.path.exists('/tmp/site.attrs'):
 	default gateway (backend nodes)
 	frontend public interface over private network
 -->
-/opt/rocks/bin/rocks add route 224.0.0.0 eth0 netmask=255.0.0.0
+/opt/rocks/bin/rocks add route 224.0.0.0 eth0 netmask=255.255.255.0
 
 /opt/rocks/bin/rocks add route 255.255.255.255 eth0 netmask=255.255.255.255
 
