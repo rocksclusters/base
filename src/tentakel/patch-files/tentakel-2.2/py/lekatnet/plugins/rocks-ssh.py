@@ -1,4 +1,4 @@
-# $Id: rocks-ssh.py,v 1.7 2010/02/24 22:04:25 bruno Exp $
+# $Id: rocks-ssh.py,v 1.8 2010/03/08 01:44:32 anoop Exp $
 #
 # @Copyright@
 # 
@@ -77,6 +77,9 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 # $Log: rocks-ssh.py,v $
+# Revision 1.8  2010/03/08 01:44:32  anoop
+# pexpect cannot interpret metacharacters like |, > and *, as part of command.
+#
 # Revision 1.7  2010/02/24 22:04:25  bruno
 # added a 'timeout' parameter to 'rocks run host'. idea by Tim Carlson.
 #
@@ -175,13 +178,10 @@ class RocksSSHRemoteCommand(RemoteCommand):
 			self.duration = time.time() - t1
 			return (-1, 'down')
 
-		# SSH to the machine, this is the same code from the
-		# stock SSHRemoteCommand class.
-
-		s = '%s %s@%s "%s"' % (self.sshpath, self.user,
-			self.destination, command)
+		# SSH to the machine
+		ssh_dest = '%s@%s' % (self.user, self.destination)
 		try:
-			p = pexpect.spawn(s)
+			p = pexpect.spawn(self.sshpath, [ssh_dest, command])
 			p.expect(pexpect.EOF, self.timeout)
 			output = p.before
 			status = 0
