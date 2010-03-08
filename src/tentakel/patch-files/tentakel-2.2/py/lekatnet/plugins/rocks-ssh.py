@@ -1,4 +1,4 @@
-# $Id: rocks-ssh.py,v 1.8 2010/03/08 01:44:32 anoop Exp $
+# $Id: rocks-ssh.py,v 1.9 2010/03/08 06:39:35 anoop Exp $
 #
 # @Copyright@
 # 
@@ -77,6 +77,9 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 # $Log: rocks-ssh.py,v $
+# Revision 1.9  2010/03/08 06:39:35  anoop
+# timeout needs a default value. Otherwise tentakel will fail when run
+#
 # Revision 1.8  2010/03/08 01:44:32  anoop
 # pexpect cannot interpret metacharacters like |, > and *, as part of command.
 #
@@ -145,7 +148,9 @@ class RocksSSHRemoteCommand(RemoteCommand):
 	def __init__(self, destination, params):
 		self.sshpath = params['ssh_path']
 		self.user = params['user']
-		self.timeout = params['timeout']
+		self.timeout = 10
+		if params.has_key('timeout'):
+			self.timeout = params['timeout']
 		RemoteCommand.__init__(self, destination, params)
 
 	def _rexec(self, command):
@@ -197,4 +202,3 @@ class RocksSSHRemoteCommand(RemoteCommand):
 
 
 registerRemoteCommandPlugin('rocks', RocksSSHRemoteCommand)
-
