@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.1 2010/03/11 03:11:11 mjk Exp $
+# $Id: __init__.py,v 1.2 2010/03/17 02:40:47 mjk Exp $
 #
 # @Copyright@
 # 
@@ -54,12 +54,18 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.2  2010/03/17 02:40:47  mjk
+# After we build the rocks-updates roll nuke the kickstart XML rpms for any
+# Rolls that are not enabled.  Also do not run update script for Rolls that
+# are not enabled.  This allows one repository to serve updates for all Rolls.
+#
 # Revision 1.1  2010/03/11 03:11:11  mjk
 # added 'rocks update' command (just for rocks packages, not os)
 #
 
 import string
 import os
+import rocks.file
 import rocks.commands
 
 class command(rocks.commands.Command):
@@ -120,11 +126,15 @@ class Command(command):
 
 		# Add the updates roll and enable it, but do not rebuild the
 		# distribution.  The user should do this when they are ready.
+		# We also nuke the .iso since it is not really safe to use
+		# outside of this command.
 
 		self.command('add.roll', [
 			'rocks-updates-%s-0.%s.disk1.iso' % (ver, self.arch),
 			'clean=yes'
 			])
+		os.unlink('rocks-updates-%s-0.%s.disk1.iso' % (ver, self.arch))
+		os.unlink('roll-rocks-updates.xml')
 		self.command('enable.roll', [
 			'rocks-updates',
 			'arch=%s' % self.arch,
@@ -137,10 +147,51 @@ class Command(command):
 		os.system('yum --disablerepo="*" '
 			'--enablerepo=Rocks-%s-Updates update' % ver)
 
+		# Determine what Rolls are on the disk and remove the XML
+		# and update scripts from Rolls that we do not have enabled
+
+		self.db.execute("""select name from rolls where
+			enabled='yes' and version='%s'""" % ver)
+		rolls = []
+		for roll, in self.db.fetchall():
+			rolls.append(roll)
+	
+		# Go into the rocks-updates Roll and remove the
+		# kickstart profile rpms that are for rolls we are not
+		# using (not enabled).
+
+		tree = rocks.file.Tree(os.path.join('..', 'install', 'rolls',
+			'rocks-updates', ver, self.arch,
+			'RedHat', 'RPMS'))
+		for file in tree.getFiles():
+			name, ext  = os.path.splitext(file.getName())
+                        try:
+	                        file.getPackageName()
+                        except AttributeError:
+				continue
+			tokens = file.getBaseName().split('-')
+			if len(tokens) != 3:
+				continue
+			if tokens[0] == 'roll' and tokens[2] == 'kickstart':
+				if tokens[2] in rolls:
+					continue
+				print '+ roll not enabled, removed %s' \
+					% file.getName()
+				os.unlink(file.getFullName())
+
+
 		# Scan the updates for any .sh files and run these to update
 		# the Frontend after the RPMs are installed.
+		# Skip update scripts for Rolls that are not enabled.
+
 		dir = url.split('//', 1)[1]
 		for file in os.listdir(dir):
 			if os.path.splitext(file)[1] != '.sh':
 				continue
+			tokens = file.split('-', 1)
+			if tokens[0] == 'update':
+				if not tokens[1] in rolls:
+					print '+ roll not enabled, ignored %s' \
+					      % file
+					continue
 			os.system('sh -x %s' % os.path.join(dir, file))
