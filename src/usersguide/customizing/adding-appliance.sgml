@@ -107,7 +107,7 @@ This is accomplished with the rocks command line:
 
 <screen>
 # /opt/rocks/bin/rocks add appliance my-compute membership='My Compute' \
-  short-name='mc' node='my-compute'
+  node='my-compute'
 </screen>
 
 <para>
