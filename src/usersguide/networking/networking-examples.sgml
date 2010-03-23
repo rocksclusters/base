@@ -1,5 +1,5 @@
 <!-- 
-$Id: networking-examples.sgml,v 1.4 2010/02/20 00:40:53 bruno Exp $
+$Id: networking-examples.sgml,v 1.5 2010/03/23 22:33:03 bruno Exp $
 
 Administration guide
 
@@ -7,6 +7,9 @@ Administration guide
 @Copyright@
 
 $Log: networking-examples.sgml,v $
+Revision 1.5  2010/03/23 22:33:03  bruno
+doc bug
+
 Revision 1.4  2010/02/20 00:40:53  bruno
 fix doc bugs
 
@@ -59,7 +62,7 @@ rocks add network fast subnet=192.168.1.0 netmask=255.255.255.0
 IP=10
 NNODES=32
 NODE=0
-while [ $NODE -lt $NNODES ]; then \
+while [ $NODE -lt $NNODES ]; do \
 	rocks set host interface ip compute-0-$NODE iface=eth1 ip=192.168.1.$IP; \
 	rocks set host interface subnet compute-0-$NODE iface=eth1 subnet=fast; \
 	rocks set host interface name compute-0-$NODE iface=eth1 name=compute-fast-0-$NODE; \
