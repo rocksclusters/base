@@ -100,7 +100,7 @@ sub init {
         qw{ 
             distname distvers extra_files rpmname rpmpath rpmvers 
             rpmdir srpmpath specpath is_noarch license summary 
-            description packager license_comment
+            description packager license_comment skiptest
           }
     );
 
@@ -116,6 +116,7 @@ sub prepare {
     my $intern = $module->parent;             # CPANPLUS::Internals
     my $conf   = $intern->configure_object;   # CPANPLUS::Configure
     my $distmm = $module->status->dist_cpan;  # CPANPLUS::Dist::MM
+    my $skiptest = $opts{'skiptest'};
 
     # Dry-run with makemaker: find build prereqs.
     msg( "dry-run prepare with makemaker..." );
@@ -151,6 +152,7 @@ sub prepare {
         msg( "writing specfile for '$self->distname'..." );
     }
 
+    $status->skiptest($skiptest);
     # create the specfile
     $self->_prepare_spec;
 
@@ -424,10 +426,10 @@ sub _parse_args {
         force   => $conf->get_conf('force'),  # force rebuild
         perl    => $^X,
         verbose => $conf->get_conf('verbose'),
+	skiptest => $conf->get_conf('skiptest'),
         %args,
     );
-
-    return %args;
+    return %opts;
 }
 
 # quickly determine if the module is pure-perl (noarch) or not
@@ -762,7 +764,9 @@ find %{buildroot} -depth -type d -exec rmdir {} 2>/dev/null ';'
 %{_fixperms} %{buildroot}/*
 
 %check
+[% IF (status.skiptest == 0) -%]
 make test
+[% END -%]
 
 %clean
 rm -rf %{buildroot} 
