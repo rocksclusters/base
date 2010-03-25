@@ -1,0 +1,27 @@
+<?xml version="1.0" standalone="no"?>
+
+<kickstart>
+
+<description>
+Create a Login appliance
+</description>
+
+<changelog>
+$Log: login-server.xml,v $
+Revision 1.1  2010/03/25 00:30:39  bruno
+the start of the login appliance
+
+</changelog>
+
+
+<post>
+
+/opt/rocks/bin/rocks add appliance login membership=Login node=login
+
+/opt/rocks/bin/rocks set appliance attr login submit_host true
+/opt/rocks/bin/rocks set appliance attr login exec_host false
+
+</post>
+
+
+</kickstart> 

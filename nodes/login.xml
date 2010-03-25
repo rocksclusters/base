@@ -1,0 +1,17 @@
+<?xml version="1.0" standalone="no"?>
+
+<kickstart>
+
+<description>
+The root XML node for the Login appliance
+</description>
+
+<changelog>
+$Log: login.xml,v $
+Revision 1.1  2010/03/25 00:30:39  bruno
+the start of the login appliance
+
+</changelog>
+
+
+</kickstart> 

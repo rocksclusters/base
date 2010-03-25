@@ -4,6 +4,9 @@
 
 	<changelog>
 	$Log: base.xml,v $
+	Revision 1.58  2010/03/25 00:30:39  bruno
+	the start of the login appliance
+	
 	Revision 1.57  2009/11/18 22:16:56  anoop
 	- Big changes to rocks-cpan. Now more accurate.
 	- CPAN Support introduced. Builds and installs the
@@ -265,6 +268,7 @@
 		<tail>networking-server</tail>
 		<tail>dhcp-server</tail>
 		<tail>dns-server</tail>
+		<tail>login-server</tail>
 	</order>
 
 	<order head="grub">
@@ -330,6 +334,10 @@
 		<to>nas-appliance</to>
 		<to>nas-exports</to>
 		<to>nas-partition</to>
+		<to>client</to>
+	</edge>
+
+	<edge from="login">
 		<to>client</to>
 	</edge>
 

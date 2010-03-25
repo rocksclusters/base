@@ -17,6 +17,9 @@
 
   <changelog>
   $Log: database-data.xml,v $
+  Revision 1.57  2010/03/25 00:30:39  bruno
+  the start of the login appliance
+
   Revision 1.56  2010/03/04 19:32:48  mjk
   multicast is now just a class c (comments said so, but code did not)
 
@@ -495,13 +498,23 @@ if os.path.exists('/tmp/site.attrs'):
 <!--	Set managed attribute for appliances.
 	This determines whether the appliances
 	can be ssh'ed into for running management
-	commands -->
+	commands
+-->
+
 /opt/rocks/bin/rocks set appliance attr frontend managed false
 /opt/rocks/bin/rocks set appliance attr network	 managed false
 /opt/rocks/bin/rocks set appliance attr power	 managed false
 /opt/rocks/bin/rocks set appliance attr ipmi	 managed false
 /opt/rocks/bin/rocks set appliance attr compute	 managed true
 /opt/rocks/bin/rocks set appliance attr nas	 managed true
+
+<!--
+	set the compute appliance to be an execution host, but not a submit
+	host. this is used to configure the queueing system (e.g., SGE or PBS).
+-->
+
+/opt/rocks/bin/rocks set appliance attr compute exec_host true
+/opt/rocks/bin/rocks set appliance attr compute submit_host false
 
 <!-- networks -->
 
