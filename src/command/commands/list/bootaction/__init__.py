@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.2 2009/05/01 19:06:58 mjk Exp $
+# $Id: __init__.py,v 1.3 2010/04/14 14:40:26 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.3  2010/04/14 14:40:26  bruno
+# changed 'host bootaction' to 'bootaction' in the documentation portion of
+# the commands
+#
 # Revision 1.2  2009/05/01 19:06:58  mjk
 # chimi con queso
 #
@@ -81,7 +85,7 @@ class Command(rocks.commands.list.command):
 	'install' and 'os' which point to command strings used to install
 	and boot hosts respectively.
 
-	<example cmd='list host bootaction'>
+	<example cmd='list bootaction'>
 	List the boot actions available for all known hosts.
 	</example>
 	"""

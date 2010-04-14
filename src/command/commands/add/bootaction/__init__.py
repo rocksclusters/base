@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.2 2009/05/01 19:06:54 mjk Exp $
+# $Id: __init__.py,v 1.3 2010/04/14 14:40:26 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.3  2010/04/14 14:40:26  bruno
+# changed 'host bootaction' to 'bootaction' in the documentation portion of
+# the commands
+#
 # Revision 1.2  2009/05/01 19:06:54  mjk
 # chimi con queso
 #
@@ -73,7 +77,7 @@ class Command(rocks.commands.HostArgumentProcessor, rocks.commands.add.command):
 	
 	<param type='string' name='action'>
 	Label name for the bootaction. You can see the bootaction label names by
-	executing: 'rocks list host bootaction [host(s)]'.
+	executing: 'rocks list bootaction [host(s)]'.
 	</param>
 	
 	<param type='string' name='kernel'>

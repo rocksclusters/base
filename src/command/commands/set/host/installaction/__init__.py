@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.3 2009/06/30 18:48:00 bruno Exp $
+# $Id: __init__.py,v 1.4 2010/04/14 14:40:26 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.4  2010/04/14 14:40:26  bruno
+# changed 'host bootaction' to 'bootaction' in the documentation portion of
+# the commands
+#
 # Revision 1.3  2009/06/30 18:48:00  bruno
 # rewrite the pxelinux.cfg files after setting the run/install action in
 # the nodes table
@@ -79,7 +83,7 @@ class Command(rocks.commands.set.host.command):
 
 	<arg type='string' name='action'>
 	The install action to assign to each host. To get a list of all actions,
-	execute: "rocks list host bootaction".
+	execute: "rocks list bootaction".
 	</arg>
 
 	<param optional='1' type='string' name='action'>
