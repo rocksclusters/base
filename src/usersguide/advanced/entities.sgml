@@ -2,4 +2,5 @@
 <!ENTITY cross SYSTEM "cross.sgml">
 <!ENTITY pxeflash SYSTEM "pxeflash.sgml">
 <!ENTITY bootflags SYSTEM "bootflags.sgml">
+<!ENTITY login SYSTEM "login.sgml">
 

@@ -1,0 +1,80 @@
+<section id="login-appliance"
+	xreflabel="Adding a Login Appliance to Your Cluster">
+<title> Adding a Login Appliance to Your Cluster </title>
+
+<para>
+A <emphasis>login appliance</emphasis> is a host that users use to build,
+launch and monitor their application(s).
+This host is a subset of a frontend appliance (a frontend runs several other
+services that are used to install and maintain all the nodes in the system).
+</para>
+
+<para>
+First, we need to perform the initial installation of the login appliance.
+On the frontend, execute:
+</para>
+
+<screen>
+# insert-ethers
+</screen>
+
+<para>
+Select "Login" as the appliance type.
+</para>
+
+<para>
+Then PXE boot the host that you want to be a login appliance.
+</para>
+
+<para>
+Login hosts are generally hosts that also have a public network interface
+so users can directly access the login host.
+After the login appliance installs, to configure the public network interface
+on the login host, see <xref linkend="adding-public-ip">.
+</para>
+
+
+<section>
+<title> Making any Host a Submission and/or Execution Host </title>
+
+<para>
+If you've installed a batch queueing system (e.g., by using the SGE Roll or
+Torque Roll), you can change any host in your system to be a submission host
+(a host where users can submit jobs) and/or an execution host (the queueing
+system schedules jobs on execution hosts).
+</para>
+
+<note>
+<para>
+By default, a login host is a submission host, but not an execution host.
+By default, a compute node is an execution host, but not a submission host.
+</para>
+</note>
+
+<para>
+To make a host a submission host (e.g., tile-0-0), on the frontend execute:
+</para>
+
+<screen>
+# rocks set host attr tile-0-0 submit_host true
+</screen>
+
+<para>
+Then reinstall tile-0-0.
+</para>
+
+<para>
+To make a host an execution host (e.g., tile-0-0), on the frontend execute:
+</para>
+
+<screen>
+# rocks set host attr tile-0-0 exec_host true
+</screen>
+
+<para>
+Then reinstall tile-0-0.
+</para>
+
+</section>
+
+</section>

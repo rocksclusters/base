@@ -1,5 +1,5 @@
 <!-- 
-$Id: networking-examples.sgml,v 1.5 2010/03/23 22:33:03 bruno Exp $
+$Id: networking-examples.sgml,v 1.6 2010/04/15 21:08:12 bruno Exp $
 
 Administration guide
 
@@ -7,6 +7,9 @@ Administration guide
 @Copyright@
 
 $Log: networking-examples.sgml,v $
+Revision 1.6  2010/04/15 21:08:12  bruno
+added login appliance documentation
+
 Revision 1.5  2010/03/23 22:33:03  bruno
 doc bug
 
@@ -30,7 +33,8 @@ Added some adminstrative examples. Needs more.
 In this section, we describe some common networking configurations and how to use Rocks commands to set up various networking scenarios.
 </para>
 
-<section>
+<section id="adding-public-ip" xreflabel="Adding a public IP address the second ethernet adapter on a compute node">
+
 <title>Adding a public IP address the second ethernet adapter on a compute node</title>
 <para>
 Often, owners want the second ethernet adapter to be on the public network and for the default routing to
