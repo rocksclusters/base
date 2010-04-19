@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.10 2010/04/15 19:00:30 bruno Exp $
+# $Id: __init__.py,v 1.11 2010/04/19 19:44:14 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,15 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.11  2010/04/19 19:44:14  bruno
+# added:
+#
+# - if "timeout == 0", then wait forever
+#
+# - if the user hits ctrl-c, then kill all the ssh processes associated with
+#   the command. the ssh processes are killed on the local side (e.g., the
+#   frontend), not the remote side
+#
 # Revision 1.10  2010/04/15 19:00:30  bruno
 # 'rocks run host' is now 100% tentakel free!
 #
@@ -95,7 +104,8 @@ import os
 import sys
 import time
 import socket
-import popen2
+import subprocess
+import shlex
 import rocks.commands
 
 class Parallel(threading.Thread):
@@ -109,10 +119,11 @@ class Parallel(threading.Thread):
 
 	def run(self):
 		starttime = time.time()
-		#os.system(self.cmd)
-		child_stdout_and_stderr, child_stdin = popen2.popen4(self.cmd)
+		self.p = subprocess.Popen(shlex.split(self.cmd),
+			stdin = subprocess.PIPE, stdout = subprocess.PIPE,
+			stderr = subprocess.STDOUT)
 
-		for line in child_stdout_and_stderr.readlines():
+		for line in self.p.stdout.readlines():
 			if self.collate:
 				self.cmdclass.addOutput(self.host, line[:-1])
 			else:
@@ -126,6 +137,9 @@ class Parallel(threading.Thread):
 				self.cmdclass.addOutput(self.host, msg)
 			else:
 				print msg
+
+	def kill(self):
+		os.kill(self.p.pid, 9)
 
 	
 class command(rocks.commands.HostArgumentProcessor,
@@ -215,7 +229,7 @@ class Command(command):
 		except:
 			self.abort('"timeout" must be an integer')
 
-		if timeout <= 0:
+		if timeout < 0:
 			self.abort('"timeout" must be a postive integer')
 
 		try:
@@ -283,19 +297,33 @@ class Command(command):
 		#
 		# collect the threads
 		#
-		while 1:
-			active = threading.enumerate()
+		try:
+			totaltime = time.time()
+			while timeout == 0 or \
+					(time.time() - totaltime) < timeout:
 
-			if len(active) == 1:
-				break
+				active = threading.enumerate()
+
+				if len(active) == 1:
+					break
 				
+				t = threads
+				for thread in t:
+					if thread not in active:
+						thread.join(0.1)
+						threads.remove(thread)
+
+				#
+				# don't burn a CPU while waiting for the
+				# threads to complete
+				#
+				time.sleep(0.5)
+
+		except KeyboardInterrupt:
 			#
-			# special case for the last thread (this program is
-			# thread '1')
+			# try to collect all the active threads
 			#
-			if len(active) == 2:
-				active[1].join(timeout)
-				break
+			active = threading.enumerate()
 
 			t = threads
 			for thread in t:
@@ -303,12 +331,13 @@ class Command(command):
 					thread.join(0.1)
 					threads.remove(thread)
 
-			#
-			# don't burn a CPU while waiting for the threads to
-			# complete
-			#
-			time.sleep(0.5)
+		#
+		# kill all still active threads
+		#
+		active = threading.enumerate()
+		if len(active) >= 2:
+			for i in range(1, len(active)):
+				active[i].kill()
 
 		if self.str2bool(collate):
 			self.endOutput(padChar='')
-
