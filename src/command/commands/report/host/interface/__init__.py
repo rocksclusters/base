@@ -1,4 +1,4 @@
-#$Id: __init__.py,v 1.12 2010/01/20 00:55:16 mjk Exp $
+#$Id: __init__.py,v 1.13 2010/04/19 21:22:15 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,12 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.13  2010/04/19 21:22:15  bruno
+# can now set and report 'options' for network interface modules.
+#
+# this will be handy for setting interrupt coalescing and for setting up
+# channel bonding.
+#
 # Revision 1.12  2010/01/20 00:55:16  mjk
 # for ipmi don't create the ifcfg-ipmi files
 #
@@ -203,13 +209,22 @@ class Command(rocks.commands.HostArgumentProcessor,
 			self.addOutput(host, 'MTU=%s' % mtu)
 		
 
-	def writeModprobe(self, host, device, module):
+	def writeModprobe(self, host, device, module, options):
 		if not module:
 			return
 
 		self.addOutput(host, '<![CDATA[')
 		self.addOutput(host, 'grep -v "\<%s\>" /etc/modprobe.conf > /tmp/modprobe.conf' % (device))
-		self.addOutput(host, "echo 'alias %s %s' >> /tmp/modprobe.conf" % (device, module))
+
+		self.addOutput(host,
+			"echo 'alias %s %s' >> /tmp/modprobe.conf" %
+			(device, module))
+
+		if options:
+			self.addOutput(host,
+				"echo 'options %s %s' >> /tmp/modprobe.conf" %
+				(module, options))
+
 		self.addOutput(host, 'mv /tmp/modprobe.conf /etc/modprobe.conf')
 		self.addOutput(host, 'chmod 444 /etc/modprobe.conf')
 		self.addOutput(host, ']]>')
@@ -248,14 +263,15 @@ class Command(rocks.commands.HostArgumentProcessor,
 		self.db.execute("""select distinctrow 
 			net.mac, net.ip, net.device,
 			if(net.subnet, s.netmask, NULL), net.vlanid,
-			net.subnet, net.module, s.mtu from
+			net.subnet, net.module, s.mtu, net.options from
 			networks net, nodes n, subnets s where net.node = n.id
 			and if(net.subnet, net.subnet = s.id, true) and
 			n.name = "%s" order by net.id""" % (host))
 
 
 		for row in self.db.fetchall():
-			mac,ip,device,netmask,vlanid,subnetid,module,mtu = row
+			(mac, ip, device, netmask, vlanid, subnetid, module,
+				mtu, options) = row
 
 
 			if device == 'ipmi':
@@ -266,7 +282,8 @@ class Command(rocks.commands.HostArgumentProcessor,
 				#
 				# output a script to update modprobe.conf
 				#
-				self.writeModprobe(host, device, module)
+				self.writeModprobe(host, device, module,
+					options)
 
 			if vlanid and self.isPhysicalHost(host):
 				#
