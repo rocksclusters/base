@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.9 2010/01/20 21:49:13 mjk Exp $
+# $Id: __init__.py,v 1.10 2010/04/20 16:38:27 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.10  2010/04/20 16:38:27  bruno
+# comment fix
+#
 # Revision 1.9  2010/01/20 21:49:13  mjk
 # - generate a default name for the interface (enhancement)
 #   - hostname if private
@@ -105,7 +108,7 @@ class Command(rocks.commands.set.host.command):
  	
  	<arg type='string' name='subnet'>
 	The subnet address of the interface. This is a named subnet and must be
-	listable by the command 'rocks list subnet'.
+	listable by the command 'rocks list network'.
 	</arg>
 
 	<param type='string' name='iface'>
