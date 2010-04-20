@@ -52,7 +52,7 @@ Here's what we'll do:
 </itemizedlist>
 
 <screen>
-# rocks add host bonded compute-0-1 channel=bond0 interfaces=eth0,eth1 ip=10.1.255.254 subnet=private
+# rocks add host bonded compute-0-1 channel=bond0 interfaces=eth0,eth1 ip=10.1.255.253 subnet=private
 </screen>
 
 <para>
@@ -63,7 +63,7 @@ following way:
 <screen>
 # rocks list host interface compute-0-1
 SUBNET  IFACE MAC               IP           NETMASK     MODULE  NAME        VLAN OPTIONS CHANNEL
-private bond0 ----------------- 10.1.255.254 255.255.0.0 bonding compute-0-1 ---- ------- -------
+private bond0 ----------------- 10.1.255.253 255.255.0.0 bonding compute-0-1 ---- ------- -------
 ------- eth0  00:1e:4f:b0:74:ef ------------ ----------- tg3     ----------- ---- ------- bond0  
 ------- eth1  00:10:18:31:74:43 ------------ ----------- tg3     ----------- ---- ------- bond0
 </screen>
@@ -110,7 +110,7 @@ And now we see:
 
 <screen>
 SUBNET  IFACE MAC               IP           NETMASK     MODULE  NAME        VLAN OPTIONS                    CHANNEL
-private bond0 ----------------- 10.1.255.254 255.255.0.0 bonding compute-0-1 ---- miimon=100 mode=balance-rr -------
+private bond0 ----------------- 10.1.255.253 255.255.0.0 bonding compute-0-1 ---- miimon=100 mode=balance-rr -------
 ------- eth0  00:1e:4f:b0:74:ef ------------ ----------- tg3     ----------- ---- -------------------------- bond0  
 ------- eth1  00:10:18:31:74:43 ------------ ----------- tg3     ----------- ---- -------------------------- bond0
 </screen>
