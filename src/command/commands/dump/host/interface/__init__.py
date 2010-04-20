@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.18 2009/12/16 18:30:07 bruno Exp $
+# $Id: __init__.py,v 1.19 2010/04/20 17:22:36 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.19  2010/04/20 17:22:36  bruno
+# initial support for channel bonding
+#
 # Revision 1.18  2009/12/16 18:30:07  bruno
 # make sure to save the vlan configuration for the frontend
 #
@@ -180,15 +183,16 @@ class Command(rocks.commands.dump.host.command):
 				IF(net.subnet, sub.name, NULL),
 				net.device, net.mac, net.ip,
 				IF(net.subnet, sub.netmask, NULL),
-				net.module, net.name, net.vlanid
+				net.module, net.name, net.vlanid, net.options,
+				net.channel
 				from nodes n, networks net, subnets sub where
 				n.name='%s' and net.node=n.id and
 				(net.subnet=sub.id or net.subnet is NULL)
 				order by net.device""" % host )
 			if rows < 1:
 				continue
-			for (subnet, iface, mac, ip, netmask, module, 
-				name, vlan) in self.db.fetchall():
+			for (subnet, iface, mac, ip, netmask, module, name,
+				vlan, options, channel) in self.db.fetchall():
 				
 				if not iface:
 					if mac:
@@ -239,4 +243,9 @@ class Command(rocks.commands.dump.host.command):
 					self.dump(set % ('subnet', subnet))
 				if vlan:
 					self.dump(set % ('vlan', vlan))
+				if options:
+					self.dump(set % ('options',
+						'options="%s"' % options))
+				if channel:
+					self.dump(set % ('channel', channel))
 

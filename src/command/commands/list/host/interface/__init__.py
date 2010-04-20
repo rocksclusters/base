@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.19 2010/04/19 21:22:15 bruno Exp $
+# $Id: __init__.py,v 1.20 2010/04/20 17:22:36 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.20  2010/04/20 17:22:36  bruno
+# initial support for channel bonding
+#
 # Revision 1.19  2010/04/19 21:22:15  bruno
 # can now set and report 'options' for network interface modules.
 #
@@ -185,7 +188,8 @@ class Command(rocks.commands.list.host.command):
 				IF(net.subnet, sub.name, NULL),
 				net.device, net.mac, net.ip,
 				IF(net.subnet,sub.netmask,NULL),
-				net.module, net.name, net.vlanid, net.options
+				net.module, net.name, net.vlanid, net.options,
+				net.channel
 				from nodes n, networks net, subnets sub
 				where n.name='%s' and net.node=n.id
 				and (net.subnet=sub.id or net.subnet is NULL)
@@ -199,10 +203,11 @@ class Command(rocks.commands.list.host.command):
                 		if row[1] and reg.match(row[1]):  
 					self.addOutput(host, (row[0], row[1],
 						None, None, None, None,
-						None, row[7], row[8]) )
+						None, row[7], row[8], row[9]) )
 				else:
 					self.addOutput(host, row)
 
 		self.endOutput(header=['host', 'subnet', 'iface', 'mac', 
-			'ip', 'netmask', 'module', 'name', 'vlan', 'options'])
+			'ip', 'netmask', 'module', 'name', 'vlan',
+			'options', 'channel'])
 

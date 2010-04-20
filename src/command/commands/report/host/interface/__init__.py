@@ -1,4 +1,4 @@
-#$Id: __init__.py,v 1.13 2010/04/19 21:22:15 bruno Exp $
+#$Id: __init__.py,v 1.14 2010/04/20 17:22:36 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.14  2010/04/20 17:22:36  bruno
+# initial support for channel bonding
+#
 # Revision 1.13  2010/04/19 21:22:15  bruno
 # can now set and report 'options' for network interface modules.
 #
@@ -111,6 +114,7 @@
 #
 #
 
+import re
 import rocks.commands
 
 class Command(rocks.commands.HostArgumentProcessor,
@@ -181,8 +185,11 @@ class Command(rocks.commands.HostArgumentProcessor,
 			% (channel))
 		self.addOutput(host, '</file>')
 
-	def writeConfig(self, host, mac, ip, device, netmask, vlanid, mtu):
+	def writeConfig(self, host, mac, ip, device, netmask, vlanid, mtu,
+			options, channel):
+
 		configured = 0
+		reg = re.compile('bond[0-9]+')
 
 		self.addOutput(host, 'DEVICE=%s' % device)
 
@@ -194,11 +201,26 @@ class Command(rocks.commands.HostArgumentProcessor,
 			self.addOutput(host, 'NETMASK=%s' % netmask)
 			self.addOutput(host, 'BOOTPROTO=static')
 			self.addOutput(host, 'ONBOOT=yes')
+
+			if reg.match(device) and options:
+				self.addOutput(host, 'BONDING_OPTS="%s"' %
+					options)
+
 			configured = 1
 
 		if vlanid and self.isPhysicalHost(host):
 			self.addOutput(host, 'VLAN=yes')
 			self.addOutput(host, 'ONBOOT=yes')
+			configured = 1
+
+		#
+		# check if this is part of a bonded channel
+		#
+		if channel and reg.match(channel):
+			self.addOutput(host, 'BOOTPROTO=none')
+			self.addOutput(host, 'ONBOOT=yes')
+			self.addOutput(host, 'MASTER=%s' % channel)
+			self.addOutput(host, 'SLAVE=yes')
 			configured = 1
 
 		if not configured:
@@ -213,6 +235,8 @@ class Command(rocks.commands.HostArgumentProcessor,
 		if not module:
 			return
 
+		reg = re.compile('bond[0-9]+')
+
 		self.addOutput(host, '<![CDATA[')
 		self.addOutput(host, 'grep -v "\<%s\>" /etc/modprobe.conf > /tmp/modprobe.conf' % (device))
 
@@ -220,7 +244,11 @@ class Command(rocks.commands.HostArgumentProcessor,
 			"echo 'alias %s %s' >> /tmp/modprobe.conf" %
 			(device, module))
 
-		if options:
+		#
+		# don't write the options here if this is a bonded interface,
+		# they written in the ifcfg-bond* file (see writeConfig() above)
+		#
+		if options and not reg.match(device):
 			self.addOutput(host,
 				"echo 'options %s %s' >> /tmp/modprobe.conf" %
 				(module, options))
@@ -263,7 +291,8 @@ class Command(rocks.commands.HostArgumentProcessor,
 		self.db.execute("""select distinctrow 
 			net.mac, net.ip, net.device,
 			if(net.subnet, s.netmask, NULL), net.vlanid,
-			net.subnet, net.module, s.mtu, net.options from
+			net.subnet, net.module, s.mtu, net.options, net.channel
+			from
 			networks net, nodes n, subnets s where net.node = n.id
 			and if(net.subnet, net.subnet = s.id, true) and
 			n.name = "%s" order by net.id""" % (host))
@@ -271,7 +300,7 @@ class Command(rocks.commands.HostArgumentProcessor,
 
 		for row in self.db.fetchall():
 			(mac, ip, device, netmask, vlanid, subnetid, module,
-				mtu, options) = row
+				mtu, options, channel) = row
 
 
 			if device == 'ipmi':
@@ -309,7 +338,8 @@ class Command(rocks.commands.HostArgumentProcessor,
 			if self.iface:
 				if self.iface == device:
 					self.writeConfig(host, mac, ip, device,
-						netmask, vlanid, mtu)
+						netmask, vlanid, mtu, options,
+						channel)
 			else:
 				s = '<file name="'
 				s += '/etc/sysconfig/network-scripts/ifcfg-'
@@ -317,7 +347,7 @@ class Command(rocks.commands.HostArgumentProcessor,
 
 				self.addOutput(host, s)
 				self.writeConfig(host, mac, ip, device,
-					netmask, vlanid, mtu)
+					netmask, vlanid, mtu, options, channel)
 				self.addOutput(host, '</file>')
 
 
