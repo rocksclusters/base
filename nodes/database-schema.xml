@@ -18,6 +18,9 @@
 
   <changelog>
   $Log: database-schema.xml,v $
+  Revision 1.41  2010/04/20 19:33:04  bruno
+  more bonding tweaks
+
   Revision 1.40  2009/06/03 21:28:51  bruno
   add MTU to the subnets table
 
@@ -419,6 +422,7 @@ CREATE TABLE networks (
   Module	varchar(128) default NULL,
   VlanID	int(11) default NULL,
   Options	varchar(128) default NULL,
+  Channel	varchar(128) default NULL,
   PRIMARY KEY(ID)
 ) TYPE=MyISAM;
 

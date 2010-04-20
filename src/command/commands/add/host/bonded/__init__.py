@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.1 2010/04/20 17:22:35 bruno Exp $
+# $Id: __init__.py,v 1.2 2010/04/20 19:33:04 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.2  2010/04/20 19:33:04  bruno
+# more bonding tweaks
+#
 # Revision 1.1  2010/04/20 17:22:35  bruno
 # initial support for channel bonding
 #
@@ -76,7 +79,8 @@ class Command(rocks.commands.add.host.command):
 
 	<param type='string' name='interfaces'>
 	The physical interfaces that will be bonded. The interfaces
-	must be comma separated (e.g., "eth0,eth1").
+	can be a comma-separated list (e.g., "eth0,eth1") or a space-separated
+	list (e.g., "eth0 eth1").
 	</param>
 
 	<param type='string' name='ip'>
@@ -145,11 +149,25 @@ class Command(rocks.commands.add.host.command):
 
 		if rows == 0:
 			self.abort('subnet "%s" not in the database. Run "rocks list network" to get a list of valid subnets.')
+
+		ifaces = []
+		if ',' in interfaces:
+			#
+			# comma-separated list
+			#
+			for i in interfaces.split(','):
+				ifaces.append(i.strip())
+		else:
+			#
+			# assume it is a space-separated list
+			#
+			for i in interfaces.split():
+				ifaces.append(i.strip())
 			
 		#
 		# check if the physical interfaces exist
 		#
-		for i in interfaces.split(','):
+		for i in ifaces:
 			rows = self.db.execute("""select net.device from
 				networks net, nodes n where
 				net.device = '%s' and n.name = '%s' and
@@ -171,7 +189,7 @@ class Command(rocks.commands.add.host.command):
 		# clear out all networking info from the physical interfaces and
 		# then associate the interfaces with the bonded channel
 		#
-		for i in interfaces.split(','):
+		for i in ifaces:
 			self.command('set.host.interface.subnet',
 				(host, i, 'subnet=NULL'))
 			self.command('set.host.interface.ip',
