@@ -1,0 +1,129 @@
+<section id="bonding"
+	xreflabel="Channel Bonding Interfaces">
+<title> Channel Bonding Interfaces </title>
+
+<para>
+Channel bonding enables two or more network interfaces to act as one.
+The following procedure describes how to channel bond interfaces in Rocks.
+</para>
+
+<para>
+We'll use the example of channel bonding two interfaces for compute-0-1.
+First, let's list the current configuration of the interfaces for compute-0-1:
+</para>
+
+<screen>
+# rocks list host interface compute-0-1
+SUBNET  IFACE MAC               IP           NETMASK     MODULE NAME        VLAN OPTIONS
+private eth0  00:1e:4f:b0:74:ef 10.1.255.253 255.255.0.0 tg3    compute-0-1 ---- -------
+------- eth1  00:10:18:31:74:43 ------------ ----------- tg3    ----------- ---- -------
+</screen>
+
+<para>
+Here's what we'll do:
+</para>
+
+<itemizedlist>
+
+<listitem>
+	<para>
+	Bond eth0 and eth1.
+	</para>
+</listitem>
+
+<listitem>
+	<para>
+	Name the bonded channel "bond0".
+	</para>
+</listitem>
+
+<listitem>
+	<para>
+	Give bond0 the IP address 10.1.255.253.
+	</para>
+</listitem>
+
+<listitem>
+	<para>
+	Associate bond0 with the private subnet.
+	</para>
+</listitem>
+
+</itemizedlist>
+
+<screen>
+# rocks add host bonded compute-0-1 channel=bond0 interfaces=eth0,eth1 ip=10.1.255.254 subnet=private
+</screen>
+
+<para>
+The above command changes the interface configuraion for compute-0-1 in the
+following way:
+</para>
+
+<screen>
+# rocks list host interface compute-0-1
+SUBNET  IFACE MAC               IP           NETMASK     MODULE  NAME        VLAN OPTIONS CHANNEL
+private bond0 ----------------- 10.1.255.254 255.255.0.0 bonding compute-0-1 ---- ------- -------
+------- eth0  00:1e:4f:b0:74:ef ------------ ----------- tg3     ----------- ---- ------- bond0  
+------- eth1  00:10:18:31:74:43 ------------ ----------- tg3     ----------- ---- ------- bond0
+</screen>
+
+<para>
+To apply the configuration, execute:
+</para>
+
+<screen>
+# rocks sync config
+# rocks sync host network compute-0-1
+</screen>
+
+
+<section>
+<title> Adding Parameters to the Kernel Bonding Module </title>
+
+<para>
+There are several options that can be added to the kernel bonding module (see
+RedHat's documentation 
+<ulink url="http://www.redhat.com/docs/en-US/Red_Hat_Enterprise_Linux/5.5/html/Deployment_Guide/s2-modules-bonding.html"> The Channel Bonding Module </ulink>
+for a full description of all the options).
+</para>
+
+<para>
+To set options "miimon=100" and "mode=balance-rr" for the kernel bonding
+module associated with bond0, execute:
+</para>
+
+<screen>
+# rocks set host interface options compute-0-1 bond0 options="miimon=100 mode=balance-rr"
+</screen>
+
+<warning>
+<para>
+The "options" value (e.g., "miimon=100 mode=balance-rr") must be a
+space-separated list.
+</para>
+</warning>
+
+<para>
+And now we see:
+</para>
+
+<screen>
+SUBNET  IFACE MAC               IP           NETMASK     MODULE  NAME        VLAN OPTIONS                    CHANNEL
+private bond0 ----------------- 10.1.255.254 255.255.0.0 bonding compute-0-1 ---- miimon=100 mode=balance-rr -------
+------- eth0  00:1e:4f:b0:74:ef ------------ ----------- tg3     ----------- ---- -------------------------- bond0  
+------- eth1  00:10:18:31:74:43 ------------ ----------- tg3     ----------- ---- -------------------------- bond0
+</screen>
+
+<para>
+To apply the options to the bond0 interface, execute:
+</para>
+
+<screen>
+# rocks sync host network compute-0-1
+</screen>
+
+
+</section>
+
+</section>

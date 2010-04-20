@@ -3,6 +3,7 @@
 
 &pxeflash;
 &login;
+&bonding;
 &central;
 &cross;
 &bootflags;
