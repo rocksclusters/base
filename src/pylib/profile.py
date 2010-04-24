@@ -1,6 +1,6 @@
 #! /opt/rocks/bin/python
 #
-# $Id: profile.py,v 1.29 2009/09/30 00:51:42 bruno Exp $
+# $Id: profile.py,v 1.30 2010/04/24 01:01:43 anoop Exp $
 #
 # @Copyright@
 # 
@@ -56,6 +56,19 @@
 # @Copyright@
 #
 # $Log: profile.py,v $
+# Revision 1.30  2010/04/24 01:01:43  anoop
+# Killed 2 birds with a single checkin
+#
+# 1. Bug Fix
+# <edge cond=s1 from=a><to cond=s2>b</to></edge>
+# This caused condition s2 to overwrite condition s1. Fixed so that both
+# s2 and s1 are evaluated, and not just the last one
+#
+# 2. Bug Fix: This was the big one, where
+# a --(cond)--> b ----> c and cond=false would result in
+# "a, c" being included in the graph when the correct response
+# was just "a".
+#
 # Revision 1.29  2009/09/30 00:51:42  bruno
 # thanks 'noop!
 #
@@ -288,7 +301,6 @@ class GraphHandler(handler.ContentHandler,
 		self.text			= ''
 		self.os				= attrs['os']
 		
-
 	def getMainGraph(self):
 		return self.graph.main
 
@@ -428,11 +440,7 @@ class GraphHandler(handler.ContentHandler,
 
 		e = FrameworkEdge(tail, head)
 
-		e.setConditional(rocks.cond.CreateCondExpr(
-			self.attrs.main.arch,
-			self.attrs.main.os,
-			self.attrs.main.release,
-			self.attrs.main.cond))
+		e.setConditional(self.attrs.main.default.cond)
 				
 		e.setRoll(self.roll)
 		self.graph.main.addEdge(e)
@@ -481,48 +489,57 @@ class GraphHandler(handler.ContentHandler,
 
 	def startElement_to(self, name, attrs):	
 		self.text		= ''
-		self.attrs.main.arch	= self.attrs.main.default.arch
-		self.attrs.main.os	= self.attrs.main.default.os
-		self.attrs.main.release	= self.attrs.main.default.release
-		self.attrs.main.cond	= self.attrs.main.default.cond
+
+		arch = None
+		osname = None
+		release	= None
+		cond = self.attrs.main.default.cond
 
 		if attrs.has_key('arch'):
-			self.attrs.main.arch = attrs['arch']
+			arch = attrs['arch']
 		if attrs.has_key('os'):
-			self.attrs.main.os = attrs['os']
-		if attrs.has_key('cond'):
-			self.attrs.main.cond = attrs['cond']
+			osname = attrs['os']
 		if attrs.has_key('release'):
-			self.attrs.main.release = attrs['release']
+			release = attrs['release']
+		if attrs.has_key('cond'):
+			cond = "( %s and %s )" % (cond, attrs['cond'])
+			
+		self.attrs.main.cond = \
+			rocks.cond.CreateCondExpr(arch, osname, release, cond)
 
 	def endElement_to(self, name):
-		self.attrs.main.parent = self.text
-		self.addEdge()	
+		if rocks.cond.EvalCondExpr(self.attrs.main.cond, self.attributes):
+			self.attrs.main.parent = self.text
+			self.addEdge()	
 		self.attrs.main.parent = None
-	
 
 	# <from>
 
 	def startElement_from(self, name, attrs):
 		self.text		= ''
-		self.attrs.main.arch	= self.attrs.main.default.arch
-		self.attrs.main.os	= self.attrs.main.default.os
-		self.attrs.main.release	= self.attrs.main.default.release
-		self.attrs.main.cond	= self.attrs.main.default.cond
-		
+
+		arch = None
+		osname = None
+		release	= None
+		cond = self.attrs.main.default.cond
+
 		if attrs.has_key('arch'):
-			self.attrs.main.arch = attrs['arch']
+			arch = attrs['arch']
 		if attrs.has_key('os'):
-			self.attrs.main.os   = attrs['os']
-		if attrs.has_key('cond'):
-			self.attrs.main.cond   = attrs['cond']
+			osname = attrs['os']
 		if attrs.has_key('release'):
-			self.attrs.main.release = attrs['release']
+			release = attrs['release']
+		if attrs.has_key('cond'):
+			cond = "( %s and %s )" % (cond, attrs['cond'])
+			
+		self.attrs.main.cond = \
+			rocks.cond.CreateCondExpr(arch, osname, release, cond)
 
 
 	def endElement_from(self, name):
-		self.attrs.main.child = self.text
-		self.addEdge()
+		if rocks.cond.EvalCondExpr(self.attrs.main.cond, self.attributes):
+			self.attrs.main.child = self.text
+			self.addEdge()	
 		self.attrs.main.child = None
 		
 	# <order>
@@ -552,21 +569,25 @@ class GraphHandler(handler.ContentHandler,
 	
 	def startElement_edge(self, name, attrs):
 		if attrs.has_key('arch'):
-			self.attrs.main.default.arch = attrs['arch']
+			arch = attrs['arch']
 		else:
-			self.attrs.main.default.arch = None
+			arch = None
 		if attrs.has_key('os'):
-			self.attrs.main.default.os = attrs['os']
+			osname = attrs['os']
 		else:
-			self.attrs.main.default.os = None
-		if attrs.has_key('cond'):
-			self.attrs.main.default.cond = attrs['cond']
-		else:
-			self.attrs.main.default.cond = None
+			osname = None
 		if attrs.has_key('release'):
-			self.attrs.main.default.release = attrs['release']
+			release = attrs['release']
 		else:
-			self.attrs.main.default.release	= None
+			release	= None
+		if attrs.has_key('cond'):
+			cond = attrs['cond']
+		else:
+			cond = None
+
+		self.attrs.main.default.cond = \
+			rocks.cond.CreateCondExpr(arch, osname, release, cond)
+		
 		if attrs.has_key('to'):
 			self.attrs.main.parent = attrs['to']
 		else:
@@ -576,11 +597,7 @@ class GraphHandler(handler.ContentHandler,
 		else:
 			self.attrs.main.child = None
 
-		self.attrs.main.arch	= self.attrs.main.default.arch
-		self.attrs.main.os	= self.attrs.main.default.os
 		self.attrs.main.cond	= self.attrs.main.default.cond
-		self.attrs.main.release	= self.attrs.main.default.release
-
 
 	def endElement_edge(self, name):
 		if self.attrs.main.parent and self.attrs.main.child:

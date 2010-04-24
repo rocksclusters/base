@@ -60,6 +60,19 @@
 # @Copyright@
 #
 # $Log: cond.py,v $
+# Revision 1.3  2010/04/24 01:01:43  anoop
+# Killed 2 birds with a single checkin
+#
+# 1. Bug Fix
+# <edge cond=s1 from=a><to cond=s2>b</to></edge>
+# This caused condition s2 to overwrite condition s1. Fixed so that both
+# s2 and s1 are evaluated, and not just the last one
+#
+# 2. Bug Fix: This was the big one, where
+# a --(cond)--> b ----> c and cond=false would result in
+# "a, c" being included in the graph when the correct response
+# was just "a".
+#
 # Revision 1.2  2009/05/01 19:07:08  mjk
 # chimi con queso
 #
@@ -136,19 +149,19 @@ def CreateCondExpr(archs, oses, releases, cond):
 		list = []		# OR of architectures
 		for arch in string.split(archs, ','):
 			list.append('arch=="%s"' % arch.strip())
-		exprs.append(string.join(list, ' or '))
+		exprs.append("( %s )" % string.join(list,' or '))
 
 	if oses:
 		list = []		# OR of OSes
 		for os in string.split(oses, ','):
 			list.append('os=="%s"' % os.strip())
-		exprs.append(string.join(list, ' or '))
+		exprs.append("( %s )" % string.join(list,' or '))
 
 	if releases:
 		list = []		# OR of releases
 		for release in string.split(releases, ','):
 			list.append('release=="%s"' % release.strip())
-		exprs.append(string.join(list, ' or '))
+		exprs.append("( %s )" % string.join(list,' or '))
 
 	if cond:
 		exprs.append(cond)	# AND of the above and the generic cond
