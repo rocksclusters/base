@@ -1,6 +1,6 @@
 #! /opt/rocks/bin/python
 #
-# $Id: profile.py,v 1.30 2010/04/24 01:01:43 anoop Exp $
+# $Id: profile.py,v 1.31 2010/04/26 18:44:16 anoop Exp $
 #
 # @Copyright@
 # 
@@ -56,6 +56,12 @@
 # @Copyright@
 #
 # $Log: profile.py,v $
+# Revision 1.31  2010/04/26 18:44:16  anoop
+# Bug fix to make sure that when "rocks list host graph" is run,
+# all edges and nodes are added to the graph and printed in full.
+# Under most other circumstances we need a pruned graph, that is
+# only traversed when all conditionals are fully met.
+#
 # Revision 1.30  2010/04/24 01:01:43  anoop
 # Killed 2 birds with a single checkin
 #
@@ -284,7 +290,7 @@ class GraphHandler(handler.ContentHandler,
 		   handler.ErrorHandler,
 		   AttributeHandler):
 
-	def __init__(self, attrs, entities={}):
+	def __init__(self, attrs, entities={}, prune=True):
 		handler.ContentHandler.__init__(self)
 		self.setAttributes(attrs)
 		self.graph			= rocks.util.Struct()
@@ -300,7 +306,13 @@ class GraphHandler(handler.ContentHandler,
 		self.roll			= ''
 		self.text			= ''
 		self.os				= attrs['os']
-		
+
+		# Should we prune the graph while adding edges or not.
+		# Prune is the answer for most cases while traversing
+		# the graph. "Do Not Prune" is the answer when pictorial
+		# representation of graph is required. 
+		self.prune			= prune
+
 	def getMainGraph(self):
 		return self.graph.main
 
@@ -508,7 +520,8 @@ class GraphHandler(handler.ContentHandler,
 			rocks.cond.CreateCondExpr(arch, osname, release, cond)
 
 	def endElement_to(self, name):
-		if rocks.cond.EvalCondExpr(self.attrs.main.cond, self.attributes):
+		if (not self.prune) or \
+			rocks.cond.EvalCondExpr(self.attrs.main.cond, self.attributes):
 			self.attrs.main.parent = self.text
 			self.addEdge()	
 		self.attrs.main.parent = None
@@ -537,7 +550,8 @@ class GraphHandler(handler.ContentHandler,
 
 
 	def endElement_from(self, name):
-		if rocks.cond.EvalCondExpr(self.attrs.main.cond, self.attributes):
+		if (not self.prune) or \
+			rocks.cond.EvalCondExpr(self.attrs.main.cond, self.attributes):
 			self.attrs.main.child = self.text
 			self.addEdge()	
 		self.attrs.main.child = None

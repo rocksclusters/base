@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.17 2009/09/03 05:12:26 bruno Exp $
+# $Id: __init__.py,v 1.18 2010/04/26 18:44:15 anoop Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,12 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.18  2010/04/26 18:44:15  anoop
+# Bug fix to make sure that when "rocks list host graph" is run,
+# all edges and nodes are added to the graph and printed in full.
+# Under most other circumstances we need a pruned graph, that is
+# only traversed when all conditionals are fully met.
+#
 # Revision 1.17  2009/09/03 05:12:26  bruno
 # added 'var' support back
 #
@@ -241,7 +247,7 @@ class Command(rocks.commands.list.host.command):
 
 			parser  = make_parser()
 			attrs = self.db.getHostAttrs(host)
-			handler = rocks.profile.GraphHandler(attrs, {})
+			handler = rocks.profile.GraphHandler(attrs, {}, prune=False)
 
 			for file in os.listdir(graphdir):
 				root, ext = os.path.splitext(file)
