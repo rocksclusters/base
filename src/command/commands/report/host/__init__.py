@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.8 2009/06/15 23:48:35 bruno Exp $
+# $Id: __init__.py,v 1.9 2010/04/27 15:41:32 phil Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.9  2010/04/27 15:41:32  phil
+# Tighten up the test for None in a nic name.
+#
 # Revision 1.8  2009/06/15 23:48:35  bruno
 # if a host has an IP address and name (but no device) make sure it shows up
 # in /etc/hosts
@@ -130,7 +133,7 @@ class Command(command):
 			nodes.append(node)
 
 		for node in nodes:
-			if node.name:
+			if node.name[0] is not None:
 				print '%s\t%s' % (node.address,
 					' '.join(node.name))
 
