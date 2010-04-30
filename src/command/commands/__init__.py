@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.79 2010/02/22 23:11:03 mjk Exp $
+# $Id: __init__.py,v 1.80 2010/04/30 22:02:46 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.80  2010/04/30 22:02:46  bruno
+# added getNetworkName() method. it is used by the firewall commands
+#
 # Revision 1.79  2010/02/22 23:11:03  mjk
 # - rocks iterface host using os.system not popen
 #   - can now be used like cluster-fork
@@ -533,6 +536,23 @@ class NetworkArgumentProcessor:
 			for name, in self.db.fetchall():
 				list.append(name)
 		return list
+
+	def getNetworkName(self, netid):
+		"""Returns a network (subnet) name from the database that
+		is associated with the id 'netid'.
+		"""
+		if not netid:
+			return ''
+
+		rows = self.db.execute("""select name from subnets where
+			id = %s""" % netid)
+
+		if rows > 0:
+			netname, = self.db.fetchone()
+		else:
+			netname = ''
+
+		return netname
 	
 	
 class RollArgumentProcessor:
