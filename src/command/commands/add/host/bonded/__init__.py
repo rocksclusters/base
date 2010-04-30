@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.2 2010/04/20 19:33:04 bruno Exp $
+# $Id: __init__.py,v 1.3 2010/04/30 22:02:13 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.3  2010/04/30 22:02:13  bruno
+# changed 'subnet' parameter to 'network'
+#
 # Revision 1.2  2010/04/20 19:33:04  bruno
 # more bonding tweaks
 #
@@ -87,8 +90,8 @@ class Command(rocks.commands.add.host.command):
 	The IP address to assign to the bonded interface.
 	</param>
 
-	<param type='string' name='subnet'>
-	The subnet address of the interface. This is a named subnet
+	<param type='string' name='network'>
+	The network to be assigned to this interface. This is a named network
 	(e.g., 'private') and must be listable by the command
 	'rocks list network'.
 	</param>
@@ -100,7 +103,7 @@ class Command(rocks.commands.add.host.command):
 	</param>
 
 	<example cmd='add host bonded compute-0-0 channel=bond0
-		interfaces=eth0,eth1 ip=10.1.255.254 subnet=private'>
+		interfaces=eth0,eth1 ip=10.1.255.254 network=private'>
 	Adds a bonded interface named "bond0" to compute-0-0 by bonding
 	the physical interfaces eth0 and eth1, it assigns the IP address
 	10.1.255.254 to bond0 and it associates this interface to the private
@@ -109,11 +112,11 @@ class Command(rocks.commands.add.host.command):
 	"""
 
 	def run(self, params, args):
-		(channel, interfaces, ip, subnet, name) = self.fillParams([
+		(channel, interfaces, ip, network, name) = self.fillParams([
 			('channel', ),
 			('interfaces', ),
 			('ip', ),
-			('subnet', ),
+			('network', ),
 			('name', ) ])
 		
 		hosts = self.getHostnames(args)
@@ -137,18 +140,17 @@ class Command(rocks.commands.add.host.command):
 			self.abort('interfaces required')
 		if not ip:
 			self.abort('ip required')
-		if not subnet:
-			self.abort('subnet required')
-
+		if not network:
+			self.abort('network required')
 		
 		#
-		# check if the subnet exists
+		# check if the network exists
 		#
 		rows = self.db.execute("""select name from subnets where
-			name = '%s'""" % (subnet))
+			name = '%s'""" % (network))
 
 		if rows == 0:
-			self.abort('subnet "%s" not in the database. Run "rocks list network" to get a list of valid subnets.')
+			self.abort('network "%s" not in the database. Run "rocks list network" to get a list of valid networks.')
 
 		ifaces = []
 		if ',' in interfaces:
@@ -183,7 +185,7 @@ class Command(rocks.commands.add.host.command):
 		#
 		self.command('add.host.interface',
 			(host, channel, 'ip=%s' % ip, 'module=bonding',
-			'name=%s' % name, 'subnet=%s' % subnet))
+			'name=%s' % name, 'subnet=%s' % network))
 
 		#
 		# clear out all networking info from the physical interfaces and
