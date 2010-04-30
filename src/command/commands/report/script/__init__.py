@@ -1,5 +1,5 @@
 #
-# $Id: __init__.py,v 1.6 2009/05/01 19:07:02 mjk Exp $
+# $Id: __init__.py,v 1.7 2010/04/30 22:03:25 bruno Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.7  2010/04/30 22:03:25  bruno
+# 'rocks report script' can now process attributes
+#
 # Revision 1.6  2009/05/01 19:07:02  mjk
 # chimi con queso
 #
@@ -129,9 +132,10 @@ class Command(rocks.commands.report.command):
 
 
 	def run(self, params, args):
-		self.os, self.arch = self.fillParams([
+		self.os, self.arch, attributes = self.fillParams([
 			('os', self.os),
-			('arch', self.arch)
+			('arch', self.arch),
+			('attrs', )
 			])
 
 		c_gen = getattr(rocks.gen,'Generator_%s' % self.os)
@@ -146,6 +150,14 @@ class Command(rocks.commands.report.command):
 		self.beginOutput()
 
 		xml = '<?xml version="1.0" standalone="no"?>\n'
+
+		if attributes:
+			attrs = eval(attributes)
+			xml += '<!DOCTYPE rocks-graph [\n'
+			for (k, v) in attrs.items():
+				xml += '\t<!ENTITY %s "%s">\n' % (k, v)
+			xml += ']>\n'
+
 		xml += '<%s>\n' % starter_tag
 		if self.os == 'sunos':
 			xml += '<post chroot="no">\n'
