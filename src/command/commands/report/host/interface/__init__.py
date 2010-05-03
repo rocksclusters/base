@@ -1,4 +1,4 @@
-#$Id: __init__.py,v 1.14 2010/04/20 17:22:36 bruno Exp $
+#$Id: __init__.py,v 1.15 2010/05/03 19:30:25 anoop Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.15  2010/05/03 19:30:25  anoop
+# IPMI support for solaris
+#
 # Revision 1.14  2010/04/20 17:22:36  bruno
 # initial support for channel bonding
 #
@@ -271,9 +274,12 @@ class Command(rocks.commands.HostArgumentProcessor,
 		self.endOutput(padChar = '')
 
 	def run_sunos(self, host):
+		# Ignore IPMI devices and get all the other configured
+		# interfaces
 		self.db.execute("select networks.ip, networks.device " +\
 				"from networks, nodes where "	+\
 				"nodes.name='%s' " % (host)	+\
+				"and networks.device!='ipmi' "	+\
 				"and networks.node=nodes.id")
 
 		for row in self.db.fetchall():
@@ -281,6 +287,32 @@ class Command(rocks.commands.HostArgumentProcessor,
 			if ip is not None:
 				self.write_host_file_sunos(ip, device)
 		
+		# Get all the IPMI interfaces
+		self.db.execute("select networks.ip, networks.module, " +\
+				"subnets.netmask from networks, nodes, "+\
+				"subnets where nodes.name='%s' " %(host)+\
+				"and networks.device='ipmi' "		+\
+				"and networks.subnet=subnets.id "		+\
+				"and networks.node=nodes.id")
+
+		for row in self.db.fetchall():
+			(ip, channel, netmask) = row
+			self.addOutput(host, 'ipmitool lan set %s ipsrc static'
+				% (channel))
+			self.addOutput(host, 'ipmitool lan set %s ipaddr %s'
+				% (channel, ip))
+			self.addOutput(host, 'ipmitool lan set %s netmask %s'
+				% (channel, netmask))
+			self.addOutput(host, 'ipmitool lan set %s arp respond on'
+				% (channel))
+			self.addOutput(host, 'ipmitool user set password 1 admin')
+			self.addOutput(host, 'ipmitool lan set %s access on'
+				% (channel))
+			self.addOutput(host, 'ipmitool lan set %s user'
+				% (channel))
+			self.addOutput(host, 'ipmitool lan set %s auth ADMIN PASSWORD'
+				% (channel))
+	
 	def write_host_file_sunos(self, ip, device):
 		s = '<file name="/etc/hostname.%s">\n' % device
 		s += "%s\n" % ip
