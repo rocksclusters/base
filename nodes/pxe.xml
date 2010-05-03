@@ -14,6 +14,9 @@ Provides pre-execution environment (PXE) support for frontend machines.
 
 <changelog>
 $Log: pxe.xml,v $
+Revision 1.25  2010/05/03 22:47:56  mjk
+- added ksdevice=bootif to all the pxe boot targets
+
 Revision 1.24  2009/05/01 19:06:48  mjk
 chimi con queso
 
@@ -232,7 +235,7 @@ cp /usr/lib/syslinux/pxelinux.0 /tftpboot/pxelinux/
 /opt/rocks/bin/rocks add bootaction action="install" \
 	kernel="vmlinuz-&version;-&arch;" \
 	ramdisk="initrd.img-&version;-&arch;" \
-	args="ks ramdisk_size=150000 lang= devfs=nomount pxe kssendmac selinux=0 noipv6"
+	args="ks ramdisk_size=150000 lang= devfs=nomount pxe kssendmac selinux=0 noipv6 ksdevice=bootif"
 
 /opt/rocks/bin/rocks add bootaction action="os" \
 	kernel="localboot 0"
@@ -243,12 +246,12 @@ cp /usr/lib/syslinux/pxelinux.0 /tftpboot/pxelinux/
 /opt/rocks/bin/rocks add bootaction action="install headless" \
 	kernel="vmlinuz-&version;-&arch;" \
 	ramdisk="initrd.img-&version;-&arch;" \
-	args="ks ramdisk_size=150000 lang= devfs=nomount pxe kssendmac selinux=0 noipv6 headless vnc"
+	args="ks ramdisk_size=150000 lang= devfs=nomount pxe kssendmac selinux=0 noipv6 headless vnc ksdevice=bootif"
 
 /opt/rocks/bin/rocks add bootaction action="rescue" \
 	kernel="vmlinuz-&version;-&arch;" \
 	ramdisk="initrd.img-&version;-&arch;" \
-	args="ks ramdisk_size=150000 lang= devfs=nomount pxe kssendmac selinux=0 noipv6 rescue"
+	args="ks ramdisk_size=150000 lang= devfs=nomount pxe kssendmac selinux=0 noipv6 rescue ksdevice=bootif"
 
 /opt/rocks/bin/rocks add bootaction action="pxeflash" \
 	kernel="kernel memdisk bigraw" \
