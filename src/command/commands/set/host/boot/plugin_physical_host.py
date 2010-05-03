@@ -1,4 +1,4 @@
-# $Id: plugin_physical_host.py,v 1.5 2009/05/01 19:07:03 mjk Exp $
+# $Id: plugin_physical_host.py,v 1.6 2010/05/03 22:50:15 mjk Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: plugin_physical_host.py,v $
+# Revision 1.6  2010/05/03 22:50:15  mjk
+# - add the ipappend 2 line if ksdevice=bootif arg is in the db
+# - add static ip information of ksdevice= is used
+#
 # Revision 1.5  2009/05/01 19:07:03  mjk
 # chimi con queso
 #
@@ -136,7 +140,7 @@ class Plugin(rocks.commands.Plugin):
 			kernel, ramdisk, args = self.db.fetchone()
 
 			filename = '/tftpboot/pxelinux/pxelinux.cfg/default'
-			file = open(filename, 'w')	
+			file = open(filename, 'w')
 			file.write('default rocks\n')
 			file.write('prompt 0\n')
 			file.write('label rocks\n')
@@ -206,6 +210,24 @@ class Plugin(rocks.commands.Plugin):
 			self.abort('bootaction "%s" for host "%s" is invalid' %
 				(action, node))
 
+		# If the ksdevice= is set fill in the ip information
+		# a well.  This will avoid the DHCP request inside
+		# anaconda.
+
+		if args and args.find('ksdevice=') != -1:
+			self.db.execute("""select net.ip
+				from networks net, subnets s, nodes n
+				where n.name='%s' and net.node=n.id and
+				s.id=net.subnet and s.name='private'""" % node)
+			ip, = self.db.fetchone()
+			args += ' ip=%s ' % ip
+			attrs = self.db.getHostAttrs(node)
+			args += 'gateway=%s netmask=%s dns=%s nextserver=%s'%(\
+				attrs['Kickstart_PrivateGateway'],
+				attrs['Kickstart_PrivateNetmask'],
+				attrs['Kickstart_PrivateDNSServers'],
+				attrs['Kickstart_PrivateKickstartHost'])
+
 		if filename != None:
 			file = open(filename, 'w')	
 			file.write('default rocks\n')
@@ -226,6 +248,12 @@ class Plugin(rocks.commands.Plugin):
 
 			if args and len(args) > 0:
 				file.write('\tappend %s\n' % (args))
+
+			# If using ksdevice=bootif we need to
+			# pass the PXE information to loader.
+			
+			if args and args.find('bootif') != -1:
+				file.write('\tipappend 2\n')
 
 			file.close()
 
