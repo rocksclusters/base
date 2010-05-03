@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.7 2009/07/31 01:05:20 anoop Exp $
+# $Id: __init__.py,v 1.8 2010/05/03 19:34:10 anoop Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.8  2010/05/03 19:34:10  anoop
+# Remove ipmi networks from host network information for solaris
+#
 # Revision 1.7  2009/07/31 01:05:20  anoop
 # Bug fix. We should not get the OS of a node from the nodes table. It should
 # always key off of the node_attributes table
@@ -148,11 +151,13 @@ class Command(rocks.commands.HostArgumentProcessor,
 		self.addOutput(host, '</file>\n')
 
 		# Get all the subnets that this node is associated with
+		# except the ipmi network
 		self.db.execute("""select distinctrow 
 			subnets.subnet, subnets.netmask from
 			subnets, networks, nodes
 			where nodes.name='%s' and 
 			networks.node=nodes.id and
+			networks.device!='ipmi' and
 			subnets.id=networks.subnet""" % host)
 
 		self.addOutput(host, '<file name="/etc/netmasks">')
