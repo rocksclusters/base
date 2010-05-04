@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.1 2010/04/30 22:07:16 bruno Exp $
+# $Id: __init__.py,v 1.2 2010/05/04 22:04:14 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.2  2010/05/04 22:04:14  bruno
+# more firewall commands
+#
 # Revision 1.1  2010/04/30 22:07:16  bruno
 # first pass at the firewall commands. we can do global and host level
 # rules, that is, we can add, remove, open (calls add), close (also calls add),
@@ -64,43 +67,7 @@
 import string
 import rocks.commands
 
-class Command(rocks.commands.HostArgumentProcessor,
-	rocks.commands.add.command):
-	"""
-	Add a firewall rule for the all hosts in the cluster.
-
-	<arg type='string' name='service'>
-	The service identifier, port number or port range. For example
-	"www", 8080 or 0:1024.
-	</arg>
-
-	<param type='string' name='protocol'>
-	The protocol associated with the service. For example, "tcp" or "udp".
-	</param>
-	
-        <param type='string' name='network'>
-        The network this service should be opened on. This is a named network
-        (e.g., 'private') and must be listable by the command
-        'rocks list network'.
-	</param>
-
-        <param type='string' name='output-network' optional='1'>
-        The output network this service should be added to. This is a named
-	network (e.g., 'private') and must be listable by the command
-        'rocks list network'.
-	</param>
-
-        <param type='string' name='chain'>
-	The iptables 'chain' this service/network should be applied to (e.g.,
-	INPUT, OUTPUT, FORWARD).
-	</param>
-
-        <param type='string' name='action'>
-	The iptables 'action' this service/network should be applied to (e.g.,
-	ACCEPT, REJECT, DROP).
-	</param>
-	"""
-
+class command(rocks.commands.HostArgumentProcessor, rocks.commands.add.command):
 	def serviceCheck(self, service):
 		#
 		# a service can look like:
@@ -144,19 +111,9 @@ class Command(rocks.commands.HostArgumentProcessor,
 		return
 
 
-	def run(self, params, args):
-		(args, service) = self.fillPositionalArgs(('service'))
-		(network, outnetwork, chain, action, protocol, flags,
-			comment) = self.fillParams([
-				('network', ),
-				('output-network', ),
-				('chain', ),
-				('action', ),
-				('protocol', ),
-				('flags', ),
-				('comment', )
-			])
-		
+	def checkArgs(self, service, network, outnetwork, chain, action,
+		protocol, flags, comment):
+
 		if not service:
 			self.abort('service required')
 		if not network and not outnetwork:
@@ -171,21 +128,21 @@ class Command(rocks.commands.HostArgumentProcessor,
 		#
 		# check if the network exists
 		#
-		inid = 'NULL'
 		if network == 'all':
-			inid = 0
+			network = 0
 		elif network:
 			rows = self.db.execute("""select id from subnets where
 				name = '%s'""" % (network))
 
 			if rows == 0:
-				self.abort('network "%s" not in the database. Run "rocks list network" to get a list of valid networks.')
+				self.abort('network "%s" not in the database. Run "rocks list network" to get a list of valid networks.' % network)
 
-			inid, = self.db.fetchone()
+			network, = self.db.fetchone()
+		else:
+			network = 'NULL'
 
-		outid = 'NULL'
 		if outnetwork == 'all':
-			outid = 0
+			outnetwork = 0
 		elif outnetwork:
 			rows = self.db.execute("""select id from subnets where
 				name = '%s'""" % (outnetwork))
@@ -193,7 +150,9 @@ class Command(rocks.commands.HostArgumentProcessor,
 			if rows == 0:
 				self.abort('output-network "%s" not in the database. Run "rocks list network" to get a list of valid networks.')
 
-			outid, = self.db.fetchone()
+			outnetwork, = self.db.fetchone()
+		else:
+			outnetwork = 'NULL'
 
 		self.serviceCheck(service)
 
@@ -215,7 +174,14 @@ class Command(rocks.commands.HostArgumentProcessor,
 		else:
 			comment = 'NULL'
 
-		rows = self.db.execute("""select * from global_firewall where
+		return (service, network, outnetwork, chain, action,
+			protocol, flags, comment)
+
+
+	def checkRule(self, table, extrawhere, service, network, outnetwork,
+		chain, action, protocol, flags, comment):
+
+		rows = self.db.execute("""select * from %s where %s
 			service = '%s' and action = '%s' and chain = '%s' and
 			if ('%s' = 'NULL', insubnet is NULL,
 				insubnet = %s) and
@@ -224,20 +190,83 @@ class Command(rocks.commands.HostArgumentProcessor,
 			if ('%s' = 'NULL', protocol is NULL,
 				protocol = %s) and
 			if ('%s' = 'NULL', flags is NULL,
-				flags = %s) """ % (service, action, chain,
-			inid, inid, outid, outid, protocol, protocol, flags,
-			flags))
+				flags = %s) """ % (table, extrawhere, service,
+			action, chain, network, network, outnetwork,
+			outnetwork, protocol, protocol, flags, flags))
 
 		if rows:
 			self.abort('firewall rule already exists')
-			
+
+
+	def insertRule(self, table, extracol, extraval, service, network,
+		outnetwork, chain, action, protocol, flags, comment):
+
 		#
 		# all input has been verified. add the row
 		#
-		self.db.execute("""insert into global_firewall
-			(insubnet, outsubnet, service, protocol,
-			action, chain, flags, comment) values ( %s, %s,
+		self.db.execute("""insert into %s
+			(%s insubnet, outsubnet, service, protocol,
+			action, chain, flags, comment) values (%s %s, %s,
 			'%s', %s, '%s', '%s', %s, %s)""" %
-			(inid, outid, service, protocol, action,
-			chain, flags, comment))
+			(table, extracol, extraval, network, outnetwork,
+			service, protocol, action, chain, flags, comment))
 
+
+class Command(command):
+	"""
+	Add a firewall rule for the all hosts in the cluster.
+
+	<arg type='string' name='service'>
+	The service identifier, port number or port range. For example
+	"www", 8080 or 0:1024.
+	</arg>
+
+	<param type='string' name='protocol'>
+	The protocol associated with the service. For example, "tcp" or "udp".
+	</param>
+	
+        <param type='string' name='network'>
+        The network this service should be opened on. This is a named network
+        (e.g., 'private') and must be listable by the command
+        'rocks list network'.
+	</param>
+
+        <param type='string' name='output-network' optional='1'>
+        The output network this service should be added to. This is a named
+	network (e.g., 'private') and must be listable by the command
+        'rocks list network'.
+	</param>
+
+        <param type='string' name='chain'>
+	The iptables 'chain' this service/network should be applied to (e.g.,
+	INPUT, OUTPUT, FORWARD).
+	</param>
+
+        <param type='string' name='action'>
+	The iptables 'action' this service/network should be applied to (e.g.,
+	ACCEPT, REJECT, DROP).
+	</param>
+	"""
+	def run(self, params, args):
+		(args, service) = self.fillPositionalArgs(('service'))
+		(network, outnetwork, chain, action, protocol, flags,
+			comment) = self.fillParams([
+				('network', ),
+				('output-network', ),
+				('chain', ),
+				('action', ),
+				('protocol', ),
+				('flags', ),
+				('comment', )
+			])
+		
+		(service, network, outnetwork, chain, action, protocol, flags,
+			comment) = self.checkArgs(service, network,
+			outnetwork, chain, action, protocol, flags, comment)
+
+		self.checkRule('global_firewall', '', service, network,
+			outnetwork, chain, action, protocol, flags, comment)
+
+		self.insertRule('global_firewall', '', '', service, network,
+			outnetwork, chain, action, protocol, flags, comment)
+			

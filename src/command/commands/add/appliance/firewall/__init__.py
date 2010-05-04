@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.2 2010/05/04 22:04:14 bruno Exp $
+# $Id: __init__.py,v 1.1 2010/05/04 22:04:14 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,13 +54,8 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
-# Revision 1.2  2010/05/04 22:04:14  bruno
+# Revision 1.1  2010/05/04 22:04:14  bruno
 # more firewall commands
-#
-# Revision 1.1  2010/04/30 22:07:16  bruno
-# first pass at the firewall commands. we can do global and host level
-# rules, that is, we can add, remove, open (calls add), close (also calls add),
-# list and dump the global rules and the host-specific rules.
 #
 #
 
@@ -68,12 +63,14 @@ import rocks.commands
 import rocks.commands.add
 import rocks.commands.add.firewall
 
-class Command(rocks.commands.add.firewall.command):
-	"""
-	Add a firewall rule for the specified hosts.
+class Command(rocks.commands.add.firewall.command,
+	rocks.commands.add.appliance.command):
 
-	<arg type='string' name='host'>
-	Host name of machine
+	"""
+	Add a firewall rule for an appliance type.
+
+	<arg type='string' name='appliance'>
+	Appliance type.
 	</arg>
 
 	<arg type='string' name='service'>
@@ -122,27 +119,30 @@ class Command(rocks.commands.add.firewall.command):
 			])
 
 		if len(args) == 0:
-			self.abort('must supply at least one host')
+			self.abort('must supply at least one appliance type')
 
 		(service, network, outnetwork, chain, action, protocol, flags,
 			comment) = self.checkArgs(service, network,
 			outnetwork, chain, action, protocol, flags, comment)
 
-		hosts = self.getHostnames(args)
+		apps = self.getApplianceNames(args)
 
-		for host in hosts:
-			sql = """(select id from nodes where
-				name = '%s') and""" % host
+		for app in apps:
+			sql = """(select id from appliances where
+				name = '%s') and""" % app
 
-			self.checkRule('node_firewall', sql, service, network,
-			outnetwork, chain, action, protocol, flags, comment)
+			self.checkRule('appliance_firewall', sql, service,
+				network, outnetwork, chain, action, protocol,
+				flags, comment)
 
 		#
 		# all the rules are valid, now let's add them
 		#
-		for host in hosts:
-			sql = "(select id from nodes where name='%s'), " % host
+		for app in apps:
+			sql = """(select id from appliances where
+				name='%s'), """ % app
 
-			self.insertRule('node_firewall', 'node, ', sql, service,
-				network, outnetwork, chain, action, protocol,
-				flags, comment)
+			self.insertRule('appliance_firewall', 'appliance, ',
+				sql, service, network, outnetwork, chain,
+				action, protocol, flags, comment)
+

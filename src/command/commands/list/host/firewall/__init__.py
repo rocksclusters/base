@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.1 2010/04/30 22:07:16 bruno Exp $
+# $Id: __init__.py,v 1.2 2010/05/04 22:04:15 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.2  2010/05/04 22:04:15  bruno
+# more firewall commands
+#
 # Revision 1.1  2010/04/30 22:07:16  bruno
 # first pass at the firewall commands. we can do global and host level
 # rules, that is, we can add, remove, open (calls add), close (also calls add),
@@ -105,12 +108,36 @@ class Command(rocks.commands.NetworkArgumentProcessor,
 				self.formatRule(rules, i, o, s, p, c, a, f,
 					cmt, 'G')
 
+			# os
+			self.db.execute("""select insubnet, outsubnet,
+				service, protocol, chain, action,
+				flags, comment from os_firewall where os =
+				(select os from nodes where name = '%s')"""
+				% (host))
+
+			for i, o, s, p, c, a, f, cmt in self.db.fetchall():
+				self.formatRule(rules, i, o, s, p, c, a, f,
+					cmt, 'O')
+
+			# appliance
+			self.db.execute("""select insubnet, outsubnet,
+				service, protocol, chain, action,
+				flags, comment from appliance_firewall where
+				appliance = (select a.id from appliances a,
+				nodes n, memberships m where n.name = '%s' and
+				n.membership = m.id and m.appliance = a.id)"""
+				% (host))
+
+			for i, o, s, p, c, a, f, cmt in self.db.fetchall():
+				self.formatRule(rules, i, o, s, p, c, a, f,
+					cmt, 'A')
+
 			# host
-			self.db.execute("""select nf.insubnet, nf.outsubnet,
-				nf.service, nf.protocol, nf.chain, nf.action,
-				nf.flags, nf.comment from
-				node_firewall nf, nodes n where
-				n.name = '%s' and nf.node = n.id""" % (host))
+			self.db.execute("""select insubnet, outsubnet,
+				service, protocol, chain, action,
+				flags, comment from node_firewall where node =
+				(select id from nodes where name = '%s')"""
+				% (host))
 
 			for i, o, s, p, c, a, f, cmt in self.db.fetchall():
 				self.formatRule(rules, i, o, s, p, c, a, f,

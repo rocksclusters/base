@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.1 2010/04/30 22:07:17 bruno Exp $
+# $Id: __init__.py,v 1.2 2010/05/04 22:04:15 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.2  2010/05/04 22:04:15  bruno
+# more firewall commands
+#
 # Revision 1.1  2010/04/30 22:07:17  bruno
 # first pass at the firewall commands. we can do global and host level
 # rules, that is, we can add, remove, open (calls add), close (also calls add),
@@ -217,11 +220,6 @@ class Command(rocks.commands.HostArgumentProcessor,
 		self.makeRules(host, rules, comments)
 
 		# host
-		print ("""select nf.insubnet, nf.outsubnet, nf.service,
-			nf.protocol, nf.action, nf.chain, nf.flags, nf.comment
-			from node_firewall nf, nodes n where
-			nf.action = '%s' and nf.node = n.id and
-			n.name = '%s' order by chain""" % (action, host))
 		self.db.execute("""select nf.insubnet, nf.outsubnet, nf.service,
 			nf.protocol, nf.action, nf.chain, nf.flags, nf.comment
 			from node_firewall nf, nodes n where
