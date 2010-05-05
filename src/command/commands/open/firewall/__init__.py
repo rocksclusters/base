@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.1 2010/04/30 22:07:16 bruno Exp $
+# $Id: __init__.py,v 1.2 2010/05/05 20:24:23 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.2  2010/05/05 20:24:23  bruno
+# tweaks
+#
 # Revision 1.1  2010/04/30 22:07:16  bruno
 # first pass at the firewall commands. we can do global and host level
 # rules, that is, we can add, remove, open (calls add), close (also calls add),
@@ -100,8 +103,6 @@ class Command(rocks.commands.HostArgumentProcessor,
 		if service not in [ 'all', 'nat' ] and not protocol:
 			self.abort('protocol required')
 
-		hosts = self.getHostnames(args)
-		
 		cmd = ()
 		if service:
 			cmd += ('service=%s' % service, )
