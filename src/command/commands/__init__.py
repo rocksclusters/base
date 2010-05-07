@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.80 2010/04/30 22:02:46 bruno Exp $
+# $Id: __init__.py,v 1.81 2010/05/07 23:13:31 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.81  2010/05/07 23:13:31  bruno
+# clean up the help info for the firewall commands
+#
 # Revision 1.80  2010/04/30 22:02:46  bruno
 # added getNetworkName() method. it is used by the firewall commands
 #
@@ -404,7 +407,7 @@ class OSArgumentProcessor:
 
 	def getOSNames(self, args=None):
 		"""Returns a list of OS names.  For each arg in the ARGS list
-		normalize the name to one of either 'linux' or 'solaris' as
+		normalize the name to one of either 'linux' or 'sunos' as
 		they are the only supported OSes.  If the ARGS list is empty
 		return a list of all supported OS names.
 		"""

@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.1 2010/05/05 20:25:17 bruno Exp $
+# $Id: __init__.py,v 1.2 2010/05/07 23:13:32 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.2  2010/05/07 23:13:32  bruno
+# clean up the help info for the firewall commands
+#
 # Revision 1.1  2010/05/05 20:25:17  bruno
 # add the remaining 'open' firewall commands
 #
@@ -66,10 +69,14 @@ class Command(rocks.commands.ApplianceArgumentProcessor,
 	"""
 	Open a service for an appliance type in the cluster.
 
-	<arg type='string' name='service'>
+	<arg type='string' name='appliance'>
+	The appliance type (e.g., "compute").
+	</arg>
+
+	<param type='string' name='param'>
 	The service identifier, port number or port range. For example
 	"www", 8080 or 0:1024.
-	</arg>
+	</param>
 
 	<param type='string' name='protocol'>
 	The protocol associated with the service. For example, "tcp" or "udp".
@@ -83,8 +90,8 @@ class Command(rocks.commands.ApplianceArgumentProcessor,
 	"""
 
 	def run(self, params, args):
-		(args, service) = self.fillPositionalArgs(('service'))
-		(network, protocol) = self.fillParams([
+		(service, network, protocol) = self.fillParams([
+			('service', ),
 			('network', ),
 			('protocol', )
 			])

@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.1 2010/04/30 22:07:16 bruno Exp $
+# $Id: __init__.py,v 1.2 2010/05/07 23:13:32 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.2  2010/05/07 23:13:32  bruno
+# clean up the help info for the firewall commands
+#
 # Revision 1.1  2010/04/30 22:07:16  bruno
 # first pass at the firewall commands. we can do global and host level
 # rules, that is, we can add, remove, open (calls add), close (also calls add),
@@ -74,25 +77,25 @@ class Command(rocks.commands.HostArgumentProcessor,
 	Host name of machine
 	</arg>
 
-	<arg type='string' name='service'>
+	<param type='string' name='service'>
 	The service identifier, port number or port range. For example
 	"www", 8080 or 0:1024.
-	</arg>
+	</param>
 
 	<param type='string' name='protocol'>
 	The protocol associated with the service. For example, "tcp" or "udp".
 	</param>
 	
         <param type='string' name='network'>
-        The network this service should be closed on. This is a named network
-        (e.g., 'private') and must be listable by the command
+        The network this rule should be applied to. This is a named network
+        (e.g., 'private') and must be one listed by the command
         'rocks list network'.
 	</param>
 	"""
 
 	def run(self, params, args):
-		(args, service) = self.fillPositionalArgs(('service'))
-		(network, protocol) = self.fillParams([
+		(service, network, protocol) = self.fillParams([
+			('service', ),
 			('network', ),
 			('protocol', )
 			])

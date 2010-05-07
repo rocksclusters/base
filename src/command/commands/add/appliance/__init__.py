@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.19 2009/05/01 19:06:51 mjk Exp $
+# $Id: __init__.py,v 1.20 2010/05/07 23:13:32 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.20  2010/05/07 23:13:32  bruno
+# clean up the help info for the firewall commands
+#
 # Revision 1.19  2009/05/01 19:06:51  mjk
 # chimi con queso
 #
@@ -179,7 +182,7 @@ class Command(command):
 
 	<param type='string' name='os'>
 	The OS that the appliance type can support. Some appliances can support
-	both linux and solaris, where as others can support only one of the two.
+	both linux and sunos, where as others can support only one of the two.
 	Acceptable values are 'linux' or 'sunos'. Defaults to 'linux'
 	</param>
 

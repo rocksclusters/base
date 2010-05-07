@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.2 2010/05/05 20:24:23 bruno Exp $
+# $Id: __init__.py,v 1.3 2010/05/07 23:13:32 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.3  2010/05/07 23:13:32  bruno
+# clean up the help info for the firewall commands
+#
 # Revision 1.2  2010/05/05 20:24:23  bruno
 # tweaks
 #
@@ -73,10 +76,10 @@ class Command(rocks.commands.HostArgumentProcessor,
 	up the firewall for all the hosts to allow the packets for a
 	service to flow into the hosts.
 
-	<arg type='string' name='service'>
+	<param type='string' name='service'>
 	The service identifier, port number or port range. For example
 	"www", 8080 or 0:1024.
-	</arg>
+	</param>
 
 	<param type='string' name='protocol'>
 	The protocol associated with the service. For example, "tcp" or "udp".
@@ -90,8 +93,8 @@ class Command(rocks.commands.HostArgumentProcessor,
 	"""
 
 	def run(self, params, args):
-		(args, service) = self.fillPositionalArgs(('service'))
-		(network, protocol) = self.fillParams([
+		(service, network, protocol) = self.fillParams([
+			('service', ),
 			('network', ),
 			('protocol', )
 			])

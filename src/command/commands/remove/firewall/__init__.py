@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.1 2010/04/30 22:07:16 bruno Exp $
+# $Id: __init__.py,v 1.2 2010/05/07 23:13:33 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.2  2010/05/07 23:13:33  bruno
+# clean up the help info for the firewall commands
+#
 # Revision 1.1  2010/04/30 22:07:16  bruno
 # first pass at the firewall commands. we can do global and host level
 # rules, that is, we can add, remove, open (calls add), close (also calls add),
@@ -67,13 +70,13 @@ import rocks.commands
 
 class Command(rocks.commands.remove.command):
 	"""
-	Remove a global firewall definition. To remove a service,
+	Remove a global firewall rule. To remove a rule,
 	one must supply the service, protocol, network, chain and action. See
-	"rocks list firewall service" for all the current defined services.
+	"rocks list firewall" for the current global rules.
 
-	<arg type='string' name='service'>
+	<param type='string' name='service'>
 	The service identifier, for example "www".
-	</arg>
+	</param>
 
         <param type='string' name='protocol'>
         The protocol associated with the service to be removed (e.g, "tcp"
@@ -81,31 +84,30 @@ class Command(rocks.commands.remove.command):
 	</param>
 
         <param type='string' name='network'>
-        The network associated with the service to be removed. This is a
-	named network (e.g., 'private') and must be listable by the command
+        The network associated with the rule. This is a
+	named network (e.g., 'private') and must be one listed by the command
         'rocks list network'.
 	</param>
 
         <param type='string' name='output-network' optional='1'>
-        The output network associated with the service to be removed. This is a
-	named network (e.g., 'private') and must be listable by the command
+        The output network associated with the rule. This is a
+	named network (e.g., 'private') and must be one listed by the command
         'rocks list network'.
 	</param>
 
         <param type='string' name='chain'>
-	The chain associated with the service and network (e.g., "INPUT").
+	The chain associated with the rule (e.g., "INPUT").
 	</param>
 
         <param type='string' name='action'>
-	The action associated with the service, network and chain
-	(e.g., "ACCEPT").
+	The action associated with the rule (e.g., "ACCEPT").
 	</param>
 	"""
 
 	def run(self, params, args):
-		(args, service) = self.fillPositionalArgs(('service'))
-		(network, outnetwork, chain, action, protocol) = \
+		(service, network, outnetwork, chain, action, protocol) = \
 			self.fillParams([
+				('service', ),
 				('network', ),
 				('output-network', ),
 				('chain', ),

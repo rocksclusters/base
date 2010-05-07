@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.1 2010/05/05 18:15:21 bruno Exp $
+# $Id: __init__.py,v 1.2 2010/05/07 23:13:32 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.2  2010/05/07 23:13:32  bruno
+# clean up the help info for the firewall commands
+#
 # Revision 1.1  2010/05/05 18:15:21  bruno
 # all firewall list commands are done
 #
@@ -64,6 +67,12 @@ import rocks.commands
 class Command(rocks.commands.NetworkArgumentProcessor,
 	rocks.commands.list.appliance.command):
 	"""
+	List the firewall rules for a given appliance type.
+
+        <arg optional='1' type='string' name='appliance' repeat='1'>
+        Zero, one or more appliance names. If no appliance names are supplied, the
+	firewall rules for all the appliances are listed.
+        </arg>
 	"""
 
 	def run(self, params, args):

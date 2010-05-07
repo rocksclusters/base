@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.1 2010/05/04 22:04:14 bruno Exp $
+# $Id: __init__.py,v 1.2 2010/05/07 23:13:32 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.2  2010/05/07 23:13:32  bruno
+# clean up the help info for the firewall commands
+#
 # Revision 1.1  2010/05/04 22:04:14  bruno
 # more firewall commands
 #
@@ -70,45 +73,43 @@ class Command(rocks.commands.add.firewall.command,
 	Add a firewall rule for an appliance type.
 
 	<arg type='string' name='appliance'>
-	Appliance type.
+	Appliance type (e.g., "compute").
 	</arg>
 
-	<arg type='string' name='service'>
+	<param type='string' name='service'>
 	The service identifier, port number or port range. For example
 	"www", 8080 or 0:1024.
-	</arg>
+	</param>
 
 	<param type='string' name='protocol'>
 	The protocol associated with the service. For example, "tcp" or "udp".
 	</param>
 	
         <param type='string' name='network'>
-        The network this service should be opened on. This is a named network
-        (e.g., 'private') and must be listable by the command
+        The network for this rule. This is a named network
+        (e.g., 'private') and must be one listed by the command
         'rocks list network'.
 	</param>
 
         <param type='string' name='output-network' optional='1'>
-        The output network this service should be added to. This is a named
-	network (e.g., 'private') and must be listable by the command
+        The output network for this rule. This is a named
+	network (e.g., 'private') and must be one listed by the command
         'rocks list network'.
 	</param>
 
         <param type='string' name='chain'>
-	The iptables 'chain' this service/network should be applied to (e.g.,
-	INPUT, OUTPUT, FORWARD).
+	The iptables 'chain' for this this rule (e.g., INPUT, OUTPUT, FORWARD).
 	</param>
 
         <param type='string' name='action'>
-	The iptables 'action' this service/network should be applied to (e.g.,
-	ACCEPT, REJECT, DROP).
+	The iptables 'action' this rule (e.g., ACCEPT, REJECT, DROP).
 	</param>
 	"""
 
 	def run(self, params, args):
-		(args, service) = self.fillPositionalArgs(('service'))
-		(network, outnetwork, chain, action, protocol, flags,
+		(service, network, outnetwork, chain, action, protocol, flags,
 			comment) = self.fillParams([
+				('service', ),
 				('network', ),
 				('output-network', ),
 				('chain', ),

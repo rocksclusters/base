@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.2 2009/05/01 19:06:59 mjk Exp $
+# $Id: __init__.py,v 1.3 2010/05/07 23:13:32 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.3  2010/05/07 23:13:32  bruno
+# clean up the help info for the firewall commands
+#
 # Revision 1.2  2009/05/01 19:06:59  mjk
 # chimi con queso
 #
@@ -71,7 +74,7 @@ class Command(rocks.commands.list.os.command):
 	Lists the set of attributes for OSes.
 
 	<arg optional='1' type='string' name='os'>
-	Name of OS (e.g. "linux", "solaris") 
+	Name of OS (e.g. "linux", "sunos") 
 	</arg>
 	
 	<example cmd='list os attr linux'>

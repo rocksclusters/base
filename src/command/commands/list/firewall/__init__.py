@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.2 2010/05/04 22:04:15 bruno Exp $
+# $Id: __init__.py,v 1.3 2010/05/07 23:13:32 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.3  2010/05/07 23:13:32  bruno
+# clean up the help info for the firewall commands
+#
 # Revision 1.2  2010/05/04 22:04:15  bruno
 # more firewall commands
 #
@@ -72,6 +75,7 @@ class command(rocks.commands.NetworkArgumentProcessor,
 
 class Command(command):
 	"""
+	List the global firewall rules.
 	"""
 
 	def run(self, params, args):

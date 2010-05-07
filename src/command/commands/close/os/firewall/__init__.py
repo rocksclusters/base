@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.1 2010/05/06 23:04:57 bruno Exp $
+# $Id: __init__.py,v 1.2 2010/05/07 23:13:32 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.2  2010/05/07 23:13:32  bruno
+# clean up the help info for the firewall commands
+#
 # Revision 1.1  2010/05/06 23:04:57  bruno
 # round out the 'close' commands
 #
@@ -66,25 +69,29 @@ class Command(rocks.commands.OSArgumentProcessor,
 	"""
 	Close a service for an OS type in the cluster.
 
-	<arg type='string' name='service'>
+	<arg type='string' name='os'>
+	Name of OS (e.g., "linux", "sunos").
+	</arg>
+
+	<param type='string' name='service'>
 	The service identifier, port number or port range. For example
 	"www", 8080 or 0:1024.
-	</arg>
+	</param>
 
 	<param type='string' name='protocol'>
 	The protocol associated with the service. For example, "tcp" or "udp".
 	</param>
 	
         <param type='string' name='network'>
-        The network this service should be closed. This is a named network
-        (e.g., 'private') and must be listable by the command
+        The network this rule should be applied to. This is a named network
+        (e.g., 'private') and must be one listed by the command
         'rocks list network'.
 	</param>
 	"""
 
 	def run(self, params, args):
-		(args, service) = self.fillPositionalArgs(('service'))
-		(network, protocol) = self.fillParams([
+		(service, network, protocol) = self.fillParams([
+			('service', ),
 			('network', ),
 			('protocol', )
 			])
