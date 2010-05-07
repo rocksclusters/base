@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.1 2010/04/30 22:07:16 bruno Exp $
+# $Id: __init__.py,v 1.2 2010/05/07 18:27:43 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.2  2010/05/07 18:27:43  bruno
+# closer
+#
 # Revision 1.1  2010/04/30 22:07:16  bruno
 # first pass at the firewall commands. we can do global and host level
 # rules, that is, we can add, remove, open (calls add), close (also calls add),
@@ -63,23 +66,11 @@
 
 import rocks.commands
 
-class Command(rocks.commands.NetworkArgumentProcessor, 
+class command(rocks.commands.NetworkArgumentProcessor, 
 	rocks.commands.dump.command):
-	"""
-	Dump the global firewall services and rules
-	"""
-	def run(self, params, args):
-		#
-		# dump the rules
-		#
-		self.addText('<![CDATA[\n')
 
-		#
-		# dump the services
-		#
-		self.db.execute("""select insubnet, outsubnet,
-			service, protocol, action, chain, flags,
-			comment from global_firewall""")
+	def dump_firewall(self, level='', id=''):
+		self.addText('<![CDATA[\n')
 
 		for i, o, s, p, a, c, f, cmt in self.db.fetchall():
 			cmd = []
@@ -112,7 +103,20 @@ class Command(rocks.commands.NetworkArgumentProcessor,
 			if cmt:
 				cmd.append('comment="%s"' % cmt)
 
-			self.dump('add firewall %s' % ' '.join(cmd))
+			self.dump('add %s firewall %s %s' % (level, id,
+				' '.join(cmd)))
 
 		self.addText(']]>\n')
+
+
+class Command(command):
+	"""
+	Dump the global firewall services and rules
+	"""
+	def run(self, params, args):
+		self.db.execute("""select insubnet, outsubnet,
+			service, protocol, action, chain, flags,
+			comment from global_firewall""")
+
+		self.dump_firewall()
 

@@ -1,5 +1,5 @@
-# $Id: __init__.py,v 1.2 2010/05/07 18:27:43 bruno Exp $
-#
+# $Id: plugin_appliance_firewall.py,v 1.1 2010/05/07 18:27:43 bruno Exp $
+# 
 # @Copyright@
 # 
 # 				Rocks(r)
@@ -53,33 +53,23 @@
 # 
 # @Copyright@
 #
-# $Log: __init__.py,v $
-# Revision 1.2  2010/05/07 18:27:43  bruno
+# $Log: plugin_appliance_firewall.py,v $
+# Revision 1.1  2010/05/07 18:27:43  bruno
 # closer
 #
-# Revision 1.1  2010/04/30 22:07:16  bruno
-# first pass at the firewall commands. we can do global and host level
-# rules, that is, we can add, remove, open (calls add), close (also calls add),
-# list and dump the global rules and the host-specific rules.
 #
 
 import rocks.commands
-import rocks.commands.dump
-import rocks.commands.dump.firewall
 
-class Command(rocks.commands.HostArgumentProcessor,
-	rocks.commands.dump.firewall.command):
-	"""
-	"""
+class Plugin(rocks.commands.Plugin):
 
-	def run(self, params, args):
-		for host in self.getHostnames(args):
-			rows = self.db.execute("""select insubnet, outsubnet,
-				service, protocol, action, chain, flags,
-				comment from node_firewall where
-				node = (select id from nodes where name = '%s')
-				""" % host)
-
-			if rows > 0:
-				self.dump_firewall('host', host)
+	def provides(self):
+		return 'appliance-firewall'
+		
+	def requires(self):
+		return [ 'appliance', 'firewall' ]
+		
+	def run(self, args):
+		self.owner.addText(self.owner.command(
+			'dump.appliance.firewall', []))
 
