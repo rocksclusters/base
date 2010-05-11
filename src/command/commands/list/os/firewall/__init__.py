@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.2 2010/05/07 23:13:32 bruno Exp $
+# $Id: __init__.py,v 1.3 2010/05/11 22:28:16 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.3  2010/05/11 22:28:16  bruno
+# more tweaks
+#
 # Revision 1.2  2010/05/07 23:13:32  bruno
 # clean up the help info for the firewall commands
 #
@@ -69,9 +72,10 @@ class Command(rocks.commands.NetworkArgumentProcessor,
 	"""
 	List the firewall rules for an OS.
 
-	<arg type='string' name='os'>
-	Name of OS (e.g., "linux", "sunos").
-	</arg>
+        <arg optional='1' type='string' name='os' repeat='1'>
+        Zero, one or more OS names. If no OS names are supplied, the firewall
+        rules for all OSes are listed.
+        </arg>
 	"""
 
 	def run(self, params, args):

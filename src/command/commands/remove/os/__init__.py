@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.2 2009/05/01 19:07:01 mjk Exp $
+# $Id: __init__.py,v 1.3 2010/05/11 22:28:16 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.3  2010/05/11 22:28:16  bruno
+# more tweaks
+#
 # Revision 1.2  2009/05/01 19:07:01  mjk
 # chimi con queso
 #
@@ -64,6 +67,26 @@
 import rocks.commands
 
 class command(rocks.commands.OSArgumentProcessor,
-	rocks.commands.remove.command):
+		rocks.commands.remove.command):
 	pass
+
+class Command(command):
+	"""
+	Remove an OS definition from the system.
+
+	<arg type='string' name='os'>
+	The OS type (e.g., "linux", "sunos").
+	</arg>
 	
+	<example cmd='remove os sunos'>
+	Removes the OS type "sunos" from the database.
+	</example>
+	"""
+
+	def run(self, params, args):
+		if len(args) < 1:
+			self.abort('must supply at least one OS')
+			
+		for os in self.getOSNames(args):
+			self.runPlugins(os)
+

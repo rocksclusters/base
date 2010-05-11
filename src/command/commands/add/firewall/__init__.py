@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.3 2010/05/07 23:13:32 bruno Exp $
+# $Id: __init__.py,v 1.4 2010/05/11 22:28:15 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.4  2010/05/11 22:28:15  bruno
+# more tweaks
+#
 # Revision 1.3  2010/05/07 23:13:32  bruno
 # clean up the help info for the firewall commands
 #
@@ -125,7 +128,7 @@ class command(rocks.commands.HostArgumentProcessor, rocks.commands.add.command):
 			self.abort('chain required')
 		if not action:
 			self.abort('action required')
-		if service not in [ 'all', 'nat' ] and not protocol:
+		if not protocol:
 			self.abort('protocol required')
 
 		#

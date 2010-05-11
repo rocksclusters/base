@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.10 2010/02/22 21:32:48 bruno Exp $
+# $Id: __init__.py,v 1.11 2010/05/11 22:28:16 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.11  2010/05/11 22:28:16  bruno
+# more tweaks
+#
 # Revision 1.10  2010/02/22 21:32:48  bruno
 # need to also update /etc/sysconfig/network
 #
@@ -146,6 +149,11 @@ class Command(rocks.commands.sync.host.command):
 			cmd += '"cat > /etc/sysconfig/static-routes" '
 			cmd += '2> /dev/null'
 
+			cmd += '; /opt/rocks/bin/rocks report host firewall '
+			cmd += '%s | ' % host
+			cmd += '/opt/rocks/bin/rocks report script | '
+			cmd += 'ssh %s bash > /dev/null 2>&1 ' % host
+
 			p = Parallel(cmd)
 			threads.append(p)
 			p.start()
@@ -167,6 +175,8 @@ class Command(rocks.commands.sync.host.command):
 					time.sleep(0.001)
 
 			cmd = 'ssh %s "/sbin/service network restart" ' % host
+			cmd += '> /dev/null 2>&1'
+			cmd += ' ; "/sbin/service iptables restart" '
 			cmd += '> /dev/null 2>&1'
 
 			p = Parallel(cmd)

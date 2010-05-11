@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.2 2010/05/07 23:13:33 bruno Exp $
+# $Id: __init__.py,v 1.3 2010/05/11 22:28:16 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.3  2010/05/11 22:28:16  bruno
+# more tweaks
+#
 # Revision 1.2  2010/05/07 23:13:33  bruno
 # clean up the help info for the firewall commands
 #
@@ -65,8 +68,11 @@
 #
 
 import rocks.commands
+import rocks.commands.remove.firewall
 
-class Command(rocks.commands.remove.host.command):
+class Command(rocks.commands.remove.host.command,
+	rocks.commands.remove.firewall.command):
+
 	"""
 	Remove a firewall rule for a host. To remove a rule,
 	one must supply the service, network, chain and action. See
@@ -120,64 +126,11 @@ class Command(rocks.commands.remove.host.command):
 
 		if len(args) == 0:
 			self.abort('must supply at least one host')
-		
-		if not service:
-			self.abort('service required')
-		if not network and not outnetwork:
-			self.abort('network or output-network required')
-		if not chain:
-			self.abort('chain required')
-		if not action:
-			self.abort('action required')
-		if service not in [ 'all', 'nat' ] and not protocol:
-			self.abort('protocol required')
-
-		if network:
-			rows = self.db.execute("""select id from subnets where
-				name = '%s'""" % network)
-
-			if rows == 0:
-				self.abort('network "%s" not in database' %
-					network)
-
-			inid, = self.db.fetchone()
-		else:
-			inid = 'NULL'
-
-		if outnetwork:
-			rows = self.db.execute("""select id from subnets where
-				name = '%s'""" % outnetwork)
-
-			if rows == 0:
-				self.abort('output-network "%s" not in database' % network)
-
-			outid, = self.db.fetchone()
-		else:
-			outid = 'NULL'
-
-		if protocol:
-			protocol = "'%s'" % protocol
-		else:
-			protocol = 'NULL'
 
 		for host in self.getHostnames(args):
-			rows = self.db.execute("""delete from node_firewall
-				where node = (select id from nodes where
-				name = '%s') and 
-				if ('%s' != 'NULL', insubnet = %s, true) and
-				if ('%s' != 'NULL', outsubnet = %s, true) and
-				service = '%s' and
-				action = '%s' and chain = '%s' and
-				if (%s != 'NULL', protocol = %s, true)"""
-				% (host, inid, inid, outid, outid, service,
-				action, chain, protocol, protocol))
+			sql = """node = (select id from nodes where
+				name = '%s') and """ % (host)
 
-			if rows == 0:
-				netname = []
-				if network:
-					netname.append(network)
-				if outnetwork:
-					netname.append(outnetwork)
-
-				self.abort('no service in database that matches %s/%s/%s/%s/%s/%s' % (host, service, protocol, '/'.join(netname), chain, action)) 
+			self.deleteRule('node_firewall', sql, service, network,
+				outnetwork, chain, action, protocol)
 

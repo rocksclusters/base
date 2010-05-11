@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.2 2010/05/04 22:04:15 bruno Exp $
+# $Id: __init__.py,v 1.3 2010/05/11 22:28:16 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.3  2010/05/11 22:28:16  bruno
+# more tweaks
+#
 # Revision 1.2  2010/05/04 22:04:15  bruno
 # more firewall commands
 #
@@ -156,7 +159,7 @@ class Command(rocks.commands.HostArgumentProcessor,
 		# in the *_firewall tables
 		#
 		if service == 'all':
-			if protocol:
+			if protocol and protocol != 'all':
 				#
 				# this is useful for icmp rules
 				#

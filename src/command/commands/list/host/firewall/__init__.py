@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.3 2010/05/07 23:13:32 bruno Exp $
+# $Id: __init__.py,v 1.4 2010/05/11 22:28:16 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.4  2010/05/11 22:28:16  bruno
+# more tweaks
+#
 # Revision 1.3  2010/05/07 23:13:32  bruno
 # clean up the help info for the firewall commands
 #
@@ -74,8 +77,9 @@ class Command(rocks.commands.NetworkArgumentProcessor,
 	"""
 	List the current firewall rules for the named hosts.
 
-	<arg optional='1' type='string' name='host'>
-	Host name of machine
+	<arg optional='1' type='string' name='host' repeat='1'>
+	Zero, one or more host names. If no host names are supplied, the firewall
+	rules for all the known hosts are listed.
 	</arg>
 	"""
 

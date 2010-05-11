@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.2 2010/05/07 23:13:33 bruno Exp $
+# $Id: __init__.py,v 1.3 2010/05/11 22:28:16 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.3  2010/05/11 22:28:16  bruno
+# more tweaks
+#
 # Revision 1.2  2010/05/07 23:13:33  bruno
 # clean up the help info for the firewall commands
 #
@@ -64,11 +67,65 @@
 #
 #
 
-
-
 import rocks.commands
 
-class Command(rocks.commands.remove.command):
+class command(rocks.commands.remove.command):
+	def deleteRule(self, table, extrawhere, service, network, outnetwork,
+		chain, action, protocol):
+
+		if not service:
+			self.abort('service required')
+		if not network and not outnetwork:
+			self.abort('network or output-network required')
+		if not chain:
+			self.abort('chain required')
+		if not action:
+			self.abort('action required')
+		if not protocol:
+			self.abort('protocol required')
+
+		if network:
+			rows = self.db.execute("""select id from subnets where
+				name = '%s'""" % network)
+
+			if rows == 0:
+				self.abort('network "%s" not in database' %
+					network)
+
+			inid, = self.db.fetchone()
+		else:
+			inid = 'NULL'
+
+		if outnetwork:
+			rows = self.db.execute("""select id from subnets where
+				name = '%s'""" % outnetwork)
+
+			if rows == 0:
+				self.abort('output-network "%s" not in database' % network)
+
+			outid, = self.db.fetchone()
+		else:
+			outid = 'NULL'
+
+		rows = self.db.execute("""delete from %s where %s
+			service = '%s' and if ('%s' = 'NULL', insubnet is NULL,
+			insubnet = %s) and if ('%s' = 'NULL', outsubnet is NULL,
+			outsubnet = %s) and chain = '%s' and action = '%s' and
+			protocol = '%s'""" % (table, extrawhere, service, inid,
+			inid, outid, outid, chain, action, protocol))
+
+		if rows == 0:
+			netname = []
+			if network:
+				netname.append(network)
+			if outnetwork:
+				netname.append(outnetwork)
+
+			self.abort('no service in database that matches %s/%s/%s/%s/%s' % (service, protocol, '/'.join(netname), chain, action)) 
+
+
+
+class Command(command):
 	"""
 	Remove a global firewall rule. To remove a rule,
 	one must supply the service, protocol, network, chain and action. See
@@ -114,54 +171,7 @@ class Command(rocks.commands.remove.command):
 				('action', ),
 				('protocol', )
 			 ])
-		
-		if not service:
-			self.abort('service required')
-		if not network and not outnetwork:
-			self.abort('network or output-network required')
-		if not chain:
-			self.abort('chain required')
-		if not action:
-			self.abort('action required')
-		if not protocol:
-			self.abort('protocol required')
 
-		if network:
-			rows = self.db.execute("""select id from subnets where
-				name = '%s'""" % network)
-
-			if rows == 0:
-				self.abort('network "%s" not in database' %
-					network)
-
-			inid, = self.db.fetchone()
-		else:
-			inid = 'NULL'
-
-		if outnetwork:
-			rows = self.db.execute("""select id from subnets where
-				name = '%s'""" % outnetwork)
-
-			if rows == 0:
-				self.abort('output-network "%s" not in database' % network)
-
-			outid, = self.db.fetchone()
-		else:
-			outid = 'NULL'
-
-		rows = self.db.execute("""delete from global_firewall where
-			service = '%s' and if ('%s' = 'NULL', insubnet is NULL,
-			insubnet = %s) and if ('%s' = 'NULL', outsubnet is NULL,
-			outsubnet = %s) and chain = '%s' and action = '%s' and
-			protocol = '%s'""" % (service, inid, inid, outid,
-			outid, chain, action, protocol))
-
-		if rows == 0:
-			netname = []
-			if network:
-				netname.append(network)
-			if outnetwork:
-				netname.append(outnetwork)
-
-			self.abort('no service in database that matches %s/%s/%s/%s/%s' % (service, protocol, '/'.join(netname), chain, action)) 
+		self.deleteRule('global_firewall', '', service, network,
+			outnetwork, chain, action, protocol)
 
