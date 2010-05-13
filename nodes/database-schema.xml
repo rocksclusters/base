@@ -18,6 +18,9 @@
 
   <changelog>
   $Log: database-schema.xml,v $
+  Revision 1.42  2010/05/13 22:59:24  bruno
+  add firewall tables
+
   Revision 1.41  2010/04/20 19:33:04  bruno
   more bonding tweaks
 
@@ -535,6 +538,60 @@ CREATE TABLE bootflags (
   Flags         varchar(256) default NULL,
   PRIMARY KEY (ID)
 ) TYPE=MyISAM;
+
+<!-- Firewall Tables -->
+
+DROP TABLE IF EXISTS global_firewall;
+CREATE TABLE global_firewall (
+  InSubnet	int(11)	default NULL references subnets,
+  OutSubnet	int(11)	default NULL references subnets,
+  Service       varchar(256) default NULL,
+  Protocol      varchar(256) default NULL,
+  Action        varchar(256) default NULL,
+  Chain         varchar(256) default NULL,
+  Flags         varchar(256) default NULL,
+  Comment       varchar(256) default NULL
+) TYPE=MyISAM;
+
+DROP TABLE IF EXISTS os_firewall;
+CREATE TABLE os_firewall (
+  OS            enum('sunos','linux') NOT NULL default 'linux',
+  InSubnet	int(11)	default NULL references subnets,
+  OutSubnet	int(11)	default NULL references subnets,
+  Service       varchar(256) default NULL,
+  Protocol      varchar(256) default NULL,
+  Action        varchar(256) default NULL,
+  Chain         varchar(256) default NULL,
+  Flags         varchar(256) default NULL,
+  Comment       varchar(256) default NULL
+) TYPE=MyISAM;
+
+DROP TABLE IF EXISTS appliance_firewall;
+CREATE TABLE appliance_firewall (
+  Appliance     int(11) NOT NULL default '0',
+  InSubnet	int(11)	default NULL references subnets,
+  OutSubnet	int(11)	default NULL references subnets,
+  Service       varchar(256) default NULL,
+  Protocol      varchar(256) default NULL,
+  Action        varchar(256) default NULL,
+  Chain         varchar(256) default NULL,
+  Flags         varchar(256) default NULL,
+  Comment       varchar(256) default NULL
+) TYPE=MyISAM;
+
+DROP TABLE IF EXISTS node_firewall;
+CREATE TABLE node_firewall (
+  Node		int(11) NOT NULL default '0',
+  InSubnet	int(11)	default NULL references subnets,
+  OutSubnet	int(11)	default NULL references subnets,
+  Service       varchar(256) default NULL,
+  Protocol      varchar(256) default NULL,
+  Action        varchar(256) default NULL,
+  Chain         varchar(256) default NULL,
+  Flags         varchar(256) default NULL,
+  Comment       varchar(256) default NULL
+) TYPE=MyISAM;
+
 </file>
 
 
