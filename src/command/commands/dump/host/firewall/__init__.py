@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.2 2010/05/07 18:27:43 bruno Exp $
+# $Id: __init__.py,v 1.3 2010/05/13 21:50:14 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.3  2010/05/13 21:50:14  bruno
+# almost there
+#
 # Revision 1.2  2010/05/07 18:27:43  bruno
 # closer
 #
@@ -67,13 +70,15 @@ import rocks.commands
 import rocks.commands.dump
 import rocks.commands.dump.firewall
 
-class Command(rocks.commands.HostArgumentProcessor,
-	rocks.commands.dump.firewall.command):
+class Command(rocks.commands.dump.host.command,
+        rocks.commands.dump.firewall.command):
 	"""
 	"""
 
 	def run(self, params, args):
 		for host in self.getHostnames(args):
+			dumpname = self.dumpHostname(host)
+
 			rows = self.db.execute("""select insubnet, outsubnet,
 				service, protocol, action, chain, flags,
 				comment from node_firewall where
@@ -81,5 +86,5 @@ class Command(rocks.commands.HostArgumentProcessor,
 				""" % host)
 
 			if rows > 0:
-				self.dump_firewall('host', host)
+				self.dump_firewall('host', dumpname)
 

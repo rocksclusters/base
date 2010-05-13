@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.2 2010/05/07 18:27:43 bruno Exp $
+# $Id: __init__.py,v 1.3 2010/05/13 21:50:14 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.3  2010/05/13 21:50:14  bruno
+# almost there
+#
 # Revision 1.2  2010/05/07 18:27:43  bruno
 # closer
 #
@@ -74,21 +77,19 @@ class command(rocks.commands.NetworkArgumentProcessor,
 
 		for i, o, s, p, a, c, f, cmt in self.db.fetchall():
 			cmd = []
-			name = self.getNetworkName(i)
+			if i == 0:
+				name = 'all'
+			else:
+				name = self.getNetworkName(i)
 			if name:
 				cmd.append('network=%s' % name)
 
-			name = self.getNetworkName(o)
+			if o == 0:
+				name = 'all'
+			else:
+				name = self.getNetworkName(o)
 			if name:
 				cmd.append('output-network=%s' % name)
-
-			if len(cmd) == 0:
-				#
-				# all rules must be associated with at
-				# least one network. if no network is
-				# supplied, then skip it.
-				#
-				continue
 
 			if s:
 				cmd.append('service="%s"' % s)

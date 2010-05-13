@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.3 2010/05/11 22:28:16 bruno Exp $
+# $Id: __init__.py,v 1.4 2010/05/13 21:50:14 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.4  2010/05/13 21:50:14  bruno
+# almost there
+#
 # Revision 1.3  2010/05/11 22:28:16  bruno
 # more tweaks
 #
@@ -181,33 +184,12 @@ class Command(rocks.commands.HostArgumentProcessor,
 
 	def makeRules(self, host, rules, comments):
 		for i, o, s, p, a, c, f, cmt in self.db.fetchall():
-			netin = []
-			if i == 0:
-				self.db.execute("""select id from subnets""");
-				for z in self.db.fetchall():
-					netin.append(z)
-			else:
-				netin.append(i)
-
-			netout = []
-			if o == 0:
-				self.db.execute("""select id from subnets""");
-				for z in self.db.fetchall():
-					netout.append(z)
-			else:
-				netout.append(o)
-
-			for neti in netin:
-				for neto in netout:
-					rule = self.buildRule(host, neti, neto,
-						s, p, a, c, f, cmt)
-
-					if rule:
-						key = '%s-%s-%s-%s-%s-%s-%s' % \
-							(c, neti, neto, s, p,
-							a, f)
-						rules[key] = rule
-						comments[key] = cmt
+			rule = self.buildRule(host, i, o, s, p, a, c, f, cmt)
+			if rule:
+				key = '%s-%s-%s-%s-%s-%s-%s' % \
+					(c, i, o, s, p, a, f)
+				rules[key] = rule
+				comments[key] = cmt
 
 
 	def getRules(self, host, action):
@@ -297,6 +279,17 @@ class Command(rocks.commands.HostArgumentProcessor,
 					self.addOutput(host,
 						'# %s' % comments[key])
 				self.addOutput(host, rules[key])
+
+			#
+			# default reject rules
+			#
+			rule = self.buildRule(None, None, None, '0:1024',
+				'tcp', 'REJECT', 'INPUT', None, None)
+			self.addOutput(host, rule)
+
+			rule = self.buildRule(None, None, None, '0:1024',
+				'udp', 'REJECT', 'INPUT', None, None)
+			self.addOutput(host, rule)
 
 			self.addOutput(host, 'COMMIT')
 			self.addOutput(host, '</file>')
