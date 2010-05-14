@@ -1,4 +1,4 @@
-# $Id: plugin_firewall.py,v 1.1 2010/05/11 22:29:21 bruno Exp $
+# $Id: plugin_firewall.py,v 1.2 2010/05/14 23:25:52 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: plugin_firewall.py,v $
+# Revision 1.2  2010/05/14 23:25:52  bruno
+# cleanup remove plugins for the firewall tables
+#
 # Revision 1.1  2010/05/11 22:29:21  bruno
 # plugin for removing host-specific firewall rules when a host is removed
 #
@@ -67,4 +70,12 @@ class Plugin(rocks.commands.Plugin):
 		return 'firewall'
 
 	def run(self, host):
-		self.owner.command('remove.host.firewall', [ host ])
+		#
+		# since we are not setting any command line parameters, we
+		# just need to remove all rows in the database that match this
+		# host
+		#
+		self.db.execute("""delete from node_firewall where
+			node = (select id from nodes where
+			name = '%s')""" % host)	
+

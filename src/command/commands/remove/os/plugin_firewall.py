@@ -1,4 +1,4 @@
-# $Id: plugin_firewall.py,v 1.1 2010/05/11 22:29:00 bruno Exp $
+# $Id: plugin_firewall.py,v 1.2 2010/05/14 23:25:52 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: plugin_firewall.py,v $
+# Revision 1.2  2010/05/14 23:25:52  bruno
+# cleanup remove plugins for the firewall tables
+#
 # Revision 1.1  2010/05/11 22:29:00  bruno
 # added plugins for all 'remove os' commands
 #
@@ -67,4 +70,11 @@ class Plugin(rocks.commands.Plugin):
 		return 'firewall'
 
 	def run(self, os):
-		self.owner.command('remove.os.firewall', [ os ])
+		#
+		# since we are not setting any command line parameters, we
+		# just need to remove all rows in the database that match this
+		# os type
+		#
+		self.db.execute("""delete from os_firewall where
+			os = '%s' """  % os)
+

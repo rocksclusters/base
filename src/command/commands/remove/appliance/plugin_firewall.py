@@ -1,4 +1,4 @@
-# $Id: plugin_firewall.py,v 1.1 2010/05/07 18:27:43 bruno Exp $
+# $Id: plugin_firewall.py,v 1.2 2010/05/14 23:25:52 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: plugin_firewall.py,v $
+# Revision 1.2  2010/05/14 23:25:52  bruno
+# cleanup remove plugins for the firewall tables
+#
 # Revision 1.1  2010/05/07 18:27:43  bruno
 # closer
 #
@@ -67,4 +70,11 @@ class Plugin(rocks.commands.Plugin):
 		return 'firewall'
 
 	def run(self, appliance):
-		self.owner.command('remove.appliance.firewall', [ appliance ])
+		#
+		# since we are not setting any parameters, we just need to
+		# remove all rows in the database that have this appliance
+		# type
+		#
+		self.db.execute("""delete from appliance_firewall where
+			appliance = (select id from appliances where
+			name = '%s')""" % appliance)	

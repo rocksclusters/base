@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.3 2010/05/11 22:28:16 bruno Exp $
+# $Id: __init__.py,v 1.4 2010/05/14 23:25:52 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.4  2010/05/14 23:25:52  bruno
+# cleanup remove plugins for the firewall tables
+#
 # Revision 1.3  2010/05/11 22:28:16  bruno
 # more tweaks
 #
@@ -129,6 +132,6 @@ class Command(rocks.commands.remove.appliance.command,
 			sql = """appliance = (select id from appliances where
 				name = '%s') and """ % (app)
 
-			self.deleteRule('appliance_firewall', sql, service, network,
-				outnetwork, chain, action, protocol)
+			self.deleteRule('appliance_firewall', sql, service,
+				network, outnetwork, chain, action, protocol)
 
