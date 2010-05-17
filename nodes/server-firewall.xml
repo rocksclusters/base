@@ -9,6 +9,9 @@ Server node firewall rules
 
 <changelog>
 $Log: server-firewall.xml,v $
+Revision 1.6  2010/05/17 20:58:22  bruno
+generate firewall rules from the database
+
 Revision 1.5  2009/05/20 12:35:42  mjk
 block foundation-mysql port as well
 
@@ -31,48 +34,59 @@ this also includes changes to help build and configure VMs for V.
 
 
 <post>
-	
-<file name="/etc/sysconfig/iptables">
-*nat
--A POSTROUTING -o eth1 -j MASQUERADE
-COMMIT
 
-*filter
-:INPUT ACCEPT [0:0]
-:FORWARD DROP [0:0]
-:OUTPUT ACCEPT [0:0]
-# Preamble
--A FORWARD -i eth1 -o eth0 -m state --state NEW,RELATED,ESTABLISHED -j ACCEPT
--A FORWARD -i eth0 -j ACCEPT
--A INPUT -i eth0 -j ACCEPT
--A INPUT -i lo -j ACCEPT
+<!-- define the global firewall rules -->
 
-# Allow these ports
--A INPUT -m state --state NEW -p tcp --dport ssh -j ACCEPT
-# http and https is allowed for all nodes on the public subnet
--A INPUT -m state --state NEW -p tcp --dport https --source &Kickstart_PublicNetwork;/&Kickstart_PublicNetmask; -j ACCEPT
--A INPUT -m state --state NEW -p tcp --dport www --source &Kickstart_PublicNetwork;/&Kickstart_PublicNetmask; -j ACCEPT
+/opt/rocks/bin/rocks add firewall network=private service="all" \
+	protocol="all" action="ACCEPT" chain="INPUT"
 
-# Standard rules
--A INPUT -p icmp --icmp-type any -j ACCEPT
--A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
-# Uncomment the line below to log incoming packets.
-#-A INPUT -j LOG --log-prefix "Unknown packet:"
+/opt/rocks/bin/rocks add firewall network=public service="ssh" \
+	protocol="tcp" action="ACCEPT" chain="INPUT" \
+	flags="-m state --state NEW"
 
-# Deny section
--A INPUT -p udp --dport 0:1024 -j REJECT
--A INPUT -p tcp --dport 0:1024 -j REJECT
-# Block incoming ganglia packets on public interface.
--A INPUT -p udp --dport 8649 -j REJECT
-# Block mysql
--A INPUT -p tcp --dport 3306  -j REJECT
--A INPUT -p tcp --dport 40000 -j REJECT
 
-# For a draconian "drop-all" firewall, uncomment the line below.
-#-A INPUT -j DROP
-COMMIT
-</file>
+<!-- define the frontend-specific firewall rules -->
+
+/opt/rocks/bin/rocks add host firewall localhost network=public \
+	output-network=private service="all" protocol="all" action="ACCEPT" \
+	chain="FORWARD" flags="-m state --state RELATED,ESTABLISHED"
+
+/opt/rocks/bin/rocks add host firewall localhost network=private \
+	service="all" protocol="all" action="ACCEPT" chain="FORWARD"
+
+/opt/rocks/bin/rocks add host firewall localhost network=public \
+	service="all" protocol="all" action="ACCEPT" chain="INPUT" \
+	flags="-m state --state ESTABLISHED,RELATED"
+
+/opt/rocks/bin/rocks add host firewall localhost output-network=public \
+	service="nat" protocol="all" action="MASQUERADE" chain="POSTROUTING"
+
+/opt/rocks/bin/rocks add host firewall localhost network=all service="8649" \
+	protocol="udp" action="REJECT" chain="INPUT" \
+	comment="block ganglia traffic from non-private interfaces"
+
+/opt/rocks/bin/rocks add host firewall localhost network=all service="3306" \
+	protocol="udp" action="REJECT" chain="INPUT" \
+	comment="block mysql traffic from non-private interfaces"
+
+/opt/rocks/bin/rocks add host firewall localhost network=all service="40000" \
+	protocol="udp" action="REJECT" chain="INPUT" \
+	comment="block foundation mysql traffic from non-private interfaces"
 
 </post>
+
+
+<!-- create the firewall rules for the frontend -->
+
+<post>
+
+/opt/rocks/bin/rocks report host firewall localhost | \
+	/opt/rocks/bin/rocks report script > /tmp/do-firewall.sh
+
+chmod a+x /tmp/do-firewall.sh
+/tmp/do-firewall.sh
+
+</post>
+
 
 </kickstart> 

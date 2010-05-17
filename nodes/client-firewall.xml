@@ -9,6 +9,9 @@ Client node firewall rules
 
 <changelog>
 $Log: client-firewall.xml,v $
+Revision 1.3  2010/05/17 20:58:22  bruno
+generate firewall rules from the database
+
 Revision 1.2  2009/03/30 19:29:50  anoop
 Merging xml files from Solaris Roll to the Linux roll.
 More files to follow
@@ -23,26 +26,11 @@ this also includes changes to help build and configure VMs for V.
 
 
 <post os='linux'>
+
+<eval mode="xml">
+/opt/rocks/bin/rocks report host firewall &hostname;
+</eval>
 	
-<file name="/etc/sysconfig/iptables">
-*filter
-:INPUT ACCEPT [0:0]
-:FORWARD DROP [0:0]
-:OUTPUT ACCEPT [0:0]
-
--A INPUT -i eth0 -j ACCEPT
--A INPUT -i lo   -j ACCEPT
-
--A INPUT -m state --state NEW -p tcp --dport ssh -j ACCEPT
--A INPUT -p icmp --icmp-type any -j ACCEPT
--A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
-
--A INPUT -p udp --dport 0:1024 -j REJECT
--A INPUT -p tcp --dport 0:1024 -j REJECT
--A INPUT -p udp --dport 8649   -j REJECT
-COMMIT
-</file>
-
 </post>
 
 </kickstart> 

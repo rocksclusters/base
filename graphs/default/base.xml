@@ -4,6 +4,9 @@
 
 	<changelog>
 	$Log: base.xml,v $
+	Revision 1.59  2010/05/17 20:58:21  bruno
+	generate firewall rules from the database
+	
 	Revision 1.58  2010/03/25 00:30:39  bruno
 	the start of the login appliance
 	
@@ -269,6 +272,7 @@
 		<tail>dhcp-server</tail>
 		<tail>dns-server</tail>
 		<tail>login-server</tail>
+		<tail>server-firewall</tail>
 	</order>
 
 	<order head="grub">

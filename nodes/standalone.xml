@@ -17,6 +17,9 @@
 
   <changelog>
   $Log: standalone.xml,v $
+  Revision 1.9  2010/05/17 20:58:22  bruno
+  generate firewall rules from the database
+
   Revision 1.8  2009/05/01 19:06:48  mjk
   chimi con queso
 
@@ -112,30 +115,16 @@ do
 		/sbin/chkconfig $i off
 	fi
 done
+</post>
 
 
-<file name="/etc/sysconfig/iptables">
-*filter
-:INPUT ACCEPT [0:0]
-:FORWARD DENY [0:0]
-:OUTPUT ACCEPT [0:0]
--A INPUT -i eth1 -p tcp -s 0/0 -d 0/0 -m tcp --dport ssh -j ACCEPT
--A INPUT -i eth1 -p tcp -s 0/0 -d 0/0 -m tcp --dport http -j ACCEPT
--A INPUT -i eth1 -p tcp -s 0/0 -d 0/0 -m tcp --dport ftp -j ACCEPT
--A INPUT -i eth1 -p tcp -s 0/0 -d 0/0 -m tcp --dport 0:1024 -j DROP
--A INPUT -i eth1 -p udp -s 0/0 -d 0/0 -m udp --dport 0:1024 -j DROP
-COMMIT
-</file>
+<post>
+
+<eval mode="xml">
+/opt/rocks/bin/rocks report host firewall &hostname;
+</eval>
 
 </post>
 
 
 </kickstart> 
-
-
-
-
-
-
-
-
