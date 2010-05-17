@@ -45,14 +45,14 @@ Here's what we'll do:
 
 <listitem>
 	<para>
-	Associate bond0 with the private subnet.
+	Associate bond0 with the private network.
 	</para>
 </listitem>
 
 </itemizedlist>
 
 <screen>
-# rocks add host bonded compute-0-1 channel=bond0 interfaces=eth0,eth1 ip=10.1.255.253 subnet=private
+# rocks add host bonded compute-0-1 channel=bond0 interfaces=eth0,eth1 ip=10.1.255.253 network=private
 </screen>
 
 <para>
