@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.11 2010/04/19 19:44:14 bruno Exp $
+# $Id: __init__.py,v 1.12 2010/05/19 20:29:57 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.12  2010/05/19 20:29:57  bruno
+# fix
+#
 # Revision 1.11  2010/04/19 19:44:14  bruno
 # added:
 #
@@ -277,7 +280,7 @@ class Command(command):
 				#
 				buf = sock.recv(64)
 			except socket.error:
-				if self.collate:
+				if collate:
 					self.addOutput(host, 'down')
 				else:
 					print '%s: down'		
