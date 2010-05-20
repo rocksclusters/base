@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.8 2010/05/20 00:16:12 bruno Exp $
+# $Id: __init__.py,v 1.9 2010/05/20 20:59:10 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.9  2010/05/20 20:59:10  bruno
+# pulled my head of out of my keister and figured out how to pass parameters
+# to 'rocks config host interface'
+#
 # Revision 1.8  2010/05/20 00:16:12  bruno
 # new code to add MAC addresses to the database and to track which interface
 # is the private one
@@ -66,35 +70,55 @@ import rocks.commands
 
 class Command(rocks.commands.config.host.command):
 	"""
-	Adds host interfaces to the database based on the settings of
-	the environmental variables HTTP_X_RHN_PROVISIONING_MAC*.
+	Adds host interfaces to the database.
 
-	This command should only be called from kickstart.cgi.
+	This command should only be called from a post section in a kickstart
+	file.
 
 	<arg type='string' name='host'>
 	Host name of machine
 	</arg>
+
+	<param type='string' name='iface'>
+	Interface names (e.g., "eth0"). If multiple interfaces are supplied,
+	then they must be comma-separated.
+	</param>
+
+	<param type='string' name='mac'>
+	MAC addresses for the interfaces. If multiple MACs are supplied,
+	then they must be comma-separated.
+	</param>
+
+	<param type='string' name='module'>
+	Driver modules to be loaded for the interfaces. If multiple modules
+	are supplied, then they must be comma-separated.
+	</param>
+
+	<param type='string' name='flag'>
+	Flags for the interfaces. If flags for multiple interfaces
+	are supplied, then they must be comma-separated.
+	</param>
 	"""
 
 	def swap(self, host, old_mac, old_iface, new_mac, new_iface):
 		#
 		# swap two interfaces
 		#
-		rows = self.db.execute("""select id from networks where
-			mac = '%s' and node = (select id from nodes where
-			name = '%s') """ % (old_mac, host))
+		rows = self.db.execute("""select id,module,options from
+			networks where mac = '%s' and node = (select id from
+			nodes where name = '%s') """ % (old_mac, host))
 		if rows != 1:
 			return
 
-		old_id, = self.db.fetchone()
+		(old_id, old_module, old_options) = self.db.fetchone()
 
-		rows = self.db.execute("""select id from networks where
-			mac = '%s' and node = (select id from nodes where
-			name = '%s') """ % (new_mac, host))
+		rows = self.db.execute("""select id,module,options from
+			networks where mac = '%s' and node = (select id from
+			nodes where name = '%s') """ % (new_mac, host))
 		if rows != 1:
 			return
 
-		new_id, = self.db.fetchone()
+		(new_id, new_module, new_options) = self.db.fetchone()
 
 		self.db.execute("""update networks set mac = '%s',
 			device = '%s' where id = %s""" % (old_mac, old_iface,
@@ -104,47 +128,74 @@ class Command(rocks.commands.config.host.command):
 			device = '%s' where id = %s""" % (new_mac, new_iface,
 			old_id))
 
+		if old_module:
+			self.db.execute("""update networks set module = '%s'
+				where id = %s""" % (old_module, new_id))
+		if new_module:
+			self.db.execute("""update networks set module = '%s'
+				where id = %s""" % (new_module, old_id))
+		if old_options:
+			self.db.execute("""update networks set options = '%s'
+				where id = %s""" % (old_options, new_id))
+		if new_options:
+			self.db.execute("""update networks set options = '%s'
+				where id = %s""" % (new_options, old_id))
+
 
 	def run(self, params, args):
+		(iface, mac, module, flag) = self.fillParams([
+			('iface', None),
+			('mac', None),
+			('module', None),
+			('flag', None) ])
+
 		hosts = self.getHostnames(args)
 
 		if len(hosts) != 1:	
 			self.abort('must supply only one host')
 
-		sync_config = 0
-
 		host = hosts[0]
 
-		#
-		# get the environmental variables
-		#
-		discovered_macs = [] 
+		sync_config = 0
 
-		for i in os.environ:
-			if re.match('HTTP_X_RHN_PROVISIONING_MAC_[0-9]+', i):
-				devinfo = os.environ[i].split()
-				iface = devinfo[0]
-				macaddr = devinfo[1].lower()
-				module = devinfo[2] 
+		discovered_macs = []
 
-				ks = ''
-				if len(devinfo) > 3:
-					ks = 'ks'
+		macs = mac.split(',')
+		ifaces = iface.split(',')
+		modules = module.split(',')
+		flags = flag.split(',')
 
-				discovered_macs.append((iface, macaddr,
-					module, ks))
+		for i in range(0, len(macs)):
+			a = (macs[i], )
+
+			if len(ifaces) > i:
+				a += (ifaces[i], )
+			else:
+				a += ('', )
+
+			if len(modules) > i:
+				a += (modules[i], )
+			else:
+				a += ('', )
+			
+			if len(flags) > i:
+				a += (flags[i], )
+			else:
+				a += ('', )
+			
+			discovered_macs.append(a)
 
 		#
 		# make sure all the MACs are in the database
 		#
-		for (iface, mac, module, ks) in discovered_macs:
+		for (mac, iface, module, ks) in discovered_macs:
 			rows = self.db.execute("""select mac from networks
 				where mac = '%s' """ % (mac))
 			if rows == 0:
 				#
 				# the mac is not in the database. but check
 				# if the interface is already in the database.
-				# if so, # then we just need to set the MAC
+				# if so, then we just need to set the MAC
 				# for the interface.
 				#
 				rows = self.db.execute("""select * from
@@ -156,6 +207,16 @@ class Command(rocks.commands.config.host.command):
 					self.command('set.host.interface.mac',
 						(host, 'iface=%s' % iface,
 						'mac=%s' % mac))
+					#
+					# since the MAC changed, we are not
+					# guaranteed that the module will be
+					# correct. we need to clear out the
+					# module field
+					#
+					self.command(
+						'set.host.interface.module',
+						(host, 'iface=%s' % iface,
+						'module=NULL'))
 				else:
 					self.command('add.host.interface', 
 						(host, 'iface=%s' % iface,
@@ -166,7 +227,7 @@ class Command(rocks.commands.config.host.command):
 		#
 		# update the iface-to-mac mapping
 		#
-		for (iface, mac, module, ks) in discovered_macs:
+		for (mac, iface, module, ks) in discovered_macs:
 			self.command('set.host.interface.iface', 
 				(host, 'iface=%s' % iface,
 					'mac=%s' % mac))
@@ -174,7 +235,7 @@ class Command(rocks.commands.config.host.command):
 		#
 		# let's see if the private interface moved
 		#
-		for (iface, mac, module, ks) in discovered_macs:
+		for (mac, iface, module, ks) in discovered_macs:
 			if ks != 'ks':
 				continue
 

@@ -17,6 +17,10 @@
 
   <changelog>
   $Log: database-data.xml,v $
+  Revision 1.59  2010/05/20 20:59:10  bruno
+  pulled my head of out of my keister and figured out how to pass parameters
+  to 'rocks config host interface'
+
   Revision 1.58  2010/05/20 00:31:44  bruno
   gonna get some serious 'star power' off this commit.
 
@@ -589,6 +593,11 @@ import sys
 import os
 import string
 
+ifaces = []
+macs = []
+modules = []
+flags = []
+
 file = open('/tmp/interfaces', 'r')
 
 macstr = 'X-RHN-Provisioning'
@@ -597,28 +606,24 @@ for line in file.readlines():
 
 	if len(l) > 3 and l[0][0:len(macstr)] == macstr:
 		tag = l[0][:-1]
-		device = l[1]
-		mac = l[2]
-		driver = l[3]
+		iface = l[1]
+		macaddr = l[2]
+		module = l[3]
                 
-		key = 'HTTP_' + string.upper(tag)
-		key = string.replace(key, '-', '_')
-
-		entry = string.join([device, mac, driver])
-
-		#
-		# always make the first interface look like the one we
-		# kickstarted from.
-		#
+		ks = ''
 		if device == 'eth0':
-			entry = string.join([entry, 'ks'])
+			ks = 'ks'
 
-		os.environ[key] = entry
+		ifaces.append(iface)
+		macs.append(macaddr)
+		modules.append(module)
+		flags.append(ks)
 
 file.close()
 
-/opt/rocks/bin/rocks config host interface localhost
-
+os.system('/opt/rocks/bin/rocks config host interface localhost iface="%s" \
+	mac="%s" module="%s" flag="%s"' % (','.join(ifaces), ','.join(macs), \
+	','.join(modules), ','.join(flags)))
 </post>
 
 

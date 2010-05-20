@@ -15,6 +15,10 @@ All rights reserved. Rocks(tm) v4.3 www.rocksclusters.org
 
 <changelog>
 $Log: networking-client.xml,v $
+Revision 1.9  2010/05/20 20:59:10  bruno
+pulled my head of out of my keister and figured out how to pass parameters
+to 'rocks config host interface'
+
 Revision 1.8  2010/05/20 00:31:44  bruno
 gonna get some serious 'star power' off this commit.
 
@@ -52,8 +56,34 @@ this also includes changes to help build and configure VMs for V.
 
 <post os='linux'>
 
-<eval>
-/opt/rocks/bin/rocks config host interface &hostname;
+<eval shell="/opt/rocks/bin/python">
+import os
+import re
+
+ifaces = []
+macs = []
+modules = []
+flags = []
+
+for i in os.environ:
+	if re.match('HTTP_X_RHN_PROVISIONING_MAC_[0-9]+', i):
+		devinfo = os.environ[i].split()
+		iface = devinfo[0]
+		macaddr = devinfo[1].lower()
+		module = devinfo[2]
+
+		ks = ''
+		if len(devinfo) > 3:
+			ks = 'ks'
+
+		ifaces.append(iface)
+		macs.append(macaddr)
+		modules.append(module)
+		flags.append(ks)
+
+os.system('/opt/rocks/bin/rocks config host interface &hostname; iface="%s" \
+	mac="%s" module="%s" flag="%s"' % (','.join(ifaces), ','.join(macs), \
+	','.join(modules), ','.join(flags)))
 </eval>
 
 </post>
