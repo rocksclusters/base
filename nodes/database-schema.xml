@@ -18,6 +18,12 @@
 
   <changelog>
   $Log: database-schema.xml,v $
+  Revision 1.43  2010/05/20 00:31:44  bruno
+  gonna get some serious 'star power' off this commit.
+
+  put in code to dynamically configure the static-routes file based on
+  networks (no longer the hardcoded 'eth0').
+
   Revision 1.42  2010/05/13 22:59:24  bruno
   add firewall tables
 
@@ -447,7 +453,8 @@ DROP TABLE IF EXISTS global_routes;
 CREATE TABLE global_routes (
   Network	varchar(32) NOT NULL default '',
   Netmask	varchar(32) NOT NULL default '',
-  Gateway	varchar(32) NOT NULL default ''
+  Gateway	varchar(32) NOT NULL default '',
+  Subnet	int(11)	default NULL references subnets
 ) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS os_routes;
@@ -455,7 +462,8 @@ CREATE TABLE os_routes (
   OS            enum('sunos','linux') NOT NULL default 'linux',
   Network	varchar(32) NOT NULL default '',
   Netmask	varchar(32) NOT NULL default '',
-  Gateway	varchar(32) NOT NULL default ''
+  Gateway	varchar(32) NOT NULL default '',
+  Subnet	int(11)	default NULL references subnets
 ) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS appliance_routes;
@@ -463,7 +471,8 @@ CREATE TABLE appliance_routes (
   Appliance     int(11) NOT NULL default '0',
   Network	varchar(32) NOT NULL default '',
   Netmask	varchar(32) NOT NULL default '',
-  Gateway	varchar(32) NOT NULL default ''
+  Gateway	varchar(32) NOT NULL default '',
+  Subnet	int(11)	default NULL references subnets
 ) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS node_routes;
@@ -471,7 +480,8 @@ CREATE TABLE node_routes (
   Node		int(11) NOT NULL default '0',
   Network	varchar(32) NOT NULL default '',
   Netmask	varchar(32) NOT NULL default '',
-  Gateway	varchar(32) NOT NULL default ''
+  Gateway	varchar(32) NOT NULL default '',
+  Subnet	int(11)	default NULL references subnets
 ) TYPE=MyISAM;
 
 

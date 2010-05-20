@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.11 2010/05/11 22:28:16 bruno Exp $
+# $Id: __init__.py,v 1.12 2010/05/20 00:31:45 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,12 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.12  2010/05/20 00:31:45  bruno
+# gonna get some serious 'star power' off this commit.
+#
+# put in code to dynamically configure the static-routes file based on
+# networks (no longer the hardcoded 'eth0').
+#
 # Revision 1.11  2010/05/11 22:28:16  bruno
 # more tweaks
 #
@@ -174,9 +180,11 @@ class Command(rocks.commands.sync.host.command):
 					#
 					time.sleep(0.001)
 
-			cmd = 'ssh %s "/sbin/service network restart" ' % host
+			cmd = 'ssh %s "/sbin/service iptables stop" ' % host
 			cmd += '> /dev/null 2>&1'
-			cmd += ' ; "/sbin/service iptables restart" '
+			cmd += ' ; "/sbin/service network restart" '
+			cmd += '> /dev/null 2>&1'
+			cmd += ' ; "/sbin/service iptables start" '
 			cmd += '> /dev/null 2>&1'
 
 			p = Parallel(cmd)

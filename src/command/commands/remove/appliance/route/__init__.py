@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.3 2009/06/02 17:28:12 bruno Exp $
+# $Id: __init__.py,v 1.4 2010/05/20 00:31:45 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,12 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.4  2010/05/20 00:31:45  bruno
+# gonna get some serious 'star power' off this commit.
+#
+# put in code to dynamically configure the static-routes file based on
+# networks (no longer the hardcoded 'eth0').
+#
 # Revision 1.3  2009/06/02 17:28:12  bruno
 # added all missing doc strings
 #
@@ -94,6 +100,8 @@ class Command(rocks.commands.remove.appliance.command):
 
 		if not address:
 			self.abort('requires address')
+		if len(args) == 0:
+			self.abort('must supply at least one appliance type')
 
 		for appliance in self.getApplianceNames(args):
 			self.db.execute("""

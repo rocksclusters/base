@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.2 2009/05/01 19:06:59 mjk Exp $
+# $Id: __init__.py,v 1.3 2010/05/20 00:31:45 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,12 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.3  2010/05/20 00:31:45  bruno
+# gonna get some serious 'star power' off this commit.
+#
+# put in code to dynamically configure the static-routes file based on
+# networks (no longer the hardcoded 'eth0').
+#
 # Revision 1.2  2009/05/01 19:06:59  mjk
 # chimi con queso
 #
@@ -73,10 +79,19 @@ class Command(rocks.commands.list.os.command):
 		self.beginOutput()
 
 		for os in self.getOSNames(args):
-			self.db.execute("""select network, netmask, gateway 
-				from os_routes r where os='%s'""" % os)
-			for row in self.db.fetchall():
-				self.addOutput(os, row)
+			self.db.execute("""select network, netmask, gateway,
+				subnet from os_routes r where os='%s'""" % os)
+
+			for (network, netmask, gateway, subnet) in \
+				self.db.fetchall():
+				if subnet:
+					rows = self.db.execute("""select name
+						from subnets where id = %s"""
+						% subnet)
+					if rows == 1:
+						gateway, = self.db.fetchone()
+
+				self.addOutput(os, (network, netmask, gateway))
 
 		self.endOutput(header=['os', 'network', 
 			'netmask', 'gateway' ], trimOwner=0)

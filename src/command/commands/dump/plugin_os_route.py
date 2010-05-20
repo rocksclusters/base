@@ -1,4 +1,4 @@
-# $Id: plugin_appliance_route.py,v 1.3 2010/05/20 00:31:44 bruno Exp $
+# $Id: plugin_os_route.py,v 1.1 2010/05/20 00:31:44 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -53,18 +53,12 @@
 # 
 # @Copyright@
 #
-# $Log: plugin_appliance_route.py,v $
-# Revision 1.3  2010/05/20 00:31:44  bruno
+# $Log: plugin_os_route.py,v $
+# Revision 1.1  2010/05/20 00:31:44  bruno
 # gonna get some serious 'star power' off this commit.
 #
 # put in code to dynamically configure the static-routes file based on
 # networks (no longer the hardcoded 'eth0').
-#
-# Revision 1.2  2009/05/01 19:06:56  mjk
-# chimi con queso
-#
-# Revision 1.1  2009/03/13 21:10:49  mjk
-# - added dump route commands
 #
 #
 
@@ -73,13 +67,13 @@ import rocks.commands
 class Plugin(rocks.commands.Plugin):
 
 	def provides(self):
-		return 'appliance-route'
+		return 'os-route'
 		
 	def requires(self):
-		return [ 'appliance', 'network' ]
+		return [ 'os', 'network' ]
 		
 	def run(self, args):
-		self.owner.addText(self.owner.command('dump.appliance.route', 
+		self.owner.addText(self.owner.command('dump.os.route', 
 			[]))
 		
 

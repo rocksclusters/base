@@ -4,6 +4,12 @@
 
 	<changelog>
 	$Log: base.xml,v $
+	Revision 1.60  2010/05/20 00:31:44  bruno
+	gonna get some serious 'star power' off this commit.
+	
+	put in code to dynamically configure the static-routes file based on
+	networks (no longer the hardcoded 'eth0').
+	
 	Revision 1.59  2010/05/17 20:58:21  bruno
 	generate firewall rules from the database
 	
@@ -272,7 +278,15 @@
 		<tail>dhcp-server</tail>
 		<tail>dns-server</tail>
 		<tail>login-server</tail>
-		<tail>server-firewall</tail>
+	</order>
+
+	<order tail="server-firewall">
+		<head>networking-server</head>
+		<head>database-data</head>
+	</order>
+
+	<order tail="client-firewall">
+		<head>networking-client</head>
 	</order>
 
 	<order head="grub">
@@ -482,8 +496,6 @@
 		<to>database-data</to>
 	</edge>
 	
-
-
 	<edge from="wan" to="null"/>
 
 	<edge from="postshell"   to="ethers-server-postshell"/>
@@ -492,8 +504,5 @@
                 <to>rsh</to>
         </edge>
 
-
-
 </graph>
-
 

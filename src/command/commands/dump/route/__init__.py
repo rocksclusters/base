@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.2 2009/05/01 19:06:57 mjk Exp $
+# $Id: __init__.py,v 1.3 2010/05/20 00:31:45 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,12 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.3  2010/05/20 00:31:45  bruno
+# gonna get some serious 'star power' off this commit.
+#
+# put in code to dynamically configure the static-routes file based on
+# networks (no longer the hardcoded 'eth0').
+#
 # Revision 1.2  2009/05/01 19:06:57  mjk
 # chimi con queso
 #
@@ -69,8 +75,15 @@ class Command(rocks.commands.dump.command):
 	"""
 
 	def run(self, params, args):
-		self.db.execute("""select network, netmask, gateway from
-			global_routes""")
-		for n, m, g in self.db.fetchall():
+		self.db.execute("""select network, netmask, gateway, subnet
+			from global_routes""")
+
+		for n, m, g, s in self.db.fetchall():
+			if s:
+				rows = self.db.execute("""select name from
+					subnets where id = %s""" % s)
+				if rows == 1:
+					g, = self.db.fetchone()
+
 			self.dump('add route %s %s netmask=%s' % (n, g, m))
 

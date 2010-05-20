@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.6 2010/01/14 23:42:30 bruno Exp $
+# $Id: __init__.py,v 1.7 2010/05/20 00:31:44 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,12 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.7  2010/05/20 00:31:44  bruno
+# gonna get some serious 'star power' off this commit.
+#
+# put in code to dynamically configure the static-routes file based on
+# networks (no longer the hardcoded 'eth0').
+#
 # Revision 1.6  2010/01/14 23:42:30  bruno
 # added 'host' argument to help section
 #
@@ -109,6 +115,20 @@ class Command(rocks.commands.add.host.command):
 			self.abort('address required')
 		if not gateway:
 			self.abort('gateway required')
+
+		#
+		# determine if this is a subnet identifier
+		#
+		subnet = 0
+		rows = self.db.execute("""select id from subnets where
+			name = '%s' """ % gateway)
+
+		if rows == 1:
+			subnet, = self.db.fetchone()
+			gateway = 'NULL'
+		else:
+			subnet = 'NULL'
+			gateway = "'%s'" % gateway
 		
 		# Verify the route doesn't already exist.  If it does
 		# for any of the hosts abort.
@@ -128,5 +148,6 @@ class Command(rocks.commands.add.host.command):
 		for host in hosts:	
 			self.db.execute("""insert into node_routes values 
 				((select id from nodes where name='%s'),
-				'%s', '%s', '%s')""" %
-                	        (host, address, netmask, gateway))
+				'%s', '%s', %s, %s)""" %
+                	        (host, address, netmask, gateway, subnet))
+

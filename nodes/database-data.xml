@@ -17,6 +17,12 @@
 
   <changelog>
   $Log: database-data.xml,v $
+  Revision 1.58  2010/05/20 00:31:44  bruno
+  gonna get some serious 'star power' off this commit.
+
+  put in code to dynamically configure the static-routes file based on
+  networks (no longer the hardcoded 'eth0').
+
   Revision 1.57  2010/03/25 00:30:39  bruno
   the start of the login appliance
 
@@ -542,9 +548,9 @@ if os.path.exists('/tmp/site.attrs'):
 	default gateway (backend nodes)
 	frontend public interface over private network
 -->
-/opt/rocks/bin/rocks add route 224.0.0.0 eth0 netmask=255.255.255.0
+/opt/rocks/bin/rocks add route 224.0.0.0 private netmask=255.255.255.0
 
-/opt/rocks/bin/rocks add route 255.255.255.255 eth0 netmask=255.255.255.255
+/opt/rocks/bin/rocks add route 255.255.255.255 private netmask=255.255.255.255
 
 /opt/rocks/bin/rocks add host route &Kickstart_PrivateHostname; 0.0.0.0 \
 	&Kickstart_PublicGateway; netmask=0.0.0.0
@@ -582,7 +588,6 @@ cp /tmp/interfaces /mnt/sysimage/tmp
 import sys
 import os
 import string
-import rocks.ConfigNetworks
 
 file = open('/tmp/interfaces', 'r')
 
@@ -603,9 +608,7 @@ for line in file.readlines():
 
 		#
 		# always make the first interface look like the one we
-		# kickstarted from. this allows us to use the logic in
-		# ConfigNetworks and not have ConfigNetworks rearrange
-		# our NICs in order to assign eth0 to the kickstarted NIC
+		# kickstarted from.
 		#
 		if device == 'eth0':
 			entry = string.join([entry, 'ks'])
@@ -614,18 +617,8 @@ for line in file.readlines():
 
 file.close()
 
-#
-# connect to the database
-#
-confignetworks = rocks.ConfigNetworks.App('&Kickstart_PrivateHostname;')
+/opt/rocks/bin/rocks config host interface localhost
 
-confignetworks.params['user'] = [ 'apache', 'host' ]
-confignetworks.connect()
-confignetworks.getMacs()
-confignetworks.setPrimary()
-confignetworks.updateModules()
-confignetworks.adjustPrivateDevice()
-confignetworks.assignDeviceNames()
 </post>
 
 

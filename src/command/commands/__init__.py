@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.81 2010/05/07 23:13:31 bruno Exp $
+# $Id: __init__.py,v 1.82 2010/05/20 00:31:44 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,12 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.82  2010/05/20 00:31:44  bruno
+# gonna get some serious 'star power' off this commit.
+#
+# put in code to dynamically configure the static-routes file based on
+# networks (no longer the hardcoded 'eth0').
+#
 # Revision 1.81  2010/05/07 23:13:31  bruno
 # clean up the help info for the firewall commands
 #
@@ -1064,43 +1070,80 @@ class DatabaseConnection:
 		routes = {}
 		
 		# global
-		self.execute("""select network, netmask, gateway from
+		self.execute("""select network, netmask, gateway, subnet from
 			global_routes""")
-		for (n, m, g) in self.fetchall():
+		for (n, m, g, s) in self.fetchall():
+			if s:
+				rows = self.execute("""select net.device from
+					subnets s, networks net, nodes n where
+					s.id = %s and s.id = net.subnet and
+					net.node = n.id and n.name = '%s' """
+					% (s, host))
+				if rows == 1:
+					g, = self.fetchone()
+			
 			if showsource:
 				routes[n] = (m, g, 'G')
 			else:
 				routes[n] = (m, g)
 
 		# os
-		self.execute("""select r.network, r.netmask, r.gateway from
-			os_routes r, nodes n where
+		self.execute("""select r.network, r.netmask, r.gateway,
+			r.subnet from os_routes r, nodes n where
 			r.os=n.os and n.name='%s'"""  % host)
-		for (n, m, g) in self.fetchall():
+		for (n, m, g, s) in self.fetchall():
+			if s:
+				rows = self.execute("""select net.device from
+					subnets s, networks net, nodes n where
+					s.id = %s and s.id = net.subnet and
+					net.node = n.id and n.name = '%s' """
+					% (s, host))
+				if rows == 1:
+					g, = self.fetchone()
+
 			if showsource:
 				routes[n] = (m, g, 'O')
 			else:
 				routes[n] = (m, g)
 
 		# appliance		
-		self.execute("""select r.network, r.netmask, r.gateway from
+		self.execute("""select r.network, r.netmask, r.gateway,
+			r.subnet from
 			appliance_routes r,
 			nodes n,
 			memberships m,
 			appliances app where
 			n.membership=m.id and m.appliance=app.id and 
 			r.appliance=app.id and n.name='%s'""" % host)
-		for (n, m, g) in self.fetchall():
+		for (n, m, g, s) in self.fetchall():
+			if s:
+				rows = self.execute("""select net.device from
+					subnets s, networks net, nodes n where
+					s.id = %s and s.id = net.subnet and
+					net.node = n.id and n.name = '%s' """
+					% (s, host))
+				if rows == 1:
+					g, = self.fetchone()
+
 			if showsource:
 				routes[n] = (m, g, 'A')
 			else:
 				routes[n] = (m, g)
 
 		# host				
-		self.execute("""select r.network, r.netmask, r.gateway from
-			node_routes r, nodes n where
+		self.execute("""select r.network, r.netmask, r.gateway,
+			r.subnet from node_routes r, nodes n where
 			n.name='%s' and n.id=r.node""" % host)
-		for (n, m, g) in self.fetchall():
+		for (n, m, g, s) in self.fetchall():
+			if s:
+				rows = self.execute("""select net.device from
+					subnets s, networks net, nodes n where
+					s.id = %s and s.id = net.subnet and
+					net.node = n.id and n.name = '%s' """
+					% (s, host))
+				if rows == 1:
+					g, = self.fetchone()
+
 			if showsource:
 				routes[n] = (m, g, 'H')
 			else:

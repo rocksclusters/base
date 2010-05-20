@@ -1,4 +1,4 @@
-# $Id: plugin_route.py,v 1.2 2009/05/01 19:06:56 mjk Exp $
+# $Id: plugin_route.py,v 1.3 2010/05/20 00:31:44 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,12 @@
 # @Copyright@
 #
 # $Log: plugin_route.py,v $
+# Revision 1.3  2010/05/20 00:31:44  bruno
+# gonna get some serious 'star power' off this commit.
+#
+# put in code to dynamically configure the static-routes file based on
+# networks (no longer the hardcoded 'eth0').
+#
 # Revision 1.2  2009/05/01 19:06:56  mjk
 # chimi con queso
 #
@@ -67,6 +73,9 @@ class Plugin(rocks.commands.Plugin):
 
 	def provides(self):
 		return 'route'
+
+	def requires(self):
+		return [ 'network' ]
 		
 	def run(self, args):
 		self.owner.addText(self.owner.command('dump.route', []))

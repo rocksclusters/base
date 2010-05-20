@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.3 2009/06/19 21:07:34 mjk Exp $
+# $Id: __init__.py,v 1.4 2010/05/20 00:31:44 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,12 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.4  2010/05/20 00:31:44  bruno
+# gonna get some serious 'star power' off this commit.
+#
+# put in code to dynamically configure the static-routes file based on
+# networks (no longer the hardcoded 'eth0').
+#
 # Revision 1.3  2009/06/19 21:07:34  mjk
 # - added dumpHostname to dump commands (use localhost for frontend)
 # - added add commands for attrs
@@ -80,10 +86,18 @@ class Command(rocks.commands.dump.host.command):
 	def run(self, params, args):
 		for host in self.getHostnames(args):
 			self.db.execute("""
-				select r.network, r.netmask, r.gateway from
-				node_routes r, nodes n where
+				select r.network, r.netmask, r.gateway,
+				r.subnet from node_routes r, nodes n where
 				r.node=n.id and n.name='%s'""" % host)
-			for n, m, g in self.db.fetchall():
+
+			for n, m, g, s in self.db.fetchall():
+				if s:
+					rows = self.db.execute("""select name
+						from subnets where id = %s"""
+						% s)
+					if rows == 1:
+						g, = self.db.fetchone()
+
 				self.dump('add host route %s %s %s netmask=%s'
 					% (self.dumpHostname(host), n, g, m))
 

@@ -1,4 +1,4 @@
-# $Id: plugin_os_firewall.py,v 1.1 2010/05/07 18:27:43 bruno Exp $
+# $Id: plugin_os_firewall.py,v 1.2 2010/05/20 00:31:44 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,12 @@
 # @Copyright@
 #
 # $Log: plugin_os_firewall.py,v $
+# Revision 1.2  2010/05/20 00:31:44  bruno
+# gonna get some serious 'star power' off this commit.
+#
+# put in code to dynamically configure the static-routes file based on
+# networks (no longer the hardcoded 'eth0').
+#
 # Revision 1.1  2010/05/07 18:27:43  bruno
 # closer
 #
@@ -67,7 +73,7 @@ class Plugin(rocks.commands.Plugin):
 		return 'os-firewall'
 		
 	def requires(self):
-		return [ 'os', 'firewall' ]
+		return [ 'os', 'firewall', 'network' ]
 		
 	def run(self, args):
 		self.owner.addText(self.owner.command('dump.os.firewall', []))

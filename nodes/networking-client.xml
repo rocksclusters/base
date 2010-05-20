@@ -15,6 +15,12 @@ All rights reserved. Rocks(tm) v4.3 www.rocksclusters.org
 
 <changelog>
 $Log: networking-client.xml,v $
+Revision 1.8  2010/05/20 00:31:44  bruno
+gonna get some serious 'star power' off this commit.
+
+put in code to dynamically configure the static-routes file based on
+networks (no longer the hardcoded 'eth0').
+
 Revision 1.7  2009/03/31 00:23:29  anoop
 Merged the remainder of the solaris XML files to the base roll
 
@@ -46,13 +52,8 @@ this also includes changes to help build and configure VMs for V.
 
 <post os='linux'>
 
-<eval shell="/opt/rocks/bin/python" mode="xml">
-import rocks.ConfigNetworks
-
-confignetworks = rocks.ConfigNetworks.App('&hostname;')
-
-confignetworks.params['user'] = [ 'apache', 'host' ]
-confignetworks.run()
+<eval>
+/opt/rocks/bin/rocks config host interface &hostname;
 </eval>
 
 </post>

@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.4 2009/07/21 21:50:51 bruno Exp $
+# $Id: __init__.py,v 1.5 2010/05/20 00:31:44 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,12 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.5  2010/05/20 00:31:44  bruno
+# gonna get some serious 'star power' off this commit.
+#
+# put in code to dynamically configure the static-routes file based on
+# networks (no longer the hardcoded 'eth0').
+#
 # Revision 1.4  2009/07/21 21:50:51  bruno
 # fix help
 #
@@ -88,7 +94,8 @@ class Command(rocks.commands.add.command):
 	</arg>
 	
 	<arg type='string' name='gateway'>
-	Network or device gateway
+	Network (e.g., IP address), subnet name (e.g., 'private', 'public'), or
+	a device gateway (e.g., 'eth0).
 	</arg>
 
 	<param type='string' name='netmask'>
@@ -106,6 +113,20 @@ class Command(rocks.commands.add.command):
 			
 		address = args[0]
 		gateway = args[1]
+
+		#
+		# determine if this is a subnet identifier
+		#
+		subnet = 0
+		rows = self.db.execute("""select id from subnets where
+			name = '%s' """ % gateway)
+
+		if rows == 1:
+			subnet, = self.db.fetchone()
+			gateway = 'NULL'
+		else:
+			subnet = 'NULL'
+			gateway = "'%s'" % gateway
 		
 		rows = self.db.execute("""select * from global_routes
 			where network='%s'""" % address)
@@ -113,5 +134,6 @@ class Command(rocks.commands.add.command):
 			self.abort('route exists')
 			
 		self.db.execute("""insert into global_routes
-                                values ('%s', '%s', '%s')""" %
-                                (address, netmask, gateway))
+                                values ('%s', '%s', %s, %s)""" %
+                                (address, netmask, gateway, subnet))
+

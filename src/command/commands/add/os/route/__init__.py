@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.3 2009/07/21 21:50:51 bruno Exp $
+# $Id: __init__.py,v 1.4 2010/05/20 00:31:44 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,12 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.4  2010/05/20 00:31:44  bruno
+# gonna get some serious 'star power' off this commit.
+#
+# put in code to dynamically configure the static-routes file based on
+# networks (no longer the hardcoded 'eth0').
+#
 # Revision 1.3  2009/07/21 21:50:51  bruno
 # fix help
 #
@@ -71,7 +77,11 @@ import rocks.commands
 class Command(rocks.commands.add.os.command):
 	"""
 	Add a route for an OS type
-	
+
+	<arg type='string' name='os'>
+	The OS type (e.g., 'linux', 'sunos', etc.). This argument is required.
+	</arg>
+
 	<arg type='string' name='address'>
 	Host or network address
 	</arg>
@@ -93,12 +103,28 @@ class Command(rocks.commands.add.os.command):
 
 		(netmask,) = self.fillParams([('netmask', '255.255.255.255')])
 		
-		oses = self.getOSNames(args)
-		
 		if not address:
 			self.abort('address required')
 		if not gateway:
 			self.abort('gateway required')
+		if len(args) == 0:
+			self.abort('must supply at least one OS type')
+
+		oses = self.getOSNames(args)
+
+		#
+		# determine if this is a subnet identifier
+		#
+		subnet = 0
+		rows = self.db.execute("""select id from subnets where
+			name = '%s' """ % gateway)
+
+		if rows == 1:
+			subnet, = self.db.fetchone()
+			gateway = 'NULL'
+		else:
+			subnet = 'NULL'
+			gateway = "'%s'" % gateway
 		
 		# Verify the route doesn't already exist.  If it does
 		# for any of the OSes abort.
@@ -116,5 +142,6 @@ class Command(rocks.commands.add.os.command):
 		
 		for os in oses:	
 			self.db.execute("""insert into os_routes values 
-				('%s', '%s', '%s', '%s')""" %
-                	        (os, address, netmask, gateway))
+				('%s', '%s', '%s', %s, %s)""" %
+                	        (os, address, netmask, gateway, subnet))
+
