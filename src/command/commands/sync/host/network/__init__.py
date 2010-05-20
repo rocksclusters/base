@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.12 2010/05/20 00:31:45 bruno Exp $
+# $Id: __init__.py,v 1.13 2010/05/20 22:07:33 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.13  2010/05/20 22:07:33  bruno
+# fix
+#
 # Revision 1.12  2010/05/20 00:31:45  bruno
 # gonna get some serious 'star power' off this commit.
 #
@@ -180,12 +183,12 @@ class Command(rocks.commands.sync.host.command):
 					#
 					time.sleep(0.001)
 
-			cmd = 'ssh %s "/sbin/service iptables stop" ' % host
+			cmd = 'ssh %s "/sbin/service iptables stop ' % host
 			cmd += '> /dev/null 2>&1'
-			cmd += ' ; "/sbin/service network restart" '
+			cmd += ' ; /sbin/service network restart '
 			cmd += '> /dev/null 2>&1'
-			cmd += ' ; "/sbin/service iptables start" '
-			cmd += '> /dev/null 2>&1'
+			cmd += ' ; /sbin/service iptables start '
+			cmd += '> /dev/null 2>&1" '
 
 			p = Parallel(cmd)
 			threads.append(p)
