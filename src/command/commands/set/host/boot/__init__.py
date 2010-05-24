@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.6 2009/05/01 19:07:03 mjk Exp $
+# $Id: __init__.py,v 1.7 2010/05/24 17:41:55 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.7  2010/05/24 17:41:55  bruno
+# fix help doc.
+#
 # Revision 1.6  2009/05/01 19:07:03  mjk
 # chimi con queso
 #
@@ -89,7 +92,8 @@ class Command(rocks.commands.set.host.command):
 	<example cmd='set host boot compute-0-0 action=os'>
 	On the next boot, compute-0-0 will boot the profile based on its
 	"run action". To see the node's "run action", execute:
-	"rocks list host runaction compute-0-0".
+	"rocks list host compute-0-0" and examine the value in the
+	"RUNACTION" column.
 	</example>
 	"""
 
