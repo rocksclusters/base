@@ -9,6 +9,9 @@ Server node firewall rules
 
 <changelog>
 $Log: server-firewall.xml,v $
+Revision 1.7  2010/05/24 23:28:14  bruno
+ssh needs a default 'RELATED,ESTABLISHED' rule
+
 Revision 1.6  2010/05/17 20:58:22  bruno
 generate firewall rules from the database
 
@@ -44,6 +47,9 @@ this also includes changes to help build and configure VMs for V.
 	protocol="tcp" action="ACCEPT" chain="INPUT" \
 	flags="-m state --state NEW"
 
+/opt/rocks/bin/rocks add firewall network=public service="all" \
+	protocol="all" action="ACCEPT" chain="INPUT" \
+	flags="-m state --state RELATED,ESTABLISHED"
 
 <!-- define the frontend-specific firewall rules -->
 
@@ -53,10 +59,6 @@ this also includes changes to help build and configure VMs for V.
 
 /opt/rocks/bin/rocks add host firewall localhost network=private \
 	service="all" protocol="all" action="ACCEPT" chain="FORWARD"
-
-/opt/rocks/bin/rocks add host firewall localhost network=public \
-	service="all" protocol="all" action="ACCEPT" chain="INPUT" \
-	flags="-m state --state ESTABLISHED,RELATED"
 
 /opt/rocks/bin/rocks add host firewall localhost output-network=public \
 	service="nat" protocol="all" action="MASQUERADE" chain="POSTROUTING"
