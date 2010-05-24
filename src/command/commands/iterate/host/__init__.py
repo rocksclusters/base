@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.3 2010/02/22 23:11:03 mjk Exp $
+# $Id: __init__.py,v 1.4 2010/05/24 17:18:14 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.4  2010/05/24 17:18:14  bruno
+# exclude the frontend.
+#
 # Revision 1.3  2010/02/22 23:11:03  mjk
 # - rocks iterface host using os.system not popen
 #   - can now be used like cluster-fork
@@ -118,6 +121,11 @@ class Command(command):
 			self.abort('requires a command')
 
 		for host in self.getHostnames(args):
+			if host == self.db.getHostname('localhost'):
+				#
+				# don't include the frontend
+				#
+				continue
 
 			# Turn the wildcard '%' into the hostname, and '%%' into
 			# a single '%'.
