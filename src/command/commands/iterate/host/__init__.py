@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.4 2010/05/24 17:18:14 bruno Exp $
+# $Id: __init__.py,v 1.5 2010/05/24 17:21:47 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.5  2010/05/24 17:21:47  bruno
+# the right fix for the last checkin
+#
 # Revision 1.4  2010/05/24 17:18:14  bruno
 # exclude the frontend.
 #
@@ -120,13 +123,23 @@ class Command(command):
 		if not cmd:
 			self.abort('requires a command')
 
-		for host in self.getHostnames(args):
-			if host == self.db.getHostname('localhost'):
-				#
-				# don't include the frontend
-				#
-				continue
+		hosts = []
+		if len(args) == 0:
+			#
+			# no hosts are supplied. we need to exclude the frontend
+			#
+			for host in self.getHostnames(args):
+				if host == self.db.getHostname('localhost'):
+					#
+					# don't include the frontend
+					#
+					continue
 
+				hosts.append(host)
+		else:
+			hosts = self.getHostnames(args)
+			
+		for host in hosts:
 			# Turn the wildcard '%' into the hostname, and '%%' into
 			# a single '%'.
 
