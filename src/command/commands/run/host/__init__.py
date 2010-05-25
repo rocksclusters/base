@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.12 2010/05/19 20:29:57 bruno Exp $
+# $Id: __init__.py,v 1.13 2010/05/25 22:42:16 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.13  2010/05/25 22:42:16  bruno
+# fix 'arg' and 'param' in help
+#
 # Revision 1.12  2010/05/19 20:29:57  bruno
 # fix
 #
@@ -164,40 +167,40 @@ class Command(command):
 	The command to run on the list of hosts.
 	</arg>
 
-	<arg type='boolean' name='managed'>
+	<param type='boolean' name='managed'>
 	Run the command only on 'managed' hosts, that is, hosts that generally
 	have an ssh login. Default is 'yes'.
-	</arg>
+	</param>
 
-	<arg type='boolean' name='x11'>
+	<param type='boolean' name='x11'>
 	If 'no', disable X11 forwarding when connecting to hosts.
 	Default is 'yes'.
-	</arg>
+	</param>
 
-	<arg type='string' name='timeout'>
+	<param type='string' name='timeout'>
 	Sets the maximum length of time (in seconds) that the command is
 	allowed to run.
 	Default is '30'.
-	</arg>
+	</param>
 
-	<arg type='string' name='delay'>
+	<param type='string' name='delay'>
 	Sets the time (in seconds) to delay between each executed command
 	on multiple hosts. For example, if the command is run on two
 	hosts and if the delay is 10, then the command will be executed on host
 	1, then 10 seconds later, the command will be executed on host 2.
 	Default is '0' (no delay).
-	</arg>
+	</param>
 
-	<arg type='string' name='stats'>
+	<param type='string' name='stats'>
 	Display performance statistics if this parameter is set to 'yes'.
 	Default is 'no'.
-	</arg>
+	</param>
 
-	<arg type='string' name='collate'>
+	<param type='string' name='collate'>
 	Prepend the hostname to every output line if this parameter is set to
 	'yes'.
 	Default is 'no'.
-	</arg>
+	</param>
 
 	<param type='string' name='command'>
 	Can be used in place of the 'command' argument.
