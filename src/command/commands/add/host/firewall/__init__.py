@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.3 2010/05/07 23:13:32 bruno Exp $
+# $Id: __init__.py,v 1.4 2010/05/25 21:23:46 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.4  2010/05/25 21:23:46  bruno
+# more firewall fixes
+#
 # Revision 1.3  2010/05/07 23:13:32  bruno
 # clean up the help info for the firewall commands
 #
@@ -134,11 +137,12 @@ class Command(rocks.commands.add.firewall.command):
 		hosts = self.getHostnames(args)
 
 		for host in hosts:
-			sql = """(select id from nodes where
+			sql = """node = (select id from nodes where
 				name = '%s') and""" % host
 
 			self.checkRule('node_firewall', sql, service, network,
-			outnetwork, chain, action, protocol, flags, comment)
+				outnetwork, chain, action, protocol, flags,
+				comment)
 
 		#
 		# all the rules are valid, now let's add them

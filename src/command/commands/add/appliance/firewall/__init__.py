@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.2 2010/05/07 23:13:32 bruno Exp $
+# $Id: __init__.py,v 1.3 2010/05/25 21:23:46 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.3  2010/05/25 21:23:46  bruno
+# more firewall fixes
+#
 # Revision 1.2  2010/05/07 23:13:32  bruno
 # clean up the help info for the firewall commands
 #
@@ -129,7 +132,7 @@ class Command(rocks.commands.add.firewall.command,
 		apps = self.getApplianceNames(args)
 
 		for app in apps:
-			sql = """(select id from appliances where
+			sql = """appliance = (select id from appliances where
 				name = '%s') and""" % app
 
 			self.checkRule('appliance_firewall', sql, service,
