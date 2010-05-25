@@ -69,4 +69,32 @@ The host will now accept web traffic on its public interface.
 
 </section>
 
+
+<section>
+<title> Closing a Port in a Node's Firewall </title>
+
+<para>
+We'll use the example of closing port 3306 (the 'mysql' service) for the public
+network of compute-0-0.
+To close the port, execute:
+</para>
+
+<screen>
+# rocks close host firewall compute-0-0 network=public protocol=tcp service=3306
+</screen>
+
+<para>
+Now apply the configuration to the host:
+</para>
+
+<screen>
+# rocks sync host network compute-0-0
+</screen>
+
+<para>
+The host will now block all traffic to port 3306 on its public interface.
+</para>
+
+</section>
+
 </section>
