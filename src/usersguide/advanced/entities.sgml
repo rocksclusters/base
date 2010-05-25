@@ -4,4 +4,5 @@
 <!ENTITY bootflags SYSTEM "bootflags.sgml">
 <!ENTITY login SYSTEM "login.sgml">
 <!ENTITY bonding SYSTEM "bonding.sgml">
+<!ENTITY firewall SYSTEM "firewall.sgml">
 

@@ -1,6 +1,7 @@
 <chapter id="advanced-tasks" xreflabel="Advanced Tasks">
 	<title> Advanced Tasks </title>
 
+&firewall;
 &pxeflash;
 &login;
 &bonding;

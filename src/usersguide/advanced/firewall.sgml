@@ -1,0 +1,72 @@
+<section id="firewall"
+	xreflabel="Managing the Firewall on the Cluster Nodes">
+<title> Managing the Firewall on the Cluster Nodes </title>
+
+<para>
+The firewall for all cluster nodes (including the frontend) is managed with
+the Rocks command line.
+In this section, we'll describe how to open and close ports for cluster nodes.
+</para>
+
+<section>
+<title> Opening a Port in a Node's Firewall </title>
+
+<para>
+We'll use the example of opening port 80 (the 'www' service) for the public
+network of compute-0-0.
+To open the port, execute:
+</para>
+
+<screen>
+# rocks open host firewall compute-0-0 network=public protocol=tcp service=www
+</screen>
+
+<para>
+Then we can see the what the resulting firewall rules will look like:
+</para>
+
+<screen>
+<![CDATA[
+# rocks report host firewall compute-0-0
+<file name="/etc/sysconfig/iptables" perms="500">
+*filter
+:INPUT ACCEPT [0:0]
+:FORWARD DROP [0:0]
+:OUTPUT ACCEPT [0:0]
+-A INPUT -i eth0 -j ACCEPT
+-A INPUT -i eth1 -m state --state RELATED,ESTABLISHED -j ACCEPT
+-A INPUT -i eth1 -p tcp --dport ssh -m state --state NEW -j ACCEPT
+-A INPUT -i eth1 -p tcp --dport www -j ACCEPT
+-A INPUT -p tcp --dport 0:1024 -j REJECT
+-A INPUT -p udp --dport 0:1024 -j REJECT
+COMMIT
+</file>
+]]>
+</screen>
+
+<para>
+In the above example, eth0 is associated with the private network and
+eth1 is associated with the public network.
+</para>
+
+<para>
+Notice the line: "-A INPUT -i eth1 -p tcp --dport www -j ACCEPT".
+This is the line in the firewall configuration that will allow web traffic to
+flow in and out of compute-0-0.
+</para>
+
+<para>
+Now apply the configuration to the host:
+</para>
+
+<screen>
+# rocks sync host network compute-0-0
+</screen>
+
+<para>
+The host will now accept web traffic on its public interface.
+</para>
+
+</section>
+
+</section>
