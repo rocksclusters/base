@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.13 2010/05/20 22:07:33 bruno Exp $
+# $Id: __init__.py,v 1.14 2010/05/27 00:11:33 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.14  2010/05/27 00:11:33  bruno
+# firewall fixes
+#
 # Revision 1.13  2010/05/20 22:07:33  bruno
 # fix
 #
@@ -143,14 +146,21 @@ class Command(rocks.commands.sync.host.command):
 					#
 					time.sleep(0.001)
 
+			#
+			# get the attributes for the host
+			#
+			attrs = self.db.getHostAttrs(host)
+
 			cmd = '/opt/rocks/bin/rocks report host interface '
 			cmd += '%s | ' % host
-			cmd += '/opt/rocks/bin/rocks report script | '
+			cmd += '/opt/rocks/bin/rocks report script '
+			cmd += 'attrs="%s" | ' % attrs
 			cmd += 'ssh %s bash > /dev/null 2>&1 ' % host
 
 			cmd += '; /opt/rocks/bin/rocks report host network '
 			cmd += '%s | ' % host
-			cmd += '/opt/rocks/bin/rocks report script | '
+			cmd += '/opt/rocks/bin/rocks report script '
+			cmd += 'attrs="%s" | ' % attrs
 			cmd += 'ssh %s bash > /dev/null 2>&1 ' % host
 
 			cmd += '; /opt/rocks/bin/rocks report host route '
@@ -160,7 +170,8 @@ class Command(rocks.commands.sync.host.command):
 
 			cmd += '; /opt/rocks/bin/rocks report host firewall '
 			cmd += '%s | ' % host
-			cmd += '/opt/rocks/bin/rocks report script | '
+			cmd += '/opt/rocks/bin/rocks report script '
+			cmd += 'attrs="%s" | ' % attrs
 			cmd += 'ssh %s bash > /dev/null 2>&1 ' % host
 
 			p = Parallel(cmd)

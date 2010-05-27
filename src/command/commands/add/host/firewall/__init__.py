@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.4 2010/05/25 21:23:46 bruno Exp $
+# $Id: __init__.py,v 1.5 2010/05/27 00:11:32 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.5  2010/05/27 00:11:32  bruno
+# firewall fixes
+#
 # Revision 1.4  2010/05/25 21:23:46  bruno
 # more firewall fixes
 #
@@ -92,8 +95,8 @@ class Command(rocks.commands.add.firewall.command):
 	</param>
 	
         <param type='string' name='network'>
-        The network this rule service should be applied to. This is a named network
-        (e.g., 'private') and must be one listed by the command
+        The network this rule service should be applied to. This is a named
+	network (e.g., 'private') and must be one listed by the command
         'rocks list network'.
 	</param>
 
@@ -111,6 +114,16 @@ class Command(rocks.commands.add.firewall.command):
         <param type='string' name='action'>
 	The iptables 'action' this rule should be applied to (e.g.,
 	ACCEPT, REJECT, DROP).
+	</param>
+
+        <param type='string' name='flags'>
+	Optional flags associated with this rule. An example flag is:
+	"-m state --state RELATED,ESTABLISHED".
+	</param>
+
+        <param type='string' name='comment'>
+	A comment associated with this rule. The comment will be printed
+	directly above the rule in the firewall configuration file.
 	</param>
 	"""
 

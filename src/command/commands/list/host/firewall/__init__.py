@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.4 2010/05/11 22:28:16 bruno Exp $
+# $Id: __init__.py,v 1.5 2010/05/27 00:11:32 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.5  2010/05/27 00:11:32  bruno
+# firewall fixes
+#
 # Revision 1.4  2010/05/11 22:28:16  bruno
 # more tweaks
 #
@@ -78,8 +81,8 @@ class Command(rocks.commands.NetworkArgumentProcessor,
 	List the current firewall rules for the named hosts.
 
 	<arg optional='1' type='string' name='host' repeat='1'>
-	Zero, one or more host names. If no host names are supplied, the firewall
-	rules for all the known hosts are listed.
+	Zero, one or more host names. If no host names are supplied, the 
+	firewall rules for all the known hosts are listed.
 	</arg>
 	"""
 
@@ -95,7 +98,8 @@ class Command(rocks.commands.NetworkArgumentProcessor,
 		else:
 			output_network = self.getNetworkName(outid)
 
-		key = '%s-%s-%s-%s' % (inid, outid, service, protocol)
+		key = '%s-%s-%s-%s-%s-%s' % \
+			(inid, outid, service, protocol, chain, action)
 		rules[key] = (service, protocol, chain, action, network,
 			output_network, flags, comment, source)
 

@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.82 2010/05/20 00:31:44 bruno Exp $
+# $Id: __init__.py,v 1.83 2010/05/27 00:11:32 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.83  2010/05/27 00:11:32  bruno
+# firewall fixes
+#
 # Revision 1.82  2010/05/20 00:31:44  bruno
 # gonna get some serious 'star power' off this commit.
 #
@@ -1077,7 +1080,8 @@ class DatabaseConnection:
 				rows = self.execute("""select net.device from
 					subnets s, networks net, nodes n where
 					s.id = %s and s.id = net.subnet and
-					net.node = n.id and n.name = '%s' """
+					net.node = n.id and n.name = '%s'
+					and net.device not like 'vlan%%' """
 					% (s, host))
 				if rows == 1:
 					g, = self.fetchone()
@@ -1096,7 +1100,8 @@ class DatabaseConnection:
 				rows = self.execute("""select net.device from
 					subnets s, networks net, nodes n where
 					s.id = %s and s.id = net.subnet and
-					net.node = n.id and n.name = '%s' """
+					net.node = n.id and n.name = '%s' 
+					and net.device not like 'vlan%%' """
 					% (s, host))
 				if rows == 1:
 					g, = self.fetchone()
@@ -1120,7 +1125,8 @@ class DatabaseConnection:
 				rows = self.execute("""select net.device from
 					subnets s, networks net, nodes n where
 					s.id = %s and s.id = net.subnet and
-					net.node = n.id and n.name = '%s' """
+					net.node = n.id and n.name = '%s' 
+					and net.device not like 'vlan%%' """
 					% (s, host))
 				if rows == 1:
 					g, = self.fetchone()
@@ -1139,7 +1145,8 @@ class DatabaseConnection:
 				rows = self.execute("""select net.device from
 					subnets s, networks net, nodes n where
 					s.id = %s and s.id = net.subnet and
-					net.node = n.id and n.name = '%s' """
+					net.node = n.id and n.name = '%s'
+					and net.device not like 'vlan%%' """
 					% (s, host))
 				if rows == 1:
 					g, = self.fetchone()

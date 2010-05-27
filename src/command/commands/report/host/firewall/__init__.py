@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.4 2010/05/13 21:50:14 bruno Exp $
+# $Id: __init__.py,v 1.5 2010/05/27 00:11:32 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.5  2010/05/27 00:11:32  bruno
+# firewall fixes
+#
 # Revision 1.4  2010/05/13 21:50:14  bruno
 # almost there
 #
@@ -92,6 +95,7 @@ class Command(rocks.commands.HostArgumentProcessor,
 		self.addOutput(host, ':INPUT ACCEPT [0:0]')
 		self.addOutput(host, ':FORWARD DROP [0:0]')
 		self.addOutput(host, ':OUTPUT ACCEPT [0:0]')
+		self.addOutput(host, '-A INPUT -i lo -j ACCEPT')
 
 
 	def translateService(self, service):
@@ -120,6 +124,7 @@ class Command(rocks.commands.HostArgumentProcessor,
 			rows = self.db.execute("""select net.device from
 				networks net, nodes n where
 				net.node = n.id and n.name = '%s' and
+				net.device not like 'vlan%%' and
 				net.subnet = %s""" % (host, '%s' % inid))
 
 			if rows == 1:
@@ -142,6 +147,7 @@ class Command(rocks.commands.HostArgumentProcessor,
 			rows = self.db.execute("""select net.device from
 				networks net, nodes n where
 				net.node = n.id and n.name = '%s' and
+				net.device not like 'vlan%%' and
 				net.subnet = %s""" % (host, '%s' % outid))
 
 			if rows == 1:
@@ -204,12 +210,32 @@ class Command(rocks.commands.HostArgumentProcessor,
 
 		self.makeRules(host, rules, comments)
 
+		# os
+		self.db.execute("""select insubnet, outsubnet, service,
+			protocol, action, chain, flags, comment
+			from os_firewall where
+			os = (select os from nodes where name = '%s') and
+			action = '%s' order by chain""" % (host, action))
+
+		self.makeRules(host, rules, comments)
+
+		# appliance
+		self.db.execute("""select insubnet, outsubnet, service,
+			protocol, action, chain, flags, comment
+			from appliance_firewall where
+			appliance = (select a.id from appliances a,
+			nodes n, memberships m where n.name = '%s' and
+			n.membership = m.id and m.appliance = a.id) and
+			action = '%s' order by chain""" % (host, action))
+
+		self.makeRules(host, rules, comments)
+
 		# host
-		self.db.execute("""select nf.insubnet, nf.outsubnet, nf.service,
-			nf.protocol, nf.action, nf.chain, nf.flags, nf.comment
-			from node_firewall nf, nodes n where
-			nf.action = '%s' and nf.node = n.id and
-			n.name = '%s' order by chain""" % (action, host))
+		self.db.execute("""select insubnet, outsubnet, service,
+			protocol, action, chain, flags, comment
+			from node_firewall where
+			node = (select id from nodes where name = '%s') and
+			action = '%s' order by chain""" % (host, action))
 
 		self.makeRules(host, rules, comments)
 
@@ -224,17 +250,37 @@ class Command(rocks.commands.HostArgumentProcessor,
 
 		# global
 		rows = self.db.execute("""select * from
-			global_firewall where chain = 'POSTROUTING'
-			and action = 'MASQUERADE' and service = 'nat' """)
+			global_firewall where chain = 'POSTROUTING' and
+			action = 'MASQUERADE' and service = 'nat' """)
+	
+		if rows > 0:
+			nat = 1
+
+		# os
+		rows = self.db.execute("""select * from
+			os_firewall where chain = 'POSTROUTING' and
+			os = (select os from nodes where name = '%s') and
+			action = 'MASQUERADE' and service = 'nat' """ % host)
+	
+		if rows > 0:
+			nat = 1
+
+		# appliance
+		rows = self.db.execute("""select * from
+			appliance_firewall where chain = 'POSTROUTING' and
+			appliance = (select a.id from appliances a,
+			nodes n, memberships m where n.name = '%s' and
+			n.membership = m.id and m.appliance = a.id) and
+			action = 'MASQUERADE' and service = 'nat' """ % host)
 	
 		if rows > 0:
 			nat = 1
 
 		# host
 		rows = self.db.execute("""select * from
-			node_firewall nf, nodes n where nf.chain = 'POSTROUTING'
-			and nf.action = 'MASQUERADE' and nf.service = 'nat'
-			and nf.node = n.id and n.name = '%s'""" % host)
+			node_firewall where chain = 'POSTROUTING' and
+			node = (select id from nodes where name = '%s') and
+			action = 'MASQUERADE' and service = 'nat'""" % host)
 	
 		if rows > 0:
 			nat = 1
@@ -263,6 +309,7 @@ class Command(rocks.commands.HostArgumentProcessor,
 			self.getPreamble(host)
 
 			rules, comments = self.getRules(host, 'ACCEPT')
+
 			keys = rules.keys()
 			keys.sort()
 			for key in keys:

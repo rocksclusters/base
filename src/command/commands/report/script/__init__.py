@@ -1,5 +1,5 @@
 #
-# $Id: __init__.py,v 1.7 2010/04/30 22:03:25 bruno Exp $
+# $Id: __init__.py,v 1.8 2010/05/27 00:11:32 bruno Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.8  2010/05/27 00:11:32  bruno
+# firewall fixes
+#
 # Revision 1.7  2010/04/30 22:03:25  bruno
 # 'rocks report script' can now process attributes
 #
@@ -90,6 +93,18 @@ class Command(rocks.commands.report.command):
 	"""
 	Take STDIN XML input and create a shell script that can be executed
 	on a host.
+
+	<param optional='1' type='string' name='os'>
+	The OS type.
+	</param>
+
+	<param optional='1' type='string' name='arch'>
+	The architecture type.
+	</param>
+
+	<param optional='1' type='string' name='attrs'>
+	Attributes to be used while building the output shell script.
+	</param>
 
 	<example cmd='report host interface compute-0-0 | rocks report script'>
 	Take the network interface XML output from 'rocks report host interface'
