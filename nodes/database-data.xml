@@ -17,6 +17,9 @@
 
   <changelog>
   $Log: database-data.xml,v $
+  Revision 1.60  2010/06/07 20:32:42  bruno
+  the ipmi appliance is dead
+
   Revision 1.59  2010/05/20 20:59:10  bruno
   pulled my head of out of my keister and figured out how to pass parameters
   to 'rocks config host interface'
@@ -503,7 +506,6 @@ if os.path.exists('/tmp/site.attrs'):
 /opt/rocks/bin/rocks add appliance nas      membership='NAS Appliance' node=nas 
 /opt/rocks/bin/rocks add appliance network  membership='Ethernet Switch'
 /opt/rocks/bin/rocks add appliance power    membership='Power Distribution Unit'
-/opt/rocks/bin/rocks add appliance ipmi     membership=IPMI
 
 <!--	Set managed attribute for appliances.
 	This determines whether the appliances
@@ -514,7 +516,6 @@ if os.path.exists('/tmp/site.attrs'):
 /opt/rocks/bin/rocks set appliance attr frontend managed false
 /opt/rocks/bin/rocks set appliance attr network	 managed false
 /opt/rocks/bin/rocks set appliance attr power	 managed false
-/opt/rocks/bin/rocks set appliance attr ipmi	 managed false
 /opt/rocks/bin/rocks set appliance attr compute	 managed true
 /opt/rocks/bin/rocks set appliance attr nas	 managed true
 
