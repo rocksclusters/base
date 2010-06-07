@@ -8,6 +8,9 @@ Create a Login appliance
 
 <changelog>
 $Log: login-server.xml,v $
+Revision 1.2  2010/06/07 20:33:37  bruno
+the login server needs firewall rules similar to the frontend
+
 Revision 1.1  2010/03/25 00:30:39  bruno
 the start of the login appliance
 
@@ -24,4 +27,45 @@ the start of the login appliance
 </post>
 
 
+<post>
+
+<!-- define the login applicace specific firewall rules -->
+
+<![CDATA[
+
+/opt/rocks/bin/rocks add appliance firewall login chain=INPUT \
+	flags="-m state --state NEW --source &Kickstart_PublicNetwork;/&Kickstart_PublicNetmask;" \
+	protocol=tcp service=https action=ACCEPT network=public
+
+/opt/rocks/bin/rocks add appliance firewall login chain=INPUT \
+	flags="-m state --state NEW --source &Kickstart_PublicNetwork;/&Kickstart_PublicNetmask;" \
+	protocol=tcp service=www action=ACCEPT network=public
+
+]]>
+
+/opt/rocks/bin/rocks add appliance firewall login network=public \
+	output-network=private service="all" protocol="all" action="ACCEPT" \
+	chain="FORWARD" flags="-m state --state RELATED,ESTABLISHED"
+
+/opt/rocks/bin/rocks add appliance firewall login network=private \
+	service="all" protocol="all" action="ACCEPT" chain="FORWARD"
+
+/opt/rocks/bin/rocks add appliance firewall login output-network=public \
+	service="nat" protocol="all" action="MASQUERADE" chain="POSTROUTING"
+
+/opt/rocks/bin/rocks add appliance firewall login network=all service="8649" \
+	protocol="udp" action="REJECT" chain="INPUT" \
+	comment="block ganglia traffic from non-private interfaces"
+
+/opt/rocks/bin/rocks add appliance firewall login network=all service="3306" \
+	protocol="udp" action="REJECT" chain="INPUT" \
+	comment="block mysql traffic from non-private interfaces"
+
+/opt/rocks/bin/rocks add appliance firewall login network=all service="40000" \
+	protocol="udp" action="REJECT" chain="INPUT" \
+	comment="block foundation mysql traffic from non-private interfaces"
+
+</post>
+
 </kickstart> 
+
