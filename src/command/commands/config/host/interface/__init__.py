@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.9 2010/05/20 20:59:10 bruno Exp $
+# $Id: __init__.py,v 1.10 2010/06/07 23:50:55 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.10  2010/06/07 23:50:55  bruno
+# 'rocks config host interface' now uses the 'rocks swap host interface'
+# command when needed.
+#
 # Revision 1.9  2010/05/20 20:59:10  bruno
 # pulled my head of out of my keister and figured out how to pass parameters
 # to 'rocks config host interface'
@@ -99,48 +103,6 @@ class Command(rocks.commands.config.host.command):
 	are supplied, then they must be comma-separated.
 	</param>
 	"""
-
-	def swap(self, host, old_mac, old_iface, new_mac, new_iface):
-		#
-		# swap two interfaces
-		#
-		rows = self.db.execute("""select id,module,options from
-			networks where mac = '%s' and node = (select id from
-			nodes where name = '%s') """ % (old_mac, host))
-		if rows != 1:
-			return
-
-		(old_id, old_module, old_options) = self.db.fetchone()
-
-		rows = self.db.execute("""select id,module,options from
-			networks where mac = '%s' and node = (select id from
-			nodes where name = '%s') """ % (new_mac, host))
-		if rows != 1:
-			return
-
-		(new_id, new_module, new_options) = self.db.fetchone()
-
-		self.db.execute("""update networks set mac = '%s',
-			device = '%s' where id = %s""" % (old_mac, old_iface,
-			new_id))
-
-		self.db.execute("""update networks set mac = '%s',
-			device = '%s' where id = %s""" % (new_mac, new_iface,
-			old_id))
-
-		if old_module:
-			self.db.execute("""update networks set module = '%s'
-				where id = %s""" % (old_module, new_id))
-		if new_module:
-			self.db.execute("""update networks set module = '%s'
-				where id = %s""" % (new_module, old_id))
-		if old_options:
-			self.db.execute("""update networks set options = '%s'
-				where id = %s""" % (old_options, new_id))
-		if new_options:
-			self.db.execute("""update networks set options = '%s'
-				where id = %s""" % (new_options, old_id))
-
 
 	def run(self, params, args):
 		(iface, mac, module, flag) = self.fillParams([
@@ -254,8 +216,10 @@ class Command(rocks.commands.config.host.command):
 					# networking info for these two
 					# interfaces
 					#
-					self.swap(host, old_mac, old_iface,
-						mac, iface)
+					self.command('swap.host.interface',
+						(host, 'sync-config="no"',
+						'ifaces="%s,%s" %
+						(old_iface, iface)))
 
 					sync_config = 1
 
