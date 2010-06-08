@@ -1,5 +1,5 @@
 <!-- 
-$Id: networking-overview.sgml,v 1.8 2010/01/14 23:49:12 bruno Exp $
+$Id: networking-overview.sgml,v 1.9 2010/06/08 00:06:11 bruno Exp $
 
 Administration guide
 
@@ -7,6 +7,9 @@ Administration guide
 @Copyright@
 
 $Log: networking-overview.sgml,v $
+Revision 1.9  2010/06/08 00:06:11  bruno
+removed the eth0 restriction from the docs
+
 Revision 1.8  2010/01/14 23:49:12  bruno
 no more 'gateway' command.
 
@@ -99,9 +102,10 @@ Examples include: /24=255.255.255.0 (Class C subnet), /16=255.255.0.0 (Class B s
                 </imageobject>
 		<caption>
 			<para> FIGURE: Hosts can have any number of physical
-			networking devices. Every Rocks node must have eth0
-			defined (the private network).
-			Frontends also must have eth1 (the public network).
+			networking devices. Every Rocks node must have a
+			private network defined (e.g., eth0).
+			Frontends also must have a separate public network
+			(e.g., eth1).
 			Other devices could be myri0 (for Myrinet) or ib0 
 			(for Infiniband).
 			</para>

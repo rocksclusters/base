@@ -31,7 +31,7 @@ connected:
 
 <para>
 On the compute nodes, the Ethernet interface that Linux maps to
-<emphasis> eth0 </emphasis> must be connected to the cluster's Ethernet
+<emphasis> eth0 </emphasis> should be connected to the cluster's Ethernet
 switch.
 This network is considered <emphasis>private</emphasis>, that is, all
 traffic on this network is physically separated from the external public
@@ -40,9 +40,9 @@ network (e.g., the internet).
 
 <para>
 On the frontend, at least two ethernet interfaces are required.
-The interface that Linux maps to <emphasis> eth0 </emphasis> must be connected
+The interface that Linux maps to <emphasis> eth0 </emphasis> should be connected
 to the same ethernet network as the compute nodes.
-The interface that Linux maps to <emphasis> eth1 </emphasis> must be
+The interface that Linux maps to <emphasis> eth1 </emphasis> should  be
 connected to the external network (e.g., the internet or your organization's
 intranet).
 </para>

@@ -1,5 +1,5 @@
 <!-- 
-$Id: networking-vm.sgml,v 1.5 2009/08/18 17:58:44 bruno Exp $
+$Id: networking-vm.sgml,v 1.6 2010/06/08 00:06:11 bruno Exp $
 
 Administration guide
 
@@ -7,6 +7,9 @@ Administration guide
 @Copyright@
 
 $Log: networking-vm.sgml,v $
+Revision 1.6  2010/06/08 00:06:11  bruno
+removed the eth0 restriction from the docs
+
 Revision 1.5  2009/08/18 17:58:44  bruno
 how to cross-kickstart with PXE
 
@@ -111,8 +114,9 @@ SUBNET IFACE MAC               IP NETMASK MODULE NAME            VLAN
 ------ eth1  00:16:3e:00:00:80 -- ------- ------ --------------- 100   
 </screen>
 <para>
-In the above scenario, if hosted-vm-0-0-0 (Xen guest, DomU)  were to be booted on physical host 
-vm-container-0-0 (Dom0), The packets from the guest on eth0 will be tagged with VLAN=2, and eth1 with
+In the above scenario, if hosted-vm-0-0-0 (Xen guest, DomU) were to be booted
+on physical host vm-container-0-0 (Dom0), the packets from the guest on eth0
+will be tagged with VLAN=2, and eth1 with
 VLAN=100.  The host machine must have Logical VLAN interfaces called "vlan*.".  To make the proper
 bridge configuration, Rocks will match the VLANs of the guest interfaces to the VLANs on the host. 
 On the host, logical interface vlan2 is labeled as being on the private network (eth0) and logical vlan100

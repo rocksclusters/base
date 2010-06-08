@@ -1,5 +1,5 @@
 <!-- 
-$Id: networking-vlan.sgml,v 1.6 2009/08/18 17:58:44 bruno Exp $
+$Id: networking-vlan.sgml,v 1.7 2010/06/08 00:06:11 bruno Exp $
 
 Administration guide
 
@@ -7,6 +7,9 @@ Administration guide
 @Copyright@
 
 $Log: networking-vlan.sgml,v $
+Revision 1.7  2010/06/08 00:06:11  bruno
+removed the eth0 restriction from the docs
+
 Revision 1.6  2009/08/18 17:58:44  bruno
 how to cross-kickstart with PXE
 
@@ -29,8 +32,9 @@ First crack at networking section (incomplete).
 
 <section><title>Virtual LANs (VLANs) and Logical VLAN Bridges</title>
 <para>
-Linux supports VLAN tagging on virtual interfaces (i.e. IEEE 802.1Q).  For example, if a host  has
-physical interface eth0 (untagged), then the kernel can send and receive a tagged packets if a properly 
+Linux supports VLAN tagging on virtual interfaces (i.e., IEEE 802.1Q).
+For example, if a host has physical interface eth0 (untagged), then the
+kernel can send and receive a tagged packets if a properly 
 defined interface named eth0.&lt;vlan&gt; has been created and properly configured. Tagging allows the same 
 physical network to be partitioned into many different networks. A key feature of VLAN tagging is that
 a broadcast packet (e.g. a DHCPDISCOVER packet) only broadcasts on the tagged VLAN in which is was initially 

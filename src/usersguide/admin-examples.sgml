@@ -1,5 +1,5 @@
 <!-- 
-$Id: admin-examples.sgml,v 1.19 2009/12/12 19:03:50 bruno Exp $
+$Id: admin-examples.sgml,v 1.20 2010/06/08 00:06:11 bruno Exp $
 
 Administration guide
 
@@ -7,6 +7,9 @@ Administration guide
 @Copyright@
 
 $Log: admin-examples.sgml,v $
+Revision 1.20  2010/06/08 00:06:11  bruno
+removed the eth0 restriction from the docs
+
 Revision 1.19  2009/12/12 19:03:50  bruno
 fix comment
 
@@ -369,61 +372,59 @@ parameter:
 
 <!-- ####################################### -->
 
-<section><title>Working with and Modifying Network Configuration</title>
-<para> The Rocks database holds information that has been discovered about
+<section>
+<title>Working with and Modifying Network Configuration</title>
+
+<para>
+The Rocks database holds information that has been discovered about
 a host and in particular records network interface information including MAC 
 addresses and local device modules. The Rocks command line has several tools
-to inspect and update entries in the database. Reinstallation of a node will
-apply the changes to a node. See the following section on Swapping Frontend
-Ethernet Interfaces. 
+to inspect and update entries in the database.
 </para>
-<para> For the following discussion, a frontend named "jeebs" will be used for 
-illustation. To list the ethernet interfaces do the following:
-</para>
-<screen>
-# rocks list host interface jeebs
 
-SUBNET  IFACE MAC               IP             NETMASK       MODULE NAME                    VLAN 
-private eth0  00:0e:0c:a7:57:d7 10.1.1.1       255.0.0.0     e1000  jeebs                   ------ 
-public  eth1  00:19:b9:21:b8:b6 172.19.119.241 255.255.255.0 tg3    jeebs.rocksclusters.org ------
-</screen>
-<para> This describes the two interfaces, eth0 and eth1. Suppose that it is
-desired to swap these two interfaces. That is we would want to associate
-the mac address 00:0e:0c:a7:57:d7 with eth1. To do this we must also associate
-the correct module. The following will change the information only in the database. This uses the <computeroutput>rocks set host interface</computeroutput> 
-group of commands.
-</para>
-<screen>
-# rocks set host interface mac jeebs iface=eth1 mac=00:0e:0c:a7:57:d7
-# rocks set host interface module jeebs iface=eth1 module=e1000
-
-# rocks set host interface mac jeebs iface=eth0 mac=00:19:b9:21:b8:b6
-# rocks set host interface module jeebs iface=eth0 module=tg3
-</screen>
 <para>
-Then the updated database configuration is as follows
+For the following discussion, a compute node with a public interface will be
+used for illustation.
+To list the ethernet interfaces do the following:
 </para>
+
 <screen>
-# rocks list host interface jeebs
-SUBNET  IFACE MAC               IP             NETMASK       MODULE NAME                    VLAN
-private eth0  00:19:b9:21:b8:b6 10.1.1.1       255.0.0.0     tg3    jeebs                   ------ 
-public  eth1  00:0e:0c:a7:57:d7 172.19.119.241 255.255.255.0 e1000  jeebs.rocksclusters.org ------
+# rocks list host interface compute-0-0
+
+SUBNET  IFACE MAC               IP             NETMASK       MODULE NAME                   VLAN OPTIONS CHANNEL
+private eth0  00:0e:0c:a7:57:d7 10.1.255.254   255.255.0.0   ------ compute-0-0            ---- ------- -------
+public  eth1  00:19:b9:21:b8:b6 137.110.119.93 255.255.255.0 ------ kong.rocksclusters.org ---- ------- -------
 </screen>
 
 <para>
-To apply the changes to the frontend, execute:
+Suppose that it is desired to swap these two interfaces.
+That is, we would want to associate the private network with eth1 and the
+public network with eth0.
+The following will change the information only in the database.
+</para>
+
+<screen>
+# rocks swap host interface compute-0-0 ifaces=eth0,eth1
+
+# rocks list host interface compute-0-0
+SUBNET  IFACE MAC               IP             NETMASK       MODULE NAME                   VLAN OPTIONS CHANNEL
+public  eth0  00:0e:0c:a7:57:d7 137.110.119.93 255.255.255.0 ------ kong.rocksclusters.org ---- ------- -------
+private eth1  00:19:b9:21:b8:b6 10.1.255.254   255.255.0.0   ------ compute-0-0            ---- ------- -------
+</screen>
+
+<para>
+We see that eth0 is now associated with the public network, and eth1 is 
+associated with the private network.
+</para>
+
+<para>
+To apply the changes to compute-0-0, execute:
+</para>
 
 <screen>
 # rocks sync config
-# rocks sync host network localhost
+# rocks sync host network compute-0-0
 </screen>
-</para>
-
-<para>
-The above commands will update some configuration files on the frontend
-(e.g., /etc/sysconfig/network-scripts/ifcfg-*), then restart the frontend's
-network.
-</para>
 
 </section>
 
