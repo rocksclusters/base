@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: gen.py,v $
+# Revision 1.60  2010/06/10 19:59:25  mjk
+# <pre> handles interpreter attribute same as <post>
+#
 # Revision 1.59  2009/08/25 21:45:51  anoop
 # More patching support for Solaris.
 #   - support for including patches during creation of Rolls
@@ -916,12 +919,20 @@ class Generator_linux(Generator):
 	
 	def handle_pre(self, node):
 		attr = node.attributes
+		# Parse the interpreter attribute
+		if attr.getNamedItem((None, 'interpreter')):
+			interpreter = '--interpreter ' + \
+				attr.getNamedItem((None, 'interpreter')).value
+		else:
+			interpreter = ''
+		# Parse any additional arguments to the interpreter
+		# or to the post section
 		if attr.getNamedItem((None, 'arg')):
 			arg = attr.getNamedItem((None, 'arg')).value
 		else:
 			arg = ''
 		list = []
-		list.append(arg)
+		list.append(string.strip(string.join([interpreter, arg])))
 		list.append(self.getChildText(node))
 		self.ks['pre'].append(list)
 
