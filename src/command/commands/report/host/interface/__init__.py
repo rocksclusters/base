@@ -1,4 +1,4 @@
-#$Id: __init__.py,v 1.15 2010/05/03 19:30:25 anoop Exp $
+#$Id: __init__.py,v 1.16 2010/06/10 19:14:54 mjk Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.16  2010/06/10 19:14:54  mjk
+# use channel (not module) for ipmi
+#
 # Revision 1.15  2010/05/03 19:30:25  anoop
 # IPMI support for solaris
 #
@@ -336,7 +339,7 @@ class Command(rocks.commands.HostArgumentProcessor,
 
 
 			if device == 'ipmi':
-				self.writeIPMI(host, ip, module, netmask)
+				self.writeIPMI(host, ip, channel, netmask)
 				break # ipmi is special, skip the standard stuff
 
 			if device and device[0:4] != 'vlan':
