@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.10 2010/06/07 23:50:55 bruno Exp $
+# $Id: __init__.py,v 1.11 2010/06/14 17:45:27 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.11  2010/06/14 17:45:27  bruno
+# tweak
+#
 # Revision 1.10  2010/06/07 23:50:55  bruno
 # 'rocks config host interface' now uses the 'rocks swap host interface'
 # command when needed.
@@ -218,7 +221,7 @@ class Command(rocks.commands.config.host.command):
 					#
 					self.command('swap.host.interface',
 						(host, 'sync-config="no"',
-						'ifaces="%s,%s" %
+						'ifaces="%s,%s"' %
 						(old_iface, iface)))
 
 					sync_config = 1
