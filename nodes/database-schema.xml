@@ -18,6 +18,9 @@
 
   <changelog>
   $Log: database-schema.xml,v $
+  Revision 1.44  2010/06/15 19:36:51  bruno
+  add the public key table
+
   Revision 1.43  2010/05/20 00:31:44  bruno
   gonna get some serious 'star power' off this commit.
 
@@ -600,6 +603,14 @@ CREATE TABLE node_firewall (
   Chain         varchar(256) default NULL,
   Flags         varchar(256) default NULL,
   Comment       varchar(256) default NULL
+) TYPE=MyISAM;
+
+DROP TABLE IF EXISTS public_keys;
+CREATE TABLE public_keys (
+ ID		int(11) NOT NULL auto_increment,
+ Node		int(11) NOT NULL default '0',
+ Public_Key	varchar(4096) default NULL,
+ PRIMARY KEY (ID)
 ) TYPE=MyISAM;
 
 </file>
