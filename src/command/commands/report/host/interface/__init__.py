@@ -1,4 +1,4 @@
-#$Id: __init__.py,v 1.16 2010/06/10 19:14:54 mjk Exp $
+#$Id: __init__.py,v 1.17 2010/06/18 17:40:07 anoop Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.17  2010/06/18 17:40:07  anoop
+# Solaris Fix: Add netmask information to
+# hostname.<interface> file
+#
 # Revision 1.16  2010/06/10 19:14:54  mjk
 # use channel (not module) for ipmi
 #
@@ -279,16 +283,17 @@ class Command(rocks.commands.HostArgumentProcessor,
 	def run_sunos(self, host):
 		# Ignore IPMI devices and get all the other configured
 		# interfaces
-		self.db.execute("select networks.ip, networks.device " +\
-				"from networks, nodes where "	+\
-				"nodes.name='%s' " % (host)	+\
+		self.db.execute("select networks.ip, networks.device, "	+\
+				"subnets.netmask from networks, nodes, " +\
+				"subnets where nodes.name='%s' " % (host)+\
+				"and networks.subnet=subnets.id " +\
 				"and networks.device!='ipmi' "	+\
 				"and networks.node=nodes.id")
 
 		for row in self.db.fetchall():
-			(ip, device) = row
+			(ip, device, netmask) = row
 			if ip is not None:
-				self.write_host_file_sunos(ip, device)
+				self.write_host_file_sunos(ip, netmask, device)
 		
 		# Get all the IPMI interfaces
 		self.db.execute("select networks.ip, networks.module, " +\
@@ -316,9 +321,9 @@ class Command(rocks.commands.HostArgumentProcessor,
 			self.addOutput(host, 'ipmitool lan set %s auth ADMIN PASSWORD'
 				% (channel))
 	
-	def write_host_file_sunos(self, ip, device):
+	def write_host_file_sunos(self, ip, netmask, device):
 		s = '<file name="/etc/hostname.%s">\n' % device
-		s += "%s\n" % ip
+		s += "%s netmask %s\n" % (ip, netmask)
 		s += '</file>\n'
 		self.addText(s)
 		
