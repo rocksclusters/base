@@ -1,5 +1,5 @@
-# --------------------------------------------------- -*- Makefile -*- --
-# $Id: Makefile,v 1.15 2010/06/21 22:46:45 bruno Exp $
+#
+# $Id: ssl.mk,v 1.1 2010/06/21 22:46:45 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,84 +54,30 @@
 # 
 # @Copyright@
 #
-# $Log: Makefile,v $
-# Revision 1.15  2010/06/21 22:46:45  bruno
+# $Log: ssl.mk,v $
+# Revision 1.1  2010/06/21 22:46:45  bruno
 # more helper libraries for the VM remote control code
 #
-# Revision 1.14  2009/05/01 19:07:06  mjk
-# chimi con queso
 #
-# Revision 1.13  2009/03/02 23:42:30  mjk
-# *** empty log message ***
-#
-# Revision 1.12  2008/12/10 22:37:23  anoop
-# Upgraded numpy - needed for Biopython
-#
-# Revision 1.11  2008/10/18 00:56:00  mjk
-# copyright 5.1
-#
-# Revision 1.10  2008/03/06 23:41:43  mjk
-# copyright storm on
-#
-# Revision 1.9  2007/12/10 21:28:34  bruno
-# the base roll now contains several elements from the HPC roll, thus
-# making the HPC roll optional.
-#
-# this also includes changes to help build and configure VMs for V.
-#
-# Revision 1.8  2007/10/25 05:32:10  anoop
-# Small changes to accommodate solaris
-#
-# Revision 1.7  2007/09/04 16:19:48  anoop
-# Removing numpy and pygtk from the solaris build.
-#
-# Revision 1.6  2007/06/23 04:03:23  mjk
-# mars hill copyright
-#
-# Revision 1.5  2006/12/02 01:04:54  anoop
-# Ridiculously big ass commit.
-# Also known as the week after thanksgiving 2006. Or "The day Anoop
-# broke Rocks".
-#
-# Main Changes.
-#
-# 1. Added a roll-profile.mk file. This is meant as a makefile for building
-# the profile rpm containing all the XML files meant for the roll. This is a
-# breakaway from the spec.in file method of building the profile RPM.
-#
-# 2. The variable PWD is now changed to CURDIR. The main reason for this is
-# PWD is supplied by the shell. CURDIR is the variable supplied by gmake itself.
-# This means we can have a slightly more platform independant way of doing things.
-# Also Solaris was failing to set PWD correctly in the source directories, wreaking
-# havoc on the location of the BUILD and PKG directories.
-#
-# Revision 1.4  2006/09/11 22:47:14  mjk
-# monkey face copyright
-#
-# Revision 1.3  2006/08/10 00:09:36  mjk
-# 4.2 copyright
-#
-# Revision 1.2  2006/01/16 23:14:06  mjk
-# - more source built foundations
-# - scipy stuff is here now (may move to hpc roll)
-#
-# Revision 1.1  2006/01/16 16:10:52  mjk
-# *** empty log message ***
-#
-
-PKGROOT		= /opt/rocks
-REDHAT.ROOT     = $(CURDIR)/../../
-ROCKSROOT       = ../../../../..
--include $(ROCKSROOT)/etc/Rules.mk
-include Rules.mk
 
 build::
-#	cd patch-files && find . -type f | grep -v CVS | cpio -pduv ../
+	gunzip -c ssl-1.15.tar.gz | $(TAR) -xf -
+	(								\
+		cd ssl-1.15;						\
+		if [ $(OS) == 'sunos' ]; then				\
+		CPPFLAGS=-I/usr/sfw/include LDFLAGS=-L/usr/sfw/lib 	\
+			 $(PY.PATH) setup.py build;			\
+		else							\
+			$(PY.PATH) setup.py build;			\
+		fi;							\
+	)
 	
 install::
-	mkdir -p $(ROOT)/$(PKGROOT)
+	(								\
+		cd ssl-1.15;						\
+		$(PY.PATH) setup.py $(OPTIONS) install --root=$(ROOT);	\
+	)
 
-include M2Crypto.mk ssl.mk MySQL-python.mk Numeric.mk POW.mk \
-	egenix-mx-base.mk libxml2dom.mk \
-	numarray.mk pexpect.mk IPy.mk numpy.mk
 
+clean::
+	rm -rf ssh-1.15
