@@ -1,5 +1,9 @@
-# --------------------------------------------------- -*- Makefile -*- --
-# $Id: Makefile,v 1.6 2010/06/22 21:07:44 mjk Exp $
+#!/bin/bash
+#
+# 
+# Copy specified rolls to mirror. If no rolls are specified, 
+# copy all rolls in current dir to mirror.
+# For use during roll development and on central servers.
 #
 # @Copyright@
 # 
@@ -53,43 +57,47 @@
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # 
 # @Copyright@
-#
-# $Log: Makefile,v $
-# Revision 1.6  2010/06/22 21:07:44  mjk
+# 
+# $Log: install-roll.sh,v $
+# Revision 1.1  2010/06/22 21:07:44  mjk
 # build env moving into base roll
 #
-# Revision 1.5  2009/05/01 19:07:05  mjk
+# Revision 1.11  2009/05/01 19:07:10  mjk
 # chimi con queso
 #
-# Revision 1.4  2008/11/30 19:13:29  anoop
-# Added templates directory to the rocks-devel package
-#
-# Revision 1.3  2008/10/18 00:55:59  mjk
+# Revision 1.10  2008/10/18 00:56:03  mjk
 # copyright 5.1
 #
-# Revision 1.2  2008/08/19 19:02:37  mjk
-# added create-package.mk
+# Revision 1.9  2008/03/06 23:41:46  mjk
+# copyright storm on
 #
-# Revision 1.1  2008/06/10 22:44:01  mjk
-# added rocks-devel
+# Revision 1.8  2007/06/23 04:03:26  mjk
+# mars hill copyright
+#
+# Revision 1.7  2006/09/11 22:47:30  mjk
+# monkey face copyright
+#
+# Revision 1.6  2006/08/10 00:09:47  mjk
+# 4.2 copyright
+#
+# Revision 1.5  2006/01/10 18:02:52  mjk
+# *** empty log message ***
+#
 #
 
-PKGROOT		= /opt/rocks/share/devel
-REDHAT.ROOT     = $(CURDIR)/../../
-ROCKSROOT	= devel
--include $(ROCKSROOT)/etc/Rules.mk
-include Rules.mk
+umount /mnt/cdrom 2> /dev/null
 
-build:
+if [ $# -ne 0 ]
+then
+	r=$*
+else
+	r=`ls *iso`
+fi
 
-install::
-	mkdir -p $(ROOT)/$(PKGROOT)/
-	mkdir -p $(ROOT)/etc/profile.d/
-	$(INSTALL) -m0555 rocks-devel.sh  $(ROOT)/etc/profile.d
-	$(INSTALL) -m0555 rocks-devel.csh $(ROOT)/etc/profile.d
-	(								\
-		cd devel;						\
-		find . | cpio -pduv $(ROOT)/$(PKGROOT)/;		\
-	)
-
-clean::
+for i in $r
+do
+	mount -o loop $i /mnt/cdrom
+	rocks-dist --clean copyroll
+	umount /mnt/cdrom
+	echo "Copied $i"
+done

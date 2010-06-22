@@ -1,5 +1,9 @@
-# --------------------------------------------------- -*- Makefile -*- --
-# $Id: Makefile,v 1.6 2010/06/22 21:07:44 mjk Exp $
+#!/opt/rocks/bin/python
+#
+# $Id: manifest-check.py,v 1.1 2010/06/22 21:07:44 mjk Exp $
+#
+# this program is used to check that all the packages for a roll are built
+# when 'make roll' is run
 #
 # @Copyright@
 # 
@@ -54,42 +58,54 @@
 # 
 # @Copyright@
 #
-# $Log: Makefile,v $
-# Revision 1.6  2010/06/22 21:07:44  mjk
+# $Log: manifest-check.py,v $
+# Revision 1.1  2010/06/22 21:07:44  mjk
 # build env moving into base roll
 #
-# Revision 1.5  2009/05/01 19:07:05  mjk
-# chimi con queso
+# Revision 1.1  2009/10/24 21:31:42  bruno
+# initial checkin
 #
-# Revision 1.4  2008/11/30 19:13:29  anoop
-# Added templates directory to the rocks-devel package
-#
-# Revision 1.3  2008/10/18 00:55:59  mjk
-# copyright 5.1
-#
-# Revision 1.2  2008/08/19 19:02:37  mjk
-# added create-package.mk
-#
-# Revision 1.1  2008/06/10 22:44:01  mjk
-# added rocks-devel
 #
 
-PKGROOT		= /opt/rocks/share/devel
-REDHAT.ROOT     = $(CURDIR)/../../
-ROCKSROOT	= devel
--include $(ROCKSROOT)/etc/Rules.mk
-include Rules.mk
 
-build:
+import os
+import rocks.file
+import rocks.util
 
-install::
-	mkdir -p $(ROOT)/$(PKGROOT)/
-	mkdir -p $(ROOT)/etc/profile.d/
-	$(INSTALL) -m0555 rocks-devel.sh  $(ROOT)/etc/profile.d
-	$(INSTALL) -m0555 rocks-devel.csh $(ROOT)/etc/profile.d
-	(								\
-		cd devel;						\
-		find . | cpio -pduv $(ROOT)/$(PKGROOT)/;		\
-	)
+tree = rocks.file.Tree(os.getcwd())
 
-clean::
+builtfiles = tree.getFiles(os.path.join('RPMS', 'noarch'))
+builtfiles += tree.getFiles(os.path.join('RPMS', rocks.util.getNativeArch()))
+
+manifest = []
+
+file = open('manifest', 'r')
+for line in file.readlines():
+	l = line.strip()
+	if len(l) == 0 or (len(l) > 0 and l[0] == '#'):
+		continue
+
+	manifest.append(l)
+
+notmanifest = []
+
+for rpm in builtfiles:
+	try:
+		pkg = rpm.getPackageName()
+		if pkg in manifest:
+			manifest.remove(pkg)
+		else:
+			notmanifest.append(pkg)
+	except:
+		pass
+
+if len(manifest) > 0:
+	print '\nERROR - the following packages were not built:'
+	for pkg in manifest:
+		print '\t%s' % pkg
+
+if len(notmanifest) > 0:
+	print '\nERROR - the following packages were built but not in manifest:'
+	for pkg in notmanifest:
+		print '\t%s' % pkg
+

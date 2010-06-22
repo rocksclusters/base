@@ -1,0 +1,24 @@
+<!ENTITY roll_alpha             "<entry namest=opt> X </entry>" >
+<!ENTITY roll_area51		"<entry namest=opt> X </entry>" >
+<!ENTITY roll_base		"<entry namest=opt> X </entry>" >
+<!ENTITY roll_bio		"<entry namest=opt> X </entry>" >
+<!ENTITY roll_condor		"<entry namest=opt> X </entry>" >
+<!ENTITY roll_ganglia		"<entry namest=opt> X </entry>" >
+<!ENTITY roll_grid		"<entry namest=opt> X </entry>" >
+<!ENTITY roll_hpc		"<entry namest=opt> X </entry>" >
+<!ENTITY roll_java		"<entry namest=opt> X </entry>" >
+<!ENTITY roll_kernel		"<entry namest=opt> X </entry>" >
+<!ENTITY roll_os1		"<entry namest=opt> X </entry>" >
+<!ENTITY roll_os2		"<entry namest=opt> X </entry>" >
+<!ENTITY roll_os3		"<entry namest=opt> X </entry>" >
+<!ENTITY roll_os4		"<entry namest=opt> X </entry>" >
+<!ENTITY roll_os5		"<entry namest=opt> X </entry>" >
+<!ENTITY roll_os6		"<entry namest=opt> X </entry>" >
+<!ENTITY roll_os7		"<entry namest=opt> X </entry>" >
+<!ENTITY roll_pbs		"<entry namest=opt> X </entry>" >
+<!ENTITY roll_service-pack	"<entry namest=opt> X </entry>" >
+<!ENTITY roll_sge		"<entry namest=opt> X </entry>" >
+<!ENTITY roll_viz		"<entry namest=opt> X </entry>" >
+<!ENTITY roll_web-server	"<entry namest=opt> X </entry>" >
+<!ENTITY roll_xen               "<entry namest=opt> X </entry>" >
+

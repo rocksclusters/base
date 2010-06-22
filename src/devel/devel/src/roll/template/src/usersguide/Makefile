@@ -1,5 +1,4 @@
-# --------------------------------------------------- -*- Makefile -*- --
-# $Id: Makefile,v 1.6 2010/06/22 21:07:44 mjk Exp $
+# $Id$
 #
 # @Copyright@
 # 
@@ -54,42 +53,35 @@
 # 
 # @Copyright@
 #
-# $Log: Makefile,v $
-# Revision 1.6  2010/06/22 21:07:44  mjk
-# build env moving into base roll
-#
-# Revision 1.5  2009/05/01 19:07:05  mjk
-# chimi con queso
-#
-# Revision 1.4  2008/11/30 19:13:29  anoop
-# Added templates directory to the rocks-devel package
-#
-# Revision 1.3  2008/10/18 00:55:59  mjk
-# copyright 5.1
-#
-# Revision 1.2  2008/08/19 19:02:37  mjk
-# added create-package.mk
-#
-# Revision 1.1  2008/06/10 22:44:01  mjk
-# added rocks-devel
-#
+# $Log$
 
-PKGROOT		= /opt/rocks/share/devel
-REDHAT.ROOT     = $(CURDIR)/../../
-ROCKSROOT	= devel
+PKGROOT         = /var/www/html/roll-documentation/@template@/$(VERSION)
+REDHAT.ROOT     = $(PWD)/../../
 -include $(ROCKSROOT)/etc/Rules.mk
 include Rules.mk
 
-build:
+default: $(NAME).spec ../$(NAME)-$(VERSION).tar.gz
 
-install::
-	mkdir -p $(ROOT)/$(PKGROOT)/
-	mkdir -p $(ROOT)/etc/profile.d/
-	$(INSTALL) -m0555 rocks-devel.sh  $(ROOT)/etc/profile.d
-	$(INSTALL) -m0555 rocks-devel.csh $(ROOT)/etc/profile.d
-	(								\
-		cd devel;						\
-		find . | cpio -pduv $(ROOT)/$(PKGROOT)/;		\
-	)
+html: predoc
+	jw --backend html --dsl $(PWD)/rocks.dsl#html index.sgml 
+
+pdf: predoc
+	jw --backend pdf --dsl $(PWD)/rocks.dsl#print index.sgml
+
+build: html pdf
+
+install:: build
+	mkdir -p $(ROOT)/$(PKGROOT)/images
+	mkdir -p $(ROOT)/$(PKGROOT)/stylesheet-images
+	install -ma+r index.pdf 	$(ROOT)/$(PKGROOT)/$(NAME).pdf
+	install -ma+r *.html    	$(ROOT)/$(PKGROOT)/
+	install -ma+r images/*.png	$(ROOT)/$(PKGROOT)/images/
+	install -ma+r stylesheet-images/{*.gif,*.png} \
+		$(ROOT)/$(PKGROOT)/stylesheet-images/
+	install -ma+r rocks.css $(ROOT)/$(PKGROOT)/
 
 clean::
+	rm -f *.html
+	rm -f index.pdf
+
+

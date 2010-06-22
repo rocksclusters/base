@@ -1,5 +1,5 @@
-# --------------------------------------------------- -*- Makefile -*- --
-# $Id: Makefile,v 1.6 2010/06/22 21:07:44 mjk Exp $
+#
+# Make rules for Compat libraries from Rolls.
 #
 # @Copyright@
 # 
@@ -54,42 +54,68 @@
 # 
 # @Copyright@
 #
-# $Log: Makefile,v $
-# Revision 1.6  2010/06/22 21:07:44  mjk
-# build env moving into base roll
-#
-# Revision 1.5  2009/05/01 19:07:05  mjk
-# chimi con queso
-#
-# Revision 1.4  2008/11/30 19:13:29  anoop
-# Added templates directory to the rocks-devel package
-#
-# Revision 1.3  2008/10/18 00:55:59  mjk
-# copyright 5.1
-#
-# Revision 1.2  2008/08/19 19:02:37  mjk
-# added create-package.mk
-#
-# Revision 1.1  2008/06/10 22:44:01  mjk
-# added rocks-devel
-#
 
-PKGROOT		= /opt/rocks/share/devel
-REDHAT.ROOT     = $(CURDIR)/../../
-ROCKSROOT	= devel
+ROCKSROOT = $(ROLLSROOT)/../..
 -include $(ROCKSROOT)/etc/Rules.mk
 include Rules.mk
 
-build:
+ifndef __COMPAT_MK
+__COMPAT_MK = yes
 
-install::
-	mkdir -p $(ROOT)/$(PKGROOT)/
-	mkdir -p $(ROOT)/etc/profile.d/
-	$(INSTALL) -m0555 rocks-devel.sh  $(ROOT)/etc/profile.d
-	$(INSTALL) -m0555 rocks-devel.csh $(ROOT)/etc/profile.d
-	(								\
-		cd devel;						\
-		find . | cpio -pduv $(ROOT)/$(PKGROOT)/;		\
-	)
+COMPATNAME=$(NAME)-compat-libs
+COMPAT.RPMNAME=$(NAME)-compat-libs-$(VERSION)
+RPMDB=$(CURDIR)/rpmdb/var/lib/rpm
+
+# --------------------------------------------------------------------- #
+# targets
+# --------------------------------------------------------------------- #
+
+compat-libs: compat-spec 
+	mkdir -p $(RPMDB); \
+	rpms=`find RPMS -name "*\.rpm"`; \
+	mkdir -p rpms-here; \
+	for r in $$rpms; do \
+		rpm -iv --force --nodeps --badreloc --noscripts --relocate /=$(CURDIR)/rpms-here --dbpath $(RPMDB) $$r; \
+	done
+	$(ROLLSROOT)/bin/make-compat-libs.py `find rpms-here -type f -perm -555` > compat-libs.txt 
+	for lib in $(COMPAT.EXTRALIBS); do echo $$lib >> compat-libs.txt; done
+	$(MAKE) compat-rpm
+
+compat-rpm: rpm-mkdirs Compat.mk Rules.mk $(HOME)/.rpmmacros
+	rm -f $(COMPAT.RPMNAME).tar.gz
+	rm -rf $(COMPAT.RPMNAME)
+	mkdir $(COMPAT.RPMNAME)
+	cp compat-libs.txt Makefile arch *.mk $(COMPATNAME).spec $(COMPAT.RPMNAME)
+	tar czf $(REDHAT.SOURCES)/$(COMPAT.RPMNAME).tar.gz $(COMPAT.RPMNAME)
+	cp $(COMPATNAME).spec $(REDHAT.SPECS)
+	rpmbuild -bb $(REDHAT.SPECS)/$(COMPATNAME).spec
+
+compat-install:
+	mkdir -p $(ROOT)/opt/x86-libs
+	cpio -pdu $(ROOT)/opt/x86-libs < compat-libs.txt
+	chmod -R a+rx $(ROOT)
+
+
+compat-spec:
+	if [ ! -f $(COMPATNAME).spec.in ] ; then \
+		sed -e 's/@ROLLNAME@/$(NAME)/g' $(ROLLSROOT)/etc/compat.spec.in > $(COMPATNAME).spec.in ; \
+		$(MAKE) $(COMPATNAME).spec ; \
+		rm -f $(COMPATNAME).spec.in; \
+	fi 
+
+
+# --------------------------------------------------------------------- #
+# Copy this file into the tarball release
+# --------------------------------------------------------------------- #
+Compat.mk: $(wildcard $(ROLLSROOT)/etc/Compat.mk)
+	cp $^ $@
+
 
 clean::
+	rm -f Compat.mk
+	rm -f $(COMPATNAME).spec
+	rm -rf $(COMPAT.RPMNAME)
+	rm -rf rpms-here
+	rm -f compat-libs.txt
+
+endif

@@ -1,0 +1,47 @@
+<!--
+$Log: rocks-copyright.sgml,v $
+Revision 1.1  2010/06/22 21:07:44  mjk
+build env moving into base roll
+
+Revision 1.2  2008/11/03 18:30:14  mjk
+- fix userguide copyright building
+- area51 uses rocks command line
+
+Revision 1.1  2007/06/16 01:38:58  mjk
+*** empty log message ***
+
+-->
+
+<appendix id="rocks-copyright" xreflabel="Rocks Copyright">
+<title>&document_rocks; Copyright and Trademark</title>
+
+<section><title>Copyright Statement</title>
+<para><screen>
+&rockscopyright;
+</screen></para>
+</section>
+
+<section><title>Trademark Licensing</title>
+<para>
+The &document_rocks; logo (<xref linkend="rocks-logo">) and the names 
+&document_rocks;,
+&document_rocks_clusters;, and
+&document_avalanche;
+have been submitted to the United States Patent and 
+Trademark Office to become registered trademarks.
+</para>
+<para>
+Commercial entities that wish to use any of the above names or logo in a 
+product name or marketing material, are required to get written permission from
+the Technology Transfer and Intellectual Property Services Office at UCSD 
+<email>invent@ucsd.edu</email>.
+</para>
+
+<figure id="rocks-logo">
+<title>&document_rocks; logo</title>
+<graphic fileref="images/roll-rocks.png"></graphic>
+</figure>
+
+</section>
+
+</appendix>

@@ -1,0 +1,27 @@
+<!--
+$Id: installing-not-onthefly.sgml,v 1.1 2010/06/22 21:07:44 mjk Exp $
+
+@Copyright@
+@Copyright@
+
+$Log: installing-not-onthefly.sgml,v $
+Revision 1.1  2010/06/22 21:07:44  mjk
+build env moving into base roll
+
+Revision 1.1  2006/09/21 04:17:12  mjk
+major doc refresh
+
+-->
+
+<section id="adding-on-installed-fe" xreflabel="Adding the Roll to Frontend">
+<title>On an Existing Server</title>
+
+<para>
+The &document_rollname; Roll may not be installed on an already existing 
+server.
+The only supported method of installation is to install the Roll at the
+time of the server installation.
+</para>
+
+</section>
+

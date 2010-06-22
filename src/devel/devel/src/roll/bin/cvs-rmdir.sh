@@ -1,5 +1,4 @@
-# --------------------------------------------------- -*- Makefile -*- --
-# $Id: Makefile,v 1.6 2010/06/22 21:07:44 mjk Exp $
+#!/bin/bash
 #
 # @Copyright@
 # 
@@ -54,42 +53,44 @@
 # 
 # @Copyright@
 #
-# $Log: Makefile,v $
-# Revision 1.6  2010/06/22 21:07:44  mjk
+# $Log: cvs-rmdir.sh,v $
+# Revision 1.1  2010/06/22 21:07:44  mjk
 # build env moving into base roll
 #
-# Revision 1.5  2009/05/01 19:07:05  mjk
+# Revision 1.5  2009/05/01 19:07:10  mjk
 # chimi con queso
 #
-# Revision 1.4  2008/11/30 19:13:29  anoop
-# Added templates directory to the rocks-devel package
-#
-# Revision 1.3  2008/10/18 00:55:59  mjk
+# Revision 1.4  2008/10/18 00:56:03  mjk
 # copyright 5.1
 #
-# Revision 1.2  2008/08/19 19:02:37  mjk
-# added create-package.mk
+# Revision 1.3  2008/03/06 23:41:46  mjk
+# copyright storm on
 #
-# Revision 1.1  2008/06/10 22:44:01  mjk
-# added rocks-devel
+# Revision 1.2  2008/02/01 19:09:09  mjk
+# safer
+#
+# Revision 1.1  2008/02/01 18:58:12  mjk
+# Use this to remove dead rolls from CVS
 #
 
-PKGROOT		= /opt/rocks/share/devel
-REDHAT.ROOT     = $(CURDIR)/../../
-ROCKSROOT	= devel
--include $(ROCKSROOT)/etc/Rules.mk
-include Rules.mk
+function rmfiles {
+	pushd $@
+	for file in *; do
+		if [ -f $file ]; then
+			/bin/rm -f $file
+			cvs rm $file
+		fi
+		if [ -d $file ] && [ $file != "CVS" ]; then
+			
+			rmfiles $file
+		fi
+	done
+	popd
+}
 
-build:
+if [ "$1" == "" ]; then
+	echo "usage: $0 dir"
+	exit -1
+fi
 
-install::
-	mkdir -p $(ROOT)/$(PKGROOT)/
-	mkdir -p $(ROOT)/etc/profile.d/
-	$(INSTALL) -m0555 rocks-devel.sh  $(ROOT)/etc/profile.d
-	$(INSTALL) -m0555 rocks-devel.csh $(ROOT)/etc/profile.d
-	(								\
-		cd devel;						\
-		find . | cpio -pduv $(ROOT)/$(PKGROOT)/;		\
-	)
-
-clean::
+rmfiles $1

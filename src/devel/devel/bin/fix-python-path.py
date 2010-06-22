@@ -1,7 +1,7 @@
-# $Id: create-package.mk,v 1.4 2009/05/01 19:07:05 mjk Exp $
+#!/opt/rocks/usr/bin/python
 #
-# This makefile is used by the "rocks create package" command to turn any
-# directory into an RPM copied into the contrib area.
+# Fixes the top line of a python script to use the foundation
+# version.
 #
 # @Copyright@
 # 
@@ -56,31 +56,64 @@
 # 
 # @Copyright@
 #
-# $Log: create-package.mk,v $
-# Revision 1.4  2009/05/01 19:07:05  mjk
+# $Log: fix-python-path.py,v $
+# Revision 1.1  2010/06/22 21:07:44  mjk
+# build env moving into base roll
+#
+# Revision 1.7  2009/05/01 19:06:45  mjk
 # chimi con queso
 #
-# Revision 1.3  2008/10/18 00:55:59  mjk
+# Revision 1.6  2008/10/18 00:55:43  mjk
 # copyright 5.1
 #
-# Revision 1.2  2008/08/20 22:12:02  mjk
-# works
+# Revision 1.5  2008/03/06 23:41:28  mjk
+# copyright storm on
 #
-# Revision 1.1  2008/08/19 18:51:12  mjk
-# rocks create package stuff
+# Revision 1.4  2007/06/23 04:03:16  mjk
+# mars hill copyright
+#
+# Revision 1.3  2006/09/11 22:46:51  mjk
+# monkey face copyright
+#
+# Revision 1.2  2006/08/10 00:09:12  mjk
+# 4.2 copyright
+#
+# Revision 1.1  2006/01/10 18:04:42  mjk
+# *** empty log message ***
+#
+# Revision 1.1  2006/01/10 18:02:52  mjk
+# *** empty log message ***
 #
 
-PKGROOT         = /opt/rocks
-REDHAT.ROOT     = $(CURDIR)
--include $(ROCKSROOT)/etc/Rules.mk
-include Rules.mk
+import sys
+import os
+import string
+import rocks.app
 
-build:
+class App(rocks.app.Application):
 
-install::
-	mkdir -p $(ROOT)/$(PREFIX)
-	cp -a $(SOURCE_DIRECTORY) $(ROOT)/$(PREFIX)/
+	def __init__(self, argv):
+		rocks.app.Application.__init__(self, argv)
+		self.usage_name = "Fix Python Path"
+		self.usage_version = "1.0"
+		self.python = '/opt/rocks/usr/bin/python'
 
-dir2pkg:
-	$(MAKE) pkg
-	mv $(REDHAT.ROOT)/RPMS/$(ARCH)/* $(DEST_DIRECTORY)
+	def run(self):
+		for file in self.args:
+			fin = open(file, 'r')
+			lines = fin.readlines()
+			if lines[0][0] == '#':
+				lines[0] = '#! %s\n' % self.python
+			fin.close()
+
+			fout = open(file, 'w')
+			fout.write(string.join(lines, ''))
+			fout.close()
+			
+
+	
+
+app=App(sys.argv)
+app.parseArgs()
+app.run()
+

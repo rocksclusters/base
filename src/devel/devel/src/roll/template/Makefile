@@ -1,5 +1,5 @@
-# --------------------------------------------------- -*- Makefile -*- --
-# $Id: Makefile,v 1.6 2010/06/22 21:07:44 mjk Exp $
+#
+# $Id$
 #
 # @Copyright@
 # 
@@ -54,42 +54,10 @@
 # 
 # @Copyright@
 #
-# $Log: Makefile,v $
-# Revision 1.6  2010/06/22 21:07:44  mjk
-# build env moving into base roll
-#
-# Revision 1.5  2009/05/01 19:07:05  mjk
-# chimi con queso
-#
-# Revision 1.4  2008/11/30 19:13:29  anoop
-# Added templates directory to the rocks-devel package
-#
-# Revision 1.3  2008/10/18 00:55:59  mjk
-# copyright 5.1
-#
-# Revision 1.2  2008/08/19 19:02:37  mjk
-# added create-package.mk
-#
-# Revision 1.1  2008/06/10 22:44:01  mjk
-# added rocks-devel
+# $Log$
 #
 
-PKGROOT		= /opt/rocks/share/devel
-REDHAT.ROOT     = $(CURDIR)/../../
-ROCKSROOT	= devel
--include $(ROCKSROOT)/etc/Rules.mk
-include Rules.mk
+-include $(ROLLSROOT)/etc/Rolls.mk
+include Rolls.mk
 
-build:
-
-install::
-	mkdir -p $(ROOT)/$(PKGROOT)/
-	mkdir -p $(ROOT)/etc/profile.d/
-	$(INSTALL) -m0555 rocks-devel.sh  $(ROOT)/etc/profile.d
-	$(INSTALL) -m0555 rocks-devel.csh $(ROOT)/etc/profile.d
-	(								\
-		cd devel;						\
-		find . | cpio -pduv $(ROOT)/$(PKGROOT)/;		\
-	)
-
-clean::
+default: roll

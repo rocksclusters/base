@@ -1,5 +1,6 @@
-# --------------------------------------------------- -*- Makefile -*- --
-# $Id: Makefile,v 1.6 2010/06/22 21:07:44 mjk Exp $
+#!/bin/env python
+#
+# $Id: genrcldocs,v 1.1 2010/06/22 21:07:44 mjk Exp $
 #
 # @Copyright@
 # 
@@ -54,42 +55,66 @@
 # 
 # @Copyright@
 #
-# $Log: Makefile,v $
-# Revision 1.6  2010/06/22 21:07:44  mjk
+# $Log: genrcldocs,v $
+# Revision 1.1  2010/06/22 21:07:44  mjk
 # build env moving into base roll
 #
-# Revision 1.5  2009/05/01 19:07:05  mjk
+# Revision 1.5  2009/05/01 19:07:15  mjk
 # chimi con queso
 #
-# Revision 1.4  2008/11/30 19:13:29  anoop
-# Added templates directory to the rocks-devel package
-#
-# Revision 1.3  2008/10/18 00:55:59  mjk
+# Revision 1.4  2008/10/18 00:56:07  mjk
 # copyright 5.1
 #
-# Revision 1.2  2008/08/19 19:02:37  mjk
-# added create-package.mk
+# Revision 1.3  2008/03/06 23:41:50  mjk
+# copyright storm on
 #
-# Revision 1.1  2008/06/10 22:44:01  mjk
-# added rocks-devel
+# Revision 1.2  2007/06/19 21:40:31  mjk
+# do not use NAME in roll-profile.mk
+#
+# Revision 1.1  2007/06/16 01:37:58  mjk
+# - better copyrights
+# - added genrcldocs (gen rocks command line docs)
 #
 
-PKGROOT		= /opt/rocks/share/devel
-REDHAT.ROOT     = $(CURDIR)/../../
-ROCKSROOT	= devel
--include $(ROCKSROOT)/etc/Rules.mk
-include Rules.mk
+import os
+import sys
+import string
 
-build:
+roll     = sys.argv[1]
+isHeader = 1
+list	 = []
+for line in os.popen('/opt/rocks/bin/rocks list roll command %s' %
+	roll).readlines():
+	if isHeader:
+		isHeader = 0
+		continue
+	list.append(line[:-1].strip())
+	
+# create all the roll-<command>.sgml files
 
-install::
-	mkdir -p $(ROOT)/$(PKGROOT)/
-	mkdir -p $(ROOT)/etc/profile.d/
-	$(INSTALL) -m0555 rocks-devel.sh  $(ROOT)/etc/profile.d
-	$(INSTALL) -m0555 rocks-devel.csh $(ROOT)/etc/profile.d
-	(								\
-		cd devel;						\
-		find . | cpio -pduv $(ROOT)/$(PKGROOT)/;		\
-	)
+for line in list:
+	cmd  = 'rocks %s help format=docbook' % line
+	fout = 'roll-%s.sgml' % string.join(line.split(' '), '-')
+	os.system('%s > %s' % (cmd, fout))
 
-clean::
+# create the roll command chapter file
+	
+prevVerb = ''
+file = open('roll-commands.sgml', 'w')
+file.write('<chapter>\n')
+file.write('<title>Command Reference</title>\n\n')
+
+for line in list:
+	currVerb = line.split(' ')[0]
+	if currVerb != prevVerb:
+		if prevVerb:
+			file.write('</section>\n')
+		file.write('\n<section><title>%s</title>\n' % currVerb)
+	file.write('&source_roll-%s;\n' % string.join(line.split(' '), '-'))
+	prevVerb = currVerb
+
+if prevVerb:
+	file.write('</section>\n')
+file.write('</chapter>\n')
+file.close()
+

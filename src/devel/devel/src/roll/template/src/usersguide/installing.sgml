@@ -1,0 +1,36 @@
+<chapter id="installing" xreflabel="Installing">
+
+
+<title>Installing the @template@ Roll</title>
+
+<section id="adding-the-roll" xreflabel="Adding the Roll">
+<title>Adding the Roll</title>
+
+<para>
+
+The @template@ Roll must be installed during the Frontend installation step
+of your cluster (refer to section 1.2 of the Rocks usersguide).
+Future releases will allow the installation of the @template@ Roll onto a
+running system.
+
+</para>
+
+
+<para>
+	
+The @template@ Roll is added to a Frontend installation in exactly the same
+manner as the required HPC Roll.  Specifically, after the HPC Roll is
+added the installer will once again ask if you have a Roll (see
+below).  Select 'Yes' and insert the @template@ Roll.
+
+<screenshot>
+	<graphic fileref="images/i-01.png" scale=50></graphic>
+</screenshot>
+
+</para>
+
+
+</section>
+
+
+</chapter>

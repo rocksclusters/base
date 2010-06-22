@@ -1,0 +1,29 @@
+<!--
+$Id: copyright-disclaimer.sgml,v 1.1 2010/06/22 21:07:44 mjk Exp $
+
+@Copyright@
+@Copyright@
+
+$Log: copyright-disclaimer.sgml,v $
+Revision 1.1  2010/06/22 21:07:44  mjk
+build env moving into base roll
+
+Revision 1.2  2007/06/16 01:37:58  mjk
+- better copyrights
+- added genrcldocs (gen rocks command line docs)
+
+Revision 1.1  2006/09/21 00:18:30  mjk
+*** empty log message ***
+
+-->
+
+<para>
+This section enumerates the licenses from all the third party software
+components of this Roll.  A "best effort" attempt has been made to
+insure the complete and current licenses are listed.  In the case of
+errors or ommisions please contact the maintainer of this Roll.  For
+more information on the licenses of any components please consult with
+the original author(s) or see the &document_rocks; CVS 
+<ulink url="http://cvs.rocksclusters.org">repository</ulink>.
+</para>
+
