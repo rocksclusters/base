@@ -1,10 +1,13 @@
 #
-# $Id: Makefile,v 1.10 2009/10/07 16:58:49 bruno Exp $
+# $Id: Makefile,v 1.11 2010/06/22 21:26:22 mjk Exp $
 #
-# @COPYRIGHT@
-# @COPYRIGHT@
+# @Copyright@
+# @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.11  2010/06/22 21:26:22  mjk
+# Build env is now from src/devel package, nothing outside of base roll.
+#
 # Revision 1.10  2009/10/07 16:58:49  bruno
 # set ROCKSROOT
 #
@@ -60,7 +63,7 @@
 #
 
 REDHAT.ROOT     = $(CURDIR)/../../
-ROCKSROOT       = ../../../../..
+ROCKSROOT       = ../devel/devel
 
 -include $(ROCKSROOT)/etc/Rules.mk
 include Rules.mk

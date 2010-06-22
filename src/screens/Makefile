@@ -1,5 +1,5 @@
 #
-# $Id: Makefile,v 1.15 2009/06/24 04:46:13 bruno Exp $
+# $Id: Makefile,v 1.16 2010/06/22 21:26:24 mjk Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.16  2010/06/22 21:26:24  mjk
+# Build env is now from src/devel package, nothing outside of base roll.
+#
 # Revision 1.15  2009/06/24 04:46:13  bruno
 # restore roll tweaks
 #
@@ -136,7 +139,7 @@
 
 PKGROOT		= /opt/rocks/screens
 REDHAT.ROOT     = $(CURDIR)/../../
-ROCKSROOT       = ../../../../..
+ROCKSROOT       = ../devel/devel
 -include $(ROCKSROOT)/etc/Rules.mk
 include Rules.mk
 
@@ -145,7 +148,6 @@ SCRIPTS		= rocks-buildscreens rocks-getroll.cgi sitexml2entities
 
 build:
 	$(MAKE) $(SCRIPTS)
-	
 
 rocks-getroll.cgi:	rocks-getroll.cgi.in
 	$(SED) $(SEDSCRIPT) $^ > $@

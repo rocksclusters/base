@@ -1,7 +1,10 @@
 #
-# $Id: Makefile,v 1.3 2007/08/15 18:33:14 bruno Exp $
+# $Id: Makefile,v 1.4 2010/06/22 21:26:24 mjk Exp $
 #
 # $Log: Makefile,v $
+# Revision 1.4  2010/06/22 21:26:24  mjk
+# Build env is now from src/devel package, nothing outside of base roll.
+#
 # Revision 1.3  2007/08/15 18:33:14  bruno
 # nuke another spec file
 #
@@ -9,7 +12,7 @@
 
 PKGROOT		= /usr/sbin
 REDHAT.ROOT     = $(CURDIR)/../../
-ROCKSROOT       = ../../../../..
+ROCKSROOT       = ../devel/devel
 -include $(ROCKSROOT)/etc/Rules.mk
 include Rules.mk
 

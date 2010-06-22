@@ -1,5 +1,5 @@
 # --------------------------------------------------- -*- Makefile -*- --
-# $Id: Makefile,v 1.19 2009/10/28 22:28:03 bruno Exp $
+# $Id: Makefile,v 1.20 2010/06/22 21:26:23 mjk Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.20  2010/06/22 21:26:23  mjk
+# Build env is now from src/devel package, nothing outside of base roll.
+#
 # Revision 1.19  2009/10/28 22:28:03  bruno
 # add user.js
 #
@@ -150,7 +153,7 @@
 
 PKGROOT		= /opt/rocks
 REDHAT.ROOT     = $(CURDIR)/../../
-ROCKSROOT       = ../../../../..
+ROCKSROOT       = ../devel/devel
 NATIVEARCH	= $(shell /bin/arch)
 
 -include $(ROCKSROOT)/etc/Rules.mk
@@ -164,7 +167,7 @@ build:
 		cp ../mozconfig .mozconfig;				\
 		$(MAKE) -f client.mk build;				\
 	)
-	
+
 install::
 	(								\
 		cd mozilla-$(MOZILLA_VERSION);				\

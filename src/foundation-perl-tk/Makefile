@@ -1,5 +1,5 @@
 # --------------------------------------------------- -*- Makefile -*- --
-# $Id: Makefile,v 1.12 2009/12/14 21:30:12 bruno Exp $
+# $Id: Makefile,v 1.13 2010/06/22 21:26:23 mjk Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.13  2010/06/22 21:26:23  mjk
+# Build env is now from src/devel package, nothing outside of base roll.
+#
 # Revision 1.12  2009/12/14 21:30:12  bruno
 # build foundation perl Tk from a tarball
 #
@@ -125,7 +128,7 @@
 
 PKGROOT		= /opt/rocks
 REDHAT.ROOT     = $(CURDIR)/../../
-ROCKSROOT       = ../../../../..
+ROCKSROOT       = ../devel/devel
 MAKE.iscontrib  = 1
 -include $(ROCKSROOT)/etc/Rules.mk
 include Rules.mk

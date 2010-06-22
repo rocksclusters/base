@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.5 2009/05/01 19:06:49 mjk Exp $
+# $Id: Makefile,v 1.6 2010/06/22 21:26:22 mjk Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.6  2010/06/22 21:26:22  mjk
+# Build env is now from src/devel package, nothing outside of base roll.
+#
 # Revision 1.5  2009/05/01 19:06:49  mjk
 # chimi con queso
 #
@@ -175,7 +178,7 @@ SCRIPTS = 411get
 PKGROOT = /opt/rocks
 
 REDHAT.ROOT     = $(CURDIR)/../../
-ROCKSROOT       = ../../../../..
+ROCKSROOT       = ../devel/devel
 -include $(ROCKSROOT)/etc/Rules.mk
 include Rules.mk
 -include $(ROCKSROOT)/etc/python.mk

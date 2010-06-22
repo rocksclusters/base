@@ -1,5 +1,5 @@
 #
-# $Id: Makefile,v 1.25 2009/05/01 19:07:05 mjk Exp $
+# $Id: Makefile,v 1.26 2010/06/22 21:26:22 mjk Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.26  2010/06/22 21:26:22  mjk
+# Build env is now from src/devel package, nothing outside of base roll.
+#
 # Revision 1.25  2009/05/01 19:07:05  mjk
 # chimi con queso
 #
@@ -326,7 +329,7 @@ MAKE.rpmflag	= -bb --define "__spec_install_post :"
 
 PKGROOT		= /
 REDHAT.ROOT     = $(CURDIR)/../../
-ROCKSROOT       = ../../../../..
+ROCKSROOT       = ../devel/devel
 -include $(ROCKSROOT)/etc/Rules.mk
 # Need this include for when we build as root.
 include Rules.mk

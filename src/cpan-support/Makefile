@@ -1,9 +1,12 @@
-# $Id: Makefile,v 1.3 2009/11/20 23:38:38 bruno Exp $
+# $Id: Makefile,v 1.4 2010/06/22 21:26:22 mjk Exp $
 
 # @Copyright@
 # @Copyright@
 
 # $Log: Makefile,v $
+# Revision 1.4  2010/06/22 21:26:22  mjk
+# Build env is now from src/devel package, nothing outside of base roll.
+#
 # Revision 1.3  2009/11/20 23:38:38  bruno
 # from anoop:
 # 	Disable building and installation of rocks-cpan and cpan-support on
@@ -22,7 +25,7 @@
 #
 
 REDHAT.ROOT = $(CURDIR)/../..
-ROCKSROOT   = ../../../../..
+ROCKSROOT = ../devel/devel
 MAKE.iscontrib = 1
 -include $(ROCKSROOT)/etc/Rules.mk
 include Rules.mk
@@ -67,7 +70,7 @@ rpm:: build install
 			mkdir -p $(REDHAT.ROOT)/RPMS/$$arch; fi; \
 		cp -rvf $$i $(REDHAT.ROOT)/RPMS/$$arch; \
 	done
-	
+
 # Clean out everything that's not Makefile or modules.build or CVS
 clean::
 	find * -prune ! -name CVS ! -name Makefile -a \

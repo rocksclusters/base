@@ -53,6 +53,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.8  2010/06/22 21:26:24  mjk
+# Build env is now from src/devel package, nothing outside of base roll.
+#
 # Revision 1.7  2009/05/01 19:07:08  mjk
 # chimi con queso
 #
@@ -137,7 +140,7 @@
 
 PKGROOT		= /opt/rocks
 REDHAT.ROOT     = $(CURDIR)/../../
-ROCKSROOT       = ../../../../..
+ROCKSROOT       = ../devel/devel
 -include $(ROCKSROOT)/etc/Rules.mk
 include Rules.mk
 
@@ -148,7 +151,7 @@ LISTENERS	= $(wildcard gmon/listeners/*.py)
 
 
 build:	$(SCRIPTS)
-	
+
 
 install::
 	mkdir -p $(ROOT)/$(PKGROOT)/bin/

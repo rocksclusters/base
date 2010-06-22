@@ -53,6 +53,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.7  2010/06/22 21:26:24  mjk
+# Build env is now from src/devel package, nothing outside of base roll.
+#
 # Revision 1.6  2009/05/15 00:34:24  anoop
 # Added some solaris support to ganglia-pylib
 #
@@ -197,7 +200,7 @@ PYLIB   = $(wildcard gmon/*.py)
 MODULES  = $(wildcard modules/*so)
 
 REDHAT.ROOT = $(CURDIR)/../../
-ROCKSROOT = ../../../../..
+ROCKSROOT = ../devel/devel
 
 -include $(ROCKSROOT)/etc/Rules.mk
 include Rules.mk

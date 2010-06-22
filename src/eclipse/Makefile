@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.1 2009/10/01 22:55:22 bruno Exp $
+# $Id: Makefile,v 1.2 2010/06/22 21:26:22 mjk Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.2  2010/06/22 21:26:22  mjk
+# Build env is now from src/devel package, nothing outside of base roll.
+#
 # Revision 1.1  2009/10/01 22:55:22  bruno
 # moved from java roll to base roll
 #
@@ -87,6 +90,7 @@
 
 PKGROOT		= /opt/eclipse
 REDHAT.ROOT	= $(PWD)/../../
+ROCKSROOT       = ../devel/devel
 -include $(ROCKSROOT)/etc/Rules.mk
 include Rules.mk
 
@@ -105,4 +109,3 @@ build:
 
 clean::
 	rm -rf $(NAME)
-	

@@ -1,5 +1,5 @@
 # --------------------------------------------------- -*- Makefile -*- --
-# $Id: Makefile,v 1.26 2009/05/20 16:38:39 bruno Exp $
+# $Id: Makefile,v 1.27 2010/06/22 21:26:24 mjk Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.27  2010/06/22 21:26:24  mjk
+# Build env is now from src/devel package, nothing outside of base roll.
+#
 # Revision 1.26  2009/05/20 16:38:39  bruno
 # more dead code nukage
 #
@@ -385,12 +388,12 @@ PLUGINS   = $(wildcard plugins/*py)
 PLUGINDIR = $(PKGROOT)/var/plugins/insertethers
 
 REDHAT.ROOT     = $(CURDIR)/../../
-ROCKSROOT	= ../../../../..
+ROCKSROOT       = ../devel/devel
 -include $(ROCKSROOT)/etc/Rules.mk
 include Rules.mk
 
 RCFILES = staterc insert-ethersrc
-	
+
 po ::
 	$(MAKE) -C po
 

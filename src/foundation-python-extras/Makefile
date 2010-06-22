@@ -1,5 +1,5 @@
 # --------------------------------------------------- -*- Makefile -*- --
-# $Id: Makefile,v 1.15 2010/06/21 22:46:45 bruno Exp $
+# $Id: Makefile,v 1.16 2010/06/22 21:26:23 mjk Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.16  2010/06/22 21:26:23  mjk
+# Build env is now from src/devel package, nothing outside of base roll.
+#
 # Revision 1.15  2010/06/21 22:46:45  bruno
 # more helper libraries for the VM remote control code
 #
@@ -121,13 +124,13 @@
 
 PKGROOT		= /opt/rocks
 REDHAT.ROOT     = $(CURDIR)/../../
-ROCKSROOT       = ../../../../..
+ROCKSROOT       = ../devel/devel
 -include $(ROCKSROOT)/etc/Rules.mk
 include Rules.mk
 
 build::
 #	cd patch-files && find . -type f | grep -v CVS | cpio -pduv ../
-	
+
 install::
 	mkdir -p $(ROOT)/$(PKGROOT)
 

@@ -1,9 +1,12 @@
-# $Id: Makefile,v 1.1 2008/05/20 01:03:07 anoop Exp $
+# $Id: Makefile,v 1.2 2010/06/22 21:26:24 mjk Exp $
 #
 # @COPYRIGHT@
 # @COPYRIGHT@
 #
 # $Log: Makefile,v $
+# Revision 1.2  2010/06/22 21:26:24  mjk
+# Build env is now from src/devel package, nothing outside of base roll.
+#
 # Revision 1.1  2008/05/20 01:03:07  anoop
 # Added pcre postfix and php for solaris
 #
@@ -14,7 +17,7 @@
 
 PKGROOT		= /opt/rocks
 REDHAT.ROOT     = $(CURDIR)/../../
-ROCKSROOT       = ../../../../..
+ROCKSROOT       = ../devel/devel
 -include $(ROCKSROOT)/etc/Rules.mk
 include Rules.mk
 

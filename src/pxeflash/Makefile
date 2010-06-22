@@ -1,5 +1,5 @@
 # --------------------------------------------------- -*- Makefile -*- --
-# $Id: Makefile,v 1.5 2009/10/05 17:19:15 bruno Exp $
+# $Id: Makefile,v 1.6 2010/06/22 21:26:24 mjk Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.6  2010/06/22 21:26:24  mjk
+# Build env is now from src/devel package, nothing outside of base roll.
+#
 # Revision 1.5  2009/10/05 17:19:15  bruno
 # need to rename LICENSE file to LICENSE.FreeDOS, otherwise, the automatic spec
 # file building code tried to include the contents of the LICENSE file which
@@ -84,7 +87,7 @@
 
 PKGROOT		= /opt/pxeflash
 REDHAT.ROOT     = $(CURDIR)/../../
-ROCKSROOT       = ../../../../..
+ROCKSROOT       = ../devel/devel
 -include $(ROCKSROOT)/etc/Rules.mk
 include Rules.mk
 
@@ -93,7 +96,7 @@ CP		= /bin/cp
 
 build:
 	make -f Makefile.disk BOOTIMG=$(DOSBOOT) build
-	
+
 install::
 	mkdir -p $(ROOT)/$(PKGROOT)
 	mkdir -p $(ROOT)/$(PKGROOT)/addon
@@ -107,6 +110,6 @@ install::
 	install -m644 LICENSE.FreeDOS $(ROOT)/$(PKGROOT)/
 	$(TAR) cf - --exclude CVS addon | (cd $(ROOT)/$(PKGROOT); $(TAR) xvf - ) 
 
-	
+
 clean::
 	make -f Makefile.disk ROOT=$(ROOT) BOOTIMG=$(DOSBOOT) clean 
