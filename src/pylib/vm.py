@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: vm.py,v $
+# Revision 1.9  2010/06/22 21:42:36  bruno
+# power control and console access for VMs
+#
 # Revision 1.8  2009/05/01 19:07:08  mjk
 # chimi con queso
 #
@@ -83,7 +86,6 @@
 
 import os
 import sys
-
 
 class VM:
 
@@ -197,3 +199,188 @@ class VM:
 
 		return rows
 
+import socket
+import sha
+import ssl
+import M2Crypto
+import select
+
+class VMControl:
+
+	def __init__(self, db, me, host):
+		self.db = db
+		self.me = me
+		self.controller = host
+		self.port = 8677
+		return
+
+
+	def sendcommand(self, s, op, src_mac, dst_mac):
+		msg = '%s\n' % op
+
+		#
+		# source MAC
+		#
+		msg += '%s\n' % src_mac
+
+		if op != 'list macs':
+			#
+			# destination MAC
+			#
+			msg += '%s\n' % dst_mac
+
+		#
+		# send the size of the clear text and send the clear text
+		# message
+		#
+		s.write('%08d\n' % len(msg))
+		s.write(msg)
+
+		#
+		# now add the signed digest
+		#
+
+		#
+		# good key
+		#
+		key = M2Crypto.RSA.load_key('/tmp/control/private.key')
+
+		digest = sha.sha(msg).digest()
+		signature = key.sign(digest, 'ripemd160')
+
+		#
+		# send the length of the signature
+		#
+		s.write('%08d\n' % len(signature))
+		s.write(signature)
+
+
+	def cmd(self, op, host):
+		#
+		# the list of valid commands:
+		#
+		#	power off
+		#	power on
+		#	list macs
+		#	console
+		#
+
+		#
+		# look up the source MAC address -- this is any non-NULL MAC
+		# associated with the host.
+		#
+		rows = self.db.execute("""select mac from networks where
+			node = (select id from nodes where name = '%s') and
+			mac is not NULL""" % self.me)
+
+		if rows > 0:
+			src_mac, = self.db.fetchone()
+		else:
+			return 'failed'
+
+		#
+		# look up the destination MAC address
+		#
+		rows = self.db.execute("""select mac from networks where
+			node = (select id from nodes where name = '%s') and
+			mac is not NULL""" % host)
+
+		if rows > 0:
+			dst_mac, = self.db.fetchone()
+		else:
+			return 'failed'
+
+		sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		s = ssl.wrap_socket(sock)
+		s.connect((self.controller, self.port))
+		
+		retval = ''
+
+		if op in [ 'power off', 'power on' ]:
+			self.sendcommand(s, op, src_mac, dst_mac)
+		elif op == 'list macs':
+			#
+			# pick up response
+			#
+			self.sendcommand(s, op, src_mac, dst_mac)
+
+			buf = s.read(9)
+
+			try:
+				msg_len = int(buf)
+			except:
+				msg_len = 0
+
+			macs = ''
+			while len(macs) != msg_len:
+				msg = s.read(msg_len - len(macs))
+			macs += msg
+
+			retval = macs
+		elif op == 'console':
+			vnc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+			#
+			# find a free port
+			#
+			success = 0
+			for i in range(1, 100):
+				vncport = 5900 + i
+				try:
+					vnc.bind(('localhost', vncport))
+					success = 1
+					break
+				except:
+					pass
+
+			if success == 0:
+				return 'failed'
+
+			vnc.listen(1)
+
+			#
+			# start the connection
+			#
+			self.sendcommand(s, op, src_mac, dst_mac)
+
+			pid = os.fork()
+			if pid == 0:
+				os.system('vncviewer localhost:%d' % vncport)
+				os._exit(0)
+			else:
+				conn, addr = vnc.accept()
+
+				done = 0
+				while not done:
+					(i, o, e) = select.select(
+						[sock.fileno()], [], [],
+						0.00001)
+					if sock.fileno() in i:
+						try:
+							output = s.read(65536)
+							conn.send(output)
+						except:
+							done = 1
+							continue
+
+					(i, o, e) = select.select(
+						[conn.fileno()], [], [],
+						0.00001)
+					if conn.fileno() in i:
+						try:
+							input = conn.recv(4096)
+							s.write(input)
+						except:
+							done = 1
+							continue
+
+				conn.shutdown(socket.SHUT_RDWR)
+				conn.close()
+
+		s.write(' ')
+		s.shutdown(socket.SHUT_RDWR)
+		sock.shutdown(socket.SHUT_RDWR)
+		s.close()
+		sock.close()
+
+		return retval
