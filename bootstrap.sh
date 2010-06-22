@@ -2,7 +2,7 @@
 #
 # This file should remain OS independent
 #
-# $Id: bootstrap.sh,v 1.20 2009/11/20 23:38:38 bruno Exp $
+# $Id: bootstrap.sh,v 1.21 2010/06/22 23:27:04 mjk Exp $
 #
 # @Copyright@
 # 
@@ -58,6 +58,9 @@
 # @Copyright@
 #
 # $Log: bootstrap.sh,v $
+# Revision 1.21  2010/06/22 23:27:04  mjk
+# *** empty log message ***
+#
 # Revision 1.20  2009/11/20 23:38:38  bruno
 # from anoop:
 # 	Disable building and installation of rocks-cpan and cpan-support on
@@ -146,7 +149,7 @@
 # bootstrap roll development
 #
 
-. ../etc/bootstrap-functions.sh
+. src/devel/devel/src/roll/etc/bootstrap-functions.sh
 
 if [ `./_os` == "linux" ]; then
 	compile_and_install foundation-redhat
