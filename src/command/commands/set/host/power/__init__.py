@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.1 2010/06/22 21:42:36 bruno Exp $
+# $Id: __init__.py,v 1.2 2010/06/23 22:51:11 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,12 +54,16 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.2  2010/06/23 22:51:11  bruno
+# fix
+#
 # Revision 1.1  2010/06/22 21:42:36  bruno
 # power control and console access for VMs
 #
 #
 
 import rocks.commands
+import os
 
 class Command(rocks.commands.set.host.command):
 	"""
@@ -69,34 +73,39 @@ class Command(rocks.commands.set.host.command):
 	One or more host names.
 	</arg>
 
-	<param type='string' name='state'>
+	<param type='string' name='switch'>
 	The power setting. This must be one of 'on' or 'off.
 	</param>
 
 	<param type='string' name='key' optional='1'>
-	A private key that will be used to authenticate the request.
+	A private key that will be used to authenticate the request. This
+        should be a file name that contains the private key.
 	</param>
 		
-	<example cmd='set host power compute-0-0 state=on'>
+	<example cmd='set host power compute-0-0 switch=on'>
 	Turn on the power for compute-0-0.
 	</example>
 	"""
 
 	def run(self, params, args):
-		(state, key) = self.fillParams([
-			('state', ),
+		(switch, key) = self.fillParams([
+			('switch', ),
 			('key', )
 			])
 		
 		if not len(args):
 			self.abort('must supply at least one host')
 
-		if state not in [ 'on', 'off' ]:
-			self.abort('invalid state. state must be "on" or "off"')
+		if switch not in [ 'on', 'off' ]:
+			self.abort('invalid switch value. ' +
+				'switch must be "on" or "off"')
+
+		if key and not os.path.exists(key):
+			self.abort("can't access the private key '%s'" % key)
 
 		for host in self.getHostnames(args):
 			#
 			# run the plugins
 			# 
-			self.runPlugins([host, state, key])
+			self.runPlugins([host, switch, key])
 
