@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: vm.py,v $
+# Revision 1.11  2010/06/24 23:43:22  bruno
+# don't allow vncviewer to auto select its settings. just go full on.
+#
 # Revision 1.10  2010/06/23 22:23:30  bruno
 # tweak
 #
@@ -224,6 +227,9 @@ class VMControl:
 		#
 		self.sendcommand(s, op, dst_mac)
 
+		#
+		# read the status code from the VM controller
+		#
 		buf = ''
 		while len(buf) != 9:
 			buf += s.read(1)
@@ -261,35 +267,42 @@ class VMControl:
 
 		pid = os.fork()
 		if pid == 0:
-			os.system('vncviewer localhost:%d' % vncport)
+			os.system('vncviewer -log *:stderr:100 -FullColor ' +
+				'-PreferredEncoding hextile localhost:%d' %
+				vncport)
 			os._exit(0)
 		else:
 			conn, addr = vnc.accept()
 
 			done = 0
 			while not done:
+				#
+				# read from the VM controller
+				#
 				(i, o, e) = select.select(
 					[sock.fileno()], [], [],
 					0.00001)
 				if sock.fileno() in i:
 					try:
-						output = s.read(65536)
+						output = s.read(8192)
 
 						bytes = conn.send(output)
 						while bytes != len(output):
 							bytes += conn.send(
 								output[bytes:])
-
 					except:
 						done = 1
 						continue
 
+				#
+				# read from the VNC client
+				#
 				(i, o, e) = select.select(
 					[conn.fileno()], [], [],
 					0.00001)
 				if conn.fileno() in i:
 					try:
-						input = conn.recv(4096)
+						input = conn.recv(1024)
 
 						bytes = s.write(input)
 						while bytes != len(input):
@@ -385,6 +398,7 @@ class VMControl:
 			return 'failed'
 
 		sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
 		s = ssl.wrap_socket(sock)
 		s.connect((self.controller, self.port))
 		
