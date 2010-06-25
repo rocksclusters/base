@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.2 2010/06/23 22:51:11 bruno Exp $
+# $Id: __init__.py,v 1.3 2010/06/25 19:10:07 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.3  2010/06/25 19:10:07  bruno
+# let non-root users control the power to nodes
+#
 # Revision 1.2  2010/06/23 22:51:11  bruno
 # fix
 #
@@ -65,7 +68,11 @@
 import rocks.commands
 import os
 
-class Command(rocks.commands.set.host.command):
+class command(rocks.commands.set.host.command):
+	MustBeRoot = 0
+
+
+class Command(command):
 	"""
 	Set the power for a host. Power settings can be 'on' or 'off.
 
