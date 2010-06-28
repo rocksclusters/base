@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: vm.py,v $
+# Revision 1.12  2010/06/28 17:42:48  bruno
+# list macs command
+#
 # Revision 1.11  2010/06/24 23:43:22  bruno
 # don't allow vncviewer to auto select its settings. just go full on.
 #
@@ -335,11 +338,10 @@ class VMControl:
 	def sendcommand(self, s, op, dst_mac):
 		msg = '%s\n' % op
 
-		if op != 'list macs':
-			#
-			# destination MAC
-			#
-			msg += '%s\n' % dst_mac
+		#
+		# destination MAC
+		#
+		msg += '%s\n' % dst_mac
 
 		#
 		# send the size of the clear text and send the clear text
@@ -389,8 +391,8 @@ class VMControl:
 		# look up the destination MAC address
 		#
 		rows = self.db.execute("""select mac from networks where
-			node = (select id from nodes where name = '%s') and
-			mac is not NULL""" % host)
+			node = (select id from nodes where name = '%s')
+			and mac is not NULL""" % host)
 
 		if rows > 0:
 			dst_mac, = self.db.fetchone()
@@ -423,8 +425,7 @@ class VMControl:
 
 			macs = ''
 			while len(macs) != msg_len:
-				msg = s.read(msg_len - len(macs))
-			macs += msg
+				macs += s.read(msg_len - len(macs))
 
 			retval = macs
 		elif op == 'console':
