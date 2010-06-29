@@ -1,5 +1,5 @@
 #
-# $Id: Makefile,v 1.17 2010/06/22 21:26:22 mjk Exp $
+# $Id: Makefile,v 1.18 2010/06/29 21:07:53 bruno Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.18  2010/06/29 21:07:53  bruno
+# build fixes
+#
 # Revision 1.17  2010/06/22 21:26:22  mjk
 # Build env is now from src/devel package, nothing outside of base roll.
 #
@@ -127,7 +130,7 @@
 # baseline
 #
 
-ROLLSROOT = src/devel/devel/src/roll
+ROLLSROOT = $(CURDIR)/src/devel/devel/src/roll
 -include $(ROLLSROOT)/etc/Rolls.mk
 include Rolls.mk
 

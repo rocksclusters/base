@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.16 2009/05/01 19:06:49 mjk Exp $
+# $Id: Makefile,v 1.17 2010/06/29 21:07:53 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.17  2010/06/29 21:07:53  bruno
+# build fixes
+#
 # Revision 1.16  2009/05/01 19:06:49  mjk
 # chimi con queso
 #
@@ -120,8 +123,8 @@
 # moved to base roll
 #
 
--include $(shell ../../../../bin/arch).mk
--include $(shell ../../../../bin/os).mk
+-include $(shell $(ROCKSROOT)/bin/arch).mk
+-include $(shell $(ROCKSROOT)/bin/os).mk
 
 default:
 	@echo "copyright|rpm|pkg|clean"
