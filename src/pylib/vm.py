@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: vm.py,v $
+# Revision 1.13  2010/06/29 00:25:14  bruno
+# a little code restructuring and now the console can handle reboots
+#
 # Revision 1.12  2010/06/28 17:42:48  bruno
 # list macs command
 #
@@ -224,26 +227,23 @@ class VMControl:
 		return
 
 
-	def doconsole(self, sock, s, op, dst_mac):
-		#
-		# start the connection
-		#
-		self.sendcommand(s, op, dst_mac)
-
-		#
-		# read the status code from the VM controller
-		#
-		buf = ''
-		while len(buf) != 9:
-			buf += s.read(1)
+	def closeconnection(self, sock, s):
+		try:
+			s.shutdown(socket.SHUT_RDWR)
+		except:
+			pass
 
 		try:
-			status = int(buf)
+			sock.shutdown(socket.SHUT_RDWR)
 		except:
-			status = 0
+			pass
 
-		if status == 0:
-			return 'failed'
+		s.close()
+		sock.close()
+
+
+	def launchconsole(self, sock, s):
+		retval = ''
 
 		#
 		# setup an endpoint that VNC will use to talk to us
@@ -263,7 +263,7 @@ class VMControl:
 			except:
 				pass
 
-		if success == 0:
+		if not success:
 			return 'failed'
 
 		vnc.listen(1)
@@ -274,65 +274,148 @@ class VMControl:
 				'-PreferredEncoding hextile localhost:%d' %
 				vncport)
 			os._exit(0)
-		else:
-			conn, addr = vnc.accept()
 
-			done = 0
-			while not done:
-				#
-				# read from the VM controller
-				#
-				(i, o, e) = select.select(
-					[sock.fileno()], [], [],
-					0.00001)
-				if sock.fileno() in i:
-					try:
-						output = s.read(8192)
+		#
+		# parent
+		#
+		conn, addr = vnc.accept()
 
-						bytes = conn.send(output)
-						while bytes != len(output):
-							bytes += conn.send(
-								output[bytes:])
-					except:
+		done = 0
+		while not done:
+			#
+			# read from the VM controller
+			#
+			(i, o, e) = select.select([sock.fileno()], [], [],
+				0.00001)
+			if sock.fileno() in i:
+				try:
+					output = s.read(8192)
+
+					if len(output) == 0:
+						# 
+						# EOF. the VM controller
+						# shutdown the connection.
+						# let's see if the remote
+						# machine rebooted
+						# 
+						retval = 'retry'
 						done = 1
 						continue
+						
+					bytes = conn.send(output)
+					while bytes != len(output):
+						bytes += conn.send(
+							output[bytes:])
+				except:
+					done = 1
+					continue
 
-				#
-				# read from the VNC client
-				#
-				(i, o, e) = select.select(
-					[conn.fileno()], [], [],
-					0.00001)
-				if conn.fileno() in i:
-					try:
-						input = conn.recv(1024)
+			#
+			# read from the VNC client
+			#
+			(i, o, e) = select.select([conn.fileno()], [], [],
+				0.00001)
+			if conn.fileno() in i:
+				try:
+					input = conn.recv(1024)
 
-						bytes = s.write(input)
-						while bytes != len(input):
-							bytes += s.write(
-								input[bytes:])
-					except:
-						done = 1
-						continue
+					bytes = s.write(input)
+					while bytes != len(input):
+						bytes += s.write(
+							input[bytes:])
+				except:
+					done = 1
+					continue
 
-			try:
-				conn.shutdown(socket.SHUT_RDWR)
-			except:
-				pass
-			try:
-				conn.close()
-			except:
-				pass
-			try:
-				vnc.shutdown(socket.SHUT_RDWR)
-			except:
-				pass
-			try:
-				vnc.close()
-			except:
-				pass
+		try:
+			conn.shutdown(socket.SHUT_RDWR)
+		except:
+			pass
+		try:
+			conn.close()
+		except:
+			pass
+		try:
+			vnc.shutdown(socket.SHUT_RDWR)
+		except:
+			pass
+		try:
+			vnc.close()
+		except:
+			pass
 
-		return ''
+		return retval
+
+
+	def console(self, op, dst_mac):
+		sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		s = ssl.wrap_socket(sock)
+		s.connect((self.controller, self.port))
+
+		#
+		# start the connection by sending a command to the VM
+		# controller
+		#
+		self.sendcommand(s, op, dst_mac)
+
+		#
+		# read the status code from the VM controller
+		#
+		buf = ''
+		while len(buf) != 9:
+			buf += s.read(1)
+
+		try:
+			status = int(buf)
+		except:
+			status = 0
+
+		if status == 0:
+			self.closeconnection(sock, s)
+			return 'failed'
+
+		retval = self.launchconsole(sock, s)
+		self.closeconnection(sock, s)
+
+		return retval
+
+
+	def power(self, op, dst_mac):
+		sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		s = ssl.wrap_socket(sock)
+		s.connect((self.controller, self.port))
+
+		self.sendcommand(s, op, dst_mac)
+
+		self.closeconnection(sock, s)
+		
+
+	def listmacs(self, op, dst_mac):
+		sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		s = ssl.wrap_socket(sock)
+		s.connect((self.controller, self.port))
+
+		self.sendcommand(s, op, dst_mac)
+
+		#
+		# pick up response
+		#
+		buf = ''
+		while len(buf) != 9:
+			buf += s.read(1)
+
+		try:
+			msg_len = int(buf)
+		except:
+			msg_len = 0
+
+		macs = ''
+		while len(macs) != msg_len:
+			macs += s.read(msg_len - len(macs))
+
+		self.closeconnection(sock, s)
+
+		return macs
 
 
 	def sendcommand(self, s, op, dst_mac):
@@ -399,46 +482,15 @@ class VMControl:
 		else:
 			return 'failed'
 
-		sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-		s = ssl.wrap_socket(sock)
-		s.connect((self.controller, self.port))
-		
 		retval = ''
 
 		if op in [ 'power off', 'power on' ]:
-			self.sendcommand(s, op, dst_mac)
+			self.power(op, dst_mac)
 		elif op == 'list macs':
-			#
-			# pick up response
-			#
-			self.sendcommand(s, op, dst_mac)
-
-			buf = ''
-			while len(buf) != 9:
-				buf += s.read(1)
-
-			try:
-				msg_len = int(buf)
-			except:
-				msg_len = 0
-
-			macs = ''
-			while len(macs) != msg_len:
-				macs += s.read(msg_len - len(macs))
-
-			retval = macs
+			retval = self.listmacs(op, dst_mac)
 		elif op == 'console':
-			retval = self.doconsole(sock, s, op, dst_mac)
-
-		try:
-			s.write(' ')
-			s.shutdown(socket.SHUT_RDWR)
-			sock.shutdown(socket.SHUT_RDWR)
-		except:
-			pass
-
-		s.close()
-		sock.close()
+			retval = 'retry'
+			while retval == 'retry':
+				retval = self.console(op, dst_mac)
 
 		return retval
