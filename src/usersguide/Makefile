@@ -1,5 +1,5 @@
 # 
-# $Id: Makefile,v 1.11 2010/06/22 21:26:25 mjk Exp $
+# $Id: Makefile,v 1.12 2010/06/29 20:54:13 bruno Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.12  2010/06/29 20:54:13  bruno
+# build fix
+#
 # Revision 1.11  2010/06/22 21:26:25  mjk
 # Build env is now from src/devel package, nothing outside of base roll.
 #
@@ -132,7 +135,7 @@
 
 PKGROOT		= /var/www/html/roll-documentation/$(ROLL)/$(VERSION)
 REDHAT.ROOT	= $(PWD)/../../
-ROCKSROOT       = ../devel/devel
+ROCKSROOT       = $(CURDIR)/../../src/devel/devel
 -include $(ROCKSROOT)/etc/Rules.mk
 include Rules.mk
 
