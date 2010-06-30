@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.83 2010/05/27 00:11:32 bruno Exp $
+# $Id: __init__.py,v 1.84 2010/06/30 17:37:32 anoop Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,17 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.84  2010/06/30 17:37:32  anoop
+# Overhaul of the naming system. We now support
+# 1. Multiple zone/domains
+# 2. Serving DNS for multiple domains
+# 3. No FQDN support for network names
+#    - FQDN must be split into name & domain.
+#    - Each piece information will go to a
+#      different table
+# Hopefully, I've covered the basics, and not broken
+# anything major
+#
 # Revision 1.83  2010/05/27 00:11:32  bruno
 # firewall fixes
 #
@@ -1348,12 +1359,22 @@ class DatabaseConnection:
 					pass
 
 				#
-				# see if this is a FQDN
+				# see if this is a FQDN. If it is FQDN,
+				# break it into name and domain.
 				#
-				self.link.execute("""select nodes.name from
-					networks,nodes where
-					nodes.id = networks.node and
-					networks.name = '%s' """ % (hostname))
+				n = hostname.split('.')
+				if len(n) > 1:
+					name = n[0]
+					domain = string.join(n[1:], '.')
+					cmd = 'select n.name from nodes n, '	+\
+						'networks nt, subnets s where '	+\
+						'nt.subnet=s.id and '		+\
+						'nt.node=n.id and '		+\
+						's.dnszone="%s" and ' % (domain)+\
+						'(nt.name="%s" or n.name="%s")'  \
+						% (name, name)
+
+					self.link.execute(cmd)
 				try:
 					hostname, = self.link.fetchone()
 					return hostname

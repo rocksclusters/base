@@ -17,6 +17,17 @@
 
   <changelog>
   $Log: database-data.xml,v $
+  Revision 1.61  2010/06/30 17:37:32  anoop
+  Overhaul of the naming system. We now support
+  1. Multiple zone/domains
+  2. Serving DNS for multiple domains
+  3. No FQDN support for network names
+     - FQDN must be split into name & domain.
+     - Each piece information will go to a
+       different table
+  Hopefully, I've covered the basics, and not broken
+  anything major
+
   Revision 1.60  2010/06/07 20:32:42  bruno
   the ipmi appliance is dead
 
@@ -529,11 +540,17 @@ if os.path.exists('/tmp/site.attrs'):
 
 <!-- networks -->
 
-/opt/rocks/bin/rocks add network private \
-	&Kickstart_PrivateNetwork; &Kickstart_PrivateNetmask;
+/opt/rocks/bin/rocks add network private	\
+	subnet=&Kickstart_PrivateNetwork;	\
+	netmask=&Kickstart_PrivateNetmask;	\
+	dnszone=&Kickstart_PrivateDNSDomain;	\
+	servedns=true
 
-/opt/rocks/bin/rocks add network public \
-	&Kickstart_PublicNetwork; &Kickstart_PublicNetmask;
+/opt/rocks/bin/rocks add network public		\
+	subnet=&Kickstart_PublicNetwork;	\
+	netmask=&Kickstart_PublicNetmask;	\
+	dnszone=&Kickstart_PublicDNSDomain;	\
+	servedns=false
 
 </post>
 

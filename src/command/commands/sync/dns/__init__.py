@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.7 2009/05/29 16:51:42 phil Exp $
+# $Id: __init__.py,v 1.8 2010/06/30 17:37:33 anoop Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,17 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.8  2010/06/30 17:37:33  anoop
+# Overhaul of the naming system. We now support
+# 1. Multiple zone/domains
+# 2. Serving DNS for multiple domains
+# 3. No FQDN support for network names
+#    - FQDN must be split into name & domain.
+#    - Each piece information will go to a
+#      different table
+# Hopefully, I've covered the basics, and not broken
+# anything major
+#
 # Revision 1.7  2009/05/29 16:51:42  phil
 # Eliminate the 2+ second hole where named was down. Replace service restart with service reload.
 #
@@ -107,13 +118,9 @@ class Command(rocks.commands.sync.command):
 		return network
 
 
-	def getNetmask(self):
+	def getNetmask(self, net):
 		"Determines the network mask of this cluster. Returns"
 		"a CIDR value i, 0<=i<=32. Handles only IPv4 addresses."
-
-		self.db.execute("""select netmask from subnets where
-			name = 'private'""")
-		net, = self.db.fetchone()
 
 		mask = 32
 		Net = string.split(net, ".")
@@ -176,6 +183,4 @@ class Command(rocks.commands.sync.command):
 
 	def run(self, params, args):
 		self.runPlugins()
-
 		os.system('/sbin/service named reload > /dev/null 2>&1')
-

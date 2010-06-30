@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.9 2010/04/27 15:41:32 phil Exp $
+# $Id: __init__.py,v 1.10 2010/06/30 17:37:33 anoop Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,17 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.10  2010/06/30 17:37:33  anoop
+# Overhaul of the naming system. We now support
+# 1. Multiple zone/domains
+# 2. Serving DNS for multiple domains
+# 3. No FQDN support for network names
+#    - FQDN must be split into name & domain.
+#    - Each piece information will go to a
+#      different table
+# Hopefully, I've covered the basics, and not broken
+# anything major
+#
 # Revision 1.9  2010/04/27 15:41:32  phil
 # Tighten up the test for None in a nic name.
 #
@@ -211,16 +222,61 @@ class Command(command):
 
       
 	def run(self, param, args):
-		print '127.0.0.1\tlocalhost.localdomain\tlocalhost' 
-		
-		# Build the static addresses
-		
-		netmask = self.db.getHostAttr('localhost',
-			'Kickstart_PrivateNetmask')
-		network = self.db.getHostAttr('localhost',
-			'Kickstart_PrivateNetwork')
+		self.beginOutput()
+		self.addOutput('localhost', '# Added by rocks report host #')
+		self.addOutput('localhost', '#        DO NOT MODIFY       #')
+		self.addOutput('localhost', '#  Add any modifications to  #')
+		self.addOutput('localhost', '#    /etc/hosts.local file   #\n')
+		self.addOutput('localhost','127.0.0.1\tlocalhost.localdomain\tlocalhost\n')
 
-		self.hostlines(network, netmask)
-		self.extranics()
-		self.hostlocal('/etc/hosts.local')
+		# First get the zonename for the private Rocks network
+		self.db.execute('select dnszone from subnets '	+\
+				'where name="private"')
+		localzone, = self.db.fetchone()
 
+		# Get a list of all hostnames that are part of the
+		# private network. Use the MySQL coalesce function
+		# to use name from nodes table if name from networks
+		# table is not set/set to NULL
+		cmd = 'select nt.ip, a.name, s.dnszone, '	+\
+			'coalesce(nt.name,n.name) '		+\
+			'from networks nt, subnets s, nodes n '	+\
+			'left join aliases a on (a.node=n.id) '	+\
+			'where nt.subnet=s.id and nt.ip!="NULL" '	+\
+			'and nt.node=n.id order by nt.subnet, nt.name'
+
+		self.db.execute(cmd)
+
+		# The policy we will maintain for every entry in
+		# the private zone is the following.
+		# <ip> <name>.<private_zone> <name> <alias> <alias>.<private_zone>
+		# For all other networks, host entry will be of the format
+		# <ip> <name>.<zonename> <alias>.<zonename>
+		for (ip, alias, zone, record) in self.db.fetchall():
+			# Construct the hosts entry
+			# Add <ip> <name>.<zonename>
+			h = '%s\t%s.%s' % (ip, record, zone)
+
+			# If it's the private zone
+			if zone == localzone:
+				# Add the <name> entry
+				h = h + '\t' + record
+				# and the <alias> entry
+				if alias is not None:
+					h = h + '\t' + alias
+			# Finally add the <alias>.<zonename> entry
+			if alias is not None:
+				h = h + '\t' + '%s.%s' % (alias, zone)
+
+			self.addOutput('localhost', h)
+
+		# Finally, add the hosts.local file to the list
+		hostlocal = '/etc/hosts.local'
+		if os.path.exists(hostlocal):
+			f = open(hostlocal,'r')
+			self.addOutput('localhost','\n# Imported from /etc/hosts.local\n')
+			h = f.read()
+			self.addOutput('localhost',h)
+			f.close()
+		
+		self.endOutput(padChar='')

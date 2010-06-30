@@ -18,6 +18,17 @@
 
   <changelog>
   $Log: database-schema.xml,v $
+  Revision 1.45  2010/06/30 17:37:32  anoop
+  Overhaul of the naming system. We now support
+  1. Multiple zone/domains
+  2. Serving DNS for multiple domains
+  3. No FQDN support for network names
+     - FQDN must be split into name & domain.
+     - Each piece information will go to a
+       different table
+  Hopefully, I've covered the basics, and not broken
+  anything major
+
   Revision 1.44  2010/06/15 19:36:51  bruno
   add the public key table
 
@@ -443,10 +454,12 @@ CREATE TABLE networks (
 DROP TABLE IF EXISTS subnets;
 CREATE TABLE subnets (
 	ID		int(11)	NOT NULL AUTO_INCREMENT,
-	name		varchar(32)	NOT NULL,
+	name		varchar(32)	UNIQUE NOT NULL,
+	dnszone		varchar(64)	UNIQUE NOT NULL ,
 	subnet		varchar(32)	NOT NULL,
 	netmask		varchar(32)	NOT NULL,
 	mtu		int(11)		default '1500',
+	servedns	boolean		default false,
 	PRIMARY KEY(ID)
 ) TYPE=MyISAM;
 

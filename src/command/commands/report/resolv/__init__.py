@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.2 2009/05/01 19:07:02 mjk Exp $
+# $Id: __init__.py,v 1.3 2010/06/30 17:37:33 anoop Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,17 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.3  2010/06/30 17:37:33  anoop
+# Overhaul of the naming system. We now support
+# 1. Multiple zone/domains
+# 2. Serving DNS for multiple domains
+# 3. No FQDN support for network names
+#    - FQDN must be split into name & domain.
+#    - Each piece information will go to a
+#      different table
+# Hopefully, I've covered the basics, and not broken
+# anything major
+#
 # Revision 1.2  2009/05/01 19:07:02  mjk
 # chimi con queso
 #
@@ -70,12 +81,20 @@ class command(rocks.commands.HostArgumentProcessor,
 	def searchdomain(self):
 		"""Prints the domain and search entries."""
 
-		print 'search', \
-			self.db.getHostAttr('localhost',
-				'Kickstart_PrivateDNSDomain'), \
-			self.db.getHostAttr('localhost',
-				'Kickstart_PublicDNSDomain')
-		
+		s = 'search '
+		# First add the private network entry.
+		self.db.execute('select dnszone from ' +\
+			'subnets where name="private"')
+		private_domain, = self.db.fetchone()
+		s += private_domain
+
+		# Add the remaining network searches after
+		self.db.execute('select dnszone from ' +\
+			'subnets where name!="private"')
+		for (zone, ) in self.db.fetchall():
+			s += ' %s' % zone
+
+		print s	
 
 	def nameservers(self, servers):
 		"""Prints a comma-separated list of name servers

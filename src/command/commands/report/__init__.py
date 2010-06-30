@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.4 2009/05/01 19:07:01 mjk Exp $
+# $Id: __init__.py,v 1.5 2010/06/30 17:37:33 anoop Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,17 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.5  2010/06/30 17:37:33  anoop
+# Overhaul of the naming system. We now support
+# 1. Multiple zone/domains
+# 2. Serving DNS for multiple domains
+# 3. No FQDN support for network names
+#    - FQDN must be split into name & domain.
+#    - Each piece information will go to a
+#      different table
+# Hopefully, I've covered the basics, and not broken
+# anything major
+#
 # Revision 1.4  2009/05/01 19:07:01  mjk
 # chimi con queso
 #
@@ -73,4 +84,34 @@ import rocks.commands
 
 class command(rocks.commands.Command):
 	MustBeRoot = 0
+
+	def getNetworks(self):
+		networks = []
+		db_cmd = 'select name, subnet, netmask, dnszone ' + \
+			'from subnets where subnets.servedns = True'
+		self.db.execute(db_cmd)
+		for n in self.db.fetchall():
+			network = rocks.util.Struct()
+			network.name	=	n[0]
+			network.subnet	=	n[1]
+			network.netmask	=	n[2]
+			network.dnszone	=	n[3]
+			networks.append(network)
+
+		return networks
+		
+		
+	def getSubnet(self, subnet, netmask):
+		s_list = subnet.split('.')
+		s_list = map(int, s_list)
+		
+		n_list = netmask.split('.')
+		n_list = map(int, n_list)
+		
+		net_list = []
+		for i in range(0, 4):
+			if n_list[i] == 255:
+				net_list.append(str(s_list[i]))
+
+		return net_list
 

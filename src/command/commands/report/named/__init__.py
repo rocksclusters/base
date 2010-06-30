@@ -1,5 +1,5 @@
-# $Id: __init__.py,v 1.10 2010/06/30 17:37:33 anoop Exp $
-#
+# $Id: __init__.py,v 1.1 2010/06/30 17:37:33 anoop Exp $
+# 
 # @Copyright@
 # 
 # 				Rocks(r)
@@ -54,7 +54,7 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
-# Revision 1.10  2010/06/30 17:37:33  anoop
+# Revision 1.1  2010/06/30 17:37:33  anoop
 # Overhaul of the naming system. We now support
 # 1. Multiple zone/domains
 # 2. Serving DNS for multiple domains
@@ -65,76 +65,140 @@
 # Hopefully, I've covered the basics, and not broken
 # anything major
 #
-# Revision 1.9  2009/06/03 21:28:52  bruno
-# add MTU to the subnets table
-#
-# Revision 1.8  2009/05/01 19:06:59  mjk
+# Revision 1.5  2009/05/01 19:07:04  mjk
 # chimi con queso
 #
-# Revision 1.7  2008/10/18 00:55:54  mjk
+# Revision 1.4  2009/03/04 21:16:54  bruno
+# replace getGlobalVar with getHostAttr
+#
+# Revision 1.3  2008/10/18 00:55:58  mjk
 # copyright 5.1
 #
-# Revision 1.6  2008/03/06 23:41:38  mjk
+# Revision 1.2  2008/03/06 23:41:40  mjk
 # copyright storm on
 #
-# Revision 1.5  2007/07/04 01:47:38  mjk
-# embrace the anger
+# Revision 1.1  2007/08/08 22:14:41  bruno
+# moved 'dbreport named' and 'dbreport dns' to rocks command line
 #
-# Revision 1.4  2007/06/28 19:51:42  bruno
-# help for 'rocks list network'
 #
-# Revision 1.3  2007/06/19 16:42:42  mjk
-# - fix add host interface docstring xml
-# - update copyright
-#
-# Revision 1.2  2007/06/12 01:33:40  mjk
-# - added NetworkArgumentProcessor
-# - updated rocks list network
-#
-# Revision 1.1  2007/06/12 01:10:42  mjk
-# - 'rocks add subnet' is now 'rocks add network'
-# - added set network subnet|netmask
-# - added list network
-# - other cleanup
-#
-
 
 import os
-import stat
-import time
-import sys
 import string
 import rocks.commands
 
+config_preamble = """options {
+	directory "/var/named";
+	dump-file "/var/named/data/cache_dump.db";
+	statistics-file "/var/named/data/named_stats.txt";
+	forwarders { %s; };
+};
 
-class Command(rocks.commands.NetworkArgumentProcessor,
-	rocks.commands.list.command):
+controls {
+	inet 127.0.0.1 allow { localhost; } keys { rndckey; };
+};
+
+zone "." IN {
+	type hint;
+	file "named.ca";
+};
+
+zone "localdomain" IN {
+	type master;
+	file "localdomain.zone";
+	allow-update { none; };
+};
+
+zone "localhost" IN {
+	type master;
+	file "localhost.zone";
+	allow-update { none; };
+};
+
+zone "0.0.127.in-addr.arpa" IN {
+	type master;
+	file "named.local";
+	allow-update { none; };
+};
+
+zone "0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.ip6.arpa" IN {
+	type master;
+	file "named.ip6.local";
+	allow-update { none; };
+};
+
+zone "255.in-addr.arpa" IN {
+	type master;
+	file "named.broadcast";
+	allow-update { none; };
+};
+
+zone "0.in-addr.arpa" IN {
+	type master;
+	file "named.zero";
+	allow-update { none; };
+};
+"""
+
+zone_template = """
+zone "%s" {
+	type master;
+	notify no;
+	file "%s.domain";
+};
+
+zone "%s.in-addr.arpa" {
+	type master;
+	notify no;
+	file "reverse.%s.domain.%s";
+};
+"""
+
+class Command(rocks.commands.report.command):
 	"""
-	List the defined networks for this system.
+	Prints the nameserver daemon configuration file
+	for the system.
 
-	<arg optional='1' type='string' name='network' repeat='1'>
-	Zero, one or more network names. If no network names are supplied,
-	info about all the known networks is listed.
-	</arg>
-	
-	<example cmd='list network private'>
-	List network info for the network named 'private'.
-	</example>
-
-	<example cmd='list network'>
-	List info for all defined networks.
+	<example cmd="report named">
+	Outputs /etc/named.conf
 	</example>
 	"""
 
 	def run(self, params, args):
 		
-		self.beginOutput()
+		# Start writing the named.conf file
+		s = '<file name="/etc/named.conf" perms="0644">\n'
+
+		# Get a list of all the Public DNS servers
+		fwds = self.db.getHostAttr('localhost','Kickstart_PublicDNSServers')
+		forwarders = string.join(fwds.split(','), ';')
 		
-		for net in self.getNetworkNames(args):
-			self.db.execute("""select subnet, netmask, mtu, 
-				dnszone, if(servedns,'True','False')
-				from subnets where name='%s'""" % net)
-			for row in self.db.fetchall():
-				self.addOutput(net, row)
+		# Create the preamble from the template
+		s += config_preamble % (forwarders)
+
+		# Get a list of all networks that we should serve
+		# domain names for
+		for n in self.getNetworks():
+			# For every network, get the base subnet,
+			# and reverse it. This is basically the
+			# format that named understands
+			sn	= self.getSubnet(n.subnet, n.netmask)
+			sn.reverse()
+			r_sn	= string.join(sn, '.')
 			
-		self.endOutput(header=['network', 'subnet', 'netmask', 'mtu', 'dnszone', 'servedns'])
+			# Add the zone to the named.conf file
+			s += zone_template % (n.dnszone, n.name, \
+					r_sn, n.name, r_sn)
+		
+		# Check if there are local modifications to named.conf
+		if os.path.exists('/etc/named.conf.local'):
+			f = open('/etc/named.conf.local', 'r')
+			s += f.read()
+			f.close()
+			s += '\n'
+			
+		s += 'include "/etc/rndc.key";\n'
+		s += '</file>\n'
+
+		self.beginOutput()
+		self.addOutput('localhost',s)
+		self.endOutput(padChar = '')

@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.12 2009/06/05 19:56:25 bruno Exp $
+# $Id: __init__.py,v 1.13 2010/06/30 17:37:33 anoop Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,17 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.13  2010/06/30 17:37:33  anoop
+# Overhaul of the naming system. We now support
+# 1. Multiple zone/domains
+# 2. Serving DNS for multiple domains
+# 3. No FQDN support for network names
+#    - FQDN must be split into name & domain.
+#    - Each piece information will go to a
+#      different table
+# Hopefully, I've covered the basics, and not broken
+# anything major
+#
 # Revision 1.12  2009/06/05 19:56:25  bruno
 # make mtu optional
 #
@@ -143,12 +154,24 @@ class Command(rocks.commands.add.command):
 	<param type='string' name='mtu'>
 	The MTU for the new network. Default is 1500.
 	</param>
+
+	<param type='string' name='dnszone'>
+	The Domain name or the DNS Zone name to use
+	for all hosts of this particular subnet. Default
+	is set to the name of the subnet
+	</param>
 	
+	<param type='boolean' name='servedns'>
+	Parameter to decide whether this zone will be
+	served by the nameserver on the frontend.
+	</param>
+
 	<example cmd='add network optiputer 192.168.1.0 255.255.255.0'>
 	Adds the optiputer network address of 192.168.1.0/255.255.255.0.
 	</example>
 
-	<example cmd='add network optiputer subnet=192.168.1.0 netmask=255.255.255.0 mtu=9000'>
+	<example cmd='add network optiputer subnet=192.168.1.0 netmask=255.255.255.0 mtu=9000
+		dnszone="optiputer.net" servedns=true'>
 	Same as above, but set the MTU to 9000.
 	</example>
 	"""
@@ -169,6 +192,10 @@ class Command(rocks.commands.add.command):
 		if not netmask:
                         self.abort('netmask not specified')
 
+		(dnszone, servedns) = self.fillParams([('dnszone', name),
+			('servedns','n')])
+
+		servedns = self.str2bool(servedns)
 		# Insert the name of the new network into the subnets
 		# table if it does not already exist
 			
@@ -178,6 +205,6 @@ class Command(rocks.commands.add.command):
 			self.abort('network "%s" exists' % name)
 		
 		self.db.execute("""insert into subnets (name, subnet, netmask,
-			mtu) values ('%s', '%s', '%s', %s)""" % (name, subnet,
-			netmask, mtu))
+			mtu, dnszone, servedns) values ('%s', '%s', '%s', %s, '%s', %s)"""\
+			% (name, subnet, netmask, mtu, dnszone, servedns))
 

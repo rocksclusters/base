@@ -1,4 +1,4 @@
-# $Id: plugin_named.py,v 1.5 2009/05/01 19:07:04 mjk Exp $
+# $Id: plugin_named.py,v 1.6 2010/06/30 17:37:33 anoop Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,17 @@
 # @Copyright@
 #
 # $Log: plugin_named.py,v $
+# Revision 1.6  2010/06/30 17:37:33  anoop
+# Overhaul of the naming system. We now support
+# 1. Multiple zone/domains
+# 2. Serving DNS for multiple domains
+# 3. No FQDN support for network names
+#    - FQDN must be split into name & domain.
+#    - Each piece information will go to a
+#      different table
+# Hopefully, I've covered the basics, and not broken
+# anything major
+#
 # Revision 1.5  2009/05/01 19:07:04  mjk
 # chimi con queso
 #
@@ -73,104 +84,21 @@
 
 import os
 import rocks.commands
-
-config_template = """options {
-	directory "/var/named";
-	dump-file "/var/named/data/cache_dump.db";
-	statistics-file "/var/named/data/named_stats.txt";
-	%s
-};
-
-controls {
-	inet 127.0.0.1 allow { localhost; } keys { rndckey; };
-};
-
-zone "." IN {
-	type hint;
-	file "named.ca";
-};
-
-zone "localdomain" IN {
-	type master;
-	file "localdomain.zone";
-	allow-update { none; };
-};
-
-zone "localhost" IN {
-	type master;
-	file "localhost.zone";
-	allow-update { none; };
-};
-
-zone "0.0.127.in-addr.arpa" IN {
-	type master;
-	file "named.local";
-	allow-update { none; };
-};
-
-zone "0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.ip6.arpa" IN {
-	type master;
-	file "named.ip6.local";
-	allow-update { none; };
-};
-
-zone "255.in-addr.arpa" IN {
-	type master;
-	file "named.broadcast";
-	allow-update { none; };
-};
-
-zone "0.in-addr.arpa" IN {
-	type master;
-	file "named.zero";
-	allow-update { none; };
-};
-
-zone "%s" {
-	type master;
-	notify no;
-	file "rocks.domain";
-};
-
-%s
-include "/etc/rndc.key";
-"""
-
-zone_template = """
-zone "%s.in-addr.arpa" {
-	type master;
-	notify no;
-	file "reverse.rocks.domain.%s";
-};
-"""
+import subprocess
 
 class Plugin(rocks.commands.Plugin):
 
 	def provides(self):
 		return 'named'
 		
-	#def requires(self):
-		#return ['dns']
 
 	def run(self, args):
-		domain = self.db.getHostAttr('localhost',
-			'Kickstart_PrivateDNSDomain')
-		nameservers = self.db.getHostAttr('localhost',
-			'Kickstart_PublicDNSServers')
+		o = self.owner.command('report.named', [])
+		p1 = subprocess.Popen(['rocks','report','script'], 
+			stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+			stderr=subprocess.PIPE)
+		out = p1.communicate(o)[0]
+		p2 = subprocess.Popen(['/bin/sh'], stdin=subprocess.PIPE,
+			stdout=None, stderr=None)
 
-		ns = ''
-		n = nameservers.strip()
-		if len(n) > 0:
-			ns = 'forwarders { %s; };' % ';'.join(n.split(','))
-
-		zone = ''
-		for subnet in self.owner.getSubnets():
-			subnet.reverse()
-			zonename = '.'.join(subnet)
-
-			zone += zone_template % (zonename, zonename)
-
-		file = open('/etc/named.conf', 'w')
-		file.write(config_template % (ns, domain, zone))
-		file.close()
-
+		p2.communicate(out)

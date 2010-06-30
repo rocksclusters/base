@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.7 2009/05/01 19:07:03 mjk Exp $
+# $Id: __init__.py,v 1.8 2010/06/30 17:37:33 anoop Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,17 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.8  2010/06/30 17:37:33  anoop
+# Overhaul of the naming system. We now support
+# 1. Multiple zone/domains
+# 2. Serving DNS for multiple domains
+# 3. No FQDN support for network names
+#    - FQDN must be split into name & domain.
+#    - Each piece information will go to a
+#      different table
+# Hopefully, I've covered the basics, and not broken
+# anything major
+#
 # Revision 1.7  2009/05/01 19:07:03  mjk
 # chimi con queso
 #
@@ -83,7 +94,6 @@ import rocks.commands
 class Command(rocks.commands.set.host.command):
 	"""
 	Sets the logical name of a network interface on a particular host.
-	This is usually a fully qualified domain name. 
 
 	<arg type='string' name='host'>
 	Host name.
@@ -95,9 +105,11 @@ class Command(rocks.commands.set.host.command):
  	</arg>
  	
  	<arg type='string' name='name'>
-	Name of this interface (e.g. hostname.external.net) This is usually of
-	the form, hostname.domain, but is not enforced.
-	Use name=NULL to clear.
+	Name of this interface (e.g. newname). This is only the
+	name associated with a certain interface. FQDNs are disallowed.
+	To set the domain or zone for an interface, use the
+	"rocks add network" command, and then associate the interface
+	with the network
 	</arg>
 
 	<param type='string' name='iface'>
@@ -105,16 +117,17 @@ class Command(rocks.commands.set.host.command):
 	</param>
 
 	<param type='string' name='name'>
-	Can be used in place of the name argument.
+	Can be used in place of the name argument. 
 	</param>
 	
 
-	<example cmd='set host interface name compute-0-0 eth1 c0-0.external.net'>
+	<example cmd='set host interface name compute-0-0 eth1 cluster-0-0'>
 	Sets the name for the eth1 device on host compute-0-0 to
-	c0-0.external.net
+	cluster-0-0.zonename. The zone is decided by the subnet that the
+	interface is attached to.
 	</example>
 
-	<example cmd='set host interface name compute-0-0 iface=eth1 name=c0-0.external.net'>
+	<example cmd='set host interface name compute-0-0 iface=eth1 name=c0-0'>
 	Same as above.
 	</example>
 	
@@ -124,6 +137,7 @@ class Command(rocks.commands.set.host.command):
 	<related>set host interface module</related>
 	-->
 	<related>add host</related>
+	<related>add network</related>
 	"""
 	
 	def run(self, params, args):
@@ -134,18 +148,25 @@ class Command(rocks.commands.set.host.command):
 			
 		if len(hosts) != 1:
 			self.abort('must supply one host')
+
+		# One host only
+		host = hosts[0]
+
 		if not iface:
 			self.abort('must supply iface')
 		if not name:
 			self.abort('must supply name')
 
-		if name.upper() == "NULL":
-			name = "NULL"
+		if len(name.split('.')) > 1:
+			self.abort('cannot be fqdn\n' +\
+			'Please use subnets table to set domain name')
 
-		for host in hosts:
-			self.db.execute("""update networks, nodes set 
-				networks.name=NULLIF('%s','NULL') where
-				nodes.name='%s' and networks.node=nodes.id and
-				(networks.device='%s' or networks.mac='%s')""" %
-				(name, host, iface, iface))
+		if name.upper() == "NULL":
+			name = host
+
+		self.db.execute("""update networks, nodes set 
+			networks.name='%s' where nodes.name='%s'
+			and networks.node=nodes.id and
+			(networks.device='%s' or networks.mac='%s')""" %
+			(name, host, iface, iface))
 
