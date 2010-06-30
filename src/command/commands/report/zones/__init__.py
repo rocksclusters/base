@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.1 2010/06/30 17:37:33 anoop Exp $
+# $Id: __init__.py,v 1.2 2010/06/30 17:42:41 anoop Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.2  2010/06/30 17:42:41  anoop
+# Added doc string
+#
 # Revision 1.1  2010/06/30 17:37:33  anoop
 # Overhaul of the naming system. We now support
 # 1. Multiple zone/domains
@@ -143,7 +146,12 @@ $TTL 3D
 
 
 class Command(rocks.commands.report.command):
-
+	"""Prints out all the named <zone>.conf
+	   and reverse-zone.conf files in XML.
+	   <example cmd='report zones'>
+	   Outputs all the zone config files
+	   </example>
+	"""
 
 	def hostlines(self, name, dnszone):
 
