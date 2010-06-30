@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: vm.py,v $
+# Revision 1.14  2010/06/30 18:01:12  bruno
+# can now route error messages back to the terminal that issued the command.
+#
 # Revision 1.13  2010/06/29 00:25:14  bruno
 # a little code restructuring and now the console can handle reboots
 #
@@ -216,14 +219,16 @@ import sha
 import ssl
 import M2Crypto
 import select
+import re
 
 class VMControl:
 
-	def __init__(self, db, controller, keyfile):
+	def __init__(self, db, controller, keyfile, flags=''):
 		self.db = db
 		self.controller = controller
 		self.keyfile = keyfile
 		self.port = 8677
+		self.flags = flags
 		return
 
 
@@ -243,7 +248,7 @@ class VMControl:
 
 
 	def launchconsole(self, sock, s):
-		retval = ''
+		reason = ''
 
 		#
 		# setup an endpoint that VNC will use to talk to us
@@ -264,15 +269,14 @@ class VMControl:
 				pass
 
 		if not success:
-			return 'failed'
+			return 'failed\n'
 
 		vnc.listen(1)
 
 		pid = os.fork()
 		if pid == 0:
-			os.system('vncviewer -log *:stderr:100 -FullColor ' +
-				'-PreferredEncoding hextile localhost:%d' %
-				vncport)
+			os.system('vncviewer %s localhost:%d' %
+				(self.flags, vncport))
 			os._exit(0)
 
 		#
@@ -289,7 +293,7 @@ class VMControl:
 				0.00001)
 			if sock.fileno() in i:
 				try:
-					output = s.read(8192)
+					(status, output) = self.recvresponse(s)
 
 					if len(output) == 0:
 						# 
@@ -298,7 +302,7 @@ class VMControl:
 						# let's see if the remote
 						# machine rebooted
 						# 
-						retval = 'retry'
+						reason = 'retry'
 						done = 1
 						continue
 						
@@ -344,7 +348,7 @@ class VMControl:
 		except:
 			pass
 
-		return retval
+		return reason
 
 
 	def console(self, op, dst_mac):
@@ -361,23 +365,14 @@ class VMControl:
 		#
 		# read the status code from the VM controller
 		#
-		buf = ''
-		while len(buf) != 9:
-			buf += s.read(1)
-
-		try:
-			status = int(buf)
-		except:
-			status = 0
+		(status, reason) = self.recvresponse(s)
 
 		if status == 0:
-			self.closeconnection(sock, s)
-			return 'failed'
+			reason = self.launchconsole(sock, s)
 
-		retval = self.launchconsole(sock, s)
 		self.closeconnection(sock, s)
 
-		return retval
+		return (status, reason)
 
 
 	def power(self, op, dst_mac):
@@ -386,8 +381,11 @@ class VMControl:
 		s.connect((self.controller, self.port))
 
 		self.sendcommand(s, op, dst_mac)
+		(status, reason) = self.recvresponse(s)
 
 		self.closeconnection(sock, s)
+
+		return (status, reason)
 		
 
 	def listmacs(self, op, dst_mac):
@@ -396,26 +394,11 @@ class VMControl:
 		s.connect((self.controller, self.port))
 
 		self.sendcommand(s, op, dst_mac)
-
-		#
-		# pick up response
-		#
-		buf = ''
-		while len(buf) != 9:
-			buf += s.read(1)
-
-		try:
-			msg_len = int(buf)
-		except:
-			msg_len = 0
-
-		macs = ''
-		while len(macs) != msg_len:
-			macs += s.read(msg_len - len(macs))
+		(status, macs) = self.recvresponse(s)
 
 		self.closeconnection(sock, s)
 
-		return macs
+		return (status, macs)
 
 
 	def sendcommand(self, s, op, dst_mac):
@@ -460,6 +443,43 @@ class VMControl:
 			bytes += s.write(signature)
 
 
+	def recvresponse(self, s):
+		#
+		# pick up response
+		#
+		buf = ''
+		while len(buf) != 9:
+			buf += s.read(1)
+
+		try:
+			msg_len = int(buf)
+		except:
+			msg_len = 0
+
+		buf = ''
+		while len(buf) != msg_len:
+			buf += s.read(msg_len - len(buf))
+
+		status = 0
+
+		#
+		# check if the message has a status code in it
+		#
+		a = re.match('^status:[0-9-]+\n', buf)
+		if a:
+			s = a.group(0).split(':')
+			if len(s) > 1:
+				try:
+					status = int(s[1])
+					response = buf[len(a.group(0)):]
+				except:
+					response = buf
+		else:
+			response = buf
+
+		return (status, response)
+
+
 	def cmd(self, op, host):
 		#
 		# the list of valid commands:
@@ -480,17 +500,18 @@ class VMControl:
 		if rows > 0:
 			dst_mac, = self.db.fetchone()
 		else:
-			return 'failed'
+			return 'failed\n'
 
 		retval = ''
 
 		if op in [ 'power off', 'power on' ]:
-			self.power(op, dst_mac)
+			(status, msg) = self.power(op, dst_mac)
 		elif op == 'list macs':
-			retval = self.listmacs(op, dst_mac)
+			(status, msg) = self.listmacs(op, dst_mac)
 		elif op == 'console':
-			retval = 'retry'
-			while retval == 'retry':
-				retval = self.console(op, dst_mac)
+			msg = 'retry'
+			while msg == 'retry':
+				(status, msg) = self.console(op, dst_mac)
 
-		return retval
+		return (status, msg)
+

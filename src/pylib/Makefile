@@ -1,5 +1,5 @@
 # --------------------------------------------------- -*- Makefile -*- --
-# $Id: Makefile,v 1.24 2010/06/22 21:26:24 mjk Exp $
+# $Id: Makefile,v 1.25 2010/06/30 18:01:12 bruno Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.25  2010/06/30 18:01:12  bruno
+# can now route error messages back to the terminal that issued the command.
+#
 # Revision 1.24  2010/06/22 21:26:24  mjk
 # Build env is now from src/devel package, nothing outside of base roll.
 #
@@ -253,7 +256,7 @@
 PYLIB		= $(wildcard *.py)
 PKGROOT		= /opt/rocks
 REDHAT.ROOT     = $(CURDIR)/../../
-ROCKSROOT       = ../devel/devel
+ROCKSROOT       = $(CURDIR)/../../src/devel/devel
 -include $(ROCKSROOT)/etc/Rules.mk
 include Rules.mk
 
