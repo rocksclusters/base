@@ -18,6 +18,9 @@
 
   <changelog>
   $Log: ntp.xml,v $
+  Revision 1.10  2010/07/07 02:00:14  anoop
+  Bug Fix
+
   Revision 1.9  2009/05/01 19:06:48  mjk
   chimi con queso
 
@@ -124,7 +127,7 @@ mkdir -p /etc/cron.hourly
 
 /usr/sbin/ntpq -pn 2> /dev/null | grep '^\*' > /dev/null
 
-if [ $? -eq 0 ] then
+if [ $? -eq 0 ]; then
 	svcadm restart network/ntp > /dev/null 2>&1 
 fi
 ]]>
