@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.19 2009/05/01 19:06:58 mjk Exp $
+# $Id: __init__.py,v 1.20 2010/07/07 02:10:50 anoop Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.20  2010/07/07 02:10:50  anoop
+# Cleanup of code. We no longer need to provide the "os" param
+# if hostname is present
+#
 # Revision 1.19  2009/05/01 19:06:58  mjk
 # chimi con queso
 #
@@ -253,32 +257,42 @@ class Command(rocks.commands.list.host.command):
 		is provide use it, otherwise assume the cooked XML is
 		on stdin."""
 
-		# Set the correct generator based on the type of os
-		# Can be overridden by a parameter like os=[linux|sunos]
+		# By default, print all sections of kickstart/jumpstart file
 		self.section = 'all'
-		if params.has_key('os'):
-			self.os = params['os']
+
 		if params.has_key('section'):
 			self.section = params['section']
-		c_gen = getattr(rocks.gen,'Generator_%s' % self.os)
-		self.generator = c_gen()
-		self.generator.setArch(self.arch)
-		self.generator.setOS(self.os)
 
 		self.beginOutput()
+		# If we're reading from stdin assume os=linux unless
+		# otherwise specified
+		if not sys.stdin.isatty():
+			if params.has_key('os'):
+				self.os = params['os']
+			else:
+				self.os = 'linux'
+			xml = ''
+			for line in sys.stdin.readlines():
+				xml += line
+
+			c_gen = getattr(rocks.gen,'Generator_%s' % self.os)
+			self.generator = c_gen()
+			self.generator.setArch(self.arch)
+			self.generator.setOS(self.os)
+			self.runXML(xml)
 		
-		if sys.stdin.isatty():
+		else:		
 			for host in self.getHostnames(args):
+				self.os = self.db.getHostAttr(host, 'os')
+				c_gen = getattr(rocks.gen,'Generator_%s' % self.os)
+				self.generator = c_gen()
+				self.generator.setArch(self.arch)
+				self.generator.setOS(self.os)
 				xml = self.command('list.host.xml', 
 				[
 				 host,
 				 'os=%s' % self.os,
 				])
 				self.runXML(xml, host)
-		else:		
-			xml = ''
-			for line in sys.stdin.readlines():
-				xml += line
-			self.runXML(xml)
 			
 		self.endOutput(padChar='')	
