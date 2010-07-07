@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.18 2009/08/11 21:10:22 bruno Exp $
+# $Id: __init__.py,v 1.19 2010/07/07 00:15:12 anoop Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,11 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.19  2010/07/07 00:15:12  anoop
+# Since network names no longer need to be unique, make sure
+# to get IP address of the private interface of the node using
+# the subnets and the nodes tables
+#
 # Revision 1.18  2009/08/11 21:10:22  bruno
 # set the membership attribute when building kickstart files
 #
@@ -172,8 +177,10 @@ class Command(rocks.commands.list.host.command):
 			# Call "rocks list node xml" with attrs{} dictionary
 			# set from the database.
 
-			self.db.execute("""select ip from networks where
-				name='%s'""" % host)
+			self.db.execute("""select nt.ip from networks nt,
+				nodes n, subnets s where s.name="private" and
+				nt.node=n.id and nt.subnet=s.id and 
+				n.name='%s'""" % host)
                         address, = self.db.fetchone()
 
 			attrs = self.db.getHostAttrs(host)
