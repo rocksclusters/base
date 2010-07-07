@@ -54,6 +54,11 @@
 # @Copyright@
 #
 # $Log: gen.py,v $
+# Revision 1.61  2010/07/07 02:02:13  anoop
+# file tag needs to support "os" conditionals. Since file tag
+# is not subject to node filter attribute check, "os" conditional
+# needs to be checked explicitly for the file tag
+#
 # Revision 1.60  2010/06/10 19:59:25  mjk
 # <pre> handles interpreter attribute same as <post>
 #
@@ -532,6 +537,11 @@ class Generator:
 		
 	def parseFile(self, node):
 		attr = node.attributes
+
+		if attr.getNamedItem((None, 'os')):
+			os = attr.getNamedItem((None, 'os')).value
+			if os != self.getOS():
+				return ''
 
 		if attr.getNamedItem((None, 'name')):
 			fileName = attr.getNamedItem((None, 'name')).value
