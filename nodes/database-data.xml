@@ -15,8 +15,12 @@
         
         </copyright>
 
-  <changelog>
+<changelog>
+<![CDATA[
   $Log: database-data.xml,v $
+  Revision 1.62  2010/07/08 19:51:56  anoop
+  CDATA the changelog field
+
   Revision 1.61  2010/06/30 17:37:32  anoop
   Overhaul of the naming system. We now support
   1. Multiple zone/domains
@@ -440,7 +444,7 @@
   Revision 1.1  2002/06/24 21:31:09  mjk
   Static cluster structure.
   Do not refer to live database for table structure.
-
+]]>
   </changelog>
 
 
