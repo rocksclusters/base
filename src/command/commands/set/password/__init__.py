@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.2 2009/05/01 19:07:04 mjk Exp $
+# $Id: __init__.py,v 1.3 2010/07/08 23:45:18 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.3  2010/07/08 23:45:18  bruno
+# password setting fixes
+#
 # Revision 1.2  2009/05/01 19:07:04  mjk
 # chimi con queso
 #
@@ -108,7 +111,7 @@ class Command(rocks.commands.Command):
 		if len(args):
 			self.abort('command does not take arguments')
 
-		old_password = getpass.getpass('(current) UNIX password: ')
+		old_password = getpass.getpass('current UNIX password: ')
 
 		#
 		# check if the old password matches
@@ -119,7 +122,15 @@ class Command(rocks.commands.Command):
 			self.abort('The current password you entered ' +
 				'does not match the stored password')
 
-		new_password = getpass.getpass('(new) UNIX password: ')
+		while 1:
+			new_password = getpass.getpass('new UNIX password: ')
+			confirm_new_password = getpass.getpass(
+				'retype new UNIX password: ')
+
+			if new_password == confirm_new_password:
+				break
+			else:
+				print 'Sorry, the passwords do not match'
 		
 		self.runPlugins( [ old_password, new_password ] )
 

@@ -1,4 +1,4 @@
-# $Id: plugin_wordpress.py,v 1.3 2009/09/30 19:44:05 bruno Exp $
+# $Id: plugin_wordpress.py,v 1.4 2010/07/08 23:45:18 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: plugin_wordpress.py,v $
+# Revision 1.4  2010/07/08 23:45:18  bruno
+# password setting fixes
+#
 # Revision 1.3  2009/09/30 19:44:05  bruno
 # make sure password changing code accesses the rocks foundation database
 #
@@ -88,19 +91,26 @@ class Plugin(rocks.commands.Plugin):
 		pw = rocks.password.Password()
 		newpw = pw.create_password(new_password)
 
-		#
-		# now update the password in the 'wordpress' database
-		#
-		link = MySQLdb.connect(host='localhost', user='root',
-			db='wordpress', passwd='%s' % old_password,
-			unix_socket='/var/opt/rocks/mysql/mysql.sock')
+		try:
+			#
+			# now update the password in the 'wordpress' database
+			#
+			link = MySQLdb.connect(host='localhost', user='root',
+				db='wordpress', passwd='%s' % old_password,
+				unix_socket='/var/opt/rocks/mysql/mysql.sock')
 
-		cursor = link.cursor()
+			cursor = link.cursor()
 
-		sqlcmd = """update wp_users set user_pass = '%s' where
-			user_login = 'admin' """ % (newpw)
+			sqlcmd = """update wp_users set user_pass = '%s' where
+				user_login = 'admin' """ % (newpw)
 
-		cursor.execute(sqlcmd)
+			cursor.execute(sqlcmd)
+		except:
+			#
+			# if we can't connect to the wordpress database, then
+			# just continue
+			#
+			pass
 
 		#
 		# store it in the rocks database
