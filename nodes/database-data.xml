@@ -16,8 +16,10 @@
         </copyright>
 
 <changelog>
-<![CDATA[
   $Log: database-data.xml,v $
+  Revision 1.63  2010/07/08 20:26:58  bruno
+  nuke ampersands in the cvs comments
+
   Revision 1.62  2010/07/08 19:51:56  anoop
   CDATA the changelog field
 
@@ -26,7 +28,7 @@
   1. Multiple zone/domains
   2. Serving DNS for multiple domains
   3. No FQDN support for network names
-     - FQDN must be split into name & domain.
+     - FQDN must be split into name and domain.
      - Each piece information will go to a
        different table
   Hopefully, I've covered the basics, and not broken
@@ -444,7 +446,6 @@
   Revision 1.1  2002/06/24 21:31:09  mjk
   Static cluster structure.
   Do not refer to live database for table structure.
-]]>
   </changelog>
 
 

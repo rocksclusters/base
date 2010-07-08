@@ -18,12 +18,15 @@
 
   <changelog>
   $Log: database-schema.xml,v $
+  Revision 1.46  2010/07/08 20:26:58  bruno
+  nuke ampersands in the cvs comments
+
   Revision 1.45  2010/06/30 17:37:32  anoop
   Overhaul of the naming system. We now support
   1. Multiple zone/domains
   2. Serving DNS for multiple domains
   3. No FQDN support for network names
-     - FQDN must be split into name & domain.
+     - FQDN must be split into name and domain.
      - Each piece information will go to a
        different table
   Hopefully, I've covered the basics, and not broken
