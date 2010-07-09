@@ -17,6 +17,9 @@
 
 <changelog>
   $Log: database-data.xml,v $
+  Revision 1.65  2010/07/09 23:19:58  bruno
+  fix
+
   Revision 1.64  2010/07/09 22:37:48  bruno
   fixes
 
@@ -637,7 +640,7 @@ for line in file.readlines():
 		module = l[3]
                 
 		ks = ''
-		if device == 'eth0':
+		if iface == 'eth0':
 			ks = 'ks'
 
 		ifaces.append(iface)
