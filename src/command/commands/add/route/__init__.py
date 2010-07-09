@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.5 2010/05/20 00:31:44 bruno Exp $
+# $Id: __init__.py,v 1.6 2010/07/09 22:30:56 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.6  2010/07/09 22:30:56  bruno
+# gateway can't be NULL
+#
 # Revision 1.5  2010/05/20 00:31:44  bruno
 # gonna get some serious 'star power' off this commit.
 #
@@ -123,7 +126,7 @@ class Command(rocks.commands.add.command):
 
 		if rows == 1:
 			subnet, = self.db.fetchone()
-			gateway = 'NULL'
+			gateway = "''"
 		else:
 			subnet = 'NULL'
 			gateway = "'%s'" % gateway
