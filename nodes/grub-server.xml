@@ -17,6 +17,9 @@
 
   <changelog>
   $Log: grub-server.xml,v $
+  Revision 1.18  2010/07/09 22:37:48  bruno
+  fixes
+
   Revision 1.17  2009/05/26 23:04:42  bruno
   mo' bugs
 
@@ -91,7 +94,11 @@
 <post interpreter="/opt/rocks/bin/python">
 import rocks.grub
 
-makegrub=rocks.grub.App()
+makegrub = rocks.grub.App()
+
+makegrub.setInstallKernel('kickstart/default/vmlinuz-&version;-&arch;')
+makegrub.setInstallRamdisk('kickstart/default/initrd.img-&version;-&arch;')
+
 args = 'build ksdevice=eth1 lang= devfs=nomount ekv central=%s ' \
 	'ip=%s gateway=%s netmask=%s dns=%s selinux=0 dropcert' \
 		% (
@@ -100,6 +107,7 @@ args = 'build ksdevice=eth1 lang= devfs=nomount ekv central=%s ' \
 		'&Kickstart_PublicGateway;',
 		'&Kickstart_PublicNetmask;',
 		'&Kickstart_PublicDNSServers;'.split(',')[0])
+
 makegrub.run(args)
 </post>
 

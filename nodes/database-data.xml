@@ -17,6 +17,9 @@
 
 <changelog>
   $Log: database-data.xml,v $
+  Revision 1.64  2010/07/09 22:37:48  bruno
+  fixes
+
   Revision 1.63  2010/07/08 20:26:58  bruno
   nuke ampersands in the cvs comments
 
@@ -661,7 +664,7 @@ os.system('/opt/rocks/bin/rocks config host interface localhost iface="%s" \
 	&Kickstart_PublicAddress;
 
 /opt/rocks/bin/rocks set host interface name  &Kickstart_PrivateHostname; eth1 \
-	&Kickstart_PublicHostname;
+	&Kickstart_PrivateHostname;
 </post>
 
 <post>

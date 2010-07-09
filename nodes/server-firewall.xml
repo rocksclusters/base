@@ -9,6 +9,9 @@ Server node firewall rules
 
 <changelog>
 $Log: server-firewall.xml,v $
+Revision 1.9  2010/07/09 22:37:48  bruno
+fixes
+
 Revision 1.8  2010/05/27 00:11:32  bruno
 firewall fixes
 
@@ -98,7 +101,10 @@ this also includes changes to help build and configure VMs for V.
 <post>
 
 /opt/rocks/bin/rocks report host firewall localhost | \
-	/opt/rocks/bin/rocks report script > /tmp/do-firewall.sh
+	/opt/rocks/bin/rocks report script \
+	attrs="{'Kickstart_PublicNetwork':'&Kickstart_PublicNetwork;', \
+	'Kickstart_PublicNetmask':'&Kickstart_PublicNetmask;'}" \
+	> /tmp/do-firewall.sh
 
 chmod a+x /tmp/do-firewall.sh
 /tmp/do-firewall.sh
