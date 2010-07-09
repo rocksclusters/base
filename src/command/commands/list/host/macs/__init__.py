@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.1 2010/07/09 23:18:06 bruno Exp $
+# $Id: __init__.py,v 1.2 2010/07/09 23:50:14 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.2  2010/07/09 23:50:14  bruno
+# check if the key exists
+#
 # Revision 1.1  2010/07/09 23:18:06  bruno
 # moved 'rocks list host macs' to the base roll.
 #
@@ -70,6 +73,7 @@
 #
 #
 
+import os
 import rocks.commands
 import rocks.vm
 
@@ -101,6 +105,8 @@ class Command(command):
 
 		if not key:
 			self.abort('must supply a path name to a private key')
+		if not os.path.exists(key):
+			self.abort('private key "%s" does not exist' % key)
 
 		vm_controller = self.db.getHostAttr('localhost',
 			'vm-controller')
