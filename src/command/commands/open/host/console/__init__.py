@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.4 2010/07/09 21:00:54 bruno Exp $
+# $Id: __init__.py,v 1.1 2010/07/09 21:00:53 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,70 +54,76 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
-# Revision 1.4  2010/07/09 21:00:54  bruno
+# Revision 1.1  2010/07/09 21:00:53  bruno
 # moved the VM power and console commands to the base roll
 #
-# Revision 1.3  2010/06/25 19:10:07  bruno
-# let non-root users control the power to nodes
+# Revision 1.4  2010/06/30 19:51:22  bruno
+# fixes
 #
-# Revision 1.2  2010/06/23 22:51:11  bruno
-# fix
+# Revision 1.3  2010/06/30 17:59:58  bruno
+# can now route error messages back to the terminal that issued the command.
 #
-# Revision 1.1  2010/06/22 21:42:36  bruno
-# power control and console access for VMs
+# can optionally set the VNC viewer flags.
+#
+# Revision 1.2  2010/06/23 22:23:37  bruno
+# fixes
+#
+# Revision 1.1  2010/06/22 21:41:14  bruno
+# basic control of VMs from within a VM
 #
 #
 
 import rocks.commands
-import os
+import rocks.vm
 
-class command(rocks.commands.set.host.command):
+class command(rocks.commands.HostArgumentProcessor,
+	rocks.commands.open.command):
+
 	MustBeRoot = 0
 
 
 class Command(command):
 	"""
-	Turn the power for a host on or off.
+	Open a console to a virtual machine.
 
-	<arg type='string' name='host' repeat='1'>
-	One or more host names.
+	<arg type='string' name='host'>
+	Host name of machine.
 	</arg>
 
-	<param type='string' name='action'>
-	The power setting. This must be one of 'on', 'off' or 'install'.
-	The 'install' action will turn the power on and force the host to
-	install.
+	<param type='string' name='key'>
+	A private key that will be used to authenticate the request. This
+	should be a file name that contains the private key.
 	</param>
 
-	<param type='string' name='key' optional='1'>
-	A private key that will be used to authenticate the request. This
-        should be a file name that contains the private key.
+	<param type='string' name='vncflags'>
+	VNC flags to be passed to the VNC viewer. The default flags are:
+	"-log *:stderr:0 -FullColor -PreferredEncoding hextile". See the
+	vncviewer man page for all the available options.
 	</param>
-		
-	<example cmd='set host power compute-0-0 action=on'>
-	Turn on the power for compute-0-0.
-	</example>
 	"""
 
 	def run(self, params, args):
-		(action, key) = self.fillParams([
-			('action', ),
-			('key', )
+		(key, vncflags) = self.fillParams([
+			('key', ),
+			('vncflags', '-log *:stderr:0 -FullColor -PreferredEncoding hextile')
 			])
-		
-		if not len(args):
-			self.abort('must supply at least one host')
 
-		if action not in [ 'on', 'off', 'install' ]:
-			self.abort('invalid action. ' +
-				'action must be "on", "off" or "install"')
+		if not key:
+			self.abort('must supply a path name to a private key')
 
-		if key and not os.path.exists(key):
-			self.abort("can't access the private key '%s'" % key)
+		vm_controller = self.db.getHostAttr('localhost',
+			'vm-controller')
 
-		for host in args:
-			#
-			# run the plugins
-			# 
-			self.runPlugins([host, action, key])
+		if not vm_controller:
+			self.abort('the "vm-controller" attribute is not set')
+
+		for host in self.getHostnames(args):
+			vm = rocks.vm.VMControl(self.db, vm_controller, key,
+				vncflags)
+
+			(status, reason) = vm.cmd('console', host)
+
+			if status != 0:
+				print 'command failed\n%s' % reason
+				sys.exit(-1)
 

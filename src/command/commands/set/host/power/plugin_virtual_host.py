@@ -1,5 +1,5 @@
-# $Id: __init__.py,v 1.4 2010/07/09 21:00:54 bruno Exp $
-#
+# $Id: plugin_virtual_host.py,v 1.1 2010/07/09 21:00:54 bruno Exp $
+# 
 # @Copyright@
 # 
 # 				Rocks(r)
@@ -53,71 +53,64 @@
 # 
 # @Copyright@
 #
-# $Log: __init__.py,v $
-# Revision 1.4  2010/07/09 21:00:54  bruno
+# $Log: plugin_virtual_host.py,v $
+# Revision 1.1  2010/07/09 21:00:54  bruno
 # moved the VM power and console commands to the base roll
 #
-# Revision 1.3  2010/06/25 19:10:07  bruno
-# let non-root users control the power to nodes
+# Revision 1.4  2010/07/07 23:18:39  bruno
+# added 'power on + install' command
 #
-# Revision 1.2  2010/06/23 22:51:11  bruno
-# fix
+# Revision 1.3  2010/06/30 17:59:58  bruno
+# can now route error messages back to the terminal that issued the command.
 #
-# Revision 1.1  2010/06/22 21:42:36  bruno
-# power control and console access for VMs
+# can optionally set the VNC viewer flags.
+#
+# Revision 1.2  2010/06/23 22:23:37  bruno
+# fixes
+#
+# Revision 1.1  2010/06/22 21:41:14  bruno
+# basic control of VMs from within a VM
 #
 #
 
 import rocks.commands
-import os
+import rocks.vm
+import sys
 
-class command(rocks.commands.set.host.command):
-	MustBeRoot = 0
+class Plugin(rocks.commands.Plugin):
 
+	def provides(self):
+		return 'virtual-host'
 
-class Command(command):
-	"""
-	Turn the power for a host on or off.
+	def run(self, args):
+		host = args[0]
+		state = args[1]
+		key = args[2]
 
-	<arg type='string' name='host' repeat='1'>
-	One or more host names.
-	</arg>
+		if not key:
+			print 'need to supply a private key'
+			sys.exit(-1)
+			
+		#
+		# if 'vm-controller' is set, then we assume this is a virtual
+		# frontend and we want to send a command to the VM controller
+		# for this virtual cluster.
+		#
+		vm_controller = self.db.getHostAttr('localhost',
+			'vm-controller')
+		if vm_controller:
+			vm = rocks.vm.VMControl(self.db, vm_controller, key)
 
-	<param type='string' name='action'>
-	The power setting. This must be one of 'on', 'off' or 'install'.
-	The 'install' action will turn the power on and force the host to
-	install.
-	</param>
+			if state == 'on':
+				op = 'power on'
+			elif state == 'off':
+				op = 'power off'
+			elif state == 'install':
+				op = 'power on + install'
 
-	<param type='string' name='key' optional='1'>
-	A private key that will be used to authenticate the request. This
-        should be a file name that contains the private key.
-	</param>
-		
-	<example cmd='set host power compute-0-0 action=on'>
-	Turn on the power for compute-0-0.
-	</example>
-	"""
+			(status, reason) = vm.cmd(op, host)
 
-	def run(self, params, args):
-		(action, key) = self.fillParams([
-			('action', ),
-			('key', )
-			])
-		
-		if not len(args):
-			self.abort('must supply at least one host')
-
-		if action not in [ 'on', 'off', 'install' ]:
-			self.abort('invalid action. ' +
-				'action must be "on", "off" or "install"')
-
-		if key and not os.path.exists(key):
-			self.abort("can't access the private key '%s'" % key)
-
-		for host in args:
-			#
-			# run the plugins
-			# 
-			self.runPlugins([host, action, key])
+			if status != 0:
+				print 'command failed\n%s' % reason
+				sys.exit(-1)
 
