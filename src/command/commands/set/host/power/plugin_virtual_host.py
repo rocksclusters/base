@@ -1,4 +1,4 @@
-# $Id: plugin_virtual_host.py,v 1.1 2010/07/09 21:00:54 bruno Exp $
+# $Id: plugin_virtual_host.py,v 1.2 2010/07/12 17:43:41 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,11 @@
 # @Copyright@
 #
 # $Log: plugin_virtual_host.py,v $
+# Revision 1.2  2010/07/12 17:43:41  bruno
+# moved the private key reading into the commands. this makes it possible to
+# enter the passphrase on the key once and have the command apply to several
+# nodes.
+#
 # Revision 1.1  2010/07/09 21:00:54  bruno
 # moved the VM power and console commands to the base roll
 #
@@ -73,6 +78,7 @@
 #
 #
 
+import M2Crypto
 import rocks.commands
 import rocks.vm
 import sys
@@ -90,6 +96,8 @@ class Plugin(rocks.commands.Plugin):
 		if not key:
 			print 'need to supply a private key'
 			sys.exit(-1)
+
+		rsakey = M2Crypto.RSA.load_key(key)
 			
 		#
 		# if 'vm-controller' is set, then we assume this is a virtual
@@ -99,7 +107,7 @@ class Plugin(rocks.commands.Plugin):
 		vm_controller = self.db.getHostAttr('localhost',
 			'vm-controller')
 		if vm_controller:
-			vm = rocks.vm.VMControl(self.db, vm_controller, key)
+			vm = rocks.vm.VMControl(self.db, vm_controller, rsakey)
 
 			if state == 'on':
 				op = 'power on'

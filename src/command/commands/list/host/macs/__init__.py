@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.2 2010/07/09 23:50:14 bruno Exp $
+# $Id: __init__.py,v 1.3 2010/07/12 17:43:41 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,11 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.3  2010/07/12 17:43:41  bruno
+# moved the private key reading into the commands. this makes it possible to
+# enter the passphrase on the key once and have the command apply to several
+# nodes.
+#
 # Revision 1.2  2010/07/09 23:50:14  bruno
 # check if the key exists
 #
@@ -74,6 +79,7 @@
 #
 
 import os
+import M2Crypto
 import rocks.commands
 import rocks.vm
 
@@ -122,7 +128,9 @@ class Command(command):
 		hosts = self.getHostnames(args)
 		host = hosts[0]
 
-		vm = rocks.vm.VMControl(self.db, vm_controller, key)
+		rsakey = M2Crypto.RSA.load_key(key)
+
+		vm = rocks.vm.VMControl(self.db, vm_controller, rsakey)
 		(status, macs) = vm.cmd('list macs', host)
 		if status != 0:
 			self.abort('command failed: %s' % macs)
