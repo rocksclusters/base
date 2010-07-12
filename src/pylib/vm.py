@@ -54,6 +54,11 @@
 # @Copyright@
 #
 # $Log: vm.py,v $
+# Revision 1.15  2010/07/12 17:44:57  bruno
+# move private key reading out to the commands.
+#
+# support for the 'power on and install' command.
+#
 # Revision 1.14  2010/06/30 18:01:12  bruno
 # can now route error messages back to the terminal that issued the command.
 #
@@ -100,7 +105,6 @@
 #
 
 import os
-import sys
 
 class VM:
 
@@ -217,16 +221,15 @@ class VM:
 import socket
 import sha
 import ssl
-import M2Crypto
 import select
 import re
 
 class VMControl:
 
-	def __init__(self, db, controller, keyfile, flags=''):
+	def __init__(self, db, controller, key, flags=''):
 		self.db = db
 		self.controller = controller
-		self.keyfile = keyfile
+		self.key = key
 		self.port = 8677
 		self.flags = flags
 		return
@@ -269,7 +272,7 @@ class VMControl:
 				pass
 
 		if not success:
-			return 'failed\n'
+			return 'failed'
 
 		vnc.listen(1)
 
@@ -425,10 +428,8 @@ class VMControl:
 		#
 		# now add the signed digest
 		#
-		key = M2Crypto.RSA.load_key(self.keyfile)
-
 		digest = sha.sha(msg).digest()
-		signature = key.sign(digest, 'ripemd160')
+		signature = self.key.sign(digest, 'ripemd160')
 
 		#
 		# send the length of the signature
@@ -486,25 +487,31 @@ class VMControl:
 		#
 		#	power off
 		#	power on
+		#	power on + install
 		#	list macs
 		#	console
 		#
 
-		#
-		# look up the destination MAC address
-		#
-		rows = self.db.execute("""select mac from networks where
-			node = (select id from nodes where name = '%s')
-			and mac is not NULL""" % host)
-
-		if rows > 0:
-			dst_mac, = self.db.fetchone()
+		if ':' in host:
+			dst_mac = host
 		else:
-			return 'failed\n'
+			#
+			# if 'host' doesn't look like a MAC address, then try
+			# to look up the destination MAC address in the
+			# database
+			#
+			rows = self.db.execute("""select mac from networks where
+				node = (select id from nodes where name = '%s')
+				and mac is not NULL""" % host)
+
+			if rows > 0:
+				dst_mac, = self.db.fetchone()
+			else:
+				return (-1, 'could not find host "%s"' % host)
 
 		retval = ''
 
-		if op in [ 'power off', 'power on' ]:
+		if op in [ 'power off', 'power on', 'power on + install' ]:
 			(status, msg) = self.power(op, dst_mac)
 		elif op == 'list macs':
 			(status, msg) = self.listmacs(op, dst_mac)
@@ -512,6 +519,11 @@ class VMControl:
 			msg = 'retry'
 			while msg == 'retry':
 				(status, msg) = self.console(op, dst_mac)
+				if msg == 'retry':
+					print ''
+					print 'Attempting to reestablish ' + \
+						'the console connection. ' + \
+						'Standby...'
 
 		return (status, msg)
 
