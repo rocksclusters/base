@@ -1,6 +1,6 @@
 #! /opt/rocks/bin/python
 #
-# $Id: kcgi.py,v 1.36 2009/07/16 22:46:28 bruno Exp $
+# $Id: kcgi.py,v 1.37 2010/07/12 22:37:34 bruno Exp $
 #
 # @Copyright@
 # 
@@ -56,6 +56,9 @@
 # @Copyright@
 #
 # $Log: kcgi.py,v $
+# Revision 1.37  2010/07/12 22:37:34  bruno
+# add trackers and pkg-servers variables
+#
 # Revision 1.36  2009/07/16 22:46:28  bruno
 # support for cross-kickstarting
 #
@@ -1129,9 +1132,40 @@ class App(rocks.kickstart.Application):
 		#
 		self.completedLoad()
 		out = string.join(self.report, '\n')
-		
+
+		#
+		# get the avalanche attributes
+		#
+		attrs = {}
+		attrs['trackers'] = ''
+		attrs['pkgservers'] = ''
+
+		for i in [ 'Kickstart_PrivateKickstartHost', 'trackers',
+				'pkgservers' ]:
+
+			cmd = '/opt/rocks/bin/rocks list host attr %s | ' \
+				% (self.clientList[0])
+			cmd += "grep %s | awk '{print $3}'" % i
+
+			for line in os.popen(cmd).readlines():
+				var = line[:-1]
+			try:
+				attrs[i] = var.strip()
+			except:
+				pass
+
+		if not attrs['trackers']:
+			attrs['trackers'] = \
+				attrs['Kickstart_PrivateKickstartHost']
+
+		if not attrs['pkgservers']:
+			attrs['pkgservers'] = \
+				attrs['Kickstart_PrivateKickstartHost']
+
 		print 'Content-type: application/octet-stream'
 		print 'Content-length: %d' % (len(out))
+		print 'Avalanche-Trackers: %s' % (attrs['trackers'])
+		print 'Avalanche-Pkg-Servers: %s' % (attrs['pkgservers'])
 		print ''
 		print out
 
