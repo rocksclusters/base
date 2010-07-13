@@ -65,5 +65,18 @@ mv /tmp/all-rocks.js /usr/lib/firefox-*/defaults/preferences/
 
 </post>
 
+<post>
+<!-- optionally set the VM controller attribute -->
+
+VMCONTROLLER=`/bin/cat /proc/cmdline | /bin/awk \
+	'BEGIN {RS="[[:space:]]"; FS="="} /vmcontroller/{print $2}'`
+
+if [ "$VMCONTROLLER" != "" ]
+then
+	/opt/rocks/bin/rocks add host attr localhost vm-controller $VMCONTROLLER
+fi
+
+</post>
+
 </kickstart> 
 
