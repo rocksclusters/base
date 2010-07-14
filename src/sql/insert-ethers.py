@@ -58,6 +58,11 @@
 # @Copyright@
 #
 # $Log: insert-ethers.py,v $
+# Revision 1.49  2010/07/14 22:41:14  anoop
+# Add the "kickstartable" attribute to appliances. Use this attribute
+# to determine if insert-ethers needs to wait for a node to kickstart
+# after getting an IP address
+#
 # Revision 1.48  2009/07/03 00:39:26  bruno
 # fix replace code
 #
@@ -751,6 +756,8 @@ class InsertEthers(GUI):
 		self.ncpus		= 1
 		self.logfile		= None
 
+		self.kickstartable	= True
+
 	def log(self, line):
 		if not self.logfile:
 			self.logfile = open('/tmp/insert-ethers.debug','w')
@@ -894,6 +901,17 @@ class InsertEthers(GUI):
 		self.membership, basename, self.distid = \
 			self.sql.fetchone()
 		
+		# Check if the appliance is kickstartable. We only need
+		# to check the appliance_attributes table in this instance
+		# since this value cannot be in any other table yet.
+		query = 'select if(aa.value="true", True, False) from '	+\
+			'appliance_attributes aa, appliances a where '	+\
+			'a.name="%s" and aa.appliance=a.id ' % basename+\
+			'and aa.attr="kickstartable"'
+		rows = self.sql.execute(query)
+		if rows > 0:
+			self.kickstartable = bool(self.sql.fetchone()[0])
+
 		#
 		# if the basename was not overridden on the command line
 		# use what we just read from the database
@@ -1288,6 +1306,10 @@ class InsertEthers(GUI):
 			return 0
 
 		if result == 'F9':
+			return 1
+
+		# If the nodes are not kickstartable
+		if self.kickstartable == False:
 			return 1
 
 		# Check if we can really go.

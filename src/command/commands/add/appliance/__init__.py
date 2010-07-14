@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.20 2010/05/07 23:13:32 bruno Exp $
+# $Id: __init__.py,v 1.21 2010/07/14 22:41:14 anoop Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,11 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.21  2010/07/14 22:41:14  anoop
+# Add the "kickstartable" attribute to appliances. Use this attribute
+# to determine if insert-ethers needs to wait for a node to kickstart
+# after getting an IP address
+#
 # Revision 1.20  2010/05/07 23:13:32  bruno
 # clean up the help info for the firewall commands
 #
@@ -220,6 +225,13 @@ class Command(command):
 			('%s', '%s', '%s', '%s')""" % 
 			(app_name, graph, node, osname))
 
+		if not node:
+			kickstartable = 'false'
+		else:
+			kickstartable = 'true'
+		self.command('add.appliance.attr', \
+			[ app_name, 'kickstartable', kickstartable] )
+			
 		# add a row to the memberships table
 
 		if not mem_name:
