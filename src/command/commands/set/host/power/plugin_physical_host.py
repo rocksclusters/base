@@ -1,4 +1,4 @@
-# $Id: plugin_physical_host.py,v 1.1 2010/06/22 21:42:36 bruno Exp $
+# $Id: plugin_physical_host.py,v 1.2 2010/07/14 19:39:39 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: plugin_physical_host.py,v $
+# Revision 1.2  2010/07/14 19:39:39  bruno
+# better
+#
 # Revision 1.1  2010/06/22 21:42:36  bruno
 # power control and console access for VMs
 #
@@ -69,7 +72,7 @@ class Plugin(rocks.commands.Plugin):
 	def run(self, args):
 		host = args[0]
 		state = args[1]
-		key = args[2]
+		rsakey = args[2]
 
 		#
 		# determine if this is a physical host

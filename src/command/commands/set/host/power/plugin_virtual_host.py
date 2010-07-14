@@ -1,4 +1,4 @@
-# $Id: plugin_virtual_host.py,v 1.2 2010/07/12 17:43:41 bruno Exp $
+# $Id: plugin_virtual_host.py,v 1.3 2010/07/14 19:39:39 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: plugin_virtual_host.py,v $
+# Revision 1.3  2010/07/14 19:39:39  bruno
+# better
+#
 # Revision 1.2  2010/07/12 17:43:41  bruno
 # moved the private key reading into the commands. this makes it possible to
 # enter the passphrase on the key once and have the command apply to several
@@ -78,7 +81,6 @@
 #
 #
 
-import M2Crypto
 import rocks.commands
 import rocks.vm
 import sys
@@ -91,14 +93,12 @@ class Plugin(rocks.commands.Plugin):
 	def run(self, args):
 		host = args[0]
 		state = args[1]
-		key = args[2]
+		rsakey = args[2]
 
-		if not key:
+		if not rsakey:
 			print 'need to supply a private key'
 			sys.exit(-1)
 
-		rsakey = M2Crypto.RSA.load_key(key)
-			
 		#
 		# if 'vm-controller' is set, then we assume this is a virtual
 		# frontend and we want to send a command to the VM controller

@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.4 2010/07/09 21:00:54 bruno Exp $
+# $Id: __init__.py,v 1.5 2010/07/14 19:39:39 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.5  2010/07/14 19:39:39  bruno
+# better
+#
 # Revision 1.4  2010/07/09 21:00:54  bruno
 # moved the VM power and console commands to the base roll
 #
@@ -70,6 +73,7 @@
 
 import rocks.commands
 import os
+import M2Crypto
 
 class command(rocks.commands.set.host.command):
 	MustBeRoot = 0
@@ -112,12 +116,17 @@ class Command(command):
 			self.abort('invalid action. ' +
 				'action must be "on", "off" or "install"')
 
-		if key and not os.path.exists(key):
-			self.abort("can't access the private key '%s'" % key)
+		rsakey = None
+
+		if key:
+			if not os.path.exists(key):
+				self.abort("can't access the private key '%s'"
+					% key)
+			rsakey = M2Crypto.RSA.load_key(key)
 
 		for host in args:
 			#
 			# run the plugins
 			# 
-			self.runPlugins([host, action, key])
+			self.runPlugins([host, action, rsakey])
 
