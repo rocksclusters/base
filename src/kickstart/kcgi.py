@@ -1,6 +1,6 @@
 #! /opt/rocks/bin/python
 #
-# $Id: kcgi.py,v 1.37 2010/07/12 22:37:34 bruno Exp $
+# $Id: kcgi.py,v 1.38 2010/07/15 19:31:42 bruno Exp $
 #
 # @Copyright@
 # 
@@ -56,6 +56,10 @@
 # @Copyright@
 #
 # $Log: kcgi.py,v $
+# Revision 1.38  2010/07/15 19:31:42  bruno
+# make sure to clear 'var' before each usage, otherwise, when 'var' is set
+# in a previous loop, then it could be used as the value for other attributes
+#
 # Revision 1.37  2010/07/12 22:37:34  bruno
 # add trackers and pkg-servers variables
 #
@@ -1147,6 +1151,7 @@ class App(rocks.kickstart.Application):
 				% (self.clientList[0])
 			cmd += "grep %s | awk '{print $3}'" % i
 
+			var = ''
 			for line in os.popen(cmd).readlines():
 				var = line[:-1]
 			try:
