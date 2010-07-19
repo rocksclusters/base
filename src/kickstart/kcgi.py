@@ -1,6 +1,6 @@
 #! /opt/rocks/bin/python
 #
-# $Id: kcgi.py,v 1.38 2010/07/15 19:31:42 bruno Exp $
+# $Id: kcgi.py,v 1.39 2010/07/19 23:17:39 bruno Exp $
 #
 # @Copyright@
 # 
@@ -56,6 +56,9 @@
 # @Copyright@
 #
 # $Log: kcgi.py,v $
+# Revision 1.39  2010/07/19 23:17:39  bruno
+# make all 'extended' http headers start with 'X-'
+#
 # Revision 1.38  2010/07/15 19:31:42  bruno
 # make sure to clear 'var' before each usage, otherwise, when 'var' is set
 # in a previous loop, then it could be used as the value for other attributes
@@ -1169,8 +1172,8 @@ class App(rocks.kickstart.Application):
 
 		print 'Content-type: application/octet-stream'
 		print 'Content-length: %d' % (len(out))
-		print 'Avalanche-Trackers: %s' % (attrs['trackers'])
-		print 'Avalanche-Pkg-Servers: %s' % (attrs['pkgservers'])
+		print 'X-Avalanche-Trackers: %s' % (attrs['trackers'])
+		print 'X-Avalanche-Pkg-Servers: %s' % (attrs['pkgservers'])
 		print ''
 		print out
 
