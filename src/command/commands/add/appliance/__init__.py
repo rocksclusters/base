@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.21 2010/07/14 22:41:14 anoop Exp $
+# $Id: __init__.py,v 1.22 2010/07/19 18:34:02 anoop Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,13 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.22  2010/07/19 18:34:02  anoop
+# Individually set "kickstartable", "dhcp_filename" and "dhcp_nextserver"
+# attributes for every host/appliance. This way we can control which appliance
+# gets the "dhcp_filename" option. This is to resolve a bug where setting
+# the dhcp_filename option for devices like switches can cause problems for
+# the devices
+#
 # Revision 1.21  2010/07/14 22:41:14  anoop
 # Add the "kickstartable" attribute to appliances. Use this attribute
 # to determine if insert-ethers needs to wait for a node to kickstart
@@ -226,11 +233,19 @@ class Command(command):
 			(app_name, graph, node, osname))
 
 		if not node:
-			kickstartable = 'false'
+			kickstartable = False
 		else:
-			kickstartable = 'true'
+			kickstartable = True
 		self.command('add.appliance.attr', \
-			[ app_name, 'kickstartable', kickstartable] )
+			[ app_name, 'kickstartable', self.bool2str(kickstartable)] )
+		
+		if kickstartable and osname=='linux':
+			self.command('add.appliance.attr', \
+			[app_name, 'dhcp_filename','/install/sbin/kickstart.cgi'])
+			next_server = self.db.getHostAttr('localhost',
+                                'Kickstart_PrivateKickstartHost')
+			self.command('add.appliance.attr', \
+			[app_name, 'dhcp_nextserver',next_server])
 			
 		# add a row to the memberships table
 

@@ -1,5 +1,5 @@
 #
-# $Id: __init__.py,v 1.14 2009/10/23 17:21:44 bruno Exp $
+# $Id: __init__.py,v 1.15 2010/07/19 18:34:02 anoop Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,13 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.15  2010/07/19 18:34:02  anoop
+# Individually set "kickstartable", "dhcp_filename" and "dhcp_nextserver"
+# attributes for every host/appliance. This way we can control which appliance
+# gets the "dhcp_filename" option. This is to resolve a bug where setting
+# the dhcp_filename option for devices like switches can cause problems for
+# the devices
+#
 # Revision 1.14  2009/10/23 17:21:44  bruno
 # user-settable lease times. a feature submitted by Tim Carlson.
 #
@@ -158,34 +165,6 @@ class Command(rocks.commands.HostArgumentProcessor,
 			(prefix, self.db.getHostAttr('localhost',
 				'Kickstart_PrivateBroadcast')))
 
-		#
-		# drop in the filename option
-		#
-		cgi = self.db.getHostAttr('localhost',
-			'Kickstart_PrivateKickstartCGI')
-
-		cgi = os.path.join(os.sep, 'install', cgi)
-
-		self.addOutput('', prefix + 'if ((substring (option' +
-			' vendor-class-identifier, 0, 9)')
-		self.addOutput('', prefix + '\t\t= "PXEClient") or')
-		self.addOutput('', prefix + '\t(substring (option' +
-			' vendor-class-identifier, 0, 9)')
-		self.addOutput('', prefix + '\t\t= "Etherboot")) {')
-		self.addOutput('', prefix + '\t# i386 and x86_64')
-		self.addOutput('', prefix + '\tfilename' +
-			' "pxelinux.0";')
-		self.addOutput('', prefix + '\tnext-server %s;' %
-			(self.db.getHostAttr('localhost',
-				'Kickstart_PrivateKickstartHost')))
-
-		self.addOutput('', prefix + '} else {')
-		self.addOutput('', prefix + '\tfilename "%s";' % (cgi))
-		self.addOutput('', prefix + '\tnext-server %s;' % 
-			(self.db.getHostAttr('localhost',
-				'Kickstart_PrivateKickstartHost')))
-		self.addOutput('', prefix + '}\n')
-
 
 	def printHost(self, name, hostname, mac, ip):
 		self.addOutput('', '\t\thost %s {' % name)
@@ -194,6 +173,20 @@ class Command(rocks.commands.HostArgumentProcessor,
 
 		self.addOutput('', '\t\t\toption host-name "%s";' % hostname)
 		self.addOutput('', '\t\t\tfixed-address %s;' % ip)
+
+		kickstartable = self.db.getHostAttr(hostname, 'kickstartable')
+		if kickstartable:
+			kickstartable = self.str2bool(kickstartable)
+		else:
+			kickstartable = False
+
+		if kickstartable:
+			filename = self.db.getHostAttr(hostname, 'dhcp_filename')
+			if filename:
+				self.addOutput('','\t\t\tfilename %s;' % filename)
+			nextserver = self.db.getHostAttr(hostname, 'dhcp_nextserver')
+			if nextserver:
+				self.addOutput('','\t\t\tnext-server %s;' % nextserver)
 		self.addOutput('', '\t\t}')
 
 		return
