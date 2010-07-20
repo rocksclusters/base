@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.13 2010/05/25 22:42:16 bruno Exp $
+# $Id: __init__.py,v 1.14 2010/07/20 19:32:38 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.14  2010/07/20 19:32:38  bruno
+# added 'num-threads' parameter
+#
 # Revision 1.13  2010/05/25 22:42:16  bruno
 # fix 'arg' and 'param' in help
 #
@@ -202,6 +205,11 @@ class Command(command):
 	Default is 'no'.
 	</param>
 
+	<param type='string' name='num-threads'>
+	The number of threads to start in parallel. If num-threads is 0, then
+	try to run the command in parallel on all hosts. Default is '128'.
+	</param>
+
 	<param type='string' name='command'>
 	Can be used in place of the 'command' argument.
 	</param>
@@ -215,19 +223,48 @@ class Command(command):
 	</example>
 	"""
 
+	def nodeup(self, host):
+		sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		sock.settimeout(2)
+		try:
+			#
+			# this catches the case when the host is down
+			# and/or there is no ssh daemon running
+			#
+			sock.connect((host, 22))
+
+			#
+			# this catches the case when the node is up,
+			# sshd is sitting on port 22, but it is not
+			# responding (e.g., the node is overloaded,
+			# sshd is hung, etc.)
+			#
+			# sock.recv() should return something like:
+			#
+			#	SSH-2.0-OpenSSH_4.3
+			#
+			buf = sock.recv(64)
+		except socket.error:
+			return 0
+
+		return 1
+
+
 	def run(self, params, args):
 		(args, command) = self.fillPositionalArgs(('command', ))
 
 		if not command:
 			self.abort('must supply a command')
 
-		(managed, x11, t, d, stats, collate) = self.fillParams([
-			('managed', 'y'),
-			('x11', 'y'),
-			('timeout', '30'),
-			('delay', '0'),
-			('stats', 'n'),
-			('collate', 'n')
+		(managed, x11, t, d, stats, collate, n) = \
+			self.fillParams([
+				('managed', 'y'),
+				('x11', 'y'),
+				('timeout', '30'),
+				('delay', '0'),
+				('stats', 'n'),
+				('collate', 'n'),
+				('num-threads', '128')
 			])
 
 		try:
@@ -237,6 +274,11 @@ class Command(command):
 
 		if timeout < 0:
 			self.abort('"timeout" must be a postive integer')
+
+		try:
+			numthreads = int(n)
+		except:
+			self.abort('"num-threads" must be an integer')
 
 		try:
 			delay = float(d)
@@ -257,62 +299,77 @@ class Command(command):
 		if self.str2bool(collate):
 			self.beginOutput()
 
+		if numthreads <= 0:
+			numthreads = len(hosts)
+
 		threads = []
-		for host in hosts:
+
+		i = 0
+		work = len(hosts)
+		while work:
+			while i < numthreads and i < len(hosts):
+				host = hosts[i]
+				i += 1	
+
+				#
+				# first test if the node is up and responding
+				# to ssh
+				#
+				if not self.nodeup(host):
+					if collate:
+						self.addOutput(host, 'down')
+					else:
+						print '%s: down'		
+
+					continue
+
+				#
+				# fire off the command
+				#
+				cmd = 'ssh %s "%s"' % (host, sys.argv[-1])
+
+				p = Parallel(self, cmd, host,
+					self.str2bool(stats),
+					self.str2bool(collate))
+				p.start()
+				threads.append(p)
+
+				if delay > 0:
+					time.sleep(delay)
+
 			#
-			# first test if the node is up and responding to ssh
+			# collect completed threads
 			#
-			sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-			sock.settimeout(2)
 			try:
-				#
-				# this catches the case when the host is down
-				# and/or there is no ssh daemon running
-				#
-				sock.connect((host, 22))
-
-				#
-				# this catches the case when the node is up,
-				# sshd is sitting on port 22, but it is not
-				# responding (e.g., the node is overloaded,
-				# sshd is hung, etc.)
-				#
-				# sock.recv() should return something like:
-				#
-				#	SSH-2.0-OpenSSH_4.3
-				#
-				buf = sock.recv(64)
-			except socket.error:
-				if collate:
-					self.addOutput(host, 'down')
-				else:
-					print '%s: down'		
-
-				continue
-
-			cmd = 'ssh %s "%s"' % (host, sys.argv[-1])
-
-			p = Parallel(self, cmd, host, self.str2bool(stats),
-				self.str2bool(collate))
-			p.start()
-			threads.append(p)
-
-			if delay > 0:
-				time.sleep(delay)
-
-		#
-		# collect the threads
-		#
-		try:
-			totaltime = time.time()
-			while timeout == 0 or \
+				totaltime = time.time()
+				while timeout == 0 or \
 					(time.time() - totaltime) < timeout:
 
+					active = threading.enumerate()
+
+					t = threads
+					for thread in t:
+						if thread not in active:
+							thread.join(0.1)
+							threads.remove(thread)
+							numthreads += 1
+							work -= 1
+
+					if len(active) == 1:
+						break
+				
+					#
+					# don't burn a CPU while waiting for the
+					# threads to complete
+					#
+					time.sleep(0.5)
+
+			except KeyboardInterrupt:
+				#
+				# try to collect all the active threads
+				#
 				active = threading.enumerate()
 
-				if len(active) == 1:
-					break
-				
 				t = threads
 				for thread in t:
 					if thread not in active:
@@ -320,22 +377,10 @@ class Command(command):
 						threads.remove(thread)
 
 				#
-				# don't burn a CPU while waiting for the
-				# threads to complete
+				# no more work to do if the user hits
+				# control-c
 				#
-				time.sleep(0.5)
-
-		except KeyboardInterrupt:
-			#
-			# try to collect all the active threads
-			#
-			active = threading.enumerate()
-
-			t = threads
-			for thread in t:
-				if thread not in active:
-					thread.join(0.1)
-					threads.remove(thread)
+				work = 0
 
 		#
 		# kill all still active threads
