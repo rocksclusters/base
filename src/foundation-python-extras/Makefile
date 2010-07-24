@@ -1,5 +1,5 @@
 # --------------------------------------------------- -*- Makefile -*- --
-# $Id: Makefile,v 1.16 2010/06/22 21:26:23 mjk Exp $
+# $Id: Makefile,v 1.17 2010/07/24 00:38:43 anoop Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,11 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.17  2010/07/24 00:38:43  anoop
+# Build M2crypto and ssl for linux only. Solaris builds
+# are currently very buggy and fail.
+# Also, remove dead code
+#
 # Revision 1.16  2010/06/22 21:26:23  mjk
 # Build env is now from src/devel package, nothing outside of base roll.
 #
@@ -128,13 +133,15 @@ ROCKSROOT       = ../devel/devel
 -include $(ROCKSROOT)/etc/Rules.mk
 include Rules.mk
 
+include $(OS).mk
+
 build::
 #	cd patch-files && find . -type f | grep -v CVS | cpio -pduv ../
 
 install::
 	mkdir -p $(ROOT)/$(PKGROOT)
 
-include M2Crypto.mk ssl.mk MySQL-python.mk Numeric.mk POW.mk \
+include MySQL-python.mk Numeric.mk POW.mk \
 	egenix-mx-base.mk libxml2dom.mk \
-	numarray.mk pexpect.mk IPy.mk numpy.mk
+	numarray.mk pexpect.mk IPy.mk 
 
