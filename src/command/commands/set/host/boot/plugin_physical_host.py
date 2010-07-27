@@ -1,4 +1,4 @@
-# $Id: plugin_physical_host.py,v 1.6 2010/05/03 22:50:15 mjk Exp $
+# $Id: plugin_physical_host.py,v 1.7 2010/07/27 19:51:11 anoop Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: plugin_physical_host.py,v $
+# Revision 1.7  2010/07/27 19:51:11  anoop
+# Cleaned code: Moved rocks report grub to rocks report host grub
+#
 # Revision 1.6  2010/05/03 22:50:15  mjk
 # - add the ipappend 2 line if ksdevice=bootif arg is in the db
 # - add static ip information of ksdevice= is used
@@ -279,7 +282,7 @@ class Plugin(rocks.commands.Plugin):
 			if action == 'os':
 				os.unlink(grub_conf_file)
 			if action == 'install':
-				os.system('/opt/rocks/bin/rocks report grub %s > ' %(host) +
+				os.system('/opt/rocks/bin/rocks report host grub %s > ' %(host) +
 					'%s 2> /dev/null' % (grub_conf_file))
 				os.system('chown root.apache %s' % (grub_conf_file))
 				os.system('chmod 664 %s' % (grub_conf_file))
