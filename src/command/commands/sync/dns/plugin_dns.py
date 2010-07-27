@@ -1,4 +1,4 @@
-# $Id: plugin_dns.py,v 1.17 2010/06/30 17:37:33 anoop Exp $
+# $Id: plugin_dns.py,v 1.18 2010/07/27 20:24:38 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: plugin_dns.py,v $
+# Revision 1.18  2010/07/27 20:24:38  bruno
+# bug fixes
+#
 # Revision 1.17  2010/06/30 17:37:33  anoop
 # Overhaul of the naming system. We now support
 # 1. Multiple zone/domains
@@ -131,7 +134,8 @@ class Plugin(rocks.commands.Plugin):
 
 	def run(self, args):
 		o = self.owner.command('report.zones', [])
-		p1 = subprocess.Popen(['rocks','report','script'], 
+		p1 = subprocess.Popen(
+			['/opt/rocks/bin/rocks','report','script'], 
 			stdin=subprocess.PIPE, stdout=subprocess.PIPE,
 			stderr=subprocess.PIPE)
 		out = p1.communicate(o)[0]

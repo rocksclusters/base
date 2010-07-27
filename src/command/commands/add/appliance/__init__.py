@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.23 2010/07/27 01:38:48 anoop Exp $
+# $Id: __init__.py,v 1.24 2010/07/27 20:24:37 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.24  2010/07/27 20:24:37  bruno
+# bug fixes
+#
 # Revision 1.23  2010/07/27 01:38:48  anoop
 # Bug fix. DHCP filename by default is always the
 # pxe boot file. In this case, "pxelinux.0"; Never kickstart.cgi
@@ -240,17 +243,33 @@ class Command(command):
 			kickstartable = False
 		else:
 			kickstartable = True
-		self.command('add.appliance.attr', \
-			[ app_name, 'kickstartable', self.bool2str(kickstartable)] )
+
+		self.command('add.appliance.attr', [ app_name, 'kickstartable',
+			self.bool2str(kickstartable) ])
 		
 		if kickstartable:
-			self.command('add.appliance.attr', \
-			[app_name, 'dhcp_filename','pxelinux.0'])
-			next_server = self.db.getHostAttr('localhost',
-                                'Kickstart_PrivateKickstartHost')
-			self.command('add.appliance.attr', \
-			[app_name, 'dhcp_nextserver',next_server])
-			
+			next_server = None
+
+			try:
+				next_server = self.db.getHostAttr('localhost',
+					'Kickstart_PrivateKickstartHost')
+			except:
+				rows = self.db.execute("""select value from
+					global_attributes where
+					attr='Kickstart_PrivateKickstartHost'
+					""")
+
+				if rows == 1:
+					next_server, = self.db.fetchone()
+
+			if next_server:
+				self.command('add.appliance.attr', [app_name,
+					'dhcp_nextserver', next_server])
+
+				self.command('add.appliance.attr', [app_name,
+					'dhcp_filename',
+					'pxelinux.0' ])
+
 		# add a row to the memberships table
 
 		if not mem_name:
