@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.22 2010/07/19 18:34:02 anoop Exp $
+# $Id: __init__.py,v 1.23 2010/07/27 01:38:48 anoop Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.23  2010/07/27 01:38:48  anoop
+# Bug fix. DHCP filename by default is always the
+# pxe boot file. In this case, "pxelinux.0"; Never kickstart.cgi
+#
 # Revision 1.22  2010/07/19 18:34:02  anoop
 # Individually set "kickstartable", "dhcp_filename" and "dhcp_nextserver"
 # attributes for every host/appliance. This way we can control which appliance
@@ -239,9 +243,9 @@ class Command(command):
 		self.command('add.appliance.attr', \
 			[ app_name, 'kickstartable', self.bool2str(kickstartable)] )
 		
-		if kickstartable and osname=='linux':
+		if kickstartable:
 			self.command('add.appliance.attr', \
-			[app_name, 'dhcp_filename','/install/sbin/kickstart.cgi'])
+			[app_name, 'dhcp_filename','pxelinux.0'])
 			next_server = self.db.getHostAttr('localhost',
                                 'Kickstart_PrivateKickstartHost')
 			self.command('add.appliance.attr', \
