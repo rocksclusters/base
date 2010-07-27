@@ -1,5 +1,5 @@
 #
-# $Id: __init__.py,v 1.15 2010/07/19 18:34:02 anoop Exp $
+# $Id: __init__.py,v 1.16 2010/07/27 01:29:24 anoop Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.16  2010/07/27 01:29:24  anoop
+# Bug fix
+#
 # Revision 1.15  2010/07/19 18:34:02  anoop
 # Individually set "kickstartable", "dhcp_filename" and "dhcp_nextserver"
 # attributes for every host/appliance. This way we can control which appliance
@@ -183,7 +186,7 @@ class Command(rocks.commands.HostArgumentProcessor,
 		if kickstartable:
 			filename = self.db.getHostAttr(hostname, 'dhcp_filename')
 			if filename:
-				self.addOutput('','\t\t\tfilename %s;' % filename)
+				self.addOutput('','\t\t\tfilename "%s";' % filename)
 			nextserver = self.db.getHostAttr(hostname, 'dhcp_nextserver')
 			if nextserver:
 				self.addOutput('','\t\t\tnext-server %s;' % nextserver)
