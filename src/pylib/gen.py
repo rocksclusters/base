@@ -54,6 +54,12 @@
 # @Copyright@
 #
 # $Log: gen.py,v $
+# Revision 1.62  2010/07/27 20:22:21  anoop
+# Bug fixes
+# - Jumpstart generation needs to recognize new tags to parse networking
+#   information
+# - Syntax error fixes
+#
 # Revision 1.61  2010/07/07 02:02:13  anoop
 # file tag needs to support "os" conditionals. Since file tag
 # is not subject to node filter attribute check, "os" conditional
@@ -1089,6 +1095,10 @@ class MainNodeFilter_sunos(NodeFilter):
 			'rootpw', 	# root password
 			'network',	# specify network configuration
 			'interface',	# network interface
+			'hostname',	# hostname
+			'ip_address',	# IP Address
+			'netmask',	# Netmask information
+			'default_route',# Default Gateway
 			'dhcp',		# to DHCP or not to DHCP
 			'protocol_ipv6',# to IPv6 or not to IPv6
 			'display',	# Display config
