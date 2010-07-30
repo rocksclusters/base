@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.14 2010/07/20 19:32:38 bruno Exp $
+# $Id: __init__.py,v 1.15 2010/07/30 19:43:15 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.15  2010/07/30 19:43:15  bruno
+# fix up rocks run host to properly mark down nodes
+#
 # Revision 1.14  2010/07/20 19:32:38  bruno
 # added 'num-threads' parameter
 #
@@ -225,7 +228,7 @@ class Command(command):
 
 	def nodeup(self, host):
 		sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		sock.settimeout(2)
+		sock.settimeout(2.0)
 		try:
 			#
 			# this catches the case when the host is down
@@ -244,7 +247,7 @@ class Command(command):
 			#	SSH-2.0-OpenSSH_4.3
 			#
 			buf = sock.recv(64)
-		except socket.error:
+		except:
 			return 0
 
 		return 1
@@ -256,7 +259,7 @@ class Command(command):
 		if not command:
 			self.abort('must supply a command')
 
-		(managed, x11, t, d, stats, collate, n) = \
+		(managed, x11, t, d, s, c, n) = \
 			self.fillParams([
 				('managed', 'y'),
 				('x11', 'y'),
@@ -296,7 +299,10 @@ class Command(command):
 			except KeyError:
 				pass
 
-		if self.str2bool(collate):
+		collate = self.str2bool(c)
+		stats = self.str2bool(s)
+
+		if collate:
 			self.beginOutput()
 
 		if numthreads <= 0:
@@ -319,8 +325,10 @@ class Command(command):
 					if collate:
 						self.addOutput(host, 'down')
 					else:
-						print '%s: down'		
+						print '%s: down' % host
 
+					numthreads += 1
+					work -= 1
 					continue
 
 				#
@@ -328,9 +336,7 @@ class Command(command):
 				#
 				cmd = 'ssh %s "%s"' % (host, sys.argv[-1])
 
-				p = Parallel(self, cmd, host,
-					self.str2bool(stats),
-					self.str2bool(collate))
+				p = Parallel(self, cmd, host, stats, collate)
 				p.start()
 				threads.append(p)
 
@@ -390,5 +396,6 @@ class Command(command):
 			for i in range(1, len(active)):
 				active[i].kill()
 
-		if self.str2bool(collate):
+		if collate:
 			self.endOutput(padChar='')
+
