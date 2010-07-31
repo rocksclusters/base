@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.84 2010/06/30 17:37:32 anoop Exp $
+# $Id: __init__.py,v 1.85 2010/07/31 01:02:02 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.85  2010/07/31 01:02:02  bruno
+# first stab at putting in 'shadow' values in the database that non-root
+# and non-apache users can't read
+#
 # Revision 1.84  2010/06/30 17:37:32  anoop
 # Overhaul of the naming system. We now support
 # 1. Multiple zone/domains
@@ -1197,45 +1201,108 @@ class DatabaseConnection:
 
 		# global
 		self.execute('select attr, value from global_attributes')
+
 		for (a, v) in self.fetchall():
 			if showsource:
 				attrs[a] = (v, 'G')
 			else:
 				attrs[a] = v
 
+		try:
+			rows = self.execute("""select attr, shadow from
+				global_attributes where shadow is not NULL""")
+		except:
+			rows = 0
+
+		if rows > 0:
+			for (a, v) in self.fetchall():
+				if showsource:
+					attrs[a] = (v, 'G')
+				else:
+					attrs[a] = v
+
 		# os
 		self.execute("""select a.attr, a.value from
 			os_attributes a, nodes n where
 			a.os=n.os and n.name='%s'"""  % host)
+
 		for (a, v) in self.fetchall():
 			if showsource:
 				attrs[a] = (v, 'O')
 			else:
 				attrs[a] = v
 
+		try:
+			rows = self.execute("""select a.attr, a.shadow from
+				os_attributes a, nodes n where
+				a.os=n.os and n.name='%s' and a.shadow is not
+				NULL"""  % host)
+		except:
+			rows = 0
+
+		if rows > 0:
+			for (a, v) in self.fetchall():
+				if showsource:
+					attrs[a] = (v, 'O')
+				else:
+					attrs[a] = v
+
 		# appliance		
 		self.execute("""select a.attr, a.value from
-			appliance_attributes a,
-			nodes n,
-			memberships m,
-			appliances app where
+			appliance_attributes a, nodes n,
+			memberships m, appliances app where
 			n.membership=m.id and m.appliance=app.id and 
 			a.appliance=app.id and n.name='%s'""" % host)
+
 		for (a, v) in self.fetchall():
 			if showsource:
 				attrs[a] = (v, 'A')
 			else:
 				attrs[a] = v
 
+		try:
+			rows = self.execute("""select a.attr, a.shadow from
+				appliance_attributes a, nodes n,
+				memberships m, appliances app where
+				n.membership=m.id and m.appliance=app.id and 
+				a.appliance=app.id and n.name='%s' and
+				a.shadow is not NULL""" % host)
+		except:
+			rows = 0
+
+		if rows > 0:
+			for (a, v) in self.fetchall():
+				if showsource:
+					attrs[a] = (v, 'A')
+				else:
+					attrs[a] = v
+
 		# host				
 		self.execute("""select a.attr, a.value from
 			node_attributes a, nodes n where
 			n.name='%s' and n.id=a.node""" % host)
+
 		for (a, v) in self.fetchall():
 			if showsource:
 				attrs[a] = (v, 'H')
 			else:
 				attrs[a] = v
+
+		try:
+			rows = self.execute("""select a.attr, a.shadow from
+				node_attributes a, nodes n where
+				n.name='%s' and n.id=a.node and
+				a.shadow is not NULL""" % host)
+		except:
+			rows = 0
+
+		if rows > 0:
+			for (a, v) in self.fetchall():
+				if showsource:
+					attrs[a] = (v, 'H')
+				else:
+					attrs[a] = v
+
 			
 		return attrs
 

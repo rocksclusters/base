@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.1 2009/06/19 21:07:20 mjk Exp $
+# $Id: __init__.py,v 1.2 2010/07/31 01:02:02 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.2  2010/07/31 01:02:02  bruno
+# first stab at putting in 'shadow' values in the database that non-root
+# and non-apache users can't read
+#
 # Revision 1.1  2009/06/19 21:07:20  mjk
 # - added dumpHostname to dump commands (use localhost for frontend)
 # - added add commands for attrs
@@ -122,13 +126,24 @@ class Command(rocks.commands.add.appliance.command):
 
 		for appliance in appliances:
 			self.checkApplianceAttr(appliance, attr, value)
+
+		shadow, = self.fillParams([ ('shadow', 'n') ])
+
+		if self.str2bool(shadow):
+			s = "'%s'" % value
+			v = 'NULL'
+		else:
+			s = 'NULL'
+			v = "'%s'" % value
+
 		for appliance in appliances:
 			self.db.execute("""
 				insert into appliance_attributes values 
 				((select id from appliances where name='%s'), 
-				'%s', '%s')
-				""" % (appliance, attr, value))
+				'%s', %s, %s)
+				""" % (appliance, attr, v, s))
 			
+
 	def checkApplianceAttr(self, appliance, attr, value):
 		rows = self.db.execute("""
 			select * from appliance_attributes where

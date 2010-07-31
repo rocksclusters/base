@@ -17,6 +17,10 @@
 
   <changelog>
   $Log: database.xml,v $
+  Revision 1.31  2010/07/31 01:02:02  bruno
+  first stab at putting in 'shadow' values in the database that non-root
+  and non-apache users can't read
+
   Revision 1.30  2009/05/20 23:00:29  anoop
   Bug fix. ldconfig needed to be run before any mysql commands
   Otherwise the database accesses would fail, no data would ever
@@ -360,8 +364,6 @@ done
 <file name="/tmp/perms.sql" perms="0400">
 grant select,update,insert,delete,lock tables on cluster.* to apache@localhost;
 grant select,update,insert,delete,lock tables on cluster.* to apache@"&Kickstart_PrivateHostname;";
-grant select on cluster.* to ''@localhost;
-grant select on cluster.* to ''@'%.local';
 </file>
 /opt/rocks/bin/mysql --user=root --password='' mysql &lt; /tmp/perms.sql
 

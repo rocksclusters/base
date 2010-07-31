@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.4 2009/11/18 23:34:49 bruno Exp $
+# $Id: __init__.py,v 1.5 2010/07/31 01:02:02 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.5  2010/07/31 01:02:02  bruno
+# first stab at putting in 'shadow' values in the database that non-root
+# and non-apache users can't read
+#
 # Revision 1.4  2009/11/18 23:34:49  bruno
 # cleanup help section
 #
@@ -114,6 +118,11 @@ class Command(rocks.commands.set.command):
 	same as value argument
 	</param>
 
+	<param type='boolean' name='shadow'>
+	If set to true, then set the 'shadow' value (only readable by root
+	and apache).
+	</param>
+
 	<example cmd='set attr sge False'>
 	Sets the sge attribution to False
 	</example>
@@ -130,14 +139,27 @@ class Command(rocks.commands.set.command):
 		if not value:
 			self.abort('missing value of attribute')
 
+		shadow, = self.fillParams([ ('shadow', 'n') ])
+
+		if self.str2bool(shadow):
+			s = "'%s'" % value
+			v = 'NULL'
+		else:
+			s = 'NULL'
+			v = "'%s'" % value
+
 		rows = self.db.execute("""select * from global_attributes
 			where attr='%s'""" % attr)
 		if not rows:
 			self.db.execute("""insert into global_attributes
-				values ('%s', '%s')""" % (attr, value))
+				values ('%s', %s)""" % (attr, v, s))
 		else:
-			self.db.execute("""update global_attributes
-				set value='%s' where attr='%s'""" %
-				(value, attr))
-
+			if v != 'NULL':
+				self.db.execute("""update global_attributes
+					set value = %s where attr = '%s'""" %
+					(v, attr))
+			else:
+				self.db.execute("""update global_attributes
+					set shadow = %s where attr = '%s'""" %
+					(s, attr))
 

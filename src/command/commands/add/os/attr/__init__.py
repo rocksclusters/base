@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.1 2009/06/19 21:07:24 mjk Exp $
+# $Id: __init__.py,v 1.2 2010/07/31 01:02:02 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.2  2010/07/31 01:02:02  bruno
+# first stab at putting in 'shadow' values in the database that non-root
+# and non-apache users can't read
+#
 # Revision 1.1  2009/06/19 21:07:24  mjk
 # - added dumpHostname to dump commands (use localhost for frontend)
 # - added add commands for attrs
@@ -113,9 +117,20 @@ class Command(rocks.commands.add.os.command):
 
 		for os in oses:
 			self.checkOSAttr(os, attr, value)
+
+		shadow, = self.fillParams([ ('shadow', 'n') ])
+
+		if self.str2bool(shadow):
+			s = "'%s'" % value
+			v = 'NULL'
+		else:
+			s = 'NULL'
+			v = "'%s'" % value
+
 		for os in oses:
 			self.db.execute("""insert into os_attributes values 
-				('%s', '%s', '%s')""" % (os, attr, value))
+				('%s', '%s', %s, %s)""" % (os, attr, v, s))
+
 			
 	def checkOSAttr(self, os, attr, value):
 		rows = self.db.execute("""select * from os_attributes where

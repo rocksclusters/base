@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.4 2009/05/01 19:07:03 mjk Exp $
+# $Id: __init__.py,v 1.5 2010/07/31 01:02:02 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.5  2010/07/31 01:02:02  bruno
+# first stab at putting in 'shadow' values in the database that non-root
+# and non-apache users can't read
+#
 # Revision 1.4  2009/05/01 19:07:03  mjk
 # chimi con queso
 #
@@ -107,6 +111,11 @@ class Command(rocks.commands.set.host.command):
 	same as value argument
 	</param>
 
+	<param type='boolean' name='shadow'>
+	If set to true, then set the 'shadow' value (only readable by root
+	and apache).
+	</param>
+
 	<example cmd='set host attr compute-0-0 cpus 2'>
 	Sets the number of cpus of compute-0-0 to 2
 	</example>
@@ -129,10 +138,20 @@ class Command(rocks.commands.set.host.command):
 		if not value:
 			self.about('missing value of attribute')
 
+		shadow, = self.fillParams([ ('shadow', 'n') ])
+
+		if self.str2bool(shadow):
+			s = "'%s'" % value
+			v = 'NULL'
+		else:
+			s = 'NULL'
+			v = "'%s'" % value
+
 		for host in hosts:
-			self.setHostAttr(host, attr, value)
+			self.setHostAttr(host, attr, v, s)
+
 			
-	def setHostAttr(self, host, attr, value):
+	def setHostAttr(self, host, attr, value, shadow):
 		rows = self.db.execute("""
 			select * from node_attributes where
 			node=(select id from nodes where name='%s') and
@@ -142,13 +161,17 @@ class Command(rocks.commands.set.host.command):
 			self.db.execute("""
 				insert into node_attributes values 
 				((select id from nodes where name='%s'), 
-				'%s', '%s')
-				""" % (host, attr, value))
+				'%s', %s, %s)
+				""" % (host, attr, value, shadow))
 		else:
-			self.db.execute("""
-				update node_attributes set value='%s' where 
-				attr='%s' and
-				node=(select id from nodes where name='%s')
-				""" % (value, attr, host)) 
-
+			if value != 'NULL':
+				self.db.execute("""update node_attributes set
+					value = %s where attr = '%s' and
+					node = (select id from nodes where
+					name = '%s') """ % (value, attr, host)) 
+			else:
+				self.db.execute("""update node_attributes set
+					shadow = %s where attr = '%s' and
+					node = (select id from nodes where
+					name = '%s') """ % (shadow, attr, host)) 
 

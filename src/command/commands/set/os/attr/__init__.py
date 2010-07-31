@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.3 2009/05/01 19:07:04 mjk Exp $
+# $Id: __init__.py,v 1.4 2010/07/31 01:02:03 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.4  2010/07/31 01:02:03  bruno
+# first stab at putting in 'shadow' values in the database that non-root
+# and non-apache users can't read
+#
 # Revision 1.3  2009/05/01 19:07:04  mjk
 # chimi con queso
 #
@@ -93,6 +97,11 @@ class Command(rocks.commands.set.os.command):
 	same as value argument
 	</param>
 
+	<param type='boolean' name='shadow'>
+	If set to true, then set the 'shadow' value (only readable by root
+	and apache).
+	</param>
+
 	<example cmd='set os attr linux sge False'>
 	Sets the sge attribution to False for linux nodes
 	</example>
@@ -109,18 +118,33 @@ class Command(rocks.commands.set.os.command):
 		if not value:
 			self.about('missing value of attribute')
 
+		shadow, = self.fillParams([ ('shadow', 'n') ])
+
+		if self.str2bool(shadow):
+			s = "'%s'" % value
+			v = 'NULL'
+		else:
+			s = 'NULL'
+			v = "'%s'" % value
+
 		for os in oses:
-			self.setOSAttr(os, attr, value)
+			self.setOSAttr(os, attr, v, s)
 			
-	def setOSAttr(self, os, attr, value):
+	def setOSAttr(self, os, attr, value, shadow):
 		rows = self.db.execute("""select * from os_attributes where
 			os='%s' and attr='%s'""" % (os, attr))
 		if not rows:
 			self.db.execute("""insert into os_attributes values 
-				('%s', '%s', '%s')""" % (os, attr, value))
+				('%s', '%s', %s, %s)""" % (os, attr, value,
+				shadow))
 		else:
-			self.db.execute("""update os_attributes set value='%s' 
-				where os='%s' and attr='%s'""" %
-				(value, os, attr))
+			if value != 'NULL':
+				self.db.execute("""update os_attributes set
+					value = %s where os = '%s' and
+					attr = '%s' """ % (value, os, attr))
+			else:
+				self.db.execute("""update os_attributes set
+					shadow = %s where os = '%s' and
+					attr = '%s' """ % (shadow, os, attr))
 
 

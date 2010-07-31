@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.2 2009/05/01 19:07:02 mjk Exp $
+# $Id: __init__.py,v 1.3 2010/07/31 01:02:02 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.3  2010/07/31 01:02:02  bruno
+# first stab at putting in 'shadow' values in the database that non-root
+# and non-apache users can't read
+#
 # Revision 1.2  2009/05/01 19:07:02  mjk
 # chimi con queso
 #
@@ -100,6 +104,11 @@ class Command(rocks.commands.set.appliance.command):
 	same as value argument
 	</param>
 
+	<param type='boolean' name='shadow'>
+	If set to true, then set the 'shadow' value (only readable by root
+	and apache).
+	</param>
+
 	<example cmd='set appliance attr compute sge False'>
 	Sets the sge attribution to False for compute appliances
 	</example>
@@ -125,10 +134,19 @@ class Command(rocks.commands.set.appliance.command):
 		if not value:
 			self.about('missing value of attribute')
 
+		shadow, = self.fillParams([ ('shadow', 'n') ])
+
+		if self.str2bool(shadow):
+			s = "'%s'" % value
+			v = 'NULL'
+		else:
+			s = 'NULL'
+			v = "'%s'" % value
+
 		for appliance in appliances:
-			self.setApplianceAttr(appliance, attr, value)
+			self.setApplianceAttr(appliance, attr, v, s)
 			
-	def setApplianceAttr(self, appliance, attr, value):
+	def setApplianceAttr(self, appliance, attr, value, shadow):
 		rows = self.db.execute("""
 			select * from appliance_attributes where
 			appliance=
@@ -139,14 +157,19 @@ class Command(rocks.commands.set.appliance.command):
 			self.db.execute("""
 				insert into appliance_attributes values 
 				((select id from appliances where name='%s'), 
-				'%s', '%s')
-				""" % (appliance, attr, value))
+				'%s', %s)
+				""" % (appliance, attr, value, shadow))
 		else:
-			self.db.execute("""
-				update appliance_attributes set value='%s' where 
-				attr='%s' and
-				appliance=
-				(select id from appliances where name='%s')
-				""" % (value, attr, appliance)) 
-
+			if value != 'NULL':
+				self.db.execute("""update appliance_attributes
+					set value = %s where attr = '%s' and
+					appliance = (select id from appliances
+					where name = '%s') """ % (value, attr,
+					appliance)) 
+			else:
+				self.db.execute("""update appliance_attributes
+					set shadow = %s where attr = '%s' and
+					appliance = (select id from appliances
+					where name = '%s') """ % (shadow, attr,
+					appliance)) 
 

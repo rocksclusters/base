@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.2 2009/11/18 23:34:49 bruno Exp $
+# $Id: __init__.py,v 1.3 2010/07/31 01:02:02 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.3  2010/07/31 01:02:02  bruno
+# first stab at putting in 'shadow' values in the database that non-root
+# and non-apache users can't read
+#
 # Revision 1.2  2009/11/18 23:34:49  bruno
 # cleanup help section
 #
@@ -113,8 +117,15 @@ class Command(rocks.commands.add.command):
 		if rows:
 			self.abort('attribute "%s" exists' % attr)
 
+		shadow, = self.fillParams([ ('shadow', 'n') ])
+
+		if self.str2bool(shadow):
+			s = "'%s'" % value
+			v = 'NULL'
+		else:
+			s = 'NULL'
+			v = "'%s'" % value
+
 		self.db.execute("""insert into global_attributes
-			values ('%s', '%s')""" % (attr, value))
-
-
+			values ('%s', %s, %s)""" % (attr, v, s))
 
