@@ -17,6 +17,10 @@
 
 <changelog>
   $Log: database-data.xml,v $
+  Revision 1.66  2010/08/02 20:35:44  bruno
+  make sure the password attributes have their values placed in the 'shadow'
+  column.
+
   Revision 1.65  2010/07/09 23:19:58  bruno
   fix
 
@@ -509,8 +513,16 @@ if os.path.exists('/tmp/site.attrs'):
 				else:
 					value += i
 			
-			os.system("/opt/rocks/bin/rocks set attr '%s' '%s'" %
-				(key, value))
+			if key in [ 'Kickstart_PrivatePortableRootPassword', \
+					'Kickstart_PrivateRootPassword', \
+					'Kickstart_PrivateSHARootPassword' ]:
+				extra = 'shadow=y'
+			else:
+				extra = ''
+
+			os.system("/opt/rocks/bin/rocks set attr %s '%s' '%s'"
+				% (extra, key, value))
+
 	file.close()
 
 </post>
