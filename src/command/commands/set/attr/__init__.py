@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.5 2010/07/31 01:02:02 bruno Exp $
+# $Id: __init__.py,v 1.6 2010/08/03 04:16:12 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.6  2010/08/03 04:16:12  bruno
+# oops
+#
 # Revision 1.5  2010/07/31 01:02:02  bruno
 # first stab at putting in 'shadow' values in the database that non-root
 # and non-apache users can't read
@@ -152,7 +155,7 @@ class Command(rocks.commands.set.command):
 			where attr='%s'""" % attr)
 		if not rows:
 			self.db.execute("""insert into global_attributes
-				values ('%s', %s)""" % (attr, v, s))
+				values ('%s', %s, %s)""" % (attr, v, s))
 		else:
 			if v != 'NULL':
 				self.db.execute("""update global_attributes
