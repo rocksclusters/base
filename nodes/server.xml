@@ -66,14 +66,14 @@ mv /tmp/all-rocks.js /usr/lib/firefox-*/defaults/preferences/
 </post>
 
 <post>
-<!-- optionally set the VM controller attribute -->
+<!-- optionally set the airboss attribute -->
 
-VMCONTROLLER=`/bin/cat /proc/cmdline | /bin/awk \
-	'BEGIN {RS="[[:space:]]"; FS="="} /vmcontroller/{print $2}'`
+AIRBOSS=`/bin/cat /proc/cmdline | /bin/awk \
+	'BEGIN {RS="[[:space:]]"; FS="="} /airboss/{print $2}'`
 
-if [ "$VMCONTROLLER" != "" ]
+if [ "$AIRBOSS" != "" ]
 then
-	/opt/rocks/bin/rocks add host attr localhost vm-controller $VMCONTROLLER
+	/opt/rocks/bin/rocks add host attr localhost airboss $AIRBOSS
 fi
 
 </post>
