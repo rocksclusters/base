@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.3 2010/07/31 01:02:02 bruno Exp $
+# $Id: __init__.py,v 1.4 2010/08/04 23:36:56 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.4  2010/08/04 23:36:56  bruno
+# fix
+#
 # Revision 1.3  2010/07/31 01:02:02  bruno
 # first stab at putting in 'shadow' values in the database that non-root
 # and non-apache users can't read
@@ -157,7 +160,7 @@ class Command(rocks.commands.set.appliance.command):
 			self.db.execute("""
 				insert into appliance_attributes values 
 				((select id from appliances where name='%s'), 
-				'%s', %s)
+				'%s', %s, %s)
 				""" % (appliance, attr, value, shadow))
 		else:
 			if value != 'NULL':
