@@ -1,5 +1,5 @@
 #
-# $Id: rocks-version.mk,v 1.1 2010/06/22 21:07:44 mjk Exp $
+# $Id: rocks-version.mk,v 1.2 2010/08/04 23:37:28 bruno Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: rocks-version.mk,v $
+# Revision 1.2  2010/08/04 23:37:28  bruno
+# next version
+#
 # Revision 1.1  2010/06/22 21:07:44  mjk
 # build env moving into base roll
 #
@@ -245,7 +248,7 @@ __RELEASE_MK = yes
 # make sure you get the version of Rocks use ROCKS_VERSION.
 
 VERSION.MAJOR = 5
-VERSION.MINOR = 3
+VERSION.MINOR = 4
 #VERSION.PATCH = 0
 
 ifeq ($(VERSION.PATCH),)
@@ -260,7 +263,7 @@ ROCKS_VERSION = $(VERSION)
 # A name, not a RPM release id. Added for flair. First releases named
 # after well-known mountains.
 
-RELEASE_NAME = Rolled Tacos
+RELEASE_NAME = ZLA
 VERSION_NAME = "$(RELEASE_NAME)"
 
 # The project name is used to identify to distribution.  The base 
