@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: vm.py,v $
+# Revision 1.16  2010/08/05 22:21:51  bruno
+# optionally get the status of the VMs
+#
 # Revision 1.15  2010/07/12 17:44:57  bruno
 # move private key reading out to the commands.
 #
@@ -513,7 +516,7 @@ class VMControl:
 
 		if op in [ 'power off', 'power on', 'power on + install' ]:
 			(status, msg) = self.power(op, dst_mac)
-		elif op == 'list macs':
+		elif op == 'list macs' or op == 'list macs + status':
 			(status, msg) = self.listmacs(op, dst_mac)
 		elif op == 'console':
 			msg = 'retry'

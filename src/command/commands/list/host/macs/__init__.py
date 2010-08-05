@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.4 2010/08/05 19:56:06 bruno Exp $
+# $Id: __init__.py,v 1.5 2010/08/05 22:21:18 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.5  2010/08/05 22:21:18  bruno
+# optionally get the status of the VMs
+#
 # Revision 1.4  2010/08/05 19:56:06  bruno
 # more airboss updates
 #
@@ -103,6 +106,11 @@ class Command(command):
 	addresses for.
 	</arg>
 
+	<param type='bool' name='status'>
+	If true, then for each VM-based cluster node, output the VM's status
+	(e.g., 'active', 'paused', etc.).
+        </param>
+
 	<param type='string' name='key'>
 	A private key that will be used to authenticate the request. This
 	should be a file name that contains the private key.
@@ -110,12 +118,14 @@ class Command(command):
 	"""
 
 	def run(self, params, args):
-		key, = self.fillParams([ ('key', ) ])
+		(key, s) = self.fillParams([ ('key', ), ('status', 'n') ])
 
 		if not key:
 			self.abort('must supply a path name to a private key')
 		if not os.path.exists(key):
 			self.abort('private key "%s" does not exist' % key)
+
+		state = self.str2bool(s)
 
 		vm_controller = self.db.getHostAttr('localhost', 'airboss')
 
@@ -133,13 +143,23 @@ class Command(command):
 		rsakey = M2Crypto.RSA.load_key(key)
 
 		vm = rocks.vm.VMControl(self.db, vm_controller, rsakey)
-		(status, macs) = vm.cmd('list macs', host)
+		if state:
+			(status, macs) = vm.cmd('list macs + status', host)
+		else:
+			(status, macs) = vm.cmd('list macs', host)
 		if status != 0:
 			self.abort('command failed: %s' % macs)
 
 		self.beginOutput()
 		for mac in macs.split('\n'):
 			if len(mac) > 0:
-				self.addOutput('', (mac))
-		self.endOutput(header=['', 'macs in cluster'])
+				if state:
+					m = mac.split()
+					self.addOutput('', (m[0], m[1]))
+				else:
+					self.addOutput('', (mac))
+		if state:
+			self.endOutput(header=['', 'macs in cluster', 'state'])
+		else:
+			self.endOutput(header=['', 'macs in cluster'])
 
