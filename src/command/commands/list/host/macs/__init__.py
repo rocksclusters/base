@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.3 2010/07/12 17:43:41 bruno Exp $
+# $Id: __init__.py,v 1.4 2010/08/05 19:56:06 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.4  2010/08/05 19:56:06  bruno
+# more airboss updates
+#
 # Revision 1.3  2010/07/12 17:43:41  bruno
 # moved the private key reading into the commands. this makes it possible to
 # enter the passphrase on the key once and have the command apply to several
@@ -114,11 +117,10 @@ class Command(command):
 		if not os.path.exists(key):
 			self.abort('private key "%s" does not exist' % key)
 
-		vm_controller = self.db.getHostAttr('localhost',
-			'vm-controller')
+		vm_controller = self.db.getHostAttr('localhost', 'airboss')
 
 		if not vm_controller:
-			self.abort('the "vm-controller" attribute is not set')
+			self.abort('the "airboss" attribute is not set')
 
 		if len(args) == 0:
 			self.abort('must supply one host name')

@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.3 2010/07/12 17:43:41 bruno Exp $
+# $Id: __init__.py,v 1.4 2010/08/05 19:56:06 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.4  2010/08/05 19:56:06  bruno
+# more airboss updates
+#
 # Revision 1.3  2010/07/12 17:43:41  bruno
 # moved the private key reading into the commands. this makes it possible to
 # enter the passphrase on the key once and have the command apply to several
@@ -126,11 +129,10 @@ class Command(command):
 
 		rsakey = M2Crypto.RSA.load_key(key)
 
-		vm_controller = self.db.getHostAttr('localhost',
-			'vm-controller')
+		vm_controller = self.db.getHostAttr('localhost', 'airboss')
 
 		if not vm_controller:
-			self.abort('the "vm-controller" attribute is not set')
+			self.abort('the "airboss" attribute is not set')
 
 		for host in self.getHostnames(args):
 			vm = rocks.vm.VMControl(self.db, vm_controller, rsakey,

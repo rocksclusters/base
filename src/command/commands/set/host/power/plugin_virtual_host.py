@@ -1,4 +1,4 @@
-# $Id: plugin_virtual_host.py,v 1.3 2010/07/14 19:39:39 bruno Exp $
+# $Id: plugin_virtual_host.py,v 1.4 2010/08/05 19:56:06 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: plugin_virtual_host.py,v $
+# Revision 1.4  2010/08/05 19:56:06  bruno
+# more airboss updates
+#
 # Revision 1.3  2010/07/14 19:39:39  bruno
 # better
 #
@@ -100,12 +103,11 @@ class Plugin(rocks.commands.Plugin):
 			sys.exit(-1)
 
 		#
-		# if 'vm-controller' is set, then we assume this is a virtual
-		# frontend and we want to send a command to the VM controller
+		# if 'airboss' is set, then we assume this is a virtual
+		# frontend and we want to send a command to the airboss 
 		# for this virtual cluster.
 		#
-		vm_controller = self.db.getHostAttr('localhost',
-			'vm-controller')
+		vm_controller = self.db.getHostAttr('localhost', 'airboss')
 		if vm_controller:
 			vm = rocks.vm.VMControl(self.db, vm_controller, rsakey)
 
