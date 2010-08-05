@@ -1,5 +1,5 @@
 #
-# $Id: rocks-version.mk,v 1.2 2010/08/04 23:37:28 bruno Exp $
+# $Id: rocks-version.mk,v 1.3 2010/08/05 19:00:03 bruno Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: rocks-version.mk,v $
+# Revision 1.3  2010/08/05 19:00:03  bruno
+# permission to buzz the tower
+#
 # Revision 1.2  2010/08/04 23:37:28  bruno
 # next version
 #
@@ -263,7 +266,7 @@ ROCKS_VERSION = $(VERSION)
 # A name, not a RPM release id. Added for flair. First releases named
 # after well-known mountains.
 
-RELEASE_NAME = ZLA
+RELEASE_NAME = Maverick
 VERSION_NAME = "$(RELEASE_NAME)"
 
 # The project name is used to identify to distribution.  The base 
