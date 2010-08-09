@@ -54,6 +54,22 @@
 # @Copyright@
 #
 # $Log: gen.py,v $
+# Revision 1.63  2010/08/09 22:58:13  mjk
+# BUG:
+#
+# In the following code snippet, the file permissions set in the first "<file>" tag will not be preserved (the second <file> tag clears the permissions):
+#
+# <file name="/tmp/a" perms="0755">
+# first line
+# </file>
+#
+# <file name="/tmp/a" mode="append">
+# second line
+# </file>
+#
+# FIX: Revert to the previous perms and owner settings for all file tags
+# that do not specify these optional attributes.
+#
 # Revision 1.62  2010/07/27 20:22:21  anoop
 # Bug fixes
 # - Jumpstart generation needs to recognize new tags to parse networking
@@ -470,6 +486,16 @@ class Generator:
 			 	file)
 			l.append('\t/opt/rocks/bin/co -f -l %s;' % file)
 			l.append('fi')
+
+		# If this is a subsequent file tag and the optional PERMS
+		# or OWNER attributes are missing, use the previous value(s).
+		
+		if self.rcsFiles.has_key(file):
+			(orig_owner, orig_perms) = self.rcsFiles[file]
+			if not perms:
+				perms = orig_perms
+			if not owner:
+				owner = orig_file
 
 		self.rcsFiles[file] = (owner, perms)
 		
