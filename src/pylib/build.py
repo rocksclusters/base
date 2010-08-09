@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: build.py,v $
+# Revision 1.39  2010/08/09 22:24:54  bruno
+# create MD5 checksums for all the RPMs
+#
 # Revision 1.38  2009/06/24 04:46:12  bruno
 # restore roll tweaks
 #
@@ -1335,13 +1338,25 @@ class DistributionBuilder(Builder):
 		return
 
 	cwd = os.getcwd()
+
+	#
+	# make an MD5 checksum for all the RPMS
+	#
+	os.chdir(self.dist.getRPMSPath())
+	cmd = '/usr/bin/md5sum *.rpm > %s/packages.md5' % (productfilesdir)
+	os.system(cmd)
+
+	#
+	# create the product.img file
+	#
 	os.chdir(productfilesdir)
 
 	if not os.path.exists('../../images'):
 		os.makedirs('../../images')
 
 	os.system('rm -f %s' % (product))
-	cmd = '/sbin/mksquashfs installclass/*py installclasses %s ' % (product)
+	cmd = '/sbin/mksquashfs packages.md5 installclass/*py installclasses '
+	cmd += '%s ' % (product)
 	cmd += '-keep-as-directory > /dev/null 2>&1'
 	os.system(cmd)
 
