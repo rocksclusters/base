@@ -1,11 +1,14 @@
 #!/opt/rocks/bin/python
 #
-# $Id: rocks-bt.py,v 1.22 2009/09/30 18:23:51 bruno Exp $
+# $Id: rocks-bt.py,v 1.23 2010/08/09 22:40:33 bruno Exp $
 #
 # @Copyright@
 # @Copyright@
 #
 # $Log: rocks-bt.py,v $
+# Revision 1.23  2010/08/09 22:40:33  bruno
+# verify md5 checksums
+#
 # Revision 1.22  2009/09/30 18:23:51  bruno
 # use bittorrent client from triton
 #
@@ -105,6 +108,7 @@ import os.path
 import getopt
 import cgi
 import string
+import md5
 
 import sha
 import BitTorrent.bencode
@@ -231,6 +235,21 @@ else:
 	
 if havefile == 0:
 	#
+	# get the MD5 checksum
+	#
+	md5sum = None
+	try:
+		md5file = open('/tmp/product/packages.md5', 'r')
+		for line in md5file.readlines():
+			l = line.split()
+			if len(l) > 1 and l[1] == os.path.basename(savefile):
+				md5sum = l[0]
+				break
+		md5file.close()
+	except:
+		pass
+
+	#
 	# append the kickstart host ip to the end of the list
 	#
 	for peer in peers + [ {'ip' : host} ]:
@@ -239,9 +258,43 @@ if havefile == 0:
 		#
 		tempfile = '/install/' + os.path.basename(savefile)
 
-		cmd = '%s http://%s/%s -O %s' % (wget, peer['ip'], filename,
-			tempfile)
-		status = os.system(cmd)
+		#
+		# two attempts per peer to try to get an MD5 checksum that
+		# matches
+		#
+		for i in range(0,2):
+			cmd = '%s http://%s/%s -O %s' % (wget, peer['ip'],
+				filename, tempfile)
+			status = os.system(cmd)
+
+			if status != 0:
+				#
+				# the download failed. let's assume a bad peer,
+				# so let's get out of the loop
+				#
+				break
+
+			if not md5sum:
+				#
+				# if there's no MD5 checksum, then exit this
+				# loop
+				#
+				break
+
+			f = open(tempfile, 'r')
+			filemd5 = md5.new(f.read()).hexdigest()
+			f.close()
+
+			if filemd5 == md5sum:
+				file.write('MD5 checksum passed ' +
+					'for file %s ' % filename +
+					'from peer %s\n' % peer['ip'])
+				break
+			else:
+				file.write('MD5 checksum failed ' +
+					'for file %s ' % filename +
+					'from peer %s\n' % peer['ip'])
+				status = -1
 
 		#
 		# output the request to a log file
@@ -258,14 +311,6 @@ if havefile == 0:
 			os.system(cmd)
 			break
 		else:
-			#
-			# if the download fails, then tell the tracker that
-			# this 'peer' is bad
-			#
-			#if peer.has_key('peer id'):
-				#BitTorrent.rocks.sendToTracker(torrentinfo,
-					#peer['peer id'], 'done')
-
 			#
 			# wget has a bad side effect -- if the file doesn't
 			# exist and if you use the '-O' flag, it will create a
