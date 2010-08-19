@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: gen.py,v $
+# Revision 1.64  2010/08/19 17:15:58  bruno
+# f'ed by the katz!
+#
 # Revision 1.63  2010/08/09 22:58:13  mjk
 # BUG:
 #
@@ -495,7 +498,7 @@ class Generator:
 			if not perms:
 				perms = orig_perms
 			if not owner:
-				owner = orig_file
+				owner = orig_owner
 
 		self.rcsFiles[file] = (owner, perms)
 		
