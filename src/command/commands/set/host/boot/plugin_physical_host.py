@@ -1,4 +1,4 @@
-# $Id: plugin_physical_host.py,v 1.7 2010/07/27 19:51:11 anoop Exp $
+# $Id: plugin_physical_host.py,v 1.8 2010/08/20 17:57:39 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: plugin_physical_host.py,v $
+# Revision 1.8  2010/08/20 17:57:39  bruno
+# make sure the IP is not null
+#
 # Revision 1.7  2010/07/27 19:51:11  anoop
 # Cleaned code: Moved rocks report grub to rocks report host grub
 #
@@ -221,7 +224,8 @@ class Plugin(rocks.commands.Plugin):
 			self.db.execute("""select net.ip
 				from networks net, subnets s, nodes n
 				where n.name='%s' and net.node=n.id and
-				s.id=net.subnet and s.name='private'""" % node)
+				s.id=net.subnet and s.name='private' and
+				net.ip is not NULL""" % node)
 			ip, = self.db.fetchone()
 			args += ' ip=%s ' % ip
 			attrs = self.db.getHostAttrs(node)
