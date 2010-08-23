@@ -53,12 +53,20 @@ class AnacondaKSScript(Script):
         os.close(fd)
         os.chmod(path, 0700)
 
-        if self.logfile is not None:
-            messages = self.logfile
-        elif serial:
-            messages = "%s.log" % path
+        # Always log stdout/stderr from scripts.  Using --logfile just lets you
+        # pick where it goes.  The script will also be logged to program.log
+        # because of execWithRedirect, and to anaconda.log if the script fails.
+        if self.logfile:
+            if self.inChroot:
+                messages = "%s/%s" % (scriptRoot, self.logfile)
+            else:
+                messages = self.logfile
+
+            d = os.path.basename(messages)
+            if not os.path.exists(d):
+                os.makedirs(d)
         else:
-            messages = "/dev/tty3"
+            messages = "%s.log" % path
 
         if intf:
             intf.suspend()
@@ -71,20 +79,32 @@ class AnacondaKSScript(Script):
         # Always log an error.  Only fail if we have a handle on the
         # windowing system and the kickstart file included --erroronfail.
         if rc != 0:
-            log.error("Error code %s encountered running a kickstart %%pre/%%post script", rc)
+            log.error("Error code %s running the kickstart script at line %s" % (rc, self.lineno))
+
+            try:
+                f = open(messages, "r")
+                err = f.readlines()
+                f.close()
+                for l in err:
+                    log.error("\t%s" % l)
+            except:
+                err = None
 
             if self.errorOnFail:
                 if intf != None:
-                    intf.messageWindow(_("Scriptlet Failure"),
-                                       _("There was an error running the "
-                                         "scriptlet.  You may examine the "
-                                         "output in %s.  This is a fatal error "
-                                         "and your install will be aborted.\n\n"
-                                         "Press the OK button to reboot your "
-                                         "system.") % (messages,))
-                sys.exit(0)
+                    msg = _("There was an error running the kickstart "
+                            "script at line %(lineno)s.  You may examine the "
+                            "output in %(msgs)s.  This is a fatal error and "
+                            "installation will be aborted.  Press the "
+                            "OK button to exit the installer.") \
+                          % {'lineno': self.lineno, 'msgs': messages}
 
-        os.unlink(path)
+                    if err:
+                        intf.detailedMessageWindow(_("Scriptlet Failure"), msg, err)
+                    else:
+                        intf.messageWindow(_("Scriptlet Failure"), msg)
+
+                sys.exit(0)
 
         if serial or self.logfile is not None:
             os.chmod("%s" % messages, 0600)
@@ -133,6 +153,7 @@ class AnacondaKSHandlers(KickstartHandlers):
     def doBootloader (self, args):
         KickstartHandlers.doBootloader(self, args)
         dict = self.ksdata.bootloader
+        self.id.bootloader.updateDriveList()
 
         if dict["location"] == "none":
             location = None
@@ -154,7 +175,8 @@ class AnacondaKSHandlers(KickstartHandlers):
             self.showSteps.append("bootloader")
             self.id.instClass.setBootloader(self.id, location, dict["forceLBA"],
                                             dict["password"], dict["md5pass"],
-                                            dict["appendLine"], dict["driveorder"])
+                                            dict["appendLine"], dict["driveorder"],
+                                            dict["hvArgs"])
 
         self.permanentSkipSteps.extend(["upgbootloader", "bootloader",
                                         "bootloaderadvanced"])
@@ -359,23 +381,50 @@ class AnacondaKSHandlers(KickstartHandlers):
         ds = DiskSet(self.anaconda)
         ds.startMPath()
 
+        from bdevid import bdevid as _bdevid
+        bd = _bdevid()
+        bd.load("scsi")
+
         mpath = self.ksdata.mpaths[-1]
-        log.debug("Searching for mpath '%s'" % (mpath.name,))
         for mp in DiskSet.mpList or []:
+            newname = ""
             it = True
-            for dev in mpath.devices:
-                dev = dev.split('/')[-1]
+            for path in mpath.paths:
+                dev = path.device
+                log.debug("Searching for mpath having '%s' as a member, the scsi id or wwpn:lunid" % (dev,))
                 log.debug("mpath '%s' has members %s" % (mp.name, list(mp.members)))
+                if dev.find(':') != -1:
+                    (wwpn, lunid) = dev.split(':')
+                    if wwpn != "" and lunid != "":
+                        if wwpn.startswith("0x"):
+                            wwpn = wwpn[2:]
+                        wwpn = wwpn.upper()
+                        scsidev = iutil.getScsiDeviceByWwpnLunid(wwpn, lunid)
+                        if scsidev != "":
+                            dev = "/dev/%s" % scsidev
+                            log.debug("'%s' is a member of the multipath device WWPN '%s' LUNID '%s'" % (dev, wwpn, lunid))
                 if not dev in mp.members:
-                    log.debug("mpath '%s' does not have device %s, skipping" \
-                        % (mp.name, dev))
-                    it = False
-            if it:
+                    mpscsiid = bd.probe("/dev/mapper/%s" % mp.name)[0]['unique_id']
+                    if dev != mpscsiid:
+                        log.debug("mpath '%s' does not have device %s, skipping" \
+                            % (mp.name, dev))
+                        it = False
+                    else:
+                        log.debug("Recognized --device=%s as the scsi id of '%s'" % (dev, mp.name))
+                        newname = path.name
+                        break
+                else:
+                    log.debug("Recognized --device=%s as a member of '%s'" % (dev, mp.name))
+                    newname = path.name
+                    break
+            if it and mp.name != newname:
                 log.debug("found mpath '%s', changing name to %s" \
-                    % (mp.name, mpath.name))
-                newname = mpath.name
+                    % (mp.name, newname))
+                mpath.name = mp.name
                 ds.renameMPath(mp, newname)
+                bd.unload("scsi")
                 return
+        bd.unload("scsi")
         ds.startMPath()
 
     def doDmRaid(self, args):
@@ -955,7 +1004,7 @@ class Kickstart(cobject):
 
     def _havePackages(self):
         return len(self.ksdata.groupList) > 0 or len(self.ksdata.packageList) > 0 or \
-               len(self.ksdata.excludedList) > 0
+               len(self.ksdata.excludedList) > 0 or len(self.ksdata.excludedGroupList)
 
     def setSteps(self, dispatch):
         if self.ksdata.upgrade:
@@ -1092,6 +1141,7 @@ class Kickstart(cobject):
                 pass
 
         map(anaconda.backend.deselectPackage, self.ksdata.excludedList)
+        map(anaconda.backend.removeGroupsPackages, self.ksdata.excludedGroupList)
 
 # look through ksfile and if it contains any lines:
 #
@@ -1123,7 +1173,7 @@ def pullRemainingKickstartConfig(ksfile):
         url = None
 
         ll = l.strip()
-        if string.find(ll, "%ksappend") == -1:
+        if not ll.startswith("%ksappend"):
             os.write(outF, l)
             continue
 

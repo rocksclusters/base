@@ -1126,11 +1126,11 @@ def doClearPartAction(anaconda, partitions, diskset):
                 # and do not create dependent delete requests (VGs, LVs)
                 # because they would be processed (in doMetaDeletes) after
                 # lvm metadata had been removed and thus fail
-                if not old.fstype.getName() == "physical volume (LVM)": 
-                    partitions.deleteDependentRequests(old)
-                    clobber = False
-                else:
+                if old.fstype.getName() == "physical volume (LVM)":
                     clobber = True
+                else:
+                    clobber = False
+                partitions.deleteDependentRequests(old, justRemove=clobber)
                 partitions.removeRequest(old)
 
                 drive = partedUtils.get_partition_drive(part)
@@ -1273,6 +1273,8 @@ def doAutoPartition(anaconda):
 
             # now go through and set things from the request to the
             # preexisting partition's request... ladeda
+            if request.fslabel:
+                req.fslabel = request.fslabel
             if request.mountpoint:
                 req.mountpoint = request.mountpoint
             if request.badblocks:

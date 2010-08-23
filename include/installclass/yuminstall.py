@@ -501,6 +501,10 @@ class YumSorter(yum.YumBase):
                 if self.tsInfo.exists(dep.pkgtup):
                     pkgs = self.tsInfo.getMembers(pkgtup=dep.pkgtup)
                     member = self.bestPackagesFromList(pkgs)[0]
+                elif self.rpmdb.installed(name = dep.name, arch = dep.arch,
+                                          epoch = dep.epoch, ver = dep.version, rel = dep.release):
+                     # If the dependency NAEVR matches what's already installed, skip it
+                     continue
                 else:
                     if dep.name != req[0]:
                         log.info("adding %s for %s, required by %s" %(dep.name, req[0], txmbr.name))
@@ -628,7 +632,7 @@ class AnacondaYum(YumSorter):
                 YumSorter.downloadHeader(self, po)
             except NoMoreMirrorsRepoError:
                 # ROCKS
-                log.info("ROCKS:downloadHeader:calling _handleFailure:1")
+                log.info("ROCKS:downloadHeader:calling _handleFailure:2")
                 #self._handleFailure(po)
                 continue
                 # ROCKS
@@ -1470,31 +1474,35 @@ class YumBackend(AnacondaBackend):
             if not os.path.isdir(d):
                 os.makedirs(d, mode=0755)
 
+            mpdevlst = []
+            for mpdev in anaconda.id.diskset.mpList or []:
+                mpdevlst.append(mpdev.name)
+
             for entry in anaconda.id.fsset.entries:
                 dev = entry.device.getDevice()
-                if dev.find('mpath') != -1:
-                    # grab just the mpathXXX part of the device name
-                    mpathname = dev.replace('/dev/', '')
-                    mpathname = mpathname.replace('mpath/', '')
-                    mpathname = mpathname.replace('mapper/', '')
+                for mpdev in mpdevlst:
+                    # eliminate the major number (ex. mpath0 -> mpath)
+                    pos = 0
+                    while pos < len(mpdev):
+                        if mpdev[pos].isdigit():
+                            mpdev = mpdev[:pos]
+                            break
+                        pos += 1
+                    if dev.find(mpdev) != -1:
+                        # grab just the basename of the device
+                        mpathname = dev.replace('/dev/', '')
+                        mpathname = mpathname.replace('mpath/', '')
+                        mpathname = mpathname.replace('mapper/', '')
 
-                    # we only want 'mpathNNN' where NNN is an int, strip all
-                    # trailing subdivisions of mpathNNN
-                    trail = re.search("(?<=^mpath).*$", mpathname)
-                    if trail is not None:
-                        i = 1
-                        major = None
-
-                        while i <= len(trail.group()):
-                            try:
-                                major = int(trail.group()[0:i])
-                                i += 1
-                            except:
-                                break
-
-                        if major is not None:
-                            mpathname = mpathname.replace(trail.group(), '')
-                            mpathname = "%s%d" % (mpathname, major,)
+                        # In case of mpathNNNpMMM, we only want 'mpathNNN' where 
+                        # NNN is an int, strip all trailing subdivisions of mpathNNN
+                        mpregex = "^%s(\d*)" % mpdev
+                        match = re.search(mpregex, mpathname)
+                        if match is not None:
+                            mpathname = match.group()
+                            major = int(match.group(1))
+                    else:
+                        continue
 
                     # if we have seen this mpath device, continue
                     if wwids != []:
@@ -1670,6 +1678,14 @@ class YumBackend(AnacondaBackend):
 
                 f.write('}\n\n')
 
+                for (mpathname, id) in wwids:
+                    if(mpathname.find("mpath") == -1):
+                        # this mpath device was renamed 
+                        f.write('\nmultipath {\n')
+                        f.write("        wwid \"%s\"\n" % (id,))
+                        f.write("        alias \"%s\"\n" % (mpathname,)) 
+                        f.write('}\n\n')
+
             f.close()
 
     def checkSupportedUpgrade(self, anaconda):
@@ -1830,6 +1846,9 @@ class YumBackend(AnacondaBackend):
                 return 0
 
     def deselectGroup(self, group, *args):
+        # This method is meant to deselect groups that have been previously
+        # selected in the UI.  It does not handle groups removed via kickstart.
+        # yum does not work that way (in 5.5).
         try:
             self.ayum.deselectGroup(group)
         except yum.Errors.GroupsError, e:
@@ -1873,6 +1892,20 @@ class YumBackend(AnacondaBackend):
         else:
             log.debug("no such package %s to remove" %(pkg,))
             return 0
+
+    def removeGroupsPackages(self, grp):
+        # This method removes all the groups of a package that has been
+        # excluded via kickstart.  This is subtly different from removing
+        # a group previously selected in the UI.
+        groups = self.ayum.comps.return_groups(grp)
+        for grp in groups:
+            for pkgname in grp.packages:
+                for txmbr in self.ayum.tsInfo:
+                    if txmbr.po.name == pkgname and txmbr.po.state in TS_INSTALL_STATES:
+                        self.ayum.tsInfo.remove(txmbr.po.pkgtup)
+
+                        for pkg in self.ayum.tsInfo.conditionals.get(txmbr.name, []):
+                            self.ayum.tsInfo.remove(pkg.pkgtup)
 
     def upgradeFindPackages(self):
         # check the installed system to see if the packages just
