@@ -26,4 +26,6 @@
 <package>createrepo</package>
 <package>squashfs-tools</package>
 
+<package>swig</package>
+
 </kickstart> 
