@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.1 2010/06/29 21:46:59 bruno Exp $
+# $Id: __init__.py,v 1.2 2010/08/27 17:16:27 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.2  2010/08/27 17:16:27  bruno
+# change the parameter name from 'p' to 'passphrase'
+#
 # Revision 1.1  2010/06/29 21:46:59  bruno
 # add a command to generate a RSA private/public key pair
 #
@@ -86,7 +89,7 @@ class Command(command):
 	def run(self, params, args):
 		(key, p) = self.fillParams([
 			('key', ),
-			('p', 'yes')
+			('passphrase', 'yes')
 			])
 
 		passphrase = self.str2bool(p)
