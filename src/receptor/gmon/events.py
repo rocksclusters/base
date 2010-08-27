@@ -58,6 +58,10 @@
 # @Copyright@
 #
 # $Log: events.py,v $
+# Revision 1.5  2010/08/27 22:58:22  bruno
+# for some reason, the PATH variable is not being set in the latest version
+# of ganglia
+#
 # Revision 1.4  2009/05/01 19:07:09  mjk
 # chimi con queso
 #
@@ -174,10 +178,17 @@ class Event:
 		syslog.syslog(syslog.LOG_WARNING, mesg)
 		print mesg
 
-	def which(self, filename, path = os.environ['PATH']):
+	def which(self, filename, path = None):
 		"""Given a search path, find a file. Should be standard in
 		python."""
 		found = 0
+
+		if not path:
+			try:
+				path = os.environ['PATH']
+			except:
+				path = ''
+
 		paths = string.split(path, os.pathsep)
 		for p in paths:
 			if os.path.exists(os.path.join(p, filename)):
