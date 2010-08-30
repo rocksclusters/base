@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.20 2010/04/20 17:22:36 bruno Exp $
+# $Id: __init__.py,v 1.21 2010/08/30 20:22:22 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.21  2010/08/30 20:22:22  bruno
+# don't print the netmask if there is no IP
+#
 # Revision 1.20  2010/04/20 17:22:36  bruno
 # initial support for channel bonding
 #
@@ -187,7 +190,7 @@ class Command(rocks.commands.list.host.command):
                         self.db.execute("""select distinctrow
 				IF(net.subnet, sub.name, NULL),
 				net.device, net.mac, net.ip,
-				IF(net.subnet,sub.netmask,NULL),
+				IF(net.subnet and net.ip,sub.netmask,NULL),
 				net.module, net.name, net.vlanid, net.options,
 				net.channel
 				from nodes n, networks net, subnets sub
