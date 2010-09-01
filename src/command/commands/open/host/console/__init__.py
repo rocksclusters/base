@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.4 2010/08/05 19:56:06 bruno Exp $
+# $Id: __init__.py,v 1.5 2010/09/01 18:00:27 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.5  2010/09/01 18:00:27  bruno
+# open multiple consoles simultaneously
+#
 # Revision 1.4  2010/08/05 19:56:06  bruno
 # more airboss updates
 #
@@ -89,6 +92,28 @@ import sys
 import M2Crypto
 import rocks.commands
 import rocks.vm
+import threading
+
+
+class Parallel(threading.Thread):
+	def __init__(self, host, db, vm_controller, rsakey, vncflags):
+		threading.Thread.__init__(self)
+		self.host = host
+		self.db = db
+		self.vm_controller = vm_controller
+		self.rsakey = rsakey
+		self.vncflags = vncflags
+
+
+	def run(self):
+		vm = rocks.vm.VMControl(self.db, self.vm_controller,
+			self.rsakey, self.vncflags)
+
+		(status, reason) = vm.cmd('console', self.host)
+
+		if status != 0:
+			print 'command failed\n%s' % reason
+
 
 class command(rocks.commands.HostArgumentProcessor,
 	rocks.commands.open.command):
@@ -134,13 +159,13 @@ class Command(command):
 		if not vm_controller:
 			self.abort('the "airboss" attribute is not set')
 
+		threads = []
 		for host in self.getHostnames(args):
-			vm = rocks.vm.VMControl(self.db, vm_controller, rsakey,
+			p = Parallel(host, self.db, vm_controller, rsakey,
 				vncflags)
+			p.start()
+			threads.append(p)
 
-			(status, reason) = vm.cmd('console', host)
-
-			if status != 0:
-				print 'command failed\n%s' % reason
-				sys.exit(-1)
+		for thread in threads:
+			thread.join()
 
