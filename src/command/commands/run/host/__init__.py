@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.16 2010/09/01 01:14:48 anoop Exp $
+# $Id: __init__.py,v 1.17 2010/09/01 01:16:00 anoop Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.17  2010/09/01 01:16:00  anoop
+# Oops!!
+#
 # Revision 1.16  2010/09/01 01:14:48  anoop
 # Use the command parameter, not the first arg on the command line
 #
@@ -261,7 +264,6 @@ class Command(command):
 
 		if not command:
 			self.abort('must supply a command')
-		print command
 
 		(managed, x11, t, d, s, c, n) = \
 			self.fillParams([
