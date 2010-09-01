@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.15 2010/07/30 19:43:15 bruno Exp $
+# $Id: __init__.py,v 1.16 2010/09/01 01:14:48 anoop Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.16  2010/09/01 01:14:48  anoop
+# Use the command parameter, not the first arg on the command line
+#
 # Revision 1.15  2010/07/30 19:43:15  bruno
 # fix up rocks run host to properly mark down nodes
 #
@@ -258,6 +261,7 @@ class Command(command):
 
 		if not command:
 			self.abort('must supply a command')
+		print command
 
 		(managed, x11, t, d, s, c, n) = \
 			self.fillParams([
@@ -334,7 +338,7 @@ class Command(command):
 				#
 				# fire off the command
 				#
-				cmd = 'ssh %s "%s"' % (host, sys.argv[-1])
+				cmd = 'ssh %s "%s"' % (host, command)
 
 				p = Parallel(self, cmd, host, stats, collate)
 				p.start()
