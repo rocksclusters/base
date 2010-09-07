@@ -1,4 +1,4 @@
-# $Id: linux.mk,v 1.20 2009/11/23 20:33:41 anoop Exp $
+# $Id: linux.mk,v 1.21 2010/09/07 23:27:44 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: linux.mk,v $
+# Revision 1.21  2010/09/07 23:27:44  bruno
+# rocks-bittorrent package is no longer needed. it has been replaced by the
+# rocks-tracker package
+#
 # Revision 1.20  2009/11/23 20:33:41  anoop
 # JDK for SunOS in the base roll
 #
@@ -147,6 +151,7 @@ SRCDIRS = `find . -type d -maxdepth 1 \
 	-not -name pcre \
 	-not -name php \
 	-not -name sun-java \
+	-not -name bittorrent \
 	-not -name postfix`
 
 #

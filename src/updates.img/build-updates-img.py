@@ -1,6 +1,6 @@
 #!/opt/rocks/usr/bin/python
 #
-# $Id: build-updates-img.py,v 1.11 2009/05/01 19:07:10 mjk Exp $
+# $Id: build-updates-img.py,v 1.12 2010/09/07 23:27:44 bruno Exp $
 #
 # @Copyright@
 # 
@@ -56,6 +56,10 @@
 # @Copyright@
 #
 # $Log: build-updates-img.py,v $
+# Revision 1.12  2010/09/07 23:27:44  bruno
+# rocks-bittorrent package is no longer needed. it has been replaced by the
+# rocks-tracker package
+#
 # Revision 1.11  2009/05/01 19:07:10  mjk
 # chimi con queso
 #
@@ -246,7 +250,6 @@ class App(rocks.app.Application):
 			'foundation-redhat',
 			'keyutils-libs',
 			'keyutils-libs-devel',
-			'rocks-bittorrent',
 			'rocks-command',
 			'rocks-ekv',
 			'rocks-kickstart', 

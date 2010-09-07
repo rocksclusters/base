@@ -19,6 +19,10 @@
 
   <changelog>
   $Log: install.xml,v $
+  Revision 1.29  2010/09/07 23:27:44  bruno
+  rocks-bittorrent package is no longer needed. it has been replaced by the
+  rocks-tracker package
+
   Revision 1.28  2009/09/18 20:18:50  bruno
   don't copy over the rocks-cdrom block device file.
 
@@ -255,7 +259,6 @@
   <package>rocks-kickstart</package>
   <package>rocks-kpp</package>
   <package>telnet</package>
-  <package>rocks-bittorrent</package>
   <package>vnc</package>
 
 <post>
@@ -300,7 +303,6 @@ fi
 
 
 <post>
-/sbin/chkconfig rocks-bittorrent on
 /sbin/chkconfig rocks-kickstart on
 </post>
 
