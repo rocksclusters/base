@@ -1,15 +1,15 @@
 #
 # insert-ethers plugin module for generating pxelinux cfg files
 
-# $Id: 00-pxecfg.py,v 1.8 2009/05/08 22:20:05 anoop Exp $
+# $Id: 00-pxecfg.py,v 1.9 2010/09/07 23:53:09 bruno Exp $
 # 
 # @Copyright@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		       version 5.2 (Chimichanga)
+# 		         version 5.4 (Maverick)
 # 
-# Copyright (c) 2000 - 2009 The Regents of the University of California.
+# Copyright (c) 2000 - 2010 The Regents of the University of California.
 # All rights reserved.	
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -57,6 +57,9 @@
 # @Copyright@
 #
 # $Log: 00-pxecfg.py,v $
+# Revision 1.9  2010/09/07 23:53:09  bruno
+# star power for gb
+#
 # Revision 1.8  2009/05/08 22:20:05  anoop
 # uses the node_attributes table to determine the OS to be installed on the
 # node, instead of the nodes table.

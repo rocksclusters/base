@@ -1,12 +1,12 @@
-# $Id: __init__.py,v 1.21 2010/08/30 20:22:22 bruno Exp $
+# $Id: __init__.py,v 1.22 2010/09/07 23:52:55 bruno Exp $
 # 
 # @Copyright@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		       version 5.2 (Chimichanga)
+# 		         version 5.4 (Maverick)
 # 
-# Copyright (c) 2000 - 2009 The Regents of the University of California.
+# Copyright (c) 2000 - 2010 The Regents of the University of California.
 # All rights reserved.	
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.22  2010/09/07 23:52:55  bruno
+# star power for gb
+#
 # Revision 1.21  2010/08/30 20:22:22  bruno
 # don't print the netmask if there is no IP
 #

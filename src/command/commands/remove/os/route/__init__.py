@@ -1,12 +1,12 @@
-# $Id: __init__.py,v 1.4 2010/05/20 00:31:45 bruno Exp $
+# $Id: __init__.py,v 1.5 2010/09/07 23:52:58 bruno Exp $
 #
 # @Copyright@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		       version 5.2 (Chimichanga)
+# 		         version 5.4 (Maverick)
 # 
-# Copyright (c) 2000 - 2009 The Regents of the University of California.
+# Copyright (c) 2000 - 2010 The Regents of the University of California.
 # All rights reserved.	
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.5  2010/09/07 23:52:58  bruno
+# star power for gb
+#
 # Revision 1.4  2010/05/20 00:31:45  bruno
 # gonna get some serious 'star power' off this commit.
 #

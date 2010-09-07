@@ -1,5 +1,5 @@
 # --------------------------------------------------- -*- Makefile -*- --
-# $Id: Makefile,v 1.14 2010/06/22 21:26:24 mjk Exp $
+# $Id: Makefile,v 1.15 2010/09/07 23:53:09 bruno Exp $
 #
 # file		Makefile
 # author(s)	Mason J. Katz
@@ -9,9 +9,9 @@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		       version 5.2 (Chimichanga)
+# 		         version 5.4 (Maverick)
 # 
-# Copyright (c) 2000 - 2009 The Regents of the University of California.
+# Copyright (c) 2000 - 2010 The Regents of the University of California.
 # All rights reserved.	
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -59,6 +59,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.15  2010/09/07 23:53:09  bruno
+# star power for gb
+#
 # Revision 1.14  2010/06/22 21:26:24  mjk
 # Build env is now from src/devel package, nothing outside of base roll.
 #

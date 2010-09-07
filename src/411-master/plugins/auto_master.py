@@ -1,12 +1,12 @@
-# $Id: auto_master.py,v 1.3 2009/05/01 19:06:50 mjk Exp $
+# $Id: auto_master.py,v 1.4 2010/09/07 23:52:48 bruno Exp $
 
 # @Copyright@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		       version 5.2 (Chimichanga)
+# 		         version 5.4 (Maverick)
 # 
-# Copyright (c) 2000 - 2009 The Regents of the University of California.
+# Copyright (c) 2000 - 2010 The Regents of the University of California.
 # All rights reserved.	
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -54,6 +54,9 @@
 # @Copyright@
 
 # $Log: auto_master.py,v $
+# Revision 1.4  2010/09/07 23:52:48  bruno
+# star power for gb
+#
 # Revision 1.3  2009/05/01 19:06:50  mjk
 # chimi con queso
 #

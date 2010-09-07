@@ -1,14 +1,14 @@
 #!/opt/rocks/usr/bin/python
 #
-# $Id: build-updates-img.py,v 1.12 2010/09/07 23:27:44 bruno Exp $
+# $Id: build-updates-img.py,v 1.13 2010/09/07 23:53:10 bruno Exp $
 #
 # @Copyright@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		       version 5.2 (Chimichanga)
+# 		         version 5.4 (Maverick)
 # 
-# Copyright (c) 2000 - 2009 The Regents of the University of California.
+# Copyright (c) 2000 - 2010 The Regents of the University of California.
 # All rights reserved.	
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -56,6 +56,9 @@
 # @Copyright@
 #
 # $Log: build-updates-img.py,v $
+# Revision 1.13  2010/09/07 23:53:10  bruno
+# star power for gb
+#
 # Revision 1.12  2010/09/07 23:27:44  bruno
 # rocks-bittorrent package is no longer needed. it has been replaced by the
 # rocks-tracker package

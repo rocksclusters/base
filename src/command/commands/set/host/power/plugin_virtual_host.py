@@ -1,12 +1,12 @@
-# $Id: plugin_virtual_host.py,v 1.4 2010/08/05 19:56:06 bruno Exp $
+# $Id: plugin_virtual_host.py,v 1.5 2010/09/07 23:53:01 bruno Exp $
 # 
 # @Copyright@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		       version 5.2 (Chimichanga)
+# 		         version 5.4 (Maverick)
 # 
-# Copyright (c) 2000 - 2009 The Regents of the University of California.
+# Copyright (c) 2000 - 2010 The Regents of the University of California.
 # All rights reserved.	
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: plugin_virtual_host.py,v $
+# Revision 1.5  2010/09/07 23:53:01  bruno
+# star power for gb
+#
 # Revision 1.4  2010/08/05 19:56:06  bruno
 # more airboss updates
 #

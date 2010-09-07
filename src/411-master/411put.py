@@ -6,15 +6,15 @@
 #
 # Requires Python 2.1 or better
 #
-# $Id: 411put.py,v 1.7 2009/05/01 19:06:49 mjk Exp $
+# $Id: 411put.py,v 1.8 2010/09/07 23:52:48 bruno Exp $
 #
 # @Copyright@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		       version 5.2 (Chimichanga)
+# 		         version 5.4 (Maverick)
 # 
-# Copyright (c) 2000 - 2009 The Regents of the University of California.
+# Copyright (c) 2000 - 2010 The Regents of the University of California.
 # All rights reserved.	
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -62,6 +62,9 @@
 # @Copyright@
 #
 # $Log: 411put.py,v $
+# Revision 1.8  2010/09/07 23:52:48  bruno
+# star power for gb
+#
 # Revision 1.7  2009/05/01 19:06:49  mjk
 # chimi con queso
 #

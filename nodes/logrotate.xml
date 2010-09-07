@@ -9,14 +9,17 @@ Append rules to logrotate to prune files in /var/log
 </description>
 
         <copyright>
-        Copyright (c) 2000 - 2009 The Regents of the University of California.
-        All rights reserved. Rocks(r) v5.2 www.rocksclusters.org
+        Copyright (c) 2000 - 2010 The Regents of the University of California.
+        All rights reserved. Rocks(r) v5.4 www.rocksclusters.org
         
         </copyright>
 
 <changelog>
 
 $Log: logrotate.xml,v $
+Revision 1.9  2010/09/07 23:52:46  bruno
+star power for gb
+
 Revision 1.8  2009/06/30 15:55:15  bruno
 fix pathname to authpriv
 

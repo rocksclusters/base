@@ -7,10 +7,16 @@
 	</description>
 
 	<copyright>
+	Copyright (c) 2000 - 2010 The Regents of the University of California.
+	All rights reserved. Rocks(r) v5.4 www.rocksclusters.org
+	
 	</copyright>
 
 	<changelog>
 	$Log: foundation-cpan.xml,v $
+	Revision 1.2  2010/09/07 23:52:46  bruno
+	star power for gb
+	
 	Revision 1.1  2009/11/18 22:16:56  anoop
 	- Big changes to rocks-cpan. Now more accurate.
 	- CPAN Support introduced. Builds and installs the

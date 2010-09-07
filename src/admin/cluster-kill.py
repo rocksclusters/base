@@ -1,6 +1,6 @@
 #! @PYTHON@
 #
-# $Id: cluster-kill.py,v 1.12 2009/05/01 19:06:50 mjk Exp $
+# $Id: cluster-kill.py,v 1.13 2010/09/07 23:52:48 bruno Exp $
 #
 # kill a set of processes on cluster nodes which match the regular expression
 # in supplied on the command line
@@ -9,9 +9,9 @@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		       version 5.2 (Chimichanga)
+# 		         version 5.4 (Maverick)
 # 
-# Copyright (c) 2000 - 2009 The Regents of the University of California.
+# Copyright (c) 2000 - 2010 The Regents of the University of California.
 # All rights reserved.	
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -59,6 +59,9 @@
 # @Copyright@
 #
 # $Log: cluster-kill.py,v $
+# Revision 1.13  2010/09/07 23:52:48  bruno
+# star power for gb
+#
 # Revision 1.12  2009/05/01 19:06:50  mjk
 # chimi con queso
 #

@@ -1,14 +1,14 @@
 #!/bin/bash
 #
-# $Id: iso-backup.cron.sh,v 1.10 2009/05/01 19:06:50 mjk Exp $
+# $Id: iso-backup.cron.sh,v 1.11 2010/09/07 23:52:48 bruno Exp $
 #
 # @Copyright@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		       version 5.2 (Chimichanga)
+# 		         version 5.4 (Maverick)
 # 
-# Copyright (c) 2000 - 2009 The Regents of the University of California.
+# Copyright (c) 2000 - 2010 The Regents of the University of California.
 # All rights reserved.	
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -56,6 +56,9 @@
 # @Copyright@
 #
 # $Log: iso-backup.cron.sh,v $
+# Revision 1.11  2010/09/07 23:52:48  bruno
+# star power for gb
+#
 # Revision 1.10  2009/05/01 19:06:50  mjk
 # chimi con queso
 #

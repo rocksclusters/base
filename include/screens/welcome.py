@@ -1,5 +1,5 @@
 #
-# $Id: welcome.py,v 1.19 2009/05/01 19:06:48 mjk Exp $
+# $Id: welcome.py,v 1.20 2010/09/07 23:52:46 bruno Exp $
 #
 # Our patch to redhat's installer
 #
@@ -7,9 +7,9 @@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		       version 5.2 (Chimichanga)
+# 		         version 5.4 (Maverick)
 # 
-# Copyright (c) 2000 - 2009 The Regents of the University of California.
+# Copyright (c) 2000 - 2010 The Regents of the University of California.
 # All rights reserved.	
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -57,6 +57,9 @@
 # @Copyright@
 #
 # $Log: welcome.py,v $
+# Revision 1.20  2010/09/07 23:52:46  bruno
+# star power for gb
+#
 # Revision 1.19  2009/05/01 19:06:48  mjk
 # chimi con queso
 #

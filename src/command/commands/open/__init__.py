@@ -1,12 +1,12 @@
-# $Id: __init__.py,v 1.1 2010/04/30 22:07:16 bruno Exp $
+# $Id: __init__.py,v 1.2 2010/09/07 23:52:56 bruno Exp $
 #
 # @Copyright@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		       version 5.2 (Chimichanga)
+# 		         version 5.4 (Maverick)
 # 
-# Copyright (c) 2000 - 2009 The Regents of the University of California.
+# Copyright (c) 2000 - 2010 The Regents of the University of California.
 # All rights reserved.	
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.2  2010/09/07 23:52:56  bruno
+# star power for gb
+#
 # Revision 1.1  2010/04/30 22:07:16  bruno
 # first pass at the firewall commands. we can do global and host level
 # rules, that is, we can add, remove, open (calls add), close (also calls add),

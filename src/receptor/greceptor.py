@@ -9,9 +9,9 @@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		       version 5.2 (Chimichanga)
+# 		         version 5.4 (Maverick)
 # 
-# Copyright (c) 2000 - 2009 The Regents of the University of California.
+# Copyright (c) 2000 - 2010 The Regents of the University of California.
 # All rights reserved.	
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -59,6 +59,9 @@
 # @Copyright@
 #
 # $Log: greceptor.py,v $
+# Revision 1.7  2010/09/07 23:53:08  bruno
+# star power for gb
+#
 # Revision 1.6  2009/06/17 22:15:04  bruno
 # fix an exception that caused greceptor from receiving 411 alerts
 #

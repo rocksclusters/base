@@ -1,4 +1,4 @@
-# $Id: create-package.mk,v 1.1 2010/06/22 21:07:44 mjk Exp $
+# $Id: create-package.mk,v 1.2 2010/09/07 23:53:04 bruno Exp $
 #
 # This makefile is used by the "rocks create package" command to turn any
 # directory into an RPM copied into the contrib area.
@@ -7,9 +7,9 @@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		       version 5.2 (Chimichanga)
+# 		         version 5.4 (Maverick)
 # 
-# Copyright (c) 2000 - 2009 The Regents of the University of California.
+# Copyright (c) 2000 - 2010 The Regents of the University of California.
 # All rights reserved.	
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -57,6 +57,9 @@
 # @Copyright@
 #
 # $Log: create-package.mk,v $
+# Revision 1.2  2010/09/07 23:53:04  bruno
+# star power for gb
+#
 # Revision 1.1  2010/06/22 21:07:44  mjk
 # build env moving into base roll
 #

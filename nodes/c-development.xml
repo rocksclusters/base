@@ -10,13 +10,16 @@
   </description>
 
         <copyright>
-        Copyright (c) 2000 - 2009 The Regents of the University of California.
-        All rights reserved. Rocks(r) v5.2 www.rocksclusters.org
+        Copyright (c) 2000 - 2010 The Regents of the University of California.
+        All rights reserved. Rocks(r) v5.4 www.rocksclusters.org
         
         </copyright>
 
   <changelog>
   $Log: c-development.xml,v $
+  Revision 1.13  2010/09/07 23:52:46  bruno
+  star power for gb
+
   Revision 1.12  2009/08/28 21:49:53  bruno
   the start of the "most scalable installer in the universe!"
 

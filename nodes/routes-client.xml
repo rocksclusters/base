@@ -7,13 +7,16 @@
 	</description>
 
         <copyright>
-        Copyright (c) 2000 - 2009 The Regents of the University of California.
-        All rights reserved. Rocks(r) v5.2 www.rocksclusters.org
+        Copyright (c) 2000 - 2010 The Regents of the University of California.
+        All rights reserved. Rocks(r) v5.4 www.rocksclusters.org
         
         </copyright>
 
 	<changelog>
 	$Log: routes-client.xml,v $
+	Revision 1.10  2010/09/07 23:52:47  bruno
+	star power for gb
+	
 	Revision 1.9  2009/05/01 19:06:48  mjk
 	chimi con queso
 	

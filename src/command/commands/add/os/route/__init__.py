@@ -1,12 +1,12 @@
-# $Id: __init__.py,v 1.5 2010/07/09 22:30:56 bruno Exp $
+# $Id: __init__.py,v 1.6 2010/09/07 23:52:50 bruno Exp $
 #
 # @Copyright@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		       version 5.2 (Chimichanga)
+# 		         version 5.4 (Maverick)
 # 
-# Copyright (c) 2000 - 2009 The Regents of the University of California.
+# Copyright (c) 2000 - 2010 The Regents of the University of California.
 # All rights reserved.	
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.6  2010/09/07 23:52:50  bruno
+# star power for gb
+#
 # Revision 1.5  2010/07/09 22:30:56  bruno
 # gateway can't be NULL
 #

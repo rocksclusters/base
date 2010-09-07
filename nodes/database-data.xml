@@ -10,13 +10,16 @@
   </description>
 
         <copyright>
-        Copyright (c) 2000 - 2009 The Regents of the University of California.
-        All rights reserved. Rocks(r) v5.2 www.rocksclusters.org
+        Copyright (c) 2000 - 2010 The Regents of the University of California.
+        All rights reserved. Rocks(r) v5.4 www.rocksclusters.org
         
         </copyright>
 
 <changelog>
   $Log: database-data.xml,v $
+  Revision 1.67  2010/09/07 23:52:46  bruno
+  star power for gb
+
   Revision 1.66  2010/08/02 20:35:44  bruno
   make sure the password attributes have their values placed in the 'shadow'
   column.

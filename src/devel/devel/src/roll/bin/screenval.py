@@ -3,15 +3,15 @@
 # Helper script, is used by roll/bin/make-screen-val.py
 # Is not used directly by the users. 
 #
-# $Id: screenval.py,v 1.1 2010/06/22 21:07:44 mjk Exp $
+# $Id: screenval.py,v 1.2 2010/09/07 23:53:05 bruno Exp $
 #
 # @Copyright@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		       version 5.2 (Chimichanga)
+# 		         version 5.4 (Maverick)
 # 
-# Copyright (c) 2000 - 2009 The Regents of the University of California.
+# Copyright (c) 2000 - 2010 The Regents of the University of California.
 # All rights reserved.	
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -59,6 +59,9 @@
 # @Copyright@
 #
 # $Log: screenval.py,v $
+# Revision 1.2  2010/09/07 23:53:05  bruno
+# star power for gb
+#
 # Revision 1.1  2010/06/22 21:07:44  mjk
 # build env moving into base roll
 #

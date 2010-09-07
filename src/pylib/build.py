@@ -4,9 +4,9 @@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		       version 5.2 (Chimichanga)
+# 		         version 5.4 (Maverick)
 # 
-# Copyright (c) 2000 - 2009 The Regents of the University of California.
+# Copyright (c) 2000 - 2010 The Regents of the University of California.
 # All rights reserved.	
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: build.py,v $
+# Revision 1.40  2010/09/07 23:53:08  bruno
+# star power for gb
+#
 # Revision 1.39  2010/08/09 22:24:54  bruno
 # create MD5 checksums for all the RPMs
 #

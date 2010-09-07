@@ -1,13 +1,13 @@
 #
-# $Id: rocks-version.mk,v 1.3 2010/08/05 19:00:03 bruno Exp $
+# $Id: rocks-version.mk,v 1.4 2010/09/07 23:53:04 bruno Exp $
 #
 # @Copyright@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		       version 5.2 (Chimichanga)
+# 		         version 5.4 (Maverick)
 # 
-# Copyright (c) 2000 - 2009 The Regents of the University of California.
+# Copyright (c) 2000 - 2010 The Regents of the University of California.
 # All rights reserved.	
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: rocks-version.mk,v $
+# Revision 1.4  2010/09/07 23:53:04  bruno
+# star power for gb
+#
 # Revision 1.3  2010/08/05 19:00:03  bruno
 # permission to buzz the tower
 #
@@ -290,9 +293,9 @@ rocks-copyright.txt:
 	@echo '' >> $@
 	@echo '				Rocks(r)' >> $@
 	@echo '		         www.rocksclusters.org' >> $@
-	@echo '		       version 5.2 (Chimichanga)' >> $@
+	@echo '		         version 5.4 (Maverick)' >> $@
 	@echo '' >> $@
-	@echo 'Copyright (c) 2000 - 2009 The Regents of the University of California.' >> $@
+	@echo 'Copyright (c) 2000 - 2010 The Regents of the University of California.' >> $@
 	@echo 'All rights reserved.	' >> $@
 	@echo '' >> $@
 	@echo 'Redistribution and use in source and binary forms, with or without' >> $@

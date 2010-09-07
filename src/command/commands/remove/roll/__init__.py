@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.7 2009/05/01 19:07:01 mjk Exp $
+# $Id: __init__.py,v 1.8 2010/09/07 23:52:58 bruno Exp $
 #
 # This file was authored by Brandon Davidson from the University of Oregon.
 # The Rocks Developers thank Brandon for his contribution.
@@ -7,9 +7,9 @@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		       version 5.2 (Chimichanga)
+# 		         version 5.4 (Maverick)
 # 
-# Copyright (c) 2000 - 2009 The Regents of the University of California.
+# Copyright (c) 2000 - 2010 The Regents of the University of California.
 # All rights reserved.	
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -57,6 +57,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.8  2010/09/07 23:52:58  bruno
+# star power for gb
+#
 # Revision 1.7  2009/05/01 19:07:01  mjk
 # chimi con queso
 #

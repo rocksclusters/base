@@ -1,12 +1,12 @@
-# $Id: plugin_key.py,v 1.1 2010/06/15 19:35:43 bruno Exp $
+# $Id: plugin_key.py,v 1.2 2010/09/07 23:52:57 bruno Exp $
 # 
 # @Copyright@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		       version 5.2 (Chimichanga)
+# 		         version 5.4 (Maverick)
 # 
-# Copyright (c) 2000 - 2009 The Regents of the University of California.
+# Copyright (c) 2000 - 2010 The Regents of the University of California.
 # All rights reserved.	
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: plugin_key.py,v $
+# Revision 1.2  2010/09/07 23:52:57  bruno
+# star power for gb
+#
 # Revision 1.1  2010/06/15 19:35:43  bruno
 # commands to:
 #  - manage public keys

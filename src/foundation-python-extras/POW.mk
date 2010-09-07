@@ -1,13 +1,13 @@
 # --------------------------------------------------- -*- Makefile -*- --
-# $Id: POW.mk,v 1.11 2009/05/01 19:07:06 mjk Exp $
+# $Id: POW.mk,v 1.12 2010/09/07 23:53:06 bruno Exp $
 #
 # @Copyright@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		       version 5.2 (Chimichanga)
+# 		         version 5.4 (Maverick)
 # 
-# Copyright (c) 2000 - 2009 The Regents of the University of California.
+# Copyright (c) 2000 - 2010 The Regents of the University of California.
 # All rights reserved.	
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: POW.mk,v $
+# Revision 1.12  2010/09/07 23:53:06  bruno
+# star power for gb
+#
 # Revision 1.11  2009/05/01 19:07:06  mjk
 # chimi con queso
 #

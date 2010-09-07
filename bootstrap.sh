@@ -2,15 +2,15 @@
 #
 # This file should remain OS independent
 #
-# $Id: bootstrap.sh,v 1.21 2010/06/22 23:27:04 mjk Exp $
+# $Id: bootstrap.sh,v 1.22 2010/09/07 23:52:46 bruno Exp $
 #
 # @Copyright@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		       version 5.2 (Chimichanga)
+# 		         version 5.4 (Maverick)
 # 
-# Copyright (c) 2000 - 2009 The Regents of the University of California.
+# Copyright (c) 2000 - 2010 The Regents of the University of California.
 # All rights reserved.	
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -58,6 +58,9 @@
 # @Copyright@
 #
 # $Log: bootstrap.sh,v $
+# Revision 1.22  2010/09/07 23:52:46  bruno
+# star power for gb
+#
 # Revision 1.21  2010/06/22 23:27:04  mjk
 # *** empty log message ***
 #

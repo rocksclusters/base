@@ -1,12 +1,12 @@
-# $Id: plugin_physical_host.py,v 1.8 2010/08/20 17:57:39 bruno Exp $
+# $Id: plugin_physical_host.py,v 1.9 2010/09/07 23:53:01 bruno Exp $
 # 
 # @Copyright@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		       version 5.2 (Chimichanga)
+# 		         version 5.4 (Maverick)
 # 
-# Copyright (c) 2000 - 2009 The Regents of the University of California.
+# Copyright (c) 2000 - 2010 The Regents of the University of California.
 # All rights reserved.	
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: plugin_physical_host.py,v $
+# Revision 1.9  2010/09/07 23:53:01  bruno
+# star power for gb
+#
 # Revision 1.8  2010/08/20 17:57:39  bruno
 # make sure the IP is not null
 #

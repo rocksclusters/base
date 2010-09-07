@@ -1,12 +1,12 @@
-# $Id: __init__.py,v 1.18 2010/04/26 18:44:15 anoop Exp $
+# $Id: __init__.py,v 1.19 2010/09/07 23:52:55 bruno Exp $
 #
 # @Copyright@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		       version 5.2 (Chimichanga)
+# 		         version 5.4 (Maverick)
 # 
-# Copyright (c) 2000 - 2009 The Regents of the University of California.
+# Copyright (c) 2000 - 2010 The Regents of the University of California.
 # All rights reserved.	
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.19  2010/09/07 23:52:55  bruno
+# star power for gb
+#
 # Revision 1.18  2010/04/26 18:44:15  anoop
 # Bug fix to make sure that when "rocks list host graph" is run,
 # all edges and nodes are added to the graph and printed in full.

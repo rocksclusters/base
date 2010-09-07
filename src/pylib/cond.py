@@ -10,9 +10,9 @@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		       version 5.2 (Chimichanga)
+# 		         version 5.4 (Maverick)
 # 
-# Copyright (c) 2000 - 2009 The Regents of the University of California.
+# Copyright (c) 2000 - 2010 The Regents of the University of California.
 # All rights reserved.	
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -60,6 +60,9 @@
 # @Copyright@
 #
 # $Log: cond.py,v $
+# Revision 1.4  2010/09/07 23:53:08  bruno
+# star power for gb
+#
 # Revision 1.3  2010/04/24 01:01:43  anoop
 # Killed 2 birds with a single checkin
 #

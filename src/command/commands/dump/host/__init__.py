@@ -1,12 +1,12 @@
-# $Id: __init__.py,v 1.11 2009/10/28 21:00:56 bruno Exp $
+# $Id: __init__.py,v 1.12 2010/09/07 23:52:52 bruno Exp $
 #
 # @Copyright@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		       version 5.2 (Chimichanga)
+# 		         version 5.4 (Maverick)
 # 
-# Copyright (c) 2000 - 2009 The Regents of the University of California.
+# Copyright (c) 2000 - 2010 The Regents of the University of California.
 # All rights reserved.	
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.12  2010/09/07 23:52:52  bruno
+# star power for gb
+#
 # Revision 1.11  2009/10/28 21:00:56  bruno
 # capture the runaction and installaction from a 'rocks dump'
 #

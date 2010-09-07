@@ -1,13 +1,13 @@
 # --------------------------------------------------- -*- Makefile -*- --
-# $Id: Makefile,v 1.25 2010/06/30 18:01:12 bruno Exp $
+# $Id: Makefile,v 1.26 2010/09/07 23:53:08 bruno Exp $
 #
 # @Copyright@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		       version 5.2 (Chimichanga)
+# 		         version 5.4 (Maverick)
 # 
-# Copyright (c) 2000 - 2009 The Regents of the University of California.
+# Copyright (c) 2000 - 2010 The Regents of the University of California.
 # All rights reserved.	
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.26  2010/09/07 23:53:08  bruno
+# star power for gb
+#
 # Revision 1.25  2010/06/30 18:01:12  bruno
 # can now route error messages back to the terminal that issued the command.
 #

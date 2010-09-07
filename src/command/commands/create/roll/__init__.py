@@ -1,12 +1,12 @@
-# $Id: __init__.py,v 1.30 2009/08/25 21:45:51 anoop Exp $
+# $Id: __init__.py,v 1.31 2010/09/07 23:52:52 bruno Exp $
 #
 # @Copyright@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		       version 5.2 (Chimichanga)
+# 		         version 5.4 (Maverick)
 # 
-# Copyright (c) 2000 - 2009 The Regents of the University of California.
+# Copyright (c) 2000 - 2010 The Regents of the University of California.
 # All rights reserved.	
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.31  2010/09/07 23:52:52  bruno
+# star power for gb
+#
 # Revision 1.30  2009/08/25 21:45:51  anoop
 # More patching support for Solaris.
 #   - support for including patches during creation of Rolls
