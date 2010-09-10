@@ -53,6 +53,12 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.9  2010/09/10 18:23:44  bruno
+# updated gmetric python interface to the latest ganglia API
+#
+# made the sge job reporting metric more efficient based on this new gmetric
+# binding
+#
 # Revision 1.8  2010/09/07 23:53:07  bruno
 # star power for gb
 #
@@ -214,7 +220,7 @@ include python.mk
 
 .PHONY: modules
 modules:
-	$(MAKE) -C modules PY.VERSION=$(PY.VERSION) OS=$(OS)
+	$(MAKE) -C modules PY.VERSION=$(PY.VERSION) LIBARCH=$(LIBARCH) OS=$(OS)
 
 
 build: modules

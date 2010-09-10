@@ -76,6 +76,7 @@
 #include <string.h>
 #include <limits.h>
 #include "metrics.h"
+#include "ganglia.h"
 
 static PyObject *ErrorObject;
 
@@ -199,6 +200,10 @@ publish_gmetric (PyObject *self, PyObject *args)
 	int udp_socket;
 	uint32_t key = 0; /* user-defined */
 	XDR xhandle;
+	Ganglia_pool global_context;
+	Ganglia_metric gmetric;
+	Ganglia_gmond_config gmond_config;
+	Ganglia_udp_send_channels send_channels;
 
 	rval = PyArg_ParseTuple(args, "s#O|ssiihss:publish",
 				&name, &namesize,
@@ -279,48 +284,49 @@ publish_gmetric (PyObject *self, PyObject *args)
 	if (!udp_socket) return NULL;
 
 	/*
-		* Alright. We have checked our inputs. Now encode the XDR message.
-		*/
-	xdrmem_create(&xhandle, gmetric_msg, MAX_MCAST_MSG, XDR_ENCODE);
+	 * Alright. We have checked our inputs. Now encode the XDR message.
+	 */
 
-	rval = xdr_u_int(&xhandle, &key);
-	if (!rval) myerror("could not encode key");
+	if ((global_context = Ganglia_pool_create(NULL)) == NULL) {
+		myerror("Ganglia_pool_create failed");
+	}
 
-	/* Include the trailing \0 character in field string. */
-	len = typesize+1;
-	rval = xdr_bytes(&xhandle, (char **)&type, &len, MAX_FIELD_LEN);
-	if (!rval) myerror("could not encode type");
+	gmond_config = Ganglia_gmond_config_create("/etc/ganglia/gmond.conf",
+		0);
 
-	len = namesize+1;
-	rval = xdr_bytes(&xhandle, (char **)&name, &len, FRAMESIZE);
-	if (!rval) myerror("could not encode name");
+	if ((send_channels = Ganglia_udp_send_channels_create(global_context,
+			gmond_config)) == NULL) {
+		myerror("Ganglia_udp_send_channels_create failed");
+	}
 
-	len = valsize+1;
-	rval = xdr_bytes(&xhandle, (char **)&Value, &len, FRAMESIZE);
-	if (!rval) myerror("could not encode value");
+	if ((gmetric = Ganglia_metric_create(global_context)) == NULL) {
+		myerror("Ganglia_metric_create failed");
+	}
 
-	len = unitsize+1;
-	rval = xdr_bytes(&xhandle, (char **)&units, &len, MAX_FIELD_LEN);
-	if (!rval) myerror("could not encode type");
+	rval = Ganglia_metric_set(gmetric, name, Value, type, units,
+             Slope, tmax, dmax);
 
-	rval = xdr_u_int(&xhandle, &Slope);
-	if (!rval) myerror("could not encode slope");
+	switch(rval) {
+	case 1:
+		myerror("Ganglia_metric_set: gmetric parameters invalid");
+		break;
+	case 2:
+		myerror("Ganglia_metric_set: one parameter has an invalid character '\"' ");
+		break;
+	case 3:
+		myerror("Ganglia_metric_set: type parameter is not valid");
+		break;
+	case 4:
+		myerror("Ganglia_metric_set: value parameter is not a number");
+		break;
+	}
 
-	rval = xdr_u_int(&xhandle, (uint32_t*) &tmax);
-	if (!rval) myerror("could not encode tmax");
+	if ((rval = Ganglia_metric_send(gmetric, send_channels)) != 0) {
+		myerror("Ganglia_metric_send: failed.");
+	}
 
-	rval = xdr_u_int(&xhandle, (uint32_t*) &dmax);
-	if (!rval) myerror("could not encode dmax");
-
-	len = xdr_getpos(&xhandle);
-
-	rval = writen( udp_socket, gmetric_msg, len );
-	if (rval<0)
-		myerror("Unable to write msg to multicast channel");
-
-	close(udp_socket);
-
-	xdr_destroy(&xhandle);
+	Ganglia_metric_destroy(gmetric);
+	Ganglia_pool_destroy(global_context);
 
 	Py_DECREF(p);
 

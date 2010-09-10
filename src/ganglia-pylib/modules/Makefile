@@ -1,5 +1,5 @@
 # --------------------------------------------------- -*- Makefile -*- --
-# $Id: Makefile,v 1.7 2010/09/07 23:53:07 bruno Exp $
+# $Id: Makefile,v 1.8 2010/09/10 18:23:44 bruno Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,12 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.8  2010/09/10 18:23:44  bruno
+# updated gmetric python interface to the latest ganglia API
+#
+# made the sge job reporting metric more efficient based on this new gmetric
+# binding
+#
 # Revision 1.7  2010/09/07 23:53:07  bruno
 # star power for gb
 #
@@ -161,6 +167,7 @@ PY.VERSION = 2.4
 
 # The 411 service requires Python 2.1 or better.
 PY_INCLUDE = /opt/rocks/include/python$(PY.VERSION)
+GANGLIA_INCLUDE = /opt/ganglia/include
 
 SRCDIRS = `find * -prune -type d ! -name "CVS" ! -name "."`
 
@@ -175,8 +182,9 @@ modules:: these_modules
 these_modules: $(MODULES:.c=.so)
 
 %.so: %.c $(HEADERS)
-	$(CC) $(CCOPTS) -g -I$(PY_INCLUDE) -c $<
-	$(CC) -shared -o $@ $(<:.c=.o) -L/opt/rocks/lib -ldnet
+	$(CC) $(CCOPTS) -g -I$(PY_INCLUDE) -I$(GANGLIA_INCLUDE) -c $<
+	$(CC) -shared -o $@ $(<:.c=.o) -L/opt/rocks/lib -ldnet \
+		-L/opt/ganglia/$(LIBARCH) -lganglia
 
 
 clean::
