@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.25 2010/09/07 23:52:49 bruno Exp $
+# $Id: __init__.py,v 1.26 2010/09/14 16:28:28 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.26  2010/09/14 16:28:28  bruno
+# better duplicate checking
+#
 # Revision 1.25  2010/09/07 23:52:49  bruno
 # star power for gb
 #
@@ -221,9 +224,6 @@ class Command(command):
 			self.abort('must supply one appliance')
 		app_name = args[0]
 					
-		if app_name in self.getApplianceNames():
-			self.abort('appliance "%s" exists' % app_name)
-
 		(mem_name, node, graph,	public, osname) = \
 			self.fillParams(
 				[('membership', ), 
@@ -236,7 +236,26 @@ class Command(command):
 		
 		if node and not graph:
 			graph = 'default'
-			
+
+		if not mem_name:
+			mem_name = string.capitalize(app_name)
+
+		#
+		# check for duplicates
+		#
+		rows = self.db.execute("""select * from memberships where
+			name = "%s" """ % mem_name)
+		if rows > 0:
+			self.abort('membership "%s" already exists' % mem_name)
+
+		rows = self.db.execute("""select * from appliances where
+			name = "%s" """ % app_name)
+		if rows > 0:
+			self.abort('appliance "%s" already exists' % app_name)
+
+		#
+		# ok, we're good to go
+		#
 		self.db.execute("""insert into appliances 
 			(name, graph, node, os) values
 			('%s', '%s', '%s', '%s')""" % 
@@ -274,9 +293,6 @@ class Command(command):
 					'pxelinux.0' ])
 
 		# add a row to the memberships table
-
-		if not mem_name:
-			mem_name = string.capitalize(app_name)
 
 		self.db.execute("""insert into memberships
 			(name, appliance, distribution, public)
