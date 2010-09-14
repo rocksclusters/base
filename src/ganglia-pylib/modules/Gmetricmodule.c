@@ -181,7 +181,7 @@ static PyObject *
 publish_gmetric (PyObject *self, PyObject *args)
 {
 	int rval, len;
-	int valsize, namesize, typesize, unitsize;
+	int namesize;
 	const char *name;
 	PyObject *val;
 	PyObject *p;
@@ -241,23 +241,7 @@ publish_gmetric (PyObject *self, PyObject *args)
 
 	/* Get python string representation of value. */
 	p = PyObject_Str(val);
-	valsize = PyString_Size(p);
 	Value = PyString_AsString(p);
-
-	if (valsize + namesize > MAX_MCAST_MSG)
-		{
-			sprintf(s, "Metric name + value strings too long (%d + %d > %d)",
-				namesize, valsize, MAX_MCAST_MSG);
-			myerror(s);
-		}
-
-	unitsize = strlen(units);
-	typesize = strlen(type);
-
-	if (unitsize > MAX_FIELD_LEN)
-		myerror("Unit string too long");
-	if (typesize > MAX_FIELD_LEN)
-		myerror("Type string too long");
 
 	if (!strcmp(slope,"zero"))
 			Slope = 0;
@@ -268,24 +252,6 @@ publish_gmetric (PyObject *self, PyObject *args)
 	else 
 			/* Default slope is both. */
 			Slope = 3;
-
-	if (tmax <= 0)
-		myerror("Tmax must be greater than zero.");
-	if (dmax < 0)
-		myerror("Dmax must be greater than zero");
-		
-	/* Choose Ganglia multicast channels by default. */
-	if (!strlen(channel))
-		channel = "239.2.11.71";
-	if (!port)
-		port = 8649;
-
-	udp_socket = out_socket (channel, port, mcast_ttl);
-	if (!udp_socket) return NULL;
-
-	/*
-	 * Alright. We have checked our inputs. Now encode the XDR message.
-	 */
 
 	if ((global_context = Ganglia_pool_create(NULL)) == NULL) {
 		myerror("Ganglia_pool_create failed");
@@ -592,14 +558,9 @@ initGmetric()
    PyObject *m, *d;
    
    m = Py_InitModule("Gmetric", Gmetric_methods);
-   
+
    /* Add "error" as a symbolic constant to this module. */
    d = PyModule_GetDict(m);
    ErrorObject = PyErr_NewException("Gmetric.error", NULL, NULL);
    PyDict_SetItemString(d, "error", ErrorObject);
 }
-
-
-
-
-
