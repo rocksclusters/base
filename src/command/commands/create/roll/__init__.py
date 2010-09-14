@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.31 2010/09/07 23:52:52 bruno Exp $
+# $Id: __init__.py,v 1.32 2010/09/14 16:55:41 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.32  2010/09/14 16:55:41  bruno
+# give meta rolls the same version number as the hosting/building system
+#
 # Revision 1.31  2010/09/07 23:52:52  bruno
 # star power for gb
 #
@@ -672,7 +675,8 @@ class RollBuilder_linux(Builder, rocks.dist.Arch):
 		
 class MetaRollBuilder(Builder):
 
-	def __init__(self, files):
+	def __init__(self, files, version):
+		self.version = version.strip()
 		Builder.__init__(self)
 		self.rolls = []
 		for file in files:
@@ -698,9 +702,7 @@ class MetaRollBuilder(Builder):
 			arch = arch[0]
 		else:
 			arch = 'any'
-		name = '%s-%s.%s' % \
-			(rollName, time.strftime('%d.%m.%Y-%H.%M.%S'), arch)
-			
+		name = "%s-%s.%s" % (rollName, self.version, arch)
 
     		# Create the meta roll
 					
@@ -931,7 +933,8 @@ class Command(rocks.commands.create.command):
 				base, ext = os.path.splitext(arg)
 				if not ext == '.iso':
 					self.abort('bad iso file')
-			builder = MetaRollBuilder(args)
+			builder = MetaRollBuilder(args,
+				self.command('report.version'))
 		else:
 			self.abort('no arguments')
 			
