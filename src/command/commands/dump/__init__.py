@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.19 2010/09/07 23:52:52 bruno Exp $
+# $Id: __init__.py,v 1.20 2010/09/15 18:45:23 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.20  2010/09/15 18:45:23  bruno
+# don't yak if an attribute doesn't have a value. and if an attribute doesn't
+# have a value, then don't dump it.
+#
 # Revision 1.19  2010/09/07 23:52:52  bruno
 # star power for gb
 #
@@ -153,11 +157,13 @@ class command(rocks.commands.Command):
 		
 	def quote(self, string):
 		s = ''
-		for c in string:
-			if c.isalnum() or c in self.safe_chars:
-				s += c
-			else:
-				s += '\\%s' % c
+
+		if string != None:
+			for c in string:
+				if c.isalnum() or c in self.safe_chars:
+					s += c
+				else:
+					s += '\\%s' % c
 		return s
 
 	def dump(self, line):

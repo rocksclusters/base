@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.4 2010/09/07 23:52:53 bruno Exp $
+# $Id: __init__.py,v 1.5 2010/09/15 18:45:23 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.5  2010/09/15 18:45:23  bruno
+# don't yak if an attribute doesn't have a value. and if an attribute doesn't
+# have a value, then don't dump it.
+#
 # Revision 1.4  2010/09/07 23:52:53  bruno
 # star power for gb
 #
@@ -95,6 +99,8 @@ class Command(rocks.commands.dump.os.command):
 			self.db.execute("""select attr, value from 
 				os_attributes where os='%s'""" % (os))
 			for row in self.db.fetchall():
-				self.dump('add os attr %s %s %s' % 
-					(os, row[0], self.quote(row[1])))
+				v = self.quote(row[1])
+				if v:
+					self.dump('add os attr %s %s %s' % 
+						(os, row[0], v))
 
