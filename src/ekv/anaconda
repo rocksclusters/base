@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# $Id: anaconda,v 1.33 2010/09/07 23:53:05 bruno Exp $
+# $Id: anaconda,v 1.34 2010/09/16 19:54:00 bruno Exp $
 #
 # @Copyright@
 # 
@@ -56,6 +56,10 @@
 # @Copyright@
 #
 # $Log: anaconda,v $
+# Revision 1.34  2010/09/16 19:54:00  bruno
+# mount /export on /tmp/ram2 instead of /dev/ram2. this avoids a benign error
+# message from mknod.
+#
 # Revision 1.33  2010/09/07 23:53:05  bruno
 # star power for gb
 #
@@ -490,11 +494,11 @@ server()
 	#
 	# copy over /export into a writable filesystem
 	#
-	mknod /dev/ram2 b 1 2
-	dd if=/dev/zero of=/dev/ram2 > /dev/null 2>&1
-	mkfs.ext2 /dev/ram2 > /dev/null 2>&1
+	mknod /tmp/ram2 b 1 2
+	dd if=/dev/zero of=/tmp/ram2 > /dev/null 2>&1
+	mkfs.ext2 /tmp/ram2 > /dev/null 2>&1
 	mkdir /export
-	mount /dev/ram2 /export
+	mount /tmp/ram2 /export
 	( cd /tmp/updates/export ; \
 		find . | /tmp/updates/rocks/bin/cpio -pdu /export \
 			> /dev/null 2>&1 )
