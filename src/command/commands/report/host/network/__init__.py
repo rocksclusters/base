@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.9 2010/09/07 23:53:00 bruno Exp $
+# $Id: __init__.py,v 1.10 2010/09/20 20:22:50 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,11 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.10  2010/09/20 20:22:50  bruno
+# use the 'primary_net' attribute to dictate which interface should be used
+# as the 'primary'. we'll get the domain name from the subnets table and we'll
+# set the hostname accordingly.
+#
 # Revision 1.9  2010/09/07 23:53:00  bruno
 # star power for gb
 #
@@ -186,25 +191,19 @@ class Command(rocks.commands.HostArgumentProcessor,
 			if key == '0.0.0.0' and val[0] == '0.0.0.0':
 				gateway = val[1]
 
-		if appliance == 'frontend':
-			interface = 'public'
-			domain = None
-		else:
+		interface = self.db.getHostAttr(host, 'primary_net')
+
+		if not interface:
 			interface = 'private'
-			domain = self.db.getHostAttr(host, 
-				'Kickstart_PrivateDNSDomain')
-			
-		self.db.execute("""select net.name from 
+
+		self.db.execute("""select net.name, s.dnszone from 
 			networks net, nodes n, subnets s where
 			n.id = net.node and net.subnet = s.id and
 			s.name = '%s' and n.name = '%s'""" % (interface, host))
-		hostname, = self.db.fetchone()
+		(hostname, domain) = self.db.fetchone()
 
-		if not domain:
-			self.addOutput(host, 'HOSTNAME=%s' % hostname)
-		else:
-			self.addOutput(host, 'HOSTNAME=%s.%s' % 
-				(hostname, domain))
+		self.addOutput(host, 'HOSTNAME=%s.%s' % (hostname, domain))
+
 		if gateway:
 			self.addOutput(host, 'GATEWAY=%s' % gateway)
 

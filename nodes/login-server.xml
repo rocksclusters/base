@@ -8,6 +8,11 @@ Create a Login appliance
 
 <changelog>
 $Log: login-server.xml,v $
+Revision 1.3  2010/09/20 20:22:50  bruno
+use the 'primary_net' attribute to dictate which interface should be used
+as the 'primary'. we'll get the domain name from the subnets table and we'll
+set the hostname accordingly.
+
 Revision 1.2  2010/06/07 20:33:37  bruno
 the login server needs firewall rules similar to the frontend
 
@@ -23,6 +28,12 @@ the start of the login appliance
 
 /opt/rocks/bin/rocks set appliance attr login submit_host true
 /opt/rocks/bin/rocks set appliance attr login exec_host false
+
+<!--
+	set the login node's primary network to be the public network. this
+	network will be used to generate the hostname for the machine.
+-->
+/opt/rocks/bin/rocks set appliance attr login primary_net public
 
 </post>
 

@@ -17,6 +17,11 @@
 
 <changelog>
   $Log: database-data.xml,v $
+  Revision 1.68  2010/09/20 20:22:50  bruno
+  use the 'primary_net' attribute to dictate which interface should be used
+  as the 'primary'. we'll get the domain name from the subnets table and we'll
+  set the hostname accordingly.
+
   Revision 1.67  2010/09/07 23:52:46  bruno
   star power for gb
 
@@ -577,6 +582,12 @@ if os.path.exists('/tmp/site.attrs'):
 	netmask=&Kickstart_PublicNetmask;	\
 	dnszone=&Kickstart_PublicDNSDomain;	\
 	servedns=false
+
+<!--
+	set the frontend's primary network to be the public network. this
+	network will be used to generate the hostname for the frontend.
+-->
+/opt/rocks/bin/rocks set appliance attr frontend primary_net public
 
 </post>
 
