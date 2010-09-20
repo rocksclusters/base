@@ -1,4 +1,4 @@
-#$Id: __init__.py,v 1.18 2010/09/07 23:53:00 bruno Exp $
+#$Id: __init__.py,v 1.19 2010/09/20 17:58:40 phil Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.19  2010/09/20 17:58:40  phil
+# Allow VMs to define VLANed interfaces. In other words, load the gun,
+# let the user shoot it.
+#
 # Revision 1.18  2010/09/07 23:53:00  bruno
 # star power for gb
 #
@@ -221,7 +225,7 @@ class Command(rocks.commands.HostArgumentProcessor,
 
 			configured = 1
 
-		if vlanid and self.isPhysicalHost(host):
+		if vlanid:
 			self.addOutput(host, 'VLAN=yes')
 			self.addOutput(host, 'ONBOOT=yes')
 			configured = 1
@@ -357,7 +361,7 @@ class Command(rocks.commands.HostArgumentProcessor,
 				self.writeModprobe(host, device, module,
 					options)
 
-			if vlanid and self.isPhysicalHost(host):
+			if vlanid:
 				#
 				# look up the name of the interface that
 				# maps to this VLAN spec
