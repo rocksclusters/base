@@ -1,0 +1,3 @@
+NAME	=	lsof
+VERSION	=	4.84
+RELEASE	=	1

@@ -1,4 +1,4 @@
-# $Id: sunos.mk,v 1.16 2010/09/07 23:52:48 bruno Exp $
+# $Id: sunos.mk,v 1.17 2010/09/20 20:01:54 anoop Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: sunos.mk,v $
+# Revision 1.17  2010/09/20 20:01:54  anoop
+# Added lsof to solaris base roll
+#
 # Revision 1.16  2010/09/07 23:52:48  bruno
 # star power for gb
 #
@@ -166,4 +169,4 @@ SRCDIRS = foundation-coreutils foundation-gawk	\
 	  foundation-mercurial devel cpan	\
 	  pcre pylib command 411	\
 	  411-master bittorrent tentakel dnet	\
-	  ganglia-pylib receptor ssl
+	  ganglia-pylib receptor ssl lsof

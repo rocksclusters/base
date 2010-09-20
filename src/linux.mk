@@ -1,4 +1,4 @@
-# $Id: linux.mk,v 1.22 2010/09/07 23:52:48 bruno Exp $
+# $Id: linux.mk,v 1.23 2010/09/20 20:01:54 anoop Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: linux.mk,v $
+# Revision 1.23  2010/09/20 20:01:54  anoop
+# Added lsof to solaris base roll
+#
 # Revision 1.22  2010/09/07 23:52:48  bruno
 # star power for gb
 #
@@ -155,7 +158,8 @@ SRCDIRS = `find . -type d -maxdepth 1 \
 	-not -name php \
 	-not -name sun-java \
 	-not -name bittorrent \
-	-not -name postfix`
+	-not -name postfix \
+	-not -name lsof`
 
 #
 # make sure we build anaconda last, that's because it includes many packages
