@@ -1,5 +1,5 @@
 # --------------------------------------------------- -*- Makefile -*- --
-# $Id: Makefile,v 1.7 2010/09/07 23:53:04 bruno Exp $
+# $Id: Makefile,v 1.8 2010/09/21 00:37:57 anoop Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.8  2010/09/21 00:37:57  anoop
+# don't include CVS files in the RPM
+#
 # Revision 1.7  2010/09/07 23:53:04  bruno
 # star power for gb
 #
@@ -92,7 +95,7 @@ install::
 	$(INSTALL) -m0555 rocks-devel.csh $(ROOT)/etc/profile.d
 	(								\
 		cd devel;						\
-		find . | cpio -pduv $(ROOT)/$(PKGROOT)/;		\
+		find . | grep -v CVS | cpio -pduv $(ROOT)/$(PKGROOT)/;		\
 	)
 
 clean::
