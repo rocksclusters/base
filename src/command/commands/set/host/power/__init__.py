@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.6 2010/09/07 23:53:01 bruno Exp $
+# $Id: __init__.py,v 1.7 2010/09/23 20:24:07 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.7  2010/09/23 20:24:07  bruno
+# use the host argument processor
+#
 # Revision 1.6  2010/09/07 23:53:01  bruno
 # star power for gb
 #
@@ -127,7 +130,7 @@ class Command(command):
 					% key)
 			rsakey = M2Crypto.RSA.load_key(key)
 
-		for host in args:
+		for host in self.getHostnames(args):
 			#
 			# run the plugins
 			# 
