@@ -12,6 +12,10 @@
 
   <changelog>
   $Log: mail-server.xml,v $
+  Revision 1.3  2010/09/24 00:40:20  anoop
+  Added admin to recipients since this is the default Info_ClusterContact
+  value
+
   Revision 1.2  2009/01/23 21:50:23  bruno
   var tags converted to entities
 
@@ -79,6 +83,12 @@ recipient_canonical_maps = hash:/etc/postfix/recipient-canonical
 
 <file name="/etc/postfix/recipient-canonical">
 root@&Kickstart_PublicDNSDomain; root
+</file>
+
+<file name="/etc/aliases" mode="append">
+
+# Add "admin" to the list of recipients
+admin:		root
 </file>
 
 /usr/sbin/postmap /etc/postfix/sender-canonical
