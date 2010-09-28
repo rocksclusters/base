@@ -133,7 +133,7 @@ add the following section right after the
 echo "clearpart --all --initlabel --drives=hda
 part / --size 8000 --ondisk hda
 part swap --size 1000 --ondisk hda
-part /mydata --size 1 --grow --ondisk hda" > /tmp/user_partition_info
+part /mydata --size 1 --grow --ondisk hda" &gt; /tmp/user_partition_info
 </pre>
 ]]>
 </screen>
