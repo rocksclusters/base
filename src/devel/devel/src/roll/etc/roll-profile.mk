@@ -1,4 +1,4 @@
-# $Id: roll-profile.mk,v 1.2 2010/09/07 23:53:05 bruno Exp $
+# $Id: roll-profile.mk,v 1.3 2010/09/28 18:12:55 mjk Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,15 @@
 # @Copyright@
 #
 # $Log: roll-profile.mk,v $
+# Revision 1.3  2010/09/28 18:12:55  mjk
+# In addition to adding the roll=ROLLNAME attribute in the XML node and graph
+# files we now wrap the inside of the <changelogs> as CDATA.  This means we
+# can check in XML entities and '<' inside the CVS log.
+#
+# This is only done for Rolls, which means things like site-profile have
+# to manually do this.  But, all the installed nodes/graphs will have it so
+# people copying our stuff will do the right thing.
+#
 # Revision 1.2  2010/09/07 23:53:05  bruno
 # star power for gb
 #
@@ -158,13 +167,21 @@ roll-profile.mk:: $(wildcard $(ROLLSROOT)/etc/roll-profile.mk)
 	cp $^ $@
 
 $(graph_files)::
-	sed 's%<graph>%<graph roll="$(ROLLNAME)">%g' $@ > \
-		$(ROOT)/$(PROFILE_DIR)/$@
+	sed \
+		-e 's%<graph>%<graph roll="$(ROLLNAME)">%g' \
+		-e 's%[[:space:]]*<changelog>%<changelog><![CDATA[%g' \
+		-e 's%[[:space:]]*</changelog>%]]></changelog>%g' \
+		$@ > $(ROOT)/$(PROFILE_DIR)/$@
+
+# CDATA stuff goes here
 
 $(node_files)::
-	sed -e 's%^<kickstart%<kickstart roll="$(ROLLNAME)"%g' \
-	    -e 's%^<jumpstart%<jumpstart roll="$(ROLLNAME)"%g' \
-	    $@ > $(ROOT)/$(PROFILE_DIR)/$@
+	sed \
+		-e 's%^<kickstart%<kickstart roll="$(ROLLNAME)"%g' \
+		-e 's%^<jumpstart%<jumpstart roll="$(ROLLNAME)"%g' \
+		-e 's%[[:space:]]*<changelog>%<changelog><![CDATA[%g' \
+		-e 's%[[:space:]]*</changelog>%]]></changelog>%g' \
+		$@ > $(ROOT)/$(PROFILE_DIR)/$@
 
 $(screen_files) $(install_class_files) $(install_classes_files) $(applet_files) $(javascript_files)::
 	$(INSTALL) -m0644 $@ $(ROOT)/$(PROFILE_DIR)/$@
