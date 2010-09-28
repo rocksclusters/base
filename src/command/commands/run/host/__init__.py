@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.18 2010/09/07 23:53:00 bruno Exp $
+# $Id: __init__.py,v 1.19 2010/09/28 22:05:04 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.19  2010/09/28 22:05:04  bruno
+# doc fix
+#
 # Revision 1.18  2010/09/07 23:53:00  bruno
 # star power for gb
 #
@@ -175,7 +178,10 @@ class Command(command):
 
 	<arg optional='1' type='string' name='host' repeat='1'>
 	Zero, one or more host names. If no host names are supplied, the command
-	is run on all known hosts.
+	is run on all 'managed' hosts. By default, all compute nodes are
+	'managed' nodes. To determine if a host is managed, execute:
+	'rocks list host attr hostname | grep managed'. If you see output like:
+	'compute-0-0: managed true', then the host is managed.
 	</arg>
 
 	<arg type='string' name='command'>
