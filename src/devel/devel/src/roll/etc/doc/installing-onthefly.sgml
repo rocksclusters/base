@@ -1,10 +1,13 @@
 <!--
-$Id: installing-onthefly.sgml,v 1.1 2010/06/22 21:07:44 mjk Exp $
+$Id: installing-onthefly.sgml,v 1.2 2010/09/29 20:41:16 bruno Exp $
 
 @Copyright@
 @Copyright@
 
 $Log: installing-onthefly.sgml,v $
+Revision 1.2  2010/09/29 20:41:16  bruno
+fixed the on-the-fly procedure
+
 Revision 1.1  2010/06/22 21:07:44  mjk
 build env moving into base roll
 
@@ -30,8 +33,9 @@ reboots the Roll should be fully installed and configured.
 $ su - root
 # rocks add roll &document_rollname;.iso
 # rocks enable roll &document_rollname;
-# rocks-dist dist
-# kroll &document_rollname; | bash
+# cd /export/rocks/install
+# rocks create distro
+# rocks run roll &document_rollname; | bash
 # init 6
 </screen>
 
