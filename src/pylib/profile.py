@@ -1,6 +1,6 @@
 #! /opt/rocks/bin/python
 #
-# $Id: profile.py,v 1.32 2010/09/07 23:53:08 bruno Exp $
+# $Id: profile.py,v 1.33 2010/09/29 18:39:08 bruno Exp $
 #
 # @Copyright@
 # 
@@ -56,6 +56,10 @@
 # @Copyright@
 #
 # $Log: profile.py,v $
+# Revision 1.33  2010/09/29 18:39:08  bruno
+# print a message that points the user to the XML file name and line number
+# when there is a parser error.
+#
 # Revision 1.32  2010/09/07 23:53:08  bruno
 # star power for gb
 #
@@ -383,7 +387,9 @@ class GraphHandler(handler.ContentHandler,
 			parser.setContentHandler(handler)
 			parser.feed(handler.getXMLHeader())
 
+			linenumber = 0
 			for line in fin.readlines():
+				linenumber += 1
 			
 				# Some of the node files might have the <?xml
 				# document header.  Since we are replacing
@@ -398,7 +404,14 @@ class GraphHandler(handler.ContentHandler,
 				
 				if os.environ.has_key('ROCKSDEBUG'):
 					sys.stderr.write('[parse1]%s' % line)
-				parser.feed(line)
+
+				try:
+					parser.feed(line)
+				except:
+					print 'XML parse error in ' + \
+						'file %s ' % xmlFile + \
+						'on line %d\n' % linenumber
+					raise
 				
 			fin.close()
 			
