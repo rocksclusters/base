@@ -1,4 +1,4 @@
-#$Id: __init__.py,v 1.19 2010/09/20 17:58:40 phil Exp $
+#$Id: __init__.py,v 1.20 2010/09/30 19:13:26 phil Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.20  2010/09/30 19:13:26  phil
+# Break should be continue. Fixes problem the problem that when ipmi was being configured all
+# other interfaces in the select statement were not being config'ed
+#
 # Revision 1.19  2010/09/20 17:58:40  phil
 # Allow VMs to define VLANed interfaces. In other words, load the gun,
 # let the user shoot it.
@@ -352,7 +356,7 @@ class Command(rocks.commands.HostArgumentProcessor,
 
 			if device == 'ipmi':
 				self.writeIPMI(host, ip, channel, netmask)
-				break # ipmi is special, skip the standard stuff
+				continue # ipmi is special, skip the standard stuff
 
 			if device and device[0:4] != 'vlan':
 				#
