@@ -16,6 +16,10 @@ Configure yum
 
 <changelog>
 $Log: yum.xml,v $
+Revision 1.13  2010/10/01 20:12:10  phil
+Make the yum repo the public side. Thus, non-tunneled EC2 clients can
+yum install/update from their home cluster.
+
 Revision 1.12  2010/09/07 23:52:47  bruno
 star power for gb
 
@@ -78,7 +82,7 @@ assumeyes=1
 
 [Rocks-&version;]
 name=Rocks &version;
-baseurl=http://&Kickstart_PrivateAddress;/install/&distribution;/&arch;
+baseurl=http://&Kickstart_PublicAddress;/install/&distribution;/&arch;
 </file>
 
 rm -f /etc/yum.repos.d/*repo
