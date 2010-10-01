@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.10 2010/09/07 23:52:51 bruno Exp $
+# $Id: __init__.py,v 1.11 2010/10/01 14:21:44 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.11  2010/10/01 14:21:44  bruno
+# we no longer build torrent files
+#
 # Revision 1.10  2010/09/07 23:52:51  bruno
 # star power for gb
 #
@@ -138,23 +141,6 @@ class Command(rocks.commands.create.command):
 	</example>
 	"""
 
-	def makeTorrents(self, dist):    	
-		import time
-
-		print 'making "torrent" files for RPMS'
-
-		#
-		# mark each torrent file with the current time
-		#
-		timestamp = time.time()
-
-		for dir in [ dist.getBasePath(), dist.getRPMSPath() ]:
-			self.command('create.torrent', [ dir,
-				'timestamp=%d' % (timestamp) ])
-
-		return
-
-
 	def getRolls(self, arch):
 		rolls = []
 
@@ -220,11 +206,6 @@ class Command(rocks.commands.create.command):
 			version))
 
 		builder = self.commandDist(distro, rolls)
-		base = distro.getBasePath()
-		try:
-			self.makeTorrents(distro)
-		except:
-			pass
 
 		#
 		# make sure everyone can traverse the the rolls directories
