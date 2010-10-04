@@ -21,6 +21,9 @@
 
   <changelog>
   $Log: base.xml,v $
+  Revision 1.50  2010/10/04 17:05:03  bruno
+  remove the log files left from the kickstart pre and post scripts
+
   Revision 1.49  2010/09/07 23:52:46  bruno
   star power for gb
 
@@ -623,6 +626,15 @@ set path = ($JAVA_HOME/bin $path)
 	expr="cat /tmp/mdmonitor"/>
 
 rm /tmp/mdmonitor
+</post>
+
+
+<post os="linux">
+<file name="/etc/rc.d/rocksconfig.d/post-01-cleanup-ks-scripts" perms="0755">
+#!/bin/bash
+rm -f /tmp/ks-script*
+rm -f /etc/rc.d/rocksconfig.d/post-01-cleanup-ks-scripts
+</file>
 </post>
 
 
