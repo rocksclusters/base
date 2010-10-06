@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.4 2010/09/07 23:53:00 bruno Exp $
+# $Id: __init__.py,v 1.5 2010/10/06 21:49:47 phil Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.5  2010/10/06 21:49:47  phil
+# If a user puts in 0.0.0.0 destination without a 0.0.0.0 netmask, then we
+# potentially get a conflict on the gateway. Simplify test ignoring netmask.
+#
 # Revision 1.4  2010/09/07 23:53:00  bruno
 # star power for gb
 #
@@ -96,7 +100,7 @@ class Command(rocks.commands.HostArgumentProcessor,
 
 		# Skip the default route (reported elsewhere)
 		
-		if network == '0.0.0.0' and netmask == '0.0.0.0':
+		if network == '0.0.0.0':
 			return None
 			
 		# Is the a host or network route?
