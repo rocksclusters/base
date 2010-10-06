@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.7 2010/09/23 20:24:07 bruno Exp $
+# $Id: __init__.py,v 1.8 2010/10/06 22:45:46 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,12 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.8  2010/10/06 22:45:46  bruno
+# don't do the hostname check for 'set host power'. this because in a newly
+# installed VM frontend, the database is not populated with the MAC address of
+# its compute nodes, so this command will fail when trying to power up the
+# compute nodes for the first time.
+#
 # Revision 1.7  2010/09/23 20:24:07  bruno
 # use the host argument processor
 #
@@ -130,7 +136,7 @@ class Command(command):
 					% key)
 			rsakey = M2Crypto.RSA.load_key(key)
 
-		for host in self.getHostnames(args):
+		for host in args:
 			#
 			# run the plugins
 			# 
