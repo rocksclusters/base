@@ -12,6 +12,9 @@
 
   <changelog>
   $Log: 411-server.xml,v $
+  Revision 1.6  2010/10/06 22:30:22  bruno
+  nuke debug code
+
   Revision 1.5  2010/10/06 20:04:54  bruno
   ganglia libraries are in a different spot on i386 machines
 
@@ -183,12 +186,6 @@ then
 	fi
 	chmod 0400 /etc/411-security/shared.key
 fi
-
-touch /tmp/fun
-while [ -f /tmp/fun ]
-do
-	sleep 1
-done
 
 <!-- Generate 1024bit RSA master keypair in PEM format. 
      Used to sign 411 files and alerts. 
