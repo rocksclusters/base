@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.10 2010/09/20 20:22:50 bruno Exp $
+# $Id: __init__.py,v 1.11 2010/10/06 21:34:09 phil Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.11  2010/10/06 21:34:09  phil
+# Guard against user mistakes. If a name is not associated with the
+# private_net network, just don't print the HOSTNAME= line and continue.
+#
 # Revision 1.10  2010/09/20 20:22:50  bruno
 # use the 'primary_net' attribute to dictate which interface should be used
 # as the 'primary'. we'll get the domain name from the subnets table and we'll
@@ -200,9 +204,11 @@ class Command(rocks.commands.HostArgumentProcessor,
 			networks net, nodes n, subnets s where
 			n.id = net.node and net.subnet = s.id and
 			s.name = '%s' and n.name = '%s'""" % (interface, host))
-		(hostname, domain) = self.db.fetchone()
-
-		self.addOutput(host, 'HOSTNAME=%s.%s' % (hostname, domain))
+		try:
+			(hostname, domain) = self.db.fetchone()
+			self.addOutput(host, 'HOSTNAME=%s.%s' % (hostname, domain))
+		except:
+			pass
 
 		if gateway:
 			self.addOutput(host, 'GATEWAY=%s' % gateway)
