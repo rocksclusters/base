@@ -12,6 +12,9 @@
 
   <changelog>
   $Log: 411-server.xml,v $
+  Revision 1.5  2010/10/06 20:04:54  bruno
+  ganglia libraries are in a different spot on i386 machines
+
   Revision 1.4  2009/01/23 21:50:23  bruno
   var tags converted to entities
 
@@ -170,10 +173,22 @@ mkdir -p /etc/411-security
 
 if [ ! -s /etc/411-security/shared.key ]
 then
-	/opt/rocks/sbin/411put --make-shared-key &gt; /etc/411-security/shared.key
+	if [ "&arch;" == "i386" ]
+	then
+		LD_LIBRARY_PATH=/opt/ganglia/lib /opt/rocks/sbin/411put \
+			--make-shared-key &gt; /etc/411-security/shared.key
+	else
+		/opt/rocks/sbin/411put --make-shared-key &gt; \
+			/etc/411-security/shared.key
+	fi
 	chmod 0400 /etc/411-security/shared.key
 fi
 
+touch /tmp/fun
+while [ -f /tmp/fun ]
+do
+	sleep 1
+done
 
 <!-- Generate 1024bit RSA master keypair in PEM format. 
      Used to sign 411 files and alerts. 
