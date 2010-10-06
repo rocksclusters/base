@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.2 2010/09/07 23:53:01 bruno Exp $
+# $Id: __init__.py,v 1.3 2010/10/06 19:41:10 phil Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.3  2010/10/06 19:41:10  phil
+# Document and interpret linux-only options: dhcp, noreport.
+# Needed by EC2.
+#
 # Revision 1.2  2010/09/07 23:53:01  bruno
 # star power for gb
 #
@@ -85,6 +89,9 @@ class Command(rocks.commands.set.host.command):
 
 	<param type='string' name='options'>
 	The options for an interface. Use options=NULL to clear.
+	In Rocks 5.4 (linux): options='dhcp' or options='noreport' have
+	special meaning. Bonded interfaces use options field to set up
+	bonding options.
 	</param>
 	
 	<example cmd='set host interface options compute-0-0 iface=eth1 options="Speed=10"'>
@@ -94,6 +101,16 @@ class Command(rocks.commands.set.host.command):
 	<example cmd='set host interface options compute-0-0 iface=eth1 options=NULL'>
 	Clear the options entry.
 	</example>
+
+	<example cmd='set host interface options compute-0-0 iface=eth0 options="dhcp"'>
+	Linux only: Configure eth0 interface for DHCP instead of static.
+	</example>
+
+	<example cmd='set host interface options compute-0-0 iface=eth0 options="noreport"'>
+	Linux only:  Tell rocks report host interface to ignore this interface
+	when writing configuration files
+	</example>
+	
 	"""
 	
 	def run(self, params, args):

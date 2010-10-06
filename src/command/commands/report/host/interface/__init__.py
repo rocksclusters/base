@@ -1,4 +1,4 @@
-#$Id: __init__.py,v 1.20 2010/09/30 19:13:26 phil Exp $
+#$Id: __init__.py,v 1.21 2010/10/06 19:41:10 phil Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.21  2010/10/06 19:41:10  phil
+# Document and interpret linux-only options: dhcp, noreport.
+# Needed by EC2.
+#
 # Revision 1.20  2010/09/30 19:13:26  phil
 # Break should be continue. Fixes problem the problem that when ipmi was being configured all
 # other interfaces in the select statement were not being config'ed
@@ -210,6 +214,14 @@ class Command(rocks.commands.HostArgumentProcessor,
 			options, channel):
 
 		configured = 0
+
+		# Should we set up DHCP on this device?
+		testOptions="%s" % options
+		if re.match('dhcp', testOptions.lower()):
+			dhcp = 1 # tell device to dhcp, explicitly
+		else:
+			dhcp = 0
+
 		reg = re.compile('bond[0-9]+')
 
 		self.addOutput(host, 'DEVICE=%s' % device)
@@ -218,9 +230,13 @@ class Command(rocks.commands.HostArgumentProcessor,
 			self.addOutput(host, 'HWADDR=%s' % mac)
 
 		if ip and netmask:
-			self.addOutput(host, 'IPADDR=%s' % ip)
-			self.addOutput(host, 'NETMASK=%s' % netmask)
-			self.addOutput(host, 'BOOTPROTO=static')
+			if dhcp:
+				self.addOutput(host, 'BOOTPROTO=dhcp')
+			else:	
+				self.addOutput(host, 'IPADDR=%s' % ip)
+				self.addOutput(host, 'NETMASK=%s' % netmask)
+				self.addOutput(host, 'BOOTPROTO=static')
+
 			self.addOutput(host, 'ONBOOT=yes')
 
 			if reg.match(device) and options:
@@ -245,8 +261,12 @@ class Command(rocks.commands.HostArgumentProcessor,
 			configured = 1
 
 		if not configured:
-			self.addOutput(host, 'BOOTPROTO=none')
-			self.addOutput(host, 'ONBOOT=no')
+			if dhcp:
+				self.addOutput(host, 'BOOTPROTO=dhcp')
+				self.addOutput(host, 'ONBOOT=yes')
+			else:
+				self.addOutput(host, 'BOOTPROTO=none')
+				self.addOutput(host, 'ONBOOT=no')
 
 		if mtu:
 			self.addOutput(host, 'MTU=%s' % mtu)
@@ -354,10 +374,13 @@ class Command(rocks.commands.HostArgumentProcessor,
 				mtu, options, channel) = row
 
 
+			testOptions="%s" % options
+			if re.match('noreport', testOptions.lower()):
+				continue # don't do anything if noreport set
+
 			if device == 'ipmi':
 				self.writeIPMI(host, ip, channel, netmask)
 				continue # ipmi is special, skip the standard stuff
-
 			if device and device[0:4] != 'vlan':
 				#
 				# output a script to update modprobe.conf
