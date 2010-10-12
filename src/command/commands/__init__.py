@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.86 2010/09/07 23:52:49 bruno Exp $
+# $Id: __init__.py,v 1.87 2010/10/12 17:14:11 mjk Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.87  2010/10/12 17:14:11  mjk
+# add precedes method for plugins
+#
 # Revision 1.86  2010/09/07 23:52:49  bruno
 # star power for gb
 #
@@ -1689,13 +1692,20 @@ class Command:
 				tail = graph.getNode('TAIL')
 			else:
 				tail = rocks.graph.Node('TAIL')
-			graph.addEdge(rocks.graph.Edge(plugin, tail))			
+			graph.addEdge(rocks.graph.Edge(plugin, tail))
+			
+			for pre in o.precedes():
+				if graph.hasNode(pre):
+					tail = graph.getNode(pre)
+				else:
+					tail = rocks.graph.Node(pre)
+				graph.addEdge(rocks.graph.Edge(plugin, tail))
+					
 			for req in o.requires():
 				if graph.hasNode(req):
 					head = graph.getNode(req)
 				else:
 					head = rocks.graph.Node(req)
-				edge = rocks.graph.Edge(head, plugin)
 				graph.addEdge(rocks.graph.Edge(head, plugin))
 			
 		list = []
@@ -1992,6 +2002,14 @@ class Plugin:
 		derived classes."""
 
 		return []
+
+	def precedes(self):
+		"""Returns a list of plug-in identifiers that can only by
+		run after this Plugin.  This is optional for all derived
+		classes."""
+
+		return []
+	
 		
 	def run(self, args):
 		"""All derived classes should override this method. This
