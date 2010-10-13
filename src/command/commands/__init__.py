@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.87 2010/10/12 17:14:11 mjk Exp $
+# $Id: __init__.py,v 1.88 2010/10/13 23:18:05 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.88  2010/10/13 23:18:05  bruno
+# if an attribute doesn't exist (that is, its value is None), then just
+# return 0 from str2bool
+#
 # Revision 1.87  2010/10/12 17:14:11  mjk
 # add precedes method for plugins
 #
@@ -1742,7 +1746,7 @@ class Command:
 	
 	def str2bool(self, s):
 		"""Converts an on/off, yes/no, true/false string to 1/0."""
-		if s.upper() in [ 'ON', 'YES', 'Y', 'TRUE', '1' ]:
+		if s and s.upper() in [ 'ON', 'YES', 'Y', 'TRUE', '1' ]:
 			return 1
 		else:
 			return 0
