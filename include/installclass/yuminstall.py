@@ -148,8 +148,8 @@ class simpleCallback:
                 except NoMoreMirrorsRepoError:
                     # ROCKS
                     log.info("ROCKS:callback:calling _handleFailure:1")
-                    #self.ayum._handleFailure(po)
-                    continue
+                    self.ayum._handleFailure(po)
+                    #continue
                     # ROCKS
                 except yum.Errors.RepoError, e:
                     continue
@@ -633,8 +633,8 @@ class AnacondaYum(YumSorter):
             except NoMoreMirrorsRepoError:
                 # ROCKS
                 log.info("ROCKS:downloadHeader:calling _handleFailure:2")
-                #self._handleFailure(po)
-                continue
+                self._handleFailure(po)
+                #continue
                 # ROCKS
             except yum.Errors.RepoError, e:
                 continue
