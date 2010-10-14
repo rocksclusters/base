@@ -339,8 +339,11 @@ getfield(char* buf, short int index)
 static int
 addstring(char *strings, int *edge, char *s)
 {
-	int e = *edge;
-	int end = e + strlen(s) + 1;
+	int e;
+	int end;
+
+	e = *edge;
+	end = e + strlen(s) + 1;
 
 	/* I wish C had real exceptions. */
 	if (e > FRAMESIZE || end > FRAMESIZE)
@@ -377,7 +380,6 @@ parse_gmetric (PyObject *self, PyObject *args)
 	char *p = s;
 	XDR xhandle;
 
-
 	rval = PyArg_ParseTuple(args, "s#:parse",
 				&msg, &msglen);
 	if (!rval) return NULL;
@@ -386,8 +388,8 @@ parse_gmetric (PyObject *self, PyObject *args)
 
 	xdrmem_create(&xhandle, msg, MAX_MCAST_MSG - 1, XDR_DECODE);
 
-   rval = xdr_u_int(&xhandle, &key);
-   if (!rval) myerror("could not decode key");
+	rval = xdr_u_int(&xhandle, &key);
+	if (!rval) myerror("could not decode key");
 
 	if (key)
 	{
@@ -403,60 +405,83 @@ parse_gmetric (PyObject *self, PyObject *args)
 #endif
 		source = "gmond";
 
-		/*printf("Got a built-in metric %d\n", key);*/
-		metric.name = addstring(metric.strings, &edge, metrics[key].name);
+		if (key >= num_key_metrics) {
+			sprintf(s, "key value (%d) larger than max value (%d)", 
+				key, num_key_metrics);
+			myerror(s);
+		}
 
 		/* Parse value field */
 		switch( metrics[key].type )
 		{
 			case g_string:
+				metric.name = addstring(metric.strings, &edge,
+					metrics[key].name);
 				rval = xdr_string(&xhandle, &p,  MAX_G_STRING_SIZE);
 				type = "string";
 				break;
 			case g_int8:
+				metric.name = addstring(metric.strings, &edge,
+					metrics[key].name);
 				rval = xdr_char(&xhandle, &mcast_val.int8);
 				type = "int8";
 				snprintf(s, FRAMESIZE, metrics[key].fmt, mcast_val.int8);
 				break;
 			case g_uint8:
+				metric.name = addstring(metric.strings, &edge,
+					metrics[key].name);
 				rval = xdr_u_char(&xhandle, &mcast_val.uint8);
 				type = "uint8";
 				snprintf(s, FRAMESIZE, metrics[key].fmt, mcast_val.uint8);
 				break;
 			case g_int16:
+				metric.name = addstring(metric.strings, &edge,
+					metrics[key].name);
 				rval = xdr_short(&xhandle, &mcast_val.int16);
 				if (!rval) myerror("could not decode string value");
 				type = "int16";
 				snprintf(s,  FRAMESIZE, metrics[key].fmt, mcast_val.int16);
 				break;
 			case g_uint16:
+				metric.name = addstring(metric.strings, &edge,
+					metrics[key].name);
 				rval = xdr_u_short(&xhandle, &mcast_val.uint16);
 				type = "uint16";
 				snprintf(s,  FRAMESIZE, metrics[key].fmt, mcast_val.uint16);
 				break;
 			case g_int32:
+				metric.name = addstring(metric.strings, &edge,
+					metrics[key].name);
 				rval = xdr_int(&xhandle, &mcast_val.int32);
 				if (!rval) myerror("could not decode string value");
 				type = "int32";
 				snprintf(s,  FRAMESIZE, metrics[key].fmt, mcast_val.int32);
 				break;
 			case g_uint32:
+				metric.name = addstring(metric.strings, &edge,
+					metrics[key].name);
 				rval = xdr_u_int(&xhandle, &mcast_val.uint32);
 				type = "uint32";
 				snprintf(s,  FRAMESIZE, metrics[key].fmt, mcast_val.uint32);
 				break;
 			/* A timestamp type is always a uint32 (32-bit unsigned int) */
 			case g_timestamp:
+				metric.name = addstring(metric.strings, &edge,
+					metrics[key].name);
 				rval = xdr_u_int(&xhandle, &mcast_val.uint32);
 				type = "timestamp";
 				snprintf(s,  FRAMESIZE, metrics[key].fmt, mcast_val.uint32);
 				break;
 			case g_float:
+				metric.name = addstring(metric.strings, &edge,
+					metrics[key].name);
 				rval = xdr_float(&xhandle, &mcast_val.f);
 				type = "float";
 				snprintf(s,  FRAMESIZE, metrics[key].fmt, mcast_val.f);
 				break;
 			case g_double:
+				metric.name = addstring(metric.strings, &edge,
+					metrics[key].name);
 				rval = xdr_double(&xhandle, &mcast_val.d);
 				type = "double";
 				snprintf(s,  FRAMESIZE, metrics[key].fmt, mcast_val.d);
