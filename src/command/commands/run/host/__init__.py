@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.19 2010/09/28 22:05:04 bruno Exp $
+# $Id: __init__.py,v 1.20 2010/10/14 15:55:53 phil Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.20  2010/10/14 15:55:53  phil
+# Pay attention to the "primary_net" attribute of the node and
+# ssh to the node on that interface.
+#
 # Revision 1.19  2010/09/28 22:05:04  bruno
 # doc fix
 #
@@ -133,10 +137,11 @@ import shlex
 import rocks.commands
 
 class Parallel(threading.Thread):
-	def __init__(self, cmdclass, cmd, host, stats, collate):
+	def __init__(self, cmdclass, cmd, host, hostif, stats, collate):
 		threading.Thread.__init__(self)
 		self.cmd = cmd
 		self.host = host
+		self.hostif = hostif
 		self.stats = stats
 		self.collate = collate
 		self.cmdclass = cmdclass
@@ -241,7 +246,7 @@ class Command(command):
 	</example>
 	"""
 
-	def nodeup(self, host):
+	def nodeup(self, host, hostif):
 		sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		sock.settimeout(2.0)
 		try:
@@ -249,7 +254,7 @@ class Command(command):
 			# this catches the case when the host is down
 			# and/or there is no ssh daemon running
 			#
-			sock.connect((host, 22))
+			sock.connect((hostif, 22))
 
 			#
 			# this catches the case when the node is up,
@@ -332,11 +337,18 @@ class Command(command):
 				host = hosts[i]
 				i += 1	
 
+				try:
+					hnet=self.db.getHostAttr(host,'primary_net')
+					query="select net.ip from networks net, nodes n, subnets s where net.node=n.id and net.subnet=s.id and n.name='%s' and s.name='%s'" % (host,hnet)
+					self.db.execute(query)
+					hostif,=self.db.fetchone()
+				except:
+					hostif=host
 				#
 				# first test if the node is up and responding
 				# to ssh
 				#
-				if not self.nodeup(host):
+				if not self.nodeup(host,hostif):
 					if collate:
 						self.addOutput(host, 'down')
 					else:
@@ -349,9 +361,9 @@ class Command(command):
 				#
 				# fire off the command
 				#
-				cmd = 'ssh %s "%s"' % (host, command)
+				cmd = 'ssh %s "%s"' % (hostif, command)
 
-				p = Parallel(self, cmd, host, stats, collate)
+				p = Parallel(self, cmd, host, hostif, stats, collate)
 				p.start()
 				threads.append(p)
 
@@ -413,4 +425,3 @@ class Command(command):
 
 		if collate:
 			self.endOutput(padChar='')
-
