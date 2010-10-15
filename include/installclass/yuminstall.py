@@ -140,6 +140,7 @@ class simpleCallback:
             self.size = po.returnSimple('installedsize')
 
             while self.files[nvra] == None:
+                retries = 0
                 try:
                     fn = repo.getPackage(po)
 
@@ -147,9 +148,13 @@ class simpleCallback:
                     self.files[nvra] = f
                 except NoMoreMirrorsRepoError:
                     # ROCKS
-                    log.info("ROCKS:callback:calling _handleFailure:1")
-                    self.ayum._handleFailure(po)
-                    #continue
+                    log.info("ROCKS:callback:failed:retries (%d)" % retries)
+
+                    if retries > 10:
+                        self.ayum._handleFailure(po)
+                    else:
+                        retries += 1
+                        continue
                     # ROCKS
                 except yum.Errors.RepoError, e:
                     continue
@@ -627,14 +632,20 @@ class AnacondaYum(YumSorter):
 
     def downloadHeader(self, po):
         while True:
+            retries = 0
+
             # retrying version of download header
             try:
                 YumSorter.downloadHeader(self, po)
             except NoMoreMirrorsRepoError:
                 # ROCKS
-                log.info("ROCKS:downloadHeader:calling _handleFailure:2")
-                self._handleFailure(po)
-                #continue
+                log.info("ROCKS:downloadHeader:failed:retries (%d)" % retries)
+
+                if retries > 10:
+                    self._handleFailure(po)
+                else:
+                    retries += 1
+                    continue
                 # ROCKS
             except yum.Errors.RepoError, e:
                 continue
