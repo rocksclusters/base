@@ -12,6 +12,9 @@
 
   <changelog>
   $Log: 411-server.xml,v $
+  Revision 1.7  2010/10/18 23:53:03  bruno
+  411put no longer sends out 411 alerts
+
   Revision 1.6  2010/10/06 22:30:22  bruno
   nuke debug code
 
@@ -176,14 +179,9 @@ mkdir -p /etc/411-security
 
 if [ ! -s /etc/411-security/shared.key ]
 then
-	if [ "&arch;" == "i386" ]
-	then
-		LD_LIBRARY_PATH=/opt/ganglia/lib /opt/rocks/sbin/411put \
-			--make-shared-key &gt; /etc/411-security/shared.key
-	else
-		/opt/rocks/sbin/411put --make-shared-key &gt; \
-			/etc/411-security/shared.key
-	fi
+	/opt/rocks/sbin/411put --make-shared-key &gt; \
+		/etc/411-security/shared.key
+
 	chmod 0400 /etc/411-security/shared.key
 fi
 

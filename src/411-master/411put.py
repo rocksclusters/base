@@ -6,7 +6,7 @@
 #
 # Requires Python 2.1 or better
 #
-# $Id: 411put.py,v 1.8 2010/09/07 23:52:48 bruno Exp $
+# $Id: 411put.py,v 1.9 2010/10/18 23:53:03 bruno Exp $
 #
 # @Copyright@
 # 
@@ -62,6 +62,9 @@
 # @Copyright@
 #
 # $Log: 411put.py,v $
+# Revision 1.9  2010/10/18 23:53:03  bruno
+# 411put no longer sends out 411 alerts
+#
 # Revision 1.8  2010/09/07 23:52:48  bruno
 # star power for gb
 #
@@ -222,7 +225,6 @@ import base64
 import rocks.net
 import rocks.service411
 from rocks.service411 import Error411
-import gmon.gmetric
 import socket
 from rocks.util import mkdir
 from urllib import quote
@@ -244,8 +246,6 @@ class App(rocks.net.Application, rocks.service411.Service411):
 		self.doAlert = 1
 		self.doName = 0
 		# Ganglia defaults for alert channel.
-		self.tx = gmon.gmetric.Tx()
-		self.tx.setChannel('255.255.255.255')
 		self.group = ''
 		self.chroot = ''
 
@@ -307,8 +307,6 @@ absolute path (after any chroots) will be maintained on clients."""
 			self.doSee = 1
 		elif c[0] == "--noalert":
 			self.doAlert = 0
-		elif c[0] == "--alert":
-			self.tx.setChannel(c[1])
 		elif c[0] == "--411name":
 			self.doName = 1
 		elif c[0] == "--group":
@@ -435,35 +433,10 @@ absolute path (after any chroots) will be maintained on clients."""
 		print "411 Wrote: %s/%s" % (dir411, filename411)
 		print "Size: %s/%s bytes (encrypted/plain)" % \
 			(len(msg), len(plaintext))
-		if self.doAlert:
-			self.sendAlert(filename411)
-			print "Alert: sent on channel %s:%s with master %s" % \
-				(self.tx.getChannel(), self.tx.getPort(), self.ip)
+
 		print
 		if self.doSee:
 			print msg
-
-
-	def sendAlert(self, filename411):
-		"""Send a multicast packet alerting clients to an updated
-		411 file. Message is in Ganglia 2.5.x format. Cryptographic
-		signature covers message in format: "filename seqnum". The
-		newline before the signature is not part of the signed
-		message."""
-
-		urldir = self.urldir
-		if self.group:
-			urldir = quote("%s/%s" % (self.urldir, self.group))
-
-		alert = "http://%s/%s/%s %.2f" % \
-			(self.ip, urldir, filename411, time.time())
-
-		# Sign the MD5 hash of message.
-		sig = self.sign(alert)
-		
-		msg = "%s\n%s" % (alert, sig)
-		# This alert is good for 20 sec.
-		self.tx.publish("411alert", msg, tmax=20, dmax=20)
 
 
 #
