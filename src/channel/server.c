@@ -1,9 +1,12 @@
-/* $Id: server.c,v 1.2 2010/10/20 01:41:53 mjk Exp $
+/* $Id: server.c,v 1.3 2010/10/20 21:12:34 mjk Exp $
  *
  * @Copyright@
  * @Copyright@
  *
  * $Log: server.c,v $
+ * Revision 1.3  2010/10/20 21:12:34  mjk
+ * works
+ *
  * Revision 1.2  2010/10/20 01:41:53  mjk
  * daemonized
  * calls out to python code for 411-listen
@@ -47,11 +50,14 @@ channel_411_alert_1_svc(char *filename, unsigned long time, char *signature,
 	static int	result = 1;
 	static time_t	last = 0; /* time of last call */
 	int		status;
+	int		pid;
 
 	assert(filename);
+	assert(time);
+	assert(signature);
 	assert(rqstp);
 
-	if ( time != last ) {
+	if ( time != last ) {	/* prevent calling the handler twice for same alert */
 		result = 1;
 		last   = time;
 
@@ -63,8 +69,8 @@ channel_411_alert_1_svc(char *filename, unsigned long time, char *signature,
 			result = -1;
 			break;
 		case 0:			/* child process */
-			execl("/opt/rocks/sbin/411-listen", "411-listen",
-			      filename, tile, signature, NULL);
+			execl("/opt/rocks/sbin/411-alert-handler", "411-alert-handler",
+			      filename, signature, NULL);
 		default:		/* parent process */
 			waitpid(pid, &status, 0);
 		}

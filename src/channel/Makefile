@@ -1,9 +1,12 @@
-# $Id: Makefile,v 1.1 2010/10/19 23:06:29 mjk Exp $
+# $Id: Makefile,v 1.2 2010/10/20 21:12:34 mjk Exp $
 #
 # @Copyright@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.2  2010/10/20 21:12:34  mjk
+# works
+#
 # Revision 1.1  2010/10/19 23:06:29  mjk
 # c is hard
 #
@@ -31,16 +34,17 @@ channeld: server.o channel_svc.o
 	$(CC) $(CFLAGS) $(LDFLAGS) -lrocks -o $@ $^
 
 
-build: channeld 411-alert
+build: channeld 411-alert 411-alert-handler
 
 install:: build
 	mkdir -p $(ROOT)/$(PKGROOT)/sbin
 	install -m544 411-alert $(ROOT)/$(PKGROOT)/sbin/
+	install -m544 411-alert-handler $(ROOT)/$(PKGROOT)/sbin/
 	install -m544 channeld  $(ROOT)/$(PKGROOT)/sbin/
 
 clean::
 	-rm *.o
-	-rm channeld 411-alert
+	-rm channeld 411-alert 411-alert-handler
 	-rm channel_svc.c channel.x
 
 
