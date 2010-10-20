@@ -53,6 +53,10 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.10  2010/10/20 21:53:52  mjk
+# Removed greceptor
+# Keep other pieces (don't know what is used)
+#
 # Revision 1.9  2010/09/07 23:53:08  bruno
 # star power for gb
 #
@@ -147,7 +151,7 @@ ROCKSROOT       = ../devel/devel
 -include $(ROCKSROOT)/etc/Rules.mk
 include Rules.mk
 
-SCRIPTS		= greceptor grunner
+SCRIPTS		= grunner
 PYLIB		= $(wildcard gmon/*.py)
 METRICS		= $(wildcard gmon/metrics/*.py)
 LISTENERS	= $(wildcard gmon/listeners/*.py)
@@ -169,10 +173,6 @@ install::
 	mkdir -p $(ROOT)/$(PY.ROCKS)/gmon/metrics/
 	$(INSTALL) -m0444 $(METRICS) $(ROOT)/$(PY.ROCKS)/gmon/metrics/
 
-	mkdir -p $(ROOT)/$(INIT_SCRIPTS_DIR)
-	$(INSTALL) -m0555 greceptor.init.$(OS) $(ROOT)/$(INIT_SCRIPTS_DIR)/greceptor
-
-	mkdir -p $(ROOT)/var/lock/greceptor-startup/
 	mkdir -p $(ROOT)/var/cluster/
 
 
