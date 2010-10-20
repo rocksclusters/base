@@ -1,4 +1,4 @@
-# $Id: linux.mk,v 1.23 2010/09/20 20:01:54 anoop Exp $
+# $Id: linux.mk,v 1.24 2010/10/20 21:32:46 mjk Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: linux.mk,v $
+# Revision 1.24  2010/10/20 21:32:46  mjk
+# fix ordering
+#
 # Revision 1.23  2010/09/20 20:01:54  anoop
 # Added lsof to solaris base roll
 #
@@ -159,10 +162,11 @@ SRCDIRS = `find . -type d -maxdepth 1 \
 	-not -name sun-java \
 	-not -name bittorrent \
 	-not -name postfix \
-	-not -name lsof`
+	-not -name lsof \
+	-not -name channel`
 
 #
 # make sure we build anaconda last, that's because it includes many packages
 # from the base roll
 #
-SRCDIRS += anaconda updates.img
+SRCDIRS += anaconda updates.img channel
