@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.8 2010/10/20 21:17:39 mjk Exp $
+# $Id: Makefile,v 1.9 2010/10/20 21:48:05 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.9  2010/10/20 21:48:05  bruno
+# no more metrics
+#
 # Revision 1.8  2010/10/20 21:17:39  mjk
 # remove the 411 listener
 #
@@ -203,7 +206,6 @@ install:: build
 	mkdir -p $(ROOT)/$(METRICS)
 	mkdir -p $(ROOT)/$(PY.ROCKS)/rocks
 	$(INSTALL) -m0555 $(SCRIPTS)  $(ROOT)/$(PKGROOT)/bin/
-	$(INSTALL) -m0555 metrics/*.py  $(ROOT)/$(METRICS)
 	$(INSTALL) -m0444 rocks/*.py $(ROOT)/$(PY.ROCKS)/rocks
 	$(INSTALL) -m0644 $(RCFILES) $(ROOT)/$(PKGROOT)/etc/
 
