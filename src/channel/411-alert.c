@@ -1,9 +1,13 @@
-/* $Id: 411-alert.c,v 1.1 2010/10/19 23:06:29 mjk Exp $
+/* $Id: 411-alert.c,v 1.2 2010/10/20 01:41:53 mjk Exp $
  *
  * @Copyright@
  * @Copyright@
  * 
  * $Log: 411-alert.c,v $
+ * Revision 1.2  2010/10/20 01:41:53  mjk
+ * daemonized
+ * calls out to python code for 411-listen
+ *
  * Revision 1.1  2010/10/19 23:06:29  mjk
  * c is hard
  *
@@ -25,6 +29,7 @@ main(int argc, char *argv[])
 {
 	int				result;
 	channel_411_alert_1_argument	args;
+	enum clnt_stat			status;
 
 
 	if (argc != 3) {
@@ -38,11 +43,17 @@ main(int argc, char *argv[])
 	args.time	= time(NULL);
 	args.signature	= argv[2];
 
-	clnt_broadcast(CHANNEL_PROG, CHANNEL_VERS, CHANNEL_411_ALERT,
-		       (xdrproc_t)xdr_channel_411_alert_1_argument,
-		       (caddr_t)&args,
-		       (xdrproc_t)xdr_int, (caddr_t)&result,
-		       callback);
+	syslog(LOG_INFO, "call sent (file=\"%s\")", args.filename);
+
+	status = clnt_broadcast(CHANNEL_PROG, CHANNEL_VERS, CHANNEL_411_ALERT,
+				(xdrproc_t)xdr_channel_411_alert_1_argument,
+				(caddr_t)&args,
+				(xdrproc_t)xdr_int, (caddr_t)&result,
+				callback);
+	if ( status != RPC_SUCCESS ) {
+		syslog(LOG_ERR, "call failed (%d)", status);
+		return -1;
+	}
 
 	return 0;
 } /* main */
@@ -67,7 +78,7 @@ callback(caddr_t result, struct sockaddr_in *addr)
 			   addr->sin_family);
 
 	if ( he ) {
-		syslog(LOG_INFO, "411_alert returned %s:%d",
+		syslog(LOG_INFO, "call returned %s:%d",
 		       he->h_name, count);
 	}
 	else {

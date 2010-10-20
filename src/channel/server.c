@@ -1,15 +1,20 @@
-/* $Id: server.c,v 1.1 2010/10/19 23:06:29 mjk Exp $
+/* $Id: server.c,v 1.2 2010/10/20 01:41:53 mjk Exp $
  *
  * @Copyright@
  * @Copyright@
  *
  * $Log: server.c,v $
+ * Revision 1.2  2010/10/20 01:41:53  mjk
+ * daemonized
+ * calls out to python code for 411-listen
+ *
  * Revision 1.1  2010/10/19 23:06:29  mjk
  * c is hard
  *
  */
 
 #include <stdio.h>
+#include <unistd.h>
 #include <string.h>
 #include <syslog.h>
 #include <assert.h>
@@ -19,8 +24,6 @@
 #include <rocks/channel.h>
 #include <rocks/hexdump.h>
 
-
-#define DEBUG 1
 
 extern void channel_prog_1(struct svc_req *rqstp, register SVCXPRT *transp);
 
@@ -43,21 +46,29 @@ channel_411_alert_1_svc(char *filename, unsigned long time, char *signature,
 {
 	static int	result = 1;
 	static time_t	last = 0; /* time of last call */
+	int		status;
 
 	assert(filename);
 	assert(rqstp);
-
 
 	if ( time != last ) {
 		result = 1;
 		last   = time;
 
-		syslog(LOG_INFO, "411_alert received");
+		syslog(LOG_INFO, "411_alert received (file=\"%s\")", filename);
 
-#ifdef DEBUG
-		syslog(LOG_DEBUG, "411_alert file=\"%s\" time=%ld sig=\"%s\"",
-		       filename, time, signature);
-#endif
+		switch ( pid=fork() ) {
+		case -1:
+			syslog(LOG_ERR, "%s", "cannot fork");
+			result = -1;
+			break;
+		case 0:			/* child process */
+			execl("/opt/rocks/sbin/411-listen", "411-listen",
+			      filename, tile, signature, NULL);
+		default:		/* parent process */
+			waitpid(pid, &status, 0);
+		}
+ 
 	}
 	else {
 		syslog(LOG_INFO, "411_alert received (dup)");
@@ -78,6 +89,24 @@ main(int argc, char *argvp[])
 
 	openlog("channeld", LOG_PID, LOG_LOCAL0);
 	syslog(LOG_INFO, "starting service");
+
+#ifndef DEBUG
+        switch ( fork() ) {
+	case -1:
+		syslog(LOG_ERR, "%s", "cannot fork");
+		exit(1);
+	case 0:			/* child process */
+		break;
+	default:		/* parent process */
+		return 0;
+	}
+ 
+        close(STDIN_FILENO);
+        close(STDOUT_FILENO);
+        close(STDERR_FILENO);
+
+        setsid();		/* start a new session */
+#endif
 
 	pmap_unset(CHANNEL_PROG, CHANNEL_VERS);
 
