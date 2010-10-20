@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.88 2010/10/13 23:18:05 bruno Exp $
+# $Id: __init__.py,v 1.89 2010/10/20 21:30:46 mjk Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,11 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.89  2010/10/20 21:30:46  mjk
+# - fix typos
+# - added rocks-channel and librocks packages
+# - librocks must be built/installed before channel
+#
 # Revision 1.88  2010/10/13 23:18:05  bruno
 # if an attribute doesn't exist (that is, its value is None), then just
 # return 0 from str2bool
@@ -454,7 +459,7 @@ class OSArgumentProcessor:
 			elif s == 'sunos':
 				list.append(s)
 			else:
-				Abort('unkown os "%s"' % arg)
+				Abort('unknown os "%s"' % arg)
 		if not list:
 			list.append('linux')
 			list.append('solaris')

@@ -2,7 +2,7 @@
 #
 # This file should remain OS independent
 #
-# $Id: bootstrap.sh,v 1.22 2010/09/07 23:52:46 bruno Exp $
+# $Id: bootstrap.sh,v 1.23 2010/10/20 21:30:46 mjk Exp $
 #
 # @Copyright@
 # 
@@ -58,6 +58,11 @@
 # @Copyright@
 #
 # $Log: bootstrap.sh,v $
+# Revision 1.23  2010/10/20 21:30:46  mjk
+# - fix typos
+# - added rocks-channel and librocks packages
+# - librocks must be built/installed before channel
+#
 # Revision 1.22  2010/09/07 23:52:46  bruno
 # star power for gb
 #
@@ -168,6 +173,7 @@ compile_and_install foundation-libxml2
 compile_and_install foundation-python-xml
 compile_and_install foundation-python-extras
 compile_and_install foundation-rcs
+compile_and_install librocks
 
 compile pylib
 install rocks-pylib

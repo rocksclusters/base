@@ -21,6 +21,11 @@
 
   <changelog>
   $Log: base.xml,v $
+  Revision 1.51  2010/10/20 21:30:46  mjk
+  - fix typos
+  - added rocks-channel and librocks packages
+  - librocks must be built/installed before channel
+
   Revision 1.50  2010/10/04 17:05:03  bruno
   remove the log files left from the kickstart pre and post scripts
 
@@ -436,6 +441,8 @@
 
   <package>tentakel</package>
   <package>rocks-command</package>
+  <package>librocks</package>
+  <package>rocks-channel</package>
 
   <!-- to fix a yum bug on 64-bit -->
   <package>nspr.&arch;</package>
