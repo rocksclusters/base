@@ -15,6 +15,9 @@
 
   <changelog>
   $Log: greceptor.xml,v $
+  Revision 1.3  2010/10/20 21:54:47  mjk
+  no more greceptor daemon
+
   Revision 1.2  2009/03/31 00:23:29  anoop
   Merged the remainder of the solaris XML files to the base roll
 
@@ -40,13 +43,5 @@
 
   <package os='sunos'>ROCKSganglia-receptor</package>
   <package os='sunos'>ROCKSganglia-pylib</package>
-
-<post os='linux'>
-/sbin/chkconfig --add greceptor
-</post>
-
-<post os='sunos'>
-<service name="network/greceptor" enabled="true"/>
-</post>
 
 </kickstart> 
