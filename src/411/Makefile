@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.7 2010/09/07 23:52:48 bruno Exp $
+# $Id: Makefile,v 1.8 2010/10/20 21:17:39 mjk Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.8  2010/10/20 21:17:39  mjk
+# remove the 411 listener
+#
 # Revision 1.7  2010/09/07 23:52:48  bruno
 # star power for gb
 #
@@ -188,7 +191,6 @@ include Rules.mk
 include python.mk
 
 METRICS = $(PY.ROCKS)/gmon/metrics
-LISTENERS = $(PY.ROCKS)/gmon/listeners
 
 RCFILES = four11getrc
 
@@ -199,11 +201,9 @@ install:: build
 	mkdir -p $(ROOT)/$(PKGROOT)/bin/
 	mkdir -p $(ROOT)/$(PKGROOT)/etc/
 	mkdir -p $(ROOT)/$(METRICS)
-	mkdir -p $(ROOT)/$(LISTENERS)
 	mkdir -p $(ROOT)/$(PY.ROCKS)/rocks
 	$(INSTALL) -m0555 $(SCRIPTS)  $(ROOT)/$(PKGROOT)/bin/
 	$(INSTALL) -m0555 metrics/*.py  $(ROOT)/$(METRICS)
-	$(INSTALL) -m0444 listeners/*.py $(ROOT)/$(LISTENERS)
 	$(INSTALL) -m0444 rocks/*.py $(ROOT)/$(PY.ROCKS)/rocks
 	$(INSTALL) -m0644 $(RCFILES) $(ROOT)/$(PKGROOT)/etc/
 
