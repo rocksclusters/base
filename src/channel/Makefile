@@ -1,9 +1,12 @@
-# $Id: Makefile,v 1.3 2010/10/20 23:41:04 mjk Exp $
+# $Id: Makefile,v 1.4 2010/10/20 23:44:46 bruno Exp $
 #
 # @Copyright@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.4  2010/10/20 23:44:46  bruno
+# tweak
+#
 # Revision 1.3  2010/10/20 23:41:04  mjk
 # forgot to make this into a service
 # needs a solaris version as well
@@ -42,7 +45,7 @@ build: channeld 411-alert 411-alert-handler
 
 install:: build
 	mkdir -p $(ROOT)/$(PKGROOT)/sbin
-	mkdir -p $(ROOT)/$(PKGROOT)/etc/rc.d/init.d
+	mkdir -p $(ROOT)/etc/rc.d/init.d
 	install -m544 411-alert $(ROOT)/$(PKGROOT)/sbin/
 	install -m544 411-alert-handler $(ROOT)/$(PKGROOT)/sbin/
 	install -m544 channeld  $(ROOT)/$(PKGROOT)/sbin/
