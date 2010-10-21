@@ -1,9 +1,15 @@
-/* $Id: 411-alert.c,v 1.4 2010/10/21 20:51:17 mjk Exp $
+/* $Id: 411-alert.c,v 1.5 2010/10/21 22:03:18 mjk Exp $
  *
  * @Copyright@
  * @Copyright@
  * 
  * $Log: 411-alert.c,v $
+ * Revision 1.5  2010/10/21 22:03:18  mjk
+ * - linux and solaris both send only .info and above to the frontend
+ *   debug stays off the network
+ * - changed syslog levels to debug (see above)
+ * - proper wait return code handling with W* macros
+ *
  * Revision 1.4  2010/10/21 20:51:17  mjk
  * - timestamp is now a timeval (microseconds)
  * - re-entry testing is done in 411-alert-handler using a pickle file for state
@@ -59,7 +65,7 @@ main(int argc, char *argv[])
 	args.usec	= tv.tv_usec;
 
 	time = tv.tv_sec + (float)tv.tv_usec / 1e6;
-	syslog(LOG_INFO, "call sent (file=\"%s\", time=%.6f)", args.filename, time);
+	syslog(LOG_DEBUG, "call sent (file=\"%s\", time=%.6f)", args.filename, time);
 
 	status = clnt_broadcast(CHANNEL_PROG, CHANNEL_VERS, CHANNEL_411_ALERT,
 				(xdrproc_t)xdr_channel_411_alert_1_argument,
@@ -97,7 +103,7 @@ callback(caddr_t result, struct sockaddr_in *addr)
 			   addr->sin_family);
 
 	if ( he ) {
-		syslog(LOG_INFO, "call returned %s:%d", he->h_name, count);
+		syslog(LOG_DEBUG, "call returned (host=%s, status=%d)", he->h_name, count);
 	}
 	else {
 		syslog(LOG_ERR, "reply from unknown host");

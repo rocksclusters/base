@@ -58,6 +58,12 @@
 # @Copyright@
 #
 # $Log: 411-alert-handler.py,v $
+# Revision 1.3  2010/10/21 22:03:18  mjk
+# - linux and solaris both send only .info and above to the frontend
+#   debug stays off the network
+# - changed syslog levels to debug (see above)
+# - proper wait return code handling with W* macros
+#
 # Revision 1.2  2010/10/21 20:51:17  mjk
 # - timestamp is now a timeval (microseconds)
 # - re-entry testing is done in 411-alert-handler using a pickle file for state
@@ -310,7 +316,7 @@ else:
 	sys.exit(-1);
 
 time = sec + usec / 1e6
-syslog.syslog(syslog.LOG_INFO, 'handle (file="%s" time="%.6f")' % (filename, time))
+syslog.syslog(syslog.LOG_DEBUG, 'handle (file="%s" time="%.6f")' % (filename, time))
 
 # 411-alert-handler.pkl keeps a list of timestamps of all the file alerts we have
 # seen.  If an alert has an identical or early timestamp it is assumed to be a
@@ -323,7 +329,7 @@ if os.path.exists('/tmp/411-alert-handler.pkl'):
 	fin.close()
 
 if timestamps.has_key(filename) and timestamps[filename] == time:
-	syslog.syslog(syslog.LOG_INFO, 'dup (file="%s" time="%.6f")' % (filename, time))
+	syslog.syslog(syslog.LOG_DEBUG, 'dup (file="%s" time="%.6f")' % (filename, time))
 	sys.exit(1)
 
 timestamps[filename] = time

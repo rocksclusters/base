@@ -1,9 +1,15 @@
-/* $Id: server.c,v 1.5 2010/10/21 20:51:17 mjk Exp $
+/* $Id: server.c,v 1.6 2010/10/21 22:03:18 mjk Exp $
  *
  * @Copyright@
  * @Copyright@
  *
  * $Log: server.c,v $
+ * Revision 1.6  2010/10/21 22:03:18  mjk
+ * - linux and solaris both send only .info and above to the frontend
+ *   debug stays off the network
+ * - changed syslog levels to debug (see above)
+ * - proper wait return code handling with W* macros
+ *
  * Revision 1.5  2010/10/21 20:51:17  mjk
  * - timestamp is now a timeval (microseconds)
  * - re-entry testing is done in 411-alert-handler using a pickle file for state
@@ -50,7 +56,7 @@ channel_ping_1_svc(struct svc_req *rqstp)
 	static int  result = 1;
 
 	assert(rqstp);
-	syslog(LOG_INFO, "ping received");
+	syslog(LOG_DEBUG, "ping received");
 
 	return &result;
 } /* channel_ping_1_svc */
@@ -72,7 +78,7 @@ channel_411_alert_1_svc(char *filename, char *signature, u_long sec, u_int usec,
 	assert(time > 0);
 	assert(rqstp);
 
-	syslog(LOG_INFO, "411_alert received (file=\"%s\", time=%.6f)", filename, time);
+	syslog(LOG_DEBUG, "411_alert received (file=\"%s\", time=%.6f)", filename, time);
 
 	switch ( pid=fork() ) {
 	case -1:
@@ -83,14 +89,20 @@ channel_411_alert_1_svc(char *filename, char *signature, u_long sec, u_int usec,
 		sprintf(sec_string, "%lu", sec);
 		sprintf(usec_string, "%u", usec);
 		status = execl("/opt/rocks/sbin/411-alert-handler", "411-alert-handler",
-		      filename, signature, &sec_string, &usec_string, NULL);
+		      filename, signature, sec_string, usec_string, NULL);
 		syslog(LOG_ERR, "411-alert-handler could not run (%s)", strerror(errno));
 		exit(-1);
 	default:		/* parent process */
-		waitpid(pid, &result, 0);
+		waitpid(pid, &status, 0);
+		if ( WIFEXITED(status) ) {
+			result = WEXITSTATUS(status);
+		}
+		else {		/* child crashed */
+			result = -1;
+		}
 	}
 
-	syslog(LOG_INFO, "411_alert processed (file=\"%s\", time=%.6f, status=%d)",
+	syslog(LOG_DEBUG, "411_alert processed (file=\"%s\", time=%.6f, status=%d)",
 	       filename, time, result);
 
 	return &result;

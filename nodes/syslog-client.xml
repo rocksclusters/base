@@ -18,6 +18,12 @@
 
   <changelog>
   $Log: syslog-client.xml,v $
+  Revision 1.9  2010/10/21 22:03:18  mjk
+  - linux and solaris both send only .info and above to the frontend
+    debug stays off the network
+  - changed syslog levels to debug (see above)
+  - proper wait return code handling with W* macros
+
   Revision 1.8  2010/09/07 23:52:47  bruno
   star power for gb
 
@@ -67,16 +73,12 @@
   </changelog>
 
 
-<post os='linux'>
-<file name="/etc/syslog.conf" mode="append">
-*.*		@&Kickstart_PrivateSyslogHost;
-</file>
-</post>
+<post>
 
-<post os='sunos'>
 <file name="/etc/syslog.conf" mode="append">
 *.info		@&Kickstart_PrivateSyslogHost;
 </file>
+
 </post>
 
 </kickstart> 
