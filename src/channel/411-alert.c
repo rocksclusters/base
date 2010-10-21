@@ -1,9 +1,16 @@
-/* $Id: 411-alert.c,v 1.3 2010/10/21 16:59:45 mjk Exp $
+/* $Id: 411-alert.c,v 1.4 2010/10/21 20:51:17 mjk Exp $
  *
  * @Copyright@
  * @Copyright@
  * 
  * $Log: 411-alert.c,v $
+ * Revision 1.4  2010/10/21 20:51:17  mjk
+ * - timestamp is now a timeval (microseconds)
+ * - re-entry testing is done in 411-alert-handler using a pickle file for state
+ * - more logging
+ *
+ * Looks good, but need to turn down the logging to keep the network quite.
+ *
  * Revision 1.3  2010/10/21 16:59:45  mjk
  * more logging
  * copy the arg strings in case RPC is doing something odd
@@ -34,7 +41,8 @@ main(int argc, char *argv[])
 	int				result;
 	channel_411_alert_1_argument	args;
 	enum clnt_stat			status;
-
+	struct timeval			tv;
+	double				time;
 
 	if (argc != 3) {
 		fprintf(stderr, "usage: %s filename signature\n", argv[0]);
@@ -43,11 +51,15 @@ main(int argc, char *argv[])
 
 	openlog("411-alert", LOG_PID, LOG_LOCAL0);
 
-	args.filename	= strdup(argv[1]);
-	args.time	= time(NULL);
-	args.signature	= strdup(argv[2]);
+	gettimeofday(&tv, NULL);
 
-	syslog(LOG_INFO, "call sent (file=\"%s\", time=%ld)", args.filename, args.time);
+	args.filename	= strdup(argv[1]);
+	args.signature	= strdup(argv[2]);
+	args.sec	= tv.tv_sec;
+	args.usec	= tv.tv_usec;
+
+	time = tv.tv_sec + (float)tv.tv_usec / 1e6;
+	syslog(LOG_INFO, "call sent (file=\"%s\", time=%.6f)", args.filename, time);
 
 	status = clnt_broadcast(CHANNEL_PROG, CHANNEL_VERS, CHANNEL_411_ALERT,
 				(xdrproc_t)xdr_channel_411_alert_1_argument,
@@ -85,15 +97,20 @@ callback(caddr_t result, struct sockaddr_in *addr)
 			   addr->sin_family);
 
 	if ( he ) {
-		syslog(LOG_INFO, "call returned %s:%d",
-		       he->h_name, count);
+		syslog(LOG_INFO, "call returned %s:%d", he->h_name, count);
 	}
 	else {
 		syslog(LOG_ERR, "reply from unknown host");
 		return 0;
 	}
 
-	return (count > 1) ? 1 : 0;
-
+	/* 411-alert will return
+	 *	 0 - file updated
+	 *	 1 - duplicate request (file not fetched/updated)
+	 *	-1 - system error
+	 *
+	 * Once a single duplicate has been detected stop the broadcast by returning 1.
+	 */
+	return (count > 0) ? 1 : 0;
 } /* callback */
 

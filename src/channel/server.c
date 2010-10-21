@@ -1,9 +1,16 @@
-/* $Id: server.c,v 1.4 2010/10/21 16:59:45 mjk Exp $
+/* $Id: server.c,v 1.5 2010/10/21 20:51:17 mjk Exp $
  *
  * @Copyright@
  * @Copyright@
  *
  * $Log: server.c,v $
+ * Revision 1.5  2010/10/21 20:51:17  mjk
+ * - timestamp is now a timeval (microseconds)
+ * - re-entry testing is done in 411-alert-handler using a pickle file for state
+ * - more logging
+ *
+ * Looks good, but need to turn down the logging to keep the network quite.
+ *
  * Revision 1.4  2010/10/21 16:59:45  mjk
  * more logging
  * copy the arg strings in case RPC is doing something odd
@@ -25,9 +32,11 @@
 #include <string.h>
 #include <syslog.h>
 #include <assert.h>
+#include <errno.h>
 #include <rpc/pmap_clnt.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
+#include <sys/wait.h>
 #include <rocks/channel.h>
 #include <rocks/hexdump.h>
 
@@ -48,52 +57,41 @@ channel_ping_1_svc(struct svc_req *rqstp)
 
 
 int *
-channel_411_alert_1_svc(char *filename, unsigned long time, char *signature,
+channel_411_alert_1_svc(char *filename, char *signature, u_long sec, u_int usec,
 			struct svc_req *rqstp)
 {
-	static int	result		= 1;
-	static char	*last_filename	= NULL;
-	static time_t	last_time	= 0;
-	int		status;
+	static int	result = 0;
+	double		time = (float)usec / 1e6 + (double)sec;
+	char		sec_string[32];
+	char		usec_string[32];
 	int		pid;
+	int		status;
 
 	assert(filename);
-	assert(time);
 	assert(signature);
+	assert(time > 0);
 	assert(rqstp);
 
-	/*
-	 * Ignore any request with the same filename and timestamp
-	 */
-	if ( time != last_time && strcmp(filename, last_filename) ) {
-		last_time = time;
-		if ( last_filename ) {
-			free(last_filename);
-		}
-		last_filename = strdup(filename);
+	syslog(LOG_INFO, "411_alert received (file=\"%s\", time=%.6f)", filename, time);
 
-		result = 1;
-
-		syslog(LOG_INFO, "411_alert received (file=\"%s\", time=%ld)",
-		       filename, time);
-
-		switch ( pid=fork() ) {
-		case -1:
-			syslog(LOG_ERR, "%s", "cannot fork");
-			result = -1;
-			break;
-		case 0:			/* child process */
-			execl("/opt/rocks/sbin/411-alert-handler", "411-alert-handler",
-			      filename, signature, NULL);
-		default:		/* parent process */
-			waitpid(pid, &status, 0);
-		}
- 
+	switch ( pid=fork() ) {
+	case -1:
+		syslog(LOG_ERR, "%s", "cannot fork");
+		result = -1;
+		break;
+	case 0:			/* child process */
+		sprintf(sec_string, "%lu", sec);
+		sprintf(usec_string, "%u", usec);
+		status = execl("/opt/rocks/sbin/411-alert-handler", "411-alert-handler",
+		      filename, signature, &sec_string, &usec_string, NULL);
+		syslog(LOG_ERR, "411-alert-handler could not run (%s)", strerror(errno));
+		exit(-1);
+	default:		/* parent process */
+		waitpid(pid, &result, 0);
 	}
-	else {
-		syslog(LOG_INFO, "411_alert received (dup)");
-		result++;	/* count number of dups */
-	}
+
+	syslog(LOG_INFO, "411_alert processed (file=\"%s\", time=%.6f, status=%d)",
+	       filename, time, result);
 
 	return &result;
 } /* channel_alert_1_svc */

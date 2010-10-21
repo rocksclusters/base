@@ -58,6 +58,13 @@
 # @Copyright@
 #
 # $Log: 411-alert-handler.py,v $
+# Revision 1.2  2010/10/21 20:51:17  mjk
+# - timestamp is now a timeval (microseconds)
+# - re-entry testing is done in 411-alert-handler using a pickle file for state
+# - more logging
+#
+# Looks good, but need to turn down the logging to keep the network quite.
+#
 # Revision 1.1  2010/10/20 21:12:34  mjk
 # works
 #
@@ -232,6 +239,7 @@ import time
 import random
 import syslog
 import urllib
+import pickle
 import rocks.service411
 
 
@@ -241,8 +249,6 @@ class Listen411(rocks.service411.Service411):
 		rocks.service411.Service411.__init__(self)
 
 	def run(self, url, sig):
-
-		syslog.syslog(syslog.LOG_INFO, 'handle (file="%s")' % url)
 
 		# If this is called as a handler it will have a signature that needs
 		# to be verfified.  Otherwise allow to be called manually to update
@@ -292,19 +298,46 @@ class Listen411(rocks.service411.Service411):
 				# hit the network to the frontend, making things worse.
 				retry -= 1
 
-				
 
 syslog.openlog('411-alert-handler', syslog.LOG_PID, syslog.LOG_LOCAL0)
 
-if len(sys.argv) == 3:
-	file = sys.argv[1]
-	sig  = sys.argv[2]
-elif len(sys.argv) == 2:
-	file = sys.argv[1]
-	sig  = None
+if len(sys.argv) == 5:
+	filename  = sys.argv[1]
+	signature = sys.argv[2]
+	sec       = long(sys.argv[3])
+	usec      = int(sys.argv[4])
 else:
 	sys.exit(-1);
 
-handler = Listen411()
-handler.run(file, sig)
+time = sec + usec / 1e6
+syslog.syslog(syslog.LOG_INFO, 'handle (file="%s" time="%.6f")' % (filename, time))
 
+# 411-alert-handler.pkl keeps a list of timestamps of all the file alerts we have
+# seen.  If an alert has an identical or early timestamp it is assumed to be a
+# repeated message and is ignored.  We also return 1 to indicate the repeat.
+
+timestamps = {}
+if os.path.exists('/tmp/411-alert-handler.pkl'):
+	fin = open('/tmp/411-alert-handler.pkl', 'rb')
+	timestamps = pickle.load(fin)
+	fin.close()
+
+if timestamps.has_key(filename) and timestamps[filename] == time:
+	syslog.syslog(syslog.LOG_INFO, 'dup (file="%s" time="%.6f")' % (filename, time))
+	sys.exit(1)
+
+timestamps[filename] = time
+	
+# Call the old (modified) listener class code to verify the signature, download the
+# file, and update the file on disk.
+
+handler = Listen411()
+handler.run(filename, signature)
+
+# Write the updated timestamps to disk, for our next run.
+
+fout = open('/tmp/411-alert-handler.pkl', 'wb')
+pickle.dump(timestamps, fout)
+fout.close()
+
+sys.exit(0)
