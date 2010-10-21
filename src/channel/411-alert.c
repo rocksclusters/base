@@ -1,9 +1,13 @@
-/* $Id: 411-alert.c,v 1.2 2010/10/20 01:41:53 mjk Exp $
+/* $Id: 411-alert.c,v 1.3 2010/10/21 16:59:45 mjk Exp $
  *
  * @Copyright@
  * @Copyright@
  * 
  * $Log: 411-alert.c,v $
+ * Revision 1.3  2010/10/21 16:59:45  mjk
+ * more logging
+ * copy the arg strings in case RPC is doing something odd
+ *
  * Revision 1.2  2010/10/20 01:41:53  mjk
  * daemonized
  * calls out to python code for 411-listen
@@ -39,11 +43,11 @@ main(int argc, char *argv[])
 
 	openlog("411-alert", LOG_PID, LOG_LOCAL0);
 
-	args.filename	= argv[1];
+	args.filename	= strdup(argv[1]);
 	args.time	= time(NULL);
-	args.signature	= argv[2];
+	args.signature	= strdup(argv[2]);
 
-	syslog(LOG_INFO, "call sent (file=\"%s\")", args.filename);
+	syslog(LOG_INFO, "call sent (file=\"%s\", time=%ld)", args.filename, args.time);
 
 	status = clnt_broadcast(CHANNEL_PROG, CHANNEL_VERS, CHANNEL_411_ALERT,
 				(xdrproc_t)xdr_channel_411_alert_1_argument,
@@ -54,6 +58,9 @@ main(int argc, char *argv[])
 		syslog(LOG_ERR, "call failed (%d)", status);
 		return -1;
 	}
+
+	free(args.filename);
+	free(args.signature);
 
 	return 0;
 } /* main */

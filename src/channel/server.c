@@ -1,9 +1,13 @@
-/* $Id: server.c,v 1.3 2010/10/20 21:12:34 mjk Exp $
+/* $Id: server.c,v 1.4 2010/10/21 16:59:45 mjk Exp $
  *
  * @Copyright@
  * @Copyright@
  *
  * $Log: server.c,v $
+ * Revision 1.4  2010/10/21 16:59:45  mjk
+ * more logging
+ * copy the arg strings in case RPC is doing something odd
+ *
  * Revision 1.3  2010/10/20 21:12:34  mjk
  * works
  *
@@ -47,8 +51,9 @@ int *
 channel_411_alert_1_svc(char *filename, unsigned long time, char *signature,
 			struct svc_req *rqstp)
 {
-	static int	result = 1;
-	static time_t	last = 0; /* time of last call */
+	static int	result		= 1;
+	static char	*last_filename	= NULL;
+	static time_t	last_time	= 0;
 	int		status;
 	int		pid;
 
@@ -57,11 +62,20 @@ channel_411_alert_1_svc(char *filename, unsigned long time, char *signature,
 	assert(signature);
 	assert(rqstp);
 
-	if ( time != last ) {	/* prevent calling the handler twice for same alert */
-		result = 1;
-		last   = time;
+	/*
+	 * Ignore any request with the same filename and timestamp
+	 */
+	if ( time != last_time && strcmp(filename, last_filename) ) {
+		last_time = time;
+		if ( last_filename ) {
+			free(last_filename);
+		}
+		last_filename = strdup(filename);
 
-		syslog(LOG_INFO, "411_alert received (file=\"%s\")", filename);
+		result = 1;
+
+		syslog(LOG_INFO, "411_alert received (file=\"%s\", time=%ld)",
+		       filename, time);
 
 		switch ( pid=fork() ) {
 		case -1:
