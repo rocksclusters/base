@@ -1,9 +1,12 @@
 <?xml version="1.0" standalone="no"?>
 
-<graph>
+<graph roll="base">
 
 	<changelog>
 	$Log: base.xml,v $
+	Revision 1.61  2010/10/21 00:17:34  anoop
+	Make the partitioning code part of the linux installation only
+	
 	Revision 1.60  2010/05/20 00:31:44  bruno
 	gonna get some serious 'star power' off this commit.
 	
@@ -382,7 +385,7 @@
 		<to>411-base</to>
 		<to>greceptor</to>
 		<to>mail</to>
-		<to>partition</to>
+		<to os="linux">partition</to>
 		<to os="linux">yum</to>
 	</edge>
 
@@ -449,7 +452,7 @@
 		<to>resolv</to>
 		<to>shared-memory</to>
 		<to>client-firewall</to>
-		<to>partitions-save</to>
+		<to os="linux">partitions-save</to>
 		<to>routes-client</to>
 	</edge>
 
@@ -470,7 +473,7 @@
 	</edge>
 
 	<edge from="partition">
-		<to>do-partition</to>
+		<to os="linux">do-partition</to>
 	</edge>
 
 	<edge from="compilers">
