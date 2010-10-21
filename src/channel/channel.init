@@ -2,7 +2,7 @@
 #
 # $RCSfile: channel.init,v $
 #
-# chkconfig: 2345 11 70
+# chkconfig: 2345 20 70
 # description: channel startup
 #
 # @Copyright@
@@ -59,6 +59,9 @@
 # @Copyright@
 #
 # $Log: channel.init,v $
+# Revision 1.2  2010/10/21 00:29:13  bruno
+# start channeld after rpc services
+#
 # Revision 1.1  2010/10/20 23:41:04  mjk
 # forgot to make this into a service
 # needs a solaris version as well
