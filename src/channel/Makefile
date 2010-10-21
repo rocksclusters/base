@@ -1,9 +1,12 @@
-# $Id: Makefile,v 1.4 2010/10/20 23:44:46 bruno Exp $
+# $Id: Makefile,v 1.5 2010/10/21 00:21:00 bruno Exp $
 #
 # @Copyright@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.5  2010/10/21 00:21:00  bruno
+# name the init script 'channeld'
+#
 # Revision 1.4  2010/10/20 23:44:46  bruno
 # tweak
 #
@@ -49,7 +52,7 @@ install:: build
 	install -m544 411-alert $(ROOT)/$(PKGROOT)/sbin/
 	install -m544 411-alert-handler $(ROOT)/$(PKGROOT)/sbin/
 	install -m544 channeld  $(ROOT)/$(PKGROOT)/sbin/
-	install -m755 channel.init $(ROOT)/etc/rc.d/init.d/
+	install -m755 channel.init $(ROOT)/etc/rc.d/init.d/channeld
 
 clean::
 	-rm *.o
