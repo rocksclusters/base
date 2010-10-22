@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.15 2010/09/07 23:53:03 bruno Exp $
+# $Id: __init__.py,v 1.16 2010/10/22 20:06:37 phil Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.16  2010/10/22 20:06:37  phil
+# With Permission from the release god ... firewall rewrite and restart
+# is now part of sync.host.firewall command
+#
 # Revision 1.15  2010/09/07 23:53:03  bruno
 # star power for gb
 #
@@ -171,12 +175,6 @@ class Command(rocks.commands.sync.host.command):
 			cmd += '"cat > /etc/sysconfig/static-routes" '
 			cmd += '2> /dev/null'
 
-			cmd += '; /opt/rocks/bin/rocks report host firewall '
-			cmd += '%s | ' % host
-			cmd += '/opt/rocks/bin/rocks report script '
-			cmd += 'attrs="%s" | ' % attrs
-			cmd += 'ssh %s bash > /dev/null 2>&1 ' % host
-
 			p = Parallel(cmd)
 			threads.append(p)
 			p.start()
@@ -197,11 +195,7 @@ class Command(rocks.commands.sync.host.command):
 					#
 					time.sleep(0.001)
 
-			cmd = 'ssh %s "/sbin/service iptables stop ' % host
-			cmd += '> /dev/null 2>&1'
-			cmd += ' ; /sbin/service network restart '
-			cmd += '> /dev/null 2>&1'
-			cmd += ' ; /sbin/service iptables start '
+			cmd = 'ssh %s "/sbin/service network restart ' % host
 			cmd += '> /dev/null 2>&1" '
 
 			p = Parallel(cmd)
@@ -214,6 +208,7 @@ class Command(rocks.commands.sync.host.command):
 		for thread in threads:
 			thread.join(timeout)
 
+		self.command('sync.host.firewall', hosts)
 		self.runPlugins(hosts)
 
 		#
