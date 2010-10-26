@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.3 2010/09/07 23:53:03 bruno Exp $
+# $Id: __init__.py,v 1.4 2010/10/26 17:47:56 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.4  2010/10/26 17:47:56  bruno
+# doc fix
+#
 # Revision 1.3  2010/09/07 23:53:03  bruno
 # star power for gb
 #
@@ -83,7 +86,7 @@ class Command(command):
 	This does not rebuild the distribution or update the backend nodes.
 	
 	<example cmd='update'>
-	Updates the Frotend.
+	Updates the frontend.
 	</example>
 	"""
 	
