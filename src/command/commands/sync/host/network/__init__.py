@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.16 2010/10/22 20:06:37 phil Exp $
+# $Id: __init__.py,v 1.17 2010/10/27 22:25:01 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.17  2010/10/27 22:25:01  bruno
+# hack to get metrics to be reported after the network is restarted with
+# 'rocks sync host network'
+#
 # Revision 1.16  2010/10/22 20:06:37  phil
 # With Permission from the release god ... firewall rewrite and restart
 # is now part of sync.host.firewall command
@@ -216,4 +220,13 @@ class Command(rocks.commands.sync.host.command):
 		# update /etc/hosts, /etc/dhcpd.conf, etc.).
 		#
 		self.command('sync.config')
+
+		#
+		# hack for ganglia
+		#
+		if self.db.getHostname('localhost') in hosts and \
+				os.path.exists('/etc/ganglia/gmond.conf'):
+
+			self.command('run.host', [ 'localhost',
+				'service gmond restart > /dev/null 2>&1' ] )
 
