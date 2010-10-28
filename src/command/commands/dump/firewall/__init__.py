@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.4 2010/09/07 23:52:52 bruno Exp $
+# $Id: __init__.py,v 1.5 2010/10/28 21:11:36 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.5  2010/10/28 21:11:36  bruno
+# no need to protect the firewall dump output with CDATA, the restore roll
+# already does that and embedded CDATA statements is an XML error.
+#
 # Revision 1.4  2010/09/07 23:52:52  bruno
 # star power for gb
 #
@@ -76,8 +80,6 @@ class command(rocks.commands.NetworkArgumentProcessor,
 	rocks.commands.dump.command):
 
 	def dump_firewall(self, level='', id=''):
-		self.addText('<![CDATA[\n')
-
 		for i, o, s, p, a, c, f, cmt in self.db.fetchall():
 			cmd = []
 			if i == 0:
@@ -109,8 +111,6 @@ class command(rocks.commands.NetworkArgumentProcessor,
 
 			self.dump('add %s firewall %s %s' % (level, id,
 				' '.join(cmd)))
-
-		self.addText(']]>\n')
 
 
 class Command(command):
