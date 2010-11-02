@@ -11,6 +11,8 @@ sys.path.append('/usr/lib64/python2.4/site-packages')
 sys.path.append('/usr/lib/python2.4/site-packages')
 import isys
 
+import time
+
 class RocksPartition:
 	saved_fstab = []
 	raidinfo = ''
@@ -409,6 +411,7 @@ class RocksPartition:
 						nodedisks[key].append(n)
 
 		syslog.syslog('getNodePartInfo:nodedisks:%s' % (nodedisks))
+
 		return nodedisks
 
 
@@ -448,7 +451,13 @@ class RocksPartition:
 					#
 					disk = disk + 'p'
 
-				list.append('%s%d' % (disk, partnumber))
+				if len(l) > 5:
+					fstype = l[5]
+				else:
+					fstype = ''
+
+				list.append(('%s%d' % (disk, partnumber),
+					fstype))
 
 		return list
 
@@ -508,7 +517,7 @@ class RocksPartition:
 
 		p = 'part '
 		p += 'swap --size=%d ' % (self.RocksGetPartsize('swap'))
-		p += '--ondisk=%s ' % (disk)
+		p += '--fstype=swap --ondisk=%s ' % (disk)
 		self.mountpoints.append('swap')
 		parts.append(p)
 
@@ -536,7 +545,12 @@ class RocksPartition:
 
 		lines = []
 		for disk in disks:
-			for partition in self.listDiskPartitions(disk):
+			for (partition, fstype) in \
+					self.listDiskPartitions(disk):
+
+				if not fstype or fstype == 'linux-swap':
+					continue
+
 				os.system('mount /dev/%s %s' \
 					% (partition, mountpoint) + \
 					' > /dev/null 2>&1')
@@ -573,9 +587,12 @@ class RocksPartition:
 			(dev,start,size,id,fstype,bootflags,partflags,mnt) = \
 				part
 
+			if not fstype or fstype == 'swap':
+				continue
+
 			devname = '/dev/%s' % (dev)
-			os.system('mount %s %s' % (devname, mountpoint) +
-				' > /dev/null 2>&1')
+
+			os.system('mount %s %s' % (devname, mountpoint))
 
 			try:
 				filename = mountpoint + '/.rocks-release'
