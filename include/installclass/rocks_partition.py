@@ -587,7 +587,7 @@ class RocksPartition:
 			(dev,start,size,id,fstype,bootflags,partflags,mnt) = \
 				part
 
-			if not fstype or fstype == 'swap':
+			if not fstype or fstype == 'linux-swap':
 				continue
 
 			devname = '/dev/%s' % (dev)
