@@ -1,9 +1,12 @@
-/* $Id: 411-alert.c,v 1.5 2010/10/21 22:03:18 mjk Exp $
+/* $Id: 411-alert.c,v 1.6 2010/11/04 02:20:15 anoop Exp $
  *
  * @Copyright@
  * @Copyright@
  * 
  * $Log: 411-alert.c,v $
+ * Revision 1.6  2010/11/04 02:20:15  anoop
+ * Solaris compatibility fixes
+ *
  * Revision 1.5  2010/10/21 22:03:18  mjk
  * - linux and solaris both send only .info and above to the frontend
  *   debug stays off the network
@@ -32,6 +35,13 @@
 
 #include <stdio.h>
 #include <syslog.h>
+
+#if defined (__SVR4) && defined (__sun)
+#include <stdlib.h>
+#include <strings.h>
+#define PORTMAP
+#endif
+
 #include <rpc/rpc.h>
 #include <rpc/pmap_clnt.h>
 #include <sys/socket.h>

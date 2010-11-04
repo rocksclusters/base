@@ -1,9 +1,12 @@
-# $Id: Makefile,v 1.3 2010/10/19 23:06:29 mjk Exp $
+# $Id: Makefile,v 1.4 2010/11/04 02:20:41 anoop Exp $
 #
 # @Copyright@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.4  2010/11/04 02:20:41  anoop
+# Solaris compatibility fixes
+#
 # Revision 1.3  2010/10/19 23:06:29  mjk
 # c is hard
 #
@@ -25,10 +28,10 @@ build:
 install:: build
 	mkdir -p $(ROOT)/$(PKGROOT)/include/rocks
 	mkdir -p $(ROOT)/$(PKGROOT)/lib
-	install -m444 include/*.h $(ROOT)/$(PKGROOT)/include/rocks/
-	install -m444 src/*.h $(ROOT)/$(PKGROOT)/include/rocks/
-	install -m444 src/*.x $(ROOT)/$(PKGROOT)/include/rocks/
-	install -m755 src/*.so $(ROOT)/$(PKGROOT)/lib/
+	$(INSTALL) -m444 include/*.h $(ROOT)/$(PKGROOT)/include/rocks/
+	$(INSTALL) -m444 src/*.h $(ROOT)/$(PKGROOT)/include/rocks/
+	$(INSTALL) -m444 src/*.x $(ROOT)/$(PKGROOT)/include/rocks/
+	$(INSTALL) -m755 src/*.so $(ROOT)/$(PKGROOT)/lib/
 
 clean::
 	$(MAKE) -C src clean

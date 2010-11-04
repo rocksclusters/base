@@ -1,9 +1,12 @@
-/* $Id: server.c,v 1.6 2010/10/21 22:03:18 mjk Exp $
+/* $Id: server.c,v 1.7 2010/11/04 02:20:15 anoop Exp $
  *
  * @Copyright@
  * @Copyright@
  *
  * $Log: server.c,v $
+ * Revision 1.7  2010/11/04 02:20:15  anoop
+ * Solaris compatibility fixes
+ *
  * Revision 1.6  2010/10/21 22:03:18  mjk
  * - linux and solaris both send only .info and above to the frontend
  *   debug stays off the network
@@ -39,7 +42,17 @@
 #include <syslog.h>
 #include <assert.h>
 #include <errno.h>
+
+#if defined (__linux__)
 #include <rpc/pmap_clnt.h>
+#endif
+
+#if defined (__SVR4) && defined (__sun)
+#define PORTMAP
+#include <rpc/rpc.h>
+#include <stdlib.h>
+#endif
+
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <sys/wait.h>

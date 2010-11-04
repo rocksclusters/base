@@ -1,9 +1,12 @@
-# $Id: Makefile,v 1.5 2010/10/21 00:21:00 bruno Exp $
+# $Id: Makefile,v 1.6 2010/11/04 02:20:15 anoop Exp $
 #
 # @Copyright@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.6  2010/11/04 02:20:15  anoop
+# Solaris compatibility fixes
+#
 # Revision 1.5  2010/10/21 00:21:00  bruno
 # name the init script 'channeld'
 #
@@ -27,38 +30,45 @@ REDHAT.ROOT	= $(CURDIR)/../../
 -include $(ROCKSROOT)/etc/Rules.mk
 include Rules.mk
 
+OS=$(shell ../devel/devel/bin/os)
+ARCH=$(shell ../devel/devel/bin/arch)
+
+ifeq ($(OS), linux)
 CFLAGS = -Wall -g 
-CPPFLAGS = -I /opt/rocks/include -iquote /opt/rocks/include/rocks
-LDFLAGS = -L /opt/rocks/lib 
+endif
+
+CPPFLAGS = -I/opt/rocks/include
+LDFLAGS = -L/opt/rocks/lib -lrocks
+
+ifeq ($(OS), sunos)
+LDFLAGS += -lrpcsvc -lnsl
+endif
 
 channel.x:
 	cp $(PKGROOT)/include/rocks/$@ .
 
 channel_svc.c: channel.x
+	rpcgen -h -N -o channel.h $^
 	rpcgen -m -N -o $@ $^
 
 channeld: server.o channel_svc.o
-	$(CC) $(CFLAGS) $(LDFLAGS) -lrocks -o $@ $^
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
 411-alert: 411-alert.o
-	$(CC) $(CFLAGS) $(LDFLAGS) -lrocks -o $@ $^
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
 
 build: channeld 411-alert 411-alert-handler
 
 install:: build
 	mkdir -p $(ROOT)/$(PKGROOT)/sbin
-	mkdir -p $(ROOT)/etc/rc.d/init.d
-	install -m544 411-alert $(ROOT)/$(PKGROOT)/sbin/
-	install -m544 411-alert-handler $(ROOT)/$(PKGROOT)/sbin/
-	install -m544 channeld  $(ROOT)/$(PKGROOT)/sbin/
-	install -m755 channel.init $(ROOT)/etc/rc.d/init.d/channeld
+	mkdir -p $(ROOT)/$(INIT_SCRIPTS_DIR)
+	$(INSTALL) -m544 411-alert $(ROOT)/$(PKGROOT)/sbin/
+	$(INSTALL) -m544 411-alert-handler $(ROOT)/$(PKGROOT)/sbin/
+	$(INSTALL) -m544 channeld  $(ROOT)/$(PKGROOT)/sbin/
+	$(INSTALL) -m755 channel.init $(ROOT)/$(INIT_SCRIPTS_DIR)/channeld
 
 clean::
 	-rm *.o
 	-rm channeld 411-alert 411-alert-handler
-	-rm channel_svc.c channel.x
-
-
-
-
+	-rm channel_svc.c channel.x channel.h
