@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: build.py,v $
+# Revision 1.41  2010/11/05 18:19:45  bruno
+# added more files to packages.md5 (e.g., comps.xml, stage2.img, etc.)
+#
 # Revision 1.40  2010/09/07 23:53:08  bruno
 # star power for gb
 #
@@ -1240,8 +1243,8 @@ class DistributionBuilder(Builder):
 
 		self.insertNetstage()
 		self.buildKickstart()
-		self.buildProductImg()
 		self.createrepo()
+		self.buildProductImg()
 		self.makeDirListing()
 	
 		return
@@ -1343,10 +1346,16 @@ class DistributionBuilder(Builder):
 	cwd = os.getcwd()
 
 	#
-	# make an MD5 checksum for all the RPMS
+	# make an MD5 checksum for all files in the distribution
 	#
-	os.chdir(self.dist.getRPMSPath())
-	cmd = '/usr/bin/md5sum *.rpm > %s/packages.md5' % (productfilesdir)
+	# the 'sed' command strips off the leading "./" from the pathnames
+	#
+	# don't include the build, SRPMS and force directories
+	#
+	os.chdir(self.dist.getReleasePath())
+	cmd = '/usr/bin/md5sum `find -L . -type f | sed "s/^\.\///" | '
+	cmd += 'egrep -v "^build|^SRPMS|^force"` '
+	cmd += '> %s/packages.md5' % (productfilesdir)
 	os.system(cmd)
 
 	#
