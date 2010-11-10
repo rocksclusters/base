@@ -151,6 +151,10 @@
 	<para>DNS resolution for multiple domains.</para>
 
 	<para>
+	The DNS naming system on the frontend now supports multiple zones,
+	where each subnet managed by the frontend can be put into a different
+	zone.
+	The DNS service can be turned on or off for each individual zone.
 	</para>
 </listitem>
 
@@ -270,6 +274,10 @@
 	/opt/rocks/share/devel on a frontend.</para>
 
 	<para>Area51: tripwire updated to v2.4.2.</para>
+
+	<para>Bio: refreshed CPAN modules.</para>
+	<para>Bio: refreshed CPAN MPI-Blast.</para>
+	<para>Bio: added Celera Whole Genome Sequence Assembler.</para>
 
 	<para>Condor: updated to v7.4.4.</para>
 
@@ -391,6 +399,9 @@
 
 	<para>Base: The "pre" tag now supports the "interpreter="
 	attribute.</para>
+
+	<para>Bio: eliminated "Permission Denied" errors during multiple runs
+	on the same BLAST database by different users.</para>
 
 	<para>SGE: made the job collection metric more efficient.
 	Previously, when
