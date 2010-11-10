@@ -62,7 +62,7 @@
 </listitem>
 
 <listitem>
-	<para>Channel bonding for nodes is now controled by the Rocks command
+	<para>Channel bonding for nodes is now controlled by the Rocks command
 	line.</para>
 
 	<para>
@@ -75,7 +75,7 @@
 </listitem>
 
 <listitem>
-	<para>All nodes' firewall rules are controled by the Rocks command
+	<para>All nodes' firewall rules are controlled by the Rocks command
 	line.</para>
 
 	<para>
@@ -124,7 +124,7 @@
 	<para>
 	Several Rocks commands were added to support this feature:
 	"rocks create keys" (to create public/private key pairs),
-	"rocks set host power" (to power up/down VMs and to forcably install
+	"rocks set host power" (to power up/down VMs and to forcibly install
 	a VM, akin to PXE booting a physical machine), and
 	"rocks open host console" (to attach to a VM's console).
 	</para>
@@ -328,7 +328,7 @@
 	<para>Web-server: wordpress updated to v3.0.1.</para>
 
 	<para>Xen: any node can how host Xen virtual machines. This is
-	controled with the "xen" attribute.</para>
+	controlled with the "xen" attribute.</para>
 
 	<para>Xen: set the power for all nodes in a virtual cluster (except
 	the VM frontend) with one command ("rocks set cluster power ...").
@@ -354,7 +354,7 @@
 	<para>Base: If an ethernet switch sends out a DHCP request, the DHCP
 	server no longer sends it the "filename" and "next server" in the
 	DHCP response.
-	This caused some swithes not to properly load their firmware. More
+	This caused some switches not to properly load their firmware. More
 	generally, this is controlled by the "kickstartable", "dhcp_filename"
 	and "dhcp_nextserver" attributes.</para>
 
