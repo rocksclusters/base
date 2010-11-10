@@ -2,6 +2,412 @@
 	<title>Release Notes</title>
 
 <section>
+<title>Release 5.4 - changes from 5.3</title>
+
+<section>
+	<title> New Features </title>
+
+<itemizedlist>
+
+<listitem>
+	<para>Redesign of the Avalanche Installer.</para>
+
+	<para>
+	While observing the performance of the Avalanche Installer on a
+	1000-node machine, it became obvious that we must reduce as much
+	traffic to the frontend as possible.
+	This led to replacing the python BitTorrent-based installer with a
+	BitTorrent-inspired installer written in C.
+	The C code allows us to put more files into the peer-to-peer network,
+	most notably: product.img (160KB), stage2.img (108MB) and
+	updates.img (98MB).
+	</para>
+
+	<para>
+	To further reduce traffic to the frontend, the frontend now sends
+	package predictions to installing nodes.
+	When a node asks for a package, the tracker on the frontend sends
+	a list of node addresses where that package can be found, plus a list of
+	the next 9 packages that node will most likely ask for next.
+	When similar appliances are concurrently installing, this reduces
+	tracker traffic by 10x.
+	</para>
+
+	<para>
+	Installing nodes can be grouped.
+	When an installing node asks the tracker for the location of a package
+	and if other nodes are concurrently installing, the tracker will
+	favor nodes that are in the same group as the requesting node, that
+	is, the list the tracker sends back to the installing node will have
+	nodes from the same group as the installing node at the top of the list.
+	The default grouping is by rack, but it can be controlled by the "coop"
+	attribute.
+	For example, if you would like to put all nodes from rack 0 and rack 1
+	in the same group (named "red"), you would execute: "rocks set host
+	attr rack0 rack1 coop red".
+	</para>
+	
+	<para>
+	One can specify multiple trackers and multiple "package servers".
+	A package server is a node that is "guaranteed" to have the
+	requested file (e.g., the frontend).
+	</para>
+
+	<para>
+	For every downloaded file, an MD5 checksum verification is performed.
+	This detects the case where a peer may have corrupted a file and 
+	prevents the corrupted file from spreading into the
+	peer-to-peer network.
+	</para>
+</listitem>
+
+<listitem>
+	<para>Channel bonding for nodes is now controled by the Rocks command
+	line.</para>
+
+	<para>
+	Channel bonding configuration for a node is stored in the database
+	and can be added, removed or modified with the Rocks command line
+	(e.g., "rocks add host bonded ...").
+	After channel bonding is configured for a node, it can be dynamically
+	applied by executing "rocks sync host network ...".
+	</para>
+</listitem>
+
+<listitem>
+	<para>All nodes' firewall rules are controled by the Rocks command
+	line.</para>
+
+	<para>
+	The rules for all the nodes are stored in the database and can be added,
+	removed or modified with the Rocks command line (e.g., "rocks open
+	host firewall", "rocks close host firewall", "rocks remove host
+	firewall").
+	After a node's firewall settings are changed, they can be applied to
+	the node on-the-fly with "rocks sync host firewall 'hostname'"
+	(this command is also called when the user executes
+	"rocks sync host network ...").
+	</para>
+</listitem>
+
+<listitem>
+	<para>Introduction of "Air Traffic Control".</para>
+
+	<para>
+	We've developed a service known as the "Airboss" that resides on the
+	physical frontend (in Dom0) and it allows non-root users to control
+	their VMs.
+	The motivation for this service is that libvirt (a virtualization API
+	written by RedHat that can control several different virtualization
+	implementations) assumes "root" access to control and monitor VMs.
+	</para>
+
+	<para>
+	The Airboss in Rocks is a small service that uses digitally signed
+	messages to give non-root users access to their virtual cluster (and
+	only their virtual cluster).
+	The Airboss relies upon public/private key pairs to validate messages.
+	The administrator of the physical hosting cluster must issue a single
+	command to associate a public key with a particular virtual cluster.
+	At that point, the full process of powering up, powering down and
+	installing a virtual
+	cluster can be controlled by the (authorized) non-root user.
+	</para>
+
+	<para>
+	In addition to VM power control, we've also added the ability to
+	attach to a VM's console.
+	This allows users to see the entire boot sequence for a VM starting
+	from the "BIOS" boot messages.
+	</para>
+
+	<para>
+	Several Rocks commands were added to support this feature:
+	"rocks create keys" (to create public/private key pairs),
+	"rocks set host power" (to power up/down VMs and to forcably install
+	a VM, akin to PXE booting a physical machine), and
+	"rocks open host console" (to attach to a VM's console).
+	</para>
+</listitem>
+
+<listitem>
+	<para>"greceptor" replaced with "channeld".</para>
+
+	<para>
+	The wire protocol for Ganglia messages changed which required a
+	major overhaul to greceptor. We made the decision to write a simple
+	RPC-based service (named 'channeld') to take over the responsibilities
+	of greceptor. Channeld accepts 411-put requests and acts on them by
+	using 411-get to download files under the control of 411.
+	</para>
+
+	<para>
+	All other components of 411 remain unchanged, only the notification
+	engine has been enhanced.
+	</para>
+</listitem>
+
+<listitem>
+	<para>DNS resolution for multiple domains.</para>
+
+	<para>
+	</para>
+</listitem>
+
+<listitem>
+	<para>Login appliance support.</para>
+
+	<para>
+	A node can be configured as a Login appliance.
+	By default, a Login appliance can submit jobs, but it cannot execute
+	jobs.
+	</para>
+</listitem>
+
+<listitem>
+	<para>Set the name of a host based on the name of a specific
+	network interface.</para>
+
+	<para>
+	The "primary_net" attribute allows nodes to have /bin/hostname set to
+	the name of a network interface other than "private".
+	This is useful for login or other multiple interface appliances.
+	</para>
+</listitem>
+
+<listitem>
+	<para>Easily swap 2 interfaces with one Rocks command.</para>
+
+	<para>
+	To swap the settings of 2 interfaces, execute "rocks swap host
+	interface ...".
+	</para>
+</listitem>
+
+<listitem>
+	<para>Created a GIT repository for Rocks-related source code.</para>
+
+	<para>
+	The host "git.rocksclusters.org" is a GIT repository for all core
+	Rocks code, UCSD Triton Resource code and Rocks contrib code.
+	</para>
+</listitem>
+
+</itemizedlist>
+
+</section>
+
+<section>
+	<title> Enhancements </title>
+
+	<para>OS: Based on CentOS release 5/update 5 and all updates as of
+	November 2, 2010.</para>
+
+	<para>Base: Anaconda installer updated to v11.1.2.209.</para>
+
+	<para>Base : no longer remap the private network to "eth0", instead
+	Rocks keeps track of the network a node kickstarted from and maps that
+	network to the "private" network. For example, if a node kickstarted
+	off "eth1", then "eth1" will be mapped to the private network.</para>
+
+	<para>Base : hardened the Anaconda installer to more aggressively write
+	the grub configuration files onto the boot disk.
+	This helps to mitigate the "hang while trying to load Grub stage2"
+	issue.</para>
+
+	<para>Base : removed ext4 kernel module from installation environment.
+	We found that trying to mount a swap partition as an ext4 file system
+	frequently caused kernel panics during installations.</para>
+
+	<para>Base : added ksdevice=bootif to all the PXE boot targets.
+	This improves installation speed by reusing the IP address/interface
+	information when a node PXE boots.
+	Previously, a node would re-scan all ethernet interfaces.</para>
+
+	<para>Base : when a node XML file has a syntax error,
+	"rocks list host profile" prints out the name of the node XML file and
+	the line number where the syntax error occurred.</para>
+
+	<para>Base : "rocks run host" now spawns multiple parallel threads when
+	multiple hosts are supplied. Also added the following
+	parameters: timeout (thanks Tim Carlson!), delay, stats, collate and
+	num-threads.</para>
+
+	<para>Base : yum configuration default modified to bind to the
+	frontend's public IP instead of the private.
+	This facilitates easy package installation for external nodes (e.g.,
+	nodes running on a public cloud).</para>
+
+	<para>Base : non-existent attributes are considered to be false
+	conditionals when building configuration files.</para>
+
+	<para>Base : "precedes" method added for Rocks command plugins to
+	enable fine-grained ordering of plugin execution.</para>
+
+	<para>Base : network interfaces under Linux support 2 new specific
+	modes: "dhcp" and "noreport".
+	The "dhcp" mode indicates that the interface should always DHCP to
+	get its address.
+	The "noreport" mode specifies that no "ifcfg-*" file should be
+	written for the interface.
+	If a mode is not specified for an interface, then Rocks will create
+	an "ifcfg-*" file for the interface based on values set in the
+	database (just like it did in the previous release).</para>
+
+	<para>Base : IPMI now uses the interface channel column in the
+	networks table to specify the baseboard controller
+	channel number.</para>
+
+	<para>Base : text inside "changelog" tags is now wrapped in CDATA to
+	allow XML escape characters.
+	This is only supported for node XML files found within Rolls (not
+	for node XML files found under
+	/export/rocks/install/site-profiles.</para>
+
+	<para>Base : rolls can be built without a complete copy of the Rocks
+	source code.
+	They use the Rocks development environment found under
+	/opt/rocks/share/devel on a frontend.</para>
+
+	<para>Area51: tripwire updated to v2.4.2.</para>
+
+	<para>Condor: updated to v7.4.4.</para>
+
+	<para>Condor: automated Condor configuration completely retooled:
+	1) the configuration is Rocks command based instead of standalone
+	CondorConf tool,
+        2) it supports dynamic update of any/all configurations on nodes,
+        3) it uses Rocks command plugins to allow additional automated condor
+	config (e.g., via plugin, it can turn on MPI support).</para>
+
+	<para>Condor: supports a pool password (shared secret) for additional
+	host verification.</para>
+
+	<para>Condor: integrates with EC2 roll to extend Condor pools with
+	EC2 Hosts.</para>
+
+	<para>Condor: support added for port ranges to facilitate firewall
+	configuration.</para>
+
+	<para>Condor: local copy of Condor's manpages added to roll
+	documents.</para>
+
+	<para>Condor: support for updating Condor on nodes without
+	re-installation (e.g., rocks run host "yum update condor" ; rocks sync
+	host condor).</para>
+
+	<para>Ganglia: monitor-core updated to v3.1.7.</para>
+
+	<para>Ganglia: rrdtool updated to v1.4.4.</para>
+
+	<para>Ganglia: the Ganglia Roll can now be added on-the-fly to an
+	existing frontend.</para>
+
+	<para>Ganglia: all nodes send out their metric metadata every 3
+	minutes. In the past, when gmond was restarted on the frontend, it
+	couldn't collect metrics from the nodes because it had no metadata
+	from the nodes (and it didn't have a way to ask the nodes because the
+	nodes are configured in "deaf" mode).</para>
+
+	<para>HPC: iozone updated to v3.347.</para>
+	<para>HPC: iperf updated to v2.0.5.</para>
+	<para>HPC: MPICH2 updated to v1.2.1p1.</para>
+	<para>HPC: OpenMPI updated to v1.4.3.</para>
+
+	<para>HPC: rocks-openmpi is the default MPI and it is configured with
+	mpi-selector.</para>
+
+	<para>SGE: SGE updated to V62u5.</para>
+
+	<para>SGE: any host can be configured to be an execution host by
+	setting the host's "exec_host" and "sge" attributes to true and any
+	host can become a submission host by setting the host's "submit_host"
+	and "sge" attributes to true.</para>
+
+	<para>Web-server: mediawiki updated to v1.16.0.</para>
+	<para>Web-server: wordpress updated to v3.0.1.</para>
+
+	<para>Xen: any node can how host Xen virtual machines. This is
+	controled with the "xen" attribute.</para>
+
+	<para>Xen: set the power for all nodes in a virtual cluster (except
+	the VM frontend) with one command ("rocks set cluster power ...").
+	Power settings can be "on", "off" or "install" (turn on and force
+	installation).</para>
+
+	<para>Xen: allow virtual machines to define VLAN tagged interfaces.
+	Previously, VLAN tagging was only supported for physical
+	interfaces.</para>
+
+</section>
+
+<section>
+	<title> Bug Fixes </title>
+
+	<para>Base: non-root users can no longer see the encrypted passwords
+	with 'rocks list host attr'. Hashed passwords are now stored in
+	a 'shadow' column in the attribute tables.</para>
+
+	<para>Base: the "%" in "rocks run host %" now returns all hosts.
+	Thanks to Tom Rockwell for the fix.</para>
+
+	<para>Base: If an ethernet switch sends out a DHCP request, the DHCP
+	server no longer sends it the "filename" and "next server" in the
+	DHCP response.
+	This caused some swithes not to properly load their firmware. More
+	generally, this is controlled by the "kickstartable", "dhcp_filename"
+	and "dhcp_nextserver" attributes.</para>
+
+	<para>Base: "rocks set password" asks the user to confirm their new
+	password.</para>
+
+	<para>Base: when a node requests a kickstart file and if the frontend
+	determines that the frontend is too "busy", the kickstarting node now
+	correctly does a random backoff before re-requesting its kickstart
+	file. Prior to this fix, a node would backoff for 30 seconds.</para>
+
+	<para>Base: multiple conditionals can now be present in XML tags.</para>
+
+	<para>Base: fixed a graph traversal issue. In the past, if you had the
+	graph "a" (cond) to "b" to "c" and if "cond" was false, the graph
+	traversal would include "a" and "c". Now it just includes "a".</para>
+
+	<para>Base: permissions set in the "file" tag are preserved even if
+	there are other "file" tags for the same file that don't set the file's
+	permissions. The bug was when a later "file" tag without a "perms"
+	attribute was encountered, the file's permissions were cleared.</para>
+
+	<para>Base: "file" tags now support "os" conditionals.</para>
+
+	<para>Base: in insert-ethers, appliances that are marked "not
+	kickstartable" will not have to wait for a kickstart file. In the past,
+	one had to hit the "F9" (force quit) key to exit insert-ethers when
+	discovering non kickstartable appliances (e.g., ethernet switches).
+	</para>
+
+	<para>Base: IPMI configuration cleaned up.
+	Rocks no longer generates erroneous entries in modprobe.conf or
+	/etc/sysconfig/ifcfg-ipmi.</para>
+
+	<para>Base: The "pre" tag now supports the "interpreter="
+	attribute.</para>
+
+	<para>SGE: made the job collection metric more efficient.
+	Previously, when
+	100's of jobs are submitted to a frontend's queue, the SGE metric
+	would take so long to execute, it caused gmond to stop gathering
+	metrics for all hosts.</para>
+
+	<para>SGE: the number of CPUs array jobs consume are now correctly
+	counted.</para>
+
+</section>
+
+
+
+</section>
+
+<section>
 <title>Release 5.3 - changes from 5.2</title>
 
 <section>
