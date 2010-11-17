@@ -18,8 +18,8 @@ Instead, you need to put local name mappings in the file:
 </para>
 
 <para>
-<literal>
-/var/named/rocks.domain.local
+<literal><![CDATA[
+/var/named/<networkname>.domain.local]]>
 </literal>
 </para>
 
@@ -28,20 +28,27 @@ And reverse mappings (IP to name) in:
 </para>
 
 <para>
-<literal>
-/var/named/reverse.rocks.domain.local-network-prefix.local
+<literal><![CDATA[
+/var/named/reverse.<networkname>.domain.<networkprefix>.local]]>
 </literal>
 </para>
 
 <para>
-Where <emphasis>local-network-prefix</emphasis> for a default rocks is
-<emphasis>1.10</emphasis>.
-That is, the above file name would be:
+Where <emphasis>networkname</emphasis> for a default Rocks
+installation is <emphasis>private</emphasis> and
+<emphasis>networkprefix</emphasis> for a default Rocks
+installation is <emphasis>1.10</emphasis>.
+That is, the above file names would be:
 </para>
 
 <para>
+For forward mapping:
 <literal>
-/var/named/reverse.rocks.domain.1.10.local
+/var/named/private.domain.local
+</literal>
+For reverse mapping:
+<literal>
+/var/named/reverse.private.domain.1.10.local
 </literal>
 </para>
 
@@ -56,7 +63,7 @@ running configuration, execute:
 
 <para>
 These files are in the BIND configuration format, just like the standard
-<literal>rocks.domain</literal> and <literal>reverse.rocks.domain</literal>
+<literal>private.domain</literal> and <literal>reverse.private.domain</literal>
 files.
 </para>
 

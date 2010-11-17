@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.3 2010/09/07 23:53:00 bruno Exp $
+# $Id: __init__.py,v 1.4 2010/11/17 01:16:33 anoop Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.4  2010/11/17 01:16:33  anoop
+# Cleanup of DNS zone file issues.
+# Documentation fixed.
+#
 # Revision 1.3  2010/09/07 23:53:00  bruno
 # star power for gb
 #
@@ -149,11 +153,17 @@ $TTL 3D
 
 
 class Command(rocks.commands.report.command):
-	"""Prints out all the named <zone>.conf
-	   and reverse-zone.conf files in XML.
-	   <example cmd='report zones'>
-	   Outputs all the zone config files
-	   </example>
+	"""
+	Prints out all the named zone.conf and reverse-zone.conf files in XML.
+	To actually create these files, run the output of the command through
+	"rocks report script"
+	<example cmd='report zones'>
+	Prints contents of all the zone config files
+	</example>
+	<example cmd='report zones | rocks report script'>
+	Creates zone config files in /var/named
+	</example>
+	<related>sync dns</related>
 	"""
 
 	def hostlines(self, name, dnszone):
@@ -198,13 +208,19 @@ class Command(rocks.commands.report.command):
 		
 		filename = '/var/named/%s.domain.local' % name
 		s = ''
+		# If local file exists import from it
 		if os.path.isfile(filename):
-			s += "; import from %s\n" % filename
+			s += "\n;Imported from %s\n\n" % filename
 			file = open(filename, 'r')
 			s += file.read()
 			file.close()
-		
-		s += '\n'
+		# if it doesn't exist, create a stub file
+		else:
+			s += "</file>\n"
+			s += '<file name="%s" perms="0644">\n' % filename
+			s += ';Extra host mappings go here. Example\n'
+			s += ';myhost	A	10.1.1.1\n'
+
 		return s
 
 	def writeForward(self, serial, name, dnszone):
@@ -278,6 +294,7 @@ class Command(rocks.commands.report.command):
 			s += '; Extra reverse host mappings here. Like \n'
 			s += ';2.2.2 PTR myhost.local.\n'
 		else:
+			s += '\n;Imported from %s\n\n' % filename
 			f = open(filename, 'r')
 			s += f.read()
 			f.close()

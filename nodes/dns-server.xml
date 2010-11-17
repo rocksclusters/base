@@ -13,6 +13,10 @@
 
   <changelog>
   $Log: dns-server.xml,v $
+  Revision 1.7  2010/11/17 01:16:32  anoop
+  Cleanup of DNS zone file issues.
+  Documentation fixed.
+
   Revision 1.6  2009/03/04 20:15:30  bruno
   moved 'dbreport hosts' and 'dbreport resolv' into the command line
 
@@ -122,11 +126,6 @@
 
 <!-- write the DNS files -->
 /opt/rocks/bin/rocks sync dns
-
-<file name="/var/named/rocks.domain.local">
-; Extra host mappings here. Like:
-;myhost A 10.2.2.2
-</file>
 
 <!-- Enable the DNS server -->
 /sbin/chkconfig named on
