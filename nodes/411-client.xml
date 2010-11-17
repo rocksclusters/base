@@ -19,6 +19,9 @@
 
   <changelog>
   $Log: 411-client.xml,v $
+  Revision 1.10  2010/11/17 01:24:25  anoop
+  Solaris Compatibility fixes for 411 channeld
+
   Revision 1.9  2010/10/20 23:41:04  mjk
   forgot to make this into a service
   needs a solaris version as well
@@ -131,10 +134,16 @@
 
   </changelog>
 
-<post>
-
+<post os="linux">
 /sbin/chkconfig channeld on
+</post>
 
+<post os="sunos">
+cp /opt/rocks/share/channeld/channeld.xml /var/svc/manifest/network/channeld.xml
+<service name='network/channeld' enabled='yes'/>
+</post>
+
+<post>
 mkdir -p /etc/411-security
 
 <!-- Only root can read the 411 shared key. -->

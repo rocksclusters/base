@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+<!DOCTYPE service_bundle SYSTEM "/usr/share/lib/xml/dtd/service_bundle.dtd.1">
+
+<service_bundle type='manifest' name='ROCKSrocks-channel:channeld'>
+
+<service 
+	name='network/channeld'
+	type='service'
+	version='1'>
+
+	<create_default_instance enabled='false' />
+
+	<single_instance />
+
+	<dependency name='fs-local'
+		grouping='require_all'
+		restart_on='none'
+		type='service'>
+		<service_fmri
+			value='svc:/system/filesystem/local' />
+	</dependency>
+
+	<dependency name='fs-autofs'
+		grouping='optional_all'
+		restart_on='none'
+		type='service'>
+		<service_fmri value='svc:/system/filesystem/autofs' />
+	</dependency>
+
+	<dependency name='net-loopback'
+		grouping='require_all'
+		restart_on='none'
+		type='service'>
+		<service_fmri value='svc:/network/loopback' />
+	</dependency>
+
+	<dependency name='net-physical'
+		grouping='require_all'
+		restart_on='none'
+		type='service'>
+		<service_fmri value='svc:/network/physical' />
+	</dependency>
+
+	<exec_method
+		type='method'
+		name='start'
+		exec='/lib/svc/method/channeld start'
+		timeout_seconds='60'/>
+
+	<exec_method
+		type='method'
+		name='stop'
+		exec='/lib/svc/method/channeld stop'
+		timeout_seconds='60' />
+
+	<exec_method
+		type='method'
+		name='refresh'
+		exec='/lib/svc/method/channeld restart'
+		timeout_seconds='60' />
+	
+	<property_group name='startd'
+		type='framework'>
+		<propval name='ignore_error'
+		    type='astring' value='core,signal' />
+	</property_group>
+
+        <property_group name='general' type='framework'>
+                <propval name='action_authorization' type='astring'
+                        value='solaris.smf.manage.channeld' />
+        </property_group>
+</service>
+
+</service_bundle>
