@@ -55,6 +55,11 @@
 # @Copyright@
 #
 # $Log: 01-dhcpd.py,v $
+# Revision 1.16  2010/11/19 23:56:00  bruno
+# convert dhcp configuration to output XML
+#
+# lookup the private interface name and write it to /etc/sysconfig/dhcpd
+#
 # Revision 1.15  2010/09/07 23:53:09  bruno
 # star power for gb
 #
@@ -133,6 +138,8 @@ class Plugin(rocks.sql.InsertEthersPlugin):
 				'--norestart' in self.app.caller_args:
 			return
 
-		os.system('/opt/rocks/bin/rocks report host dhcpd ' +
-			  '> /etc/dhcpd.conf 2> /dev/null')
+		cmd = '/opt/rocks/bin/rocks report host dhcpd localhost | '
+		cmd += '/opt/rocks/bin/rocks report script | bash'
+		os.system(cmd)
+
 		os.system('/etc/rc.d/init.d/dhcpd restart > /dev/null 2>&1')

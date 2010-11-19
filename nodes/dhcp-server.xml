@@ -11,6 +11,11 @@
 
   <changelog>
   $Log: dhcp-server.xml,v $
+  Revision 1.6  2010/11/19 23:55:59  bruno
+  convert dhcp configuration to output XML
+
+  lookup the private interface name and write it to /etc/sysconfig/dhcpd
+
   Revision 1.5  2009/04/20 21:57:24  bruno
   dhcpd.leases file is now correctly created
 
@@ -84,24 +89,14 @@
 
 <post>
 
-<!-- tell dhcp just to listen to eth0 -->
-awk ' \
-	/^DHCPDARGS/ { \
-		printf("DHCPDARGS=\"eth0\"\n"); \
-		next; \
-	}  \
- \
-	{ \
-		print $0; \
-	} ' /etc/sysconfig/dhcpd &gt; /tmp/dhcpd
-
-mv /tmp/dhcpd /etc/sysconfig/dhcpd
-
-<!-- turn me on dead man -->
+<!-- turn on dhcpd service -->
 /sbin/chkconfig dhcpd on
 
-<!-- configure the skeleton dhcpd.conf -->
-<file name="/etc/dhcpd.conf" expr="/opt/rocks/bin/rocks report host dhcpd"/>
+/opt/rocks/bin/rocks report host dhcpd &Kickstart_PrivateHostname; | \
+	/opt/rocks/bin/rocks report script > /tmp/do-dhcpd.sh
+
+chmod a+x /tmp/do-dhcpd.sh
+/tmp/do-dhcpd.sh
 
 </post>
 
