@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: gen.py,v $
+# Revision 1.66  2010/11/28 00:32:44  anoop
+# Add the auto_reg keyword to jumpstart sysidcfg
+#
 # Revision 1.65  2010/09/07 23:53:08  bruno
 # star power for gb
 #
@@ -1138,6 +1141,8 @@ class MainNodeFilter_sunos(NodeFilter):
 			'keyboard',	# Keyboard Config
 			'pointer',	# Mouse config
 			'security_policy', # Security config
+			'auto_reg',	# Auto Registration
+			'type',	# Auto Registration
 			]:
 			return self.FILTER_SKIP
 			
@@ -1229,6 +1234,7 @@ class Generator_sunos(Generator):
 			elif node.nodeName in [
 				'name_service',
 				'network',
+				'auto_reg',
 				]:
 				f = getattr(self, "handle_%s" % node.nodeName)
 				f(node, iter)
@@ -1327,6 +1333,26 @@ class Generator_sunos(Generator):
 			self.ks['sysidcfg'].append('\t%s=%s' % (i, dns[i]))
 		self.ks['sysidcfg'].append('}')
 			
+	
+	# <auto_registration>
+	def handle_auto_reg(self, node, iter):
+		auto_reg = {}
+		child = iter.firstChild()
+		while child:
+			auto_reg[child.nodeName] = self.getChildText(child).strip()
+			child = iter.nextSibling()
+		if not auto_reg.has_key('type'):
+			self.ks['sysidcfg'].append('auto_reg=disable')
+			return
+		auto_reg_type = auto_reg.pop('type')
+		if auto_reg_type in ['disable', 'none']:
+			self.ks['sysidcfg'].append("auto_reg=%s" % auto_reg_type)
+			return
+		self.ks['sysidcfg'].append('auto_reg=%s {')
+		for i in auto_reg:
+			self.ks['sysidcfg'].append('\t%s=%s' % (i,auto_reg[i]))
+		self.ks['sysidcfg'].append('}')
+		
 	# <main>
 	#	<security_policy>
 	# </main>
