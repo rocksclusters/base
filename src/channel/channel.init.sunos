@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# $RCSfile: channel.init,v $
+# $RCSfile: channel.init.sunos,v $
 #
 # chkconfig: 2345 20 70
 # description: channel startup
@@ -58,7 +58,10 @@
 # 
 # @Copyright@
 #
-# $Log: channel.init,v $
+# $Log: channel.init.sunos,v $
+# Revision 1.1  2010/11/28 00:33:16  anoop
+# channeld init script is now OS specific
+#
 # Revision 1.2  2010/10/21 00:29:13  bruno
 # start channeld after rpc services
 #
@@ -71,31 +74,26 @@
 NAME=channeld
 DAEMON=/opt/rocks/sbin/$NAME
 
-. /etc/rc.d/init.d/functions
+. /lib/svc/share/smf_include.sh
 
 case "$1" in
 	start)
-		echo -n "Starting Rocks Channel: "
-		daemon $DAEMON
+		echo "Starting Rocks Channel"
+		$DAEMON
 		RETVAL=$?
-		echo
-		[ $RETVAL -eq 0 ] && touch /var/lock/subsys/$NAME
+		[ $RETVAL -eq 0 ] && touch /var/lock/$NAME
 		;;
 
 	stop)
-		echo -n "Shutting down Rocks Channel: "
-		killproc $NAME
+		echo "Shutting down Rocks Channel"
+		pkill $NAME
 		RETVAL=$?
-		echo
-		[ $RETVAL -eq 0 ] && rm -f /var/lock/subsys/$NAME
+		[ $RETVAL -eq 0 ] && rm -f /var/lock/$NAME
 		;;
 
 	restart)
 		$0 stop
 		$0 start
-		;;
-	status)
-		status $NAME
 		;;
 	*)
 		echo "Usage: $NAME {start|stop|restart|status}"

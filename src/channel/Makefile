@@ -1,9 +1,12 @@
-# $Id: Makefile,v 1.6 2010/11/04 02:20:15 anoop Exp $
+# $Id: Makefile,v 1.7 2010/11/28 00:33:16 anoop Exp $
 #
 # @Copyright@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.7  2010/11/28 00:33:16  anoop
+# channeld init script is now OS specific
+#
 # Revision 1.6  2010/11/04 02:20:15  anoop
 # Solaris compatibility fixes
 #
@@ -66,7 +69,7 @@ install:: build
 	$(INSTALL) -m544 411-alert $(ROOT)/$(PKGROOT)/sbin/
 	$(INSTALL) -m544 411-alert-handler $(ROOT)/$(PKGROOT)/sbin/
 	$(INSTALL) -m544 channeld  $(ROOT)/$(PKGROOT)/sbin/
-	$(INSTALL) -m755 channel.init $(ROOT)/$(INIT_SCRIPTS_DIR)/channeld
+	$(INSTALL) -m755 channel.init.$(OS) $(ROOT)/$(INIT_SCRIPTS_DIR)/channeld
 
 clean::
 	-rm *.o
