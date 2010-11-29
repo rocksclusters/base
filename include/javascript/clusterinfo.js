@@ -1,5 +1,5 @@
 /*
- * $Id: clusterinfo.js,v 1.16 2010/09/07 23:52:46 bruno Exp $
+ * $Id: clusterinfo.js,v 1.17 2010/11/29 18:38:56 bruno Exp $
  *
  * @Copyright@
  * 
@@ -55,6 +55,9 @@
  * @Copyright@
  * 
  * $Log: clusterinfo.js,v $
+ * Revision 1.17  2010/11/29 18:38:56  bruno
+ * need to flag the apostrophe as a 'bad character'.
+ *
  * Revision 1.16  2010/09/07 23:52:46  bruno
  * star power for gb
  *
@@ -190,7 +193,9 @@ function check_ssl(field) {
 		badchar = '"';
 	} else if (field.value.search('/') > -1) {
 		badchar = '/';
-	}	
+	} else if (field.value.search("'") > -1) {
+		badchar = "'";
+	}
 
 	if (badchar != '') {
 		field.setAttribute("class", "ProInputError Padded");
