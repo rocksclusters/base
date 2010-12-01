@@ -17,6 +17,9 @@
 
 	<changelog>
 	$Log: foundation-base.xml,v $
+	Revision 1.30  2010/12/01 18:35:58  bruno
+	make sure to run ldconfig after any file is added to /etc/ld.so.conf.d
+	
 	Revision 1.29  2010/09/07 23:52:46  bruno
 	star power for gb
 	
@@ -169,6 +172,8 @@
 /usr/lib64
 /opt/rocks/lib
 </file>
+
+/sbin/ldconfig
 
 </post>
 
