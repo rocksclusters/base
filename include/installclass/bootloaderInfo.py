@@ -1017,7 +1017,7 @@ class x86BootloaderInfo(bootloaderInfo):
             os.system('sync ; sync ; sync')
             os.system('md5sum /mnt/sysimage/boot/grub/stage2 >> /tmp/grub-install.log')
 
-            os.system('cp /tmp/*log /mnt/sysimage/root')
+            os.system('cp /tmp/*log /tmp/*debug /mnt/sysimage/root')
             # ROCKS
 
         return ""
