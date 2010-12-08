@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.5 2010/12/08 18:09:28 bruno Exp $
+# $Id: __init__.py,v 1.6 2010/12/08 23:04:22 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.6  2010/12/08 23:04:22  bruno
+# for aliases, make sure the format is 'alias CNAME real_host_name'
+#
 # Revision 1.5  2010/12/08 18:09:28  bruno
 # make sure aliases are written as 'c0-1' and not '(c0-1,)'
 #
@@ -202,7 +205,7 @@ class Command(rocks.commands.report.command):
 				'nt.ip="%s"' % (ip))
 
 			for alias, in self.db.fetchall():
-				s += '%s CNAME %s\n' % (record, alias)
+				s += '%s CNAME %s\n' % (alias, record)
 
 		return s
 
