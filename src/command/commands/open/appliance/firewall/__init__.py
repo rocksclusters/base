@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.3 2010/09/07 23:52:56 bruno Exp $
+# $Id: __init__.py,v 1.4 2010/12/13 23:44:48 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.4  2010/12/13 23:44:48  bruno
+# fix documentation bug
+#
 # Revision 1.3  2010/09/07 23:52:56  bruno
 # star power for gb
 #
@@ -76,7 +79,7 @@ class Command(rocks.commands.ApplianceArgumentProcessor,
 	The appliance type (e.g., "compute").
 	</arg>
 
-	<param type='string' name='param'>
+	<param type='string' name='service'>
 	The service identifier, port number or port range. For example
 	"www", 8080 or 0:1024.
 	</param>
