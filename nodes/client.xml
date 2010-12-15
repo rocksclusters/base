@@ -18,6 +18,9 @@ This file is used as a connection point for other XML configuration nodes.
 
 <changelog>
 $Log: client.xml,v $
+Revision 1.15  2010/12/15 19:17:32  bruno
+make sure clients can access the database via the rocks command line
+
 Revision 1.14  2010/09/07 23:52:46  bruno
 star power for gb
 
@@ -113,5 +116,17 @@ touch /tmp/rocks-skip-welcome
 </eval>
 
 </post>
+
+
+<post>
+
+<file name="/etc/ld.so.conf.d/foundation-mysql.conf">
+/opt/rocks/lib/mysql
+</file>
+
+/sbin/ldconfig
+
+</post>
+
 
 </kickstart> 
