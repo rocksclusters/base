@@ -202,7 +202,7 @@ publish_gmetric (PyObject *self, PyObject *args)
 	XDR xhandle;
 	Ganglia_pool global_context;
 	Ganglia_metric gmetric;
-	Ganglia_gmond_config gmond_config;
+	Ganglia_gmond_config gmond_config = NULL;
 	Ganglia_udp_send_channels send_channels;
 
 	rval = PyArg_ParseTuple(args, "s#O|ssiihss:publish",
@@ -293,6 +293,10 @@ publish_gmetric (PyObject *self, PyObject *args)
 
 	Ganglia_metric_destroy(gmetric);
 	Ganglia_pool_destroy(global_context);
+
+	if (gmond_config) {
+		cfg_free(gmond_config);
+	}
 
 	Py_DECREF(p);
 
