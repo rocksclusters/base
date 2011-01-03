@@ -4,6 +4,10 @@
 
 	<changelog>
 	$Log: base.xml,v $
+	Revision 1.62  2011/01/03 20:55:41  bruno
+	move the login appliance configuration out of the SGE roll and into the Base
+	roll.
+	
 	Revision 1.61  2010/10/21 00:17:34  anoop
 	Make the partitioning code part of the linux installation only
 	
@@ -422,6 +426,7 @@
 		<to>server-firewall</to>
 		<to>partitions-save-server</to>
 		<to>routes-server</to>
+		<to>login-server</to>
 	</edge>
 
 	<edge from="server">
