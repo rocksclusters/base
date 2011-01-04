@@ -916,7 +916,8 @@ class Kickstart(cobject):
 	diskfile.write('disks: %s\n' % (' '.join(disks)))
 	swraid = []
 	for dev, devices, level, numActive in ds.mdList:
-		swraid.append(dev)
+		if dev not in swraid:
+			swraid.append(dev)
 	diskfile.write('raids: %s\n' % (' '.join(swraid)))
 	diskfile.close()
 	# ROCKS
@@ -974,7 +975,8 @@ class Kickstart(cobject):
 	diskfile.write('disks: %s\n' % (' '.join(disks)))
 	swraid = []
 	for dev, devices, level, numActive in ds.mdList:
-		swraid.append(dev)
+		if dev not in swraid:
+			swraid.append(dev)
 	diskfile.write('raids: %s\n' % (' '.join(swraid)))
 	diskfile.close()
         # ROCKS
