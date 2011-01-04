@@ -8,6 +8,9 @@ Create a Login appliance
 
 <changelog>
 $Log: login-server.xml,v $
+Revision 1.4  2011/01/04 22:27:31  bruno
+typo in comment
+
 Revision 1.3  2010/09/20 20:22:50  bruno
 use the 'primary_net' attribute to dictate which interface should be used
 as the 'primary'. we'll get the domain name from the subnets table and we'll
@@ -40,7 +43,7 @@ the start of the login appliance
 
 <post>
 
-<!-- define the login applicace specific firewall rules -->
+<!-- define the login appliance specific firewall rules -->
 
 <![CDATA[
 
