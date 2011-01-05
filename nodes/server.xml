@@ -78,5 +78,26 @@ fi
 
 </post>
 
+
+<post>
+
+<!--
+	all rolls added to a running frontend will be added 'on the fly', so
+	set the roll_install_on_the_fly ottribute to true.
+
+	'shadow=yes' means that root and apache can access this attribute,
+	but it will not show up in 'rocks dump' so it won't pollute the
+	restore roll.
+-->
+
+<file name="/etc/rc.d/rocksconfig.d/post-02-on-the-fly" perms="755">
+/opt/rocks/bin/rocks set host attr localhost roll_install_on_the_fly true \
+	shadow=yes
+</file>
+
+rm -f /etc/rc.d/rocksconfig.d/post-02-on-the-fly
+</post>
+
+
 </kickstart> 
 

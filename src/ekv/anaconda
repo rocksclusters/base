@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# $Id: anaconda,v 1.34 2010/09/16 19:54:00 bruno Exp $
+# $Id: anaconda,v 1.35 2011/01/05 19:00:53 bruno Exp $
 #
 # @Copyright@
 # 
@@ -56,6 +56,12 @@
 # @Copyright@
 #
 # $Log: anaconda,v $
+# Revision 1.35  2011/01/05 19:00:53  bruno
+# Properly report disk partitions into the database for software RAID file
+# systems.
+#
+# Increase installation speeds for clients with software RAID file systems.
+#
 # Revision 1.34  2010/09/16 19:54:00  bruno
 # mount /export on /tmp/ram2 instead of /dev/ram2. this avoids a benign error
 # message from mknod.
@@ -401,6 +407,21 @@ UsePrivilegeSeparation no" > /tmp/sshd_install_config
 
 echo "sshd:x:74:74:Privilege-separated SSH:/var/empty/sshd:/sbin/nologin" \
 	>> /etc/passwd
+
+#
+# if one of the partitions is a software raid and if the raid is in a
+# "dirty" state, mdadm will try to 'resync' the disks to ensure all the
+# data is protected.
+#
+# on a running system, this is a great thing to do. 
+#
+# on an installing system, it slows the install down considerably.
+#
+# i haven't found a way to disable the 'resync' action for mdadm, but we can
+# extremely throttle back the top rebuild speed.
+#
+echo 1 > /proc/sys/dev/raid/speed_limit_min
+echo 2 > /proc/sys/dev/raid/speed_limit_max
 
 #
 # translate an XML-based kickstart file into a redhat compliant one

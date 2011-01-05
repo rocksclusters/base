@@ -420,7 +420,7 @@ class RocksPartition:
 		inHeader = 1
 		
 		if disk[0:2] == 'md':
-			return [ disk ]
+			return [ (disk, 'dummy') ]
 
 		for part in self.getDiskInfo(disk):
 			l = string.split(part)
