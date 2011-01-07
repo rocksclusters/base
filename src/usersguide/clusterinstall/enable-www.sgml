@@ -18,52 +18,87 @@ cluster more prone to malicious attacks and breakins.
 </para>
 </warning>
 
-<orderedlist>
-<listitem>
 <para>
-Edit the <filename>/etc/sysconfig/iptables</filename> file and open up
-https and www traffic by changing the section:
+To open port 80 (the 'www' service) for the public
+network of frontend, execute:
 </para>
 
-<para>
 <screen>
-...
-# http and https is allowed for all nodes on the public subnet
--A INPUT -m state --state NEW -p tcp --dport https --source XXX.XXX.XXX.0/255.255.255.0 -j ACCEPT
--A INPUT -m state --state NEW -p tcp --dport www --source XXX.XXX.XXX.0/255.255.255.0 -j ACCEPT
-... other firewall directives ...
+# rocks open host firewall localhost network=public protocol=tcp service=www
 </screen>
-</para>
 
 <para>
-to:
+Then we can see the what the resulting firewall rules will look like:
 </para>
 
-<para>
 <screen>
-...
-# http and https is allowed for all nodes on the public subnet
--A INPUT -m state --state NEW -p tcp --dport https -j ACCEPT
--A INPUT -m state --state NEW -p tcp --dport www -j ACCEPT
-... other firewall directives ...
+<![CDATA[
+# rocks report host firewall localhost
+<file name="/etc/sysconfig/iptables" perms="500">
+*nat
+-A POSTROUTING -o eth1 -j MASQUERADE
+COMMIT
+
+*filter
+:INPUT ACCEPT [0:0]
+:FORWARD DROP [0:0]
+:OUTPUT ACCEPT [0:0]
+-A INPUT -i lo -j ACCEPT
+-A FORWARD -i eth0 -j ACCEPT
+-A FORWARD -i eth1 -o eth0 -m state --state RELATED,ESTABLISHED -j ACCEPT
+-A INPUT -i eth0 -j ACCEPT
+-A INPUT -i eth1 -m state --state RELATED,ESTABLISHED -j ACCEPT
+-A INPUT -i eth1 -p tcp --dport https -m state --state NEW --source &Kickstart_PublicNetwork;/&Kickstart_PublicNetmask; -j ACCEPT
+-A INPUT -i eth1 -p tcp --dport ssh -m state --state NEW -j ACCEPT
+-A INPUT -i eth1 -p tcp --dport www -m state --state NEW --source &Kickstart_PublicNetwork;/&Kickstart_PublicNetmask; -j ACCEPT
+-A INPUT -i eth1 -p tcp --dport www -j ACCEPT
+# block mysql traffic from non-private interfaces
+-A INPUT -p tcp --dport 3306 -j REJECT
+# block foundation mysql traffic from non-private interfaces
+-A INPUT -p tcp --dport 40000 -j REJECT
+# block ganglia traffic from non-private interfaces
+-A INPUT -p udp --dport 8649 -j REJECT
+-A INPUT -p tcp --dport 0:1024 -j REJECT
+-A INPUT -p udp --dport 0:1024 -j REJECT
+COMMIT
+</file>
+]]>
 </screen>
-</para>
 
-</listitem>
-
-<listitem>
 <para>
-Restart the iptables service. You must execute this command as the root user.
+In the above example, eth0 is associated with the private network and
+eth1 is associated with the public network.
 </para>
 
 <para>
-<userinput>
-# service iptables restart
-</userinput>
+Notice the line: "-A INPUT -i eth1 -p tcp --dport www -j ACCEPT".
+This is the line in the firewall configuration that will allow web traffic from
+any source to flow in and out of the frontend.
+This line was added to your firewall configuration with the "rocks open host
+firewall" command that you executed.
 </para>
-</listitem>
 
-<listitem>
+<para>
+Also, notice the line:
+<![CDATA["-A INPUT -i eth1 -p tcp --dport www -m state --state NEW --source &Kickstart_PublicNetwork;/&Kickstart_PublicNetmask; -j ACCEPT"]]>.
+This default Rocks firewall rule allows web traffic
+from <emphasis>your local public subnet</emphasis> to flow in and out of the
+frontend.
+</para>
+
+<para>
+Now apply the configuration to the host:
+</para>
+
+<screen>
+# rocks sync host firewall localhost
+</screen>
+
+<para>
+The host will now accept web traffic on its public interface.
+</para>
+
+
 <para>
 Test your changes by pointing a web browser to 
 <literal>http://my.cluster.org/</literal>,
@@ -78,8 +113,6 @@ the cluster. Check that you can ping the frontend machine from
 the machine running the web browser, that you can ssh into it, etc.
 </para>
 </tip>
-</listitem>
-</orderedlist>
 
 </section>
 

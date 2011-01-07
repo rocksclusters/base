@@ -60,7 +60,7 @@ Now apply the configuration to the host:
 </para>
 
 <screen>
-# rocks sync host network compute-0-0
+# rocks sync host firewall compute-0-0
 </screen>
 
 <para>
@@ -88,7 +88,7 @@ Now apply the configuration to the host:
 </para>
 
 <screen>
-# rocks sync host network compute-0-0
+# rocks sync host firewall compute-0-0
 </screen>
 
 <para>
