@@ -1,4 +1,4 @@
-# $Id: Rules-macosx.mk,v 1.2 2010/09/07 23:53:04 bruno Exp $
+# $Id: Rules-macosx.mk,v 1.3 2011/01/10 20:19:32 mjk Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: Rules-macosx.mk,v $
+# Revision 1.3  2011/01/10 20:19:32  mjk
+# Fix for MacOS 10.6.4
+#
 # Revision 1.2  2010/09/07 23:53:04  bruno
 # star power for gb
 #
@@ -150,7 +153,7 @@ PERL    = /opt/rocks/bin/perl
 # Build the $(NAME).pkg directory
 # --------------------------------------------------------------------- #
 ROOT	= $(CURDIR)/$(NAME)-buildroot
-PKG	= /Developer/Tools/packagemaker
+PKG	= /Developer/Applications/Utilities/PackageMaker.app/Contents/MacOS/PackageMaker
 
 $(ROOT):
 	if [ ! -x $(ROOT) ]; then mkdir -p $(ROOT); fi
