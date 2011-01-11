@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.3 2011/01/11 17:35:19 bruno Exp $
+# $Id: plugin_host_key.py,v 1.1 2011/01/11 17:35:18 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -53,34 +53,23 @@
 # 
 # @Copyright@
 #
-# $Log: __init__.py,v $
-# Revision 1.3  2011/01/11 17:35:19  bruno
+# $Log: plugin_host_key.py,v $
+# Revision 1.1  2011/01/11 17:35:18  bruno
 # dump the host public keys
-#
-# Revision 1.2  2010/09/07 23:52:53  bruno
-# star power for gb
-#
-# Revision 1.1  2010/06/15 19:35:43  bruno
-# commands to:
-#  - manage public keys
-#  - start/stop a service
 #
 #
 
 import rocks.commands
 
-class Command(rocks.commands.dump.host.command):
-	"""
-	Dump the public keys for hosts.
-	"""
+class Plugin(rocks.commands.Plugin):
 
-	def run(self, params, args):
-		for host in self.getHostnames(args):
-			self.db.execute("""select public_key from
-				public_keys where node = (select id from
-				nodes where name = '%s') """ % host)
-
-			for k, in self.db.fetchall():
-				self.dump('add host key %s key="%s"'
-					% (self.dumpHostname(host), k))
+	def provides(self):
+		return 'host-key'
+		
+	def requires(self):
+		return [ 'host' ]
+		
+	def run(self, args):
+		self.owner.addText(self.owner.command('dump.host.key', []))
+		
 
