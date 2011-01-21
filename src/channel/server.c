@@ -1,9 +1,12 @@
-/* $Id: server.c,v 1.7 2010/11/04 02:20:15 anoop Exp $
+/* $Id: server.c,v 1.8 2011/01/21 20:08:46 anoop Exp $
  *
  * @Copyright@
  * @Copyright@
  *
  * $Log: server.c,v $
+ * Revision 1.8  2011/01/21 20:08:46  anoop
+ * Solaris build fixes
+ *
  * Revision 1.7  2010/11/04 02:20:15  anoop
  * Solaris compatibility fixes
  *
@@ -51,6 +54,7 @@
 #define PORTMAP
 #include <rpc/rpc.h>
 #include <stdlib.h>
+int _rpcpmstart;
 #endif
 
 #include <netinet/in.h>
@@ -132,6 +136,10 @@ main(int argc, char *argvp[])
 
 	openlog("channeld", LOG_PID, LOG_LOCAL0);
 	syslog(LOG_INFO, "starting service");
+
+#if defined (__SVR4) && defined (__sun)
+	_rpcpmstart = 0;
+#endif
 
 #ifndef DEBUG
         switch ( fork() ) {

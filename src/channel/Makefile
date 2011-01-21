@@ -1,9 +1,12 @@
-# $Id: Makefile,v 1.7 2010/11/28 00:33:16 anoop Exp $
+# $Id: Makefile,v 1.8 2011/01/21 20:08:46 anoop Exp $
 #
 # @Copyright@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.8  2011/01/21 20:08:46  anoop
+# Solaris build fixes
+#
 # Revision 1.7  2010/11/28 00:33:16  anoop
 # channeld init script is now OS specific
 #
@@ -33,8 +36,8 @@ REDHAT.ROOT	= $(CURDIR)/../../
 -include $(ROCKSROOT)/etc/Rules.mk
 include Rules.mk
 
-OS=$(shell ../devel/devel/bin/os)
-ARCH=$(shell ../devel/devel/bin/arch)
+OS=$(shell $(REDHAT.ROOT)/src/devel/devel/bin/os)
+ARCH=$(shell $(REDHAT.ROOT)/src/devel/devel/bin/arch)
 
 ifeq ($(OS), linux)
 CFLAGS = -Wall -g 
@@ -44,15 +47,16 @@ CPPFLAGS = -I/opt/rocks/include
 LDFLAGS = -L/opt/rocks/lib -lrocks
 
 ifeq ($(OS), sunos)
+CFLAGS = -g -m64
 LDFLAGS += -lrpcsvc -lnsl
 endif
 
 channel.x:
 	cp $(PKGROOT)/include/rocks/$@ .
+	rpcgen -h -N -o channel.h $@
+	rpcgen -m -N -o channel_svc.c $@
 
-channel_svc.c: channel.x
-	rpcgen -h -N -o channel.h $^
-	rpcgen -m -N -o $@ $^
+channel_svc.c:channel.x
 
 channeld: server.o channel_svc.o
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
