@@ -1,9 +1,12 @@
-# $Id: Makefile,v 1.4 2010/11/04 02:20:41 anoop Exp $
+# $Id: Makefile,v 1.5 2011/01/21 20:06:50 anoop Exp $
 #
 # @Copyright@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.5  2011/01/21 20:06:50  anoop
+# Build for 64-bit architecture
+#
 # Revision 1.4  2010/11/04 02:20:41  anoop
 # Solaris compatibility fixes
 #
@@ -26,6 +29,10 @@ CFLAGS = -fPIC
 ifeq ($(OS), linux)
 CFLAGS += -Wall -g
 HEXDUMPTEST = hexdump_test
+endif
+
+ifeq ($(OS), sunos)
+CFLAGS += -g -m64
 endif
 
 default: librocks.so $(HEXDUMPTEST)
