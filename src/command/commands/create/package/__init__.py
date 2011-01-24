@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.5 2010/09/07 23:52:52 bruno Exp $
+# $Id: __init__.py,v 1.6 2011/01/24 17:54:44 mjk Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.6  2011/01/24 17:54:44  mjk
+# Disable RPM computing the provides list
+#
 # Revision 1.5  2010/09/07 23:52:52  bruno
 # star power for gb
 #
@@ -153,6 +156,7 @@ class Command(rocks.commands.create.command):
 		file.write('PREFIX=%s\n' % prefix)
 		file.write('SOURCE_DIRECTORY=%s\n' % dir)
 		file.write('DEST_DIRECTORY=%s\n' % cwd)
+		file.write('RPM.EXTRAS=AutoReqProv: no\n')
 		file.close()
 
 		for line in os.popen('make dir2pkg').readlines():
