@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.3 2010/09/07 23:53:00 bruno Exp $
+# $Id: __init__.py,v 1.4 2011/01/24 22:47:34 mjk Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,12 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.4  2011/01/24 22:47:34  mjk
+# Use YUM instead of RPM for rocks run roll
+# This fixes two issues
+# 1) On 64bit we were not installing the 32bit RPMs
+# 2) name.arch packages were not being installed
+#
 # Revision 1.3  2010/09/07 23:53:00  bruno
 # star power for gb
 #
@@ -126,7 +132,7 @@ class Command(rocks.commands.run.command):
 				rpms.append(line)			
 		for rpm in rpms:
 			if rpm in dict:
-				script.append('rpm -Uhv --force --nodeps %s' %
+				script.append('yum install %s' %
 					dict[rpm])
 
 
