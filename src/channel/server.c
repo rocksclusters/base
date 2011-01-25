@@ -1,9 +1,14 @@
-/* $Id: server.c,v 1.8 2011/01/21 20:08:46 anoop Exp $
+/* $Id: server.c,v 1.9 2011/01/25 21:58:51 mjk Exp $
  *
  * @Copyright@
  * @Copyright@
  *
  * $Log: server.c,v $
+ * Revision 1.9  2011/01/25 21:58:51  mjk
+ * - Move all RPC stuff from librocks to here
+ * - Handle case of Solaris naming server side functions different than
+ *   Linux.
+ *
  * Revision 1.8  2011/01/21 20:08:46  anoop
  * Solaris build fixes
  *
@@ -66,9 +71,18 @@ int _rpcpmstart;
 
 extern void channel_prog_1(struct svc_req *rqstp, register SVCXPRT *transp);
 
+/* 
+ * Linux adds a _svc to the server side RPC functions and Solaris does not.
+ */
+
+#if defined(__linux__)
+# define RPC_SERVICE(a)   a ## _svc
+#else
+# define RPC_SERVICE(a)   a
+#endif
 
 int *
-channel_ping_1_svc(struct svc_req *rqstp)
+RPC_SERVICE(channel_ping_1)(struct svc_req *rqstp)
 {
 	static int  result = 1;
 
@@ -80,8 +94,8 @@ channel_ping_1_svc(struct svc_req *rqstp)
 
 
 int *
-channel_411_alert_1_svc(char *filename, char *signature, u_long sec, u_int usec,
-			struct svc_req *rqstp)
+RPC_SERVICE(channel_411_alert_1)(char *filename, char *signature, 
+				 u_long sec, u_int usec, struct svc_req *rqstp)
 {
 	static int	result = 0;
 	double		time = (float)usec / 1e6 + (double)sec;

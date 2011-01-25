@@ -1,9 +1,14 @@
-# $Id: Makefile,v 1.8 2011/01/21 20:08:46 anoop Exp $
+# $Id: Makefile,v 1.9 2011/01/25 21:58:51 mjk Exp $
 #
 # @Copyright@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.9  2011/01/25 21:58:51  mjk
+# - Move all RPC stuff from librocks to here
+# - Handle case of Solaris naming server side functions different than
+#   Linux.
+#
 # Revision 1.8  2011/01/21 20:08:46  anoop
 # Solaris build fixes
 #
@@ -36,32 +41,35 @@ REDHAT.ROOT	= $(CURDIR)/../../
 -include $(ROCKSROOT)/etc/Rules.mk
 include Rules.mk
 
-OS=$(shell $(REDHAT.ROOT)/src/devel/devel/bin/os)
-ARCH=$(shell $(REDHAT.ROOT)/src/devel/devel/bin/arch)
 
-ifeq ($(OS), linux)
-CFLAGS = -Wall -g 
-endif
-
-CPPFLAGS = -I/opt/rocks/include
-LDFLAGS = -L/opt/rocks/lib -lrocks
+CFLAGS		= -Wall -g 
+CPPFLAGS	= -I/opt/rocks/include
+LDFLAGS		= -L/opt/rocks/lib -lrocks
 
 ifeq ($(OS), sunos)
-CFLAGS = -g -m64
-LDFLAGS += -lrpcsvc -lnsl
+CFLAGS		+= -m64
+LDFLAGS		+= -lrpcsvc -lnsl
 endif
 
-channel.x:
-	cp $(PKGROOT)/include/rocks/$@ .
-	rpcgen -h -N -o channel.h $@
-	rpcgen -m -N -o channel_svc.c $@
 
-channel_svc.c:channel.x
+#	rpcgen -h -N -o channel.h $@
 
-channeld: server.o channel_svc.o
+channel_svc.c: channel.x channel.h
+	rpcgen -m -N -o $@ $<
+
+channel_clnt.c: channel.x
+	rpcgen -l -N -o $@ $<
+
+channel_xdr.c: channel.x channel.h
+	rpcgen -c -N -o $@ $<
+
+channel.h: channel.x
+	rpcgen -h -N -o $@ $<
+
+channeld: server.o channel_svc.o channel_xdr.o
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
-411-alert: 411-alert.o
+411-alert: 411-alert.o channel_xdr.o
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
 
@@ -78,4 +86,5 @@ install:: build
 clean::
 	-rm *.o
 	-rm channeld 411-alert 411-alert-handler
-	-rm channel_svc.c channel.x channel.h
+	-rm channel_svc.c channel.h
+	-rm channel_clnt.c channel_xdr.c
