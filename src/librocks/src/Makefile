@@ -1,9 +1,13 @@
-# $Id: Makefile,v 1.5 2011/01/21 20:06:50 anoop Exp $
+# $Id: Makefile,v 1.6 2011/01/25 21:16:28 mjk Exp $
 #
 # @Copyright@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.6  2011/01/25 21:16:28  mjk
+# - Removed channel.x
+# - Off by one on hexdump buffer size
+#
 # Revision 1.5  2011/01/21 20:06:50  anoop
 # Build for 64-bit architecture
 #
@@ -21,38 +25,28 @@
 #
 
 OS=$(shell ../../devel/devel/bin/os)
-ARCH=$(shell ../../devel/devel/bin/arch)
 
+CFLAGS = -Wall -g -fPIC
 
-CFLAGS = -fPIC
-
-ifeq ($(OS), linux)
-CFLAGS += -Wall -g
-HEXDUMPTEST = hexdump_test
-endif
+BINS = hexdump_test
 
 ifeq ($(OS), sunos)
-CFLAGS += -g -m64
+BINS =
+CFLAGS += -m64
 endif
 
-default: librocks.so $(HEXDUMPTEST)
+default: librocks.so $(BINS)
 
-OBJS = hexdump.o channel_clnt.o channel_xdr.o
+OBJS = hexdump.o
+
+librocks.so: $(OBJS)
+	$(CC) $(CFLAGS) -shared -o $@ $^
 
 hexdump.o: hexdump.c ../include/hexdump.h
 
 hexdump_test: hexdump_test.o hexdump.o
 	$(CC) $(CFLAGS) -o $@ $^
 
-channel_clnt.c: channel.x
-	rpcgen -N $^
-
-channel_xdr.c: channel.x
-	rpcgen -N -c -o $@ $^
-
-librocks.so: $(OBJS)
-	$(CC) $(CFLAGS) -shared -o $@ $^
 clean:
-	-rm *.o *.so
-	-rm channel_clnt.c channel_svc.c channel_xdr.c channel.h
+	-rm *.o
 	-rm hexdump_test

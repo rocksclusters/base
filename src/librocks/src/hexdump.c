@@ -1,10 +1,14 @@
 /*
- * $Id: hexdump.c,v 1.1 2010/10/19 23:06:29 mjk Exp $
+ * $Id: hexdump.c,v 1.2 2011/01/25 21:16:28 mjk Exp $
  *
  * @Copyright@
  * @Copyright@
  *
  * $Log: hexdump.c,v $
+ * Revision 1.2  2011/01/25 21:16:28  mjk
+ * - Removed channel.x
+ * - Off by one on hexdump buffer size
+ *
  * Revision 1.1  2010/10/19 23:06:29  mjk
  * c is hard
  *
@@ -75,7 +79,7 @@ HexDumpToString(const char *label, const char *msg, int len)
 		line_len += strlen(label) + strlen(": ");
 	}
 
-	buffer_len = (len + HEX_CHARS - 1) / HEX_CHARS * line_len;
+	buffer_len = (len + HEX_CHARS - 1) / HEX_CHARS * line_len + 1;
 	buffer = malloc(buffer_len);
 	if ( !buffer ) {
 		return NULL;
