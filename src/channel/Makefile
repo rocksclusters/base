@@ -1,9 +1,12 @@
-# $Id: Makefile,v 1.10 2011/01/25 23:14:40 mjk Exp $
+# $Id: Makefile,v 1.11 2011/01/25 23:20:24 anoop Exp $
 #
 # @Copyright@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.11  2011/01/25 23:20:24  anoop
+# hexdump and -Wall are linux only
+#
 # Revision 1.10  2011/01/25 23:14:40  mjk
 # actually builds
 #
@@ -39,10 +42,13 @@ REDHAT.ROOT	= $(CURDIR)/../../
 -include $(ROCKSROOT)/etc/Rules.mk
 include Rules.mk
 
+CFLAGS		= -g 
 
-CFLAGS		= -Wall -g 
+ifeq ($(OS), linux)
+CFLAGS		+= -Wall 
 CPPFLAGS	= -I/opt/rocks/include
 LDFLAGS		= -L/opt/rocks/lib -lrocks
+endif
 
 ifeq ($(OS), sunos)
 CFLAGS		+= -m64

@@ -1,9 +1,12 @@
-/* $Id: server.c,v 1.10 2011/01/25 23:14:40 mjk Exp $
+/* $Id: server.c,v 1.11 2011/01/25 23:20:24 anoop Exp $
  *
  * @Copyright@
  * @Copyright@
  *
  * $Log: server.c,v $
+ * Revision 1.11  2011/01/25 23:20:24  anoop
+ * hexdump and -Wall are linux only
+ *
  * Revision 1.10  2011/01/25 23:14:40  mjk
  * actually builds
  *
@@ -56,6 +59,7 @@
 
 #if defined (__linux__)
 #include <rpc/pmap_clnt.h>
+#include <rocks/hexdump.h>
 #endif
 
 #if defined (__SVR4) && defined (__sun)
@@ -69,8 +73,6 @@ int _rpcpmstart;
 #include <sys/socket.h>
 #include <sys/wait.h>
 #include "channel.h"
-#include <rocks/hexdump.h>
-
 
 extern void channel_prog_1(struct svc_req *rqstp, register SVCXPRT *transp);
 
