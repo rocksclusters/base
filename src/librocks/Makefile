@@ -1,9 +1,12 @@
-# $Id: Makefile,v 1.4 2010/11/04 02:20:41 anoop Exp $
+# $Id: Makefile,v 1.5 2011/01/25 21:57:41 mjk Exp $
 #
 # @Copyright@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.5  2011/01/25 21:57:41  mjk
+# Cleanup
+#
 # Revision 1.4  2010/11/04 02:20:41  anoop
 # Solaris compatibility fixes
 #
@@ -29,8 +32,6 @@ install:: build
 	mkdir -p $(ROOT)/$(PKGROOT)/include/rocks
 	mkdir -p $(ROOT)/$(PKGROOT)/lib
 	$(INSTALL) -m444 include/*.h $(ROOT)/$(PKGROOT)/include/rocks/
-	$(INSTALL) -m444 src/*.h $(ROOT)/$(PKGROOT)/include/rocks/
-	$(INSTALL) -m444 src/*.x $(ROOT)/$(PKGROOT)/include/rocks/
 	$(INSTALL) -m755 src/*.so $(ROOT)/$(PKGROOT)/lib/
 
 clean::
