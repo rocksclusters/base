@@ -1,13 +1,11 @@
-# $Id: Makefile,v 1.9 2011/01/25 21:58:51 mjk Exp $
+# $Id: Makefile,v 1.10 2011/01/25 23:14:40 mjk Exp $
 #
 # @Copyright@
 # @Copyright@
 #
 # $Log: Makefile,v $
-# Revision 1.9  2011/01/25 21:58:51  mjk
-# - Move all RPC stuff from librocks to here
-# - Handle case of Solaris naming server side functions different than
-#   Linux.
+# Revision 1.10  2011/01/25 23:14:40  mjk
+# actually builds
 #
 # Revision 1.8  2011/01/21 20:08:46  anoop
 # Solaris build fixes
@@ -65,6 +63,10 @@ channel_xdr.c: channel.x channel.h
 
 channel.h: channel.x
 	rpcgen -h -N -o $@ $<
+
+server.o: server.c channel.h
+
+411-alert.o: 411-alert.c channel.h
 
 channeld: server.o channel_svc.o channel_xdr.o
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^

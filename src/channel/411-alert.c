@@ -1,9 +1,12 @@
-/* $Id: 411-alert.c,v 1.6 2010/11/04 02:20:15 anoop Exp $
+/* $Id: 411-alert.c,v 1.7 2011/01/25 23:14:40 mjk Exp $
  *
  * @Copyright@
  * @Copyright@
  * 
  * $Log: 411-alert.c,v $
+ * Revision 1.7  2011/01/25 23:14:40  mjk
+ * actually builds
+ *
  * Revision 1.6  2010/11/04 02:20:15  anoop
  * Solaris compatibility fixes
  *
@@ -47,7 +50,7 @@
 #include <sys/socket.h>
 #include <netdb.h>
 #include <time.h>
-#include <rocks/channel.h>
+#include "channel.h"
 
 static bool_t callback(caddr_t, struct sockaddr_in *);
 

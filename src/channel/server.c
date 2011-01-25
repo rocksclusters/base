@@ -1,9 +1,12 @@
-/* $Id: server.c,v 1.9 2011/01/25 21:58:51 mjk Exp $
+/* $Id: server.c,v 1.10 2011/01/25 23:14:40 mjk Exp $
  *
  * @Copyright@
  * @Copyright@
  *
  * $Log: server.c,v $
+ * Revision 1.10  2011/01/25 23:14:40  mjk
+ * actually builds
+ *
  * Revision 1.9  2011/01/25 21:58:51  mjk
  * - Move all RPC stuff from librocks to here
  * - Handle case of Solaris naming server side functions different than
@@ -65,7 +68,7 @@ int _rpcpmstart;
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <sys/wait.h>
-#include <rocks/channel.h>
+#include "channel.h"
 #include <rocks/hexdump.h>
 
 
