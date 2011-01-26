@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.17 2010/10/27 22:25:01 bruno Exp $
+# $Id: __init__.py,v 1.18 2011/01/26 17:56:02 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.18  2011/01/26 17:56:02  bruno
+# restart the network after all the plugins have been run
+#
 # Revision 1.17  2010/10/27 22:25:01  bruno
 # hack to get metrics to be reported after the network is restarted with
 # 'rocks sync host network'
@@ -189,6 +192,13 @@ class Command(rocks.commands.sync.host.command):
 		for thread in threads:
 			thread.join(timeout)
 
+		self.command('sync.host.firewall', hosts)
+		self.runPlugins(hosts)
+
+		#
+		# after all the configuration files have been rewritten,
+		# restart the network
+		#
 		threads = []
 		for host in hosts:
 			if max_threading > 0:
@@ -212,9 +222,6 @@ class Command(rocks.commands.sync.host.command):
 		for thread in threads:
 			thread.join(timeout)
 
-		self.command('sync.host.firewall', hosts)
-		self.runPlugins(hosts)
-
 		#
 		# if IP addresses change, we'll need to sync the config (e.g.,
 		# update /etc/hosts, /etc/dhcpd.conf, etc.).
@@ -222,7 +229,7 @@ class Command(rocks.commands.sync.host.command):
 		self.command('sync.config')
 
 		#
-		# hack for ganglia
+		# hack for ganglia on the frontend
 		#
 		if self.db.getHostname('localhost') in hosts and \
 				os.path.exists('/etc/ganglia/gmond.conf'):
