@@ -1,4 +1,4 @@
-# $Id: sunos.mk,v 1.18 2010/10/20 21:32:46 mjk Exp $
+# $Id: sunos.mk,v 1.19 2011/01/26 01:47:57 anoop Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: sunos.mk,v $
+# Revision 1.19  2011/01/26 01:47:57  anoop
+# Removed librocks from Solaris
+#
 # Revision 1.18  2010/10/20 21:32:46  mjk
 # fix ordering
 #
@@ -173,4 +176,4 @@ SRCDIRS = foundation-coreutils foundation-gawk	\
 	  pcre pylib command 411	\
 	  411-master bittorrent tentakel dnet	\
 	  ganglia-pylib receptor ssl lsof \
-	  librocks channel
+	  channel
