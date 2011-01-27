@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.13 2010/09/07 23:52:58 bruno Exp $
+# $Id: __init__.py,v 1.14 2011/01/27 20:06:14 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.14  2011/01/27 20:06:14  bruno
+# when an interface is removed from the database, also try to remove the
+# ifcfg-* file on the node
+#
 # Revision 1.13  2010/09/07 23:52:58  bruno
 # star power for gb
 #
@@ -114,7 +118,7 @@ import time
 import sys
 import string
 import rocks.commands
-
+import threading
 
 class Command(rocks.commands.remove.host.command):
 	"""
@@ -149,10 +153,21 @@ class Command(rocks.commands.remove.host.command):
 			self.abort('must supply host')
 		if not iface:
 			self.abort('must supply iface')
-			
-		for host in self.getHostnames(args):
+
+		hosts = self.getHostnames(args)
+
+		#
+		# remove the interface from the database
+		#
+		for host in hosts:
 			self.db.execute("""delete from networks where 
 				node=(select id from nodes where name='%s')
 				and (device like '%s' or mac like '%s')""" % 
 				(host, iface, iface))
-			
+
+		#
+		# now try to remove the ifcfg-* file on the nodes
+		#
+		cmd = 'rm -f /etc/sysconfig/network-scripts/ifcfg-%s' % iface
+		self.command('run.host', hosts + [ cmd ] )
+
