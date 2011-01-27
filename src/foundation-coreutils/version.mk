@@ -1,3 +1,3 @@
 NAME	= foundation-coreutils
-VERSION = 5.97
+VERSION = 8.9
 RELEASE = 0
