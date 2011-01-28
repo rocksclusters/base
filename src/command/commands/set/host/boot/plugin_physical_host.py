@@ -1,4 +1,4 @@
-# $Id: plugin_physical_host.py,v 1.9 2010/09/07 23:53:01 bruno Exp $
+# $Id: plugin_physical_host.py,v 1.10 2011/01/28 22:43:22 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: plugin_physical_host.py,v $
+# Revision 1.10  2011/01/28 22:43:22  bruno
+# changed the calls to 'self.abort' to 'print' + 'sys.exit'. we can't
+# call abort from a plugin
+#
 # Revision 1.9  2010/09/07 23:53:01  bruno
 # star power for gb
 #
@@ -202,13 +206,15 @@ class Plugin(rocks.commands.Plugin):
 			nrows = self.db.execute("""select installaction from 
 				nodes where name = '%s' """ % node)
 		else:
-			self.abort('action "%s" for host "%s" is invalid' %
-				(action, node))
+			print 'action "%s" for host "%s" is invalid' % \
+				(action, node)
+			sys.exit(-1)
 
 		if nrows == 1:
 			bootaction, = self.db.fetchone()
 		else:
-			self.abort('failed to get bootaction')
+			print 'failed to get bootaction'
+			sys.exit(-1)
 
 		nrows = self.db.execute("""select kernel, ramdisk, args from
 			bootaction where action = '%s' """% bootaction)
@@ -216,8 +222,9 @@ class Plugin(rocks.commands.Plugin):
 		if nrows == 1:
 			kernel, ramdisk, args = self.db.fetchone()
 		else:
-			self.abort('bootaction "%s" for host "%s" is invalid' %
-				(action, node))
+			print 'bootaction "%s" for host "%s" is invalid' % \
+				(action, node)
+			sys.exit(-1)
 
 		# If the ksdevice= is set fill in the ip information
 		# a well.  This will avoid the DHCP request inside
@@ -318,8 +325,8 @@ class Plugin(rocks.commands.Plugin):
 		if nrows > 0:
 			nodeid, = self.db.fetchone()
 		else:
-			self.abort('could not find host "%s" in the database'
-				% host)
+			print 'could not find host "%s" in the database' % host
+			sys.exit(-1)
 
 		#
 		# if this host is the frontend, then generate the
