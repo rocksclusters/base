@@ -1,5 +1,5 @@
 # --------------------------------------------------- -*- Makefile -*- --
-# $Id: Rules.mk,v 1.2 2010/09/07 23:53:04 bruno Exp $
+# $Id: Rules.mk,v 1.3 2011/01/28 02:17:28 mjk Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,18 @@
 # @Copyright@
 #
 # $Log: Rules.mk,v $
+# Revision 1.3  2011/01/28 02:17:28  mjk
+# Docbook cleanup (using Viz Roll as proto-type)
+# - consistent entity naming (no more mixing of '-' and '_')
+# - roll compat page only lists specified rolls (version.mk)
+# - added note about using all OS cds with non-core rolls (e.g. viz)
+# - added entities for roll names, and bools
+# - logical styles used instead of direct formatting
+#   e.g. constant vs. emphasis
+# Works for Viz (needs new devel env installed)
+# TODO: Update Base Roll to further standardize (slow)
+# TODO: Cleanup all other Rolls (fast)
+#
 # Revision 1.2  2010/09/07 23:53:04  bruno
 # star power for gb
 #
@@ -816,35 +828,37 @@ DOCROOT = $(ROCKSROOT)/src/roll/etc/doc
 entities.sgml::
 	touch $@
 	for sgml in $(basename $(shell ls *.sgml)); do	\
-		echo "<!ENTITY source_$$sgml SYSTEM \"$$sgml.sgml\">" >> $@; \
+		echo "<!ENTITY source-$$sgml SYSTEM \"$$sgml.sgml\">" >> $@; \
 	done
-	for req in $(ROLL_REQUIRES); do \
-		echo "<!ENTITY roll_$$req \"<entry namest="req">X</entry>\">"\
-			>> $@; \
+	for roll in $(ROLL_REQUIRES); do \
+		echo "<!ENTITY roll-$$roll-depend \"<row><entry namest="req">&roll-$$roll;</entry></row>\">" >> $@; \
 	done
-	for con in $(ROLL_CONFLICTS); do \
-		echo "<!ENTITY roll_$$con \"<entry namest="con">X</entry>\">"\
-			>> $@; \
+	for roll in $(ROLL_CONFLICTS); do \
+		echo "<!ENTITY roll-$$roll-depend \"<row><entry namest="con">&roll-$$roll;</entry></row>\">" >> $@; \
 	done
-	@echo '<!ENTITY document_rocks "<trademark class=registered>Rocks</trademark>">' >> $@
-	@echo '<!ENTITY document_rocks_clusters "<trademark class=trade>Rocks Clusters</trademark>">' >> $@
-	@echo '<!ENTITY document_avalanche "<trademark class=trade>Avalanche Installer</trademark>">' >> $@
-	@echo '<!ENTITY document_rollname "$(ROLL)">' >> $@
-	@echo '<!ENTITY document_version "$(VERSION)">' >> $@
-	@echo '<!ENTITY document_version_name "$(RELEASE_NAME)">' >> $@
-	@echo '<!ENTITY document_pubdate "$(PUBDATE)">' >> $@
-	@echo '<!ENTITY document_year "$(YEAR)">' >> $@
-	@echo '<!ENTITY document_copyright "$(COPYRIGHT)">' >> $@
-	@echo '<!ENTITY summary_compatible "$(SUMMARY_COMPATIBLE)">' >> $@
-	@echo '<!ENTITY summary_maintainer "$(SUMMARY_MAINTAINER)">' >> $@
-	@echo '<!ENTITY summary_architecture "$(SUMMARY_ARCHITECTURE)">' >> $@
-	@echo '<!ENTITY rockscopyright SYSTEM "rocks-copyright.txt">' >> $@
+ifneq ($(ROLL_REQUIRES_FULL_OS),)
+	@echo '<!ENTITY source-roll-overview-complete-os SYSTEM "roll-overview-complete-os.sgml">' >> $@
+else
+	@echo '<!ENTITY source-roll-overview-complete-os "">' >> $@
+endif
+	@echo '<!ENTITY document-rollname "&roll-$(ROLL);">' >> $@
+	@echo '<!ENTITY document-version "$(VERSION)">' >> $@
+	@echo '<!ENTITY document-version_name "$(RELEASE_NAME)">' >> $@
+	@echo '<!ENTITY document-pubdate "$(PUBDATE)">' >> $@
+	@echo '<!ENTITY document-year "$(YEAR)">' >> $@
+	@echo '<!ENTITY document-copyright "$(COPYRIGHT)">' >> $@
+	@echo '<!ENTITY summary-compatible "$(SUMMARY_COMPATIBLE)">' >> $@
+	@echo '<!ENTITY summary-maintainer "$(SUMMARY_MAINTAINER)">' >> $@
+	@echo '<!ENTITY summary-architecture "$(SUMMARY_ARCHITECTURE)">' >> $@
 	cat $(DOCROOT)/overview-entities.sgml >> $@
+	cat $(DOCROOT)/general-entities.sgml >> $@
 
 
 predoctemplates::
 	cp $(DOCROOT)/overview.sgml \
 		roll-overview.sgml
+	cp $(DOCROOT)/overview-complete-os.sgml \
+		roll-overview-complete-os.sgml
 	cp $(DOCROOT)/copyright-disclaimer.sgml \
 		roll-copyright-disclaimer.sgml
 	cp $(DOCROOT)/installing-standard.sgml \

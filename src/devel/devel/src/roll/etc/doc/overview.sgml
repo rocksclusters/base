@@ -1,10 +1,22 @@
 <!--
-$Id: overview.sgml,v 1.1 2010/06/22 21:07:44 mjk Exp $
+$Id: overview.sgml,v 1.2 2011/01/28 02:17:28 mjk Exp $
 
 @Copyright@
 @Copyright@
 
 $Log: overview.sgml,v $
+Revision 1.2  2011/01/28 02:17:28  mjk
+Docbook cleanup (using Viz Roll as proto-type)
+- consistent entity naming (no more mixing of '-' and '_')
+- roll compat page only lists specified rolls (version.mk)
+- added note about using all OS cds with non-core rolls (e.g. viz)
+- added entities for roll names, and bools
+- logical styles used instead of direct formatting
+  e.g. constant vs. emphasis
+Works for Viz (needs new devel env installed)
+TODO: Update Base Roll to further standardize (slow)
+TODO: Cleanup all other Rolls (fast)
+
 Revision 1.1  2010/06/22 21:07:44  mjk
 build env moving into base roll
 
@@ -54,81 +66,70 @@ starting new manual
 		<tbody>
 			<row>
 				<entry>Name</entry>
-				<entry>&document_rollname;</entry>
+				<entry>&document-rollname;</entry>
 			</row>
 			<row>
 				<entry>Version</entry>
-				<entry>&document_version;</entry>
+				<entry>&document-version;</entry>
 			</row>
 			<row>
 				<entry>Maintained By</entry>
-				<entry>&summary_maintainer;</entry>
+				<entry>&summary-maintainer;</entry>
 			</row>
 			<row>
 				<entry>Architecture</entry>
-				<entry>&summary_architecture;</entry>
+				<entry>&summary-architecture;</entry>
 			</row>
 			<row>
-				<entry>Compatible with &document_rocks;</entry>
-				<entry>&summary_compatible;</entry>
+				<entry>Compatible with &rocks;</entry>
+				<entry>&summary-compatible;</entry>
 			</row>
 		</tbody>
 	</tgroup>
 </table>
 
+<para>
+The &document-rollname; &roll; has the following requirements
+of other &roll;s.  Compatability with all known
+&roll;s is assured, and all known conflicts are listed.
+There is no assurance of compatiblity with third-party &roll;s.
+</para>
+
 <table>
-	<title>Roll Compatibility</title>
-	<tgroup cols=4>
-		<colspec colname="roll">
-		<colspec colname="req" align="center">
-		<colspec colname="opt" align="center">
-		<colspec colname="con" align="center">
+	<title>Compatibility</title>
+	<tgroup cols=2>
+		<colspec colname="req">
+		<colspec colname="con">
 		<thead>
 			<row>
-				<entry>Roll</entry>
-				<entry>Requires
-<footnote><para>
-You may also substitute your own OS CDs for the &document_rocks; OS Roll CDs.
-In this case you must use all the CDs from your distribution and not use any
-of the &document_rocks; OS Roll CDs.
-</para></footnote>
-				</entry>
-				<entry>Optional
-<footnote><para>
-Only Rolls that have been verified as compatible with this Roll are listed.
-Other Rolls will likely work, but have not been tested by the maintainer
-of this Roll.
-</para></footnote>
-				</entry>
+				<entry>Requires</entry>
 				<entry>Conflicts</entry>
 			</row>
 		</thead>
 		<tbody>
-			<row><entry>alpha</entry>&roll_alpha;</row>
-			<row><entry>area51</entry>&roll_area51;</row>
-			<row><entry>base</entry>&roll_base;</row>
-			<row><entry>bio</entry>&roll_bio;</row>
-			<row><entry>condor</entry>&roll_condor;</row>
-			<row><entry>ganglia</entry>&roll_ganglia;</row>
-			<row><entry>grid</entry>&roll_grid;</row>
-			<row><entry>hpc</entry>&roll_hpc;</row>
-			<row><entry>java</entry>&roll_java;</row>
-			<row><entry>kernel</entry>&roll_kernel;</row>
-			<row><entry>os (disk 1)</entry>&roll_os1;</row>
-			<row><entry>os (disk 2)</entry>&roll_os2;</row>
-			<row><entry>os (disk 3)</entry>&roll_os3;</row>
-			<row><entry>os (disk 4)</entry>&roll_os4;</row>
-			<row><entry>os (disk 5)</entry>&roll_os4;</row>
-			<row><entry>os (disk 6)</entry>&roll_os4;</row>
-			<row><entry>os (disk 7)</entry>&roll_os4;</row>
-			<row><entry>pbs</entry>&roll_pbs;</row>
-			<row><entry>service-pack</entry>&roll_service-pack;</row>
-			<row><entry>sge</entry>&roll_sge;</row>
-			<row><entry>viz</entry>&roll_viz;</row>
-			<row><entry>web-server</entry>&roll_web-server;</row>
-			<row><entry>xen</entry>&roll_xen;</row>
+			&roll-alpha-depend;
+			&roll-area51-depend;
+			&roll-base-depend;
+			&roll-bio-depend;
+			&roll-condor-depend;
+			&roll-ganglia-depend;
+			&roll-grid-depend;
+			&roll-hpc-depend;
+			&roll-java-depend;
+			&roll-kernel-depend;
+			&roll-os-depend;
+			&roll-pbs-depend;
+			&roll-service-pack-depend;
+			&roll-sge-depend;
+			&roll-viz-depend;
+			&roll-web-server-depend;
+			&roll-xen-depend;
 		</tbody>
 	</tgroup>
 </table>
+
+
+&source-roll-overview-complete-os;
+
 
 </chapter>

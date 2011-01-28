@@ -1,10 +1,22 @@
 <!--
-$Id: installing-onthefly.sgml,v 1.2 2010/09/29 20:41:16 bruno Exp $
+$Id: installing-onthefly.sgml,v 1.3 2011/01/28 02:17:28 mjk Exp $
 
 @Copyright@
 @Copyright@
 
 $Log: installing-onthefly.sgml,v $
+Revision 1.3  2011/01/28 02:17:28  mjk
+Docbook cleanup (using Viz Roll as proto-type)
+- consistent entity naming (no more mixing of '-' and '_')
+- roll compat page only lists specified rolls (version.mk)
+- added note about using all OS cds with non-core rolls (e.g. viz)
+- added entities for roll names, and bools
+- logical styles used instead of direct formatting
+  e.g. constant vs. emphasis
+Works for Viz (needs new devel env installed)
+TODO: Update Base Roll to further standardize (slow)
+TODO: Cleanup all other Rolls (fast)
+
 Revision 1.2  2010/09/29 20:41:16  bruno
 fixed the on-the-fly procedure
 
@@ -23,19 +35,19 @@ major doc refresh
 <title>On an Existing Server</title>
 
 <para>
-The &document_rollname; Roll may also be added onto an existing server
+The &document-rollname; Roll may also be added onto an existing server
 (or frontend).  For sake of discussion, assume that you have an iso image
-of the roll called <computeroutput>&document_rollname;.iso</computeroutput>.
+of the roll called <computeroutput>&document-rollname;.iso</computeroutput>.
 The following procedure will install the Roll, and after the server
 reboots the Roll should be fully installed and configured.
 
 <screen>
 $ su - root
-# rocks add roll &document_rollname;.iso
-# rocks enable roll &document_rollname;
+# rocks add roll &document-rollname;.iso
+# rocks enable roll &document-rollname;
 # cd /export/rocks/install
 # rocks create distro
-# rocks run roll &document_rollname; | bash
+# rocks run roll &document-rollname; | bash
 # init 6
 </screen>
 

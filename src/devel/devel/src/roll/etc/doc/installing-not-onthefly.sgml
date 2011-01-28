@@ -1,10 +1,22 @@
 <!--
-$Id: installing-not-onthefly.sgml,v 1.1 2010/06/22 21:07:44 mjk Exp $
+$Id: installing-not-onthefly.sgml,v 1.2 2011/01/28 02:17:28 mjk Exp $
 
 @Copyright@
 @Copyright@
 
 $Log: installing-not-onthefly.sgml,v $
+Revision 1.2  2011/01/28 02:17:28  mjk
+Docbook cleanup (using Viz Roll as proto-type)
+- consistent entity naming (no more mixing of '-' and '_')
+- roll compat page only lists specified rolls (version.mk)
+- added note about using all OS cds with non-core rolls (e.g. viz)
+- added entities for roll names, and bools
+- logical styles used instead of direct formatting
+  e.g. constant vs. emphasis
+Works for Viz (needs new devel env installed)
+TODO: Update Base Roll to further standardize (slow)
+TODO: Cleanup all other Rolls (fast)
+
 Revision 1.1  2010/06/22 21:07:44  mjk
 build env moving into base roll
 
@@ -17,7 +29,7 @@ major doc refresh
 <title>On an Existing Server</title>
 
 <para>
-The &document_rollname; Roll may not be installed on an already existing 
+The &document-rollname; Roll may not be installed on an already existing 
 server.
 The only supported method of installation is to install the Roll at the
 time of the server installation.

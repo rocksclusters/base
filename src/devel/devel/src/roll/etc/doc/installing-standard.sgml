@@ -1,10 +1,22 @@
 <!--
-$Id: installing-standard.sgml,v 1.1 2010/06/22 21:07:44 mjk Exp $
+$Id: installing-standard.sgml,v 1.2 2011/01/28 02:17:28 mjk Exp $
 
 @Copyright@
 @Copyright@
 
 $Log: installing-standard.sgml,v $
+Revision 1.2  2011/01/28 02:17:28  mjk
+Docbook cleanup (using Viz Roll as proto-type)
+- consistent entity naming (no more mixing of '-' and '_')
+- roll compat page only lists specified rolls (version.mk)
+- added note about using all OS cds with non-core rolls (e.g. viz)
+- added entities for roll names, and bools
+- logical styles used instead of direct formatting
+  e.g. constant vs. emphasis
+Works for Viz (needs new devel env installed)
+TODO: Update Base Roll to further standardize (slow)
+TODO: Cleanup all other Rolls (fast)
+
 Revision 1.1  2010/06/22 21:07:44  mjk
 build env moving into base roll
 
@@ -31,10 +43,10 @@ Revision 1.1  2006/09/21 00:18:30  mjk
 
 <para>
 
-The &document_rollname; Roll should be installed during the initial
+The &document-rollname; &roll; should be installed during the initial
 installation of your server (or cluster).  This procedure is documented
-in section 1.2 of the &document_rocks; usersguide.  You should select the
-&document_rollname; Roll from the list of available rolls when you
+in section 1.2 of the &rocks; usersguide.  You should select the
+&document-rollname; &roll; from the list of available &roll;s when you
 see a screen that is similar to the one below.
 
 </para>

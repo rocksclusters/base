@@ -1,0 +1,15 @@
+<!-- Put Common Entities Here
+-->
+
+<!ENTITY rockscopyright SYSTEM "rocks-copyright.txt">
+
+<!ENTITY rocks		  	"<trademark class=registered>Rocks</trademark>">
+<!ENTITY rocks-clusters	"<trademark class=trade>Rocks Clusters</trademark>">
+<!ENTITY rocks-avalanche	"<trademark class=trade>Avalanche Installer</trademark>">
+
+<!ENTITY roll "roll">
+
+<!ENTITY true "<constant>TRUE</constant>">
+<!ENTITY false "<constant>FALSE</constant>">
+
+

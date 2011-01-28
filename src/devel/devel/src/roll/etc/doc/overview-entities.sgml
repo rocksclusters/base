@@ -1,24 +1,69 @@
-<!ENTITY roll_alpha             "<entry namest=opt> X </entry>" >
-<!ENTITY roll_area51		"<entry namest=opt> X </entry>" >
-<!ENTITY roll_base		"<entry namest=opt> X </entry>" >
-<!ENTITY roll_bio		"<entry namest=opt> X </entry>" >
-<!ENTITY roll_condor		"<entry namest=opt> X </entry>" >
-<!ENTITY roll_ganglia		"<entry namest=opt> X </entry>" >
-<!ENTITY roll_grid		"<entry namest=opt> X </entry>" >
-<!ENTITY roll_hpc		"<entry namest=opt> X </entry>" >
-<!ENTITY roll_java		"<entry namest=opt> X </entry>" >
-<!ENTITY roll_kernel		"<entry namest=opt> X </entry>" >
-<!ENTITY roll_os1		"<entry namest=opt> X </entry>" >
-<!ENTITY roll_os2		"<entry namest=opt> X </entry>" >
-<!ENTITY roll_os3		"<entry namest=opt> X </entry>" >
-<!ENTITY roll_os4		"<entry namest=opt> X </entry>" >
-<!ENTITY roll_os5		"<entry namest=opt> X </entry>" >
-<!ENTITY roll_os6		"<entry namest=opt> X </entry>" >
-<!ENTITY roll_os7		"<entry namest=opt> X </entry>" >
-<!ENTITY roll_pbs		"<entry namest=opt> X </entry>" >
-<!ENTITY roll_service-pack	"<entry namest=opt> X </entry>" >
-<!ENTITY roll_sge		"<entry namest=opt> X </entry>" >
-<!ENTITY roll_viz		"<entry namest=opt> X </entry>" >
-<!ENTITY roll_web-server	"<entry namest=opt> X </entry>" >
-<!ENTITY roll_xen               "<entry namest=opt> X </entry>" >
+<!-- Core Rocks Rolls
+
+All Rolls from the Rocks source tree should have two entries in this
+file:
+
+- roll-NAME
+	Human readable name of the Roll.
+
+- roll-NAME-depend
+	Must be the empty string "".  Adding the name of the Roll to
+	a usersguide version.mk will create the corresponding entry
+	in the dependcies table (overview section of manual).
+
+-->
+
+<!ENTITY roll-alpha "<command>Alpha</command>">
+<!ENTITY roll-alpha-depend "">
+
+<!ENTITY roll-area51 "<command>Area51</command>">
+<!ENTITY roll-area51-depend "">
+
+<!ENTITY roll-base "<command>Base</command>">
+<!ENTITY roll-base "">
+
+<!ENTITY roll-bio "<command>Bio</command>">
+<!ENTITY roll-bio-depend "">
+
+<!ENTITY roll-condor "<command>Condor</command>">
+<!ENTITY roll-condor-depend "">
+
+<!ENTITY roll-ganglia "<command>Ganglia</command>">
+<!ENTITY roll-ganglia-depend "">
+
+<!ENTITY roll-grid "<command>Ganglia</command>">
+<!ENTITY roll-grid-depend "">
+
+<!ENTITY roll-hpc "<command>HPC</command>">
+<!ENTITY roll-hpc-depend "">
+
+<!ENTITY roll-java "<command>Java</command>">
+<!ENTITY roll-java-depend "">
+
+<!ENTITY roll-jumbo "<command>Jumbo</command>">
+<!ENTITY roll-jumbo-depend "">
+
+<!ENTITY roll-kernel "<command>Kernel</command>">
+<!ENTITY roll-kernel-depend "">
+
+<!ENTITY roll-os "<command>OS</command>">
+<!ENTITY roll-os-depend "">
+
+<!ENTITY roll-pbs "<command>PBS</command>">
+<!ENTITY roll-pbs-depend "">
+
+<!ENTITY roll-service-pack "<command>Service Pack</command>">
+<!ENTITY roll-service-pack-depend "">
+
+<!ENTITY roll-sge "<command>Grid Engine</command>">
+<!ENTITY roll-sge-depend "">
+
+<!ENTITY roll-viz "<command>Viz</command>">
+<!ENTITY roll-viz-depend "">
+
+<!ENTITY roll-web-server "<command>Web Server</command>">
+<!ENTITY roll-web-server-depend "">
+
+<!ENTITY roll-xen "<command>Xen</command>">
+<!ENTITY roll-xen-depend "">
 
