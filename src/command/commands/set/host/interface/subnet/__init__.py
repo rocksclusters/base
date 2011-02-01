@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.11 2010/09/07 23:53:01 bruno Exp $
+# $Id: __init__.py,v 1.12 2011/02/01 20:46:24 mjk Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.12  2011/02/01 20:46:24  mjk
+# Fixed naming to default to HOSTNAME, instead of HOSTNAME-SUBNET.  This
+# was missed in the transition to the new networks based naming.
+#
 # Revision 1.11  2010/09/07 23:53:01  bruno
 # star power for gb
 #
@@ -156,7 +160,7 @@ class Command(rocks.commands.set.host.command):
 			# Check to see if this interface has a name yet.  If
 			# not label the private interace according to the
 			# hostname (in nodes table) and secondary networks
-			# are labeled hostname-subnet.
+			# are labeled hostname.
 			#
 			# This protects from the user forgetting to assign
 			# a name to each interface, since several commands
@@ -170,10 +174,7 @@ class Command(rocks.commands.set.host.command):
 
 			name, = self.db.fetchone()
 			if not name:
-				if subnet == 'private':
-					name = host
-				else:
-					name = '%s-%s' % (host, subnet)
+				name = host
 
 			# Updates the subnet id and the name.  The name
 			# is updated even if it did not change (see above)
