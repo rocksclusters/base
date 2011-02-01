@@ -1,4 +1,4 @@
-#$Id: __init__.py,v 1.21 2010/10/06 19:41:10 phil Exp $
+#$Id: __init__.py,v 1.22 2011/02/01 21:14:00 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,11 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.22  2011/02/01 21:14:00  bruno
+# tweaks for the new OpenIPMI.
+#
+# also, can now set the IPMI password.
+#
 # Revision 1.21  2010/10/06 19:41:10  phil
 # Document and interpret linux-only options: dhcp, noreport.
 # Needed by EC2.
@@ -193,22 +198,48 @@ class Command(rocks.commands.HostArgumentProcessor,
 
 
 	def writeIPMI(self, host, ip, channel, netmask):
+		defaults = [ ('IPMI_SI', 'yes'),
+			('DEV_IPMI', 'yes'),
+			('IPMI_WATCHDOG', 'no'),
+			('IPMI_WATCHDOG_OPTIONS', '"timeout=60"'),
+			('IPMI_POWEROFF', 'no'),
+			('IPMI_POWERCYCLE', 'no'),
+			('IPMI_IMB', 'no') ]
+
 		self.addOutput(host,
-			'<file name="/etc/sysconfig/ipmi-settings">')
+			'<file name="/etc/sysconfig/ipmi" perms="500">')
+
+		for var, default in defaults:
+			attr = self.db.getHostAttr(host, var)
+			if not attr:
+				attr = default
+			self.addOutput(host, '%s=%s' % (var, attr))
+
 		self.addOutput(host, 'ipmitool lan set %s ipaddr %s'
 			% (channel, ip))
 		self.addOutput(host, 'ipmitool lan set %s netmask %s'
 			% (channel, netmask))
 		self.addOutput(host, 'ipmitool lan set %s arp respond on'
 			% (channel))
-		self.addOutput(host, 'ipmitool user set password 1 admin')
+
+		attr = self.db.getHostAttr(host, 'ipmi_password')
+		if attr:
+			password = attr
+		else:
+			password = 'admin'
+
+		self.addOutput(host, 'ipmitool user set password 1 %s'
+			% (password))
+
 		self.addOutput(host, 'ipmitool lan set %s access on'
 			% (channel))
 		self.addOutput(host, 'ipmitool lan set %s user'
 			% (channel))
 		self.addOutput(host, 'ipmitool lan set %s auth ADMIN PASSWORD'
 			% (channel))
+
 		self.addOutput(host, '</file>')
+
 
 	def writeConfig(self, host, mac, ip, device, netmask, vlanid, mtu,
 			options, channel):

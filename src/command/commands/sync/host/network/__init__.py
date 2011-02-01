@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.18 2011/01/26 17:56:02 bruno Exp $
+# $Id: __init__.py,v 1.19 2011/02/01 21:14:00 bruno Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,11 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.19  2011/02/01 21:14:00  bruno
+# tweaks for the new OpenIPMI.
+#
+# also, can now set the IPMI password.
+#
 # Revision 1.18  2011/01/26 17:56:02  bruno
 # restart the network after all the plugins have been run
 #
@@ -210,7 +215,8 @@ class Command(rocks.commands.sync.host.command):
 					time.sleep(0.001)
 
 			cmd = 'ssh %s "/sbin/service network restart ' % host
-			cmd += '> /dev/null 2>&1" '
+			cmd += '> /dev/null 2>&1 ; '
+			cmd += '/sbin/service ipmi restart > /dev/null 2>&1" '
 
 			p = Parallel(cmd)
 			threads.append(p)
