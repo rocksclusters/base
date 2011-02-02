@@ -34,7 +34,7 @@
 <screen>
 # cd /export/rocks/install
 # cp rocks-dist/<emphasis>arch</emphasis>/build/nodes/auto-kickstart.xml \
-site-profiles/&document_version;/nodes/replace-auto-kickstart.xml
+site-profiles/&document-version;/nodes/replace-auto-kickstart.xml
 </screen>
 
 	<para>
@@ -47,7 +47,7 @@ site-profiles/&document_version;/nodes/replace-auto-kickstart.xml
 		<para>
 		Edit the file
 		<computeroutput>
-		site-profiles/&document_version;/nodes/replace-auto-kickstart.xml
+		site-profiles/&document-version;/nodes/replace-auto-kickstart.xml
 		</computeroutput>
 		</para>
 	</listitem>

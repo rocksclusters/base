@@ -8,7 +8,7 @@ Put the package you want to add in:
 </para>
 
 <screen>
-/export/rocks/install/contrib/&document_version;/<emphasis>arch</emphasis>/RPMS
+/export/rocks/install/contrib/&document-version;/<emphasis>arch</emphasis>/RPMS
 </screen>
 
 <para>
@@ -23,7 +23,7 @@ file:
 </para>
 
 <screen>
-# cd /export/rocks/install/site-profiles/&document_version;/nodes
+# cd /export/rocks/install/site-profiles/&document-version;/nodes
 # cp skeleton.xml extend-compute.xml
 </screen>
 

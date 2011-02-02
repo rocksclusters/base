@@ -1,10 +1,14 @@
 <!-- 
-$Id: index.sgml,v 1.7 2008/09/13 00:41:43 phil Exp $
+$Id: index.sgml,v 1.8 2011/02/02 18:52:48 mjk Exp $
 
 @Copyright@
 @Copyright@
 
 $Log: index.sgml,v $
+Revision 1.8  2011/02/02 18:52:48  mjk
+Added Attr section
+Cleanup
+
 Revision 1.7  2008/09/13 00:41:43  phil
 First crack at networking section (incomplete).
 
@@ -65,7 +69,7 @@ builds with command reference
 
 <bookinfo>
 
-	<title>Base Roll: Users Guide</title>
+	<title>&roll-base; Users Guide</title>
 
 	<subtitle>
 		<inlinemediaobject>
@@ -75,11 +79,11 @@ builds with command reference
 		</inlinemediaobject>
 	</subtitle>
 
-	<edition>Version &document_version;</edition>
-	<pubdate>&document_pubdate;</pubdate>
+	<edition> &document-version;</edition>
+	<pubdate>&document-pubdate;</pubdate>
 	<copyright id="copyright" xreflabel="copyright">
-		<year>&document_year;</year>
-		<holder>&document_copyright;</holder>	
+		<year>&document-year;</year>
+		<holder>&document-copyright;</holder>	
 	</copyright>
 
 	<releaseinfo>
@@ -88,22 +92,23 @@ builds with command reference
 
 	<legalnotice>
 		<para>
-		This document is subject to the Rocks License 
+		This document is subject to the &rocks; License 
 		(see <xref linkend="rocks-copyright">).
 		</para>
 	</legalnotice>
 
 </bookinfo>
 
-&source_preface;
-&source_roll-overview;
+&source-preface;
+&source-roll-overview;
+&source-attr;
 &clusterinstall;
 &networking;
 &customizing;
 &community;
-&source_admin-examples;
+&source-admin-examples;
 &advanced;
-&source_roll-commands;
+&source-roll-commands;
 &appendix;
 
 </book>

@@ -1,23 +1,23 @@
 
-&source_roll-rocks-copyright;
+&source-roll-rocks-copyright;
 
 <appendix>
 	<title>Common Licenses</title>
 
-&source_roll-artistic-copyright;
-&source_roll-apachev2-copyright;
-&source_roll-ggplv1-copyright;
-&source_roll-ggplv2-copyright;
-&source_roll-glgplv21-copyright;
-&source_roll-glgplv2-copyright;
-&source_roll-python2-copyright;
+&source-roll-artistic-copyright;
+&source-roll-apachev2-copyright;
+&source-roll-ggplv1-copyright;
+&source-roll-ggplv2-copyright;
+&source-roll-glgplv21-copyright;
+&source-roll-glgplv2-copyright;
+&source-roll-python2-copyright;
 </appendix>
 
 
 <appendix>
 	<title>Package Licenses</title>
 
-&source_roll-copyright-disclaimer;
+&source-roll-copyright-disclaimer;
 
 
 <section><title>anaconda</title>

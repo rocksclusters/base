@@ -65,9 +65,9 @@ the x86_64 architecture:
 </para>
 
 <screen>
-# rpm -i --force --ignorearch /export/rocks/install/rocks-dist/x86_64/RedHat/RPMS/rocks-boot-&document_version;-1.x86_64.rpm
-# cp /boot/kickstart/default/vmlinuz-&document_version;-x86_64 /tftpboot/pxelinux
-# cp /boot/kickstart/default/initrd.img-&document_version;-x86_64 /tftpboot/pxelinux
+# rpm -i --force --ignorearch /export/rocks/install/rocks-dist/x86_64/RedHat/RPMS/rocks-boot-&document-version;-1.x86_64.rpm
+# cp /boot/kickstart/default/vmlinuz-&document-version;-x86_64 /tftpboot/pxelinux
+# cp /boot/kickstart/default/initrd.img-&document-version;-x86_64 /tftpboot/pxelinux
 </screen>
 </listitem>
 
@@ -77,8 +77,8 @@ Then you need to add a new <computeroutput>bootaction</computeroutput>:
 </para>
 
 <screen>
-# rocks add bootaction action="install x86_64" kernel="vmlinuz-&document_version;-x86_64" \
-  ramdisk="initrd.img-&document_version;-x86_64" \
+# rocks add bootaction action="install x86_64" kernel="vmlinuz-&document-version;-x86_64" \
+  ramdisk="initrd.img-&document-version;-x86_64" \
   args="ks ramdisk_size=150000 lang= devfs=nomount pxe kssendmac selinux=0 noipv6"
 </screen>
 </listitem>
@@ -170,9 +170,9 @@ the i386 architecture:
 </para>
 
 <screen>
-# rpm -i --force /export/rocks/install/rocks-dist/i386/RedHat/RPMS/rocks-boot-&document_version;-1.i386.rpm
-# cp /boot/kickstart/default/vmlinuz-&document_version;-i386 /tftpboot/pxelinux
-# cp /boot/kickstart/default/initrd.img-&document_version;-i386 /tftpboot/pxelinux
+# rpm -i --force /export/rocks/install/rocks-dist/i386/RedHat/RPMS/rocks-boot-&document-version;-1.i386.rpm
+# cp /boot/kickstart/default/vmlinuz-&document-version;-i386 /tftpboot/pxelinux
+# cp /boot/kickstart/default/initrd.img-&document-version;-i386 /tftpboot/pxelinux
 </screen>
 </listitem>
 
@@ -182,8 +182,8 @@ Then you need to add a new <computeroutput>bootaction</computeroutput>:
 </para>
 
 <screen>
-# rocks add bootaction action="install i386" kernel="vmlinuz-&document_version;-i386" \
-  ramdisk="initrd.img-&document_version;-i386" \
+# rocks add bootaction action="install i386" kernel="vmlinuz-&document-version;-i386" \
+  ramdisk="initrd.img-&document-version;-i386" \
   args="ks ramdisk_size=150000 lang= devfs=nomount pxe kssendmac selinux=0 noipv6"
 </screen>
 </listitem>

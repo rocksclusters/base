@@ -1,0 +1,323 @@
+<!--
+$Id: attr.sgml,v 1.1 2011/02/02 18:52:48 mjk Exp $
+
+@Copyright@
+@Copyright@
+
+$Log: attr.sgml,v $
+Revision 1.1  2011/02/02 18:52:48  mjk
+Added Attr section
+Cleanup
+
+-->
+
+
+<!--
+HttpConf                              /etc/httpd/conf                          O     
+HttpConfigDirExt                      /etc/httpd/conf.d                        O     
+HttpRoot                              /var/www/html                            O     
+Kickstart_DistroDir                   /export/rocks                            G     
+Kickstart_Keyboard                    us                                       G     
+Kickstart_Lang                        en_US                                    G     
+Kickstart_Langsupport                 en_US                                    G     
+Kickstart_Multicast                   226.117.172.185                          G     
+Kickstart_PrivateAddress              10.1.1.1                                 G     
+Kickstart_PrivateBroadcast            10.1.255.255                             G     
+Kickstart_PrivateDNSDomain            local                                    G     
+Kickstart_PrivateDNSServers           10.1.1.1                                 G     
+Kickstart_PrivateGateway              10.1.1.1                                 G     
+Kickstart_PrivateHostname             vizagra                                  G     
+Kickstart_PrivateKickstartBasedir     install                                  G     
+Kickstart_PrivateKickstartCGI         sbin/kickstart.cgi                       G     
+Kickstart_PrivateKickstartHost        10.1.1.1                                 G     
+Kickstart_PrivateNTPHost              10.1.1.1                                 G     
+Kickstart_PrivateNetmask              255.255.0.0                              G     
+Kickstart_PrivateNetmaskCIDR          16                                       G     
+Kickstart_PrivateNetwork              10.1.0.0                                 G     
+Kickstart_PrivatePortableRootPassword $P$BWBWBywpGzP8K8OOpIuQbKg1zQ6ukh.       G     
+Kickstart_PrivateRootPassword         $1$bhy.sxjO$mGOt642DLpOCjokNXzqJe1       G     
+Kickstart_PrivateSHARootPassword      9234f05594d83b4df12612879763cf7b2609a10e G     
+Kickstart_PrivateSyslogHost           10.1.1.1                                 G     
+Kickstart_PublicAddress               137.110.119.111                          G     
+Kickstart_PublicBroadcast             137.110.119.255                          G     
+Kickstart_PublicDNSDomain             rocksclusters.org                        G     
+Kickstart_PublicDNSServers            8.8.8.8                                  G     
+Kickstart_PublicGateway               137.110.119.1                            G     
+Kickstart_PublicHostname              vizagra.rocksclusters.org                G     
+Kickstart_PublicKickstartHost         central.rocksclusters.org                G     
+Kickstart_PublicNTPHost               pool.ntp.org                             G     
+Kickstart_PublicNetmask               255.255.255.0                            G     
+Kickstart_PublicNetmaskCIDR           24                                       G     
+Kickstart_PublicNetwork               137.110.119.0                            G     
+Kickstart_Timezone                    America/Los_Angeles                      G     
+RootDir                               /root                                    O     
+Server_Partitioning                   force-default-root-disk-only             G     
+dhcp_filename                         pxelinux.0                               A     
+dhcp_nextserver                       10.1.1.1                                 A     
+kickstartable                         yes                                      A     
+ssh_use_dns                           true                                     G     
+-->
+
+<chapter>
+
+<title>Attributes</title>
+
+<table>
+	<title>Roll Attributes</title>
+	<tgroup cols=3>
+		<colspec colname="name">
+		<colspec colname="type">
+		<colspec colname="value">
+		<thead>
+			<row>
+				<entry>Name</entry>
+				<entry>Type</entry>
+				<entry>Default</entry>
+			</row>
+		</thead>
+		<tbody>
+			<row>
+				<entry>
+				  <varname>Info_CertificateCountry</varname>
+				  <footnote id="fn-global-attr">
+				    <para>
+Default value created using
+<command>rocks add attr <varname>name</varname> <varname>value</varname></command>
+and affects all hosts.
+				    </para>
+				  </footnote>
+				</entry>
+				<entry>string</entry>
+				<entry></entry>
+			</row>
+			<row>
+				<entry>
+				  <varname>Info_CertificateLocality</varname>
+				  <footnoteref linkend="fn-global-attr">
+				</entry>
+				<entry>string</entry>
+				<entry> </entry>
+			</row>
+			<row>
+				<entry>
+				  <varname>Info_CertificateOrganization</varname>
+				  <footnoteref linkend="fn-global-attr">
+				</entry>
+				<entry>string</entry>
+				<entry> </entry>
+			</row>
+			<row>
+				<entry>
+				  <varname>Info_CertificateState</varname>
+				  <footnoteref linkend="fn-global-attr">
+				</entry>
+				<entry>string</entry>
+				<entry> </entry>
+			</row>
+			<row>
+				<entry>
+				  <varname>Info_CertificateContact</varname>
+				  <footnoteref linkend="fn-global-attr">
+				</entry>
+				<entry>string</entry>
+				<entry> </entry>
+			</row>
+			<row>
+				<entry>
+				  <varname>Info_CertificateLatLong</varname>
+				  <footnoteref linkend="fn-global-attr">
+				</entry>
+				<entry>string</entry>
+				<entry> </entry>
+			</row>
+			<row>
+				<entry>
+				  <varname>Info_CertificateName</varname>
+				  <footnoteref linkend="fn-global-attr">
+				</entry>
+				<entry>string</entry>
+				<entry> </entry>
+			</row>
+			<row>
+				<entry>
+				  <varname>Info_CertificateURL</varname>
+				  <footnoteref linkend="fn-global-attr">
+				</entry>
+				<entry>string</entry>
+				<entry> </entry>
+			</row>
+			<row>
+				<entry>
+				  <varname>airboss</varname>
+				  <footnote id="fn-host-attr">
+				    <para>
+Default value created using
+<command>rocks add host attr localhost <varname>name</varname> <varname>value</varname></command>
+and only affects the <constant>frontend</constant> appliance.
+				    </para>
+				  </footnote>
+				</entry>
+				<entry>string</entry>
+				<entry>specified on boot line</entry>
+			</row>
+			<row>
+				<entry>
+				  <varname>arch</varname>
+				  <footnote id="fn-internal-attr">
+				    <para>
+Attribute is for internal use only, and should not be altered by the
+user.  Each time a machine installs this attributed is reset to the
+default value for that machine (depend on kernel booted).
+				    </para>
+				  </footnote>,
+				  <footnoteref linkend="fn-host-attr">
+				</entry>
+				<entry>string</entry>
+				<entry>i386 | x86_64</entry>
+			</row>
+			<row>
+				<entry>
+				  <varname>hostname</varname>
+				  <footnote id="fn-implied-attr">
+				    <para>
+Attribute cannot by modified.  This value is not recorded in the
+cluster database and is only available as an XML entity during
+installation.
+                                 </para>
+				  </footnote>,
+				  <footnoteref linkend="fn-host-attr">
+				</entry>
+				<entry>string</entry>
+				<entry></entry>
+			</row>
+			<row>
+				<entry>
+				  <varname>os</varname>
+				  <footnoteref linkend="fn-internal-attr">,
+				  <footnoteref linkend="fn-host-attr">
+				</entry>
+				<entry>string</entry>
+				<entry>linux | solaris</entry>
+			</row>
+			<row>
+				<entry>
+				  <varname>rack</varname>
+				  <footnoteref linkend="fn-implied-attr">,
+				  <footnoteref linkend="fn-host-attr">
+				</entry>
+				<entry>int</entry>
+				<entry></entry>
+			</row>
+			<row>
+				<entry>
+				  <varname>rank</varname>
+				  <footnoteref linkend="fn-implied-attr">,
+				  <footnoteref linkend="fn-host-attr">
+				</entry>
+				<entry>int</entry>
+				<entry></entry>
+			</row>
+			<row>
+				<entry>
+				  <varname>rocks_version</varname>
+				  <footnoteref linkend="fn-global-attr">
+				</entry>
+				<entry>string</entry>
+				<entry>&document-version;</entry>
+			</row>
+			<row>
+				<entry>
+				  <varname>rsh</varname>
+				  <footnote id="fn-undefined-attr">
+				    <para>
+Attribute is referenced but not defined so is treated as &false;.				      
+				    </para>
+				  </footnote>
+				</entry>
+				<entry>bool</entry>
+				<entry>&false;</entry>
+			</row>
+			<row>
+				<entry>
+				  <varname>x11</varname>
+				  <footnoteref linkend="fn-undefined-attr">
+				</entry>
+				<entry>bool</entry>
+				<entry>&false;</entry>
+			</row>
+		</tbody>
+	</tgroup>
+</table>
+
+
+
+<variablelist>
+
+	<varlistentry>
+	    	<term><varname>Info_Certificate</varname>{<varname>*</varname>}</term>
+		<listitem>
+			<para>
+The attributes are created during <constant>frontend</constant>
+installation.  The values are taken from user input on the system
+installation screens.
+			</para>
+		</listitem>
+	</varlistentry>
+
+	<varlistentry>
+	    	<term><varname>airboss</varname></term>
+		<listitem>
+			<para>
+Specifies the address of the airboss host.  This only applies to
+virtual machines.
+			</para>
+		</listitem>
+	</varlistentry>
+
+	<varlistentry>
+	    	<term><varname>arch</varname></term>
+		<listitem>
+			<para>
+The CPU architecture of the host.  This host-specific attribute is set
+by the installing machine.  User changes to this attribute have no
+affect.
+			</para>
+		</listitem>
+	</varlistentry>
+
+	<varlistentry>
+	    	<term><varname>os</varname></term>
+		<listitem>
+			<para>
+The OS of the host.  This host-specific attribute is set 
+by the installing machine.  User changes to this attribute have no
+affect.
+			</para>
+		</listitem>
+	</varlistentry>
+
+	<varlistentry>
+	    	<term><varname>rsh</varname></term>
+		<listitem>
+			<para>
+If &true; the machine is configured as an RSH client.  This is not
+recommended, and will still require RSH server configuration on
+the <constant>frontend</constant> machine.
+			</para>
+		</listitem>
+	</varlistentry>
+
+	<varlistentry>
+    		<term><varname>x11</varname></term>
+		<listitem>
+			<para>
+If &true; X11 is configured and the default runlevel is
+changed from 3 to 5.  X11 is always configure on
+the <constant>frontend</constant> and this attribute applies only to
+the other nodes in the cluster.
+			</para>
+		</listitem>
+	</varlistentry>
+</variablelist>
+
+</chapter>

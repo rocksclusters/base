@@ -19,9 +19,9 @@ To check out the current source code you will first need to clone the master Roc
 </para>
 
 <screen>
-$ hg clone http://fyp.rocksclusters.org/hg/rocks-&document_version;
-destination directory: rocks-&document_version;
-real URL is http://fyp.rocksclusters.org/hg/rocks-&document_version;/
+$ hg clone http://fyp.rocksclusters.org/hg/rocks-&document-version;
+destination directory: rocks-&document-version;
+real URL is http://fyp.rocksclusters.org/hg/rocks-&document-version;/
 requesting all changes
 adding changesets
 adding manifests

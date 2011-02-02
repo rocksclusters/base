@@ -113,7 +113,7 @@ file:
 </para>
 
 <screen>
-# cd /export/rocks/install/site-profiles/&document_version;/nodes/
+# cd /export/rocks/install/site-profiles/&document-version;/nodes/
 # cp skeleton.xml replace-partition.xml
 </screen>
 
@@ -639,7 +639,7 @@ file:
 </para>
 
 <screen>
-# cd /export/rocks/install/site-profiles/&document_version;/nodes/
+# cd /export/rocks/install/site-profiles/&document-version;/nodes/
 # cp skeleton.xml replace-partition.xml
 </screen>
 
@@ -718,7 +718,7 @@ allow Rocks to preserve all non-root partition data.
 </para>
 
 <screen>
-# rm /export/rocks/install/site-profiles/&document_version;/nodes/replace-partition.xml
+# rm /export/rocks/install/site-profiles/&document-version;/nodes/replace-partition.xml
 </screen>
 
 <para>
@@ -752,7 +752,7 @@ file:
 </para>
 
 <screen>
-# cd /export/rocks/install/site-profiles/&document_version;/nodes/
+# cd /export/rocks/install/site-profiles/&document-version;/nodes/
 # cp skeleton.xml replace-partition.xml
 </screen>
 

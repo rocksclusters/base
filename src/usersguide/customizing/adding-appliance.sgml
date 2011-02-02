@@ -25,7 +25,7 @@ This file will contain the configuration scripts and/or packages that
 will be applied to each of your appliances.
 Let's call it <computeroutput>my-compute.xml</computeroutput>.
 This file should be created in the directory
-<computeroutput>/export/rocks/install/site-profiles/&document_version;/nodes</computeroutput>.
+<computeroutput>/export/rocks/install/site-profiles/&document-version;/nodes</computeroutput>.
 Below is the contents of the file:
 </para>
 
@@ -64,7 +64,7 @@ compute appliance and then extending it.
 <para>
 To link <computeroutput>my-compute.xml</computeroutput> to 
 <computeroutput>compute.xml</computeroutput>, in the directory
-<computeroutput>/export/rocks/install/site-profiles/&document_version;/graphs/default</computeroutput>, 
+<computeroutput>/export/rocks/install/site-profiles/&document-version;/graphs/default</computeroutput>, 
 create the file <computeroutput>my-appliance.xml</computeroutput> and
 have it contain:
 </para>

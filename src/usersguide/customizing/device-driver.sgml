@@ -5,7 +5,7 @@
 
 <para>
 This section describes how to add a device driver to the installation
-environment (<emphasis>initrd.img-&document_version;-&lt;arch&gt;</emphasis>).
+environment (<emphasis>initrd.img-&document-version;-&lt;arch&gt;</emphasis>).
 This enables the installation environment to use the new driver as well
 as installing the device driver into the running environment (that is,
 after the node has installed).
@@ -25,7 +25,7 @@ Set up a build environment:
 
 <screen>
 # cd /export
-# hg clone http://fyp.rocksclusters.org/hg/rocks-&document_version;
+# hg clone http://fyp.rocksclusters.org/hg/rocks-&document-version;
 </screen>
 </listitem>
 
@@ -35,7 +35,7 @@ Go to the directory which holds the device driver code:
 </para>
 
 <screen>
-# cd /export/rocks-&document_version;/src/roll/kernel/src/rocks-boot/enterprise/5/images/drivers
+# cd /export/rocks-&document-version;/src/roll/kernel/src/rocks-boot/enterprise/5/images/drivers
 </screen>
 </listitem>
 
@@ -126,7 +126,7 @@ Build the <emphasis>rocks-boot</emphasis> package:
 </para>
 
 <screen>
-# cd /export/rocks-&document_version;/src/roll/kernel/src/rocks-boot
+# cd /export/rocks-&document-version;/src/roll/kernel/src/rocks-boot
 # make rpm
 </screen>
 </listitem>
@@ -139,8 +139,8 @@ and include them:
 </para>
 
 <screen>
-# cp /export/rocks-&document_version;/src/roll/kernel/RPMS/x86_64/rocks-boot* \
-	/export/rocks/install/contrib/&document_version;/x86_64/RPMS/
+# cp /export/rocks-&document-version;/src/roll/kernel/RPMS/x86_64/rocks-boot* \
+	/export/rocks/install/contrib/&document-version;/x86_64/RPMS/
 </screen>
 
 <note>
@@ -165,17 +165,17 @@ Rebuild the distro:
 <listitem>
 <para>
 Install the newly created
-<emphasis>initrd.img-&document_version;-&lt;arch&gt;</emphasis> and its
+<emphasis>initrd.img-&document-version;-&lt;arch&gt;</emphasis> and its
 matching kernel
-<emphasis>vmlinuz-&document_version;-&lt;arch&gt;</emphasis>
+<emphasis>vmlinuz-&document-version;-&lt;arch&gt;</emphasis>
 so PXE booted nodes will get the new device drivers:
 </para>
 
 <screen>
 # cd /export/rocks/install
 # rpm -Uvh --force rocks-dist/x86_64/RedHat/RPMS/rocks-boot-5*.rpm
-# cp /boot/kickstart/default/initrd.img-&document_version;-&lt;arch&gt; /tftpboot/pxelinux/
-# cp /boot/kickstart/default/vmlinuz-&document_version;-&lt;arch&gt; /tftpboot/pxelinux/
+# cp /boot/kickstart/default/initrd.img-&document-version;-&lt;arch&gt; /tftpboot/pxelinux/
+# cp /boot/kickstart/default/vmlinuz-&document-version;-&lt;arch&gt; /tftpboot/pxelinux/
 </screen>
 </listitem>
 
@@ -205,7 +205,7 @@ files.
 
 <para>
 For help on how to populate your new driver directory, see:
-/export/rocks-&document_version;/src/roll/kernel/src/rocks-boot/enterprise/5/images/drivers/INSTALL.
+/export/rocks-&document-version;/src/roll/kernel/src/rocks-boot/enterprise/5/images/drivers/INSTALL.
 </para>
 
 <para>

@@ -162,7 +162,7 @@ XEN             = 1
 	</para>
 
 <screen>
-# cp ../../RPMS/&lt;arch&gt;/kernel*rpm /export/rocks/install/contrib/&document_version;/&lt;arch&gt;/RPMS/
+# cp ../../RPMS/&lt;arch&gt;/kernel*rpm /export/rocks/install/contrib/&document-version;/&lt;arch&gt;/RPMS/
 </screen>
 
 	<para>
