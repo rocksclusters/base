@@ -4,6 +4,7 @@
 &firewall;
 &pxeflash;
 &login;
+&ipmi;
 &bonding;
 &central;
 &cross;

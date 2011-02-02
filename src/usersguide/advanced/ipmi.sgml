@@ -1,0 +1,183 @@
+<section id="ipmi"
+	xreflabel="Configuring IPMI">
+<title> Configuring IPMI </title>
+
+<para>
+Intelligent Platform Management Interface (IPMI) is used to monitor system
+health and manage the system (e.g., power nodes on and off).
+In this section, we'll describe how to configure your cluster nodes to
+respond to IPMI commands.
+</para>
+
+<section id="ipmi-example"
+	xreflabel="Example Cluster Configuration">
+<title> Example Cluster Configuration </title>
+
+<para>
+In this section, we'll walk through an example of how to set up IPMI on a
+cluster with the following hardware configuration:
+</para>
+
+<para>
+<mediaobject>
+	<imageobject>
+		<imagedata fileref="images/ipmi.png">
+	</imageobject>
+</mediaobject>
+</para>
+
+<para>
+In the above configuration, we have 1 frontend and 2 compute nodes.
+There are 2 internal networks: 'private' (used for node installation, message
+passing, ganglia monitoring) and 'ipmi' (used to carry IPMI commands).
+</para>
+
+<para>
+The frontend has 3 ethernet ports: eth0, eth1 and eth2.
+Eth0 is connected to the private network, eth1 is connected to the public
+network and eth2 is connected to the IPMI network.
+</para>
+
+<para>
+The compute nodes have 1 ethernet port (eth0) that is connected
+to the private network.
+They also have a dedicated 'net mgmt' port that is connected to
+the ipmi network.
+</para>
+
+<para>
+The private and ipmi networks are physically separated by 2 ethernet
+switches.
+All the nodes' eth0 interfaces are connected to one switch while all the
+compute nodes' net mgmt ports and the frontend's eth2 port are connected
+to another switch.
+This ensures IPMI messages do not interfere with the normal operation of
+the cluster.
+</para>
+
+</section>
+
+
+<section id="ipmi-rocks-command-line"
+	xreflabel="Using the Rocks Command Line to Configure IPMI">
+<title> Using the Rocks Command Line to Configure IPMI </title>
+
+<para>
+First, we'll define a new non-routable network for the nodes' IPMI interfaces:
+</para>
+
+<screen>
+# rocks add network ipmi subnet=192.168.1.0 netmask=255.255.255.0 servedns=true
+</screen>
+
+<para>
+Let's check our work:
+</para>
+
+<screen>
+# rocks list network
+NETWORK  SUBNET       NETMASK       MTU   DNSZONE           SERVEDNS
+ipmi:    192.168.20.0 255.255.255.0 1500  ipmi              True    
+private: 10.1.0.0     255.255.0.0   1500  local             True    
+public:  198.202.88.0 255.255.255.0 1500  rocksclusters.org False
+</screen>
+
+<para>
+We'll need to configure the ipmi interface on the frontend (eth2):
+</para>
+
+<screen>
+# rocks set host interface subnet localhost eth2 ipmi
+# rocks set host interface ip localhost eth2 192.168.1.254
+</screen>
+
+<screen>
+SUBNET  IFACE   MAC               IP             NETMASK       MODULE NAME      VLAN OPTIONS CHANNEL
+private eth0    00:12:3F:20:D6:4D 10.1.1.1       255.255.0.0   ------ brunoland ---- ------- -------
+public  eth1    00:12:3F:20:D6:4E 198.202.88.152 255.255.255.0 ------ brunoland ---- ------- -------
+ipmi    eth2    00:01:02:03:04:05 192.168.1.254  255.255.255.0 ------ brunoland ---- ------- -------
+</screen>
+
+<para>
+Now will add the ipmi interface to a compute node and we'll set the 'channel'
+to 1.
+</para>
+
+<note>
+<para>
+The 'channel' instructs ipmitool on how to communicate with the service
+processor inside a node.
+In general, channel 1 is the LAN-based network management port, but this
+may not be true with your node.
+To be sure, you'll need to look up what the channel number should be in
+the node's manual.
+</para>
+</note>
+
+<screen>
+# rocks add host interface compute-0-0 ipmi ip=192.168.1.1 subnet=ipmi
+# rocks set host interface channel compute-0-0 ipmi 1
+</screen>
+
+<screen>
+# rocks list host interface compute-0-0
+SUBNET  IFACE MAC               IP           NETMASK       MODULE NAME        VLAN OPTIONS CHANNEL
+private eth0  00:12:3f:20:d6:f8 10.1.255.254 255.255.0.0   ------ compute-0-0 ---- ------- -------
+------- eth1  00:12:3f:20:d6:f9 ------------ ------------- ------ ----------- ---- ------- -------
+ipmi    ipmi  ----------------- 192.168.1.1  255.255.255.0 ------ compute-0-0 ---- ------- 1
+</screen>
+
+<para>
+Repeat the above procedure for all your compute nodes.
+</para>
+
+<para>
+Now apply the networking changes to your frontend and your compute nodes:
+</para>
+
+<screen>
+# rocks sync config
+# rocks sync host network localhost compute
+</screen>
+
+<para>
+To test the IPMI configuration, execute:
+</para>
+
+<screen>
+# ipmitool -I lan -H compute-0-0.ipmi -P admin chassis status
+</screen>
+
+<para>
+You should see output similar to:
+</para>
+
+<screen>
+System Power         : on
+Power Overload       : false
+Power Interlock      : inactive
+Main Power Fault     : false
+Power Control Fault  : false
+Power Restore Policy : always-off
+Last Power Event     : 
+Chassis Intrusion    : inactive
+Front-Panel Lockout  : inactive
+Drive Fault          : false
+Cooling/Fan Fault    : false
+</screen>
+
+<note>
+<para>
+The default IPMI password for channel 1 is 'admin'.
+You can change it by executing:
+</para>
+
+<screen>
+# rocks set attr ipmi_password your-new-password
+# rocks sync host network localhost compute
+</screen>
+</note>
+
+</section>
+
+</section>
