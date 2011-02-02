@@ -43,13 +43,24 @@ The compute nodes have 1 ethernet port (eth0) that is connected
 to the private network.
 They also have a dedicated 'net mgmt' port that is connected to
 the ipmi network.
+Below is a picture of a node that has a dedicated 'net mgmt' port that is
+connected to the ipmi network and an ethernet port (eth0) that is connected
+to the private network.
+</para>
+
+<para>
+<mediaobject>
+	<imageobject>
+		<imagedata fileref="images/ipmi-sun-node.png">
+	</imageobject>
+</mediaobject>
 </para>
 
 <para>
 The private and ipmi networks are physically separated by 2 ethernet
 switches.
 All the nodes' eth0 interfaces are connected to one switch while all the
-compute nodes' net mgmt ports and the frontend's eth2 port are connected
+compute nodes' net mgmt ports (and the frontend's eth2 port) are connected
 to another switch.
 This ensures IPMI messages do not interfere with the normal operation of
 the cluster.
@@ -77,7 +88,7 @@ Let's check our work:
 <screen>
 # rocks list network
 NETWORK  SUBNET       NETMASK       MTU   DNSZONE           SERVEDNS
-ipmi:    192.168.20.0 255.255.255.0 1500  ipmi              True    
+ipmi:    192.168.1.0  255.255.255.0 1500  ipmi              True    
 private: 10.1.0.0     255.255.0.0   1500  local             True    
 public:  198.202.88.0 255.255.255.0 1500  rocksclusters.org False
 </screen>
@@ -89,9 +100,8 @@ We'll need to configure the ipmi interface on the frontend (eth2):
 <screen>
 # rocks set host interface subnet localhost eth2 ipmi
 # rocks set host interface ip localhost eth2 192.168.1.254
-</screen>
 
-<screen>
+# rocks list host interface localhost
 SUBNET  IFACE   MAC               IP             NETMASK       MODULE NAME      VLAN OPTIONS CHANNEL
 private eth0    00:12:3F:20:D6:4D 10.1.1.1       255.255.0.0   ------ brunoland ---- ------- -------
 public  eth1    00:12:3F:20:D6:4E 198.202.88.152 255.255.255.0 ------ brunoland ---- ------- -------
@@ -99,7 +109,7 @@ ipmi    eth2    00:01:02:03:04:05 192.168.1.254  255.255.255.0 ------ brunoland 
 </screen>
 
 <para>
-Now will add the ipmi interface to a compute node and we'll set the 'channel'
+Now we'll add an ipmi interface to a compute node and we'll set the 'channel'
 to 1.
 </para>
 
@@ -109,17 +119,14 @@ The 'channel' instructs ipmitool on how to communicate with the service
 processor inside a node.
 In general, channel 1 is the LAN-based network management port, but this
 may not be true with your node.
-To be sure, you'll need to look up what the channel number should be in
-the node's manual.
+To be sure, you'll need to consult your node's manual.
 </para>
 </note>
 
 <screen>
 # rocks add host interface compute-0-0 ipmi ip=192.168.1.1 subnet=ipmi
 # rocks set host interface channel compute-0-0 ipmi 1
-</screen>
 
-<screen>
 # rocks list host interface compute-0-0
 SUBNET  IFACE MAC               IP           NETMASK       MODULE NAME        VLAN OPTIONS CHANNEL
 private eth0  00:12:3f:20:d6:f8 10.1.255.254 255.255.0.0   ------ compute-0-0 ---- ------- -------
@@ -173,10 +180,40 @@ You can change it by executing:
 </para>
 
 <screen>
-# rocks set attr ipmi_password your-new-password
+# rocks set attr ipmi_password your-new-password shadow=yes
 # rocks sync host network localhost compute
 </screen>
 </note>
+
+</section>
+
+
+<section id="ipmi-power-commands"
+	xreflabel="Power On/Off a Node with ipmitool">
+<title> Power On/Off a Node with ipmitool </title>
+
+<para>
+After you configure IPMI on your Rocks cluster, you can use "ipmitool" to
+power on/off your compute nodes.
+To power off compute-0-0, execute:
+</para>
+
+<screen>
+# ipmitool -I lan -H compute-0-0.ipmi -P admin chassis power off
+</screen>
+
+<para>
+To power compute-0-0 back on, execute:
+</para>
+
+<screen>
+# ipmitool -I lan -H compute-0-0.ipmi -P admin chassis power on
+</screen>
+
+<para>
+There are several more management tasks you can perform with ipmitool.
+See the man page for ipmitool for more details.
+</para>
 
 </section>
 
