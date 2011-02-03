@@ -1,0 +1,65 @@
+<!-- 
+$Id: index.sgml,v 1.1 2011/02/03 22:05:29 bruno Exp $
+
+@Copyright@
+@Copyright@
+
+$Log: index.sgml,v $
+Revision 1.1  2011/02/03 22:05:29  bruno
+renamed directory
+
+Revision 1.1  2011/02/03 22:03:03  bruno
+outline for the new developer's guide
+
+-->
+
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook V3.1//EN" [
+
+	<!ENTITY % entities SYSTEM "entities.sgml">
+
+	%entities;
+
+]>
+<book>
+
+<bookinfo>
+
+	<title>Roll Developer's Guide</title>
+
+	<subtitle>
+		<inlinemediaobject>
+			<imageobject>
+				<imagedata fileref="images/developer.png"
+					scale=30>
+			</imageobject>
+		</inlinemediaobject>
+	</subtitle>
+
+	<edition> &document-version;</edition>
+	<pubdate>&document-pubdate;</pubdate>
+	<copyright id="copyright" xreflabel="copyright">
+		<year>&document-year;</year>
+		<holder>&document-copyright;</holder>	
+	</copyright>
+
+	<releaseinfo>
+		<ulink url="roll-base-reference-guide.pdf">(PDF version)</ulink>
+	</releaseinfo>
+
+	<legalnotice>
+		<para>
+		This document is subject to the &rocks; License 
+		(see <xref linkend="rocks-copyright">).
+		</para>
+	</legalnotice>
+
+</bookinfo>
+
+&source-overview;
+&source-internals;
+&source-building;
+&source-installing;
+&source-testing;
+&source-roll-rocks-copyright;
+
+</book>

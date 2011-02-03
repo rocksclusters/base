@@ -1,0 +1,57 @@
+<chapter id="internals" xreflabel="internals">
+	<title> Roll Internals </title>
+
+<para>
+This section describes in detail the two major components of a roll: packages
+and configuration files.
+</para>
+
+
+<section id="internals-packages" xreflabel="internals-packages">
+        <title>Packages</title>
+
+<para>
+Describe packages
+</para>
+
+</section>
+
+
+<section id="internals-xml-files" xreflabel="internals-xml-files">
+        <title>Configuration Files</title>
+
+
+<section id="internals-xml-files-node" xreflabel="internals-xml-files-node">
+        <title>Node XML Files</title>
+
+<para>
+Describe node XML files
+</para>
+
+</section>
+
+
+<section id="internals-xml-files-graph" xreflabel="internals-xml-files-graph">
+        <title>Graph XML Files</title>
+
+<para>
+Describe graph XML files
+</para>
+
+</section>
+
+
+<section id="internals-xml-files-attr" xreflabel="internals-xml-files-attr">
+        <title>Attributes</title>
+
+<para>
+Global, OS, appliance and host attributes.
+</para>
+
+</section>
+
+
+</section>
+
+
+</chapter>

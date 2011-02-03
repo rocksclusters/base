@@ -1,0 +1,12 @@
+<chapter id="overview" xreflabel="overview">
+	<title> Overview </title>
+
+<para>
+The Roll Developer's Guide is for people who wish to build their own rolls.
+</para>
+
+<para>
+A roll contains two significant parts: packages and configuration files.
+</para>
+
+</chapter>
