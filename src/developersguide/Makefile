@@ -1,5 +1,5 @@
 #
-# $Id: Makefile,v 1.1 2011/02/03 22:05:29 bruno Exp $
+# $Id: Makefile,v 1.2 2011/02/03 22:12:13 bruno Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.2  2011/02/03 22:12:13  bruno
+# tweak
+#
 # Revision 1.1  2011/02/03 22:05:29  bruno
 # renamed directory
 #
@@ -63,7 +66,7 @@
 #
 #
 
-PKGROOT		= /var/www/html/roll-documentation/reference-guide/$(VERSION)
+PKGROOT		= /var/www/html/roll-documentation/developers-guide/$(VERSION)
 REDHAT.ROOT	= $(PWD)/../../
 ROCKSROOT       = $(CURDIR)/../../src/devel/devel
 -include $(ROCKSROOT)/etc/Rules.mk

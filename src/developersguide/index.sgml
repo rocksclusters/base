@@ -1,10 +1,13 @@
 <!-- 
-$Id: index.sgml,v 1.1 2011/02/03 22:05:29 bruno Exp $
+$Id: index.sgml,v 1.2 2011/02/03 22:12:13 bruno Exp $
 
 @Copyright@
 @Copyright@
 
 $Log: index.sgml,v $
+Revision 1.2  2011/02/03 22:12:13  bruno
+tweak
+
 Revision 1.1  2011/02/03 22:05:29  bruno
 renamed directory
 
@@ -43,7 +46,7 @@ outline for the new developer's guide
 	</copyright>
 
 	<releaseinfo>
-		<ulink url="roll-base-reference-guide.pdf">(PDF version)</ulink>
+		<ulink url="rocks-developersguide.pdf">(PDF version)</ulink>
 	</releaseinfo>
 
 	<legalnotice>
