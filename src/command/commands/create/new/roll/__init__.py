@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.2 2010/09/07 23:52:51 bruno Exp $
+# $Id: __init__.py,v 1.3 2011/02/03 23:01:22 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.3  2011/02/03 23:01:22  bruno
+# fix help for command
+#
 # Revision 1.2  2010/09/07 23:52:51  bruno
 # star power for gb
 #
@@ -109,7 +112,7 @@ class Command(rocks.commands.create.new.command):
 	<arg type='string' name='color'>	
 	</arg>
 	
-	<param type='string' name='rollname'>
+	<param type='string' name='name'>
 	</param>
 	
 	<param type='string' name='version'>
