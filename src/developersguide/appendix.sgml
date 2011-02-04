@@ -1,0 +1,941 @@
+<appendix id="appendix-b" xreflabel="node-xml-syntax">
+        <title>Nodes XML Syntax</title>
+
+<para>
+Rocks generates Kickstart files for compute nodes dynamically using a structure
+called the Kickstart Graph. This graph is made from edges and nodes, both
+described in an XML language. This section serves as a reference for the XML
+tags and attributes. It is not an XML DTD. The XML language is specified by the
+<literal>KPP</literal>, <literal>KGEN</literal>, and <literal>KCGI</literal>
+applications.
+
+</para>
+
+<para>
+The kickstart graph is specified by G=(V,E) where G is the graph, V is
+the set of nodes, and E is the set of edges that connect nodes. A traversal of
+the kickstart nodes and edges makes a full kickstart file used to specify the
+software and configuration for a node. Edges are described in "graph" files,
+while each node is specified in a "node" file. 
+
+</para>
+
+<para>
+When the order of nodes' contribution to the kickstart file matters, we use
+special edges made with &lt;order&gt; tags. We describe these tags in this
+section as well.
+
+</para>
+
+<para>
+The &lt;tagname&gt; is given first, with a description. A
+list of attributes supported by the tag follows. All tags accept the
+<command>arch</command> attribute, which may be a list: "x86_64", or "i386,
+ia64". The tag is ignored if the client's architecture does not match this
+list.
+
+</para>
+
+<section id="node-xml" xreflabel="Node XML">
+<title>Node XML</title>
+
+<itemizedlist>
+
+<listitem>
+<para>
+<command>&lt;kickstart&gt;</command>
+</para>
+
+<para>
+Wraps an XML node file.
+
+</para>
+
+<variablelist>
+
+<varlistentry>
+<term>roll</term>
+<listitem>
+<para>
+Optional. Specifies the roll this node belongs too. Default "base".
+</para>
+</listitem>
+</varlistentry>
+
+</variablelist>
+</listitem>
+
+
+<listitem>
+<para>
+<command>&lt;description&gt;</command>
+</para>
+
+<para>
+Text description of what this node does.
+
+</para>
+
+</listitem>
+
+
+<listitem>
+<para>
+<command>&lt;changelog&gt;</command>
+</para>
+
+<para>
+Text description of the changes made to this node file. Generally a "Log"
+CVS directive.
+
+</para>
+</listitem>
+
+
+<listitem>
+<para>
+<command>&lt;package&gt;</command>
+</para>
+
+<para>
+Specifies a single RPM package. Includes only the RPM name, not its version or
+release number. 
+
+</para>
+
+<variablelist>
+
+<varlistentry>
+<term>roll</term>
+<listitem>
+<para>
+Optional. Specifies the roll this package belongs too. Default "rocks".
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>type</term>
+<listitem>
+<para>
+Optional. Value is "meta". Used to describe RedHat meta packages. Examples
+are "Base", "Emacs", "GNOME".
+
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>disable</term>
+<listitem>
+<para>
+Optional. If this attribute exists, the RPM will not be installed, even if it
+is specified by a RedHat meta package.
+
+</para>
+</listitem>
+</varlistentry>
+</variablelist>
+</listitem>
+
+
+<listitem>
+<para>
+<command>&lt;include&gt;</command>
+</para>
+
+<para>
+KPP replaces this tag with the contents of the file specified. Done primarily
+to enable syntax-friendly editing of script and language files.
+
+</para>
+
+<variablelist>
+
+<varlistentry>
+<term>file</term>
+<listitem>
+<para>
+Required. The file to include.
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>mode</term>
+<listitem>
+<para>
+Optional. Value is (quote|xml). If "quote", XML characters in the file are escaped
+appropriately. Default is "quote".
+
+</para>
+</listitem>
+</varlistentry>
+
+</variablelist>
+</listitem>
+
+
+<listitem>
+<para>
+<command>&lt;var&gt;</command>
+</para>
+
+<para>
+In "read" form, KPP substitutes this tag with its value. In "write" form, KPP
+creates a variable for later reading. The value is generally found in the
+<literal>app_globals</literal> table of the Cluster database for compute nodes,
+and in the <literal>site.xml</literal> XML file (not ordinarily visible) for
+frontend installs. KCGI adds several additional variables, specified by the
+"Node" service name.
+
+</para>
+
+<variablelist>
+
+<varlistentry>
+<term>name</term>
+<listitem>
+<para>
+Required. The name of this variable. Format is generally
+<literal>Service_Component</literal>, where Service and Component names are
+used to match values in the app_global table of the database. Examples are
+<literal>Kickstart_PublicDNSDomain</literal>, and
+<literal>Info_ClusterName</literal>.
+
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>val</term>
+<listitem>
+<para>
+Optional. Sets the value of this variable. A "write" form.
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>ref</term>
+<listitem>
+<para>
+Optional. Allows you to set the value of this variable to the value of
+the variable specified here. A "write" form.
+
+</para>
+</listitem>
+</varlistentry>
+
+</variablelist>
+</listitem>
+
+<listitem>
+<para>
+<command>&lt;eval&gt;</command>
+</para>
+
+<para>
+Replaced with the output of the script specified between these tags. The script
+is run on the host generating the kickstart file (generally the frontend).
+
+</para>
+
+<variablelist>
+
+<varlistentry>
+<term>shell</term>
+<listitem>
+<para>
+Optional. Specifies the script interpreter to use. If shell is "python", the
+<literal>Applets</literal> directory is added to the Python include path. This
+allows easy inclusion of python modules. Default "sh".
+
+</para>
+
+<para>
+All <literal>var</literal> variables are made available to the script in the form
+of environment variables.
+
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>mode</term>
+<listitem>
+<para>
+Optional. Value is (quote|xml). If value is "quote", KPP escapes any XML
+characters in the shell output. Default is "quote".
+
+</para>
+</listitem>
+</varlistentry>
+</variablelist>
+</listitem>
+
+
+<listitem>
+<para>
+<command>&lt;post&gt;</command>
+</para>
+
+<para>
+Wraps the post section of this node. Configuration is generally carried out in
+the post section, making this a popular tag. The commands specfied here
+correspond to an RPM post section, and they are executed on the client machine
+(not on the frontend, in contrast to the &lt;eval&gt; tag).
+
+</para>
+
+<variablelist>
+
+<varlistentry>
+<term>arg</term>
+<listitem>
+<para>
+Optional. Passed straight to anaconda. Common values are
+<literal>--interpreter /usr/bin/python</literal> and
+<literal>--nochroot</literal>.
+
+</para>
+</listitem>
+</varlistentry>
+
+</variablelist>
+</listitem>
+
+<listitem>
+<para>
+<command>&lt;pre&gt;</command>
+</para>
+
+<para>
+Wraps the pre section commands. Run before package installation, in contrast to
+commands from the post section.
+
+</para>
+
+<variablelist>
+
+<varlistentry>
+<term>arg</term>
+<listitem>
+<para>
+Optional. Same semantics as the post section attribute.
+
+</para>
+</listitem>
+</varlistentry>
+
+</variablelist>
+</listitem>
+
+
+<listitem>
+<para>
+<command>&lt;file&gt;</command>
+</para>
+
+<para>
+Wraps the contents of a file.
+
+</para>
+
+<variablelist>
+
+<varlistentry>
+<term>name</term>
+<listitem>
+<para>
+Required. Specifies the name of this file, a full path. 
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>mode</term>
+<listitem>
+<para>
+Optional. Value is (create|append). If "create", file is created. If "append",
+the contents are appended to the end of an existing file. If target file does
+not exist, it will be created. A record of the change is kept in a RCS
+repository in the same directory as the file. Default is "create".
+
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>owner</term>
+<listitem>
+<para>
+Optional. The user.group that owns this file. Can be specified either as names
+"root.root" or numbers (guids) "0.0".
+
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>perms</term>
+<listitem>
+<para>
+Optional. The permissions of this file. The value of this argument is passed to the "chmod" command, and accepts the same format. Examples are "0755" or "a+rx".
+
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>vars</term>
+<listitem>
+<para>
+Optional. Value is "literal" or "expanded". If "literal" no variable or backtick
+expansion is done on the contents of the file. If value is "expanded", standard
+shell variable expansion is performed, as well as running commands quoted with
+backticks. Default is "literal".
+
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>expr</term>
+<listitem>
+<para>
+Optional. Specifies a command whose output is placed in the file. Should only
+be used as a singleton tag:
+
+</para>
+
+<para>
+<screen>
+&lt;file name="/etc/rocks.zone" expr="/opt/rocks/dbreport dns config"/&gt;
+</screen>
+</para>
+</listitem>
+</varlistentry>
+
+</variablelist>
+</listitem>
+
+</itemizedlist>
+
+<section id="node-main-xml" xreflabel="Node XML: Main Commands">
+<title>Kickstart Main Section</title>
+
+<para>
+These tags specify commands in the "main" section of a kickstart file. Each of
+these tags are wrapped in &lt;main&gt; tags. They appear in node XML. Only the
+tags normally used in a cluster appliance kickstart file are presented here; for
+a full reference see <ulink url=
+"http://www.redhat.com/docs/manuals/linux/RHL-7.3-Manual/custom-guide/s1-kickstart2-options.html">Red
+Hat Linux 7.3: The Official Red Hat Linux Customization Guide</ulink>. 
+
+</para>
+
+<para>
+<command>&lt;main&gt;</command>
+
+</para>
+
+<itemizedlist>
+<listitem>
+<para>
+<command>&lt;auth&gt;</command>
+</para>
+
+<para>
+Commands for the authentication of the system. Default "--useshadow --enablemd5
+--enablenis --nisdomain rocks".
+
+</para>
+
+</listitem>
+
+<listitem>
+<para>
+<command>&lt;zerombr&gt;</command>
+</para>
+
+<para>
+If "yes" any invalid partition tables found on disks are initialized. Default
+"yes".
+
+</para>
+
+</listitem>
+
+<listitem>
+<para>
+<command>&lt;bootloader&gt;</command>
+</para>
+
+<para>
+Specifies the bootloader arguments. Default "--location=mbr"
+
+</para>
+
+</listitem>
+
+<listitem>
+<para>
+<command>&lt;interactive&gt;</command>
+</para>
+
+<para>
+Optional. Allows for inspection and modification of the kickstart values given,
+via the snack screen interface. Default: present.
+
+</para>
+
+</listitem>
+
+<listitem>
+<para>
+<command>&lt;url&gt;</command>
+</para>
+
+<para>
+Specifies the installation method with the <literal>--url</literal> argument.
+Default for compute nodes "--url http://$KickstartHost/$KickstartBasedir/$Node_Distribution" where variables are specified with the &lt;var&gt; construct.
+
+</para>
+
+<para>
+Default for frontend nodes: "--url http://127.0.0.1/mnt/cdrom"
+
+</para>
+
+</listitem>
+
+<listitem>
+<para>
+<command>&lt;network&gt;</command>
+</para>
+
+<para>
+Arguments for network configuration.
+
+</para>
+
+</listitem>
+
+
+<listitem>
+<para>
+<command>&lt;lang&gt;</command>
+</para>
+
+<para>
+The installation language to use. Default "en_US".
+
+</para>
+
+</listitem>
+
+<listitem>
+<para>
+<command>&lt;langsupport&gt;</command>
+</para>
+
+<para>
+The languages to install on the system. Example <literal>&lt;langsupport&gt;
+--default en_US fr_FR&lt;/langsupport&gt;</literal>. 
+
+</para>
+
+<para>
+Default "--default en_US".
+
+</para>
+</listitem>
+
+
+<listitem>
+<para>
+<command>&lt;part&gt;</command>
+</para>
+
+<para>
+Define a partition on the drive. See usage and warnings in
+<ulink url="http://www.rocksclusters.org/rocks-documentation/&document-version;/customization-partitioning.html">Rocks Compute Node Partitioning</ulink>.
+
+</para>
+
+</listitem>
+
+<listitem>
+<para>
+<command>&lt;clearpart&gt;</command>
+</para>
+
+<para>
+Clear all disk partitions on all drives.
+
+</para>
+
+</listitem>
+
+<listitem>
+<para>
+<command>&lt;keyboard&gt;</command>
+</para>
+
+<para>
+Sets the system keyboard type. Default "us".
+
+</para>
+
+</listitem>
+
+<listitem>
+<para>
+<command>&lt;mouse&gt;</command>
+</para>
+
+<para>
+Specifies the system mouse type. Default "none".
+
+</para>
+
+</listitem>
+
+<listitem>
+<para>
+<command>&lt;timezone&gt;</command>
+</para>
+
+<para>
+Required. Sets the system timezone. Default "--utc GMT".
+
+</para>
+
+</listitem>
+
+<listitem>
+<para>
+<command>&lt;text&gt;</command>
+</para>
+
+<para>
+If present, perform the kickstart installation in text mode. Default: present.
+
+</para>
+
+</listitem>
+
+<listitem>
+<para>
+<command>&lt;install&gt;</command>
+</para>
+
+<para>
+If present, perform a fresh install (not an upgrade). Default: present.
+
+</para>
+
+</listitem>
+
+<listitem>
+<para>
+<command>&lt;reboot&gt;</command>
+</para>
+
+<para>
+If present, automatically reboot after installation. Default: present.
+
+</para>
+
+</listitem>
+
+</itemizedlist>
+
+</section>
+
+</section>
+
+<section id="graph-xml" xreflabel="Graph XML">
+<title>Graph XML</title>
+
+<para>
+Edges in the kickstart graph are specified with the XML tags below. Order
+tags give control of the graph traversal (the order nodes appear in the final 
+kickstart file). 
+
+</para>
+
+<para>
+Both the edge and order tags appear in kickstart graph files.
+
+</para>
+
+<itemizedlist>
+
+<listitem>
+<para>
+<command>&lt;graph&gt;</command>
+</para>
+
+<para>
+Wraps an XML graph file.
+
+</para>
+
+<variablelist>
+
+<varlistentry>
+<term>roll</term>
+<listitem>
+<para>
+Optional. Specifies the roll this node belongs too. Default "base".
+
+</para>
+</listitem>
+</varlistentry>
+
+</variablelist>
+</listitem>
+
+
+<listitem>
+<para>
+<command>&lt;description&gt;</command>
+</para>
+
+<para>
+Text description of what this part of the graph does.
+
+</para>
+
+</listitem>
+
+
+<listitem>
+<para>
+<command>&lt;changelog&gt;</command>
+</para>
+
+<para>
+Text description of the changes made to this node file. Generally a "Log"
+CVS directive.
+
+</para>
+</listitem>
+
+
+<listitem>
+<para>
+<command>&lt;edge&gt;</command>
+</para>
+
+<para>
+Specifies an edge in the kickstart graph, links graph nodes together. Can be
+specified as a singleton tag: 
+
+</para>
+
+<para>
+<literal>&lt;edge from="client" to="java"/&gt;</literal>,
+or a standard tag that wraps &lt;to&gt; or &lt;from&gt; tags.
+
+</para>
+
+<variablelist>
+
+<varlistentry>
+<term>arch</term>
+<listitem>
+<para>
+Optional. Specifies which architectures should follow this edge. Same format as
+arch attribute in node files. The edge is ignored if the client's architecture
+does not match this list.
+
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>gen</term>
+<listitem>
+<para>
+Optional. Value is "kgen". Specifies which kickstart generator should follow
+this edge. Default "kgen".
+
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>from</term>
+<listitem>
+<para>
+Optional. Specifies the end of this edge, a node name.
+
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>to</term>
+<listitem>
+<para>
+Optional. Specifies the beginning of this edge, a node name.
+
+</para>
+</listitem>
+</varlistentry>
+
+
+</variablelist>
+</listitem>
+
+<listitem>
+<para>
+<command>&lt;to&gt;</command>
+</para>
+
+<para>
+Wraps a node name. Specifies the end of a directed edge in the graph. Used
+inside an edge tag with the "from" attribute:
+
+</para>
+
+<para>
+<screen>
+&lt;edge from="slave-node"&gt;
+ &lt;to&gt;xinetd&lt;/to&gt;
+ &lt;to&gt;rsh&lt;/to&gt;
+&lt;/edge&gt;
+</screen>
+</para>
+
+<variablelist>
+
+<varlistentry>
+<term>arch</term>
+<listitem>
+<para>
+Optional. Specifies which architectures should follow this edge. The entire
+edge is ignored if the client's architecture does not match this list.
+
+</para>
+</listitem>
+</varlistentry>
+
+</variablelist>
+</listitem>
+
+
+<listitem>
+<para>
+<command>&lt;from&gt;</command>
+</para>
+
+<para>
+Wraps a node name. Specifies the beginning of a directed edge. Used like 
+"to" tag.
+
+</para>
+
+<variablelist>
+
+<varlistentry>
+<term>arch</term>
+<listitem>
+<para>
+Optional. Specifies which architectures should follow this edge. The entire
+edge is ignored if the client's architecture does not match this list.
+
+</para>
+</listitem>
+</varlistentry>
+
+</variablelist>
+</listitem>
+
+
+<listitem>
+<para>
+<command>&lt;order&gt;</command>
+</para>
+
+<para>
+Specifies a ordering between nodes in the graph. While the &lt;edge&gt; tags
+specify a "membership" in the kickstart file, the &lt;order&gt; tags give an
+"ordering" between nodes. 
+
+</para>
+
+<para>
+The ordering is affected by a topological sort of nodes using order edges.
+While the kickstart graph allows cycles, the set of order tags must specify a
+directed-acyclic graph (DAG). Any nodes not touched by an order edge have 
+a random order in the resultant kickstart file.
+
+</para>
+
+<para>
+Can be used to wrap &lt;head&gt; and &lt;tail&gt; tags in the same fashion as
+the &lt;to&gt; and &lt;from&gt; tags for "edge".
+
+</para>
+
+<variablelist>
+
+<varlistentry>
+<term>arch</term>
+<listitem>
+<para>
+Optional. Specifies which architectures should follow this edge. Same format as
+arch attribute in node files. The edge is ignored if the client's architecture
+does not match this list.
+
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>gen</term>
+<listitem>
+<para>
+Optional. Value is "kgen". Specifies which kickstart generator should follow
+this edge. Default "kgen".
+
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>head</term>
+<listitem>
+<para>
+Optional. Specifies the beginning of this edge, a node name. Special node name
+"HEAD" is allowed, which specifies the node is placed first. Ordering among
+nodes with HEAD ordering is undefined.
+
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>tail</term>
+<listitem>
+<para>
+Optional. Specifies the end of this edge, a node name. Special name
+"TAIL" is allowed, which specifies the node be placed last. Ordering among
+nodes with TAIL ordering is undefined.
+
+</para>
+</listitem>
+</varlistentry>
+
+</variablelist>
+</listitem>
+</itemizedlist>
+
+</section>
+
+
+</appendix>

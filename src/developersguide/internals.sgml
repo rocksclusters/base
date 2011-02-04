@@ -4,28 +4,314 @@
 <para>
 This section describes in detail the two major components of a roll: packages
 and configuration files.
+Before we dive into those topics, we need set up an environment in which to
+create a roll.
+To make this more concrete, we'll use the example of building the "valgrind"
+roll.
 </para>
+
+
+<section id="internals-roll-env" xreflabel="internals-roll-env">
+        <title> Roll Development Environment </title>
+
+<para>
+To create a development environment that can be used to create the "valgrind"
+roll, execute:
+</para>
+
+<screen>
+# mkdir -p /export/src/roll
+# cd /export/src/roll
+# rocks create new roll name=valgrind
+</screen>
+
+<para>
+There are several more options you can supply to
+<constant>"rocks create new roll"</constant> (execute
+<constant>"rocks create new roll help"</constant> to see all the options).
+</para>
+
+<para>
+The command <constant>"rocks create new roll name=valgrind"</constant>
+creates the following file system:
+</para>
+
+<screen>
+valgrind -+
+          |
+          +- graphs -+
+          |
+          +- nodes -+
+          |
+          +- src -+
+          |
+          +- version.mk
+          |
+          +- Makefile
+</screen>
+
+<para>
+Now we are ready to add packages to the valgrind roll.
+</para>
+
+
+</section>
 
 
 <section id="internals-packages" xreflabel="internals-packages">
         <title>Packages</title>
 
 <para>
-Describe packages
+A Rocks roll requires that all packages contained in the roll must be in the
+native format of the OS.
+For Redhat-based Rocks clusters, this means all packages must be RPMS.
+</para>
+
+
+<section id="internals-packages-rpm" xreflabel="internals-packages-rpm">
+        <title>The Software is Already in an RPM </title>
+
+<para>
+If the software you wish to install is already in RPM format, you can directly
+put it into the roll source tree.
+For example, to put the RPM <constant>unzip-5.52-3.el5.x86_64.rpm</constant>
+into the valgrind roll, execute:
+</para>
+
+<screen>
+# mkdir -p /export/src/roll/valgrind/RPMS/x86_64
+# cp /tmp/unzip-5.52-3.el5.x86_64.rpm /export/src/roll/valgrind/RPMS/x86_64
+</screen>
+
+</section>
+
+
+<section id="internals-packages-bundle" xreflabel="internals-packages-bundle">
+        <title>Bundle an Existing Subdirectory into an RPM </title>
+
+<para>
+If your application is already installed on your frontend and you would like
+to bundle its subdirectory into and RPM, you can
+create an RPM that contains all the files in a subdirectory.
+For example, let's say you want to create an RPM from all the files under
+/opt/stream.
+You can execute:
+</para>
+
+<screen>
+# rocks create package /opt/stream stream
+</screen>
+
+<para>
+This will create a package named <constant>stream-1.0-1.x86_64.rpm</constant>
+in the current working directory.
+To see the contents of the package, execute:
+</para>
+
+<screen>
+# rpm -qlp stream-1.0-1.x86_64.rpm 
+/
+/opt
+/opt/stream
+/opt/stream/bin
+/opt/stream/bin/stream
+/opt/stream/bin/stream_f
+/opt/stream/docs
+/opt/stream/docs/HISTORY.txt
+/opt/stream/docs/LICENSE.txt
+/opt/stream/docs/Makefile
+/opt/stream/docs/READ.ME
+/opt/stream/docs/ROCKS.txt
+/opt/stream/docs/linux.mk
+/opt/stream/docs/mysecond.c
+/opt/stream/docs/stream.c
+/opt/stream/docs/stream.f
+/opt/stream/docs/sunos.mk
+/opt/stream/docs/version.mk
+</screen>
+
+<para>
+There are several more options you can supply to
+<constant>"rocks create package"</constant> (execute
+<constant>"rocks create package help"</constant> to see all the options).
+</para>
+
+<para>
+Now place the RPM into the correct directory within the roll:
+</para>
+
+<screen>
+# mkdir -p /export/src/roll/valgrind/RPMS/x86_64
+# cp stream-1.0-1.x86_64.rpm /export/src/roll/valgrind/RPMS/x86_64
+</screen>
+
+
+</section>
+
+
+<section id="internals-packages-src" xreflabel="internals-packages-src">
+        <title>Create an RPM from a Source Code Tarball </title>
+
+<para>
+The most common way we create RPMS is from source tarballs (the classic:
+untar, configure, make, make install).
+</para>
+
+<para>
+First, we'll download the source tarball into the correct directory:
+</para>
+
+<screen>
+# cd /export/src/roll/valgrind/src/valgrind
+# wget http://valgrind.org/downloads/valgrind-3.6.0.tar.bz2
+</screen>
+
+<para>
+Edit <constant>version.mk</constant> and change
+<constant>TARBALL_POSTFIX = tgz</constant> to
+<constant>TARBALL_POSTFIX = tar.bz2</constant>, change
+<constant>PKGROOT = /opt/valgrind</constant> to
+<constant>PKGROOT = /opt</constant>,and change
+<constant>VERSION = 1.0</constant> to
+<constant>VERSION = 3.6.0</constant>.
+Your version.mk should look like:
+</para>
+
+<screen>
+PKGROOT		= /opt
+NAME    	= valgrind
+VERSION 	= 3.6.0
+RELEASE 	= 1
+TARBALL_POSTFIX	= tar.bz2
+</screen>
+
+<para>
+Edit <constant>Makefile</constant> and change the line:
+<constant>gunzip -c</constant> to
+<constant>bzcat</constant> (since the tarball is a bz2).
+</para>
+
+<para>
+Now build the RPM:
+</para>
+
+<screen>
+# make rpm
+</screen>
+
+<para>
+It will take several minutes to build the package.
+When it completes, you'll see the line:
+</para>
+
+<screen>
+Wrote: /export/src/roll/valgrind/RPMS/x86_64/valgrind-3.6.0-1.x86_64.rpm
+</screen>
+
+<para>
+You can inspect the contents of the <constant>valgrind</constant> RPM:
+</para>
+
+<screen>
+# rpm -qlp /export/src/roll/valgrind/RPMS/x86_64/valgrind-3.6.0-1.x86_64.rpm
+/
+/opt
+/opt/valgrind
+/opt/valgrind/bin
+/opt/valgrind/bin/callgrind_annotate
+/opt/valgrind/bin/callgrind_control
+/opt/valgrind/bin/cg_annotate
+/opt/valgrind/bin/cg_diff
+/opt/valgrind/bin/cg_merge
+/opt/valgrind/bin/ms_print
+/opt/valgrind/bin/no_op_client_for_valgrind
+/opt/valgrind/bin/valgrind
+/opt/valgrind/bin/valgrind-listener
+/opt/valgrind/include
+/opt/valgrind/include/valgrind
+/opt/valgrind/include/valgrind/callgrind.h
+   .
+   .
+   .
+</screen>
+
+<para>
+Note that the valgrind-3.6.0-1.x86_64.rpm RPM was automatically placed into
+the correct directory (/export/src/roll/valgrind/RPMS/x86_64).
 </para>
 
 </section>
 
 
+
+</section>
+
+
 <section id="internals-xml-files" xreflabel="internals-xml-files">
-        <title>Configuration Files</title>
+        <title>Configuring Software with XML Files</title>
+
+<para>
+In Rocks, RPMs are only used as containers for applications -- all software
+configuration is done outside of the RPM mechanism.
+We've developed a graph-based XML framework that allows developers to easily 
+"splice" their software in with the core Rocks rolls.
+</para>
+
+<para>
+All software configuration commands are contained within "node" XML files and
+all the node XML files are tied together with "graph" XML files.
+When a host asks for its configuration file from the frontend, a process on
+the frontend traverses the node XML files based on the definitions within the
+graph XML files.
+In addition, the graph XML files can enforce a relative order between the
+node XML files.
+</para>
 
 
 <section id="internals-xml-files-node" xreflabel="internals-xml-files-node">
         <title>Node XML Files</title>
 
 <para>
-Describe node XML files
+All software configuration commands are contained within node XML files.
+Let's look at a real node XML (grub.xml from the base roll):
+</para>
+
+<screen>
+<![CDATA[
+<?xml version="1.0" standalone="no"?>
+
+<kickstart>
+
+  <description>
+
+  Boot loader support (GRand Unified Bootloader)
+
+  </description>
+
+
+<package>grub</package>
+
+
+<post>
+
+<!-- take out the splashscreen -->
+<file name="/tmp/grub.conf" expr="grep -v splashimage /boot/grub/grub.conf"/>
+mv /tmp/grub.conf /boot/grub/grub.conf
+
+<!-- Preserve the original grub.conf -->
+cp /boot/grub/grub.conf /boot/grub/grub-orig.conf
+
+</post>
+
+
+</kickstart>
+]]>
+</screen>
+
+<para>
+We see that this file will install the "grub" package
+(<constant>&lt;package&gt;grub&lt;/package&gt;</constant>), and it will
+modify the configuration file <constant>grub.conf</constant>).
 </para>
 
 </section>

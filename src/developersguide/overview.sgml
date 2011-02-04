@@ -3,10 +3,9 @@
 
 <para>
 The Roll Developer's Guide is for people who wish to build their own rolls.
+In this document, we'll describe the internals of rolls, how to create a roll,
+how to install a roll and how to test a roll.
 </para>
 
-<para>
-A roll contains two significant parts: packages and configuration files.
-</para>
 
 </chapter>
