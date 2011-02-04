@@ -47,9 +47,18 @@ Wraps an XML node file.
 
 <para>
 Text description of what this node does.
+</para>
+</listitem>
 
+
+<listitem>
+<para>
+<command>&lt;copyright&gt;</command>
 </para>
 
+<para>
+Text description of the copyright associated with this node file.
+</para>
 </listitem>
 
 
@@ -250,6 +259,7 @@ Example:
 </listitem>
 </varlistentry>
 
+
 <varlistentry>
 <term>os</term>
 <listitem>
@@ -266,6 +276,40 @@ host is installed.
 <para>
 Example:
 <constant><![CDATA[<post os="linux">]]></constant>.
+</para>
+
+</listitem>
+</varlistentry>
+
+
+<varlistentry>
+<term>cond</term>
+<listitem>
+<para>
+Optional.
+If the value of the "cond" is true, then this post section will be executed.
+Values can be Rocks attributes or generic python expressions.
+</para>
+
+<para>
+Example:
+<constant><![CDATA[<post cond="submit_host">]]></constant>.
+</para>
+
+<para>
+If the "submit_host" Rocks attribute is set to "true" for this host, then
+the post section will be executed, otherwise, this post section will be
+skipped.
+</para>
+
+<para>
+Example:
+<constant><![CDATA[<post cond="not ssh_use_dns">]]></constant>.
+</para>
+
+<para>
+If the "ssh_use_dns" Rocks attribute is set to "false" for this host, then
+the post section will be executed (because of the python "not" operator).
 </para>
 
 </listitem>
@@ -609,19 +653,17 @@ generated, the attribute is substituted with its respective value.
 
 </section>
 
-<section id="graph-xml" xreflabel="Graph XML">
-<title>Graph XML</title>
+<section id="graph-xml" xreflabel="Graph XML Tags">
+<title>Graph XML Tags</title>
 
 <para>
 Edges in the kickstart graph are specified with the XML tags below. Order
 tags give control of the graph traversal (the order nodes appear in the final 
 kickstart file). 
-
 </para>
 
 <para>
 Both the edge and order tags appear in kickstart graph files.
-
 </para>
 
 <itemizedlist>
@@ -633,22 +675,8 @@ Both the edge and order tags appear in kickstart graph files.
 
 <para>
 Wraps an XML graph file.
-
 </para>
 
-<variablelist>
-
-<varlistentry>
-<term>roll</term>
-<listitem>
-<para>
-Optional. Specifies the roll this node belongs too. Default "base".
-
-</para>
-</listitem>
-</varlistentry>
-
-</variablelist>
 </listitem>
 
 
@@ -659,10 +687,20 @@ Optional. Specifies the roll this node belongs too. Default "base".
 
 <para>
 Text description of what this part of the graph does.
+</para>
+</listitem>
 
+
+<listitem>
+<para>
+<command>&lt;copyright&gt;</command>
 </para>
 
+<para>
+Text description of the copyright associated with this graph file.
+</para>
 </listitem>
+
 
 
 <listitem>
@@ -673,7 +711,6 @@ Text description of what this part of the graph does.
 <para>
 Text description of the changes made to this node file. Generally a "Log"
 CVS directive.
-
 </para>
 </listitem>
 
@@ -684,65 +721,95 @@ CVS directive.
 </para>
 
 <para>
-Specifies an edge in the kickstart graph, links graph nodes together. Can be
-specified as a singleton tag: 
-
+Specifies an edge in the kickstart graph, links graph nodes together.
+Can be specified as a singleton tag: 
 </para>
 
 <para>
-<literal>&lt;edge from="client" to="java"/&gt;</literal>,
+<constant><![CDATA[<edge from="base" to="ganglia"/>]]></constant>,
 or a standard tag that wraps &lt;to&gt; or &lt;from&gt; tags.
-
 </para>
 
 <variablelist>
 
 <varlistentry>
-<term>arch</term>
-<listitem>
-<para>
-Optional. Specifies which architectures should follow this edge. Same format as
-arch attribute in node files. The edge is ignored if the client's architecture
-does not match this list.
-
-</para>
-</listitem>
-</varlistentry>
-
-<varlistentry>
-<term>gen</term>
-<listitem>
-<para>
-Optional. Value is "kgen". Specifies which kickstart generator should follow
-this edge. Default "kgen".
-
-</para>
-</listitem>
-</varlistentry>
-
-<varlistentry>
 <term>from</term>
 <listitem>
 <para>
-Optional. Specifies the end of this edge, a node name.
-
+Optional.
+Specifies the beginning of an edge, a node name.
 </para>
+
+<para>
+Example:
+<constant><![CDATA[<edge from="server">]]></constant>.
+</para>
+
 </listitem>
 </varlistentry>
+
 
 <varlistentry>
 <term>to</term>
 <listitem>
 <para>
-Optional. Specifies the beginning of this edge, a node name.
-
+Optional.
+Specifies the end of an edge, a node name.
 </para>
+
+<para>
+Example:
+<constant><![CDATA[<edge from="client">]]></constant>.
+</para>
+
 </listitem>
 </varlistentry>
 
 
+<varlistentry>
+<term>cond</term>
+<listitem>
+<para>
+Optional.
+If the value of the "cond" is true, then this edge will be traversed.
+Values can be Rocks attributes or generic python expressions.
+</para>
+
+<para>
+Example:
+<constant><![CDATA[<edge from="client" to="x11" cond="x11"/>]]></constant>.
+</para>
+
+<para>
+If the "x11" Rocks attribute is set to "true", then this edge will be
+traversed.
+</para>
+
+</listitem>
+</varlistentry>
+
+
+<varlistentry>
+<term>arch</term>
+<listitem>
+<para>
+Optional.
+Specifies which architectures should follow this edge.
+Same format as arch attribute in node files.
+The edge is ignored if the client's architecture does not match this list.
+</para>
+
+<para>
+Example:
+<constant><![CDATA[<edge from="client" to="x11" arch="x86_64"/>]]></constant>.
+</para>
+
+</listitem>
+</varlistentry>
+
 </variablelist>
 </listitem>
+
 
 <listitem>
 <para>
@@ -750,19 +817,19 @@ Optional. Specifies the beginning of this edge, a node name.
 </para>
 
 <para>
-Wraps a node name. Specifies the end of a directed edge in the graph. Used
-inside an edge tag with the "from" attribute:
-
+Wraps a node name.
+Specifies the end of a directed edge in the graph.
+Used inside an edge tag with the "from" attribute:
 </para>
 
 <para>
 <screen>
-&lt;edge from="slave-node"&gt;
- &lt;to&gt;xinetd&lt;/to&gt;
- &lt;to&gt;rsh&lt;/to&gt;
-&lt;/edge&gt;
+<![CDATA[<edge from="compute">
+	<to>compute-appliance</to>
+</edge>]]>
 </screen>
 </para>
+
 
 <variablelist>
 
@@ -770,10 +837,17 @@ inside an edge tag with the "from" attribute:
 <term>arch</term>
 <listitem>
 <para>
-Optional. Specifies which architectures should follow this edge. The entire
-edge is ignored if the client's architecture does not match this list.
-
+Optional.
+Specifies which architectures should follow this edge.
+The entire edge is ignored if the client's architecture does not match this
+list.
 </para>
+
+<para>
+Example:
+<constant><![CDATA[<to arch="i386">pvm</to>]]></constant>.
+</para>
+
 </listitem>
 </varlistentry>
 
@@ -789,8 +863,16 @@ edge is ignored if the client's architecture does not match this list.
 <para>
 Wraps a node name. Specifies the beginning of a directed edge. Used like 
 "to" tag.
-
 </para>
+
+<para>
+<screen>
+<![CDATA[<edge to="client">
+        <from>compute-appliance</from>
+</edge>]]>
+</screen>
+</para>
+
 
 <variablelist>
 
@@ -815,24 +897,22 @@ edge is ignored if the client's architecture does not match this list.
 </para>
 
 <para>
-Specifies a ordering between nodes in the graph. While the &lt;edge&gt; tags
-specify a "membership" in the kickstart file, the &lt;order&gt; tags give an
-"ordering" between nodes. 
-
+Specifies a ordering between nodes in the graph.
+While the &lt;edge&gt; tags specify a "membership" in the kickstart file,
+the &lt;order&gt; tags give a "relative ordering" between nodes. 
 </para>
 
 <para>
 The ordering is affected by a topological sort of nodes using order edges.
 While the kickstart graph allows cycles, the set of order tags must specify a
-directed-acyclic graph (DAG). Any nodes not touched by an order edge have 
-a random order in the resultant kickstart file.
-
+directed-acyclic graph (DAG).
+Any nodes not touched by an order edge have a random order in the resultant
+kickstart file.
 </para>
 
 <para>
 Can be used to wrap &lt;head&gt; and &lt;tail&gt; tags in the same fashion as
 the &lt;to&gt; and &lt;from&gt; tags for "edge".
-
 </para>
 
 <variablelist>
@@ -844,51 +924,152 @@ the &lt;to&gt; and &lt;from&gt; tags for "edge".
 Optional. Specifies which architectures should follow this edge. Same format as
 arch attribute in node files. The edge is ignored if the client's architecture
 does not match this list.
-
 </para>
 </listitem>
 </varlistentry>
 
-<varlistentry>
-<term>gen</term>
-<listitem>
-<para>
-Optional. Value is "kgen". Specifies which kickstart generator should follow
-this edge. Default "kgen".
-
-</para>
-</listitem>
-</varlistentry>
 
 <varlistentry>
 <term>head</term>
 <listitem>
 <para>
-Optional. Specifies the beginning of this edge, a node name. Special node name
-"HEAD" is allowed, which specifies the node is placed first. Ordering among
-nodes with HEAD ordering is undefined.
-
+Optional.
+Specifies the beginning of this edge, a node name.
 </para>
+
+<para>
+<screen>
+<![CDATA[<order head="grub">
+	<tail>grub-client</tail>
+	<tail>grub-server</tail>
+</order>]]>
+</screen>
+</para>
+
+<para>
+Special name "TAIL" is allowed, which specifies the node be placed last.
+Ordering among nodes with TAIL ordering is undefined.
+</para>
+
+<para>
+<screen>
+<![CDATA[<order head="TAIL">
+	<tail>install</tail>
+	<tail>pxeboot</tail>
+	<tail>compute</tail>
+</order>]]>
+</screen>
+</para>
+
+<para>
+In the above example, the node files are "install", "pxeboot" and "compute"
+will all be at the end of the kickstart file.
+</para>
+
 </listitem>
 </varlistentry>
+
 
 <varlistentry>
 <term>tail</term>
 <listitem>
 <para>
-Optional. Specifies the end of this edge, a node name. Special name
-"TAIL" is allowed, which specifies the node be placed last. Ordering among
-nodes with TAIL ordering is undefined.
-
+Optional.
+Specifies the end of this edge, a node name.
 </para>
+
+<para>
+<screen>
+<![CDATA[<order tail="server-firewall">
+	<head>networking-server</head>
+	<head>database-data</head>
+</order>]]>
+</screen>
+</para>
+
+<para>
+Special node name "HEAD" is allowed, which specifies the node is placed first.
+Ordering among nodes with HEAD ordering is undefined.
+</para>
+
+<para>
+<screen>
+<![CDATA[<order tail="HEAD">
+	<head>python-development</head>
+	<head>rlo</head>
+</order>]]>
+</screen>
+</para>
+
 </listitem>
 </varlistentry>
 
 </variablelist>
 </listitem>
+
+<listitem>
+<para>
+<command>&lt;head&gt;</command>
+</para>
+
+<para>
+Wraps a node name.
+This tag is a child of an
+<constant>&lt;order tail="some-node-name"&gt;</constant> tag.
+All nodes wrapped by <constant>&lt;head&gt;</constant> tags are guaranteed
+to execute prior to the node specified in the 
+<constant>&lt;order tail="some-node-name"&gt;</constant> tag.
+</para>
+
+<para>
+<screen>
+<![CDATA[<order tail="server-firewall">
+	<head>networking-server</head>
+	<head>database-data</head>
+</order>]]>
+</screen>
+</para>
+
+<para>
+In the example above, "networking-server" and "database-data" are guaranteed
+to execute before "server-firewall".
+</para>
+
+</listitem>
+
+
+<listitem>
+<para>
+<command>&lt;tail&gt;</command>
+</para>
+
+<para>
+Wraps a node name.
+This tag is a child of an
+<constant>&lt;order head="some-node-name"&gt;</constant> tag.
+All nodes wrapped by <constant>&lt;tail&gt;</constant> tags are guaranteed
+to execute after to the node specified in the 
+<constant>&lt;order head="some-node-name"&gt;</constant> tag.
+</para>
+
+<para>
+<screen>
+<![CDATA[<order head="grub">
+	<tail>grub-client</tail>
+	<tail>grub-server</tail>
+</order>]]>
+</screen>
+</para>
+
+<para>
+In the example above, "grub-client" and "grub-server" are guaranteed
+to execute after "grub".
+</para>
+
+</listitem>
+
 </itemizedlist>
 
 </section>
-
 
 </appendix>
