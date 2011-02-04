@@ -1,68 +1,42 @@
 <appendix id="appendix-b" xreflabel="node-xml-syntax">
-        <title>Nodes XML Syntax</title>
+        <title>XML File Syntax</title>
 
 <para>
-Rocks generates Kickstart files for compute nodes dynamically using a structure
-called the Kickstart Graph. This graph is made from edges and nodes, both
-described in an XML language. This section serves as a reference for the XML
-tags and attributes. It is not an XML DTD. The XML language is specified by the
-<literal>KPP</literal>, <literal>KGEN</literal>, and <literal>KCGI</literal>
-applications.
-
+Rocks generates kickstart files for compute nodes dynamically using a structure
+called the "kickstart graph".
+This graph is made from edges and nodes, both described in an XML language.
+This section serves as a reference for the XML tags and attributes.
 </para>
 
 <para>
-The kickstart graph is specified by G=(V,E) where G is the graph, V is
-the set of nodes, and E is the set of edges that connect nodes. A traversal of
-the kickstart nodes and edges makes a full kickstart file used to specify the
-software and configuration for a node. Edges are described in "graph" files,
-while each node is specified in a "node" file. 
-
+A traversal of the kickstart nodes and edges makes a full kickstart file used
+to specify the software and configuration for a node.
+Edges are described in "graph" files, while each node is specified in a
+"node" file. 
 </para>
 
 <para>
 When the order of nodes' contribution to the kickstart file matters, we use
-special edges made with &lt;order&gt; tags. We describe these tags in this
-section as well.
-
+special edges made with &lt;order&gt; tags.
+We describe these tags in this section as well.
 </para>
 
-<para>
-The &lt;tagname&gt; is given first, with a description. A
-list of attributes supported by the tag follows. All tags accept the
-<command>arch</command> attribute, which may be a list: "x86_64", or "i386,
-ia64". The tag is ignored if the client's architecture does not match this
-list.
 
-</para>
-
-<section id="node-xml" xreflabel="Node XML">
-<title>Node XML</title>
+<section id="node-xml-tags" xreflabel="Node XML Tags">
+<title>Node XML Tags</title>
 
 <itemizedlist>
 
 <listitem>
+
 <para>
 <command>&lt;kickstart&gt;</command>
 </para>
 
 <para>
 Wraps an XML node file.
-
 </para>
 
-<variablelist>
-
-<varlistentry>
-<term>roll</term>
-<listitem>
-<para>
-Optional. Specifies the roll this node belongs too. Default "base".
-</para>
-</listitem>
-</varlistentry>
-
-</variablelist>
 </listitem>
 
 
@@ -106,22 +80,18 @@ release number.
 <variablelist>
 
 <varlistentry>
-<term>roll</term>
-<listitem>
-<para>
-Optional. Specifies the roll this package belongs too. Default "rocks".
-</para>
-</listitem>
-</varlistentry>
-
-<varlistentry>
 <term>type</term>
 <listitem>
-<para>
-Optional. Value is "meta". Used to describe RedHat meta packages. Examples
-are "Base", "Emacs", "GNOME".
 
+<para>
+Optional. Value is "meta". Used to describe RedHat meta packages.
 </para>
+
+<para>
+Example:
+<constant><![CDATA[<package type="meta">gnome-desktop</package>]]></constant>.
+</para>
+
 </listitem>
 </varlistentry>
 
@@ -129,106 +99,61 @@ are "Base", "Emacs", "GNOME".
 <term>disable</term>
 <listitem>
 <para>
-Optional. If this attribute exists, the RPM will not be installed, even if it
-is specified by a RedHat meta package.
-
-</para>
-</listitem>
-</varlistentry>
-</variablelist>
-</listitem>
-
-
-<listitem>
-<para>
-<command>&lt;include&gt;</command>
+Optional. If this value is non-zero, the RPM will not be installed.
 </para>
 
 <para>
-KPP replaces this tag with the contents of the file specified. Done primarily
-to enable syntax-friendly editing of script and language files.
-
+Example:
+<constant><![CDATA[<package disable="1">emacs</package>]]></constant>.
 </para>
 
-<variablelist>
-
-<varlistentry>
-<term>file</term>
-<listitem>
-<para>
-Required. The file to include.
-</para>
 </listitem>
 </varlistentry>
 
 <varlistentry>
-<term>mode</term>
+<term>arch</term>
 <listitem>
 <para>
-Optional. Value is (quote|xml). If "quote", XML characters in the file are escaped
-appropriately. Default is "quote".
-
-</para>
-</listitem>
-</varlistentry>
-
-</variablelist>
-</listitem>
-
-
-<listitem>
-<para>
-<command>&lt;var&gt;</command>
+Optional.
+This value can be "i386" or "x86_64".
+If "arch" matches the architecture of the host that is being installed, then
+the package will be installed, otherwise the package will be skipped.
+For example, if the value is "i386" and if the x86_64 version of Rocks is
+being installed on a host, then the package will be skipped.
+Or said another way, the package will only be installed on i386 hosts.
 </para>
 
 <para>
-In "read" form, KPP substitutes this tag with its value. In "write" form, KPP
-creates a variable for later reading. The value is generally found in the
-<literal>app_globals</literal> table of the Cluster database for compute nodes,
-and in the <literal>site.xml</literal> XML file (not ordinarily visible) for
-frontend installs. KCGI adds several additional variables, specified by the
-"Node" service name.
-
+Example:
+<constant><![CDATA[<package arch="i386">nasm</package>]]></constant>.
 </para>
 
-<variablelist>
-
-<varlistentry>
-<term>name</term>
-<listitem>
-<para>
-Required. The name of this variable. Format is generally
-<literal>Service_Component</literal>, where Service and Component names are
-used to match values in the app_global table of the database. Examples are
-<literal>Kickstart_PublicDNSDomain</literal>, and
-<literal>Info_ClusterName</literal>.
-
-</para>
 </listitem>
 </varlistentry>
 
 <varlistentry>
-<term>val</term>
+<term>os</term>
 <listitem>
 <para>
-Optional. Sets the value of this variable. A "write" form.
+Optional.
+Value is "linux" or "sunos".
+If this is specified, then the package will only be installed on 
+the specified OS.
+For example, if "linux" is specified, then the package will only be installed
+on linux hosts (and the package will not be installed on Solaris hosts).
 </para>
-</listitem>
-</varlistentry>
 
-<varlistentry>
-<term>ref</term>
-<listitem>
 <para>
-Optional. Allows you to set the value of this variable to the value of
-the variable specified here. A "write" form.
-
+Example:
+<constant><![CDATA[<package os="linux">]]></constant>.
 </para>
+
 </listitem>
 </varlistentry>
 
 </variablelist>
 </listitem>
+
 
 <listitem>
 <para>
@@ -247,17 +172,19 @@ is run on the host generating the kickstart file (generally the frontend).
 <term>shell</term>
 <listitem>
 <para>
-Optional. Specifies the script interpreter to use. If shell is "python", the
-<literal>Applets</literal> directory is added to the Python include path. This
-allows easy inclusion of python modules. Default "sh".
-
+Optional. Specifies the script interpreter to use. Default "sh".
 </para>
 
 <para>
-All <literal>var</literal> variables are made available to the script in the form
-of environment variables.
-
+Example:
+<constant><![CDATA[<eval shell="/bin/bash">]]></constant>.
 </para>
+
+<para>
+Example:
+<constant><![CDATA[<eval shell="/opt/rocks/bin/python">]]></constant>.
+</para>
+
 </listitem>
 </varlistentry>
 
@@ -265,12 +192,25 @@ of environment variables.
 <term>mode</term>
 <listitem>
 <para>
-Optional. Value is (quote|xml). If value is "quote", KPP escapes any XML
-characters in the shell output. Default is "quote".
-
+Optional.
+Value is "quote" or "xml".
+If value is "quote", XML characters are escaped in the shell output.
+Default is "quote".
 </para>
+
+<para>
+Example:
+<constant><![CDATA[<eval mode="xml">]]></constant>.
+</para>
+
+<para>
+Example:
+<constant><![CDATA[<eval shell="/bin/bash" mode='xml'>]]></constant>.
+</para>
+
 </listitem>
 </varlistentry>
+
 </variablelist>
 </listitem>
 
@@ -281,24 +221,89 @@ characters in the shell output. Default is "quote".
 </para>
 
 <para>
-Wraps the post section of this node. Configuration is generally carried out in
-the post section, making this a popular tag. The commands specfied here
+Wraps a post section.
+Configuration is generally carried out in
+the post section, making this a popular tag.
+The commands specfied here
 correspond to an RPM post section, and they are executed on the client machine
 (not on the frontend, in contrast to the &lt;eval&gt; tag).
-
 </para>
 
 <variablelist>
 
 <varlistentry>
+<term>arch</term>
+<listitem>
+
+<para>
+Optional.
+This value can be "i386" or "x86_64".
+If "arch" matches the architecture of the host that is being installed, then
+this post section will be run, otherwise the post section will be skipped.
+</para>
+
+<para>
+Example:
+<constant><![CDATA[<post arch="i386">]]></constant>.
+</para>
+
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>os</term>
+<listitem>
+<para>
+Optional.
+Value is "linux" or "sunos".
+If this is specified, then the post section will only be run during the
+installation of the specified OS.
+For example, if "linux" is specified, then the post section will be run when
+a linux host is installed, but the post section will not be run when a Solaris
+host is installed.
+</para>
+
+<para>
+Example:
+<constant><![CDATA[<post os="linux">]]></constant>.
+</para>
+
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>interpreter</term>
+<listitem>
+<para>
+Optional. Specifies the script interpreter to use. Default "/bin/bash".
+</para>
+
+<para>
+Example:
+<constant><![CDATA[<post interpreter="/opt/rocks/bin/python">]]></constant>.
+</para>
+
+</listitem>
+</varlistentry>
+
+<varlistentry>
 <term>arg</term>
 <listitem>
 <para>
-Optional. Passed straight to anaconda. Common values are
-<literal>--interpreter /usr/bin/python</literal> and
-<literal>--nochroot</literal>.
-
+Optional.
+Value can be "--nochroot".
+The "--nochroot" value means run this post section in the context of the
+installer, not in the context of the installing machine.
+The installer runs on a ramdisk on an installing machine, so if this argument
+is supplied, then the post section has access to the ramdisk file system as
+well as the mounted file systems for the installing node.
 </para>
+
+<para>
+Example:
+<constant><![CDATA[<post arg="--nochroot">]]></constant>.
+</para>
+
 </listitem>
 </varlistentry>
 
@@ -311,24 +316,13 @@ Optional. Passed straight to anaconda. Common values are
 </para>
 
 <para>
-Wraps the pre section commands. Run before package installation, in contrast to
+Wraps the pre section commands.
+All pre sections run before package installation, in contrast to
 commands from the post section.
-
+All pre sections are run in the context of the installation environment, that
+is, the root file system is a ramdisk.
 </para>
 
-<variablelist>
-
-<varlistentry>
-<term>arg</term>
-<listitem>
-<para>
-Optional. Same semantics as the post section attribute.
-
-</para>
-</listitem>
-</varlistentry>
-
-</variablelist>
 </listitem>
 
 
@@ -339,7 +333,6 @@ Optional. Same semantics as the post section attribute.
 
 <para>
 Wraps the contents of a file.
-
 </para>
 
 <variablelist>
@@ -347,22 +340,37 @@ Wraps the contents of a file.
 <varlistentry>
 <term>name</term>
 <listitem>
+
 <para>
 Required. Specifies the name of this file, a full path. 
 </para>
+
+<para>
+Example:
+<constant><![CDATA[<file name="/etc/auto.master">]]></constant>.
+</para>
+
 </listitem>
 </varlistentry>
 
 <varlistentry>
 <term>mode</term>
 <listitem>
-<para>
-Optional. Value is (create|append). If "create", file is created. If "append",
-the contents are appended to the end of an existing file. If target file does
-not exist, it will be created. A record of the change is kept in a RCS
-repository in the same directory as the file. Default is "create".
 
+<para>
+Optional.
+Value is "append".
+If "append" is specified,
+the contents are appended to the end of an existing file.
+A record of the change is kept in a RCS
+repository in the same directory as the file.
 </para>
+
+<para>
+Example:
+<constant><![CDATA[<file name="/etc/man.config" mode="append">]]></constant>.
+</para>
+
 </listitem>
 </varlistentry>
 
@@ -370,10 +378,16 @@ repository in the same directory as the file. Default is "create".
 <term>owner</term>
 <listitem>
 <para>
-Optional. The user.group that owns this file. Can be specified either as names
-"root.root" or numbers (guids) "0.0".
-
+Optional.
+The "user.group" that owns this file.
+Can be specified either as names "root.root" or numbers (guids) "0.0".
 </para>
+
+<para>
+Example:
+<constant><![CDATA[<file name="/var/www/html/index.html" owner="root.apache">]]></constant>.
+</para>
+
 </listitem>
 </varlistentry>
 
@@ -381,9 +395,17 @@ Optional. The user.group that owns this file. Can be specified either as names
 <term>perms</term>
 <listitem>
 <para>
-Optional. The permissions of this file. The value of this argument is passed to the "chmod" command, and accepts the same format. Examples are "0755" or "a+rx".
-
+Optional.
+The permissions of this file.
+The value of this argument is passed to the "chmod" command, and accepts the
+same format.
 </para>
+
+<para>
+Example:
+<constant><![CDATA[<file name="/etc/ssh/ssh_host_key.pub" perms="0444">]]></constant>.
+</para>
+
 </listitem>
 </varlistentry>
 
@@ -391,12 +413,20 @@ Optional. The permissions of this file. The value of this argument is passed to 
 <term>vars</term>
 <listitem>
 <para>
-Optional. Value is "literal" or "expanded". If "literal" no variable or backtick
-expansion is done on the contents of the file. If value is "expanded", standard
-shell variable expansion is performed, as well as running commands quoted with
-backticks. Default is "literal".
-
+Optional.
+Value is "literal" or "expanded".
+If "literal" no variable or backtick expansion is done on the contents of the
+file.
+If value is "expanded", standard shell variable expansion is performed, as
+well as running commands quoted with backticks.
+Default is "literal".
 </para>
+
+<para>
+Example:
+<constant><![CDATA[<file name="/etc/motd" mode="append" vars="expanded">]]></constant>.
+</para>
+
 </listitem>
 </varlistentry>
 
@@ -404,16 +434,34 @@ backticks. Default is "literal".
 <term>expr</term>
 <listitem>
 <para>
-Optional. Specifies a command whose output is placed in the file. Should only
-be used as a singleton tag:
-
+Optional.
+Specifies a command whose output is placed in the file.
 </para>
 
 <para>
-<screen>
-&lt;file name="/etc/rocks.zone" expr="/opt/rocks/dbreport dns config"/&gt;
-</screen>
+Example:
+<constant><![CDATA[<file name="/etc/dhcpd.conf" expr="/opt/rocks/bin/rocks report host dhcpd"/>]]></constant>.
 </para>
+
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>os</term>
+<listitem>
+
+<para>
+Optional.
+Value is "linux" or "sunos".
+If this is specified, then the file will only be created (or appended to )
+run during the installation of the specified OS.
+</para>
+
+<para>
+Example:
+<constant><![CDATA[<file name="/etc/postfix/main.cf" mode="append" os="sunos">]]></constant>.
+</para>
+
 </listitem>
 </varlistentry>
 
@@ -422,50 +470,26 @@ be used as a singleton tag:
 
 </itemizedlist>
 
+
 <section id="node-main-xml" xreflabel="Node XML: Main Commands">
 <title>Kickstart Main Section</title>
 
 <para>
-These tags specify commands in the "main" section of a kickstart file. Each of
-these tags are wrapped in &lt;main&gt; tags. They appear in node XML. Only the
+These tags specify commands in the "main" section of a kickstart file.
+Each of these tags are wrapped in &lt;main&gt; tags.
+They appear in node XML files.
+Only the
 tags normally used in a cluster appliance kickstart file are presented here; for
-a full reference see <ulink url=
-"http://www.redhat.com/docs/manuals/linux/RHL-7.3-Manual/custom-guide/s1-kickstart2-options.html">Red
-Hat Linux 7.3: The Official Red Hat Linux Customization Guide</ulink>. 
-
+a full reference of all the kickstart options and their respective arguments,
+see
+<ulink url="http://docs.redhat.com/docs/en-US/Red_Hat_Enterprise_Linux/5/html-single/Installation_Guide/index.html#ch-kickstart2">RHEL5 Documentation - Kickstart Installations</ulink>.
 </para>
 
 <para>
 <command>&lt;main&gt;</command>
-
 </para>
 
 <itemizedlist>
-<listitem>
-<para>
-<command>&lt;auth&gt;</command>
-</para>
-
-<para>
-Commands for the authentication of the system. Default "--useshadow --enablemd5
---enablenis --nisdomain rocks".
-
-</para>
-
-</listitem>
-
-<listitem>
-<para>
-<command>&lt;zerombr&gt;</command>
-</para>
-
-<para>
-If "yes" any invalid partition tables found on disks are initialized. Default
-"yes".
-
-</para>
-
-</listitem>
 
 <listitem>
 <para>
@@ -474,10 +498,10 @@ If "yes" any invalid partition tables found on disks are initialized. Default
 
 <para>
 Specifies the bootloader arguments. Default "--location=mbr"
-
 </para>
 
 </listitem>
+
 
 <listitem>
 <para>
@@ -487,7 +511,6 @@ Specifies the bootloader arguments. Default "--location=mbr"
 <para>
 Optional. Allows for inspection and modification of the kickstart values given,
 via the snack screen interface. Default: present.
-
 </para>
 
 </listitem>
@@ -499,29 +522,13 @@ via the snack screen interface. Default: present.
 
 <para>
 Specifies the installation method with the <literal>--url</literal> argument.
-Default for compute nodes "--url http://$KickstartHost/$KickstartBasedir/$Node_Distribution" where variables are specified with the &lt;var&gt; construct.
-
-</para>
-
-<para>
-Default for frontend nodes: "--url http://127.0.0.1/mnt/cdrom"
-
+Default is 
+<constant><![CDATA[http://&Kickstart_PrivateKickstartHost;/&Kickstart_PrivateKickstartBasedir;/&distribution;/&arch;]]></constant>,
+and when the kickstart file is
+generated, all the attributes are substituted with their respective values.
 </para>
 
 </listitem>
-
-<listitem>
-<para>
-<command>&lt;network&gt;</command>
-</para>
-
-<para>
-Arguments for network configuration.
-
-</para>
-
-</listitem>
-
 
 <listitem>
 <para>
@@ -530,50 +537,6 @@ Arguments for network configuration.
 
 <para>
 The installation language to use. Default "en_US".
-
-</para>
-
-</listitem>
-
-<listitem>
-<para>
-<command>&lt;langsupport&gt;</command>
-</para>
-
-<para>
-The languages to install on the system. Example <literal>&lt;langsupport&gt;
---default en_US fr_FR&lt;/langsupport&gt;</literal>. 
-
-</para>
-
-<para>
-Default "--default en_US".
-
-</para>
-</listitem>
-
-
-<listitem>
-<para>
-<command>&lt;part&gt;</command>
-</para>
-
-<para>
-Define a partition on the drive. See usage and warnings in
-<ulink url="http://www.rocksclusters.org/rocks-documentation/&document-version;/customization-partitioning.html">Rocks Compute Node Partitioning</ulink>.
-
-</para>
-
-</listitem>
-
-<listitem>
-<para>
-<command>&lt;clearpart&gt;</command>
-</para>
-
-<para>
-Clear all disk partitions on all drives.
-
 </para>
 
 </listitem>
@@ -585,7 +548,6 @@ Clear all disk partitions on all drives.
 
 <para>
 Sets the system keyboard type. Default "us".
-
 </para>
 
 </listitem>
@@ -597,7 +559,6 @@ Sets the system keyboard type. Default "us".
 
 <para>
 Specifies the system mouse type. Default "none".
-
 </para>
 
 </listitem>
@@ -608,20 +569,8 @@ Specifies the system mouse type. Default "none".
 </para>
 
 <para>
-Required. Sets the system timezone. Default "--utc GMT".
-
-</para>
-
-</listitem>
-
-<listitem>
-<para>
-<command>&lt;text&gt;</command>
-</para>
-
-<para>
-If present, perform the kickstart installation in text mode. Default: present.
-
+Required. Sets the system timezone.
+The default is the timezone selected when a frontend is installed.
 </para>
 
 </listitem>
@@ -633,22 +582,26 @@ If present, perform the kickstart installation in text mode. Default: present.
 
 <para>
 If present, perform a fresh install (not an upgrade). Default: present.
-
 </para>
 
 </listitem>
 
 <listitem>
 <para>
-<command>&lt;reboot&gt;</command>
+<command>&lt;rootpw&gt;</command>
 </para>
 
 <para>
-If present, automatically reboot after installation. Default: present.
-
+Optional.
+Set the root password for the installing system.
+Default is 
+<constant><![CDATA[<rootpw>--iscrypted &Kickstart_PrivateRootPassword;</rootpw>]]></constant>,
+and when the kickstart file is
+generated, the attribute is substituted with its respective value.
 </para>
 
 </listitem>
+
 
 </itemizedlist>
 

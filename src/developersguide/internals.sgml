@@ -4,10 +4,6 @@
 <para>
 This section describes in detail the two major components of a roll: packages
 and configuration files.
-Before we dive into those topics, we need set up an environment in which to
-create a roll.
-To make this more concrete, we'll use the example of building the "valgrind"
-roll.
 </para>
 
 
@@ -15,8 +11,14 @@ roll.
         <title> Roll Development Environment </title>
 
 <para>
-To create a development environment that can be used to create the "valgrind"
-roll, execute:
+In this section, we'll build an example roll (the "valgrind" roll) from the
+ground up.
+</para>
+
+<para>
+First, we need to create a development environment that can be used to build
+the "valgrind" roll.
+On a Rocks frontend, execute:
 </para>
 
 <screen>
@@ -251,15 +253,16 @@ the correct directory (/export/src/roll/valgrind/RPMS/x86_64).
         <title>Configuring Software with XML Files</title>
 
 <para>
-In Rocks, RPMs are only used as containers for applications -- all software
-configuration is done outside of the RPM mechanism.
-We've developed a graph-based XML framework that allows developers to easily 
-"splice" their software in with the core Rocks rolls.
+Rocks generates kickstart files for compute nodes dynamically using a
+structure called the "kickstart graph".
+This graph is made from graph XML files and node XML files.
+In general, a node XML file contains a list of packages that should be
+installed on a host and commands to configure those packages.
+Graph XML files contain a description of "edges" that tie the node XML files
+together.
 </para>
 
 <para>
-All software configuration commands are contained within "node" XML files and
-all the node XML files are tied together with "graph" XML files.
 When a host asks for its configuration file from the frontend, a process on
 the frontend traverses the node XML files based on the definitions within the
 graph XML files.
@@ -309,9 +312,24 @@ cp /boot/grub/grub.conf /boot/grub/grub-orig.conf
 </screen>
 
 <para>
-We see that this file will install the "grub" package
-(<constant>&lt;package&gt;grub&lt;/package&gt;</constant>), and it will
-modify the configuration file <constant>grub.conf</constant>).
+We see that the above node file will install the "grub" package
+(<constant>&lt;package&gt;grub&lt;/package&gt;</constant>), and in the
+"post" configuration step during a kickstart installation, it will
+modify the configuration file (<constant>/boot/grub/grub.conf</constant>).
+</para>
+
+<note>
+<para>
+In kickstart installation, all the packages from all the node XML files are
+installed first, then all the "post" sections are executed.
+That is, when you write a post section, you are guaranteed that all the
+software packages have been installed.
+</para>
+</note>
+
+<para>
+For a complete definition of the node XML file syntax, see
+<xref linkend="node-xml-tags">.
 </para>
 
 </section>
