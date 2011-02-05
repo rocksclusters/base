@@ -332,6 +332,135 @@ For a complete definition of the node XML file syntax, see
 <xref linkend="node-xml-tags">.
 </para>
 
+<para>
+For our "valgrind" example, we will modify the node file that was already
+created for us:
+</para>
+
+<screen>
+# cd /export/src/roll/valgrind/nodes
+# mv valgrind.xml valgrind-base.xml
+</screen>
+
+<note>
+<para>
+A node naming convention in Rocks is to begin the name all the node files with
+the name of the roll they are associated with.
+For example, all node files in the SGE roll begin with "sge-".
+</para>
+
+<para>
+Another naming convention is to add the name "client", "server" or "base" to
+the name of node file based on which appliance type the node file will be
+applied to.
+For example, if the node file is intended to configure only backend
+appliances (e.g., compute nodes or tile nodes), then we'd name our node file
+"valgrind-client.xml".
+If the node file is intended to configure only frontend appliances, then we'd
+name our node file "valgrind-server.xml".
+And if the node file is for all appliance types, we'd name it
+"valgrind-base.xml". 
+</para>
+</note>
+
+<para>
+When you edit "valgrind-base.xml", you'll see:
+</para>
+
+<screen>
+<![CDATA[
+<?xml version="1.0" standalone="no"?>
+
+<kickstart>
+
+
+        <description>
+        Your valgrind roll description here
+        </description>
+
+        <copyright>
+        Copyright (c) 2000 - 2010 The Regents of the University of California.
+        All rights reserved. Rocks(r) v5.4 www.rocksclusters.org
+
+        </copyright>
+
+        <changelog>
+        $Log: internals.sgml,v $
+        Revision 1.4  2011/02/05 01:04:49  bruno
+        checkpoint
+
+        </changelog>
+
+        <package>valgrind</package>
+        <package>roll-valgrind-usersguide</package>
+
+
+</kickstart>
+]]>
+</screen>
+
+<para>
+Notice above that the "valgrind" and "roll-valgrind-usersguide" RPMs
+are specified in &lt;package&gt; tags which means those RPMs will be installed 
+by the Red Hat installer.
+</para>
+
+<para>
+Now let's add a &lt;post&gt; section to it:
+</para>
+
+<screen>
+<![CDATA[
+<?xml version="1.0" standalone="no"?>
+
+<kickstart>
+
+
+        <description>
+        Your valgrind roll description here
+        </description>
+
+        <copyright>
+        Copyright (c) 2000 - 2010 The Regents of the University of California.
+        All rights reserved. Rocks(r) v5.4 www.rocksclusters.org
+
+        </copyright>
+
+        <changelog>
+        $Log: internals.sgml,v $
+        Revision 1.4  2011/02/05 01:04:49  bruno
+        checkpoint
+
+        </changelog>
+
+        <package>valgrind</package>
+        <package>roll-valgrind-usersguide</package>
+
+<post>
+
+<file name="/etc/motd" mode="append">
+
+This node has "valgrind" configured for it.
+
+</file>
+
+</post>
+
+</kickstart>
+
+]]>
+</screen>
+
+<para>
+This post section will append a small note to an installing host's /etc/motd.
+</para>
+
+<para>
+Now that we have our first node XML file, we need to "splice" it into the
+Rocks kickstart graph -- which is the subject of the next section.
+</para>
+
+
 </section>
 
 
@@ -339,8 +468,192 @@ For a complete definition of the node XML file syntax, see
         <title>Graph XML Files</title>
 
 <para>
-Describe graph XML files
+Every roll has node XML files and graph XML files.
+Node XML files describe what packages should be installed and how those
+packages should be configured.
+Graph XML files describe how all the node XML files are "connected" -- a
+graph XML file describes the "edges" between nodes.
 </para>
+
+<para>
+Below is a picture of how the Base roll's nodes are connected together via
+its graph XML file:
+</para>
+
+<para>
+<mediaobject>
+	<imageobject>
+	<imagedata
+		fileref="images/base-graph.png">
+	</imageobject>
+</mediaobject>
+</para>
+
+<para>
+Let's "splice" our "valgrind-base.xml" node XML file into the Rocks kickstart
+graph.
+We'll look at the default graph file that was automatically created for us:
+</para>
+
+<screen>
+# cd /export/src/roll/valgrind/graphs/default
+</screen>
+
+<para>
+Now edit the file "valgrind.xml":
+</para>
+
+<screen>
+<![CDATA[
+<?xml version="1.0" standalone="no"?>
+
+<graph>
+
+        <description>
+
+        The valgrind Roll
+
+        </description>
+
+        <copyright>
+        Copyright (c) 2000 - 2010 The Regents of the University of California.
+        All rights reserved. Rocks(r) v5.4 www.rocksclusters.org
+
+        </copyright>
+
+        <changelog>
+        $Log: internals.sgml,v $
+        Revision 1.4  2011/02/05 01:04:49  bruno
+        checkpoint
+
+        </changelog>
+
+        <!-- add edges here -->
+
+</graph>
+]]>
+</screen>
+
+<para>
+We will add an "edge" to this file.
+Since we want our "valgrind-base.xml" node XML file to be installed on all
+nodes, we'll make an edge from the "base" node XML file to ours:
+</para>
+
+<screen>
+<![CDATA[
+<?xml version="1.0" standalone="no"?>
+
+<graph>
+
+        <description>
+
+        The valgrind Roll
+
+        </description>
+
+        <copyright>
+        Copyright (c) 2000 - 2010 The Regents of the University of California.
+        All rights reserved. Rocks(r) v5.4 www.rocksclusters.org
+
+        </copyright>
+
+        <changelog>
+        $Log: internals.sgml,v $
+        Revision 1.4  2011/02/05 01:04:49  bruno
+        checkpoint
+
+        </changelog>
+
+        <!-- add edges here -->
+
+        <edge from="base">
+                <to>valgrind-base</to>
+        </edge>
+
+</graph>
+]]>
+</screen>
+
+<note>
+<para>
+Note that we don't add the ".xml" file extension in edge descriptions.
+</para>
+</note>
+
+<para>
+Our node XML file has now been spliced into the Rocks kickstart graph.
+Note: the node XML file "base" is from the Base roll.
+</para>
+
+<para>
+Now suppose we want to create 2 new node XML files where one file should be
+applied to a frontend installation and the other should be applied to the
+backend appliances.
+We'll create a new node XML file for frontends named "valgrind-server.xml" and
+a new node XML file named "valgrind-client.xml" for the backend appliances.
+We'll add &lt;package&gt; and &lt;post&gt; tags to both.
+Then, to splice them in to the Rocks kickstart graph, we'll modify our
+graph XML file "valgrind.xml" to look like:
+</para>
+
+<screen>
+<![CDATA[
+<?xml version="1.0" standalone="no"?>
+
+<graph>
+
+        <description>
+
+        The valgrind Roll
+
+        </description>
+
+        <copyright>
+        Copyright (c) 2000 - 2010 The Regents of the University of California.
+        All rights reserved. Rocks(r) v5.4 www.rocksclusters.org
+
+        </copyright>
+
+        <changelog>
+        $Log: internals.sgml,v $
+        Revision 1.4  2011/02/05 01:04:49  bruno
+        checkpoint
+
+        </changelog>
+
+        <!-- add edges here -->
+
+        <edge from="base">
+                <to>valgrind-base</to>
+        </edge>
+
+        <edge from="server">
+                <to>valgrind-server</to>
+        </edge>
+
+        <edge from="client">
+                <to>valgrind-client</to>
+        </edge>
+
+</graph>
+]]>
+</screen>
+
+<para>
+With the above graph XML file, we can see (at a high level) how the Valgrind
+roll is spliced in with the Base roll:
+</para>
+
+<para>
+<mediaobject>
+	<imageobject>
+	<imagedata
+		fileref="images/base-valgrind-graph.png">
+	</imageobject>
+</mediaobject>
+</para>
+
 
 </section>
 
