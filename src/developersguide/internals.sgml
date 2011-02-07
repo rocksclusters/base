@@ -151,8 +151,9 @@ Now place the RPM into the correct directory within the roll:
 </section>
 
 
-<section id="internals-packages-src" xreflabel="internals-packages-src">
-        <title>Create an RPM from a Source Code Tarball </title>
+<section id="internals-packages-src"
+	xreflabel="Create an RPM from a Source Code Tarball">
+        <title>Create an RPM from a Source Code Tarball</title>
 
 <para>
 The most common way we create RPMS is from source tarballs (the classic:
@@ -385,6 +386,9 @@ When you edit "valgrind-base.xml", you'll see:
 
         <changelog>
         $Log: internals.sgml,v $
+        Revision 1.6  2011/02/07 23:30:26  bruno
+        first pass at build section
+
         Revision 1.5  2011/02/07 20:48:46  bruno
         the first draft of 'roll internals' is done.
 
@@ -428,6 +432,9 @@ Now let's add a &lt;post&gt; section to it:
 
         <changelog>
         $Log: internals.sgml,v $
+        Revision 1.6  2011/02/07 23:30:26  bruno
+        first pass at build section
+
         Revision 1.5  2011/02/07 20:48:46  bruno
         the first draft of 'roll internals' is done.
 
@@ -526,6 +533,9 @@ Now edit the file "valgrind.xml":
 
         <changelog>
         $Log: internals.sgml,v $
+        Revision 1.6  2011/02/07 23:30:26  bruno
+        first pass at build section
+
         Revision 1.5  2011/02/07 20:48:46  bruno
         the first draft of 'roll internals' is done.
 
@@ -566,6 +576,9 @@ nodes, we'll make an edge from the "base" node XML file to ours:
 
         <changelog>
         $Log: internals.sgml,v $
+        Revision 1.6  2011/02/07 23:30:26  bruno
+        first pass at build section
+
         Revision 1.5  2011/02/07 20:48:46  bruno
         the first draft of 'roll internals' is done.
 
@@ -655,6 +668,9 @@ Here's the contents of "valgrind-client.xml":
 
 	<changelog>
 	$Log: internals.sgml,v $
+	Revision 1.6  2011/02/07 23:30:26  bruno
+	first pass at build section
+	
 	Revision 1.5  2011/02/07 20:48:46  bruno
 	the first draft of 'roll internals' is done.
 	
@@ -697,6 +713,9 @@ And here is the contents of "valgrind-server.xml":
 
 	<changelog>
 	$Log: internals.sgml,v $
+	Revision 1.6  2011/02/07 23:30:26  bruno
+	first pass at build section
+	
 	Revision 1.5  2011/02/07 20:48:46  bruno
 	the first draft of 'roll internals' is done.
 	
@@ -743,6 +762,9 @@ graph XML file "valgrind.xml" to look like:
 
         <changelog>
         $Log: internals.sgml,v $
+        Revision 1.6  2011/02/07 23:30:26  bruno
+        first pass at build section
+
         Revision 1.5  2011/02/07 20:48:46  bruno
         the first draft of 'roll internals' is done.
 
@@ -827,6 +849,9 @@ We can enforce this ordering by adding two &lt;order&gt; tags:
 
 	<changelog>
 	$Log: internals.sgml,v $
+	Revision 1.6  2011/02/07 23:30:26  bruno
+	first pass at build section
+	
 	Revision 1.5  2011/02/07 20:48:46  bruno
 	the first draft of 'roll internals' is done.
 	

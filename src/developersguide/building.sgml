@@ -3,12 +3,72 @@
 
 
 <para>
-How to build your roll
+In this section, we'll show you how to build your roll and we'll examine
+some of the files that are created when you build your roll.
+</para>
+
+<para>
+Building your roll is rather simple.
+To build the example Valgrind Roll that we developed in the previous
+section, execute:
 </para>
 
 <screen>
+# cd /export/src/roll/valgrind
 # make roll
 </screen>
 
+<para>
+This will take several minutes to build.
+When it completes, the most important file is
+<constant>valgrind-1.0-0.x86_64.disk1.iso</constant> --
+this is the Valgrind Roll in an ISO image.
+You can burn this ISO to a CD/DVD or you can transport it to a frontend and
+install it like you would any other roll.
+</para>
+
+<para>
+When you execute "make roll", it will descend into the
+<constant>src</constant> directory and try to build every package.
+In the case of the Valgrind Roll, there are two subdirectories under
+<constant>src</constant>: usersguide and valgrind.
+The "make roll" process will go into each of those directories and execute
+"make rpm".
+And as decribed in the section <xref linkend="internals-packages-src">, the
+resulting RPMs will be placed in
+<constant>/export/src/roll/valgrind/RPMS/x86_64</constant>.
+</para>
+
+<para>
+Also, all the node XML files and the graph XML file will be bundled into
+a package called
+<constant>roll-valgrind-kickstart-1.0-0.noarch.rpm</constant>.
+To see this, execute:
+</para>
+
+<screen>
+# cd /export/src/roll/valgrind
+# rpm -qlp RPMS/noarch/roll-valgrind-kickstart-1.0-0.noarch.rpm 
+/export/profile
+/export/profile/graphs
+/export/profile/graphs/default
+/export/profile/graphs/default/valgrind.xml
+/export/profile/nodes
+/export/profile/nodes/valgrind-base.xml
+/export/profile/nodes/valgrind-client.xml
+/export/profile/nodes/valgrind-server.xml
+/export/profile/roll-valgrind.xml
+</screen>
+
+<para>
+Above we see the graph XML file (
+<constant>/export/profile/graphs/default/valgrind.xml</constant>)
+and the node XML files:
+(<constant>/export/profile/nodes/valgrind-base.xml</constant>,
+<constant>/export/profile/nodes/valgrind-client.xml</constant>,
+<constant>/export/profile/nodes/valgrind-server.xml</constant>).
+The file <constant>/export/profile/roll-valgrind.xml</constant> contains
+info that describes how the roll was built.
+</para>
 
 </chapter>
