@@ -373,7 +373,6 @@ When you edit "valgrind-base.xml", you'll see:
 
 <kickstart>
 
-
         <description>
         Your valgrind roll description here
         </description>
@@ -386,6 +385,9 @@ When you edit "valgrind-base.xml", you'll see:
 
         <changelog>
         $Log: internals.sgml,v $
+        Revision 1.5  2011/02/07 20:48:46  bruno
+        the first draft of 'roll internals' is done.
+
         Revision 1.4  2011/02/05 01:04:49  bruno
         checkpoint
 
@@ -393,7 +395,6 @@ When you edit "valgrind-base.xml", you'll see:
 
         <package>valgrind</package>
         <package>roll-valgrind-usersguide</package>
-
 
 </kickstart>
 ]]>
@@ -415,7 +416,6 @@ Now let's add a &lt;post&gt; section to it:
 
 <kickstart>
 
-
         <description>
         Your valgrind roll description here
         </description>
@@ -428,6 +428,9 @@ Now let's add a &lt;post&gt; section to it:
 
         <changelog>
         $Log: internals.sgml,v $
+        Revision 1.5  2011/02/07 20:48:46  bruno
+        the first draft of 'roll internals' is done.
+
         Revision 1.4  2011/02/05 01:04:49  bruno
         checkpoint
 
@@ -468,11 +471,11 @@ Rocks kickstart graph -- which is the subject of the next section.
         <title>Graph XML Files</title>
 
 <para>
-Every roll has node XML files and graph XML files.
+Every roll has node XML files and a graph XML file.
 Node XML files describe what packages should be installed and how those
 packages should be configured.
-Graph XML files describe how all the node XML files are "connected" -- a
-graph XML file describes the "edges" between nodes.
+A graph XML file describes how all the node XML files are "connected", that is,
+a graph XML file describes the "edges" between nodes.
 </para>
 
 <para>
@@ -523,6 +526,9 @@ Now edit the file "valgrind.xml":
 
         <changelog>
         $Log: internals.sgml,v $
+        Revision 1.5  2011/02/07 20:48:46  bruno
+        the first draft of 'roll internals' is done.
+
         Revision 1.4  2011/02/05 01:04:49  bruno
         checkpoint
 
@@ -535,7 +541,7 @@ Now edit the file "valgrind.xml":
 </screen>
 
 <para>
-We will add an "edge" to this file.
+We will add an "edge".
 Since we want our "valgrind-base.xml" node XML file to be installed on all
 nodes, we'll make an edge from the "base" node XML file to ours:
 </para>
@@ -560,6 +566,9 @@ nodes, we'll make an edge from the "base" node XML file to ours:
 
         <changelog>
         $Log: internals.sgml,v $
+        Revision 1.5  2011/02/07 20:48:46  bruno
+        the first draft of 'roll internals' is done.
+
         Revision 1.4  2011/02/05 01:04:49  bruno
         checkpoint
 
@@ -587,12 +596,129 @@ Note: the node XML file "base" is from the Base roll.
 </para>
 
 <para>
-Now suppose we want to create 2 new node XML files where one file should be
-applied to a frontend installation and the other should be applied to the
-backend appliances.
-We'll create a new node XML file for frontends named "valgrind-server.xml" and
-a new node XML file named "valgrind-client.xml" for the backend appliances.
+In the picture below, we see how "valgrind-base.xml" has been spliced into
+the Rocks kickstart graph:
+</para>
+
+<para>
+<mediaobject>
+	<imageobject>
+	<imagedata
+		fileref="images/base-valgrind-simple-graph.png">
+	</imageobject>
+</mediaobject>
+</para>
+
+
+<section id="internals-xml-files-graph-ordering"
+	xreflabel="internals-xml-files-graph-ordering">
+
+        <title>Controlling the Order of Post Section Execution</title>
+
+<para>
+There are instances when we need to ensure that a post section in one
+node XML file executes before (or after) a post section in another node XML
+file.
+We can accomplish this by specifying an &lt;order&gt; tag in a graph XML
+file.
+To show how this is done, we'll create 2 new node XML files and then we'll
+edit the graph XML file.
+</para>
+
+<para>
+We will create 2 new node XML files where one file should be
+applied to a frontend (named "valgrind-server.xml") and the other should be
+applied to the backend appliances (named "valgrind-client.xml).
 We'll add &lt;package&gt; and &lt;post&gt; tags to both.
+</para>
+
+<para>
+Here's the contents of "valgrind-client.xml":
+</para>
+
+<screen>
+<![CDATA[
+<?xml version="1.0" standalone="no"?>
+
+<kickstart>
+
+	<description>
+	Valgrind client node XML file. This file should be applied to
+	backend appliances (e.g., compute nodes and tile nodes).
+	</description>
+
+	<copyright>
+	Copyright (c) 2000 - 2010 The Regents of the University of California.
+	All rights reserved. Rocks(r) v5.4 www.rocksclusters.org
+	
+	</copyright>
+
+	<changelog>
+	$Log: internals.sgml,v $
+	Revision 1.5  2011/02/07 20:48:46  bruno
+	the first draft of 'roll internals' is done.
+	
+	</changelog>
+
+<post>
+
+<file name="/etc/motd" mode="append">
+
+Valgrind on a "client".
+
+</file>
+
+</post>
+
+</kickstart>
+]]>
+</screen>
+
+<para>
+And here is the contents of "valgrind-server.xml":
+</para>
+
+<screen>
+<![CDATA[
+<?xml version="1.0" standalone="no"?>
+
+<kickstart>
+
+	<description>
+	Valgrind server node XML file. This file should be applied to
+	frontends.
+	</description>
+
+	<copyright>
+	Copyright (c) 2000 - 2010 The Regents of the University of California.
+	All rights reserved. Rocks(r) v5.4 www.rocksclusters.org
+	
+	</copyright>
+
+	<changelog>
+	$Log: internals.sgml,v $
+	Revision 1.5  2011/02/07 20:48:46  bruno
+	the first draft of 'roll internals' is done.
+	
+	</changelog>
+
+	<package>roll-valgrind-usersguide</package>
+
+<post>
+
+<file name="/etc/motd" mode="append">
+
+Valgrind on a "server".
+
+</file>
+
+</post>
+
+</kickstart>
+]]>
+</screen>
+
+<para>
 Then, to splice them in to the Rocks kickstart graph, we'll modify our
 graph XML file "valgrind.xml" to look like:
 </para>
@@ -617,6 +743,9 @@ graph XML file "valgrind.xml" to look like:
 
         <changelog>
         $Log: internals.sgml,v $
+        Revision 1.5  2011/02/07 20:48:46  bruno
+        the first draft of 'roll internals' is done.
+
         Revision 1.4  2011/02/05 01:04:49  bruno
         checkpoint
 
@@ -642,7 +771,9 @@ graph XML file "valgrind.xml" to look like:
 
 <para>
 With the above graph XML file, we can see (at a high level) how the Valgrind
-roll is spliced in with the Base roll:
+roll is spliced in with the Base roll.
+The Base Roll node XML files are yellow and the Valgrind Roll
+node XML files are red.
 </para>
 
 <para>
@@ -654,6 +785,91 @@ roll is spliced in with the Base roll:
 </mediaobject>
 </para>
 
+<para>
+If we zoom in, we can see how tow of the valgrind node XML files have been
+spliced in:
+</para>
+
+<para>
+<mediaobject>
+	<imageobject>
+	<imagedata
+		fileref="images/base-valgrind-zoom.png">
+	</imageobject>
+</mediaobject>
+</para>
+
+<para>
+Now suppose we want the post section of "valgrind-server.xml" to execute
+<emphasis>before</emphasis> the post section of "valgrind-base.xml" and we
+want the post section of "valgrind-client.xml" to execute
+<emphasis>after</emphasis> "valgrind-base.xml".
+We can enforce this ordering by adding two &lt;order&gt; tags:
+</para>
+
+<screen>
+<![CDATA[
+<?xml version="1.0" standalone="no"?>
+
+<graph roll="valgrind">
+
+	<description>
+
+	The valgrind Roll
+
+	</description>
+
+	<copyright>
+	Copyright (c) 2000 - 2010 The Regents of the University of California.
+	All rights reserved. Rocks(r) v5.4 www.rocksclusters.org
+	
+	</copyright>
+
+	<changelog>
+	$Log: internals.sgml,v $
+	Revision 1.5  2011/02/07 20:48:46  bruno
+	the first draft of 'roll internals' is done.
+	
+	</changelog>
+
+	<!-- add edges here -->
+
+	<edge from="base">
+		<to>valgrind-base</to>
+	</edge>
+
+	<edge from="server">
+		<to>valgrind-server</to>
+	</edge>
+
+	<edge from="client">
+		<to>valgrind-client</to>
+	</edge>
+
+
+	<!-- enforce post section ordering -->
+
+	<!--
+		valgrind-server post sections execute before valgrind-base
+		post sections
+	-->
+	<order head="valgrind-server">
+		<tail>valgrind-base</tail>
+	</order>
+
+	<!--
+		valgrind-client post sections execute after valgrind-base
+		post sections
+	-->
+	<order head="valgrind-base">
+		<tail>valgrind-client</tail>
+	</order>
+
+</graph>
+]]>
+</screen>
+
+</section>
 
 </section>
 
@@ -662,7 +878,190 @@ roll is spliced in with the Base roll:
         <title>Attributes</title>
 
 <para>
-Global, OS, appliance and host attributes.
+In Rocks, "attributes" are a way to have variables inside node and graph
+XML files.
+Attributes are evaluated during kickstart file creation (one of the first
+actions done when a host is installed).
+The following is an example of how the 'hostname' attribute is used in a
+post section of a node XML file:
+</para>
+
+<screen>
+<![CDATA[
+<post>
+
+<!--
+        set the hostname to the private name.
+-->
+/bin/hostname &hostname;
+
+</post>
+]]>
+</screen>
+
+<para>
+In node XML files, if you want to use an attribute in a post section, you
+need to encode it as an XML entity (thus the '&' and ';' characters that
+bracket the 'hostname' attribute.
+</para>
+
+<para>
+There are four levels of attributes: global, OS, appliance and host.
+Global attributes apply to all hosts in a cluster, OS attributes apply to hosts of a specific OS type (currently "linux" or "sunos"), appliance attributes
+apply to hosts that have the same appliance type (e.g., compute, tile, etc.),
+and host attributes apply to only one host.
+You can add an attribute with one of the following commands:
+<constant>rocks add attr</constant> (global),
+<constant>rocks add os attr</constant> (OS),
+<constant>rocks add appliance attr</constant> (appliance global),
+<constant>rocks add host attr</constant> (host).
+</para>
+
+<para>
+To examine which attributes are currently set for a host, execute
+<constant>rocks list host attr "hostname"</constant>.
+For example:
+</para>
+
+<screen>
+<![CDATA[
+# rocks list host attr compute-0-0
+HOST         ATTR                                  VALUE                                    SOURCE
+compute-0-0: Condor_Client                         true                                     A     
+compute-0-0: Condor_Daemons                        MASTER, STARTD                           G     
+compute-0-0: Condor_EnableMPI                      no                                       G     
+compute-0-0: Condor_HostAllow                      +                                        G     
+compute-0-0: Condor_Master                         brunoland.rocksclusters.org              G     
+compute-0-0: Condor_Network                        private                                  G     
+compute-0-0: Condor_PasswordAuth                   no                                       G     
+compute-0-0: Condor_PortHigh                       50000                                    G     
+compute-0-0: Condor_PortLow                        40000                                    G     
+compute-0-0: HttpConf                              /etc/httpd/conf                          O     
+compute-0-0: HttpConfigDirExt                      /etc/httpd/conf.d                        O     
+compute-0-0: HttpRoot                              /var/www/html                            O     
+compute-0-0: Info_CertificateCountry               US                                       G     
+compute-0-0: Info_CertificateLocality              San Diego                                G     
+compute-0-0: Info_CertificateOrganization          SDSC                                     G     
+compute-0-0: Info_CertificateState                 California                               G     
+compute-0-0: Info_ClusterContact                   admin@place.org                          G     
+compute-0-0: Info_ClusterLatlong                   N32.87 W117.22                           G     
+compute-0-0: Info_ClusterName                      Brunoland                                G     
+compute-0-0: Info_ClusterURL                       http://www.place.org/                    G     
+compute-0-0: Kickstart_DistroDir                   /export/rocks                            G     
+compute-0-0: Kickstart_Keyboard                    us                                       G     
+compute-0-0: Kickstart_Lang                        en_US                                    G     
+compute-0-0: Kickstart_Langsupport                 en_US                                    G     
+compute-0-0: Kickstart_Multicast                   231.253.121.191                          G     
+compute-0-0: Kickstart_PrivateAddress              10.1.1.1                                 G     
+compute-0-0: Kickstart_PrivateBroadcast            10.1.255.255                             G     
+compute-0-0: Kickstart_PrivateDNSDomain            local                                    G     
+compute-0-0: Kickstart_PrivateDNSServers           10.1.1.1                                 G     
+compute-0-0: Kickstart_PrivateGateway              10.1.1.1                                 G     
+compute-0-0: Kickstart_PrivateHostname             brunoland                                G     
+compute-0-0: Kickstart_PrivateKickstartBasedir     install                                  G     
+compute-0-0: Kickstart_PrivateKickstartCGI         sbin/kickstart.cgi                       G     
+compute-0-0: Kickstart_PrivateKickstartHost        10.1.1.1                                 G     
+compute-0-0: Kickstart_PrivateNTPHost              10.1.1.1                                 G     
+compute-0-0: Kickstart_PrivateNetmask              255.255.0.0                              G     
+compute-0-0: Kickstart_PrivateNetmaskCIDR          16                                       G     
+compute-0-0: Kickstart_PrivateNetwork              10.1.0.0                                 G     
+compute-0-0: Kickstart_PrivateSyslogHost           10.1.1.1                                 G     
+compute-0-0: Kickstart_PublicAddress               198.202.88.152                           G     
+compute-0-0: Kickstart_PublicBroadcast             198.202.88.255                           G     
+compute-0-0: Kickstart_PublicDNSDomain             rocksclusters.org                        G     
+compute-0-0: Kickstart_PublicDNSServers            198.202.75.26                            G     
+compute-0-0: Kickstart_PublicGateway               198.202.88.20                            G     
+compute-0-0: Kickstart_PublicHostname              brunoland.rocksclusters.org              G     
+compute-0-0: Kickstart_PublicKickstartHost         central.rocksclusters.org                G     
+compute-0-0: Kickstart_PublicNTPHost               pool.ntp.org                             G     
+compute-0-0: Kickstart_PublicNetmask               255.255.255.0                            G     
+compute-0-0: Kickstart_PublicNetmaskCIDR           24                                       G     
+compute-0-0: Kickstart_PublicNetwork               198.202.88.0                             G     
+compute-0-0: Kickstart_Timezone                    America/Los_Angeles                      G     
+compute-0-0: RootDir                               /root                                    O     
+compute-0-0: Server_Partitioning                   manual                                   G     
+compute-0-0: Xen_Dom0MinMem                        768                                      G     
+compute-0-0: arch                                  x86_64                                   H     
+compute-0-0: bio                                   true                                     A     
+compute-0-0: dhcp_filename                         pxelinux.0                               A     
+compute-0-0: dhcp_nextserver                       10.1.1.1                                 A     
+compute-0-0: exec_host                             true                                     A     
+compute-0-0: ganglia_address                       224.0.0.3                                G     
+compute-0-0: hostname                              compute-0-0                              I     
+compute-0-0: kickstartable                         yes                                      A     
+compute-0-0: managed                               true                                     A     
+compute-0-0: os                                    linux                                    H     
+compute-0-0: rack                                  0                                        I     
+compute-0-0: rank                                  0                                        I     
+compute-0-0: rocks_version                         5.4                                      G     
+compute-0-0: sge                                   true                                     A     
+compute-0-0: ssh_use_dns                           true                                     G     
+compute-0-0: submit_host                           false                                    A     
+compute-0-0: tripwire_mail                         root@brunoland.rocksclusters.org         G     
+compute-0-0: vm_mac_base_addr                      9a:58:ca:0:00:00                         G     
+compute-0-0: vm_mac_base_addr_mask                 ff:ff:ff:c0:00:00                        G
+]]>
+</screen>
+
+<para>
+In the output above, the letters in the 'SOURCE' column indicate the level
+at which this host got the attribute.
+'G' means the attribute is global, 'O' is an OS attribute, 'A' is an appliance
+attribute, 'H' is a host attribute and 'I' in an intrinsic attribute (these
+attributes cannot be removed or modified).
+</para>
+
+<para>
+If a host has an attribute assigned to it, you can use it in a post section
+by referring to it in its entity form ("&amp;attribute_name;").
+For example, if you'd like to dynamically get the IP address of the private
+network for the frontend, you'd use "&amp;Kickstart_PrivateAddress;" in a post
+section.
+</para>
+
+<para>
+Attributes can also be used as a "edge conditional" in graph XML files or
+as a "post section conditional" in node XML files.
+An edge conditional is used to conditionally traverse an edge in graph XML
+file.
+The following is an excerpt from the Base Roll graph XML file:
+</para>
+
+<screen>
+<![CDATA[
+<edge from="client" to="x11" cond="x11"/>
+]]>
+</screen>
+
+<para>
+If the "x11" attribute is set to "true", then when a kickstart file is built
+for a "client" host (e.g., a compute node or tile node), then the kickstart
+file generation code will traverse the edge from client to x11, that is, 
+the x11 node XML file will be included in the kickstart file.
+Otherwise, if the x11 attribute is set to false, then the x11 node XML file
+will not be included in the kickstart file.
+</para>
+
+<para>
+Post section conditions are used to conditionally execute post sections.
+The following is an excerpt from a SGE node XML file:
+</para>
+
+<screen>
+<![CDATA[
+<post os="linux" cond="exec_host">
+
+<file name="/etc/rc.d/rocksconfig.d/post-91-sge" mode="append">
+SET_HOST_TYPE=" -x "
+</file>
+
+</post>
+]]>
+</screen>
+
+<para>
+If the attribute "exec_host" is true, then the post section will be executed,
+otherwise, this post section will be skipped.
 </para>
 
 </section>
