@@ -31,10 +31,11 @@ install it like you would any other roll.
 When you execute "make roll", it will descend into the
 <constant>src</constant> directory and try to build every package.
 In the case of the Valgrind Roll, there are two subdirectories under
-<constant>src</constant>: usersguide and valgrind.
+<constant>src</constant>: <constant>usersguide</constant> and
+<constant>valgrind</constant>.
 The "make roll" process will go into each of those directories and execute
-"make rpm".
-And as decribed in the section <xref linkend="internals-packages-src">, the
+"make rpm", 
+and as decribed in the section <xref linkend="internals-packages-src">, the
 resulting RPMs will be placed in
 <constant>/export/src/roll/valgrind/RPMS/x86_64</constant>.
 </para>

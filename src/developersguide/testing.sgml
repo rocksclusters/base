@@ -31,7 +31,7 @@ ech "yo" 2&>1 > /tmp/fun
 When the above node XML file is included in a roll and when a compute node asks
 for its kickstart file, no file will be returned and the compute node will not
 install.
-The compute node will display a screen asking for the user input a
+The compute node will display a screen asking for the user to input a
 "language" (compute node installations are 100% automated, so a compute node
 should never ask for user input).
 </para>
@@ -86,7 +86,7 @@ to the <constant>rocks list host profile</constant> command:
 
 <screen>
 <![CDATA[
-ROCKSDEBUG=y rocks list host profile compute-0-0 > /tmp/ks.cfg
+# ROCKSDEBUG=y rocks list host profile compute-0-0 > /tmp/ks.cfg
   .
   .
   .
@@ -170,7 +170,8 @@ We'll modify the post section in
 <post>
 ech "yo" > /tmp/fun
 
-while [ -f /tmp/fun ]
+touch /tmp/stall
+while [ -f /tmp/stall ]
 do
 	sleep 1
 done
@@ -198,18 +199,19 @@ disk are all mounted with the prefix <constant>/mnt/sysimage</constant>.
 For example, the root partition is <constant>/mnt/sysimage</constant>,
 the var partition is <constant>/mnt/sysimage/var</constant>, etc.
 Before a post installation script is run, the installer
-executes a <constant>chroot</constant> to /mnt/sysiamge so the script has the
+executes a <constant>chroot</constant> to
+<constant>/mnt/sysimage</constant> so the script has the
 illusion it is running on the hard disk environment (not the ramdisk
 environment).
 </para>
 
 <para>
-After we debugged the issue, we can instruct the installtion to continue
+After we debugged the issue, we can instruct the installaation to continue
 by executing:
 </para>
 
 <screen>
-# rm -f /mnt/sysimage/tmp/fun 
+# rm -f /mnt/sysimage/tmp/stall 
 </screen>
 
 
@@ -292,8 +294,8 @@ Installing zlib-1.2.3-3.x86_64
 	<para>
 	Error messages from all the post sections will be found in this
 	log file.
-	In general, all you will see are 'begin post section' and
-	'end post section' messages.
+	In general, all you will see are "begin post section" and
+	"end post section" messages.
 	</para>
 
 	<para>
@@ -320,7 +322,7 @@ Installing zlib-1.2.3-3.x86_64
 	</para>
 
 	<para>
-	This is the syslog from host during its installation phase.
+	This is the syslog from the host during its installation phase.
 	</para>
 
 	<para>

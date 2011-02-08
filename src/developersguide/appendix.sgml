@@ -17,7 +17,7 @@ Edges are described in "graph" files, while each node is specified in a
 
 <para>
 When the order of nodes' contribution to the kickstart file matters, we use
-special edges made with &lt;order&gt; tags.
+special edges made with <constant>&lt;order&gt;</constant> tags.
 We describe these tags in this section as well.
 </para>
 
@@ -149,7 +149,7 @@ Value is "linux" or "sunos".
 If this is specified, then the package will only be installed on 
 the specified OS.
 For example, if "linux" is specified, then the package will only be installed
-on linux hosts (and the package will not be installed on Solaris hosts).
+on Linux hosts (and the package will not be installed on Solaris hosts).
 </para>
 
 <para>
@@ -232,10 +232,10 @@ Example:
 <para>
 Wraps a post section.
 Configuration is generally carried out in
-the post section, making this a popular tag.
-The commands specfied here
+post sections, making this a popular tag.
+The commands specified here
 correspond to an RPM post section, and they are executed on the client machine
-(not on the frontend, in contrast to the &lt;eval&gt; tag).
+(not on the frontend, in contrast to the <constant>&lt;eval&gt;</constant> tag).
 </para>
 
 <variablelist>
@@ -269,7 +269,7 @@ Value is "linux" or "sunos".
 If this is specified, then the post section will only be run during the
 installation of the specified OS.
 For example, if "linux" is specified, then the post section will be run when
-a linux host is installed, but the post section will not be run when a Solaris
+a Linux host is installed, but the post section will not be run when a Solaris
 host is installed.
 </para>
 
@@ -520,7 +520,7 @@ Example:
 
 <para>
 These tags specify commands in the "main" section of a kickstart file.
-Each of these tags are wrapped in &lt;main&gt; tags.
+Each of these tags are wrapped in <constant>&lt;main&gt;</constant> tags.
 They appear in node XML files.
 Only the
 tags normally used in a cluster appliance kickstart file are presented here; for
@@ -727,7 +727,8 @@ Can be specified as a singleton tag:
 
 <para>
 <constant><![CDATA[<edge from="base" to="ganglia"/>]]></constant>,
-or a standard tag that wraps &lt;to&gt; or &lt;from&gt; tags.
+or a standard tag that wraps <constant>&lt;to&gt;</constant> or
+<constant>&lt;from&gt;</constant> tags.
 </para>
 
 <variablelist>
@@ -759,7 +760,7 @@ Specifies the end of an edge, a node name.
 
 <para>
 Example:
-<constant><![CDATA[<edge from="client">]]></constant>.
+<constant><![CDATA[<edge to="client">]]></constant>.
 </para>
 
 </listitem>
@@ -898,8 +899,9 @@ edge is ignored if the client's architecture does not match this list.
 
 <para>
 Specifies a ordering between nodes in the graph.
-While the &lt;edge&gt; tags specify a "membership" in the kickstart file,
-the &lt;order&gt; tags give a "relative ordering" between nodes. 
+While the <constant>&lt;edge&gt;</constant> tags specify a "membership" in the
+kickstart file, the <constant>&lt;order&gt;</constant> tags give a
+"relative ordering" between nodes. 
 </para>
 
 <para>
@@ -911,8 +913,10 @@ kickstart file.
 </para>
 
 <para>
-Can be used to wrap &lt;head&gt; and &lt;tail&gt; tags in the same fashion as
-the &lt;to&gt; and &lt;from&gt; tags for "edge".
+Can be used to wrap <constant>&lt;head&gt;</constant> and
+<constant>&lt;tail&gt;</constant> tags in the same fashion as
+the <constant>&lt;to&gt;</constant> and
+<constant>&lt;from&gt;</constant> tags for "edge".
 </para>
 
 <variablelist>
@@ -935,6 +939,8 @@ does not match this list.
 <para>
 Optional.
 Specifies the beginning of this edge, a node name.
+The node specified by the <constant>&lt;order head="node"&gt;</constant>
+tag should be ordered before all child <constant>&lt;tail&gt;</constant> tags.
 </para>
 
 <para>
@@ -976,6 +982,8 @@ will all be at the end of the kickstart file.
 <para>
 Optional.
 Specifies the end of this edge, a node name.
+The node specified by the <constant>&lt;order tail="node"&gt;</constant>
+tag should be ordered after all child <constant>&lt;head&gt;</constant> tags.
 </para>
 
 <para>
@@ -988,7 +996,8 @@ Specifies the end of this edge, a node name.
 </para>
 
 <para>
-Special node name "HEAD" is allowed, which specifies the node is placed first.
+Special node name "HEAD" is allowed, which specifies the node is placed at
+the beginning of the kickstart file.
 Ordering among nodes with HEAD ordering is undefined.
 </para>
 
