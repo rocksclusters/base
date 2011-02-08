@@ -11,13 +11,13 @@ and configuration files.
         <title> Roll Development Environment </title>
 
 <para>
-In this section, we'll build an example roll (the "valgrind" roll) from the
+In this section, we'll build an example roll (the Valgrind Roll) from the
 ground up.
 </para>
 
 <para>
 First, we need to create a development environment that can be used to build
-the "valgrind" roll.
+the Valgrind Roll.
 On a Rocks frontend, execute:
 </para>
 
@@ -53,7 +53,7 @@ valgrind -+
 </screen>
 
 <para>
-Now we are ready to add packages to the valgrind roll.
+Now we are ready to add packages to the Valgrind Roll.
 </para>
 
 
@@ -77,7 +77,7 @@ For Redhat-based Rocks clusters, this means all packages must be RPMS.
 If the software you wish to install is already in RPM format, you can directly
 put it into the roll source tree.
 For example, to put the RPM <constant>unzip-5.52-3.el5.x86_64.rpm</constant>
-into the valgrind roll, execute:
+into the Valgrind Roll, execute:
 </para>
 
 <screen>
@@ -277,7 +277,8 @@ node XML files.
 
 <para>
 All software configuration commands are contained within node XML files.
-Let's look at a real node XML (grub.xml from the base roll):
+Let's look at a real node XML (<constant>grub.xml</constant> from the
+Base Roll):
 </para>
 
 <screen>
@@ -313,7 +314,7 @@ cp /boot/grub/grub.conf /boot/grub/grub-orig.conf
 </screen>
 
 <para>
-We see that the above node file will install the "grub" package
+We see that the above node XML file will install the "grub" package
 (<constant>&lt;package&gt;grub&lt;/package&gt;</constant>), and in the
 "post" configuration step during a kickstart installation, it will
 modify the configuration file (<constant>/boot/grub/grub.conf</constant>).
@@ -321,8 +322,8 @@ modify the configuration file (<constant>/boot/grub/grub.conf</constant>).
 
 <note>
 <para>
-In kickstart installation, all the packages from all the node XML files are
-installed first, then all the "post" sections are executed.
+During a kickstart installation, all the packages from all the node XML files
+are installed first, then all the "post" sections are executed.
 That is, when you write a post section, you are guaranteed that all the
 software packages have been installed.
 </para>
@@ -334,7 +335,7 @@ For a complete definition of the node XML file syntax, see
 </para>
 
 <para>
-For our "valgrind" example, we will modify the node file that was already
+For our Valgrind example, we will modify the node XML file that was already
 created for us:
 </para>
 
@@ -345,21 +346,21 @@ created for us:
 
 <note>
 <para>
-A node naming convention in Rocks is to begin the name all the node files with
-the name of the roll they are associated with.
-For example, all node files in the SGE roll begin with "sge-".
+A node XML file naming convention in Rocks is to begin the name all the node
+XML files with the name of the roll they are associated with.
+For example, all node XML files in the SGE roll begin with "sge-".
 </para>
 
 <para>
 Another naming convention is to add the name "client", "server" or "base" to
-the name of node file based on which appliance type the node file will be
-applied to.
-For example, if the node file is intended to configure only backend
-appliances (e.g., compute nodes or tile nodes), then we'd name our node file
+the name of the node XML file based on which appliance type the node XML
+file will be applied to.
+For example, if the node XML file is intended to configure only backend
+appliances (e.g., compute nodes or tile nodes), then we'd name our node XML file
 "valgrind-client.xml".
-If the node file is intended to configure only frontend appliances, then we'd
-name our node file "valgrind-server.xml".
-And if the node file is for all appliance types, we'd name it
+If the node XML file is intended to configure only frontend appliances, then
+we'd name our node XML file "valgrind-server.xml".
+And if the node XML file is for all appliance types, we'd name it
 "valgrind-base.xml". 
 </para>
 </note>
@@ -386,6 +387,9 @@ When you edit "valgrind-base.xml", you'll see:
 
         <changelog>
         $Log: internals.sgml,v $
+        Revision 1.7  2011/02/08 21:59:41  bruno
+        edits
+
         Revision 1.6  2011/02/07 23:30:26  bruno
         first pass at build section
 
@@ -406,12 +410,12 @@ When you edit "valgrind-base.xml", you'll see:
 
 <para>
 Notice above that the "valgrind" and "roll-valgrind-usersguide" RPMs
-are specified in &lt;package&gt; tags which means those RPMs will be installed 
-by the Red Hat installer.
+are specified in <constant>&lt;package&gt;</constant> tags which means those
+RPMs will be installed by the Red Hat installer.
 </para>
 
 <para>
-Now let's add a &lt;post&gt; section to it:
+Now let's add a <constant>&lt;post&gt;</constant> section to it:
 </para>
 
 <screen>
@@ -432,6 +436,9 @@ Now let's add a &lt;post&gt; section to it:
 
         <changelog>
         $Log: internals.sgml,v $
+        Revision 1.7  2011/02/08 21:59:41  bruno
+        edits
+
         Revision 1.6  2011/02/07 23:30:26  bruno
         first pass at build section
 
@@ -462,7 +469,8 @@ This node has "valgrind" configured for it.
 </screen>
 
 <para>
-This post section will append a small note to an installing host's /etc/motd.
+This post section will append a small note to an installing host's
+<constant>/etc/motd</constant>.
 </para>
 
 <para>
@@ -486,7 +494,7 @@ a graph XML file describes the "edges" between nodes.
 </para>
 
 <para>
-Below is a picture of how the Base roll's nodes are connected together via
+Below is a picture of how the Base Roll's nodes are connected together via
 its graph XML file:
 </para>
 
@@ -533,6 +541,9 @@ Now edit the file "valgrind.xml":
 
         <changelog>
         $Log: internals.sgml,v $
+        Revision 1.7  2011/02/08 21:59:41  bruno
+        edits
+
         Revision 1.6  2011/02/07 23:30:26  bruno
         first pass at build section
 
@@ -553,7 +564,7 @@ Now edit the file "valgrind.xml":
 <para>
 We will add an "edge".
 Since we want our "valgrind-base.xml" node XML file to be installed on all
-nodes, we'll make an edge from the "base" node XML file to ours:
+nodes, we'll make an edge from the "base" node XML file to "valgrind-base":
 </para>
 
 <screen>
@@ -576,6 +587,9 @@ nodes, we'll make an edge from the "base" node XML file to ours:
 
         <changelog>
         $Log: internals.sgml,v $
+        Revision 1.7  2011/02/08 21:59:41  bruno
+        edits
+
         Revision 1.6  2011/02/07 23:30:26  bruno
         first pass at build section
 
@@ -605,7 +619,7 @@ Note that we don't add the ".xml" file extension in edge descriptions.
 
 <para>
 Our node XML file has now been spliced into the Rocks kickstart graph.
-Note: the node XML file "base" is from the Base roll.
+Note: the node XML file "base" is from the Base Roll.
 </para>
 
 <para>
@@ -632,17 +646,19 @@ the Rocks kickstart graph:
 There are instances when we need to ensure that a post section in one
 node XML file executes before (or after) a post section in another node XML
 file.
-We can accomplish this by specifying an &lt;order&gt; tag in a graph XML
+We can accomplish this by specifying an
+<constant>&lt;order&gt;</constant> tag in a graph XML
 file.
-To show how this is done, we'll create 2 new node XML files and then we'll
+To show how this is done, we'll create two new node XML files and then we'll
 edit the graph XML file.
 </para>
 
 <para>
-We will create 2 new node XML files where one file should be
+We will create two new node XML files where one file should be
 applied to a frontend (named "valgrind-server.xml") and the other should be
 applied to the backend appliances (named "valgrind-client.xml).
-We'll add &lt;package&gt; and &lt;post&gt; tags to both.
+We'll add <constant>&lt;package&gt;</constant> and
+<constant>&lt;post&gt;</constant> tags to both.
 </para>
 
 <para>
@@ -668,6 +684,9 @@ Here's the contents of "valgrind-client.xml":
 
 	<changelog>
 	$Log: internals.sgml,v $
+	Revision 1.7  2011/02/08 21:59:41  bruno
+	edits
+	
 	Revision 1.6  2011/02/07 23:30:26  bruno
 	first pass at build section
 	
@@ -713,6 +732,9 @@ And here is the contents of "valgrind-server.xml":
 
 	<changelog>
 	$Log: internals.sgml,v $
+	Revision 1.7  2011/02/08 21:59:41  bruno
+	edits
+	
 	Revision 1.6  2011/02/07 23:30:26  bruno
 	first pass at build section
 	
@@ -762,6 +784,9 @@ graph XML file "valgrind.xml" to look like:
 
         <changelog>
         $Log: internals.sgml,v $
+        Revision 1.7  2011/02/08 21:59:41  bruno
+        edits
+
         Revision 1.6  2011/02/07 23:30:26  bruno
         first pass at build section
 
@@ -793,8 +818,8 @@ graph XML file "valgrind.xml" to look like:
 
 <para>
 With the above graph XML file, we can see (at a high level) how the Valgrind
-roll is spliced in with the Base roll.
-The Base Roll node XML files are yellow and the Valgrind Roll
+Roll is spliced in with the Base Roll.
+the Base Roll node XML files are yellow and the Valgrind Roll
 node XML files are red.
 </para>
 
@@ -808,7 +833,7 @@ node XML files are red.
 </para>
 
 <para>
-If we zoom in, we can see how tow of the valgrind node XML files have been
+If we zoom in, we can see how two of the Valgrind node XML files have been
 spliced in:
 </para>
 
@@ -826,7 +851,8 @@ Now suppose we want the post section of "valgrind-server.xml" to execute
 <emphasis>before</emphasis> the post section of "valgrind-base.xml" and we
 want the post section of "valgrind-client.xml" to execute
 <emphasis>after</emphasis> "valgrind-base.xml".
-We can enforce this ordering by adding two &lt;order&gt; tags:
+We can enforce this ordering by adding two
+<constant>&lt;order&gt;</constant> tags:
 </para>
 
 <screen>
@@ -849,6 +875,9 @@ We can enforce this ordering by adding two &lt;order&gt; tags:
 
 	<changelog>
 	$Log: internals.sgml,v $
+	Revision 1.7  2011/02/08 21:59:41  bruno
+	edits
+	
 	Revision 1.6  2011/02/07 23:30:26  bruno
 	first pass at build section
 	
@@ -907,7 +936,7 @@ In Rocks, "attributes" are a way to have variables inside node and graph
 XML files.
 Attributes are evaluated during kickstart file creation (one of the first
 actions done when a host is installed).
-The following is an example of how the 'hostname' attribute is used in a
+The following is an example of how the "hostname" attribute is used in a
 post section of a node XML file:
 </para>
 
@@ -927,7 +956,7 @@ post section of a node XML file:
 <para>
 In node XML files, if you want to use an attribute in a post section, you
 need to encode it as an XML entity (thus the '&' and ';' characters that
-bracket the 'hostname' attribute.
+bracket the "hostname" attribute).
 </para>
 
 <para>
@@ -1029,7 +1058,7 @@ compute-0-0: vm_mac_base_addr_mask                 ff:ff:ff:c0:00:00            
 </screen>
 
 <para>
-In the output above, the letters in the 'SOURCE' column indicate the level
+In the output above, the letters in the "SOURCE" column indicate the level
 at which this host got the attribute.
 'G' means the attribute is global, 'O' is an OS attribute, 'A' is an appliance
 attribute, 'H' is a host attribute and 'I' in an intrinsic attribute (these
@@ -1047,7 +1076,7 @@ section.
 <para>
 Attributes can also be used as a "edge conditional" in graph XML files or
 as a "post section conditional" in node XML files.
-An edge conditional is used to conditionally traverse an edge in graph XML
+An edge conditional is used to conditionally traverse an edge in a graph XML
 file.
 The following is an excerpt from the Base Roll graph XML file:
 </para>
@@ -1061,15 +1090,15 @@ The following is an excerpt from the Base Roll graph XML file:
 <para>
 If the "x11" attribute is set to "true", then when a kickstart file is built
 for a "client" host (e.g., a compute node or tile node), then the kickstart
-file generation code will traverse the edge from client to x11, that is, 
-the x11 node XML file will be included in the kickstart file.
-Otherwise, if the x11 attribute is set to false, then the x11 node XML file
+file generation code will traverse the edge from "client" to "x11", that is, 
+the "x11" node XML file will be included in the kickstart file.
+Otherwise, if the "x11" attribute is set to false, then the "x11" node XML file
 will not be included in the kickstart file.
 </para>
 
 <para>
 Post section conditions are used to conditionally execute post sections.
-The following is an excerpt from a SGE node XML file:
+The following is an excerpt from a node XML file from the SGE Roll:
 </para>
 
 <screen>
@@ -1085,8 +1114,8 @@ SET_HOST_TYPE=" -x "
 </screen>
 
 <para>
-If the attribute "exec_host" is true, then the post section will be executed,
-otherwise, this post section will be skipped.
+If the attribute "exec_host" is true (and if this is a "linux" host), then the
+post section will be executed, otherwise, this post section will be skipped.
 </para>
 
 </section>
