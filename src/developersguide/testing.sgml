@@ -1,11 +1,218 @@
-<chapter id="testing" xreflabel="testing">
+<chapter id="testing" xreflabel="Testing Your Roll">
 	<title> Testing Your Roll </title>
 
+<section id="testing-post" xreflabel="Post Installation Script Debugging">
+        <title> Post Installation Script Debugging</title>
 
 <para>
-How to test your roll
+This section will discuss some common mistakes made in post installation
+scripts and provide some techniques on how to help you debug them.
 </para>
 
+<para>
+Below is an example node XML file that has a XML syntax error:
+</para>
 
+<screen>
+<![CDATA[
+<?xml version="1.0" standalone="no"?>
+
+<kickstart>
+
+<post>
+ech "yo" 2&>1 > /tmp/fun
+</post>
+
+</kickstart>
+]]>
+</screen>
+
+<para>
+When the above node XML file is included in a roll and when a compute node asks
+for its kickstart file, no file will be returned and the compute node will not
+install.
+The compute node will display a screen asking for the user input a
+"language" (compute node installations are 100% automated, so a compute node
+should never ask for user input).
+</para>
+
+<para>
+The command <constant>rocks list host profile &lt;hostname&gt;</constant>
+executes the same functions as the code which automatically generates
+kickstart files.
+So, if we execute
+<constant>rocks list host profile compute-0-0</constant>, we'll see what
+error occurs:
+</para>
+
+<screen>
+<![CDATA[
+# rocks list host profile compute-0-0 > /tmp/ks.cfg
+Traceback (most recent call last):
+  File "/opt/rocks/bin/rocks", line 267, in ?
+    command.runWrapper(name, args[i:])
+  File "/opt/rocks/lib/python2.4/site-packages/rocks/commands/__init__.py", line 1981, in runWrapper
+    self.run(self._params, self._args)
+  File "/opt/rocks/lib/python2.4/site-packages/rocks/commands/list/host/profile/__init__.py", line 295, in run
+    [
+  File "/opt/rocks/lib/python2.4/site-packages/rocks/commands/__init__.py", line 1667, in command
+    o.runWrapper(name, args)
+  File "/opt/rocks/lib/python2.4/site-packages/rocks/commands/__init__.py", line 1981, in runWrapper
+    self.run(self._params, self._args)
+  File "/opt/rocks/lib/python2.4/site-packages/rocks/commands/list/host/xml/__init__.py", line 199, in run
+    xml = self.command('list.node.xml', args)
+  File "/opt/rocks/lib/python2.4/site-packages/rocks/commands/__init__.py", line 1667, in command
+    o.runWrapper(name, args)
+  File "/opt/rocks/lib/python2.4/site-packages/rocks/commands/__init__.py", line 1981, in runWrapper
+    self.run(self._params, self._args)
+  File "/opt/rocks/lib/python2.4/site-packages/rocks/commands/list/node/xml/__init__.py", line 514, in run
+    handler.parseNode(node, doEval)
+  File "/opt/rocks/lib/python2.4/site-packages/rocks/profile.py", line 409, in parseNode
+    parser.feed(line)
+  File "/opt/rocks/lib/python2.4/site-packages/_xmlplus/sax/expatreader.py", line 220, in feed
+    self._err_handler.fatalError(exc)
+  File "/opt/rocks/lib/python2.4/site-packages/_xmlplus/sax/handler.py", line 38, in fatalError
+    raise exception
+xml.sax._exceptions.SAXParseException: <unknown>:91:11: not well-formed (invalid token)
+]]>
+</screen>
+
+<para>
+The last line of the output above let's us know there is a problem, but it
+is not clear in which file and which line number.
+One way to debug the problem is to add <constant>ROCKSDEBUG=y</constant>
+to the <constant>rocks list host profile</constant> command:
+</para>
+
+<screen>
+<![CDATA[
+ROCKSDEBUG=y rocks list host profile compute-0-0 > /tmp/ks.cfg
+  .
+  .
+  .
+</kickstart>[parse1]
+[parse1]<kickstart roll="valgrind">
+[parse1]
+[parse1]<post>
+[parse1]ech "yo" 2&>1 > /tmp/fun
+Traceback (most recent call last):
+  File "/opt/rocks/bin/rocks", line 267, in ?
+    command.runWrapper(name, args[i:])
+  File "/opt/rocks/lib/python2.4/site-packages/rocks/commands/__init__.py", line 1981, in runWrapper
+    self.run(self._params, self._args)
+]]>
+</screen>
+
+<para>
+The command produces a lot of output, but it does stop on the line with the
+bug.
+Now we have something to <constant>grep</constant> for.
+On a stock Rocks frontend, all the node XML files for a distribution can be
+found in
+<constant>/export/rocks/install/rocks-dist/*/build/nodes</constant>.
+So to find the file with the syntax error, execute:
+</para>
+
+<screen>
+# cd /export/rocks/install/rocks-dist/x86_64/build/nodes
+# grep 'ech "yo" 2&>1 > /tmp/fun' *
+valgrind-bug.xml:ech "yo" 2&>1 > /tmp/fun
+</screen>
+
+<para>
+The bug is in <constant>valgrind-bug.xml</constant>, so we can go to the
+source code for the Valgrind Roll and fix the node XML file.
+</para>
+
+<para>
+But let's say we just fix the XML syntax error:
+</para>
+
+<screen>
+<![CDATA[
+<?xml version="1.0" standalone="no"?>
+
+<kickstart roll="valgrind">
+
+<post>
+ech "yo" > /tmp/fun
+</post>
+
+</kickstart>
+]]>
+</screen>
+
+<para>
+There is still a bug (the command <constant>ech</constant> should
+be <constant>echo</constant>).
+After a host installs, there are several log files saved on a host.
+One that we'll look at is: <constant>/var/log/rocks-install.log</constant>:
+</para>
+
+<screen>
+<![CDATA[
+./nodes/valgrind-bug.xml: begin post section
+/tmp/ks-script-MP2uTd: line 2: ech: command not found
+./nodes/valgrind-bug.xml: end post section
+]]>
+</screen>
+
+<para>
+This may be enough information to help determine the root cause of the problem,
+but we have found that sometimes we need to "stall" an installation at a
+specific point.
+We'll modify the post section in
+<constant>valgrind-bug.xml</constant> to loop indefinitely:
+</para>
+
+<screen>
+<![CDATA[
+<post>
+ech "yo" > /tmp/fun
+
+while [ -f /tmp/fun ]
+do
+	sleep 1
+done
+
+</post>
+]]>
+</screen>
+
+<para>
+When a compute node installs, you wll see a screen that says
+"Running post-install scripts" -- the installation will not progress beyond
+this point due to the loop above.
+From the frontend, we can access the installing node by executing:
+</para>
+
+<screen>
+# ssh compute-0-0 -p 2200
+</screen>
+
+<para>
+We'll see a bash prompt -- we are now in the installation environment for
+compute-0-0.
+This environment is running out of a ramdisk, so the partitions on the hard
+disk are all mounted with the prefix <constant>/mnt/sysimage</constant>.
+For example, the root partition is <constant>/mnt/sysimage</constant>,
+the var partition is <constant>/mnt/sysimage/var</constant>, etc.
+Before a post installation script is run, the installer
+executes a <constant>chroot</constant> to /mnt/sysiamge so the script has the
+illusion it is running on the hard disk environment (not the ramdisk
+environment).
+</para>
+
+<para>
+After we debugged the issue, we can instruct the installtion to continue
+by executing:
+</para>
+
+<screen>
+# rm -f /mnt/sysimage/tmp/fun 
+</screen>
+
+
+</section>
 
 </chapter>
