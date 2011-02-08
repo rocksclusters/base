@@ -215,4 +215,166 @@ by executing:
 
 </section>
 
+
+<section id="testing-log" xreflabel="Installation Log Files">
+        <title>Installation Log Files</title>
+
+<para>
+After a node installs, there are several log files you can examine to 
+help you debug installation errors:
+</para>
+
+<itemizedlist>
+
+
+<listitem>
+	<para>
+	<constant>/root/install.log</constant>
+	</para>
+
+	<para>
+	A list of all the RPMs that were installed.
+	This is the order in which the RPMs were installed and the
+	architecture of each package that was installed.
+	</para>
+
+	<para>
+	Example output:
+	</para>
+
+<screen>
+<![CDATA[
+Installing words-3.0-9.1.noarch
+Installing libgcc-4.1.2-48.el5.i386
+Installing libgcc-4.1.2-48.el5.x86_64
+Installing glibc-2.5-49.el5_5.7.x86_64
+Installing glibc-2.5-49.el5_5.7.i686
+Installing chkconfig-1.3.30.2-2.el5.x86_64
+Installing zlib-1.2.3-3.x86_64
+]]>
+</screen>
+</listitem>
+
+
+<listitem>
+	<para>
+	<constant>/root/anaconda.log</constant>
+	</para>
+
+	<para>
+	The output of the ananconda installer.
+	It shows the steps the anaconda installer executed as well as the
+	output of the sub-commands anaconda executed.
+	</para>
+
+	<para>
+	Example output:
+	</para>
+
+<screen>
+<![CDATA[
+18:58:53 INFO    : moving (1) to step partitionobjinit
+18:58:53 INFO    : ISCSID is /usr/sbin/iscsid
+18:58:53 INFO    : no initiator set18:58:53 INFO    : no /tmp/fcpconfig; not configuring zfcp
+18:58:53 DEBUG   : starting mpaths18:58:53 DEBUG   : self.driveList(): ['sda', 'sdb']
+18:58:53 DEBUG   : DiskSet.skippedDisks: []
+18:58:53 DEBUG   : DiskSet.skippedDisks: []
+18:58:53 DEBUG   : done starting mpaths.  Drivelist: ['sda', 'sdb']
+]]>
+</screen>
+</listitem>
+
+<listitem>
+	<para>
+	<constant>/var/log/rocks-install.log</constant>
+	</para>
+
+	<para>
+	Error messages from all the post sections will be found in this
+	log file.
+	In general, all you will see are 'begin post section' and
+	'end post section' messages.
+	</para>
+
+	<para>
+	Example output:
+	</para>
+
+<screen>
+<![CDATA[
+./nodes/411-client.xml: begin post section
+./nodes/411-client.xml: end post section
+./nodes/411-client.xml: begin post section
+./nodes/411-client.xml: end post section
+./nodes/411-client.xml: begin post section
+./nodes/411-client.xml: end post section
+]]>
+</screen>
+
+</listitem>
+
+
+<listitem>
+	<para>
+	<constant>/root/syslog</constant>
+	</para>
+
+	<para>
+	This is the syslog from host during its installation phase.
+	</para>
+
+	<para>
+	Example output:
+	</para>
+
+<screen>
+<![CDATA[
+<6>Checking 'hlt' instruction... OK.
+<6>SMP alternatives: switching to UP code
+<6>ACPI: Core revision 20060707
+<4>CPU0: Intel(R) Xeon(R) CPU           E5320  @ 1.86GHz stepping 07
+<6>SMP alternatives: switching to SMP code
+<4>Booting processor 1/1 eip 11000
+<4>CPU 1 irqstacks, hard=c0769000 soft=c0749000
+<6>Initializing CPU#1
+]]>
+</screen>
+</listitem>
+
+<listitem>
+	<para>
+	<constant>/root/httpd.log</constant>
+	</para>
+
+	<para>
+	A copy of the log messages from lighttpd.
+	Lighttpd is used on an installing node to execute key parts of
+	the Avalanche Installer.
+	You will see messages (in apache log format) that log the http
+	requests to lighttpd.
+	</para>
+
+	<para>
+	Example output:
+	</para>
+
+<screen>
+<![CDATA[
+127.0.0.1 127.0.0.1 - [28/May/2010:10:45:11 -0700]
+"GET /install/rocks-dist/x86_64/RedHat/RPMS/dmraid-events-1.0.0.rc13-53.el5.x86_64.rpm HTTP/1.1"
+200 18083 "-" "urlgrabber/3.1.0 yum/3.2.22"
+
+127.0.0.1 127.0.0.1 - [28/May/2010:10:45:13 -0700]
+"GET /install/rocks-dist/x86_64/RedHat/RPMS/compat-libf2c-34-3.4.6-4.i386.rpm HTTP/1.1"
+200 2674 "-" "urlgrabber/3.1.0 yum/3.2.22"
+]]>
+</screen>
+</listitem>
+
+
+</itemizedlist>
+
+</section>
+
+
 </chapter>
