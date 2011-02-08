@@ -1,10 +1,13 @@
 <!--
-$Id: attr.sgml,v 1.1 2011/02/02 18:52:48 mjk Exp $
+$Id: attr.sgml,v 1.2 2011/02/08 17:56:58 mjk Exp $
 
 @Copyright@
 @Copyright@
 
 $Log: attr.sgml,v $
+Revision 1.2  2011/02/08 17:56:58  mjk
+more attrs
+
 Revision 1.1  2011/02/02 18:52:48  mjk
 Added Attr section
 Cleanup
@@ -16,40 +19,8 @@ Cleanup
 HttpConf                              /etc/httpd/conf                          O     
 HttpConfigDirExt                      /etc/httpd/conf.d                        O     
 HttpRoot                              /var/www/html                            O     
-Kickstart_DistroDir                   /export/rocks                            G     
-Kickstart_Keyboard                    us                                       G     
-Kickstart_Lang                        en_US                                    G     
-Kickstart_Langsupport                 en_US                                    G     
-Kickstart_Multicast                   226.117.172.185                          G     
-Kickstart_PrivateAddress              10.1.1.1                                 G     
-Kickstart_PrivateBroadcast            10.1.255.255                             G     
-Kickstart_PrivateDNSDomain            local                                    G     
-Kickstart_PrivateDNSServers           10.1.1.1                                 G     
-Kickstart_PrivateGateway              10.1.1.1                                 G     
-Kickstart_PrivateHostname             vizagra                                  G     
-Kickstart_PrivateKickstartBasedir     install                                  G     
-Kickstart_PrivateKickstartCGI         sbin/kickstart.cgi                       G     
-Kickstart_PrivateKickstartHost        10.1.1.1                                 G     
-Kickstart_PrivateNTPHost              10.1.1.1                                 G     
-Kickstart_PrivateNetmask              255.255.0.0                              G     
-Kickstart_PrivateNetmaskCIDR          16                                       G     
-Kickstart_PrivateNetwork              10.1.0.0                                 G     
-Kickstart_PrivatePortableRootPassword $P$BWBWBywpGzP8K8OOpIuQbKg1zQ6ukh.       G     
-Kickstart_PrivateRootPassword         $1$bhy.sxjO$mGOt642DLpOCjokNXzqJe1       G     
-Kickstart_PrivateSHARootPassword      9234f05594d83b4df12612879763cf7b2609a10e G     
-Kickstart_PrivateSyslogHost           10.1.1.1                                 G     
-Kickstart_PublicAddress               137.110.119.111                          G     
-Kickstart_PublicBroadcast             137.110.119.255                          G     
-Kickstart_PublicDNSDomain             rocksclusters.org                        G     
-Kickstart_PublicDNSServers            8.8.8.8                                  G     
-Kickstart_PublicGateway               137.110.119.1                            G     
-Kickstart_PublicHostname              vizagra.rocksclusters.org                G     
-Kickstart_PublicKickstartHost         central.rocksclusters.org                G     
-Kickstart_PublicNTPHost               pool.ntp.org                             G     
-Kickstart_PublicNetmask               255.255.255.0                            G     
-Kickstart_PublicNetmaskCIDR           24                                       G     
-Kickstart_PublicNetwork               137.110.119.0                            G     
-Kickstart_Timezone                    America/Los_Angeles                      G     
+
+
 RootDir                               /root                                    O     
 Server_Partitioning                   force-default-root-disk-only             G     
 dhcp_filename                         pxelinux.0                               A     
@@ -65,9 +36,9 @@ ssh_use_dns                           true                                     G
 <table>
 	<title>Roll Attributes</title>
 	<tgroup cols=3>
-		<colspec colname="name">
-		<colspec colname="type">
-		<colspec colname="value">
+		<colspec colname="name" colwidth="5*">
+		<colspec colname="type" colwidth="1*" align="center">
+		<colspec colname="value" colwidth="3*">
 		<thead>
 			<row>
 				<entry>Name</entry>
@@ -145,6 +116,280 @@ and affects all hosts.
 				</entry>
 				<entry>string</entry>
 				<entry> </entry>
+			</row>
+
+			<row>
+				<entry>
+				  <varname>Kickstart_DistroDir</varname>
+				  <footnoteref linkend="fn-global-attr">
+				</entry>
+				<entry>string</entry>
+				<entry>/export/rocks</entry>
+			</row>
+			<row>
+				<entry>
+				  <varname>Kickstart_Keyboard</varname>
+				  <footnoteref linkend="fn-global-attr">
+				</entry>
+				<entry>string</entry>
+				<entry>us</entry>
+			</row>
+			<row>
+				<entry>
+				  <varname>Kickstart_Lang</varname>
+				  <footnoteref linkend="fn-global-attr">
+				</entry>
+				<entry>string</entry>
+				<entry>en_US</entry>
+			</row>
+			<row>
+				<entry>
+				  <varname>Kickstart_Langsupport</varname>
+				  <footnoteref linkend="fn-global-attr">
+				</entry>
+				<entry>string</entry>
+				<entry>en_US</entry>
+			</row>
+			<row>
+				<entry>
+				  <varname>Kickstart_Mutlicast</varname>
+				  <footnoteref linkend="fn-global-attr">
+				</entry>
+				<entry>string</entry>
+				<entry>226.117.172.185</entry>
+			</row>
+
+			<row>
+				<entry>
+				  <varname>Kickstart_PrivateAddress</varname>
+				  <footnoteref linkend="fn-global-attr">
+				</entry>
+				<entry>string</entry>
+				<entry>10.1.1.1</entry>
+			</row>
+			<row>
+				<entry>
+				  <varname>Kickstart_PrivateBroadcast</varname>
+				  <footnoteref linkend="fn-global-attr">
+				</entry>
+				<entry>string</entry>
+				<entry>10.1.255.255</entry>
+			</row>
+			<row>
+				<entry>
+				  <varname>Kickstart_PrivateDNSDomain</varname>
+				  <footnoteref linkend="fn-global-attr">
+				</entry>
+				<entry>string</entry>
+				<entry>local</entry>
+			</row>
+			<row>
+				<entry>
+				  <varname>Kickstart_PrivateDNSServers</varname>
+				  <footnoteref linkend="fn-global-attr">
+				</entry>
+				<entry>string</entry>
+				<entry>10.1.1.1</entry>
+			</row>
+			<row>
+				<entry>
+				  <varname>Kickstart_PrivateGateway</varname>
+				  <footnoteref linkend="fn-global-attr">
+				</entry>
+				<entry>string</entry>
+				<entry>10.1.1.1</entry>
+			</row>
+			<row>
+				<entry>
+				  <varname>Kickstart_PrivateHostname</varname>
+				  <footnoteref linkend="fn-global-attr">
+				</entry>
+				<entry>string</entry>
+				<entry></entry>
+			</row>
+			<row>
+				<entry>
+				  <varname>Kickstart_PrivateKickstartBaseDir</varname>
+				  <footnoteref linkend="fn-global-attr">
+				</entry>
+				<entry>string</entry>
+				<entry>install</entry>
+			</row>
+			<row>
+				<entry>
+				  <varname>Kickstart_PrivateKickstartCGI</varname>
+				  <footnoteref linkend="fn-global-attr">
+				</entry>
+				<entry>string</entry>
+				<entry>sbin/kickstart.cgi</entry>
+			</row>
+			<row>
+				<entry>
+				  <varname>Kickstart_PrivateKickstartHost</varname>
+				  <footnoteref linkend="fn-global-attr">
+				</entry>
+				<entry>string</entry>
+				<entry>10.1.1.1</entry>
+			</row>
+			<row>
+				<entry>
+				  <varname>Kickstart_PrivateNTPHost</varname>
+				  <footnoteref linkend="fn-global-attr">
+				</entry>
+				<entry>string</entry>
+				<entry>10.1.1.1</entry>
+			</row>
+			<row>
+				<entry>
+				  <varname>Kickstart_PrivateNetmask</varname>
+				  <footnoteref linkend="fn-global-attr">
+				</entry>
+				<entry>string</entry>
+				<entry>255.255.0.0</entry>
+			</row>
+			<row>
+				<entry>
+				  <varname>Kickstart_PrivateNetmaskCIDR</varname>
+				  <footnoteref linkend="fn-global-attr">
+				</entry>
+				<entry>string</entry>
+				<entry>16</entry>
+			</row>
+			<row>
+				<entry>
+				  <varname>Kickstart_PrivateNetwork</varname>
+				  <footnoteref linkend="fn-global-attr">
+				</entry>
+				<entry>string</entry>
+				<entry>10.1.0.0</entry>
+			</row>
+			<row>
+				<entry>
+				  <varname>Kickstart_PrivatePortableRootPassword</varname>
+				  <footnoteref linkend="fn-global-attr">
+				</entry>
+				<entry>string</entry>
+				<entry></entry>
+			</row>
+			<row>
+				<entry>
+				  <varname>Kickstart_PrivateRootPassword</varname>
+				  <footnoteref linkend="fn-global-attr">
+				</entry>
+				<entry>string</entry>
+				<entry></entry>
+			</row>
+			<row>
+				<entry>
+				  <varname>Kickstart_PrivateSHARootPassword</varname>
+				  <footnoteref linkend="fn-global-attr">
+				</entry>
+				<entry>string</entry>
+				<entry></entry>
+			</row>
+			<row>
+				<entry>
+				  <varname>Kickstart_PrivateSyslogHost</varname>
+				  <footnoteref linkend="fn-global-attr">
+				</entry>
+				<entry>string</entry>
+				<entry>10.1.1.1</entry>
+			</row>
+			<row>
+				<entry>
+				  <varname>Kickstart_PublicAddress</varname>
+				  <footnoteref linkend="fn-global-attr">
+				</entry>
+				<entry>string</entry>
+				<entry></entry>
+			</row>
+			<row>
+				<entry>
+				  <varname>Kickstart_PublicBroadcast</varname>
+				  <footnoteref linkend="fn-global-attr">
+				</entry>
+				<entry>string</entry>
+				<entry></entry>
+			</row>
+			<row>
+				<entry>
+				  <varname>Kickstart_PublicDNSDomain</varname>
+				  <footnoteref linkend="fn-global-attr">
+				</entry>
+				<entry>string</entry>
+				<entry></entry>
+			</row>
+			<row>
+				<entry>
+				  <varname>Kickstart_PublicDNSServers</varname>
+				  <footnoteref linkend="fn-global-attr">
+				</entry>
+				<entry>string</entry>
+				<entry></entry>
+			</row>
+			<row>
+				<entry>
+				  <varname>Kickstart_PublicGateway</varname>
+				  <footnoteref linkend="fn-global-attr">
+				</entry>
+				<entry>string</entry>
+				<entry></entry>
+			</row>
+			<row>
+				<entry>
+				  <varname>Kickstart_PublicHostname</varname>
+				  <footnoteref linkend="fn-global-attr">
+				</entry>
+				<entry>string</entry>
+				<entry></entry>
+			</row>
+			<row>
+				<entry>
+				  <varname>Kickstart_PublicKickstartHost</varname>
+				  <footnoteref linkend="fn-global-attr">
+				</entry>
+				<entry>string</entry>
+				<entry></entry>
+			</row>
+			<row>
+				<entry>
+				  <varname>Kickstart_PublicNTPHost</varname>
+				  <footnoteref linkend="fn-global-attr">
+				</entry>
+				<entry>string</entry>
+				<entry></entry>
+			</row>
+			<row>
+				<entry>
+				  <varname>Kickstart_PublicNetmask</varname>
+				  <footnoteref linkend="fn-global-attr">
+				</entry>
+				<entry>string</entry>
+				<entry></entry>
+			</row>
+			<row>
+				<entry>
+				  <varname>Kickstart_PublicNetmaskCIDR</varname>
+				  <footnoteref linkend="fn-global-attr">
+				</entry>
+				<entry>string</entry>
+				<entry></entry>
+			</row>
+			<row>
+				<entry>
+				  <varname>Kickstart_PublicNetwork</varname>
+				  <footnoteref linkend="fn-global-attr">
+				</entry>
+				<entry>string</entry>
+				<entry></entry>
+			</row>
+			<row>
+				<entry>
+				  <varname>Kickstart_Timezone</varname>
+				  <footnoteref linkend="fn-global-attr">
+				</entry>
+				<entry>string</entry>
+				<entry></entry>
 			</row>
 			<row>
 				<entry>
