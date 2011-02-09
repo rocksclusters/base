@@ -17,6 +17,7 @@
 
 
 <package>roll-base-usersguide</package>
+<package>rocks-developersguide</package>
 <package>rocks-config-server</package>
 <package>rocks-admin</package>
 <package>firefox</package>
