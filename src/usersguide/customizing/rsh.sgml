@@ -6,7 +6,7 @@
 <para>
 The default Rocks configuration does not enable rsh commands or login
 to compute nodes.  Instead, Rocks uses ssh as a drop in replacement
-for rsh.  There may be some circustances where ssh does not have
+for rsh.  There may be some circumstances where ssh does not have
 exactly the same semantics of rsh.  Further, there may be some users
 that cannot modify their application to switch from rsh to ssh.  If
 you are one of these users you may wish to enable rsh on your cluster.
