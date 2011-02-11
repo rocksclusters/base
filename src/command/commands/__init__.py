@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.89 2010/10/20 21:30:46 mjk Exp $
+# $Id: __init__.py,v 1.90 2011/02/11 16:48:37 mjk Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,16 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.90  2011/02/11 16:48:37  mjk
+# getHostname changes
+# - Bug Fix: Can now use IP addresses as hostnames again.  The code to handle
+# bad DNS servers broke this (been broken for a few releases).
+# - Enhancement: Handles the case of hostnames that are not in local DNS, or
+# real DNS, but are in the /etc/hosts file.
+#
+# Revision 1.2  2010/12/08 00:13:14  bruno
+# get the right commands
+#
 # Revision 1.89  2010/10/20 21:30:46  mjk
 # - fix typos
 # - added rocks-channel and librocks packages
@@ -435,10 +445,12 @@ from xml.sax._exceptions import SAXParseException
 
 def Abort(message, doExit=1):
 	"""Print a standard error message and abort the program"""
+	
 	syslog.syslog(syslog.LOG_ERR, message)
 	print 'error - %s' % message
 	if doExit:
 		sys.exit(-1)
+
 
 
 class OSArgumentProcessor:
@@ -1382,7 +1394,7 @@ class DatabaseConnection:
 		# to reverse lookup the IP address and map that to the
 		# name in the nodes table.  This should speed up the
 		# installer w/ the restore roll
-		
+
 		if hostname and self.link:
 			rows = self.link.execute("""select * from nodes where
 				name='%s'""" % hostname)
@@ -1398,21 +1410,27 @@ class DatabaseConnection:
 			# address is in DNS.  This is done to catch
 			# evil DNS servers (timewarner) that have a
 			# catchall address.  We've had several users
-			# complain about this one.  Had to be at home 
+			# complain about this one.  Had to be at home
 			# to see it.
 			#
-			# For truly evil DNS (OpenDNS) that have catchall
-			# servers that are in DNS we make sure the hostname
-			# matches the primary or alias of the forward lookup
-			# Throw an Except, if the forward failed an exception
-			# was already thrown.
+			# If the resolved address is the same as the
+			# hostname then this function was called with
+			# an ip address, so we don't need the reverse
+			# lookup.
 			#
-			# Bad DNS, Bad Bad Bad
+			# For truly evil DNS (OpenDNS) that have
+			# catchall servers that are in DNS we make
+			# sure the hostname matches the primary or
+			# alias of the forward lookup Throw an Except,
+			# if the forward failed an exception was
+			# already thrown.
+
 
 			addr = socket.gethostbyname(hostname)
-			(name, aliases, addrs) = socket.gethostbyaddr(addr)
-			if hostname != name and hostname not in aliases:
-				raise NameError
+			if not addr == hostname:
+				(name, aliases, addrs) = socket.gethostbyaddr(addr)
+				if hostname != name and hostname not in aliases:
+					raise NameError
 
 		except:
 			if hostname == 'localhost':
@@ -1461,8 +1479,48 @@ class DatabaseConnection:
 					hostname, = self.link.fetchone()
 					return hostname
 				except:
-					Abort('cannot resolve host "%s"' %
-						hostname)
+					pass
+
+				# Check if the hostname is a basename
+				# and the FQDN is in /etc/hosts but
+				# not actually registered with DNS.
+				# To do this we need lookup the DNS
+				# search domains and then do a lookup
+				# in each domain.  The DNS lookup will
+				# fail (already has) but we might
+				# find an entry in the /etc/hosts
+				# file.
+				#
+				# All this to handle the case when the
+				# user lies and gives a FQDN that does
+				# not really exist.  Still a common
+				# case.
+				
+				try:
+					fin = open('/etc/resolv.conf', 'r')
+				except:
+					fin = None
+				if fin:
+					domains = []
+					for line in fin.readlines():
+						tokens = line[:-1].split()
+						if tokens[0] == 'search':
+							domains = tokens[1:]
+					for domain in domains:
+						try:
+							name = '%s.%s' % (hostname, domain)
+							addr = socket.gethostbyname(name)
+							hostname = name
+							break
+						except:
+							pass
+					if addr:
+						return self.getHostname(hostname)
+
+					fin.close()
+				
+				Abort('cannot resolve host "%s"' % hostname)
+					
 		
 		if addr == '127.0.0.1': # allow localhost to be valid
 			return self.getHostname()
@@ -2053,5 +2111,3 @@ class PluginOrderIterator(rocks.graph.GraphIterator):
 		self.time = self.time + 1
 		self.nodes.append((self.time, node))
 		
-
-
