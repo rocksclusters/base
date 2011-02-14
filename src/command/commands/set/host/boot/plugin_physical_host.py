@@ -1,4 +1,4 @@
-# $Id: plugin_physical_host.py,v 1.10 2011/01/28 22:43:22 bruno Exp $
+# $Id: plugin_physical_host.py,v 1.11 2011/02/14 04:20:39 phil Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: plugin_physical_host.py,v $
+# Revision 1.11  2011/02/14 04:20:39  phil
+# Treat HVM virtual machines as physical.
+#
 # Revision 1.10  2011/01/28 22:43:22  bruno
 # changed the calls to 'self.abort' to 'print' + 'sys.exit'. we can't
 # call abort from a plugin
@@ -348,9 +351,12 @@ class Plugin(rocks.commands.Plugin):
 				'vm_nodes' """)
 
 			if nrows == 1:
+				# HVM Virtual Machines act like Physical Hosts. Treat them
+				# that way
 				nrows = self.db.execute("""select vn.id from
 					vm_nodes vn, nodes n
 					where vn.node = n.id and
+					vn.virt_type != 'hvm' and
 					n.name = "%s" """ % (host))
 				if nrows == 1:
 					physnode = 0
