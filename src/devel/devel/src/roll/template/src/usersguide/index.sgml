@@ -20,12 +20,12 @@
 		</inlinemediaobject>
 	</subtitle>
 
-	<edition>Version &document_version;</edition>
+	<edition>&document-version;</edition>
 
-	<pubdate>&document_pubdate;</pubdate>
+	<pubdate>&document-pubdate;</pubdate>
 
 	<copyright id="copyright" xreflabel="copyright">
-		<year>&document_year;</year>
+		<year>&document-year;</year>
 		<holder>The copyright holder, and UC Regents</holder>
 	</copyright>
 
