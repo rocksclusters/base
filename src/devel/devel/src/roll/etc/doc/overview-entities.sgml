@@ -20,7 +20,7 @@ file:
 <!ENTITY roll-area51-depend "">
 
 <!ENTITY roll-base "<command>Base</command>">
-<!ENTITY roll-base "">
+<!ENTITY roll-base-depend "">
 
 <!ENTITY roll-bio "<command>Bio</command>">
 <!ENTITY roll-bio-depend "">

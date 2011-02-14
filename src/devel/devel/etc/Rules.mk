@@ -1,5 +1,5 @@
 # --------------------------------------------------- -*- Makefile -*- --
-# $Id: Rules.mk,v 1.3 2011/01/28 02:17:28 mjk Exp $
+# $Id: Rules.mk,v 1.4 2011/02/14 22:14:16 mjk Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,13 @@
 # @Copyright@
 #
 # $Log: Rules.mk,v $
+# Revision 1.4  2011/02/14 22:14:16  mjk
+# - Build Env
+#   - ROLLNAME defaults to ROLL
+#   - Fixes for docbook
+# - All userguides build again
+# - All userguides are now NOARCH rpms
+#
 # Revision 1.3  2011/01/28 02:17:28  mjk
 # Docbook cleanup (using Viz Roll as proto-type)
 # - consistent entity naming (no more mixing of '-' and '_')
@@ -613,9 +620,9 @@ ifeq ($(ROLL),)
 ROLL		= $(PATH.GRANDPARENT)
 endif
 
-#ifneq ($(ROLLNAME),)
-#NAME		= $(PATH.PARENT)-$(ROLLNAME)
-#endif
+ifeq ($(ROLLNAME),)
+ROLLNAME	= $(ROLL)
+endif
 
 .PHONY: dump-name
 dump-name:
@@ -841,7 +848,7 @@ ifneq ($(ROLL_REQUIRES_FULL_OS),)
 else
 	@echo '<!ENTITY source-roll-overview-complete-os "">' >> $@
 endif
-	@echo '<!ENTITY document-rollname "&roll-$(ROLL);">' >> $@
+	@echo '<!ENTITY document-rollname "$(ROLLNAME)">' >> $@
 	@echo '<!ENTITY document-version "$(VERSION)">' >> $@
 	@echo '<!ENTITY document-version_name "$(RELEASE_NAME)">' >> $@
 	@echo '<!ENTITY document-pubdate "$(PUBDATE)">' >> $@

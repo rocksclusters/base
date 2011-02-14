@@ -1,10 +1,17 @@
 <!-- 
-$Id: index.sgml,v 1.8 2011/02/02 18:52:48 mjk Exp $
+$Id: index.sgml,v 1.9 2011/02/14 22:14:16 mjk Exp $
 
 @Copyright@
 @Copyright@
 
 $Log: index.sgml,v $
+Revision 1.9  2011/02/14 22:14:16  mjk
+- Build Env
+  - ROLLNAME defaults to ROLL
+  - Fixes for docbook
+- All userguides build again
+- All userguides are now NOARCH rpms
+
 Revision 1.8  2011/02/02 18:52:48  mjk
 Added Attr section
 Cleanup
@@ -79,7 +86,7 @@ builds with command reference
 		</inlinemediaobject>
 	</subtitle>
 
-	<edition> &document-version;</edition>
+	<edition>&document-version;</edition>
 	<pubdate>&document-pubdate;</pubdate>
 	<copyright id="copyright" xreflabel="copyright">
 		<year>&document-year;</year>
