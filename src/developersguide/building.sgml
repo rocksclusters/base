@@ -72,4 +72,71 @@ The file <constant>/export/profile/roll-valgrind.xml</constant> contains
 info that describes how the roll was built.
 </para>
 
+<para>
+After the Roll is built, you can add a file to the Valgrind Roll that will
+help you determine if all the expected packages were built.
+We do this with the "manifest-check.py" program.
+</para>
+
+<para>
+The "manifest-check.py" program looks at file called "manifest" in the
+base directory of the Roll and then looks at the RPMs under the directory
+"disk1".
+The "manifest-check.py" program expects that only the RPMs listed in
+"manifest" will be present.
+If there is an entry in "manifest" and if the RPM doesn't exist
+under "disk1", you will see an error message like:
+</para>
+
+<screen>
+ERROR - the following packages were not built:
+        roll-condor-usersguide
+</screen>
+
+<para>
+And if there is package that was built, but there is no entry in
+"manifest" for it, you'll see an error message like:
+</para>
+
+<screen>
+ERROR - the following packages were built but not in manifest:
+        foundation-perl-Statistics-Descriptive
+        foundation-perl-Spreadsheet-ParseExcel
+</screen>
+
+<para>
+For the Valgrind Roll, create a file named "manifest":
+</para>
+
+<screen>
+# cd /export/src/roll/valgrind
+# vi manifest
+</screen>
+
+<para>
+Then put the following package names in it:
+</para>
+
+<screen>
+roll-valgrind-kickstart
+roll-valgrind-usersguide
+valgrind
+</screen>
+
+<para>
+Now run "manifest-check.py" to verify that all the expected packages have
+been built:
+</para>
+
+<screen>
+# /opt/rocks/share/devel/src/roll/bin/manifest-check.py
+</screen>
+
+<note>
+<para>
+Everytime you add a new package to your Roll, make sure to add the package's
+base name to the "manifest" file.
+</para>
+</note>
+
 </chapter>
