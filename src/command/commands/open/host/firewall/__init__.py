@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.4 2010/09/07 23:52:57 bruno Exp $
+# $Id: __init__.py,v 1.5 2011/02/24 20:10:29 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.5  2011/02/24 20:10:29  bruno
+# Added documentation and examples to the add/close/open firewall commands.
+# Thanks to Larry Baker for the suggestion.
+#
 # Revision 1.4  2010/09/07 23:52:57  bruno
 # star power for gb
 #
@@ -86,17 +90,38 @@ class Command(rocks.commands.HostArgumentProcessor,
 	<param type='string' name='service'>
 	The service identifier, port number or port range. For example
 	"www", 8080 or 0:1024.
+	To have this firewall rule apply to all services, specify the
+	keyword 'all'.
 	</param>
 
 	<param type='string' name='protocol'>
 	The protocol associated with the service. For example, "tcp" or "udp".
+	To have this firewall rule apply to all protocols, specify the
+	keyword 'all'.
 	</param>
 	
         <param type='string' name='network'>
         The network this rule should be applied to. This is a named network
         (e.g., 'private') and must be one listed by the command
         'rocks list network'.
+	To have this firewall rule apply to all networks, specify the
+	keyword 'all'.
 	</param>
+
+	<example cmd='open host firewall compute-0-0 network=public protocol=tcp service=www'>
+	Open the www service that use the TCP protocol for the public network
+	on compute-0-0.
+	If 'eth1' is associated with the public network on compute-0-0, this
+	will be translated as the following iptables rule:
+	"-A INPUT -i eth1 -p tcp --dport www -j ACCEPT"
+	</example>
+
+	<example cmd='open host firewall compute-0-0 network=all protocol=all service=https'>
+	Open the https service for all protocols on all networks 
+	on compute-0-0.
+	This will be translated as the following iptables rule for compute-0-0:
+	"-A INPUT --dport https -j ACCEPT"
+	</example>
 	"""
 
 	def run(self, params, args):

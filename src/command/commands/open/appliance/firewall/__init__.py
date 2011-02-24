@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.4 2010/12/13 23:44:48 bruno Exp $
+# $Id: __init__.py,v 1.5 2011/02/24 20:10:29 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.5  2011/02/24 20:10:29  bruno
+# Added documentation and examples to the add/close/open firewall commands.
+# Thanks to Larry Baker for the suggestion.
+#
 # Revision 1.4  2010/12/13 23:44:48  bruno
 # fix documentation bug
 #
@@ -82,17 +86,39 @@ class Command(rocks.commands.ApplianceArgumentProcessor,
 	<param type='string' name='service'>
 	The service identifier, port number or port range. For example
 	"www", 8080 or 0:1024.
+	To have this firewall rule apply to all services, specify the
+	keyword 'all'.
 	</param>
 
 	<param type='string' name='protocol'>
 	The protocol associated with the service. For example, "tcp" or "udp".
+	To have this firewall rule apply to all protocols, specify the
+	keyword 'all'.
 	</param>
 	
         <param type='string' name='network'>
         The network this service should be opened on. This is a named network
         (e.g., 'private') and must be listable by the command
         'rocks list network'.
+	To have this firewall rule apply to all networks, specify the
+	keyword 'all'.
 	</param>
+
+	<example cmd='open appliance firewall compute network=public protocol=tcp service=www'>
+	Open the www service that use the TCP protocol for the public network
+	for all compute nodes.
+	If 'eth1' is associated with the public network on a compute node,
+	then this will be translated as the following iptables rule:
+	"-A INPUT -i eth1 -p tcp --dport www -j ACCEPT"
+	</example>
+
+	<example cmd='open appliance firewall compute-0-0 network=all protocol=all service=https'>
+	Open the https service for all protocols on all networks 
+	for all compute nodes.
+	This will be translated as the following iptables rule for a compute
+	node: 
+	"-A INPUT --dport https -j ACCEPT"
+	</example>
 	"""
 
 	def run(self, params, args):

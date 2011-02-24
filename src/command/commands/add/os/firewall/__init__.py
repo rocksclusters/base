@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.3 2010/09/07 23:52:50 bruno Exp $
+# $Id: __init__.py,v 1.4 2011/02/24 20:10:28 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.4  2011/02/24 20:10:28  bruno
+# Added documentation and examples to the add/close/open firewall commands.
+# Thanks to Larry Baker for the suggestion.
+#
 # Revision 1.3  2010/09/07 23:52:50  bruno
 # star power for gb
 #
@@ -82,16 +86,22 @@ class Command(rocks.commands.add.firewall.command,
 	<param type='string' name='service'>
 	The service identifier, port number or port range. For example
 	"www", 8080 or 0:1024.
+	To have this firewall rule apply to all services, specify the
+	keyword 'all'.
 	</param>
 
 	<param type='string' name='protocol'>
 	The protocol associated with the service. For example, "tcp" or "udp".
+	To have this firewall rule apply to all protocols, specify the
+	keyword 'all'.
 	</param>
 	
         <param type='string' name='network'>
         The network this rule should be applied to. This is a named network
         (e.g., 'private') and must be one listed by the command
         'rocks list network'.
+	To have this firewall rule apply to all networks, specify the
+	keyword 'all'.
 	</param>
 
         <param type='string' name='output-network' optional='1'>
@@ -109,6 +119,14 @@ class Command(rocks.commands.add.firewall.command,
 	The iptables 'action' this rule should be applied to (e.g.,
 	ACCEPT, REJECT, DROP).
 	</param>
+
+	<example cmd='add os firewall linux network=private service="all" protocol="all" action="ACCEPT" chain="FORWARD"'>
+	Accept all services and all protocols from the private network on
+	the FORWARD chain for Linux hosts.
+	If 'eth0' is associated with the private network on a Linux host, then
+	this will be translated as the following iptables rule:
+	"-A FORWARD -i eth0 -j ACCEPT".
+	</example>
 	"""
 
 	def run(self, params, args):

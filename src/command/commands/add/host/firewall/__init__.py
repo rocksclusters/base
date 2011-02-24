@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.6 2010/09/07 23:52:50 bruno Exp $
+# $Id: __init__.py,v 1.7 2011/02/24 20:10:28 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.7  2011/02/24 20:10:28  bruno
+# Added documentation and examples to the add/close/open firewall commands.
+# Thanks to Larry Baker for the suggestion.
+#
 # Revision 1.6  2010/09/07 23:52:50  bruno
 # star power for gb
 #
@@ -91,16 +95,22 @@ class Command(rocks.commands.add.firewall.command):
 	<param type='string' name='service'>
 	The service identifier, port number or port range. For example
 	"www", 8080 or 0:1024.
+	To have this firewall rule apply to all services, specify the
+	keyword 'all'.
 	</param>
 
 	<param type='string' name='protocol'>
 	The protocol associated with the service. For example, "tcp" or "udp".
+	To have this firewall rule apply to all protocols, specify the
+	keyword 'all'.
 	</param>
 	
         <param type='string' name='network'>
         The network this rule service should be applied to. This is a named
 	network (e.g., 'private') and must be one listed by the command
         'rocks list network'.
+	To have this firewall rule apply to all networks, specify the
+	keyword 'all'.
 	</param>
 
         <param type='string' name='output-network' optional='1'>
@@ -128,6 +138,22 @@ class Command(rocks.commands.add.firewall.command):
 	A comment associated with this rule. The comment will be printed
 	directly above the rule in the firewall configuration file.
 	</param>
+
+	<example cmd='add host firewall localhost network=private service="all" protocol="all" action="ACCEPT" chain="FORWARD"'>
+	Accept all services and all protocols from the private network on
+	the FORWARD chain.
+	If 'eth0' is associated with the private network, then this will
+	be translated as the following iptables rule:
+	"-A FORWARD -i eth0 -j ACCEPT".
+	</example>
+
+	<example cmd='add host firewall localhost network=all service="40000"
+        protocol="tcp" action="REJECT" chain="INPUT"'>
+	Reject TCP packets that are destined for port 40000 on all networks
+	on the INPUT chain.
+	This will be translated into the following rule:
+	"-A INPUT -p tcp --dport 40000 -j REJECT"
+	</example>
 	"""
 
 	def run(self, params, args):

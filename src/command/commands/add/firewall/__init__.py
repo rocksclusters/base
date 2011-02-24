@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.5 2010/09/07 23:52:50 bruno Exp $
+# $Id: __init__.py,v 1.6 2011/02/24 20:10:28 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.6  2011/02/24 20:10:28  bruno
+# Added documentation and examples to the add/close/open firewall commands.
+# Thanks to Larry Baker for the suggestion.
+#
 # Revision 1.5  2010/09/07 23:52:50  bruno
 # star power for gb
 #
@@ -228,16 +232,22 @@ class Command(command):
 	<param type='string' name='service'>
 	The service identifier, port number or port range. For example
 	"www", 8080 or 0:1024.
+	To have this firewall rule apply to all services, specify the
+	keyword 'all'.
 	</param>
 
 	<param type='string' name='protocol'>
 	The protocol associated with the rule. For example, "tcp" or "udp".
+	To have this firewall rule apply to all protocols, specify the
+	keyword 'all'.
 	</param>
 	
         <param type='string' name='network'>
         The network this rule should be applied to. This is a named network
         (e.g., 'private') and must be one listed by the command
         'rocks list network'.
+	To have this firewall rule apply to all networks, specify the
+	keyword 'all'.
 	</param>
 
         <param type='string' name='output-network' optional='1'>
@@ -255,6 +265,23 @@ class Command(command):
 	The iptables 'action' this rule should be applied to (e.g.,
 	ACCEPT, REJECT, DROP).
 	</param>
+
+	<example cmd='add firewall network=public service="ssh" protocol="tcp" action="ACCEPT" chain="INPUT" flags="-m state --state NEW"'>
+	Accept TCP packets for the ssh service on the public network on
+	the INPUT chain and apply the "-m state --state NEW" flags to the
+	rule.
+	If 'eth1' is associated with the public network, this will be
+	translated as the following iptables rule:
+	"-A INPUT -i eth1 -p tcp --dport ssh -m state --state NEW -j ACCEPT"
+	</example>
+
+	<example cmd='add firewall network=private service="all" protocol="all" action="ACCEPT" chain="INPUT"'>
+	Accept all protocols and all services on the private network on the
+	INPUT chain.
+	If 'eth0' is the private network, then this will be translated as
+	the following iptables rule:
+	"-A INPUT -i eth0 -j ACCEPT"
+	</example>
 	"""
 	def run(self, params, args):
 		(service, network, outnetwork, chain, action, protocol, flags,
