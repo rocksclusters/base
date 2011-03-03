@@ -1,5 +1,5 @@
 # --------------------------------------------------- -*- Makefile -*- --
-# $Id: Makefile,v 1.11 2010/09/07 23:53:06 bruno Exp $
+# $Id: Makefile,v 1.12 2011/03/03 00:17:56 anoop Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.12  2011/03/03 00:17:56  anoop
+# build bug fixed
+#
 # Revision 1.11  2010/09/07 23:53:06  bruno
 # star power for gb
 #
@@ -137,11 +140,10 @@ include Rules.mk
 build:
 	gunzip -c libxml2-$(VERSION).tar.gz | $(TAR) -xf - 
 #	cd patch-files && find . -type f | grep -v CVS | cpio -pduv ../
-	( 								\
-		cd libxml2-$(VERSION);					\
-		PATH=/opt/rocks/bin:$$PATH				\
-			./configure --prefix=$(PKGROOT);		\
-		$(MAKE);							\
+	( 					\
+		cd libxml2-$(VERSION);		\
+		./configure --prefix=$(PKGROOT);\
+		$(MAKE);			\
 	)
 
 install::
