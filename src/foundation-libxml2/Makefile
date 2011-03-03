@@ -1,5 +1,5 @@
 # --------------------------------------------------- -*- Makefile -*- --
-# $Id: Makefile,v 1.12 2011/03/03 00:17:56 anoop Exp $
+# $Id: Makefile,v 1.13 2011/03/03 21:15:21 anoop Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.13  2011/03/03 21:15:21  anoop
+# Use foundation python and perl
+#
 # Revision 1.12  2011/03/03 00:17:56  anoop
 # build bug fixed
 #
@@ -142,7 +145,9 @@ build:
 #	cd patch-files && find . -type f | grep -v CVS | cpio -pduv ../
 	( 					\
 		cd libxml2-$(VERSION);		\
-		./configure --prefix=$(PKGROOT);\
+		./configure --prefix=$(PKGROOT) \
+		--with-python=/opt/rocks	\
+		PERL=$(PERL);\
 		$(MAKE);			\
 	)
 
