@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.12 2010/09/07 23:52:52 bruno Exp $
+# $Id: __init__.py,v 1.13 2011/03/04 02:00:26 anoop Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.13  2011/03/04 02:00:26  anoop
+# fix rocks host dump command to capture os information
+#
 # Revision 1.12  2010/09/07 23:52:52  bruno
 # star power for gb
 #
@@ -150,11 +153,11 @@ class Command(command):
 		for host in self.getHostnames(args):
 			self.db.execute("""select 
 				n.cpus, n.rack, n.rank, m.name, 
-				n.runaction, n.installaction
+				n.runaction, n.installaction, n.os
 				from nodes n, memberships m where
 				n.membership=m.id and n.name='%s'""" % host)
 			(cpus, rack, rank, membership, runaction,
-				installaction) = self.db.fetchone()
+				installaction, os) = self.db.fetchone()
 
 			# do not dump the localhost since the installer
 			# will add the host for us
@@ -163,9 +166,9 @@ class Command(command):
 				continue
 
 			self.dump('add host %s cpus=%s rack=%s rank=%s '
-				'membership=%s' %
+				'membership=%s os=%s' %
 				(host, cpus, rack, rank, 
-				self.quote(membership)))
+				self.quote(membership), os))
 
 			#
 			# now set the runaction and installaction for each host
