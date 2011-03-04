@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.17 2010/09/07 23:52:50 bruno Exp $
+# $Id: __init__.py,v 1.18 2011/03/04 01:57:23 anoop Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.18  2011/03/04 01:57:23  anoop
+# when rocks add host is run by hand, we need to set the
+# os attribute explicitly.
+#
 # Revision 1.17  2010/09/07 23:52:50  bruno
 # star power for gb
 #
@@ -261,3 +265,9 @@ class Command(command):
 			'%d', '%d', '%d', '%s')""" % (host, membership,
 			int(numCPUs), int(rack), int(rank), osname))
 
+		# Set the value of the OS in the host attributes table
+		db_cmd = ('insert into node_attributes '
+			'(node, attr, value) '
+			'values ((select id from nodes where name="%s"), '
+			'"%s","%s")' % (host, 'os', osname))
+		self.db.execute(db_cmd)
