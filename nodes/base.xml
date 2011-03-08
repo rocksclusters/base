@@ -21,6 +21,9 @@
 
   <changelog>
   $Log: base.xml,v $
+  Revision 1.52  2011/03/08 15:29:43  phil
+  support disableServices attribute so that users can optionally control additional services that are removed via ckhconfig.
+
   Revision 1.51  2010/10/20 21:30:46  mjk
   - fix typos
   - added rocks-channel and librocks packages
@@ -551,7 +554,12 @@ python -c 'import time; print "%.7f" % time.time()'
 </eval>
 </file>
 
-for i in kudzu canna cWnn FreeWnn kWnn tWnn mDNSResponder
+serviceList="&disableServices;"
+if [ "x&serviceList;" == "x" ]; then
+	serviceList="kudzu canna cWnn FreeWnn kWnn tWnn mDNSResponder"
+fi
+
+for i in $serviceList 
 do
 	if [ -f /etc/rc.d/init.d/$i ]; then
 		/sbin/chkconfig $i off

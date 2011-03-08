@@ -1,10 +1,13 @@
 <!--
-$Id: attr.sgml,v 1.3 2011/02/11 19:58:21 mjk Exp $
+$Id: attr.sgml,v 1.4 2011/03/08 15:29:43 phil Exp $
 
 @Copyright@
 @Copyright@
 
 $Log: attr.sgml,v $
+Revision 1.4  2011/03/08 15:29:43  phil
+support disableServices attribute so that users can optionally control additional services that are removed via ckhconfig.
+
 Revision 1.3  2011/02/11 19:58:21  mjk
 More attributes (skipping the OS linux,solaris stuff)
 
@@ -36,6 +39,13 @@ Cleanup
 			</row>
 		</thead>
 		<tbody>
+			<row>
+				<entry>
+				     <varname>disableServices</varname>
+				</entry>
+				<entry>string</entry>
+				<entry>kudzu canna cWnn FreeWnn kWnn tWnn mDNSResponder</entry>
+			</row>
 			<row>
 				<entry>
 				  <varname>Info_CertificateCountry</varname>
