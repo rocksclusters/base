@@ -22,6 +22,7 @@
 <package>rocks-admin</package>
 <package>firefox</package>
 <package>eclipse</package>
+<package>pdsh</package>
 
 
 <post>

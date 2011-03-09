@@ -8,10 +8,13 @@ The root XML node for the Login appliance
 
 <changelog>
 $Log: login.xml,v $
+Revision 1.2  2011/03/09 03:15:09  phil
+add pdsh to login and server nodes
+
 Revision 1.1  2010/03/25 00:30:39  bruno
 the start of the login appliance
 
 </changelog>
 
-
+<package>pdsh</package>
 </kickstart> 
