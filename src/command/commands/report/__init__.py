@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.6 2010/09/07 23:52:58 bruno Exp $
+# $Id: __init__.py,v 1.7 2011/03/23 00:14:55 anoop Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.7  2011/03/23 00:14:55  anoop
+# Added support for subnets in between /8, /16, and /24
+#
 # Revision 1.6  2010/09/07 23:52:58  bruno
 # star power for gb
 #
@@ -104,7 +107,7 @@ class command(rocks.commands.Command):
 		return networks
 		
 		
-	def getSubnet(self, subnet, netmask):
+	def getSubnet_deprecated(self, subnet, netmask):
 		s_list = subnet.split('.')
 		s_list = map(int, s_list)
 		
@@ -118,3 +121,33 @@ class command(rocks.commands.Command):
 
 		return net_list
 
+	# This Function returns a subnet with a
+	# CIDR netmask that is not a multiple of
+	# 8. This means subnets smaller than /24 (25-32)
+	# will result in the correct subnet being
+	# computed for named.conf.
+	def getSubnet(self, subnet, netmask):
+		s_list = subnet.split('.')
+		s_list = map(int, s_list)
+		
+		n_list = netmask.split('.')
+		n_list = map(int, n_list)
+		
+		net_list = []
+		cidr = 0
+		for i in range(0, 4):
+			if n_list[i] == 0:
+				break
+			elif n_list[i] == 255:
+				net_list.append(str(s_list[i]))
+				cidr = cidr + 8
+			else:
+				b = n_list[i]
+				s = 0
+				while (b > 0):
+					b = (b << 1 ) - 256
+					s = s + 1
+				s = cidr + s
+				net_list.append("%d-%d" % (s_list[i], s))
+
+		return net_list
