@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.19 2011/02/01 21:14:00 bruno Exp $
+# $Id: __init__.py,v 1.20 2011/03/24 19:37:01 phil Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,11 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.20  2011/03/24 19:37:01  phil
+# Wrap routes report inside of XML tag to make it like interfaces,networks.
+# Add ability to report host addr to output a python dictionary
+# mod routes-*.xml and sync host network to use new output format
+#
 # Revision 1.19  2011/02/01 21:14:00  bruno
 # tweaks for the new OpenIPMI.
 #
@@ -183,9 +188,10 @@ class Command(rocks.commands.sync.host.command):
 			cmd += 'ssh %s bash > /dev/null 2>&1 ' % host
 
 			cmd += '; /opt/rocks/bin/rocks report host route '
-			cmd += '%s | ssh %s ' % (host, host)
-			cmd += '"cat > /etc/sysconfig/static-routes" '
-			cmd += '2> /dev/null'
+			cmd += '%s | ' % host
+			cmd += '/opt/rocks/bin/rocks report script '
+			cmd += 'attrs="%s" | ' % attrs
+			cmd += 'ssh %s bash > /dev/null 2>&1 ' % host
 
 			p = Parallel(cmd)
 			threads.append(p)

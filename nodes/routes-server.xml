@@ -15,6 +15,11 @@
 
 	<changelog>
 	$Log: routes-server.xml,v $
+	Revision 1.19  2011/03/24 19:37:00  phil
+	Wrap routes report inside of XML tag to make it like interfaces,networks.
+	Add ability to report host addr to output a python dictionary
+	mod routes-*.xml and sync host network to use new output format
+	
 	Revision 1.18  2010/09/07 23:52:47  bruno
 	star power for gb
 	
@@ -81,9 +86,10 @@
 	</changelog>
 
 
-<post>
+<post os="linux">
 
-/opt/rocks/bin/rocks report host route localhost > /etc/sysconfig/static-routes
+/opt/rocks/bin/rocks report host route localhost | \
+/opt/rocks/bin/rocks report script attrs="`/opt/rocks/bin/rocks report host attr localhost pydict=true`" | /bin/bash 
 
 </post>
 

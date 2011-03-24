@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.5 2010/10/06 21:49:47 phil Exp $
+# $Id: __init__.py,v 1.6 2011/03/24 19:37:01 phil Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,11 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.6  2011/03/24 19:37:01  phil
+# Wrap routes report inside of XML tag to make it like interfaces,networks.
+# Add ability to report host addr to output a python dictionary
+# mod routes-*.xml and sync host network to use new output format
+#
 # Revision 1.5  2010/10/06 21:49:47  phil
 # If a user puts in 0.0.0.0 destination without a 0.0.0.0 netmask, then we
 # potentially get a conflict on the gateway. Simplify test ignoring netmask.
@@ -125,11 +130,13 @@ class Command(rocks.commands.HostArgumentProcessor,
 		self.beginOutput()
 
 		for host in self.getHostnames(args):
+			self.addOutput(host, '<file name="/etc/sysconfig/static-routes">')
 			routes = self.db.getHostRoutes(host)
 			for (key, val) in routes.items():
 				s = self.getRoute(key, val[0], val[1])
 				if s:
 					self.addOutput(host, s)
+			self.addOutput(host,'</file>')
 
 		self.endOutput(padChar='')
 

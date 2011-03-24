@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.6 2010/09/07 23:52:59 bruno Exp $
+# $Id: __init__.py,v 1.7 2011/03/24 19:37:00 phil Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,11 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.7  2011/03/24 19:37:00  phil
+# Wrap routes report inside of XML tag to make it like interfaces,networks.
+# Add ability to report host addr to output a python dictionary
+# mod routes-*.xml and sync host network to use new output format
+#
 # Revision 1.6  2010/09/07 23:52:59  bruno
 # star power for gb
 #
@@ -87,27 +92,58 @@ class Command(rocks.commands.HostArgumentProcessor,
 	<arg optional='1' type='string' name='host'>
 	Host name of machine
 	</arg>
+
+	<param optional='1' type='string' name='attr'>
+	Output just the value of a particular attribute	
+	</param>
+	
+	<param optional='1' type='bool' name='pydict'>
+	Output as a python-formatted dictionary. Defaults to false.
+	Only valid if attr parameter is not specified.
+	</param>
 	
 	<example cmd='report host attr compute-0-0'>
 	Report the attributes for compute-0-0.
 	</example>
+
+	<example cmd='report host attr compute-0-0 pydict=true'>
+	Report the attributes for compute-0-0 as a python dictionary suitable
+	for input to rocks report script.
+	</example>
+
+	<example cmd='report host attr compute-0-0 attr=Kickstart_Lang'>
+	Output value of the attribute called Kickstart_Lang for node
+        compute-0-0.
+	</example>
+
+	<related>report script</related>
 	"""
 
 	def run(self, params, args):
 
-		(attr, ) = self.fillParams([('attr', )])
+		(attr, pydict) = self.fillParams([('attr', ),('pydict','false')])
+		pyformat=self.str2bool(pydict)
 
 		self.beginOutput()
 		
 		for host in self.getHostnames(args):
 		
+
 			if not attr:
+				if pyformat:
+					fmt="'%s':'%s',"
+				else:
+					fmt="%s:%s"
 				attrs = self.db.getHostAttrs(host)
 				keys = attrs.keys()
 				keys.sort()
+				if pyformat:
+					self.addOutput(host, '{')
 				for key in keys:
 					self.addOutput(host,
-						'%s:%s' % (key, attrs[key]))
+						fmt % (key, attrs[key]))
+				if pyformat:
+					self.addOutput(host,'}')
 			else:
 				self.addOutput(host,
 					self.db.getHostAttr(host, attr))
