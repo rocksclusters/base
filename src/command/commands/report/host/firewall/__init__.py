@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.6 2010/09/07 23:53:00 bruno Exp $
+# $Id: __init__.py,v 1.7 2011/03/24 00:14:58 phil Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.7  2011/03/24 00:14:58  phil
+# priviledged ports are actually 0:1023, 1024 is user space.
+#
 # Revision 1.6  2010/09/07 23:53:00  bruno
 # star power for gb
 #
@@ -333,11 +336,11 @@ class Command(rocks.commands.HostArgumentProcessor,
 			#
 			# default reject rules
 			#
-			rule = self.buildRule(None, None, None, '0:1024',
+			rule = self.buildRule(None, None, None, '0:1023',
 				'tcp', 'REJECT', 'INPUT', None, None)
 			self.addOutput(host, rule)
 
-			rule = self.buildRule(None, None, None, '0:1024',
+			rule = self.buildRule(None, None, None, '0:1023',
 				'udp', 'REJECT', 'INPUT', None, None)
 			self.addOutput(host, rule)
 
