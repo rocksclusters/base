@@ -1,4 +1,4 @@
-# $Id: Rules-linux-centos.mk,v 1.2 2010/09/07 23:53:04 bruno Exp $
+# $Id: Rules-linux-centos.mk,v 1.3 2011/03/26 05:33:17 phil Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: Rules-linux-centos.mk,v $
+# Revision 1.3  2011/03/26 05:33:17  phil
+# Enable RPM.FILES.EXTRAS similar RPM.EXTRAS. Use this to define config
+# files in the rpm way.
+#
 # Revision 1.2  2010/09/07 23:53:04  bruno
 # star power for gb
 #
@@ -406,6 +410,7 @@ ifeq ($(RPM.PREFIX),)
 else
 	@$(PF) "$(RPM.PREFIX)\n" >> $@
 endif
+	echo  "$(RPM.FILE.EXTRAS)" >> $@
 
 $(NAME).spec.mk:
 	@$(PF) "# This file is called from the generated spec file.\n" > $@
