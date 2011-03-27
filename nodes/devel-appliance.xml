@@ -10,6 +10,9 @@
 
   <changelog>
   $Log: devel-appliance.xml,v $
+  Revision 1.2  2011/03/27 19:17:54  phil
+  Local database fixups. Make the local DB appear more rational
+
   Revision 1.1  2011/03/27 17:27:30  phil
   Add the development appliance (Imported from 5.4 EC2 Roll)
 
@@ -45,6 +48,14 @@ fi
 MYSQL_HOME=/opt/rocks/etc /usr/bin/mysqldump -u apache cluster rolls
 </eval>
 </file>
+
+<!-- Do some fixups to the  Devel-Servers local database -->
+/opt/rocks/bin/mysql -u apache cluster -e 'update nodes set name="&hostname;" where ID=1'
+/opt/rocks/bin/rocks set host interface ip &hostname; eth0 &hostaddr;
+/opt/rocks/bin/rocks set host interface name &hostname; eth0 &hostname;
+/opt/rocks/bin/rocks set host membership &hostname; "Development Appliance"
+/opt/rocks/bin/rocks remove host interface &hostname; eth1 
+/opt/rocks/bin/rocks report host &gt; /etc/hosts 
 
 </post>
 </kickstart> 
