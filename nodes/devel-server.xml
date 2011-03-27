@@ -1,0 +1,23 @@
+<?xml version="1.0" standalone="no"?>
+
+<kickstart>
+
+<description>
+	Add Development Appliance Definition to the Frontend
+</description>
+
+
+<changelog>
+$Log: devel-server.xml,v $
+Revision 1.1  2011/03/27 17:27:30  phil
+Add the development appliance (Imported from 5.4 EC2 Roll)
+
+</changelog>
+
+
+<post>
+/opt/rocks/bin/rocks add appliance devel-server membership="Development Appliance" node=devel-appliance graph=default compute=no public=yes
+</post>
+
+</kickstart> 
+

@@ -1,0 +1,51 @@
+<?xml version="1.0" standalone="no"?>
+
+<kickstart>
+
+  <description>
+  
+  Rocks Development Appliance. Defined to compile rolls
+
+  </description>
+
+  <changelog>
+  $Log: devel-appliance.xml,v $
+  Revision 1.1  2011/03/27 17:27:30  phil
+  Add the development appliance (Imported from 5.4 EC2 Roll)
+
+  </changelog>
+
+<!-- Required Packages to build rocks core rolls -->
+<package>rocks-bittorrent</package>
+<package>alsa-lib-devel</package>
+<package>libxml2.&arch;</package>
+<package>libXxf86misc-devel</package>
+<package>libXaw</package>
+<package>libXaw-devel</package>
+<package>iscsi-initiator-utils</package>
+
+<post>
+<file name="/etc/motd" mode="append">
+Rocks &rocks_version; Development Server
+</file>
+chkconfig --del autofs
+
+if [ ! -d  /home ]; then 
+	mkdir -p /home; 
+fi
+
+if [ ! -d  /mnt/cdrom ]; then 
+	mkdir -p /mnt/cdrom; 
+fi
+
+<!-- record the rolls that are installed on frontend -->
+<!-- use foundation mysql -->
+<file name="/root/populate.rolls.sql">
+<eval> 
+MYSQL_HOME=/opt/rocks/etc /usr/bin/mysqldump -u apache cluster rolls
+</eval>
+</file>
+
+</post>
+</kickstart> 
+

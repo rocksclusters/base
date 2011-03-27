@@ -4,6 +4,9 @@
 
 	<changelog>
 	$Log: base.xml,v $
+	Revision 1.63  2011/03/27 17:27:30  phil
+	Add the development appliance (Imported from 5.4 EC2 Roll)
+	
 	Revision 1.62  2011/01/03 20:55:41  bruno
 	move the login appliance configuration out of the SGE roll and into the Base
 	roll.
@@ -285,6 +288,11 @@
 		<tail>dhcp-server</tail>
 		<tail>dns-server</tail>
 		<tail>login-server</tail>
+		<tail>devel-server</tail>
+	</order>
+
+	<order head="autofs">
+		<tail>devel-appliance</tail>
 	</order>
 
 	<order tail="server-firewall">
@@ -344,7 +352,6 @@
 		<tail>screen-partitioning</tail>
 	</order>
 
-
 	<!-- Graph OO Framework -->
 
 	<edge from="compute">
@@ -364,6 +371,17 @@
 
 	<edge from="login">
 		<to>client</to>
+	</edge>
+
+	<edge from="devel-appliance">
+		<to>client</to>
+		<to>foundation-server</to>
+		<to>devel</to>
+		<to>rocks-dist</to>
+		<to>database</to>
+		<to>x11</to>
+		<to>snmp-client</to>
+		<to>rocks-devel</to>
 	</edge>
 
 	<edge from="base">
@@ -427,6 +445,7 @@
 		<to>partitions-save-server</to>
 		<to>routes-server</to>
 		<to>login-server</to>
+		<to>devel-server</to>
 	</edge>
 
 	<edge from="server">
