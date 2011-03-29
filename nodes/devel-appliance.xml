@@ -10,6 +10,9 @@
 
   <changelog>
   $Log: devel-appliance.xml,v $
+  Revision 1.3  2011/03/29 05:30:12  phil
+  Packages for devel server to build kernel roll
+
   Revision 1.2  2011/03/27 19:17:54  phil
   Local database fixups. Make the local DB appear more rational
 
@@ -26,6 +29,9 @@
 <package>libXaw</package>
 <package>libXaw-devel</package>
 <package>iscsi-initiator-utils</package>
+<package>pcre-devel</package>
+<package>apr-devel</package>
+<package>httpd-devel</package>
 
 <post>
 <file name="/etc/motd" mode="append">
