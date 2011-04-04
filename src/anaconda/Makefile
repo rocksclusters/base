@@ -1,5 +1,5 @@
 #
-# $Id: Makefile,v 1.18 2010/09/07 23:52:48 bruno Exp $
+# $Id: Makefile,v 1.19 2011/04/04 04:57:29 phil Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,13 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.19  2011/04/04 04:57:29  phil
+# The Centos 5.5 update to gtk2 breaks anaconda-runtime's ability to
+# properly wire gtk2 support into initrd. A one-line patch to an internal
+# script works for both original 5.5 and updated 5.5 package.
+# Makefile changes supports general patching of anaconda files in
+# case we have to do this again for a future version.
+#
 # Revision 1.18  2010/09/07 23:52:48  bruno
 # star power for gb
 #
@@ -144,14 +151,22 @@ ROCKSROOT       = ../devel/devel
 -include $(ROCKSROOT)/etc/Rules.mk
 include Rules.mk
 
-rpm::	$(HOME)/.rpmmacros
-	rpmbuild --rebuild $(NAME)-$(VERSION)-$(RELEASE).src.rpm
+rpm::	$(HOME)/.rpmmacros patch
+	rpmbuild -ba $(REDHAT.ROOT)/SPECS/$(NAME).spec
 
+#
+# Unpack the source tree, patch it, rebundle
 patch:
+	rpm -Uvh $(NAME)-$(VERSION)-$(RELEASE).src.rpm
+	bunzip2 -c $(REDHAT.ROOT)/SOURCES/$(NAME)-$(VERSION).tar.bz2 | $(TAR) xvf -
 	(								\
 		cd patch-files/anaconda-$(VERSION) ;			\
 		for i in `find . -type f | grep -v CVS` ; do 		\
-			cp $$i $(REDHAT.SOURCES) ;			\
+			cp $$i ../../$(NAME)-$(VERSION)/$$i;			\
 		done							\
 	)
+	$(TAR) cf $(REDHAT.ROOT)/SOURCES/$(NAME)-$(VERSION).tar $(NAME)-$(VERSION)
+	bzip2 -f $(REDHAT.ROOT)/SOURCES/$(NAME)-$(VERSION).tar
 
+clean::
+	$(RM) -rf $(NAME)-$(VERSION)	
