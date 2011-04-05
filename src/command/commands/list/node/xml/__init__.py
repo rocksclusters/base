@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.49 2010/09/07 23:52:56 bruno Exp $
+# $Id: __init__.py,v 1.50 2011/04/05 16:49:33 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.50  2011/04/05 16:49:33  bruno
+# only close file if you opened it first.
+#
 # Revision 1.49  2010/09/07 23:52:56  bruno
 # star power for gb
 #
@@ -340,7 +343,7 @@ class Command(rocks.commands.list.command):
 							#
 							attrs[l[0].strip()] = \
 								l[1].strip()
-				file.close()
+					file.close()
 		else:
 			attrs = {}
 
