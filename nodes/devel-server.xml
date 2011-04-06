@@ -9,6 +9,10 @@
 
 <changelog>
 $Log: devel-server.xml,v $
+Revision 1.2  2011/04/06 15:38:18  phil
+Default the yum repository to local, but override this with Attribute
+RepositoryLocal
+
 Revision 1.1  2011/03/27 17:27:30  phil
 Add the development appliance (Imported from 5.4 EC2 Roll)
 
@@ -17,6 +21,7 @@ Add the development appliance (Imported from 5.4 EC2 Roll)
 
 <post>
 /opt/rocks/bin/rocks add appliance devel-server membership="Development Appliance" node=devel-appliance graph=default compute=no public=yes
+/opt/rocks/bin/rocks add appliance attr devel-server RepositoryLocal true
 </post>
 
 </kickstart> 

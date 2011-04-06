@@ -4,6 +4,10 @@
 
 	<changelog>
 	$Log: base.xml,v $
+	Revision 1.64  2011/04/06 15:38:17  phil
+	Default the yum repository to local, but override this with Attribute
+	RepositoryLocal
+	
 	Revision 1.63  2011/03/27 17:27:30  phil
 	Add the development appliance (Imported from 5.4 EC2 Roll)
 	
@@ -331,6 +335,9 @@
 	<order head="nas-partition">
 		<tail>do-partition</tail>
 	</order>
+
+	<order head="yum">
+		<tail>devel-appliance</tail>
 
 	<!-- order the screens -->
 	<order head="screen-clusterinfo">

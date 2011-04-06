@@ -10,6 +10,10 @@
 
   <changelog>
   $Log: devel-appliance.xml,v $
+  Revision 1.4  2011/04/06 15:38:17  phil
+  Default the yum repository to local, but override this with Attribute
+  RepositoryLocal
+
   Revision 1.3  2011/03/29 05:30:12  phil
   Packages for devel server to build kernel roll
 
@@ -23,6 +27,7 @@
 
 <!-- Required Packages to build rocks core rolls -->
 <package>rocks-bittorrent</package>
+<package>rocks-kickstart</package>
 <package>alsa-lib-devel</package>
 <package>libxml2.&arch;</package>
 <package>libXxf86misc-devel</package>
@@ -62,6 +67,14 @@ MYSQL_HOME=/opt/rocks/etc /usr/bin/mysqldump -u apache cluster rolls
 /opt/rocks/bin/rocks set host membership &hostname; "Development Appliance"
 /opt/rocks/bin/rocks remove host interface &hostname; eth1 
 /opt/rocks/bin/rocks report host &gt; /etc/hosts 
+
+</post>
+<post cond="RepositoryLocal">
+<-- Modify yum.conf to point locally. Self-containment -->
+/bin/sed -i '/^baseurl/d' /etc/yum.conf
+<file name="/etc/yum.conf" mode="append">
+baseurl=file:/localhost/export/rocks/install/&arch;
+</file>
 
 </post>
 </kickstart> 
