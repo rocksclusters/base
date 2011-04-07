@@ -4,6 +4,9 @@
 
 	<changelog>
 	$Log: base.xml,v $
+	Revision 1.65  2011/04/07 20:32:15  phil
+	One missing tag can ruin your whole install
+	
 	Revision 1.64  2011/04/06 15:38:17  phil
 	Default the yum repository to local, but override this with Attribute
 	RepositoryLocal
@@ -338,6 +341,7 @@
 
 	<order head="yum">
 		<tail>devel-appliance</tail>
+	</order>
 
 	<!-- order the screens -->
 	<order head="screen-clusterinfo">
