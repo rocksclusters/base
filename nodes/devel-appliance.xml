@@ -10,6 +10,9 @@
 
   <changelog>
   $Log: devel-appliance.xml,v $
+  Revision 1.5  2011/04/08 16:56:25  phil
+  Properly open comment.
+
   Revision 1.4  2011/04/06 15:38:17  phil
   Default the yum repository to local, but override this with Attribute
   RepositoryLocal
@@ -70,7 +73,7 @@ MYSQL_HOME=/opt/rocks/etc /usr/bin/mysqldump -u apache cluster rolls
 
 </post>
 <post cond="RepositoryLocal">
-<-- Modify yum.conf to point locally. Self-containment -->
+<!-- Modify yum.conf to point locally. Self-containment -->
 /bin/sed -i '/^baseurl/d' /etc/yum.conf
 <file name="/etc/yum.conf" mode="append">
 baseurl=file:/localhost/export/rocks/install/&arch;
