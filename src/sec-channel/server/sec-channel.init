@@ -1,0 +1,53 @@
+#!/bin/sh
+#
+# $RCSfile: sec-channel.init,v $
+#
+# chkconfig: 2345 20 70
+# description: 411 shared key startup
+#
+# @Copyright@
+# @Copyright@
+#
+# $Log: sec-channel.init,v $
+# Revision 1.1  2011/04/11 22:41:50  anoop
+# RPC service that initiates transfer of shared 411 key
+#
+
+
+NAME=sec_channel_server
+DAEMON=/opt/rocks/sbin/$NAME
+
+. /etc/rc.d/init.d/functions
+
+case "$1" in
+	start)
+		echo -n "Starting 411 shared key channel: "
+		daemon $DAEMON
+		RETVAL=$?
+		echo
+		[ $RETVAL -eq 0 ] && touch /var/lock/subsys/$NAME
+		;;
+
+	stop)
+		echo -n "Shutting down 411 shared key channel: "
+		killproc $NAME
+		RETVAL=$?
+		echo
+		[ $RETVAL -eq 0 ] && rm -f /var/lock/subsys/$NAME
+		;;
+
+	restart)
+		$0 stop
+		$0 start
+		;;
+	status)
+		status $NAME
+		;;
+	*)
+		echo "Usage: $NAME {start|stop|restart|status}"
+		exit 1
+esac
+
+exit 0
+
+
