@@ -1,4 +1,4 @@
-# $Id: linux.mk,v 1.24 2010/10/20 21:32:46 mjk Exp $
+# $Id: linux.mk,v 1.25 2011/04/13 17:45:17 anoop Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,11 @@
 # @Copyright@
 #
 # $Log: linux.mk,v $
+# Revision 1.25  2011/04/13 17:45:17  anoop
+# Don't build foundation-perl, cpan, & cpan-support when building the
+# base roll. This is an ad-hoc solution. Ideally we should move these package
+# to their own roll.
+#
 # Revision 1.24  2010/10/20 21:32:46  mjk
 # fix ordering
 #
@@ -163,7 +168,11 @@ SRCDIRS = `find . -type d -maxdepth 1 \
 	-not -name bittorrent \
 	-not -name postfix \
 	-not -name lsof \
-	-not -name channel`
+	-not -name channel \
+	-not -name foundation-perl \
+	-not -name foundation-perl-tk \
+	-not -name cpan	\
+	-not -name cpan-support`
 
 #
 # make sure we build anaconda last, that's because it includes many packages
