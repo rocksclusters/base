@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.90 2011/02/11 16:48:37 mjk Exp $
+# $Id: __init__.py,v 1.91 2011/04/14 23:04:50 anoop Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.91  2011/04/14 23:04:50  anoop
+# Add appliance and membership as internal attributes
+#
 # Revision 1.90  2011/02/11 16:48:37  mjk
 # getHostname changes
 # - Bug Fix: Can now use IP addresses as hostnames again.  The code to handle
@@ -1217,14 +1220,28 @@ class DatabaseConnection:
 		except:
 			print 'XXX', host
 		
+
+		try:
+			self.execute('select a.name, m.name from appliances a, ' +\
+			'memberships m, nodes n where n.name="%s" ' % host +\
+			'and n.membership=m.id and m.appliance=a.id')
+			(appliance, membership) = self.fetchone()
+		except:
+			print 'XXX', host
+
 		if showsource:
 			attrs['hostname']	= (host, 'I')
 			attrs['rack']		= (rack, 'I')
 			attrs['rank']		= (rank, 'I')
+			attrs['appliance']	= (appliance, 'I')
+			attrs['membership']	= (membership, 'I')
+			
 		else:
 			attrs['hostname']	= host
 			attrs['rack']		= rack
 			attrs['rank']		= rank
+			attrs['appliance']	= appliance
+			attrs['membership']	= membership
 
 		# global
 		self.execute('select attr, value from global_attributes')
