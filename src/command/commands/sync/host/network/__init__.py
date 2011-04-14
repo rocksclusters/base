@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.20 2011/03/24 19:37:01 phil Exp $
+# $Id: __init__.py,v 1.21 2011/04/14 23:08:59 anoop Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,13 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.21  2011/04/14 23:08:59  anoop
+# Move parallel class up one level, so that all sync commands can
+# take advantage of it.
+#
+# Added rocks sync host sharedkey. This distributes the 411 shared key
+# to compute nodes
+#
 # Revision 1.20  2011/03/24 19:37:01  phil
 # Wrap routes report inside of XML tag to make it like interfaces,networks.
 # Add ability to report host addr to output a python dictionary
@@ -134,19 +141,8 @@
 import os
 import time
 import rocks.commands
-import threading
-
-max_threading = 512
-timeout = 30.0
-
-class Parallel(threading.Thread):
-	def __init__(self, cmd):
-		threading.Thread.__init__(self)
-		self.cmd = cmd
-
-	def run(self):
-		os.system(self.cmd)
-
+from rocks.commands.sync.host import Parallel
+from rocks.commands.sync.host import timeout
 
 class Command(rocks.commands.sync.host.command):
 	"""
@@ -162,13 +158,6 @@ class Command(rocks.commands.sync.host.command):
 
 		threads = []
 		for host in hosts:
-			if max_threading > 0:
-				while threading.activeCount() > max_threading:
-					#
-					# need to wait for some threads to
-					# complete before starting any new ones
-					#
-					time.sleep(0.001)
 
 			#
 			# get the attributes for the host
@@ -179,19 +168,19 @@ class Command(rocks.commands.sync.host.command):
 			cmd += '%s | ' % host
 			cmd += '/opt/rocks/bin/rocks report script '
 			cmd += 'attrs="%s" | ' % attrs
-			cmd += 'ssh %s bash > /dev/null 2>&1 ' % host
+			cmd += 'ssh -T -x %s bash > /dev/null 2>&1 ' % host
 
 			cmd += '; /opt/rocks/bin/rocks report host network '
 			cmd += '%s | ' % host
 			cmd += '/opt/rocks/bin/rocks report script '
 			cmd += 'attrs="%s" | ' % attrs
-			cmd += 'ssh %s bash > /dev/null 2>&1 ' % host
+			cmd += 'ssh -T -x %s bash > /dev/null 2>&1 ' % host
 
 			cmd += '; /opt/rocks/bin/rocks report host route '
 			cmd += '%s | ' % host
 			cmd += '/opt/rocks/bin/rocks report script '
 			cmd += 'attrs="%s" | ' % attrs
-			cmd += 'ssh %s bash > /dev/null 2>&1 ' % host
+			cmd += 'ssh -T -x %s bash > /dev/null 2>&1 ' % host
 
 			p = Parallel(cmd)
 			threads.append(p)
@@ -212,13 +201,6 @@ class Command(rocks.commands.sync.host.command):
 		#
 		threads = []
 		for host in hosts:
-			if max_threading > 0:
-				while threading.activeCount() > max_threading:
-					#
-					# need to wait for some threads to
-					# complete before starting any new ones
-					#
-					time.sleep(0.001)
 
 			cmd = 'ssh %s "/sbin/service network restart ' % host
 			cmd += '> /dev/null 2>&1 ; '

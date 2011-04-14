@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.4 2010/09/07 23:53:03 bruno Exp $
+# $Id: __init__.py,v 1.5 2011/04/14 23:08:58 anoop Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,13 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.5  2011/04/14 23:08:58  anoop
+# Move parallel class up one level, so that all sync commands can
+# take advantage of it.
+#
+# Added rocks sync host sharedkey. This distributes the 411 shared key
+# to compute nodes
+#
 # Revision 1.4  2010/09/07 23:53:03  bruno
 # star power for gb
 #
@@ -70,8 +77,32 @@
 #
 
 import rocks.commands
+import threading
+import subprocess
+import shlex
+import sys
+
+max_threading = 512
+timeout	= 30
 
 class command(rocks.commands.HostArgumentProcessor,
         rocks.commands.sync.command):
 	pass
 
+class Parallel(threading.Thread):
+	def __init__(self, cmd):
+		self.cmd = cmd
+		while threading.activeCount() > max_threading:
+			time.sleep(0.001)
+		threading.Thread.__init__(self)
+
+	def run(self):
+		p = subprocess.Popen(self.cmd,
+			stdout=subprocess.PIPE,
+			stderr=subprocess.PIPE,
+			shell=True)
+		(o, e) = p.communicate()
+		if p.returncode == 0:
+			sys.stdout.write(o)
+		else:
+			sys.stderr.write(e)
