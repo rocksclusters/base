@@ -19,6 +19,13 @@
 
   <changelog>
   $Log: 411-client.xml,v $
+  Revision 1.11  2011/04/14 23:26:30  anoop
+  411 shared key is no longer transferred through kickstart.
+  It is transferred through "rocks sync host sharedkey"
+  411 configuration is now generated through "rocks report host config411"
+  411 files are not transferred during kickstart. They are now transferred
+  at first boot.
+
   Revision 1.10  2010/11/17 01:24:25  anoop
   Solaris Compatibility fixes for 411 channeld
 
@@ -134,6 +141,8 @@
 
   </changelog>
 
+<package>rocks-sec-channel-client</package>
+
 <post os="linux">
 /sbin/chkconfig channeld on
 </post>
@@ -146,13 +155,6 @@ cp /opt/rocks/share/channeld/channeld.xml /var/svc/manifest/network/channeld.xml
 <post>
 mkdir -p /etc/411-security
 
-<!-- Only root can read the 411 shared key. -->
-<file name="/etc/411-security/shared.key" owner="root:root" perms="0400">
-<eval shell="sh">
-/opt/rocks/sbin/read-411-shared-key
-</eval>
-</file>
-
 <file name="/etc/411-security/master.pub" owner="root:root" perms="0444">
 <eval shell="sh">
 cat /etc/411-security/master.pub
@@ -162,65 +164,27 @@ cat /etc/411-security/master.pub
 <!-- Although the 411 service can spring to life autonomously, it 
 requires an alert to do so. We set the config file explicitly so we
 do not have to resend alerts for every new node in the cluster. -->
-<file name="/etc/411.conf">
-&lt;!-- Configuration file for the 411 Information Service --&gt;
-&lt;config&gt;
-&lt;master url="http://&Kickstart_PrivateAddress;/411.d/"/&gt;
-&lt;group&gt;&membership;&lt;/group&gt;
-&lt;/config&gt;
+<eval mode="xml">
+/opt/rocks/bin/rocks report host config411 &hostname;
+<eval>
+
+<file name="/etc/rc.d/rocksconfig.d/post-02-411get" perms="0700">
+#!/bin/bash
+
+# Tell frontend to send you the 411 shared key
+/opt/rocks/bin/get-411-key &Kickstart_PrivateAddress;
+
+# Wait 10 seconds for shared key to get populated
+for i in 1 2 3 4 5 6 7 8 9 10; do \
+	[ ! -f /etc/411-security/shared.key ] &amp;&amp; sleep 1; \
+done
+
+# If shared key got transferred, do a 411get and pull information
+# from frontend
+
+[ -f /etc/411-security/shared.key ] &amp;&amp; /opt/rocks/bin/411get --all
+
+rm -rf /etc/rc.d/rocksconfig.d/post-02-411get
 </file>
-
-<!-- Write all 411 messages into ks file. -->
-mkdir -p /tmp/411.d
-
-<eval shell="/opt/rocks/bin/python" mode="xml">
-import os
-from xml.sax.saxutils import escape
-
-base411 = '/etc/411.d'
-
-for m in os.listdir(base411):
-	try:
-		filename = os.path.join(base411, m)
-		file = open(filename, 'r')
-		ciphertext = file.read()
-		file.close()
-		print '&lt;file name="/tmp/411.d/%s"&gt;' % (m)
-		for line in ciphertext.split('\n'):
-			print escape(line)
-		print '&lt;/file&gt;'
-	except:
-		pass
-	print
-</eval>
 </post>
-
-<!-- Decrypt 411 msgs on compute node -->
-<post interpreter="/opt/rocks/bin/python">
-import os
-import rocks.service411
-
-four11 = rocks.service411.Service411()
-four11.master = rocks.service411.Master('http://127.0.0.1/411.d/')
-
-base411 = '/tmp/411.d'
-
-for m in os.listdir(base411):
-	try:
-		filename = os.path.join(base411, m)
-		if os.path.isdir(filename):
-			continue
-		file = open(filename, 'r')
-		contents, meta = four11.decrypt(file.read())
-		file.close()
-		four11.write(contents,meta)
-	except:
-		pass
-
-</post>
-
-<post>
-rm -rf /tmp/411.d
-</post>
-
-</kickstart> 
+</kickstart>
