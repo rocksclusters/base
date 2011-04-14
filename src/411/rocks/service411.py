@@ -66,6 +66,13 @@
 # @Copyright@
 #
 # $Log: service411.py,v $
+# Revision 1.10  2011/04/14 23:10:59  anoop
+# 411 client can now download from a privileged source port
+# 411get parses the 411 configuration to get information about
+# the node that it's running on. This info is converted to attributes
+# and sent to the filter plugins, so that they may filter content
+# based on node attributes
+#
 # Revision 1.9  2010/09/07 23:52:48  bruno
 # star power for gb
 #
@@ -347,6 +354,9 @@ class Service411:
 		# Groups we are interested in
 		self.groups = ['']
 
+		# Store attributes which we can use to filter on.
+		self.attrs = {}
+
 		self.config = Conf(self)
 		self.config.parse()
 
@@ -360,7 +370,6 @@ class Service411:
 
 		# Use Blowfish with fast Cipher Block Chaining.
 		self.sym = POW.Symmetric(POW.BF_CBC)
-		
 
 	def fillPool(self):
 		"""Starts the random pool. Dont do in constructor since this
@@ -419,11 +428,19 @@ class Service411:
 
 		conn = None
 		for master in masters:
-
-			conn = HTTPConnection(master.getAddress())
+			# Split address into host & port
+			m = master.getAddress().split(':')
+			if len(m) == 2:
+				conn = HTTPConnection(m[0], int(m[1]))
+			else:
+				conn = HTTPConnection(m[0]) 
 
 			# Test the connection.
 			try:
+				# Set variable so that connection originates
+				# from privileged port only. This way, only
+				# root can initialize this connection
+				conn.privileged_port = True
 				conn.connect()
 			except:
 				# If we cannot connect, devalue this server.
@@ -697,7 +714,7 @@ class Service411:
 
 	def decode(self, plaintext):
 		meta = {}
-		p = Parser(plaintext)
+		p = Parser(plaintext, self.attrs)
 		meta = p.get_filtered_content()
 		return meta['content'], meta
 		
@@ -798,8 +815,8 @@ class Service411:
 		return self.masters
 
 class Plugin:
-	def __init__(self):
-		self.os = platform.system().lower()
+	def __init__(self, attrs):
+		self.attrs = attrs
 		pass
 	
 class NodeFilter(xml.dom.NodeFilter.NodeFilter):
@@ -822,12 +839,17 @@ class Parser:
 	"""
 	This class acts as the parser for the 411 xml file.
 	"""
-	def __init__(self, content, osname="linux"):
+	def __init__(self, content, attrs):
 		
 		# Dictionary of the Entire 411 file. This contains
 		# everything, name, content, filter, mode, blah,
 		# and any other XML tag that's made up
 		self.dict411 = {}
+
+		# Dictionary of attributes which are passed to
+		# the filter, and can be used by the filter
+		# to determine code paths.
+		self.attrs = attrs
 
 		# Contains the output of the filtering process.
 		self.filtered = {}
@@ -901,7 +923,7 @@ class Parser:
 		mod_name = os.path.basename(dir)
 		sys.path.append(base_dir)
 		m = __import__(mod_name)
-		plugin = m.Plugin()
+		plugin = m.Plugin(self.attrs)
 
 		# Filter the original content, and set
 		# the new content.
@@ -1129,8 +1151,31 @@ class Conf:
 class ConfHandler(rocks.util.ParseXML):
 
 	def __init__(self, app):
-		rocks.util.ParseXML.__init__(self,app)
+		rocks.util.ParseXML.__init__(self, app)
+		self.app = app
 
+	def startElement(self, name, attrs):
+		try:
+			f = getattr(self, "startElement_%s" % name)
+			f(name, attrs)
+		except AttributeError:
+			self.app.attrs[name] = ''
+			self.text = ''
+			return
+
+	def endElement(self, name):
+		try:
+			f = getattr(self, "endElement_%s" % name)
+			f(name)
+		except AttributeError:
+			self.app.attrs[name] = string.strip(self.text)
+			return
+		
+	def startElement_config(self, name, attrs):
+		return
+
+	def endElement_config(self, name):
+		return
 
 	def startElement_master(self, name, attrs):
 		url = attrs.get('url', None)
@@ -1138,9 +1183,14 @@ class ConfHandler(rocks.util.ParseXML):
 		m = Master(url, int(score))
 		self.app.addMaster(m)
 
+	def endElement_master(self, name):
+		return
 
 	def startElement_disable(self, name, attrs):
 		self.app.disable = 1
+
+	def endElement_disable(self, name):
+		return
 
 	def startElement_urldir(self, name, attrs):
 		self.text = ''

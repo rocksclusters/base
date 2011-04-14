@@ -59,6 +59,13 @@
 # @Copyright@
 #
 # $Log: simplehttp.py,v $
+# Revision 1.6  2011/04/14 23:10:59  anoop
+# 411 client can now download from a privileged source port
+# 411get parses the 411 configuration to get information about
+# the node that it's running on. This info is converted to attributes
+# and sent to the filter plugins, so that they may filter content
+# based on node attributes
+#
 # Revision 1.5  2010/09/07 23:52:48  bruno
 # star power for gb
 #
@@ -127,6 +134,7 @@ class HTTPConnection:
 	def __init__(self, server, port=80):
 		self.peer = server
 		self.port = port
+		self.privileged_port = False
 		self.sock = None
 		self.headers = {}
 		self.fd = None
@@ -164,6 +172,21 @@ class HTTPConnection:
 			raise HTTPException, "Please close() first"
 		# Use TCP
 		self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		
+		# If privileged port is true, that means
+		# that the source port has to be under 1024
+		# This way we can prevent any user from running
+		# this http connection, and thereby filter on the
+		# server side
+		if self.privileged_port == True:
+			p = 1023
+			while p > 0:
+				try:
+					self.sock.bind(('',p))
+					break		
+				except:
+					p = p-1
+					continue
 		self.sock.connect((self.peer, self.port))
 		self.connected = 1
 
