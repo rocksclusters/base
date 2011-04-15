@@ -1,4 +1,4 @@
-# $Id: linux.mk,v 1.25 2011/04/13 17:45:17 anoop Exp $
+# $Id: linux.mk,v 1.26 2011/04/15 19:41:58 phil Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,15 @@
 # @Copyright@
 #
 # $Log: linux.mk,v $
+# Revision 1.26  2011/04/15 19:41:58  phil
+# Updates to build under CentOS 5.6 and new anaconda version.
+# Calling this version5.4.3. Codename Viper.
+#
+# Had to rebuild our own kudzu lib because the CentOS 5.6 version on initial
+# release was bad. See bug ID 4813 on bugs.centos.org. That was a not fun debug.
+#
+# Splash screen is work in progress.
+#
 # Revision 1.25  2011/04/13 17:45:17  anoop
 # Don't build foundation-perl, cpan, & cpan-support when building the
 # base roll. This is an ad-hoc solution. Ideally we should move these package
@@ -157,7 +166,6 @@ SRCDIRS = `find . -type d -maxdepth 1 \
 	-not -name CVS \
 	-not -name . \
 	-not -name ncurses \
-	-not -name kudzu \
 	-not -name rocks-pxe \
 	-not -name updates.img \
 	-not -name anaconda \

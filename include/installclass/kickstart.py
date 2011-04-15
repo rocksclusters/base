@@ -980,7 +980,6 @@ class Kickstart(cobject):
 	diskfile.write('raids: %s\n' % (' '.join(swraid)))
 	diskfile.close()
         # ROCKS
-
         # run %pre scripts
         self.runPreScripts(anaconda)
 

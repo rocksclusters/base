@@ -1319,11 +1319,11 @@ def doAutoPartition(anaconda):
                 req.fstype = request.fstype
             # XXX not copying the raid bits because they should be handled
             # automagically (actually, people probably aren't specifying them)
-
+                
             # ROCKS - start
             req.raidmembers = request.raidmembers
             # ROCKS - end
-                
+
         elif (isinstance(request, partRequests.VolumeGroupRequestSpec) and
               request.preexist == 1):
             # get the preexisting partition they want to use

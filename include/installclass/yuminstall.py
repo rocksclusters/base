@@ -140,7 +140,6 @@ class simpleCallback:
             self.size = po.returnSimple('installedsize')
 
             while self.files[nvra] == None:
-                retries = 0
                 try:
                     fn = repo.getPackage(po)
 
@@ -291,17 +290,16 @@ class AnacondaYumRepo(YumRepository):
                     
         else:
             try:
-                # ROCKS
-                # result = self.grab.urlgrab(relative, local,
-                                           # keepalive = False,
-                                           # text = text,
-                                           # range = (start, end),
-                                           # copy_local=copy_local,
-                                           # reget = reget,
-                                           # checkfunc=checkfunc,
-                                           # http_headers=headers,
-                                           # )
-
+		# ROCKS
+                #result = self.grab.urlgrab(relative, local,
+                                         #  keepalive = False,
+                                         #  text = text,
+                                         #  range = (start, end),
+                                         #  copy_local=copy_local,
+                                         #  reget = reget,
+                                         #  checkfunc=checkfunc,
+                                         #  http_headers=headers,
+                                         #  )
                 #
                 # add 'timeout' parameter
                 #
@@ -326,13 +324,11 @@ class AnacondaYumRepo(YumRepository):
 		file.write('%s: %s end\n' % (time.time(), relative))
 		file.close()
                 # ROCKS
-
             except URLGrabError, e:
                 # ROCKS
                 # slowly increase the timeout by 30 second increments
 		self.timeout += 30.0
                 # ROCKS
-
                 errstr = "failure: %s from %s: %s" % (relative, self.id, e)
                 if e.errno == 256:
                     raise NoMoreMirrorsRepoError, errstr
@@ -632,8 +628,9 @@ class AnacondaYum(YumSorter):
 
     def downloadHeader(self, po):
         while True:
-            retries = 0
-
+	    # ROCKS
+	    retries = 0
+	    # ROCKS
             # retrying version of download header
             try:
                 YumSorter.downloadHeader(self, po)

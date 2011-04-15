@@ -978,11 +978,11 @@ class x86BootloaderInfo(bootloaderInfo):
                 p = os.pipe()
                 os.write(p[1], cmd + '\n')
                 os.close(p[1])
+                import time
 
                 # ROCKS
                 f.write('cmd : %s\n' % cmd)
                 # ROCKS
-                import time
 
                 # FIXME: hack to try to make sure everything is written
                 #        to the disk
@@ -991,14 +991,14 @@ class x86BootloaderInfo(bootloaderInfo):
                 else:
                     syncDataToDisk(bootDev, "/", instRoot)                
 
-                # ROCKS
-                #rhpl.executil.execWithRedirect('/sbin/grub' ,
-                                    #[ "grub",  "--batch", "--no-floppy",
-                                      #"--device-map=/boot/grub/device.map" ],
-                                    #stdin = p[0],
-                                    #stdout = "/dev/tty5", stderr = "/dev/tty5",
-                                    #root = instRoot)
-
+		# ROCKS 
+                # rhpl.executil.execWithRedirect('/sbin/grub' ,
+                                 #   [ "grub",  "--batch", "--no-floppy",
+                                 #     "--device-map=/boot/grub/device.map" ],
+                                 #   stdin = p[0],
+                                 #   stdout = "/dev/tty5", stderr = "/dev/tty5",
+                                 #   root = instRoot)
+		
                 rhpl.executil.execWithRedirect('/sbin/grub' ,
                                     [ "grub",  "--batch", "--no-floppy",
                                       "--device-map=/boot/grub/device.map" ],

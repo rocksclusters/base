@@ -1,5 +1,5 @@
 #
-# $Id: rocks-version.mk,v 1.4 2010/09/07 23:53:04 bruno Exp $
+# $Id: rocks-version.mk,v 1.5 2011/04/15 19:41:59 phil Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,15 @@
 # @Copyright@
 #
 # $Log: rocks-version.mk,v $
+# Revision 1.5  2011/04/15 19:41:59  phil
+# Updates to build under CentOS 5.6 and new anaconda version.
+# Calling this version5.4.3. Codename Viper.
+#
+# Had to rebuild our own kudzu lib because the CentOS 5.6 version on initial
+# release was bad. See bug ID 4813 on bugs.centos.org. That was a not fun debug.
+#
+# Splash screen is work in progress.
+#
 # Revision 1.4  2010/09/07 23:53:04  bruno
 # star power for gb
 #
@@ -255,7 +264,7 @@ __RELEASE_MK = yes
 
 VERSION.MAJOR = 5
 VERSION.MINOR = 4
-#VERSION.PATCH = 0
+VERSION.PATCH = 3
 
 ifeq ($(VERSION.PATCH),)
 VERSION   = $(VERSION.MAJOR).$(VERSION.MINOR)
@@ -269,7 +278,7 @@ ROCKS_VERSION = $(VERSION)
 # A name, not a RPM release id. Added for flair. First releases named
 # after well-known mountains.
 
-RELEASE_NAME = Maverick
+RELEASE_NAME = Viper
 VERSION_NAME = "$(RELEASE_NAME)"
 
 # The project name is used to identify to distribution.  The base 

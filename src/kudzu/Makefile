@@ -1,5 +1,5 @@
 #
-# $Id: Makefile,v 1.12 2010/09/07 23:53:08 bruno Exp $
+# $Id: Makefile,v 1.13 2011/04/15 19:41:59 phil Exp $
 #
 # @Copyright@
 # 
@@ -55,25 +55,73 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
-# Revision 1.12  2010/09/07 23:53:08  bruno
+# Revision 1.13  2011/04/15 19:41:59  phil
+# Updates to build under CentOS 5.6 and new anaconda version.
+# Calling this version5.4.3. Codename Viper.
+#
+# Had to rebuild our own kudzu lib because the CentOS 5.6 version on initial
+# release was bad. See bug ID 4813 on bugs.centos.org. That was a not fun debug.
+#
+# Splash screen is work in progress.
+#
+# Revision 1.19  2011/04/04 04:57:29  phil
+# The Centos 5.5 update to gtk2 breaks anaconda-runtime's ability to
+# properly wire gtk2 support into initrd. A one-line patch to an internal
+# script works for both original 5.5 and updated 5.5 package.
+# Makefile changes supports general patching of anaconda files in
+# case we have to do this again for a future version.
+#
+# Revision 1.18  2010/09/07 23:52:48  bruno
 # star power for gb
 #
-# Revision 1.11  2010/06/22 21:26:24  mjk
+# Revision 1.17  2010/06/22 21:26:22  mjk
 # Build env is now from src/devel package, nothing outside of base roll.
 #
-# Revision 1.10  2009/05/01 19:07:08  mjk
+# Revision 1.16  2009/05/01 19:06:50  mjk
 # chimi con queso
 #
-# Revision 1.9  2008/10/18 00:56:01  mjk
+# Revision 1.15  2008/10/18 00:55:47  mjk
 # copyright 5.1
 #
-# Revision 1.8  2008/03/06 23:41:44  mjk
+# Revision 1.14  2008/03/06 23:41:32  mjk
 # copyright storm on
 #
-# Revision 1.7  2007/06/23 04:03:23  mjk
+# Revision 1.13  2007/12/10 21:28:34  bruno
+# the base roll now contains several elements from the HPC roll, thus
+# making the HPC roll optional.
+#
+# this also includes changes to help build and configure VMs for V.
+#
+# Revision 1.12  2007/06/23 04:03:20  mjk
 # mars hill copyright
 #
-# Revision 1.6  2006/12/02 01:04:54  anoop
+# Revision 1.11  2007/06/04 22:23:44  bruno
+# do patching right
+#
+# Revision 1.10  2007/06/02 16:11:32  bruno
+# patch anaconda 10.1.1.63
+#
+# Revision 1.9  2006/12/06 00:20:20  anoop
+# All the Makefiles get a bit of an overhaul
+#
+# $(INSTALL) is used instead of install
+# $(MAKE) is used instead of make or gmake
+# $(TAR) is used instead of tar of gtar
+#
+# The mode argument for the $(INSTALL) command needs to be numeric and
+# follow the convention of
+#
+# install [-cs] [-g group] [-m mode] [-o owner] file ...  destination
+# install  -d   [-g group] [-m mode] [-o owner] dir
+#
+# This is portable across solaris and linux.
+#
+# Finally "tar xzf $TARFILE.tar.gz" is replaced with "gunzip -c $TARFILE.tar.gz | tar -xf -"
+# This is again done for portability.
+#
+# This needs to be the convention from now on.
+#
+# Revision 1.8  2006/12/02 01:04:53  anoop
 # Ridiculously big ass commit.
 # Also known as the week after thanksgiving 2006. Or "The day Anoop
 # broke Rocks".
@@ -90,14 +138,19 @@
 # Also Solaris was failing to set PWD correctly in the source directories, wreaking
 # havoc on the location of the BUILD and PKG directories.
 #
-# Revision 1.5  2006/09/11 22:47:20  mjk
+# Revision 1.7  2006/09/11 22:47:02  mjk
 # monkey face copyright
 #
-# Revision 1.4  2006/08/10 00:09:39  mjk
+# Revision 1.6  2006/08/10 00:09:26  mjk
 # 4.2 copyright
 #
-# Revision 1.3  2006/06/07 18:09:03  bruno
-# added copyright
+# Revision 1.5  2006/06/15 23:07:34  bruno
+# vnc for monitoring installations is ready for the beta
+#
+# Revision 1.4  2006/06/07 18:08:17  bruno
+# added latest anaconda package
+#
+# needed to patch spec file in order to build on i386 to *not* use diet libraries
 #
 #
 
@@ -107,7 +160,23 @@ ROCKSROOT       = ../devel/devel
 -include $(ROCKSROOT)/etc/Rules.mk
 include Rules.mk
 
-rpm::	$(HOME)/.rpmmacros
-	ROCKS_REBUILD_SRPM=$(NAME)-$(VERSION)-$(RELEASE).src.rpm \
-		REDHATSPECS=$(REDHAT.SPECS) ./build
+rpm::	$(HOME)/.rpmmacros patch
+	rpmbuild -ba $(REDHAT.ROOT)/SPECS/$(NAME).spec
 
+#
+# Unpack the source tree, patch it, rebundle
+patch:
+	rpm -Uvh $(NAME)-$(VERSION)-$(RELEASE).src.rpm
+	bunzip2 -c $(REDHAT.ROOT)/SOURCES/$(NAME)-$(VERSION).tar.bz2 | $(TAR) xvf -
+	(								\
+		if [ ! -d patch-files/$(NAME)-$(VERSION) ]; then exit; fi; \
+		cd patch-files/$(NAME)-$(VERSION) ;			\
+		for i in `find . -type f | grep -v CVS` ; do 		\
+			cp $$i ../../$(NAME)-$(VERSION)/$$i;			\
+		done							\
+	)
+	$(TAR) cf $(REDHAT.ROOT)/SOURCES/$(NAME)-$(VERSION).tar $(NAME)-$(VERSION)
+	bzip2 -f $(REDHAT.ROOT)/SOURCES/$(NAME)-$(VERSION).tar
+
+clean::
+	$(RM) -rf $(NAME)-$(VERSION)	

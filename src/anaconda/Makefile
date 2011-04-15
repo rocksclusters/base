@@ -1,5 +1,5 @@
 #
-# $Id: Makefile,v 1.19 2011/04/04 04:57:29 phil Exp $
+# $Id: Makefile,v 1.20 2011/04/15 19:41:58 phil Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,15 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.20  2011/04/15 19:41:58  phil
+# Updates to build under CentOS 5.6 and new anaconda version.
+# Calling this version5.4.3. Codename Viper.
+#
+# Had to rebuild our own kudzu lib because the CentOS 5.6 version on initial
+# release was bad. See bug ID 4813 on bugs.centos.org. That was a not fun debug.
+#
+# Splash screen is work in progress.
+#
 # Revision 1.19  2011/04/04 04:57:29  phil
 # The Centos 5.5 update to gtk2 breaks anaconda-runtime's ability to
 # properly wire gtk2 support into initrd. A one-line patch to an internal
@@ -160,6 +169,7 @@ patch:
 	rpm -Uvh $(NAME)-$(VERSION)-$(RELEASE).src.rpm
 	bunzip2 -c $(REDHAT.ROOT)/SOURCES/$(NAME)-$(VERSION).tar.bz2 | $(TAR) xvf -
 	(								\
+		if [ ! -d patch-files/anaconda-$(VERSION) ]; then exit; fi; \
 		cd patch-files/anaconda-$(VERSION) ;			\
 		for i in `find . -type f | grep -v CVS` ; do 		\
 			cp $$i ../../$(NAME)-$(VERSION)/$$i;			\
