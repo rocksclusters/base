@@ -12,6 +12,12 @@
 
   <changelog>
   $Log: 411-server.xml,v $
+  Revision 1.8  2011/04/15 19:26:12  anoop
+  Add sec-channel service to the server
+  Force all 411 traffic to come to port 372
+  Make sure any request for 411 over any other
+  port is denied
+
   Revision 1.7  2010/10/18 23:53:03  bruno
   411put no longer sends out 411 alerts
 
@@ -131,6 +137,7 @@
   </changelog>
 
   <package>rocks-411-master</package>
+  <package>rocks-sec-channel-server</package>
 
 
 <post arg="--nochroot">
@@ -150,11 +157,20 @@ fi
 
 <post>
 
+<!--	Choose port 372 as the port to serve 411 on -->
+/opt/rocks/bin/rocks set attr 411port 372
+
+<!-- Create 411 configuration for apache -->
 <file name="/etc/httpd/conf.d/411.conf">
 #
 # 411 Specific Apache configuration.
 # Generated automatically by the 411.xml kickstart node.
 #
+
+Listen 372
+NameVirtualHost &Kickstart_PrivateAddress;:372
+
+&lt;VirtualHost &Kickstart_PrivateAddress;:372&gt;
 Alias /411.d/ "/etc/411.d/"
 Alias /411.d "/etc/411.d"
 
@@ -170,6 +186,7 @@ Alias /411.d "/etc/411.d"
 	Deny from all
 
 &lt;/Directory&gt;
+&lt;/VirtualHost&gt;
 </file>
 
 <!-- 	Generate the 411 shared key. This will be distributed to
@@ -203,6 +220,9 @@ chmod 0444 /etc/411-security/master.pub
 
 /sbin/chkconfig 411 on
 
+<!-- Start 411 shared key server -->
+/sbin/chkconfig sec-channel on
+
 
 <!-- Publish altered login files periodically to propagate changes -->
 <file name="/etc/cron.hourly/make411" perms="0555">
@@ -218,4 +238,3 @@ make -C /var/411 &gt; /dev/null
 </post>
 
 </kickstart>
-
