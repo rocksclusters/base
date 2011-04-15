@@ -9,6 +9,9 @@ Server node firewall rules
 
 <changelog>
 $Log: server-firewall.xml,v $
+Revision 1.11  2011/04/15 19:30:43  anoop
+Disallow 411 traffic from non-privileged ports
+
 Revision 1.10  2010/08/27 17:34:54  bruno
 firewall fixes
 
@@ -46,6 +49,13 @@ this also includes changes to help build and configure VMs for V.
 
 
 <post>
+
+<!-- Disallow 411 traffic from non-privileged ports -->
+/opt/rocks/bin/rocks add host firewall	\
+&Kickstart_PrivateHostname; network=private	\
+service="all" protocol="all" action="REJECT"	\
+chain="INPUT" flags="--dport 372 --sport 1024:65535"
+
 
 <!-- define the global firewall rules -->
 
