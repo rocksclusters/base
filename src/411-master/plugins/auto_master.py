@@ -1,4 +1,4 @@
-# $Id: auto_master.py,v 1.4 2010/09/07 23:52:48 bruno Exp $
+# $Id: auto_master.py,v 1.5 2011/04/21 17:28:20 anoop Exp $
 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 
 # $Log: auto_master.py,v $
+# Revision 1.5  2011/04/21 17:28:20  anoop
+# 411 plugins now take advantage of attributes
+#
 # Revision 1.4  2010/09/07 23:52:48  bruno
 # star power for gb
 #
@@ -84,7 +87,7 @@ class Plugin(rocks.service411.Plugin):
 	filename = '/etc/auto.master'
 
 	def filter_name(self, fname):
-		if self.os == 'linux':
+		if self.attrs['os'] == 'linux':
 			return '/etc/auto.master'
-		if self.os == 'sunos':
+		if self.attrs['os'] == 'sunos':
 			return '/etc/auto_master'

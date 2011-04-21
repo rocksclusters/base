@@ -1,4 +1,4 @@
-# $Id: group.py,v 1.5 2010/09/07 23:52:48 bruno Exp $
+# $Id: group.py,v 1.6 2011/04/21 17:28:20 anoop Exp $
 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 
 # $Log: group.py,v $
+# Revision 1.6  2011/04/21 17:28:20  anoop
+# 411 plugins now take advantage of attributes
+#
 # Revision 1.5  2010/09/07 23:52:48  bruno
 # star power for gb
 #
@@ -105,7 +108,7 @@ class Plugin(rocks.service411.Plugin):
 
 		# If the client is a linux box
 		# just return the original content
-		if self.os == 'linux':
+		if self.attrs['os'] == 'linux':
 			return content
 
 		# If not, then start filtering
@@ -146,7 +149,7 @@ class Plugin(rocks.service411.Plugin):
 		return group_lines
 
 	def filter_owner(self, oid):
-		if self.os == 'linux':
+		if self.attrs['os'] == 'linux':
 			return oid
 		s = os.stat('/etc/group')
 		import stat
