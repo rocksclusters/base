@@ -100,6 +100,14 @@ fi
 rm -f /etc/rc.d/rocksconfig.d/post-02-on-the-fly
 </post>
 
+<!--
+	Set max allowable "rocks sync host"
+	parallel instances to 64. This is modifiable
+	over the running of the cluster.
+-->
+<post>
+/opt/rocks/bin/rocks add host attr localhost \
+	max_parallel_proc 64
+</post>
 
 </kickstart> 
-
