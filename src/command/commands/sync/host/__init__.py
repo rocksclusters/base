@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.5 2011/04/14 23:08:58 anoop Exp $
+# $Id: __init__.py,v 1.6 2011/04/21 02:30:59 anoop Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,16 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.6  2011/04/21 02:30:59  anoop
+# Parallel class now takes care of serializing
+# tasks that may overrun the system. If more than
+# a set number of tasks are running, then requesting
+# tasks will wait till slots are available to run
+#
+# Each task now prints out error messages if they fail
+# on remote hosts. This way, we can track which syncs failed
+# and which ones succeeded.
+#
 # Revision 1.5  2011/04/14 23:08:58  anoop
 # Move parallel class up one level, so that all sync commands can
 # take advantage of it.
@@ -79,30 +89,180 @@
 import rocks.commands
 import threading
 import subprocess
-import shlex
 import sys
+import os
+import fcntl
+import time
 
+# Threading limits.
 max_threading = 512
 timeout	= 30
+
+# Arbitrary Process Limits. This will be
+# ignored if this information is in the
+# database as a rocks attribute.
+max_processes = 32
+
+# Counting Semaphore file
+semfile = '/var/lock/rocks-sync-host.lock'
+
+lock = threading.Lock()
 
 class command(rocks.commands.HostArgumentProcessor,
         rocks.commands.sync.command):
 	pass
 
 class Parallel(threading.Thread):
-	def __init__(self, cmd):
+	def __init__(self, cmd, host=None):
+		
+		# The command to run
 		self.cmd = cmd
+
+		# thread lock object that controls thread access to
+		# the semaphore file.
+		self.s = lock
+		
+		# Host information so that we may print out
+		# errors from the host
+		self.host = host
+		
+		# Make sure each call can only start
+		# "max_threading" number of threads
 		while threading.activeCount() > max_threading:
 			time.sleep(0.001)
 		threading.Thread.__init__(self)
 
+		# Check to see if semaphore file is present.
+		# If not, create it. This file is going to be
+		# used as a simple counting semaphore.
+		# This code exists here in the unlikely event that the
+		# semaphore file was somehow removed. The
+		# semaphore file is created on the frontend
+		# using "rocks sync config"
+		if not os.path.exists(semfile):
+			f = open(semfile, 'w+')
+			f.write('%04d\n' % max_processes)
+			f.close()
+
+		self.lockfile = open(semfile, 'r+')
+
+
+	def lock(self):
+		"""Helper function to lock the thread and
+		the semaphore file. This is necessary
+		because, at any give time, a single thread
+		of a single process must be the only entity
+		updating/querying to the file"""
+
+		# Acquire the threading lock first
+		self.s.acquire()
+		# Acquire the file lock
+		fcntl.lockf(self.lockfile, fcntl.LOCK_EX)
+
+	def unlock(self):
+		"""Helper function to unlock the thread and
+		the semaphore file"""
+
+		# Release the file lock first
+		fcntl.lockf(self.lockfile, fcntl.LOCK_UN)
+		# Release the thread lock
+		self.s.release()
+
+	def getAvailProcSlots(self):
+		"""Return the number of available
+		processing slots"""
+		self.lockfile.flush()
+		self.lockfile.seek(0)
+		return int(self.lockfile.readline())
+
+	def incAvailProcSlots(self):
+		"""This function serves to increment the
+		contents the semaphore"""
+
+		# Acquire a lock
+		self.lock()
+
+		# Read number of currently executing processes
+		c0 = self.getAvailProcSlots()
+
+		c1 = c0 + 1
+		self.lockfile.seek(0)
+		self.lockfile.write('%04d\n' % c1)
+		self.lockfile.flush()
+		# Unlock semaphore
+		self.unlock()
+	
+	def decAvailProcSlots(self):
+		"""This function serves to decrement the
+		semaphore counter"""
+
+		self.lock()
+		# Read the semaphore count
+		c0 = self.getAvailProcSlots()
+		
+		# If there are no slots available,
+		# wait till one becomes available
+		# before decrementing it again 
+		while (c0 == 0):
+			# Unlock semaphore so someone else
+			# may decrement it.
+			self.unlock()
+			# Wait
+			time.sleep(0.01)
+			# Check again
+			self.lock()
+			c0 = self.getAvailProcSlots()
+
+		# Once we reach this point, that means
+		# we are free to update the semaphore
+		# without a race condition
+		# Decrement count of available slots.
+		c1 = c0 - 1
+		self.lockfile.seek(0)
+		self.lockfile.write('%04d\n' % c1)
+		self.lockfile.flush()
+		# Unlock semaphore
+		self.unlock()
+
 	def run(self):
-		p = subprocess.Popen(self.cmd,
-			stdout=subprocess.PIPE,
-			stderr=subprocess.PIPE,
-			shell=True)
-		(o, e) = p.communicate()
-		if p.returncode == 0:
-			sys.stdout.write(o)
-		else:
-			sys.stderr.write(e)
+
+		# decrement available process slots
+		self.decAvailProcSlots()
+
+		# Run the command
+		self.exec_proc()
+
+		# increment available process slots
+		self.incAvailProcSlots()
+		
+	def exec_proc(self):
+		"""Execute the process requested"""
+
+		try:
+			p = os.system(self.cmd)
+		except:
+			# Lock stderr so that we can write safely
+			fcntl.lockf(sys.stderr, fcntl.LOCK_EX)
+			sys.stderr.flush()
+			# print error message
+			sys.stderr.write("%s running %s\nraised %s: %s\n" % \
+				(self.name, self.cmd, \
+				sys.exc_info()[0], sys.exc_info()[1]))
+			sys.stderr.flush()
+			# unlock stderr
+			fcntl.lockf(sys.stderr, fcntl.LOCK_UN)
+			# Always return. Otherwise, semaphore counter
+			# will not be incremented. 
+			return
+		# If the command errors out
+		if p != 0:
+			# Lock stderr so that we can write safely
+			fcntl.lockf(sys.stderr, fcntl.LOCK_EX)
+			sys.stderr.flush()
+			# print error code
+			sys.stderr.write("Error running: %s\n" % self.cmd)
+			sys.stderr.write("%s returned error code %d\n" \
+				% (self.host, p))
+			sys.stderr.flush()
+			# unlock stderr
+			fcntl.lockf(sys.stderr, fcntl.LOCK_UN)
