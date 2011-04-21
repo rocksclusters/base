@@ -66,6 +66,9 @@
 # @Copyright@
 #
 # $Log: service411.py,v $
+# Revision 1.11  2011/04/21 21:29:05  anoop
+# Bug fix
+#
 # Revision 1.10  2011/04/14 23:10:59  anoop
 # 411 client can now download from a privileged source port
 # 411get parses the 411 configuration to get information about
@@ -815,7 +818,7 @@ class Service411:
 		return self.masters
 
 class Plugin:
-	def __init__(self, attrs):
+	def __init__(self, attrs = {}):
 		self.attrs = attrs
 		pass
 	
