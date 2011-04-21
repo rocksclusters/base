@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.21 2011/04/14 23:08:59 anoop Exp $
+# $Id: __init__.py,v 1.22 2011/04/21 02:31:39 anoop Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.22  2011/04/21 02:31:39  anoop
+# sync commands now take advantage of new parallel class
+#
 # Revision 1.21  2011/04/14 23:08:59  anoop
 # Move parallel class up one level, so that all sync commands can
 # take advantage of it.
@@ -182,7 +185,7 @@ class Command(rocks.commands.sync.host.command):
 			cmd += 'attrs="%s" | ' % attrs
 			cmd += 'ssh -T -x %s bash > /dev/null 2>&1 ' % host
 
-			p = Parallel(cmd)
+			p = Parallel(cmd, host)
 			threads.append(p)
 			p.start()
 
@@ -206,7 +209,7 @@ class Command(rocks.commands.sync.host.command):
 			cmd += '> /dev/null 2>&1 ; '
 			cmd += '/sbin/service ipmi restart > /dev/null 2>&1" '
 
-			p = Parallel(cmd)
+			p = Parallel(cmd, host)
 			threads.append(p)
 			p.start()
 

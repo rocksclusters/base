@@ -1,9 +1,12 @@
-# $Id: __init__.py,v 1.1 2011/04/14 23:08:59 anoop Exp $
+# $Id: __init__.py,v 1.2 2011/04/21 02:31:39 anoop Exp $
 
 # @Copyright@
 # @Copyright@
 
 # $Log: __init__.py,v $
+# Revision 1.2  2011/04/21 02:31:39  anoop
+# sync commands now take advantage of new parallel class
+#
 # Revision 1.1  2011/04/14 23:08:59  anoop
 # Move parallel class up one level, so that all sync commands can
 # take advantage of it.
@@ -33,7 +36,7 @@ class Command(rocks.commands.sync.host.command):
 		for host in hosts:
 			cmd = 'scp -q %s root@%s:%s' % \
 				(fname, host, fname)
-			p = Parallel(cmd)
+			p = Parallel(cmd, host)
 			p.start()
 			threads.append(p)
 
