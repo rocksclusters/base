@@ -1,9 +1,12 @@
-# $Id: plugin_master.py,v 1.1 2011/04/14 23:06:24 anoop Exp $
+# $Id: plugin_master.py,v 1.2 2011/04/21 00:43:39 anoop Exp $
 
 # @Copyright@
 # @Copyright@
 
 # $Log: plugin_master.py,v $
+# Revision 1.2  2011/04/21 00:43:39  anoop
+# As Phil so eloquently put it, "Who woulda thunk that"
+#
 # Revision 1.1  2011/04/14 23:06:24  anoop
 # 411 configuration now created as a report. Plugins may be added
 # to put more information into the 411 configuration. This information
@@ -25,8 +28,8 @@ class Plugin(rocks.commands.Plugin):
 		attrs = self.owner.s.attrs
 
 		port_string = ''
-		if attrs.has_key('411port'):
-			port_string = ':%s' % attrs['411port']
+		if attrs.has_key('port411'):
+			port_string = ':%s' % attrs['port411']
 
 		master = '<master url="http://%s%s/%s"/>' \
 			% (attrs['Kickstart_PrivateAddress'],
