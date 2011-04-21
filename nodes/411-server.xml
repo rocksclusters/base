@@ -12,6 +12,10 @@
 
   <changelog>
   $Log: 411-server.xml,v $
+  Revision 1.9  2011/04/21 00:21:29  phil
+  Close eval tag.
+  XML entities cannot begin with a numeric digit. Who woulda thunk that.
+
   Revision 1.8  2011/04/15 19:26:12  anoop
   Add sec-channel service to the server
   Force all 411 traffic to come to port 372
@@ -158,7 +162,7 @@ fi
 <post>
 
 <!--	Choose port 372 as the port to serve 411 on -->
-/opt/rocks/bin/rocks set attr 411port 372
+/opt/rocks/bin/rocks set attr port411 372
 
 <!-- Create 411 configuration for apache -->
 <file name="/etc/httpd/conf.d/411.conf">

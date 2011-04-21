@@ -19,6 +19,10 @@
 
   <changelog>
   $Log: 411-client.xml,v $
+  Revision 1.12  2011/04/21 00:21:29  phil
+  Close eval tag.
+  XML entities cannot begin with a numeric digit. Who woulda thunk that.
+
   Revision 1.11  2011/04/14 23:26:30  anoop
   411 shared key is no longer transferred through kickstart.
   It is transferred through "rocks sync host sharedkey"
@@ -166,7 +170,7 @@ requires an alert to do so. We set the config file explicitly so we
 do not have to resend alerts for every new node in the cluster. -->
 <eval mode="xml">
 /opt/rocks/bin/rocks report host config411 &hostname;
-<eval>
+</eval>
 
 <file name="/etc/rc.d/rocksconfig.d/post-02-411get" perms="0700">
 #!/bin/bash
