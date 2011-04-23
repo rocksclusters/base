@@ -1,5 +1,5 @@
 # --------------------------------------------------- -*- Makefile -*- --
-# $Id: Makefile,v 1.27 2010/09/07 23:53:06 bruno Exp $
+# $Id: Makefile,v 1.28 2011/04/23 18:34:19 phil Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.28  2011/04/23 18:34:19  phil
+# remove deprecated build option. Patch startup to use rocks paths/files
+#
 # Revision 1.27  2010/09/07 23:53:06  bruno
 # star power for gb
 #
@@ -185,7 +188,7 @@ PKGROOT		= /opt/rocks
 PKGVAR		= /var/$(PKGROOT)/mysql
 INSTALLDB	= $(PKGROOT)/sbin/mysql-install-db
 REDHAT.ROOT     = $(CURDIR)/../../
-ROCKSROOT       = ../devel/devel
+#ROCKSROOT       = ../devel/devel
 
 -include $(ROCKSROOT)/etc/Rules.mk
 include Rules.mk
@@ -202,7 +205,6 @@ build:
 			--with-mysqld-user=rocksdb			\
 			--enable-thread-safe-client			\
 			--with-ssl					\
-			--without-bench					\
 			--without-debug					\
 			LDFLAGS=$(MYSQL_LDFLAGS) CFLAGS=$(MYSQL_CFLAGS)	\
 			;						\
