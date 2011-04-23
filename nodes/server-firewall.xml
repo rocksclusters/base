@@ -9,6 +9,10 @@ Server node firewall rules
 
 <changelog>
 $Log: server-firewall.xml,v $
+Revision 1.12  2011/04/23 23:26:53  phil
+with specific port (e.g. --dport), iptables needs a port-based protocol
+explicitly specified
+
 Revision 1.11  2011/04/15 19:30:43  anoop
 Disallow 411 traffic from non-privileged ports
 
@@ -53,7 +57,11 @@ this also includes changes to help build and configure VMs for V.
 <!-- Disallow 411 traffic from non-privileged ports -->
 /opt/rocks/bin/rocks add host firewall	\
 &Kickstart_PrivateHostname; network=private	\
-service="all" protocol="all" action="REJECT"	\
+service="all" protocol="tcp" action="REJECT"	\
+chain="INPUT" flags="--dport 372 --sport 1024:65535"
+/opt/rocks/bin/rocks add host firewall	\
+&Kickstart_PrivateHostname; network=private	\
+service="all" protocol="udp" action="REJECT"	\
 chain="INPUT" flags="--dport 372 --sport 1024:65535"
 
 
