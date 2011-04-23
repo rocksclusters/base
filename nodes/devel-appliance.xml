@@ -10,6 +10,9 @@
 
   <changelog>
   $Log: devel-appliance.xml,v $
+  Revision 1.6  2011/04/23 23:30:48  phil
+  Another package: readline-devel
+
   Revision 1.5  2011/04/08 16:56:25  phil
   Properly open comment.
 
@@ -40,6 +43,7 @@
 <package>pcre-devel</package>
 <package>apr-devel</package>
 <package>httpd-devel</package>
+<package>readline-devel</package>
 
 <post>
 <file name="/etc/motd" mode="append">
