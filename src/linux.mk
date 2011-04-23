@@ -1,4 +1,4 @@
-# $Id: linux.mk,v 1.26 2011/04/15 19:41:58 phil Exp $
+# $Id: linux.mk,v 1.27 2011/04/23 18:36:32 phil Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: linux.mk,v $
+# Revision 1.27  2011/04/23 18:36:32  phil
+# build devel-env by default
+#
 # Revision 1.26  2011/04/15 19:41:58  phil
 # Updates to build under CentOS 5.6 and new anaconda version.
 # Calling this version5.4.3. Codename Viper.
@@ -169,7 +172,6 @@ SRCDIRS = `find . -type d -maxdepth 1 \
 	-not -name rocks-pxe \
 	-not -name updates.img \
 	-not -name anaconda \
-	-not -name devel-env \
 	-not -name pcre \
 	-not -name php \
 	-not -name sun-java \
