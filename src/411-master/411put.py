@@ -6,7 +6,7 @@
 #
 # Requires Python 2.1 or better
 #
-# $Id: 411put.py,v 1.12 2011/04/26 03:30:27 anoop Exp $
+# $Id: 411put.py,v 1.13 2011/04/26 23:23:26 anoop Exp $
 #
 # @Copyright@
 # 
@@ -62,6 +62,10 @@
 # @Copyright@
 #
 # $Log: 411put.py,v $
+# Revision 1.13  2011/04/26 23:23:26  anoop
+# Minor modification to 411put. Use a get_filename function instead of
+# a filename constant.
+#
 # Revision 1.12  2011/04/26 03:30:27  anoop
 # Support for pre-send filtering of content,
 # and post receive actions.
@@ -393,7 +397,7 @@ absolute path (after any chroots) will be maintained on clients."""
 			# Get the filename that the plugin will
 			# process
 			plugin = mod.Plugin()
-			if plugin.filename == fullpath:
+			if plugin.get_filename() == fullpath:
 				mod_file = plugin_file
 				break
 		if mod_file == None:

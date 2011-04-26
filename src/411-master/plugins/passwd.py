@@ -1,4 +1,4 @@
-# $Id: passwd.py,v 1.6 2011/04/21 17:28:20 anoop Exp $
+# $Id: passwd.py,v 1.7 2011/04/26 23:23:27 anoop Exp $
 
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 
 # $Log: passwd.py,v $
+# Revision 1.7  2011/04/26 23:23:27  anoop
+# Minor modification to 411put. Use a get_filename function instead of
+# a filename constant.
+#
 # Revision 1.6  2011/04/21 17:28:20  anoop
 # 411 plugins now take advantage of attributes
 #
@@ -91,7 +95,8 @@ class Plugin(rocks.service411.Plugin):
 
 	# THIS IS AN ABSOLUTE MUST FOR ALL PLUGINS. WITHOUT THIS,
 	# PLUGINS WONT WORK
-	filename="/etc/passwd"
+	def get_filename(self):
+		return "/etc/passwd"
 
 	# Function to filter the content of the passwd file
 	def filter_content(self, content):

@@ -1,4 +1,4 @@
-# $Id: auto_master.py,v 1.5 2011/04/21 17:28:20 anoop Exp $
+# $Id: auto_master.py,v 1.6 2011/04/26 23:23:27 anoop Exp $
 
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 
 # $Log: auto_master.py,v $
+# Revision 1.6  2011/04/26 23:23:27  anoop
+# Minor modification to 411put. Use a get_filename function instead of
+# a filename constant.
+#
 # Revision 1.5  2011/04/21 17:28:20  anoop
 # 411 plugins now take advantage of attributes
 #
@@ -84,7 +88,8 @@ import stat
 import rocks.service411
 
 class Plugin(rocks.service411.Plugin):
-	filename = '/etc/auto.master'
+	def get_filename(self)
+		return '/etc/auto.master'
 
 	def filter_name(self, fname):
 		if self.attrs['os'] == 'linux':
