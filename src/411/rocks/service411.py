@@ -66,6 +66,11 @@
 # @Copyright@
 #
 # $Log: service411.py,v $
+# Revision 1.12  2011/04/26 03:30:26  anoop
+# Support for pre-send filtering of content,
+# and post receive actions.
+# Minor cleanup in the way temp files are created.
+#
 # Revision 1.11  2011/04/21 21:29:05  anoop
 # Bug fix
 #
@@ -362,6 +367,8 @@ class Service411:
 
 		self.config = Conf(self)
 		self.config.parse()
+
+		self.plugin = None
 
 		# A regex for our header search.
 		pattern = "\n*(?P<comment>.*?)\$411id\$"
@@ -719,6 +726,7 @@ class Service411:
 		meta = {}
 		p = Parser(plaintext, self.attrs)
 		meta = p.get_filtered_content()
+		self.plugin = p.get_plugin()
 		return meta['content'], meta
 		
 		
@@ -778,14 +786,13 @@ class Service411:
 			elif stat.S_ISREG(mode):
 				path, name = os.path.split(filename)
 				mkdir(path)
-				filenameTmp="%s.411tmp" % filename
-				f = open(filenameTmp, "w")
-				os.chown(filenameTmp, uid, gid)
-				os.chmod(filenameTmp, stat.S_IMODE(mode))
-				f.write(contents)
-				f.close()
+				(f, tmp_filename) = tempfile.mkstemp()
+				os.write(f, contents)
+				os.close(f)
+				os.chown(tmp_filename, uid, gid)
+				os.chmod(tmp_filename, stat.S_IMODE(mode))
 				# mv temp file
-				shutil.move(filenameTmp,filename)
+				shutil.move(tmp_filename, filename)
 				
 			else:
 				raise Error411, \
@@ -853,6 +860,8 @@ class Parser:
 		# the filter, and can be used by the filter
 		# to determine code paths.
 		self.attrs = attrs
+
+		self.plugin = None
 
 		# Contains the output of the filtering process.
 		self.filtered = {}
@@ -926,13 +935,13 @@ class Parser:
 		mod_name = os.path.basename(dir)
 		sys.path.append(base_dir)
 		m = __import__(mod_name)
-		plugin = m.Plugin(self.attrs)
+		self.plugin = m.Plugin(self.attrs)
 
 		# Filter the original content, and set
 		# the new content.
 		for i in self.dict411:
 			try:
-				self.filtered[i] = eval('plugin.filter_%s(self.dict411[i])' % i)
+				self.filtered[i] = eval('self.plugin.filter_%s(self.dict411[i])' % i)
 			except AttributeError:
 				self.filtered[i] = self.dict411[i]
 
@@ -942,6 +951,10 @@ class Parser:
 		os.unlink('%s/__init__.pyc' % dir)
 		os.rmdir(dir)
 		
+
+	def get_plugin(self):
+		return self.plugin
+
 	def get_text(self, node):
 		# This function returns the base64 unencoded
 		# text present inside an xml tag.

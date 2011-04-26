@@ -3,7 +3,7 @@
 # Retrives a file using HTTPS for the 411 service. Assumes
 # the master servers are running Apache with mod_ssl.
 # 
-# $Id: 411get.py,v 1.7 2010/09/07 23:52:48 bruno Exp $
+# $Id: 411get.py,v 1.8 2011/04/26 03:30:26 anoop Exp $
 #
 # @Copyright@
 # 
@@ -59,6 +59,11 @@
 # @Copyright@
 #
 # $Log: 411get.py,v $
+# Revision 1.8  2011/04/26 03:30:26  anoop
+# Support for pre-send filtering of content,
+# and post receive actions.
+# Minor cleanup in the way temp files are created.
+#
 # Revision 1.7  2010/09/07 23:52:48  bruno
 # star power for gb
 #
@@ -165,7 +170,23 @@ If no filename is given, a list of 411 files is returned."""
 					contents, meta = self.get(file)
 					self.write(contents, meta, files[file])
 					print "Wrote:", meta['name']
-
+					# Support for post() function in the filter.
+					# This function is run after the file is obtained
+					# and written to disk.
+					# Check to see if post() function exists in plugin
+					try:
+						f = getattr(self.plugin, 'post')
+						f()
+					# If not, don't worry about it.
+					except AttributeError:
+						pass
+					# If it does exist, but something else goes wrong
+					# complain to the admin about it.
+					except:
+						sys.stderr.write("Could not complete 'post()' " +\
+							"for %s\n" % file)
+						sys.stderr.write("%s: %s\n" \
+							% (sys.exc_info()[0], sys.exc_info()[1]))
 		except ValueError:
 			raise
 			# Thrown by connect() called by get().

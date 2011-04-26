@@ -6,7 +6,7 @@
 #
 # Requires Python 2.1 or better
 #
-# $Id: 411put.py,v 1.11 2010/11/20 20:57:49 bruno Exp $
+# $Id: 411put.py,v 1.12 2011/04/26 03:30:27 anoop Exp $
 #
 # @Copyright@
 # 
@@ -62,6 +62,11 @@
 # @Copyright@
 #
 # $Log: 411put.py,v $
+# Revision 1.12  2011/04/26 03:30:27  anoop
+# Support for pre-send filtering of content,
+# and post receive actions.
+# Minor cleanup in the way temp files are created.
+#
 # Revision 1.11  2010/11/20 20:57:49  bruno
 # on a 'rocks sync config', we need to update /opt/rocks/etc/four11putrc
 # with the private address and CIDR netmask to tell 411put where the local
@@ -387,7 +392,8 @@ absolute path (after any chroots) will be maintained on clients."""
 			mod = __import__(mod_name)
 			# Get the filename that the plugin will
 			# process
-			if mod.Plugin().filename == fullpath:
+			plugin = mod.Plugin()
+			if plugin.filename == fullpath:
 				mod_file = plugin_file
 				break
 		if mod_file == None:
@@ -411,7 +417,18 @@ absolute path (after any chroots) will be maintained on clients."""
 		if stat.S_ISREG(mode):
 			file = open(filename, 'r')
 			plaintext += "<content>\n<![CDATA[\n"
-			plaintext += base64.b64encode(file.read())
+
+			content = file.read()
+			# Support for pre-send function
+			try:
+				# if the pre_send function exists in the plugin
+				# filter the content through it, before sending
+				# it over
+				f = getattr(plugin, 'pre_send')
+				content = f(content)
+			except AttributeError:
+				pass
+			plaintext += base64.b64encode(content)
 			plaintext += "]]>\n</content>\n"
 			file.close()
 
