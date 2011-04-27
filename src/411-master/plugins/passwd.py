@@ -1,4 +1,4 @@
-# $Id: passwd.py,v 1.7 2011/04/26 23:23:27 anoop Exp $
+# $Id: passwd.py,v 1.8 2011/04/27 00:20:52 anoop Exp $
 
 # @Copyright@
 # 
@@ -54,6 +54,11 @@
 # @Copyright@
 
 # $Log: passwd.py,v $
+# Revision 1.8  2011/04/27 00:20:52  anoop
+# Transfer only password entries which are greater than UID 500
+# Also merge entries into the password file rather than overwriting them
+# Merge entries so that only users with UID > 500 are overwritten.
+#
 # Revision 1.7  2011/04/26 23:23:27  anoop
 # Minor modification to 411put. Use a get_filename function instead of
 # a filename constant.
@@ -90,6 +95,7 @@ import os
 import sys
 import rocks
 import rocks.service411
+import string
 
 class Plugin(rocks.service411.Plugin):
 
@@ -98,60 +104,64 @@ class Plugin(rocks.service411.Plugin):
 	def get_filename(self):
 		return "/etc/passwd"
 
-	# Function to filter the content of the passwd file
-	def filter_content(self, content):
-
-		# List of usernames to avoid, irrespective
-		# of the UID
-		avoid_uname = [
+	# List of usernames to avoid transferring
+	# that may have UIDs greater than 500
+	def avoid_uname(self):
+		return [
 			'nobody',
 			'nobody4',
 			'noaccess',
 			'nfsnobody',
 			]
 
-		# If the client is a linux box
-		# just return the original content
-		if self.attrs['os'] == 'linux':
-			return content
-
-		# If not, then start filtering
+	def pre_send(self, content):
+		
 		content = content.rstrip('\n')
 		content_lines = content.split('\n')
 
-		# Get all users greater than 500
-		# except for users.
-		user_list = ''
-		for line in content_lines:
-			line = line.strip()
-			entry = line.split(':')
-			uid = int(entry[2])
-			username = entry[0].strip()
-			if uid >= 500 and \
-				username not in avoid_uname:
-				user_list = user_list + line + '\n'
+		# Get a list of all usernames in passwd file
+		# that are over UID 500
+		
+		# Reduce lines to only those whose UID >= 500
+		lp = filter(self.uid_f, content_lines)
 
-		# Open the password file. and read 
-		# it's contents, so that we can
-		# maintain the UID's less than 500
-		# Also maintain all usernames like
-		# nobody, nobody4, etc for solaris
+		return string.join(lp, '\n') + '\n'
+
+	# Function that returns true if UID >= 500
+	def uid_f(self, x):
+		l = x.split(':')
+		if int(l[2]) < 500:
+			return False
+		if l[0] in self.avoid_uname():
+			return False
+		return True
+
+	# Function to filter the content of the passwd file
+	def filter_content(self, content):
+
+		content = content.rstrip('\n')
+		content_lines = content.split('\n')
+		
+		# Merge entries from existing passwd file and
+		# passwd file that we just downloaded.
+		pw_lam = lambda(x): (x.split(':')[0].strip(), x)
+		recv_pw = dict(map(pw_lam, content_lines))
+		
+		# Original Password file
 		f = open('/etc/passwd', 'r')
-		passwd_lines = ''
-		line = ''
-		for line in f.readlines():
-			line = line.strip()
-			passwd_entry = line.split(':')
-			uid = int(passwd_entry[2])
-			username = passwd_entry[0].strip()
-			if uid < 500 or username in avoid_uname:
-				passwd_lines = passwd_lines + line + '\n'
+		lp = map(string.strip, f.readlines())
 		f.close()
+		new_pw = []
+		for line in lp:
+			u_name = line.split(':')[0].strip()
+			if self.uid_f(line) and recv_pw.has_key(u_name):
+				new_pw.append(recv_pw[u_name])
 
-		passwd_lines = passwd_lines + user_list
-
-		return passwd_lines
-
+			else:
+				new_pw.append(line)
+		
+		return string.join(new_pw, '\n') + '\n'
+		
 	def filter_owner(self, oid):
 		if self.attrs['os'] == 'linux':
 			return oid
