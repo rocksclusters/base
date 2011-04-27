@@ -1,4 +1,4 @@
-# $Id: auto_master.py,v 1.6 2011/04/26 23:23:27 anoop Exp $
+# $Id: auto_master.py,v 1.7 2011/04/27 00:02:31 anoop Exp $
 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 
 # $Log: auto_master.py,v $
+# Revision 1.7  2011/04/27 00:02:31  anoop
+# Bug fix
+#
 # Revision 1.6  2011/04/26 23:23:27  anoop
 # Minor modification to 411put. Use a get_filename function instead of
 # a filename constant.
@@ -88,7 +91,7 @@ import stat
 import rocks.service411
 
 class Plugin(rocks.service411.Plugin):
-	def get_filename(self)
+	def get_filename(self):
 		return '/etc/auto.master'
 
 	def filter_name(self, fname):
