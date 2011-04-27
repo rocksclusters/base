@@ -1,9 +1,12 @@
-# $Id: shadow.py,v 1.1 2011/04/26 23:24:04 anoop Exp $
+# $Id: shadow.py,v 1.2 2011/04/27 00:03:39 anoop Exp $
 #
 # @Copyright@
 # @Copyright@
 #
 # $Log: shadow.py,v $
+# Revision 1.2  2011/04/27 00:03:39  anoop
+# Minor improvements to the way shadow entries are transmitted.
+#
 # Revision 1.1  2011/04/26 23:24:04  anoop
 # Added shadow file plugin to only transfer shadow information
 # for users over UID 500
@@ -20,6 +23,16 @@ class Plugin(rocks.service411.Plugin):
 
 	def get_filename(self):
 		return '/etc/shadow'
+
+	# List of usernames to avoid transferring
+	# that may have UIDs greater than 500
+	def avoid_uname(self):
+		return [
+			'nobody',
+			'nobody4',
+			'noaccess',
+			'nfsnobody',
+			]
 
 	def pre_send(self, content):
 		
@@ -56,13 +69,13 @@ class Plugin(rocks.service411.Plugin):
 		return string.join(filtered_content, '\n') + '\n'
 
 	# Function that returns true if UID >= 500
-	@staticmethod
-	def uid_f(x):
+	def uid_f(self, x):
 		l = x.split(':')
-		if int(l[2]) >= 500:
-			return True
-		else:
+		if int(l[2]) < 500:
 			return False
+		if l[0] in self.avoid_uname():
+			return False
+		return True
 
 	@staticmethod
 	def get_shadow_lambda():
