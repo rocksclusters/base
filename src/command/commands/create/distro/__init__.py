@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.11 2010/10/01 14:21:44 bruno Exp $
+# $Id: __init__.py,v 1.12 2011/04/28 22:52:21 bruno Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,13 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.12  2011/04/28 22:52:21  bruno
+# Put the rocks-dist lock file back in place.
+#
+# This is important to have as one could build a new frontend and then
+# immediately run 'insert-ethers', discover some nodes, then the repo will be
+# swapped out from under them which will cause those installations to fail.
+#
 # Revision 1.11  2010/10/01 14:21:44  bruno
 # we no longer build torrent files
 #
@@ -168,6 +175,9 @@ class Command(rocks.commands.create.command):
 		#
 		# args = arch
 		#
+		lockfile = '/var/lock/rocks-dist'
+		os.system('touch %s' % lockfile)
+
 		(arch, version, withrolls, root, dist) = self.fillParams(
 			[ ('arch', self.arch),
 			('version', rocks.version),
@@ -250,4 +260,6 @@ class Command(rocks.commands.create.command):
 				shutil.rmtree(prevdist)
 			except:
 				pass
+
+		os.unlink(lockfile)
 
