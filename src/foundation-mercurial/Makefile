@@ -1,5 +1,5 @@
 # --------------------------------------------------- -*- Makefile -*- --
-# $Id: Makefile,v 1.10 2010/09/07 23:53:06 bruno Exp $
+# $Id: Makefile,v 1.11 2011/04/28 03:09:42 phil Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.11  2011/04/28 03:09:42  phil
+# Update mercurial version. Add docutils to foundation-python-extras
+#
 # Revision 1.10  2010/09/07 23:53:06  bruno
 # star power for gb
 #
@@ -89,7 +92,6 @@
 PKGROOT	= /opt/rocks
 
 REDHAT.ROOT = $(CURDIR)/../../
-ROCKSROOT = ../devel/devel
 -include $(ROCKSROOT)/etc/Rules.mk
 include Rules.mk
 -include $(ROCKSROOT)/etc/python.mk
