@@ -1,0 +1,7 @@
+<?xml version='1.0' standalone='no'?>
+
+<kickstart>
+<main os='linux'>
+	<rootpw>--iscrypted &Kickstart_PrivateRootPassword;</rootpw>
+</main>
+</kickstart>

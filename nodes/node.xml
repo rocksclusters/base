@@ -18,6 +18,10 @@
 
   <changelog>
   $Log: node.xml,v $
+  Revision 1.20  2011/05/10 00:48:03  anoop
+  Frontend root password is set to Kickstart_RootPassword attribute
+  Client root password is generated at random
+
   Revision 1.19  2010/09/07 23:52:46  bruno
   star power for gb
 
@@ -307,10 +311,6 @@
   main and packages section is correct for compute nodes
 
   </changelog>
-
-  <main os='linux'>
-    <rootpw>--iscrypted &Kickstart_PrivateRootPassword;</rootpw>
-  </main>
 
   <package os='linux'>rocks-config</package>
   <package os='linux'>sudo</package>
