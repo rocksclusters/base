@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.6 2011/05/10 05:12:47 anoop Exp $
+# $Id: __init__.py,v 1.7 2011/05/10 18:35:01 anoop Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.7  2011/05/10 18:35:01  anoop
+# mysql does not like it if you don't quote values
+#
 # Revision 1.6  2011/05/10 05:12:47  anoop
 # Move shadow attributes out of attributes tables.
 # Seperate secure attributes table for all attributes
@@ -155,11 +158,11 @@ class Command(rocks.commands.set.appliance.command):
 			self.db.execute("""
 				insert into appliance_attributes values 
 				((select id from appliances where name='%s'), 
-				'%s', %s)
+				'%s', '%s')
 				""" % (appliance, attr, value))
 		else:
 			self.db.execute("""update appliance_attributes
-				set value = %s where attr = '%s' and
+				set value = '%s' where attr = '%s' and
 				appliance = (select id from appliances
 				where name = '%s') """ % (value, attr,
 				appliance)) 

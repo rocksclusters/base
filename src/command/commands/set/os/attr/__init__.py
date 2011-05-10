@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.6 2011/05/10 05:12:47 anoop Exp $
+# $Id: __init__.py,v 1.7 2011/05/10 18:35:02 anoop Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.7  2011/05/10 18:35:02  anoop
+# mysql does not like it if you don't quote values
+#
 # Revision 1.6  2011/05/10 05:12:47  anoop
 # Move shadow attributes out of attributes tables.
 # Seperate secure attributes table for all attributes
@@ -133,7 +136,7 @@ class Command(rocks.commands.set.os.command):
 				('%s', '%s', %s)""" % (os, attr, value))
 		else:
 			self.db.execute("""update os_attributes set
-				value = %s where os = '%s' and
+				value = '%s' where os = '%s' and
 				attr = '%s' """ % (value, os, attr))
 
 

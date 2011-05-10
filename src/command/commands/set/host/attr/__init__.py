@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.7 2011/05/10 05:12:47 anoop Exp $
+# $Id: __init__.py,v 1.8 2011/05/10 18:35:02 anoop Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.8  2011/05/10 18:35:02  anoop
+# mysql does not like it if you don't quote values
+#
 # Revision 1.7  2011/05/10 05:12:47  anoop
 # Move shadow attributes out of attributes tables.
 # Seperate secure attributes table for all attributes
@@ -156,11 +159,11 @@ class Command(rocks.commands.set.host.command):
 			self.db.execute("""
 				insert into node_attributes values 
 				((select id from nodes where name='%s'), 
-				'%s', %s)
+				'%s', '%s')
 				""" % (host, attr, value))
 		else:
 			self.db.execute("""update node_attributes set
-				value = %s where attr = '%s' and
+				value = '%s' where attr = '%s' and
 				node = (select id from nodes where
 				name = '%s') """ % (value, attr, host)) 
 

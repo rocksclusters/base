@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.8 2011/05/10 05:12:47 anoop Exp $
+# $Id: __init__.py,v 1.9 2011/05/10 18:35:02 anoop Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.9  2011/05/10 18:35:02  anoop
+# mysql does not like it if you don't quote values
+#
 # Revision 1.8  2011/05/10 05:12:47  anoop
 # Move shadow attributes out of attributes tables.
 # Seperate secure attributes table for all attributes
@@ -151,9 +154,9 @@ class Command(rocks.commands.set.command):
 			where attr='%s'""" % attr)
 		if not rows:
 			self.db.execute("""insert into global_attributes
-				values ('%s', %s)""" % (attr, value))
+				values ('%s', '%s')""" % (attr, value))
 		else:
 			self.db.execute("""update global_attributes
-				set value = %s where attr = '%s'""" %
+				set value = '%s' where attr = '%s'""" %
 				(value, attr))
 
