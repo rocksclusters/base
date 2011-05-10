@@ -1,5 +1,5 @@
 # --------------------------------------------------- -*- Makefile -*- --
-# $Id: Makefile,v 1.27 2011/05/10 00:45:27 anoop Exp $
+# $Id: Makefile,v 1.28 2011/05/10 17:15:12 anoop Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.28  2011/05/10 17:15:12  anoop
+# Stupid permissions
+#
 # Revision 1.27  2011/05/10 00:45:27  anoop
 # Random password generator
 #
@@ -319,8 +322,8 @@ ROCKSROOT       = ../devel/devel
 -include $(ROCKSROOT)/etc/Rules.mk
 include Rules.mk
 
-ROOTONLY	= big-red-button rocks-user-sync shoot-node gen_root_pw
-ANYONE		= cluster-fork cluster-kill rocks-console
+ROOTONLY	= big-red-button rocks-user-sync shoot-node
+ANYONE		= cluster-fork cluster-kill rocks-console gen_root_pw
 SCRIPTS		= $(ANYONE) $(ROOTONLY)
 
 build::
