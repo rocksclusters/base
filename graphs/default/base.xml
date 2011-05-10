@@ -4,6 +4,10 @@
 
 	<changelog>
 	$Log: base.xml,v $
+	Revision 1.66  2011/05/10 00:53:42  anoop
+	Generate random root password for client nodes
+	Setup database security through scripts
+	
 	Revision 1.65  2011/04/07 20:32:15  phil
 	One missing tag can ruin your whole install
 	
@@ -284,6 +288,10 @@
 	</order>
 
 	<order head="database-data">
+		<tail>database-sec</tail>
+	</order>
+
+	<order head="database-data">
 		<tail>rocks-dist</tail>
 		<tail>install</tail>
 		<tail>routes-client</tail>
@@ -371,6 +379,14 @@
 
 	<edge to="client">
 		<from>compute-appliance</from>
+	</edge>
+
+	<edge from="server">
+		<to>server-rootpw</to>
+	</edge>
+
+	<edge from="client">
+		<to>client-rootpw</to>
 	</edge>
 
 	<edge from="nas">
@@ -532,6 +548,7 @@
 	<edge from="database">
 		<to>database-schema</to>
 		<to>database-data</to>
+		<to>database-sec</to>
 	</edge>
 	
 	<edge from="wan" to="null"/>
