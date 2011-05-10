@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.3 2010/09/07 23:52:50 bruno Exp $
+# $Id: __init__.py,v 1.4 2011/05/10 05:12:47 anoop Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,12 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.4  2011/05/10 05:12:47  anoop
+# Move shadow attributes out of attributes tables.
+# Seperate secure attributes table for all attributes
+# that we want to hide. These attributes will never
+# be passed through kickstart.
+#
 # Revision 1.3  2010/09/07 23:52:50  bruno
 # star power for gb
 #
@@ -121,18 +127,9 @@ class Command(rocks.commands.add.os.command):
 		for os in oses:
 			self.checkOSAttr(os, attr, value)
 
-		shadow, = self.fillParams([ ('shadow', 'n') ])
-
-		if self.str2bool(shadow):
-			s = "'%s'" % value
-			v = 'NULL'
-		else:
-			s = 'NULL'
-			v = "'%s'" % value
-
 		for os in oses:
 			self.db.execute("""insert into os_attributes values 
-				('%s', '%s', %s, %s)""" % (os, attr, v, s))
+				('%s', '%s', %s)""" % (os, attr, value))
 
 			
 	def checkOSAttr(self, os, attr, value):

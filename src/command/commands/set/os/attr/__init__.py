@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.5 2010/09/07 23:53:02 bruno Exp $
+# $Id: __init__.py,v 1.6 2011/05/10 05:12:47 anoop Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,12 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.6  2011/05/10 05:12:47  anoop
+# Move shadow attributes out of attributes tables.
+# Seperate secure attributes table for all attributes
+# that we want to hide. These attributes will never
+# be passed through kickstart.
+#
 # Revision 1.5  2010/09/07 23:53:02  bruno
 # star power for gb
 #
@@ -100,11 +106,6 @@ class Command(rocks.commands.set.os.command):
 	same as value argument
 	</param>
 
-	<param type='boolean' name='shadow'>
-	If set to true, then set the 'shadow' value (only readable by root
-	and apache).
-	</param>
-
 	<example cmd='set os attr linux sge False'>
 	Sets the sge attribution to False for linux nodes
 	</example>
@@ -121,33 +122,18 @@ class Command(rocks.commands.set.os.command):
 		if not value:
 			self.about('missing value of attribute')
 
-		shadow, = self.fillParams([ ('shadow', 'n') ])
-
-		if self.str2bool(shadow):
-			s = "'%s'" % value
-			v = 'NULL'
-		else:
-			s = 'NULL'
-			v = "'%s'" % value
-
 		for os in oses:
-			self.setOSAttr(os, attr, v, s)
+			self.setOSAttr(os, attr, value)
 			
-	def setOSAttr(self, os, attr, value, shadow):
+	def setOSAttr(self, os, attr, value):
 		rows = self.db.execute("""select * from os_attributes where
 			os='%s' and attr='%s'""" % (os, attr))
 		if not rows:
 			self.db.execute("""insert into os_attributes values 
-				('%s', '%s', %s, %s)""" % (os, attr, value,
-				shadow))
+				('%s', '%s', %s)""" % (os, attr, value))
 		else:
-			if value != 'NULL':
-				self.db.execute("""update os_attributes set
-					value = %s where os = '%s' and
-					attr = '%s' """ % (value, os, attr))
-			else:
-				self.db.execute("""update os_attributes set
-					shadow = %s where os = '%s' and
-					attr = '%s' """ % (shadow, os, attr))
+			self.db.execute("""update os_attributes set
+				value = %s where os = '%s' and
+				attr = '%s' """ % (value, os, attr))
 
 

@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.3 2010/09/07 23:52:49 bruno Exp $
+# $Id: __init__.py,v 1.4 2011/05/10 05:12:46 anoop Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,12 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.4  2011/05/10 05:12:46  anoop
+# Move shadow attributes out of attributes tables.
+# Seperate secure attributes table for all attributes
+# that we want to hide. These attributes will never
+# be passed through kickstart.
+#
 # Revision 1.3  2010/09/07 23:52:49  bruno
 # star power for gb
 #
@@ -130,21 +136,12 @@ class Command(rocks.commands.add.appliance.command):
 		for appliance in appliances:
 			self.checkApplianceAttr(appliance, attr, value)
 
-		shadow, = self.fillParams([ ('shadow', 'n') ])
-
-		if self.str2bool(shadow):
-			s = "'%s'" % value
-			v = 'NULL'
-		else:
-			s = 'NULL'
-			v = "'%s'" % value
-
 		for appliance in appliances:
 			self.db.execute("""
 				insert into appliance_attributes values 
 				((select id from appliances where name='%s'), 
-				'%s', %s, %s)
-				""" % (appliance, attr, v, s))
+				'%s', %s)
+				""" % (appliance, attr, value))
 			
 
 	def checkApplianceAttr(self, appliance, attr, value):

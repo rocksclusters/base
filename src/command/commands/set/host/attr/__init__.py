@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.6 2010/09/07 23:53:01 bruno Exp $
+# $Id: __init__.py,v 1.7 2011/05/10 05:12:47 anoop Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,12 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.7  2011/05/10 05:12:47  anoop
+# Move shadow attributes out of attributes tables.
+# Seperate secure attributes table for all attributes
+# that we want to hide. These attributes will never
+# be passed through kickstart.
+#
 # Revision 1.6  2010/09/07 23:53:01  bruno
 # star power for gb
 #
@@ -114,11 +120,6 @@ class Command(rocks.commands.set.host.command):
 	same as value argument
 	</param>
 
-	<param type='boolean' name='shadow'>
-	If set to true, then set the 'shadow' value (only readable by root
-	and apache).
-	</param>
-
 	<example cmd='set host attr compute-0-0 cpus 2'>
 	Sets the number of cpus of compute-0-0 to 2
 	</example>
@@ -141,20 +142,11 @@ class Command(rocks.commands.set.host.command):
 		if not value:
 			self.about('missing value of attribute')
 
-		shadow, = self.fillParams([ ('shadow', 'n') ])
-
-		if self.str2bool(shadow):
-			s = "'%s'" % value
-			v = 'NULL'
-		else:
-			s = 'NULL'
-			v = "'%s'" % value
-
 		for host in hosts:
-			self.setHostAttr(host, attr, v, s)
+			self.setHostAttr(host, attr, value)
 
 			
-	def setHostAttr(self, host, attr, value, shadow):
+	def setHostAttr(self, host, attr, value):
 		rows = self.db.execute("""
 			select * from node_attributes where
 			node=(select id from nodes where name='%s') and
@@ -164,17 +156,11 @@ class Command(rocks.commands.set.host.command):
 			self.db.execute("""
 				insert into node_attributes values 
 				((select id from nodes where name='%s'), 
-				'%s', %s, %s)
-				""" % (host, attr, value, shadow))
+				'%s', %s)
+				""" % (host, attr, value))
 		else:
-			if value != 'NULL':
-				self.db.execute("""update node_attributes set
-					value = %s where attr = '%s' and
-					node = (select id from nodes where
-					name = '%s') """ % (value, attr, host)) 
-			else:
-				self.db.execute("""update node_attributes set
-					shadow = %s where attr = '%s' and
-					node = (select id from nodes where
-					name = '%s') """ % (shadow, attr, host)) 
+			self.db.execute("""update node_attributes set
+				value = %s where attr = '%s' and
+				node = (select id from nodes where
+				name = '%s') """ % (value, attr, host)) 
 
