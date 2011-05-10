@@ -17,6 +17,9 @@
 
   <changelog>
   $Log: database.xml,v $
+  Revision 1.33  2011/05/10 00:53:13  anoop
+  Moved grants for apache to a python script
+
   Revision 1.32  2010/09/07 23:52:46  bruno
   star power for gb
 
@@ -363,12 +366,6 @@ while [ $? -eq 1 ]; do
         sleep 1
         /opt/rocks/bin/mysqladmin -s ping > /dev/null
 done
-
-<file name="/tmp/perms.sql" perms="0400">
-grant select,update,insert,delete,lock tables on cluster.* to apache@localhost;
-grant select,update,insert,delete,lock tables on cluster.* to apache@"&Kickstart_PrivateHostname;";
-</file>
-/opt/rocks/bin/mysql --user=root --password='' mysql &lt; /tmp/perms.sql
 
 </post>
 
