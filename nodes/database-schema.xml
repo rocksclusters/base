@@ -18,6 +18,9 @@
 
   <changelog>
   $Log: database-schema.xml,v $
+  Revision 1.50  2011/05/10 23:35:44  anoop
+  Bug fix
+
   Revision 1.49  2011/05/10 00:52:19  anoop
   Remove shadow attributes from attributes tables
   added secure attributes tables
@@ -377,14 +380,14 @@ CREATE TABLE node_attributes (
 <!-- Secure Attributes -->
 
 DROP TABLE IF EXISTS sec_global_attributes;
-CREATE TABLE global_attributes (
+CREATE TABLE sec_global_attributes (
   Attr          varchar(128) default NULL,
   Value         text,
   Enc		varchar(64) default NULL
 ) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS sec_node_attributes;
-CREATE TABLE node_attributes (
+CREATE TABLE sec_node_attributes (
   Node		int(11) NOT NULL default '0',
   Attr		varchar(128) default NULL,
   Value		text,
