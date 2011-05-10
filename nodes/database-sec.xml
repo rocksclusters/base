@@ -22,10 +22,10 @@ db.execute('show tables')
 tables = db.fetchall()
 sec_re = re.compile('sec_[a-zA-Z]*_attributes')
 cmd_set = []
+cmd_set.append('grant all on cluster.* to "root"@"localhost"')
+cmd_set.append('grant all on cluster.* to "root"@"%%.local"')
 for (tab_name,) in tables:
 	if sec_re.match(tab_name):
-		cmd_set.append('grant usage on cluster.%s to ""@"localhost"' % tab_name)
-		cmd_set.append('grant usage on cluster.%s to ""@"%%.local"' % tab_name)
 		cmd_set.append('grant usage on cluster.%s to "apache"@"localhost"' % tab_name)
 		cmd_set.append('grant usage on cluster.%s to "apache"@"&Kickstart_PrivateHostname;"' % tab_name)
 
