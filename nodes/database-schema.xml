@@ -18,6 +18,12 @@
 
   <changelog>
   $Log: database-schema.xml,v $
+  Revision 1.49  2011/05/10 00:52:19  anoop
+  Remove shadow attributes from attributes tables
+  added secure attributes tables
+  moved grants for each table from hardcoded SQL statements
+  to a script that generates the grant permissions
+
   Revision 1.48  2010/09/07 23:52:46  bruno
   star power for gb
 
@@ -335,55 +341,55 @@ CREATE TABLE aliases (
   PRIMARY KEY (ID)
 ) TYPE=MyISAM;
 
-grant select on cluster.aliases to ''@'localhost';
-grant select on cluster.aliases to ''@'%.local';
 
 <!-- Attributes -->
 
 DROP TABLE IF EXISTS global_attributes;
 CREATE TABLE global_attributes (
   Attr          varchar(128) default NULL,
-  Value         text,
-  Shadow        text
+  Value         text
 ) TYPE=MyISAM;
 
-grant select (attr, value) on cluster.global_attributes to ''@'localhost';
-grant select (attr, value) on cluster.global_attributes to ''@'%.local';
 
 DROP TABLE IF EXISTS os_attributes;
 CREATE TABLE os_attributes (
   OS		enum('sunos','linux') NOT NULL default 'linux',
   Attr          varchar(128) default NULL,
-  Value         text,
-  Shadow        text
+  Value         text
 ) TYPE=MyISAM;
 
-grant select (os, attr, value) on cluster.os_attributes to ''@'localhost';
-grant select (os, attr, value) on cluster.os_attributes to ''@'%.local';
 
 DROP TABLE IF EXISTS appliance_attributes;
 CREATE TABLE appliance_attributes (
   Appliance     int(11) NOT NULL default '0',
   Attr          varchar(128) default NULL,
-  Value         text,
-  Shadow        text
+  Value         text
 ) TYPE=MyISAM;
 
-grant select (appliance, attr, value) on cluster.appliance_attributes
-	to ''@'localhost';
-grant select (appliance, attr, value) on cluster.appliance_attributes
-	to ''@'%.local';
 
 DROP TABLE IF EXISTS node_attributes;
 CREATE TABLE node_attributes (
   Node		int(11) NOT NULL default '0',
   Attr		varchar(128) default NULL,
-  Value		text,
-  Shadow        text
+  Value		text
 ) TYPE=MyISAM;
 
-grant select (node, attr, value) on cluster.node_attributes to ''@'localhost';
-grant select (node, attr, value) on cluster.node_attributes to ''@'%.local';
+<!-- Secure Attributes -->
+
+DROP TABLE IF EXISTS sec_global_attributes;
+CREATE TABLE global_attributes (
+  Attr          varchar(128) default NULL,
+  Value         text,
+  Enc		varchar(64) default NULL
+) TYPE=MyISAM;
+
+DROP TABLE IF EXISTS sec_node_attributes;
+CREATE TABLE node_attributes (
+  Node		int(11) NOT NULL default '0',
+  Attr		varchar(128) default NULL,
+  Value		text,
+  Enc		varchar(64) default NULL
+) TYPE=MyISAM;
 
 <!-- App_Globals -->
 
@@ -398,8 +404,6 @@ CREATE TABLE app_globals (
   PRIMARY KEY (ID)
 ) TYPE=MyISAM;
 
-grant select on cluster.app_globals to ''@'localhost';
-grant select on cluster.app_globals to ''@'%.local';
 
 <!-- Appliances -->
 
@@ -413,8 +417,6 @@ CREATE TABLE appliances (
   PRIMARY KEY (ID)
 ) TYPE=MyISAM;
 
-grant select on cluster.appliances to ''@'localhost';
-grant select on cluster.appliances to ''@'%.local';
 
 <!-- Distributions -->
 
@@ -427,8 +429,6 @@ CREATE TABLE distributions (
   PRIMARY KEY (ID)
 ) TYPE=MyISAM;
 
-grant select on cluster.distributions to ''@'localhost';
-grant select on cluster.distributions to ''@'%.local';
 
 <!-- Memberships -->
 
@@ -442,8 +442,6 @@ CREATE TABLE memberships (
   PRIMARY KEY (ID)
 ) TYPE=MyISAM;
 
-grant select on cluster.memberships to ''@'localhost';
-grant select on cluster.memberships to ''@'%.local';
 
 <!-- Nodes
  NOT NORMALIZED: Name is a repeat from the networks table. Nodes.name should be
@@ -465,8 +463,6 @@ CREATE TABLE nodes (
   PRIMARY KEY  (ID)
 ) TYPE=MyISAM;
 
-grant select on cluster.nodes to ''@'localhost';
-grant select on cluster.nodes to ''@'%.local';
 
 <!-- Networks -->
 
@@ -488,8 +484,6 @@ CREATE TABLE networks (
   PRIMARY KEY(ID)
 ) TYPE=MyISAM;
 
-grant select on cluster.networks to ''@'localhost';
-grant select on cluster.networks to ''@'%.local';
 
 <!-- Subnets Table -->
 
@@ -505,8 +499,6 @@ CREATE TABLE subnets (
 	PRIMARY KEY(ID)
 ) TYPE=MyISAM;
 
-grant select on cluster.subnets to ''@'localhost';
-grant select on cluster.subnets to ''@'%.local';
 
 <!-- Routes -->
 
@@ -518,8 +510,6 @@ CREATE TABLE global_routes (
   Subnet	int(11)	default NULL references subnets
 ) TYPE=MyISAM;
 
-grant select on cluster.global_routes to ''@'localhost';
-grant select on cluster.global_routes to ''@'%.local';
 
 DROP TABLE IF EXISTS os_routes;
 CREATE TABLE os_routes (
@@ -530,8 +520,6 @@ CREATE TABLE os_routes (
   Subnet	int(11)	default NULL references subnets
 ) TYPE=MyISAM;
 
-grant select on cluster.os_routes to ''@'localhost';
-grant select on cluster.os_routes to ''@'%.local';
 
 DROP TABLE IF EXISTS appliance_routes;
 CREATE TABLE appliance_routes (
@@ -542,8 +530,6 @@ CREATE TABLE appliance_routes (
   Subnet	int(11)	default NULL references subnets
 ) TYPE=MyISAM;
 
-grant select on cluster.appliance_routes to ''@'localhost';
-grant select on cluster.appliance_routes to ''@'%.local';
 
 DROP TABLE IF EXISTS node_routes;
 CREATE TABLE node_routes (
@@ -554,8 +540,6 @@ CREATE TABLE node_routes (
   Subnet	int(11)	default NULL references subnets
 ) TYPE=MyISAM;
 
-grant select on cluster.node_routes to ''@'localhost';
-grant select on cluster.node_routes to ''@'%.local';
 
 <!-- Roll.  What Rolls are installed and used by default. -->
 
@@ -570,8 +554,6 @@ CREATE TABLE rolls (
   PRIMARY KEY (ID)
 ) TYPE=MyISAM;
 
-grant select on cluster.rolls to ''@'localhost';
-grant select on cluster.rolls to ''@'%.local';
 
 DROP TABLE IF EXISTS node_rolls;
 CREATE TABLE node_rolls (
@@ -579,8 +561,6 @@ CREATE TABLE node_rolls (
   RollID	int(11) NOT NULL
 ) TYPE=MyISAM;
 
-grant select on cluster.node_rolls to ''@'localhost';
-grant select on cluster.node_rolls to ''@'%.local';
 
 <!-- Partitions. stores all the partitions for all the appliances -->
 
@@ -599,8 +579,6 @@ CREATE TABLE partitions (
 	PRIMARY KEY (ID)
 ) TYPE=MyISAM;
 
-grant select on cluster.partitions to ''@'localhost';
-grant select on cluster.partitions to ''@'%.local';
 
 <!-- Boot/Action Tables -->
 DROP TABLE IF EXISTS boot;
@@ -611,8 +589,6 @@ CREATE TABLE boot (
   PRIMARY KEY (ID)
 ) TYPE=MyISAM;
 
-grant select on cluster.boot to ''@'localhost';
-grant select on cluster.boot to ''@'%.local';
 
 DROP TABLE IF EXISTS bootaction;
 CREATE TABLE bootaction (
@@ -624,8 +600,6 @@ CREATE TABLE bootaction (
   PRIMARY KEY (ID)
 ) TYPE=MyISAM;
 
-grant select on cluster.bootaction to ''@'localhost';
-grant select on cluster.bootaction to ''@'%.local';
 
 DROP TABLE IF EXISTS bootflags;
 CREATE TABLE bootflags (
@@ -635,8 +609,6 @@ CREATE TABLE bootflags (
   PRIMARY KEY (ID)
 ) TYPE=MyISAM;
 
-grant select on cluster.bootflags to ''@'localhost';
-grant select on cluster.bootflags to ''@'%.local';
 
 <!-- Firewall Tables -->
 
@@ -652,8 +624,6 @@ CREATE TABLE global_firewall (
   Comment       varchar(256) default NULL
 ) TYPE=MyISAM;
 
-grant select on cluster.global_firewall to ''@'localhost';
-grant select on cluster.global_firewall to ''@'%.local';
 
 DROP TABLE IF EXISTS os_firewall;
 CREATE TABLE os_firewall (
@@ -668,8 +638,6 @@ CREATE TABLE os_firewall (
   Comment       varchar(256) default NULL
 ) TYPE=MyISAM;
 
-grant select on cluster.os_firewall to ''@'localhost';
-grant select on cluster.os_firewall to ''@'%.local';
 
 DROP TABLE IF EXISTS appliance_firewall;
 CREATE TABLE appliance_firewall (
@@ -684,8 +652,6 @@ CREATE TABLE appliance_firewall (
   Comment       varchar(256) default NULL
 ) TYPE=MyISAM;
 
-grant select on cluster.appliance_firewall to ''@'localhost';
-grant select on cluster.appliance_firewall to ''@'%.local';
 
 DROP TABLE IF EXISTS node_firewall;
 CREATE TABLE node_firewall (
@@ -700,8 +666,6 @@ CREATE TABLE node_firewall (
   Comment       varchar(256) default NULL
 ) TYPE=MyISAM;
 
-grant select on cluster.node_firewall to ''@'localhost';
-grant select on cluster.node_firewall to ''@'%.local';
 
 DROP TABLE IF EXISTS public_keys;
 CREATE TABLE public_keys (
@@ -711,8 +675,6 @@ CREATE TABLE public_keys (
  PRIMARY KEY (ID)
 ) TYPE=MyISAM;
 
-grant select on cluster.public_keys to ''@'localhost';
-grant select on cluster.public_keys to ''@'%.local';
 
 </file>
 
