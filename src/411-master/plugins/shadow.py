@@ -1,9 +1,12 @@
-# $Id: shadow.py,v 1.2 2011/04/27 00:03:39 anoop Exp $
+# $Id: shadow.py,v 1.3 2011/05/11 19:29:16 anoop Exp $
 #
 # @Copyright@
 # @Copyright@
 #
 # $Log: shadow.py,v $
+# Revision 1.3  2011/05/11 19:29:16  anoop
+# Bug fix. Make sure even new entries get propogated
+#
 # Revision 1.2  2011/04/27 00:03:39  anoop
 # Minor improvements to the way shadow entries are transmitted.
 #
@@ -106,11 +109,17 @@ class Plugin(rocks.service411.Plugin):
 		recv_shadow_dict = dict(map(shadow_lam, content_lines))
 
 		new_shadow = []
+
+		# Merge existing entries in original shadow file
+		# with existing entries in received content
 		for entry in shadow:
 			u_name = entry[0]
 			if recv_shadow_dict.has_key(u_name):
-				new_shadow.append(recv_shadow_dict[u_name])
+				new_shadow.append(recv_shadow_dict.pop(u_name))
 			else:
 				new_shadow.append(entry[1])
 
+		for sh in recv_shadow_dict:
+			new_shadow.append(recv_shadow_dict[sh])
+			
 		return string.join(new_shadow, '\n') + '\n'

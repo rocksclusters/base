@@ -1,4 +1,4 @@
-# $Id: passwd.py,v 1.8 2011/04/27 00:20:52 anoop Exp $
+# $Id: passwd.py,v 1.9 2011/05/11 19:29:16 anoop Exp $
 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 
 # $Log: passwd.py,v $
+# Revision 1.9  2011/05/11 19:29:16  anoop
+# Bug fix. Make sure even new entries get propogated
+#
 # Revision 1.8  2011/04/27 00:20:52  anoop
 # Transfer only password entries which are greater than UID 500
 # Also merge entries into the password file rather than overwriting them
@@ -155,11 +158,14 @@ class Plugin(rocks.service411.Plugin):
 		for line in lp:
 			u_name = line.split(':')[0].strip()
 			if self.uid_f(line) and recv_pw.has_key(u_name):
-				new_pw.append(recv_pw[u_name])
+				new_pw.append(recv_pw.pop(u_name))
 
 			else:
 				new_pw.append(line)
 		
+		for pw in recv_pw:
+			new_pw.append(recv_pw[pw])
+
 		return string.join(new_pw, '\n') + '\n'
 		
 	def filter_owner(self, oid):
