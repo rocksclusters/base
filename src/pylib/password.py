@@ -29,10 +29,19 @@
 # ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #################################################################################
 # $Log: password.py,v $
+# Revision 1.2  2011/05/12 18:03:50  anoop
+# Added different encryption schemes to pylib
+#
 # Revision 1.1  2008/08/26 23:57:33  bruno
 # create a 'portable' password for wordpress
 #
 #
+
+import os
+import sys
+import string
+import sha
+import crypt
 
 class Password:
 	def __init__(self):
@@ -163,3 +172,27 @@ class Password:
 
 		return self.crypt_private(cleartext, '$P$B' + salt)
 
+class Enc:
+	def __init__(self):
+		pass
+
+	def enc_sha(self, value):
+        	s = sha.sha(value)
+        	return s.hexdigest()
+                                                
+        def enc_shasha(self, value):
+        	s = sha.sha(value)
+		t = sha.sha(s.digest())
+		return t.hexdigest()
+
+        def enc_crypt(self, value):
+        	salt = '$1$'
+        	for i in range(0, 8):
+        		salt += random.choice(
+        		string.ascii_letters +
+        		string.digits + './')
+        	return crypt.crypt(value, salt)
+        
+        def enc_portable(self, value):
+        	p = Password()
+        	return p.create_password(value)
