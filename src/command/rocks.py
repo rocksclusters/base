@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: rocks.py,v $
+# Revision 1.27  2011/05/12 21:44:54  anoop
+# Dont barf if space exists around a password
+#
 # Revision 1.26  2010/09/07 23:52:49  bruno
 # star power for gb
 #
@@ -173,8 +176,8 @@ try:
 	file=open('/opt/rocks/etc/my.cnf','r')
 	for line in file.readlines():
 		l=string.split(line[:-1],'=')
-		if len(l) > 1 and l[0] == "password":
-			passwd = l[1]	
+		if len(l) > 1 and l[0].strip() == "password":
+			passwd = l[1].strip()
 			break
 	file.close()
 except:

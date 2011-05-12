@@ -92,7 +92,7 @@ cmd_set.append('set password for root@&Kickstart_PrivateHostname;=PASSWORD("%s")
 # Add root password access to root MySQL config file
 f = open('/root/.rocks.my.cnf', 'w')
 f.write('[client]\n')
-f.write('password=%s\n' % root_pass)
+f.write('password\t= %s\n' % root_pass)
 f.close()
 
 for cmd in cmd_set:
