@@ -18,6 +18,18 @@ This file is used as a connection point for other XML configuration nodes.
 
 <changelog>
 $Log: client.xml,v $
+Revision 1.16  2011/05/12 18:19:21  anoop
+dbhost set for all clients except devel-servers.
+Needs to be made more generic to support all
+database installs.
+
+Database Security now set programmatically.
+All users have "SELECT" access on some tables
+apache has few more privs on some tables
+Root has all access to all.
+
+All passwords are random.
+
 Revision 1.15  2010/12/15 19:17:32  bruno
 make sure clients can access the database via the rocks command line
 
@@ -109,7 +121,9 @@ touch /tmp/rocks-skip-welcome
 <file name="/var/cluster/frontend">
 &Kickstart_PrivateAddress;
 </file>
+</post>
 
+<post cond="appliance != 'devel-server'">
 <!-- get the name of the database host into the rocks command line -->
 <eval mode="xml">
 /opt/rocks/bin/rocks report dbhost

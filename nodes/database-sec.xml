@@ -2,14 +2,18 @@
 
 <kickstart>
 
+<!-- Set permissions on the database -->
 <post interpreter='/opt/rocks/bin/python'>
 import os
 import sys
 import re
-from MySQLdb import *
+import string
+import base64
 
-d = connect(user='root',
-	db='cluster',
+import MySQLdb
+
+# Connect to the database to set permissions
+d = MySQLdb.connect(user='root', db='cluster', passwd='',
 	unix_socket='/var/opt/rocks/mysql/mysql.sock')
 
 try:
@@ -17,27 +21,95 @@ try:
 except:
 	sys.exit(-1)
 
+# Get a list of all tables in the database
 db.execute('show tables')
-
 tables = db.fetchall()
-sec_re = re.compile('sec_[a-zA-Z]*_attributes')
-cmd_set = []
-cmd_set.append('grant all on cluster.* to "root"@"localhost"')
-cmd_set.append('grant all on cluster.* to "root"@"%%.local"')
-for (tab_name,) in tables:
-	if sec_re.match(tab_name):
-		cmd_set.append('grant usage on cluster.%s to "apache"@"localhost"' % tab_name)
-		cmd_set.append('grant usage on cluster.%s to "apache"@"&Kickstart_PrivateHostname;"' % tab_name)
 
+# Reg-exp to match secure attributes tables
+sec_re = re.compile('sec_[a-zA-Z]*_attributes')
+
+# Set of commands that will set db permissions
+cmd_set = []
+
+# For each table set permissions
+for (tab_name,) in tables:
+	# If the table is a secure attributes table, move on
+	if sec_re.match(tab_name):
+		continue
+	# Otherwise explicitly grant some privileges
 	else:
 		cmd_set.append('grant select on cluster.%s to ""@"localhost"' % tab_name)
 		cmd_set.append('grant select on cluster.%s to ""@"%%.local"' % tab_name)
-		cmd_set.append('grant select,insert,update,delete,lock tables on cluster.%s to "apache"@"localhost"' % tab_name)
-		cmd_set.append('grant select, insert, update, delete, lock tables on cluster.%s to "apache"@"&Kickstart_PrivateHostname;"' % tab_name)
+		cmd_set.append('grant select,insert,update,delete on cluster.%s to "apache"@"localhost"' % tab_name)
+		cmd_set.append('grant select,insert,update,delete on cluster.%s to "apache"@"&Kickstart_PrivateHostname;"' % tab_name)
 
+# Finally grant apache the ability to lock a table if necessary
+cmd_set.append('grant lock tables on cluster.* to "apache"@"localhost"')
+cmd_set.append('grant lock tables on cluster.* to "apache"@"&Kickstart_PrivateHostname;"')
+
+# Run through the command set
+for cmd in cmd_set:
+	db.execute(cmd)
+
+</post>
+
+<!-- Access control on the database -->
+<post interpreter='/opt/rocks/bin/python'>
+import os
+import sys
+import re
+import string
+import base64
+
+import MySQLdb
+
+# Connect to the database to set security
+d = MySQLdb.connect(user='root', db='mysql', passwd='',
+	unix_socket='/var/opt/rocks/mysql/mysql.sock')
+
+try:
+	db = d.cursor()
+except:
+	sys.exit(-1)
+
+cmd_set = []
+
+# Password Access for the apache
+apache_pass = string.strip(base64.b64encode(os.urandom(16), './')[0:16])
+cmd_set.append('set password for apache@localhost=PASSWORD("%s")' % apache_pass)
+cmd_set.append('set password for apache@&Kickstart_PrivateHostname;=PASSWORD("%s")' % apache_pass)
+
+# Add password to the common MySQL config file
+f = open('/opt/rocks/etc/my.cnf', 'a')
+f.write("password\t= %s\n" % apache_pass)
+f.close()
+
+# Password Access for root
+root_pass = string.strip(base64.b64encode(os.urandom(16), './')[0:16])
+cmd_set.append('set password for root@localhost=PASSWORD("%s")' % root_pass)
+cmd_set.append('set password for root@&Kickstart_PrivateHostname;=PASSWORD("%s")' % root_pass)
+
+# Add root password access to root MySQL config file
+f = open('/root/.rocks.my.cnf', 'w')
+f.write('[client]\n')
+f.write('password=%s\n' % root_pass)
+f.close()
 
 for cmd in cmd_set:
 	db.execute(cmd)
+
+</post>
+
+<post>
+chown root:apache /opt/rocks/etc/my.cnf
+chmod 0640 /opt/rocks/etc/my.cnf
+
+chmod 0600 /root/.rocks.my.cnf
+
+<!-- use long passwords in the database -->
+<file name="/tmp/my.cnf" expr="grep -v '^old_passwords' /etc/my.cnf"/>
+<file name="/etc/my.cnf" perms="644" expr="cat /tmp/my.cnf"/>
+rm /tmp/my.cnf
 
 </post>
 </kickstart>

@@ -17,6 +17,18 @@
 
 <changelog>
   $Log: database-data.xml,v $
+  Revision 1.69  2011/05/12 18:19:21  anoop
+  dbhost set for all clients except devel-servers.
+  Needs to be made more generic to support all
+  database installs.
+
+  Database Security now set programmatically.
+  All users have "SELECT" access on some tables
+  apache has few more privs on some tables
+  Root has all access to all.
+
+  All passwords are random.
+
   Revision 1.68  2010/09/20 20:22:50  bruno
   use the 'primary_net' attribute to dictate which interface should be used
   as the 'primary'. we'll get the domain name from the subnets table and we'll
@@ -694,35 +706,6 @@ os.system('/opt/rocks/bin/rocks config host interface localhost iface="%s" \
 
 /opt/rocks/bin/rocks set host interface name  &Kickstart_PrivateHostname; eth1 \
 	&Kickstart_PrivateHostname;
-</post>
-
-<post>
-<!-- Password Access for the apache  and root user  Create Password -->
-clupass=`/bin/date +%d%m%y%H%M%S`
-export clupass
-
-<!-- now password protect the root user and apache user in database --> 
-<file name="/tmp/perms2.sql" perms="0400">
-update mysql.user set \
-	password='*&Kickstart_PrivateSHARootPassword;' \
-	where user='root';
-</file>
-echo "set password for apache@localhost=PASSWORD(\"$clupass\");" &gt;&gt; /tmp/perms2.sql
-echo "set password for apache@\"&Kickstart_PrivateHostname;\"=PASSWORD(\"$clupass\");" &gt;&gt; /tmp/perms2.sql
-
-echo "password=$clupass" &gt;&gt; /opt/rocks/etc/my.cnf
-chmod o-rwx /opt/rocks/etc/my.cnf
-chgrp apache /opt/rocks/etc/my.cnf
-
-<!-- use long passwords in the database -->
-<file name="/tmp/my.cnf" expr="grep -v '^old_passwords' /etc/my.cnf"/>
-<file name="/etc/my.cnf" perms="644" expr="cat /tmp/my.cnf"/>
-rm /tmp/my.cnf
-
-</post>
-
-<post>
-/opt/rocks/bin/mysql --user=root --password='' &lt; /tmp/perms2.sql
 </post>
 
 <post>
