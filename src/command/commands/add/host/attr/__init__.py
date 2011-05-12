@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.4 2011/05/10 05:12:47 anoop Exp $
+# $Id: __init__.py,v 1.5 2011/05/12 22:45:19 anoop Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.5  2011/05/12 22:45:19  anoop
+# Bug fix
+#
 # Revision 1.4  2011/05/10 05:12:47  anoop
 # Move shadow attributes out of attributes tables.
 # Seperate secure attributes table for all attributes
@@ -137,7 +140,7 @@ class Command(rocks.commands.add.host.command):
 		for host in hosts:
 			self.db.execute("""insert into node_attributes values 
 				((select id from nodes where name='%s'), 
-				'%s', %s)""" % (host, attr, value))
+				'%s', '%s')""" % (host, attr, value))
 	
 
 	def checkHostAttr(self, host, attr, value):

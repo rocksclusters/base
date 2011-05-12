@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.4 2011/05/10 05:12:46 anoop Exp $
+# $Id: __init__.py,v 1.5 2011/05/12 22:45:18 anoop Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.5  2011/05/12 22:45:18  anoop
+# Bug fix
+#
 # Revision 1.4  2011/05/10 05:12:46  anoop
 # Move shadow attributes out of attributes tables.
 # Seperate secure attributes table for all attributes
@@ -140,7 +143,7 @@ class Command(rocks.commands.add.appliance.command):
 			self.db.execute("""
 				insert into appliance_attributes values 
 				((select id from appliances where name='%s'), 
-				'%s', %s)
+				'%s', '%s')
 				""" % (appliance, attr, value))
 			
 
