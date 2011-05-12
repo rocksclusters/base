@@ -4,6 +4,10 @@
 
 	<changelog>
 	$Log: base.xml,v $
+	Revision 1.67  2011/05/12 21:46:30  anoop
+	Set security before putting data in. This way the command
+	line will function properly
+	
 	Revision 1.66  2011/05/10 00:53:42  anoop
 	Generate random root password for client nodes
 	Setup database security through scripts
@@ -287,8 +291,8 @@
 		<tail>database-data</tail>
 	</order>
 
-	<order head="database-data">
-		<tail>database-sec</tail>
+	<order head="database-sec">
+		<tail>database-data</tail>
 	</order>
 
 	<order head="database-data">
@@ -547,8 +551,8 @@
 
 	<edge from="database">
 		<to>database-schema</to>
-		<to>database-data</to>
 		<to>database-sec</to>
+		<to>database-data</to>
 	</edge>
 	
 	<edge from="wan" to="null"/>
