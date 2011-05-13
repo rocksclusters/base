@@ -6,7 +6,7 @@
 #
 # Requires Python 2.1 or better
 #
-# $Id: 411put.py,v 1.13 2011/04/26 23:23:26 anoop Exp $
+# $Id: 411put.py,v 1.14 2011/05/13 21:56:08 anoop Exp $
 #
 # @Copyright@
 # 
@@ -62,6 +62,9 @@
 # @Copyright@
 #
 # $Log: 411put.py,v $
+# Revision 1.14  2011/05/13 21:56:08  anoop
+# If plugin doesn't match reset plugin instance to None
+#
 # Revision 1.13  2011/04/26 23:23:26  anoop
 # Minor modification to 411put. Use a get_filename function instead of
 # a filename constant.
@@ -400,6 +403,8 @@ absolute path (after any chroots) will be maintained on clients."""
 			if plugin.get_filename() == fullpath:
 				mod_file = plugin_file
 				break
+			else:
+				plugin = None
 		if mod_file == None:
 			filter = None
 		else:
