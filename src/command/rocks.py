@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: rocks.py,v $
+# Revision 1.28  2011/05/13 21:37:35  anoop
+# Treat each user as themselves
+#
 # Revision 1.27  2011/05/12 21:44:54  anoop
 # Dont barf if space exists around a password
 #
@@ -170,10 +173,16 @@ syslog.openlog('rockscommand', syslog.LOG_PID, syslog.LOG_LOCAL0)
 
 # First try to read the cluster password (for apache)
 
+username = pwd.getpwuid(os.geteuid())[0]
 passwd = ''
 
+if username == 'root':
+	conf_file = '/root/.rocks.my.cnf'
+if username == 'apache':
+	conf_file = '/opt/rocks/etc/my.cnf'
+
 try:
-	file=open('/opt/rocks/etc/my.cnf','r')
+	file=open(conf_file,'r')
 	for line in file.readlines():
 		l=string.split(line[:-1],'=')
 		if len(l) > 1 and l[0].strip() == "password":
@@ -192,11 +201,6 @@ except:
 
 try:
 	from MySQLdb import *
-
-	if os.geteuid() == 0:
-		username = 'apache'
-	else:
-		username = pwd.getpwuid(os.geteuid())[0]
 
 	# Connect over UNIX socket if it exists, otherwise go over the
 	# network.
