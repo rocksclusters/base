@@ -140,6 +140,9 @@ class simpleCallback:
             self.size = po.returnSimple('installedsize')
 
             while self.files[nvra] == None:
+		# ROCKS
+		retries = 0
+		# ROCKS
                 try:
                     fn = repo.getPackage(po)
 
