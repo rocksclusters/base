@@ -57,6 +57,9 @@
 # @Copyright@
 #
 # $Log: sql.py,v $
+# Revision 1.30  2011/05/19 18:39:29  anoop
+# reading the password file should be done correctly, with or without spaces
+#
 # Revision 1.29  2010/09/07 23:53:08  bruno
 # star power for gb
 #
@@ -314,9 +317,9 @@ class Application(rocks.app.Application):
 	try:
 		file=open('/opt/rocks/etc/my.cnf','r')
 		for line in file.readlines():
-			l=string.split(line[:-1],'=')
-			if len(l) > 1 and l[0] == "password" :
-				rval=l[1]	
+			l=line.split('=')
+			if len(l) > 1 and l[0].strip() == "password" :
+				rval=l[1].strip()
 				break
 		file.close()
 	except:
