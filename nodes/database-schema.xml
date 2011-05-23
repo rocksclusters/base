@@ -18,6 +18,9 @@
 
   <changelog>
   $Log: database-schema.xml,v $
+  Revision 1.51  2011/05/23 04:59:42  phil
+  Schema for indexed category resolution of firewall rules
+
   Revision 1.50  2011/05/10 23:35:44  anoop
   Bug fix
 
@@ -679,11 +682,217 @@ CREATE TABLE public_keys (
 ) TYPE=MyISAM;
 
 
-</file>
+<!-- ====  Start of new Generic Categories Schema ====
+     Will eventually replace  ALL
+     [global,os,appliance,host]_[attributes, firewalls,routes] tables
+-->
 
+DROP TABLE IF EXISTS `categories`;
+CREATE TABLE `categories` (
+  `ID` int(11) NOT NULL AUTO_INCREMENT,
+  `Name` varchar(64) NOT NULL DEFAULT '0',
+  `Description` varchar(512) DEFAULT NULL,
+  PRIMARY KEY (`ID`),
+  UNIQUE KEY `NoDuplicateCategories` (`Name`)
+); 
+
+<!-- (Category,index) tuples.
+      e.g. ('appliance','Login'), or ('host','compute-0-0')
+-->
+DROP TABLE IF EXISTS `catindex`;
+CREATE TABLE `catindex` (
+  `ID` int(11) NOT NULL AUTO_INCREMENT,
+  `Name` varchar(64) NOT NULL DEFAULT '0',
+  `Category` int(11) NOT NULL,
+  PRIMARY KEY (`ID`),
+  UNIQUE KEY `UniqueCatindex` (`Name`,`Category`),
+  FOREIGN KEY (Category) REFERENCES Categories(ID) ON DELETE CASCADE
+);
+
+<!-- Resolutions chains, This is a precedence of categories -->
+DROP TABLE IF EXISTS `resolvechain`;
+CREATE TABLE `resolvechain` (
+  `ID` int(11) NOT NULL AUTO_INCREMENT,
+  `Name` varchar(64) NOT NULL DEFAULT '0',
+  `Category` int(11) NOT NULL,
+  `Precedence` int(11) NOT NULL DEFAULT 10,
+  PRIMARY KEY (`ID`),
+  UNIQUE KEY `UniqueChain` (`Name`,`Category`),
+  FOREIGN KEY (Category) REFERENCES Categories(ID) ON DELETE CASCADE
+);
+
+<!-- Which category indices has a host selected, 
+     e.g. 'global','os','appliance','host' in Rocks 5.4
+          but trivially allows an arbitrary set of of selections
+-->
+DROP TABLE IF EXISTS `hostselections`;
+CREATE TABLE `hostselections` (
+  `ID`  int(11) NOT NULL AUTO_INCREMENT,
+  `Host` int(11) NOT NULL,
+  `Category` int(11) NOT NULL,
+  `Selection` int(11) NOT NULL,
+   PRIMARY KEY(ID),
+   UNIQUE KEY `UniqueAttr` (`Host`,`Category`),
+   FOREIGN KEY (Host) REFERENCES Catindex(ID) ON DELETE CASCADE,
+   FOREIGN KEY (Selection) REFERENCES Catindex(ID) ON DELETE CASCADE,
+   FOREIGN KEY (Category) REFERENCES Categories(ID) ON DELETE CASCADE
+);
+
+<!-- New Firewalls Table. Schema includes a Rulename (used for
+Final ordering of resolved rules, and (category,category index) 
+association.
+-->
+DROP TABLE IF EXISTS `firewalls`;
+CREATE TABLE `firewalls` (
+	`ID`  int(11) NOT NULL AUTO_INCREMENT,
+	`Rulename` varchar(128) NOT NULL, 
+	`InSubnet`  int(11),
+	`OutSubnet` int(11),
+	`Service` varchar(256),
+	`Protocol` varchar(256),
+	`Action` varchar(256),
+	`Chain` varchar(256),
+	`Flags` varchar(256),
+	`Comment` varchar(256),
+	`Category` int(11) NOT NULL,
+	`Catindex` int(11) NOT NULL,
+   	PRIMARY KEY(ID),
+   	UNIQUE KEY `UniqueFirewallRule` (`Rulename`,`Category`,`Catindex`),
+   	FOREIGN KEY (Catindex) REFERENCES Catindex(ID) ON DELETE CASCADE
+);
+
+<!-- New Attributes Table, but not used (yet) -->
+DROP TABLE IF EXISTS `attributes`;
+CREATE TABLE `attributes` (
+  `ID`  int(11) NOT NULL AUTO_INCREMENT,
+  `Attr` varchar(128) NOT NULL,
+  `Value` text,
+  `Shadow` text,
+  `Category` int(11) NOT NULL,
+  `Catindex` int(11) NOT NULL,
+   PRIMARY KEY(ID),
+   UNIQUE KEY `UniqueAttr` (`Attr`,`Category`,`Catindex`),
+   FOREIGN KEY (Catindex) REFERENCES Catindex(ID) ON DELETE CASCADE
+);
+
+
+<!-- View for human readable queries --> 
+DROP VIEW IF EXISTS `vcatindex`;
+CREATE VIEW `vcatindex` AS SELECT ci.id, cat.name AS category, ci.name AS catindex FROM categories cat, catindex ci WHERE ci.category=cat.id order by category,catindex;
+
+DROP VIEW IF EXISTS `vresolvechain`;
+CREATE VIEW `vresolvechain` AS SELECT r.name AS chain, cat.name AS category, precedence FROM resolvechain r, categories cat WHERE r.category=cat.id order by chain,precedence;
+
+DROP VIEW IF EXISTS `vattributes`;
+CREATE VIEW `vattributes` AS SELECT a.id, attr, value, shadow, cat.name AS category, ci.name AS catindex FROM attributes a, catindex ci, categories cat WHERE a.catindex=ci.id AND a.category=cat.id order by attr,catindex,category;
+
+DROP VIEW IF EXISTS `vfirewalls`;
+CREATE VIEW `vfirewalls` AS SELECT f.ID, f.Rulename, f.InSubnet, f.OutSubnet, f.Service, f.protocol, f.Action, f.Chain, f.Flags, f.Comment,
+	cat.name AS category, ci.name AS catindex FROM firewalls f, catindex ci, categories cat WHERE 
+	f.catindex=ci.id AND f.category=cat.id ORDER BY f.Rulename,category,catindex;
+
+DROP VIEW IF EXISTS `vhostselections`;
+
+CREATE VIEW `vhostselections` AS SELECT hs.id, si.name AS host, cat.name AS category, ci.name AS selection FROM catindex si, categories cat, hostselections hs JOIN catindex ci ON hs.selection=ci.id WHERE hs.category=cat.id AND hs.host=si.id order by host,category,selection;
+
+<!-- Stored Procedures -->
+<!-- Part I: Simple Mapping Functions to make External Queries Readable -->
+
+DROP FUNCTION IF EXISTS mapCategory;
+DELIMITER //
+CREATE FUNCTION mapCategory(
+    catname VARCHAR(128) 
+)
+RETURNS INT(11) 
+BEGIN
+	DECLARE myIndex INT;
+ 	SELECT cat.ID FROM categories cat WHERE cat.Name=catname INTO myIndex;
+	RETURN (SELECT IFNULL(myIndex,0));
+END //
+DELIMITER ; 
+
+
+DROP FUNCTION IF EXISTS mapCategoryIndex;
+DELIMITER //
+CREATE FUNCTION mapCategoryIndex(
+    categoryName VARCHAR(128),
+    categoryIndex VARCHAR(128) 
+)
+RETURNS INT(11) 
+BEGIN
+	DECLARE myIndex INT;
+	SELECT ci.ID FROM catindex ci JOIN categories cat on ci.category=cat.id WHERE cat.Name=categoryName AND ci.Name=categoryIndex INTO myIndex;
+	RETURN (SELECT IFNULL(myIndex,0));
+END //
+DELIMITER ; 
+
+<!-- Part II: Resolvers.
+     resolveattributes - builds a temporary table of resolved attributes for a
+     particular host, using a specific resolution chain
+
+     resolvefirewall - builds a temporary table of resolved firewall rules for a
+     particular host, using a specific resolution chain
+ -->
+DROP PROCEDURE IF EXISTS resolveattributes;
+DELIMITER //
+CREATE PROCEDURE resolveattributes(
+    hostname VARCHAR(128), 
+    chainname VARCHAR(128)
+)
+COMMENT 'Fully Resolve Attributes for an input host using a specified resolution chain'
+BEGIN
+    DROP TABLE IF EXISTS resolved1;
+    CREATE TEMPORARY TABLE resolved1 select hostname, chainname, attributes.*, r.precedence FROM resolvechain r, catindex ci, attributes JOIN hostselections hs ON hs.category=attributes.category AND hs.selection=attributes.catindex WHERE hs.host=ci.id AND ci.name=hostname AND r.category=hs.category AND r.name=chainname;
+    DROP TABLE IF EXISTS resolved2;
+    CREATE TEMPORARY TABLE resolved2 select * FROM resolved1;
+    DROP TABLE IF EXISTS resolved;
+    CREATE TEMPORARY TABLE resolved select r1.*,cat.name AS CategoryName FROM categories cat, resolved1 r1 JOIN ( select Attr, MAX(precedence) AS precedence FROM resolved2 GROUP BY Attr) AS r2 ON r1.Attr=r2.Attr AND r1.precedence=r2.precedence WHERE r1.category=cat.id;
+END //
+DELIMITER ; 
+
+DROP PROCEDURE IF EXISTS resolvefirewalls;
+DELIMITER //
+CREATE PROCEDURE resolvefirewalls(
+    hostname VARCHAR(128), 
+    chainname VARCHAR(128)
+)
+COMMENT 'Fully Resolve Firewall Rules for an input host using a specified resolution chain'
+BEGIN
+    DROP TABLE IF EXISTS fresolved1;
+    CREATE TEMPORARY TABLE fresolved1 select hostname, chainname, f.*, r.precedence FROM resolvechain r, catindex ci, 
+	firewalls f JOIN hostselections hs ON hs.category=f.category AND hs.selection=f.catindex 
+	WHERE hs.host=ci.id AND ci.name=hostname AND r.category=hs.category AND r.name=chainname;
+    DROP TABLE IF EXISTS fresolved2;
+    CREATE TEMPORARY TABLE fresolved2 select * FROM fresolved1;
+    DROP TABLE IF EXISTS fwresolved;
+    CREATE TEMPORARY TABLE fwresolved select r1.*,cat.name AS CategoryName FROM categories cat, fresolved1 r1 JOIN ( select Rulename, MAX(precedence) AS precedence FROM fresolved2 GROUP BY Rulename) AS r2 ON r1.Rulename=r2.Rulename AND r1.precedence=r2.precedence WHERE r1.category=cat.id;
+END //
+DELIMITER ; 
+</file>
+<file name='/tmp/categories.sql'>
+
+INSERT INTO `categories`(`Name`,`Description`) VALUES ('global','Global Defaults');
+INSERT INTO `categories`(`Name`,`Description`) VALUES ('os','OS Choice(Linux,Sunos)');
+INSERT INTO `categories`(`Name`,`Description`) VALUES ('appliance','Logical Appliances');
+INSERT INTO `categories`(`Name`,`Description`) VALUES ('rack','Machine Room Racks');
+INSERT INTO `categories`(`Name`,`Description`) VALUES ('host','Hosts - Physical AND Virtual');
+
+INSERT INTO resolvechain(name, category, precedence) VALUES('default',mapCategory('global'), 10);
+INSERT INTO resolvechain(name, category, precedence) VALUES('default',mapCategory('os'), 20);
+INSERT INTO resolvechain(name, category, precedence) VALUES('default',mapCategory('appliance'), 30);
+INSERT INTO resolvechain(name, category, precedence) VALUES('default',mapCategory('host'), 40);
+
+INSERT INTO resolvechain(name, category, precedence) VALUES('default',mapCategory('global'), 10);
+INSERT INTO resolvechain(name, category, precedence) VALUES('default',mapCategory('os'), 20);
+INSERT INTO resolvechain(name, category, precedence) VALUES('default',mapCategory('appliance'), 30);
+INSERT INTO resolvechain(name, category, precedence) VALUES('default',mapCategory('rack'), 40);
+INSERT INTO resolvechain(name, category, precedence) VALUES('default',mapCategory('host'), 50);
+
+</file>
 
 /opt/rocks/bin/mysqladmin --user=root --password='' create cluster
 /opt/rocks/bin/mysql --user=root --password='' cluster &lt; /tmp/tables.sql
+/opt/rocks/bin/mysql --user=root --password='' cluster &lt; /tmp/categories.sql
 
 </post>
 
