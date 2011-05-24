@@ -1,4 +1,4 @@
-# $Id: plugin_appliance.py,v 1.3 2010/09/07 23:52:57 bruno Exp $
+# $Id: plugin_appliance.py,v 1.4 2011/05/24 00:39:42 phil Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: plugin_appliance.py,v $
+# Revision 1.4  2011/05/24 00:39:42  phil
+# remove the category index for this appliance.
+# If we missed anything, this should clean up the database on a cascade.
+#
 # Revision 1.3  2010/09/07 23:52:57  bruno
 # star power for gb
 #
@@ -82,4 +86,6 @@ class Plugin(rocks.commands.Plugin):
 	def run(self, appliance):
 		self.owner.db.execute("""delete from appliances where
 			name='%s'""" % appliance)
+		self.owner.db.execute("""DELETE FROM catindex WHERE
+			ID=mapCategoryIndex('appliance','%s')""" % appliance)
 
