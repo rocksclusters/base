@@ -1,4 +1,4 @@
-# $Id: plugin_host.py,v 1.6 2010/09/07 23:52:57 bruno Exp $
+# $Id: plugin_host.py,v 1.7 2011/05/24 05:34:53 phil Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: plugin_host.py,v $
+# Revision 1.7  2011/05/24 05:34:53  phil
+# Remove all hostselections associated with this host
+# Remove host from catindex 'host'
+#
 # Revision 1.6  2010/09/07 23:52:57  bruno
 # star power for gb
 #
@@ -91,4 +95,8 @@ class Plugin(rocks.commands.Plugin):
 	def run(self, host):
 		self.owner.db.execute("""delete from nodes where
 			name = '%s' """ % host)
+		self.owner.db.execute("""DELETE FROM hostselections WHERE 
+				Host=mapCategoryIndex('host','%s')""" % host) 
+		self.owner.db.execute("""DELETE FROM catindex WHERE 
+				category=mapCategory('host') AND  name='%s'""" % host) 
 
