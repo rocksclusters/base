@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.26 2010/09/14 16:28:28 bruno Exp $
+# $Id: __init__.py,v 1.27 2011/05/24 00:13:15 phil Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.27  2011/05/24 00:13:15  phil
+# Add the appliance name into the category
+#
 # Revision 1.26  2010/09/14 16:28:28  bruno
 # better duplicate checking
 #
@@ -260,6 +263,11 @@ class Command(command):
 			(name, graph, node, os) values
 			('%s', '%s', '%s', '%s')""" % 
 			(app_name, graph, node, osname))
+
+		# Add this appliance name the appliance category
+		#
+		self.db.execute("""INSERT INTO catindex(name,category) 
+			VALUES('%s',mapCategory('appliance')) """ % app_name
 
 		if not node:
 			kickstartable = False
