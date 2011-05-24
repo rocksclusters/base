@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.18 2011/03/04 01:57:23 anoop Exp $
+# $Id: __init__.py,v 1.19 2011/05/24 00:31:29 phil Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.19  2011/05/24 00:31:29  phil
+# add host to 'host' category. Install standard category selections of
+# (global,os,appliance,host) for a host
+#
 # Revision 1.18  2011/03/04 01:57:23  anoop
 # when rocks add host is run by hand, we need to set the
 # os attribute explicitly.
@@ -265,6 +269,33 @@ class Command(command):
 			'%d', '%d', '%d', '%s')""" % (host, membership,
 			int(numCPUs), int(rack), int(rank), osname))
 
+		#
+		# add this host into the host categories
+		# Mirrors the host table entries, for 5.4.3.
+		#
+		self.db.execute("""INSERT INTO catindex(Name,Category)
+			VALUES('%s',mapCategory('host'))""" % host
+
+		# And then make the Default category selections for this host
+		self.db.execute("""INSERT INTO hostselections(Host,
+			Category, Selection) VALUES (
+			mapCategoryIndex('host','%s'), mapCategory('global'),
+			mapCategoryIndex('global','global')) """ % host
+		self.db.execute("""INSERT INTO hostselections(Host,
+			Category, Selection) VALUES (
+			mapCategoryIndex('host','%s'), mapCategory('os'),
+			mapCategoryIndex('os','%s')) """ % (host,osname))
+		self.db.execute("""INSERT INTO hostselections(Host,
+			Category, Selection) VALUES (
+			mapCategoryIndex('host','%s'), mapCategory('appliance'),
+			mapCategoryIndex('appliance','%s'))""" % (host,membership))
+		self.db.execute("""INSERT INTO hostselections(Host,
+			Category, Selection) VALUES (
+			mapCategoryIndex('host','%s'), mapCategory('host'),
+			mapCategoryIndex('host','%s'))""" % (host,host)
+
+		#
+		#
 		# Set the value of the OS in the host attributes table
 		db_cmd = ('insert into node_attributes '
 			'(node, attr, value) '
