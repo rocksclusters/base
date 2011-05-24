@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.19 2011/05/24 00:31:29 phil Exp $
+# $Id: __init__.py,v 1.20 2011/05/24 05:26:54 phil Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.20  2011/05/24 05:26:54  phil
+# Ugly query to map membership back to appliance.
+#
 # Revision 1.19  2011/05/24 00:31:29  phil
 # add host to 'host' category. Install standard category selections of
 # (global,os,appliance,host) for a host
@@ -288,7 +291,9 @@ class Command(command):
 		self.db.execute("""INSERT INTO hostselections(Host,
 			Category, Selection) VALUES (
 			mapCategoryIndex('host','%s'), mapCategory('appliance'),
-			mapCategoryIndex('appliance','%s'))""" % (host,membership))
+			mapCategoryIndex('appliance',
+			(SELECT a.name FROM memberships m JOIN appliances a ON m.appliance=a.id AND m.name='%s'))""" 
+				% (host,membership))
 		self.db.execute("""INSERT INTO hostselections(Host,
 			Category, Selection) VALUES (
 			mapCategoryIndex('host','%s'), mapCategory('host'),
