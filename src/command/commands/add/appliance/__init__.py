@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.27 2011/05/24 00:13:15 phil Exp $
+# $Id: __init__.py,v 1.28 2011/05/25 19:09:30 anoop Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.28  2011/05/25 19:09:30  anoop
+# Missing brackets can ruin your whole day
+#
 # Revision 1.27  2011/05/24 00:13:15  phil
 # Add the appliance name into the category
 #
@@ -267,7 +270,7 @@ class Command(command):
 		# Add this appliance name the appliance category
 		#
 		self.db.execute("""INSERT INTO catindex(name,category) 
-			VALUES('%s',mapCategory('appliance')) """ % app_name
+			VALUES('%s',mapCategory('appliance')) """ % app_name)
 
 		if not node:
 			kickstartable = False

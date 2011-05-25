@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.20 2011/05/24 05:26:54 phil Exp $
+# $Id: __init__.py,v 1.21 2011/05/25 19:09:31 anoop Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.21  2011/05/25 19:09:31  anoop
+# Missing brackets can ruin your whole day
+#
 # Revision 1.20  2011/05/24 05:26:54  phil
 # Ugly query to map membership back to appliance.
 #
@@ -277,13 +280,13 @@ class Command(command):
 		# Mirrors the host table entries, for 5.4.3.
 		#
 		self.db.execute("""INSERT INTO catindex(Name,Category)
-			VALUES('%s',mapCategory('host'))""" % host
+			VALUES('%s',mapCategory('host'))""" % host)
 
 		# And then make the Default category selections for this host
 		self.db.execute("""INSERT INTO hostselections(Host,
 			Category, Selection) VALUES (
 			mapCategoryIndex('host','%s'), mapCategory('global'),
-			mapCategoryIndex('global','global')) """ % host
+			mapCategoryIndex('global','global')) """ % host)
 		self.db.execute("""INSERT INTO hostselections(Host,
 			Category, Selection) VALUES (
 			mapCategoryIndex('host','%s'), mapCategory('os'),
@@ -297,7 +300,7 @@ class Command(command):
 		self.db.execute("""INSERT INTO hostselections(Host,
 			Category, Selection) VALUES (
 			mapCategoryIndex('host','%s'), mapCategory('host'),
-			mapCategoryIndex('host','%s'))""" % (host,host)
+			mapCategoryIndex('host','%s'))""" % (host,host))
 
 		#
 		#
