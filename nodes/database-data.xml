@@ -17,6 +17,9 @@
 
 <changelog>
   $Log: database-data.xml,v $
+  Revision 1.70  2011/05/26 23:19:35  phil
+  use unambiguous add host command.
+
   Revision 1.69  2011/05/12 18:19:21  anoop
   dbhost set for all clients except devel-servers.
   Needs to be made more generic to support all
@@ -606,7 +609,7 @@ if os.path.exists('/tmp/site.attrs'):
 <post os='linux'>	
 <!-- frontend host -->
 
-/opt/rocks/bin/rocks add host &Kickstart_PrivateHostname; \
+/opt/rocks/bin/rocks "add host" &Kickstart_PrivateHostname; \
 	membership=Frontend rack=0 rank=0
 
 /opt/rocks/bin/rocks set host attr &Kickstart_PrivateHostname; \
