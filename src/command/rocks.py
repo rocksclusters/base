@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: rocks.py,v $
+# Revision 1.29  2011/05/26 23:16:59  phil
+# Disambiguate the command line
+#
 # Revision 1.28  2011/05/13 21:37:35  anoop
 # Treat each user as themselves
 #
@@ -232,20 +235,34 @@ if len(sys.argv) == 1:
 else:
 	args = sys.argv[1:]
 	
+# Check if the rocks command has been quoted.
+
+module = None
+cmd = args[0].split()
+if len(cmd) > 1:
+	s = 'rocks.commands.%s' % string.join(cmd, '.')
+	try:
+		__import__(s)
+		module = eval(s)
+		i = 1
+	except:
+		module = None
+
 # Treat the entire command line as if it were a python command module and
 # keep popping arguments off the end until we get a match.  If no match is
 # found issue an error.
 
-module = None
-for i in range(len(args), 0, -1):
-	s = 'rocks.commands.%s' % string.join(args[:i], '.')
-	try:
-		__import__(s)
-		module = eval(s)
-		if module:
-			break
-	except ImportError:
-		continue
+if not module:
+	for i in range(len(args), 0, -1):
+		s = 'rocks.commands.%s' % string.join(args[:i], '.')
+		try:
+			__import__(s)
+			module = eval(s)
+			if module:
+				break
+		except ImportError:
+			continue
+
 if not module:
 	print 'error - invalid rocks command "%s"' % args[0]
 	sys.exit(-1)
