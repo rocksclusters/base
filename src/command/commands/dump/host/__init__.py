@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.13 2011/03/04 02:00:26 anoop Exp $
+# $Id: __init__.py,v 1.14 2011/05/26 23:20:54 phil Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.14  2011/05/26 23:20:54  phil
+# Add unambiguous add host command
+#
 # Revision 1.13  2011/03/04 02:00:26  anoop
 # fix rocks host dump command to capture os information
 #
@@ -165,7 +168,7 @@ class Command(command):
 			if self.db.getHostname() == host:
 				continue
 
-			self.dump('add host %s cpus=%s rack=%s rank=%s '
+			self.dump('"add host" %s cpus=%s rack=%s rank=%s '
 				'membership=%s os=%s' %
 				(host, cpus, rack, rank, 
 				self.quote(membership), os))
