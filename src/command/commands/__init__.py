@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.92 2011/05/10 05:12:46 anoop Exp $
+# $Id: __init__.py,v 1.93 2011/05/27 19:06:47 phil Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.93  2011/05/27 19:06:47  phil
+# First edition of new firewall add rule.
+# Still needs error handling/checking.
+#
 # Revision 1.92  2011/05/10 05:12:46  anoop
 # Move shadow attributes out of attributes tables.
 # Seperate secure attributes table for all attributes
@@ -461,7 +465,6 @@ def Abort(message, doExit=1):
 		sys.exit(-1)
 
 
-
 class OSArgumentProcessor:
 	"""An Interface class to add the ability to process os arguments."""
 
@@ -757,6 +760,67 @@ class HostArgumentProcessor:
 		list = dict.keys()
 		list.sort()
 		return list
+
+
+class CategoryArgumentProcessor(HostArgumentProcessor):
+	"""An Interface class to add the ability to process Category=Member arguments."""
+
+	def getCategoryIndices(self, args=None):
+		"""Returns a list of tuples (category,index), 
+		   based upon those available in the database  
+                   Special case: args=None, args[0]='global=', 
+		   args[0]='global' returns the tuple ('global','global').
+	           An empty list signifies category or index not found
+
+		"""
+
+		indexList=[]
+		if args is None:
+			indexList.append(('global','global'))
+			return indexList
+
+		if len(args[0].split('=',1)) == 2:
+			(category,index) = args[0].split('=',1)
+		else:
+			category = args[0]
+			index=None
+
+		if category == 'global':
+			indexList.append(('global','global'))
+			return indexList
+
+		if index is None:
+			Abort('Cannot have a Null index for category:%s' % category)
+		# Check of category is valid
+		rows = self.db.execute("""SELECT ID FROM categories 
+				WHERE name='%s'""" % category)
+		if rows < 1:
+			Abort('unknown category "%s"' % category)
+
+
+		# Check if member of category is valid
+		# ?? handling of wild-carded hosts for category=host
+		#   
+		if category == 'host':
+			hostlist=index.split()
+			print "host list:" ,hostlist
+			for index in self.getHostnames(hostlist):
+				print "checking for host" ,index
+
+				rows = self.db.execute("""SELECT ID FROM vcatindex 
+				WHERE catindex='%s' and category='%s'""" % (index,category))
+				if rows < 1:
+					Abort('Unknown index "%s" of category "%s"' % (index,category))
+				indexList.append((category,index))
+
+		else:
+			rows = self.db.execute("""SELECT ID FROM vcatindex 
+				WHERE catindex='%s' and category='%s'""" % (index,category))
+			if rows < 1:
+				Abort('Unknown index "%s" of category "%s"' % (index,category))
+			indexList.append((category,index))
+
+		return indexList
 
 class AppGlobalsHandler(handler.ContentHandler,
 	handler.DTDHandler,
@@ -1983,6 +2047,7 @@ class Command:
 		dict = {} # flags
 		list = [] # arguments
 		
+		nparams = 0
 		for arg in args:
 			tokens = arg.split()
 			if tokens[0] == 'select':
@@ -1990,6 +2055,9 @@ class Command:
 			elif len(arg.split('=',1)) == 2:
 				(key, val) = arg.split('=', 1)
 				dict[key] = val
+				if nparams == 0:
+					dict['@ROCKSPARAM0']=arg
+				nparams += 1
 			else:
 				list.append(arg)
 

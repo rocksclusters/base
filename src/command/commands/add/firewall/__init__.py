@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.6 2011/02/24 20:10:28 bruno Exp $
+# $Id: __init__.py,v 1.7 2011/05/27 19:06:48 phil Exp $RAM
 #
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.7  2011/05/27 19:06:48  phil
+# First edition of new firewall add rule.
+# Still needs error handling/checking.
+#
 # Revision 1.6  2011/02/24 20:10:28  bruno
 # Added documentation and examples to the add/close/open firewall commands.
 # Thanks to Larry Baker for the suggestion.
@@ -80,7 +84,7 @@
 import string
 import rocks.commands
 
-class command(rocks.commands.HostArgumentProcessor, rocks.commands.add.command):
+class command(rocks.commands.CategoryArgumentProcessor, rocks.commands.add.command):
 	def serviceCheck(self, service):
 		#
 		# a service can look like:
@@ -191,43 +195,53 @@ class command(rocks.commands.HostArgumentProcessor, rocks.commands.add.command):
 			protocol, flags, comment)
 
 
-	def checkRule(self, table, extrawhere, service, network, outnetwork,
-		chain, action, protocol, flags, comment):
+	def insertRule(self, category, index, rulename,  
+		service, network, outnetwork, chain, action, protocol, 
+		flags, comment):
 
-		rows = self.db.execute("""select * from %s where %s
-			service = '%s' and action = '%s' and chain = '%s' and
-			if ('%s' = 'NULL', insubnet is NULL,
-				insubnet = %s) and
-			if ('%s' = 'NULL', outsubnet is NULL,
-				outsubnet = %s) and
-			if ('%s' = 'NULL', protocol is NULL,
-				protocol = %s) and
-			if ('%s' = 'NULL', flags is NULL,
-				flags = %s) """ % (table, extrawhere, service,
-			action, chain, network, network, outnetwork,
-			outnetwork, protocol, protocol, flags, flags))
-
-		if rows:
-			self.abort('firewall rule already exists')
-
-
-	def insertRule(self, table, extracol, extraval, service, network,
-		outnetwork, chain, action, protocol, flags, comment):
-
+		
 		#
 		# all input has been verified. add the row
 		#
-		self.db.execute("""insert into %s
-			(%s insubnet, outsubnet, service, protocol,
-			action, chain, flags, comment) values (%s %s, %s,
-			'%s', %s, '%s', '%s', %s, %s)""" %
-			(table, extracol, extraval, network, outnetwork,
-			service, protocol, action, chain, flags, comment))
+		try: 
+			self.db.execute("""INSERT INTO firewalls 
+				(category, catindex, 
+				rulename, insubnet, outsubnet, service, 
+				protocol, action, chain, flags, 
+				comment) 
+				VALUES (mapCategory('%s'), mapCategoryIndex('%s','%s'), 
+				'%s', %s, %s, '%s', 
+	                        '%s', '%s', '%s', '%s',
+	                        '%s' )""" %
+				(category, category, index, 
+				rulename, network, outnetwork, service, 
+				protocol, action, chain, flags, 
+				comment))
+		except:
+			print "Rule '%s' already exists for %s=%s" % (rulename,category,index)
 
 
 class Command(command):
 	"""
-	Add a global firewall rule for the all hosts in the cluster.
+	Add a firewall rule to the a category in cluster.
+
+	<arg type='string' name='category=index'>
+	[global,os,appliance,host]=index.
+
+	Must precede all other a=b parameters
+
+        Apply rule to index (member) of category. e.g.
+	os=linux, appliance=login, or host=compute-0-0.
+
+        global, global=, and global=global all refer
+        to the global category
+	</arg>
+
+	<param type='string' name='rulename' optional='1'>
+	User-defined name of rule. If omitted, defined as 
+        CHAIN&lt;NN&gt; where NN is
+        arbitrary. Firewall rules are ordered lexicographically. 
+	</param>
 
 	<param type='string' name='service'>
 	The service identifier, port number or port range. For example
@@ -266,26 +280,47 @@ class Command(command):
 	ACCEPT, REJECT, DROP).
 	</param>
 
-	<example cmd='add firewall network=public service="ssh" protocol="tcp" action="ACCEPT" chain="INPUT" flags="-m state --state NEW"'>
+	<example cmd='add firewall appliance=login rulename=ACCEPT-SSH network=public service="ssh" protocol="tcp" action="ACCEPT" chain="INPUT" flags="-m state --state NEW"'>
 	Accept TCP packets for the ssh service on the public network on
 	the INPUT chain and apply the "-m state --state NEW" flags to the
 	rule.
+        
+        Apply the rule to login appliances (appliance=login)
+
+	Name the rule ACCEPT-SSH
+
 	If 'eth1' is associated with the public network, this will be
 	translated as the following iptables rule:
 	"-A INPUT -i eth1 -p tcp --dport ssh -m state --state NEW -j ACCEPT"
 	</example>
 
-	<example cmd='add firewall network=private service="all" protocol="all" action="ACCEPT" chain="INPUT"'>
+	<example cmd='add firewall global rulename=ACCEPT-PRIVATE network=private service="all" protocol="all" action="ACCEPT" chain="INPUT"'>
 	Accept all protocols and all services on the private network on the
 	INPUT chain.
+
+	Apply this rule to all nodes in the cluster (global)
+
 	If 'eth0' is the private network, then this will be translated as
 	the following iptables rule:
 	"-A INPUT -i eth0 -j ACCEPT"
 	</example>
+
+
+	<example cmd='add firewall host=compute-0-0 rulename=ZZDRACONIAN network="all" service="all" protocol="all" action="DROP" chain="INPUT"'>
+        DROP all non-matched packets
+
+	Apply this rule to host compute-0-0 (host=compute-0-0)
+
+        rule will be named ZZDRACONIAN 
+
+	This will drop all non-matched packets  that have not been previously accepted
+        Known as a draconian firewall rule. 
+	</example>
 	"""
 	def run(self, params, args):
-		(service, network, outnetwork, chain, action, protocol, flags,
-			comment) = self.fillParams([
+		(rulename,service, network, outnetwork, chain, action, 
+			protocol, flags, comment) = self.fillParams([
+				('rulename',),
 				('service', ),
 				('network', ),
 				('output-network', ),
@@ -296,13 +331,22 @@ class Command(command):
 				('comment', )
 			])
 		
+		
+
+
 		(service, network, outnetwork, chain, action, protocol, flags,
 			comment) = self.checkArgs(service, network,
 			outnetwork, chain, action, protocol, flags, comment)
 
-		self.checkRule('global_firewall', '', service, network,
-			outnetwork, chain, action, protocol, flags, comment)
+		# Get (category,index) pairs that this rule affects.
+		myargs = args[:]
+		if params.has_key('@ROCKSPARAM0'):
+			myargs.append(params['@ROCKSPARAM0'])
 
-		self.insertRule('global_firewall', '', '', service, network,
-			outnetwork, chain, action, protocol, flags, comment)
+		indices =  self.getCategoryIndices(myargs)
+
+		for category,index in indices:
+			self.insertRule(category,index,rulename,service, 
+				network, outnetwork, chain, action, protocol, flags, comment)
+
 			
