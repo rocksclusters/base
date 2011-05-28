@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.8 2011/05/28 03:25:26 phil Exp $
+# $Id: __init__.py,v 1.9 2011/05/28 03:41:45 phil Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.9  2011/05/28 03:41:45  phil
+# Print out rulename and category in comment line for each rule that comes from the DB
+#
 # Revision 1.8  2011/05/28 03:25:26  phil
 # Add Firewall, report firewall now working with resolved rules.
 # Created a TEMPTABLES database for temporary SQL tables.
@@ -201,12 +204,13 @@ class Command(rocks.commands.HostArgumentProcessor,
 
 	def makeRules(self, host, rules, comments):
 
-		for rulename,i, o, s, p, a, c, f, cmt in self.db.fetchall():
+		for rulename, category, i, o, s, p, a, c, f, cmt in self.db.fetchall():
 			rule = self.buildRule(host, i, o, s, p, a, c, f, cmt)
 			if rule:
 				rules[rulename] = rule
+				comments[rulename] = " %s (%s) : " % (rulename,category)
 				if cmt is not None:
-					comments[rulename] = cmt
+					comments[rulename] = comments[rulename] + "%s" % cmt 
 
 
 	def getRules(self, host):
@@ -218,7 +222,7 @@ class Command(rocks.commands.HostArgumentProcessor,
 		# rules resolved from all levels. Get all rules except NAT
 
 		self.db.execute("""CALL resolvefirewalls('%s','default')""" % host)
-		self.db.execute("""SELECT rulename, insubnet, outsubnet, service,
+		self.db.execute("""SELECT rulename, categoryName, insubnet, outsubnet, service,
 			protocol, action, chain, flags, comment
 			FROM TEMPTABLES.fwresolved WHERE NOT (chain = 'POSTROUTING' AND
                         action = 'MASQUERADE' AND service = 'nat' ) ORDER BY rulename""" )
@@ -237,7 +241,7 @@ class Command(rocks.commands.HostArgumentProcessor,
 		# rules resolved from all levels. Get all NAT rules
 
 		self.db.execute("CALL resolvefirewalls('%s','default')" % host)
-		rows = self.db.execute("""SELECT rulename, insubnet, outsubnet, service,
+		rows = self.db.execute("""SELECT rulename, categoryName, insubnet, outsubnet, service,
 			protocol, action, chain, flags, comment
 			FROM TEMPTABLES.fwresolved WHERE chain = 'POSTROUTING' AND
 			action = 'MASQUERADE' AND service = 'nat'""")
@@ -270,11 +274,10 @@ class Command(rocks.commands.HostArgumentProcessor,
 			keys = rules.keys()
 			keys.sort()
 			for key in keys:
-				commentLine='# %s: ' % key
 				if comments.has_key(key) and comments[key]:
-					commentLine = commentLine + "%s" % comments[key]
-				
-				self.addOutput(host, commentLine) 
+					commentLine = "# %s" % comments[key]
+					self.addOutput(host, commentLine) 
+
 				self.addOutput(host, rules[key])
 
 			#
