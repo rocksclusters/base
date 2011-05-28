@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.5 2010/09/07 23:52:55 bruno Exp $
+# $Id: __init__.py,v 1.6 2011/05/28 05:00:54 phil Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.6  2011/05/28 05:00:54  phil
+# List firewall rules with category index
+#
 # Revision 1.5  2010/09/07 23:52:55  bruno
 # star power for gb
 #
@@ -75,33 +78,48 @@
 
 import rocks.commands
 
-class command(rocks.commands.NetworkArgumentProcessor,
+class command(rocks.commands.CategoryArgumentProcessor,
+	rocks.commands.NetworkArgumentProcessor,
 	rocks.commands.list.command):
 	pass
 
 class Command(command):
 	"""
-	List the global firewall rules.
+	List the firewall rules for a particular category
 
-	<arg>
+	<arg type='string' name='category=index'>
+	[global,os,appliance,host]=index.
+
+        list rules index (member) of category. e.g.
+	os=linux, appliance=login, or host=compute-0-0.
+
+        global, global=, and global=global all refer
+        to the global category
 	</arg>
+
 	"""
 
 	def run(self, params, args):
 		self.beginOutput()
+		if params.has_key('@ROCKSPARAM0'):
+			args.append(params['@ROCKSPARAM0'])
 
-		self.db.execute("""select insubnet, outsubnet, service,
-			protocol, chain, action, flags, comment from
-			global_firewall""")
+		indices =  self.getCategoryIndices(args)
 
-		for i, o, s, p, c, a, f, cmt in self.db.fetchall():
-			network = self.getNetworkName(i)
-			output_network = self.getNetworkName(o)
+		for category,index in indices:
+			self.db.execute("""SELECT rulename, insubnet, outsubnet, service,
+					protocol, chain, action, flags, comment from
+					vfirewalls WHERE category LIKE '%s' 
+					AND catindex LIKE '%s' ORDER BY rulename""" % (category,index))
 
-			self.addOutput('', (s, p, c, a, network,
-				output_network, f, cmt))
-
-		self.endOutput(header=['', 'service', 'protocol', 'chain',
+			for rulename, i, o, s, p, c, a, f, cmt in self.db.fetchall():
+				network = self.getNetworkName(i)
+				output_network = self.getNetworkName(o)
+	
+				self.addOutput(index,(rulename, s, p, c, a, network,
+					output_network, f, cmt, '%s:%s' % (category,index)))
+	
+		self.endOutput(header=['Host', 'rulename', 'service', 'protocol', 'chain',
 			'action', 'network', 'output-network', 'flags',
-			'comment' ])
+			'comment', 'category'])
 
