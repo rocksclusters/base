@@ -18,6 +18,11 @@
 
   <changelog>
   $Log: database-schema.xml,v $
+  Revision 1.52  2011/05/28 03:25:26  phil
+  Add Firewall, report firewall now working with resolved rules.
+  Created a TEMPTABLES database for temporary SQL tables.
+  Still needs full testing.
+
   Revision 1.51  2011/05/23 04:59:42  phil
   Schema for indexed category resolution of firewall rules
 
@@ -833,22 +838,33 @@ DELIMITER ;
      resolvefirewall - builds a temporary table of resolved firewall rules for a
      particular host, using a specific resolution chain
  -->
+
+DROP DATABASE IF EXISTS TEMPTABLES;
+CREATE DATABASE TEMPTABLES;
+GRANT SELECT, INSERT, UPDATE, DELETE, DROP, ALTER, CREATE TEMPORARY TABLES ON TEMPTABLES.* to ''@'localhost','apache'@'localhost',''@'%.local';
+
 DROP PROCEDURE IF EXISTS resolveattributes;
 DELIMITER //
 CREATE PROCEDURE resolveattributes(
     hostname VARCHAR(128), 
     chainname VARCHAR(128)
 )
-COMMENT 'Fully Resolve Attributes for an input host using a specified resolution chain'
+SQL SECURITY DEFINER 
+COMMENT 'Fully Resolve Attributes for a input host and resolution chain'
 BEGIN
+    SET @@session.max_error_count=0;
     DROP TABLE IF EXISTS resolved1;
-    CREATE TEMPORARY TABLE resolved1 select hostname, chainname, attributes.*, r.precedence FROM resolvechain r, catindex ci, attributes JOIN hostselections hs ON hs.category=attributes.category AND hs.selection=attributes.catindex WHERE hs.host=ci.id AND ci.name=hostname AND r.category=hs.category AND r.name=chainname;
+    CREATE TEMPORARY TABLE resolved1 select hostname, chainname as Resolver, attributes.*, r.precedence FROM resolvechain r, catindex ci, attributes JOIN hostselections hs ON hs.category=attributes.category AND hs.selection=attributes.catindex WHERE hs.host=ci.id AND ci.name=hostname AND r.category=hs.category AND r.name=chainname;
     DROP TABLE IF EXISTS resolved2;
     CREATE TEMPORARY TABLE resolved2 select * FROM resolved1;
     DROP TABLE IF EXISTS resolved;
-    CREATE TEMPORARY TABLE resolved select r1.*,cat.name AS CategoryName FROM categories cat, resolved1 r1 JOIN ( select Attr, MAX(precedence) AS precedence FROM resolved2 GROUP BY Attr) AS r2 ON r1.Attr=r2.Attr AND r1.precedence=r2.precedence WHERE r1.category=cat.id;
+    CREATE TEMPORARY TABLE TEMPTABLES.resolved select r1.*,cat.name AS CategoryName FROM categories cat, resolved1 r1 JOIN ( select Attr, MAX(precedence) AS precedence FROM resolved2 GROUP BY Attr) AS r2 ON r1.Attr=r2.Attr AND r1.precedence=r2.precedence WHERE r1.category=cat.id;
+    SET @@session.max_error_count=64;
 END //
 DELIMITER ; 
+GRANT EXECUTE ON PROCEDURE cluster.resolveattributes TO 'apache'@'localhost';
+GRANT EXECUTE ON PROCEDURE cluster.resolveattributes TO ''@'localhost';
+GRANT EXECUTE ON PROCEDURE cluster.resolveattributes TO ''@'%.local';
 
 DROP PROCEDURE IF EXISTS resolvefirewalls;
 DELIMITER //
@@ -856,18 +872,26 @@ CREATE PROCEDURE resolvefirewalls(
     hostname VARCHAR(128), 
     chainname VARCHAR(128)
 )
-COMMENT 'Fully Resolve Firewall Rules for an input host using a specified resolution chain'
+SQL SECURITY DEFINER 
+COMMENT 'Fully Resolve Firewalls for a input host and resolution chain'
 BEGIN
+    SET @@session.max_error_count=0;
     DROP TABLE IF EXISTS fresolved1;
-    CREATE TEMPORARY TABLE fresolved1 select hostname, chainname, f.*, r.precedence FROM resolvechain r, catindex ci, 
+    CREATE TEMPORARY TABLE fresolved1 select hostname, chainname as Resolver, f.*, r.precedence FROM resolvechain r, catindex ci, 
 	firewalls f JOIN hostselections hs ON hs.category=f.category AND hs.selection=f.catindex 
 	WHERE hs.host=ci.id AND ci.name=hostname AND r.category=hs.category AND r.name=chainname;
     DROP TABLE IF EXISTS fresolved2;
     CREATE TEMPORARY TABLE fresolved2 select * FROM fresolved1;
-    DROP TABLE IF EXISTS fwresolved;
-    CREATE TEMPORARY TABLE fwresolved select r1.*,cat.name AS CategoryName FROM categories cat, fresolved1 r1 JOIN ( select Rulename, MAX(precedence) AS precedence FROM fresolved2 GROUP BY Rulename) AS r2 ON r1.Rulename=r2.Rulename AND r1.precedence=r2.precedence WHERE r1.category=cat.id;
+    DROP TABLE IF EXISTS TEMPTABLES.fwresolved;
+    CREATE TEMPORARY TABLE TEMPTABLES.fwresolved select r1.*,cat.name AS CategoryName FROM categories cat, fresolved1 r1 JOIN ( select Rulename, MAX(precedence) AS precedence FROM fresolved2 GROUP BY Rulename) AS r2 ON r1.Rulename=r2.Rulename AND r1.precedence=r2.precedence WHERE r1.category=cat.id;
+    SET @@session.max_error_count=64;
 END //
 DELIMITER ; 
+
+GRANT EXECUTE ON PROCEDURE cluster.resolvefirewalls TO 'apache'@'localhost';
+GRANT EXECUTE ON PROCEDURE cluster.resolvefirewalls TO ''@'localhost';
+GRANT EXECUTE ON PROCEDURE cluster.resolvefirewalls TO ''@'%.local';
+
 </file>
 <file name='/tmp/categories.sql'>
 

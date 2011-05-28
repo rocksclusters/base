@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.7 2011/05/27 19:06:48 phil Exp $RAM
+# $Id: __init__.py,v 1.8 2011/05/28 03:25:26 phil Exp $RAM
 #
 # @Copyright@
 # 
@@ -54,6 +54,11 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.8  2011/05/28 03:25:26  phil
+# Add Firewall, report firewall now working with resolved rules.
+# Created a TEMPTABLES database for temporary SQL tables.
+# Still needs full testing.
+#
 # Revision 1.7  2011/05/27 19:06:48  phil
 # First edition of new firewall add rule.
 # Still needs error handling/checking.
@@ -199,7 +204,6 @@ class command(rocks.commands.CategoryArgumentProcessor, rocks.commands.add.comma
 		service, network, outnetwork, chain, action, protocol, 
 		flags, comment):
 
-		
 		#
 		# all input has been verified. add the row
 		#
@@ -211,8 +215,8 @@ class command(rocks.commands.CategoryArgumentProcessor, rocks.commands.add.comma
 				comment) 
 				VALUES (mapCategory('%s'), mapCategoryIndex('%s','%s'), 
 				'%s', %s, %s, '%s', 
-	                        '%s', '%s', '%s', '%s',
-	                        '%s' )""" %
+	                        %s, '%s', '%s', %s,
+	                        %s )""" %
 				(category, category, index, 
 				rulename, network, outnetwork, service, 
 				protocol, action, chain, flags, 
