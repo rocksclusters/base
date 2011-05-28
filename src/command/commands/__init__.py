@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.94 2011/05/28 05:34:53 phil Exp $
+# $Id: __init__.py,v 1.95 2011/05/28 06:39:50 phil Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.95  2011/05/28 06:39:50  phil
+# properly handle the wildcarded index.
+#
 # Revision 1.94  2011/05/28 05:34:53  phil
 # allow wildcards for categories so that rocks list firewall appliance
 # gives the rules for all indices at the appliance level
@@ -792,10 +795,9 @@ class CategoryArgumentProcessor(HostArgumentProcessor):
 		else:
 			category = args[0]
 			index=None
-
-		if wildcard:
-			indexList.append((category,'%'))
-			return indexList
+			if wildcard:
+				indexList.append((category,'%'))
+				return indexList
 
 		if category == 'global':
 			indexList.append(('global','global'))
