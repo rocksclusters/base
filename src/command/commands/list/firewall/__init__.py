@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.6 2011/05/28 05:00:54 phil Exp $
+# $Id: __init__.py,v 1.7 2011/05/28 05:34:53 phil Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.7  2011/05/28 05:34:53  phil
+# allow wildcards for categories so that rocks list firewall appliance
+# gives the rules for all indices at the appliance level
+#
 # Revision 1.6  2011/05/28 05:00:54  phil
 # List firewall rules with category index
 #
@@ -87,14 +91,15 @@ class Command(command):
 	"""
 	List the firewall rules for a particular category
 
-	<arg type='string' name='category=index'>
+	<arg type='string' name='category=index' optional='1'>
 	[global,os,appliance,host]=index.
 
         list rules index (member) of category. e.g.
 	os=linux, appliance=login, or host=compute-0-0.
 
         global, global=, and global=global all refer
-        to the global category
+        to the global category.
+
 	</arg>
 
 	"""
@@ -104,22 +109,22 @@ class Command(command):
 		if params.has_key('@ROCKSPARAM0'):
 			args.append(params['@ROCKSPARAM0'])
 
-		indices =  self.getCategoryIndices(args)
+		indices =  self.getCategoryIndices(args, wildcard=1)
 
 		for category,index in indices:
-			self.db.execute("""SELECT rulename, insubnet, outsubnet, service,
+			self.db.execute("""SELECT category, catindex, rulename, insubnet, outsubnet, service,
 					protocol, chain, action, flags, comment from
 					vfirewalls WHERE category LIKE '%s' 
-					AND catindex LIKE '%s' ORDER BY rulename""" % (category,index))
+					AND catindex LIKE '%s' ORDER BY category,catindex,rulename""" % (category,index))
 
-			for rulename, i, o, s, p, c, a, f, cmt in self.db.fetchall():
+			for cat, idx, rulename, i, o, s, p, c, a, f, cmt in self.db.fetchall():
 				network = self.getNetworkName(i)
 				output_network = self.getNetworkName(o)
 	
-				self.addOutput(index,(rulename, s, p, c, a, network,
-					output_network, f, cmt, '%s:%s' % (category,index)))
+				self.addOutput('',(rulename, s, p, c, a, network,
+					output_network, f, cmt, '%s:%s' % (cat,idx)))
 	
-		self.endOutput(header=['Host', 'rulename', 'service', 'protocol', 'chain',
+		self.endOutput(header=['', 'rulename', 'service', 'protocol', 'chain',
 			'action', 'network', 'output-network', 'flags',
 			'comment', 'category'])
 

@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.93 2011/05/27 19:06:47 phil Exp $
+# $Id: __init__.py,v 1.94 2011/05/28 05:34:53 phil Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.94  2011/05/28 05:34:53  phil
+# allow wildcards for categories so that rocks list firewall appliance
+# gives the rules for all indices at the appliance level
+#
 # Revision 1.93  2011/05/27 19:06:47  phil
 # First edition of new firewall add rule.
 # Still needs error handling/checking.
@@ -765,7 +769,7 @@ class HostArgumentProcessor:
 class CategoryArgumentProcessor(HostArgumentProcessor):
 	"""An Interface class to add the ability to process Category=Member arguments."""
 
-	def getCategoryIndices(self, args=None):
+	def getCategoryIndices(self, args=None, wildcard=0):
 		"""Returns a list of tuples (category,index), 
 		   based upon those available in the database  
                    Special case: args=None, args[0]='global=', 
@@ -775,8 +779,12 @@ class CategoryArgumentProcessor(HostArgumentProcessor):
 		"""
 
 		indexList=[]
-		if args is None:
-			indexList.append(('global','global'))
+		if args is None or len(args) == 0 :
+			if wildcard:
+				indexList.append(('%','%'))
+			else:
+				indexList.append(('global','global'))
+
 			return indexList
 
 		if len(args[0].split('=',1)) == 2:
@@ -785,9 +793,14 @@ class CategoryArgumentProcessor(HostArgumentProcessor):
 			category = args[0]
 			index=None
 
+		if wildcard:
+			indexList.append((category,'%'))
+			return indexList
+
 		if category == 'global':
 			indexList.append(('global','global'))
 			return indexList
+
 
 		if index is None:
 			Abort('Cannot have a Null index for category:%s' % category)
