@@ -1,4 +1,4 @@
-# $Id: Rules-linux-centos.mk,v 1.4 2011/06/02 01:51:57 phil Exp $
+# $Id: Rules-linux-centos.mk,v 1.5 2011/06/02 02:30:32 phil Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: Rules-linux-centos.mk,v $
+# Revision 1.5  2011/06/02 02:30:32  phil
+# Fix.
+#
 # Revision 1.4  2011/06/02 01:51:57  phil
 # allow multiline EXTRAS
 #
@@ -376,7 +379,7 @@ $(NAME).spec: $(NAME).spec.mk
 	$(PF) "$(rpm.prefix)\n" >> $@
 	$(PF) "$(rpm.arch)\n" >> $@
 	$(PF) "$(rpm.requires)\n" >> $@
-	$(PF) "$(RPM.EXTRAS)" >> $@
+	echo -e "$(RPM.EXTRAS)" >> $@
 	$(PF) "%%description\n" >> $@
 	if [ ! -f DESCRIPTION ]; then			\
 		$(PF) "$(rpm.description)\n" >> $@;	\
@@ -413,7 +416,7 @@ ifeq ($(RPM.PREFIX),)
 else
 	@$(PF) "$(RPM.PREFIX)\n" >> $@
 endif
-	@$(PF) "$(RPM.FILE.EXTRAS)" >> $@
+	echo -e "$(RPM.FILE.EXTRAS)" >> $@
 
 $(NAME).spec.mk:
 	@$(PF) "# This file is called from the generated spec file.\n" > $@
