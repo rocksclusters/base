@@ -1,4 +1,4 @@
-# $Id: Rules-linux-centos.mk,v 1.3 2011/03/26 05:33:17 phil Exp $
+# $Id: Rules-linux-centos.mk,v 1.4 2011/06/02 01:51:57 phil Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: Rules-linux-centos.mk,v $
+# Revision 1.4  2011/06/02 01:51:57  phil
+# allow multiline EXTRAS
+#
 # Revision 1.3  2011/03/26 05:33:17  phil
 # Enable RPM.FILES.EXTRAS similar RPM.EXTRAS. Use this to define config
 # files in the rpm way.
@@ -373,7 +376,7 @@ $(NAME).spec: $(NAME).spec.mk
 	$(PF) "$(rpm.prefix)\n" >> $@
 	$(PF) "$(rpm.arch)\n" >> $@
 	$(PF) "$(rpm.requires)\n" >> $@
-	echo  "$(RPM.EXTRAS)" >> $@
+	$(PF) "$(RPM.EXTRAS)" >> $@
 	$(PF) "%%description\n" >> $@
 	if [ ! -f DESCRIPTION ]; then			\
 		$(PF) "$(rpm.description)\n" >> $@;	\
@@ -410,7 +413,7 @@ ifeq ($(RPM.PREFIX),)
 else
 	@$(PF) "$(RPM.PREFIX)\n" >> $@
 endif
-	echo  "$(RPM.FILE.EXTRAS)" >> $@
+	@$(PF) "$(RPM.FILE.EXTRAS)" >> $@
 
 $(NAME).spec.mk:
 	@$(PF) "# This file is called from the generated spec file.\n" > $@
