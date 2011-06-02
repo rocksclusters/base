@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.7 2010/11/23 20:55:57 bruno Exp $
+# $Id: __init__.py,v 1.8 2011/06/02 21:49:35 phil Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.8  2011/06/02 21:49:35  phil
+# Update to new firewall resolution method
+#
 # Revision 1.7  2010/11/23 20:55:57  bruno
 # we need to list rules that are exactly the same 'except' for their 'flags'
 # field.
@@ -93,97 +96,31 @@ class Command(rocks.commands.NetworkArgumentProcessor,
 	</arg>
 	"""
 
-	def formatRule(self, rules, inid, outid, service, protocol, chain,
-			action, flags, comment, source):
-
-		if inid == 0:
-			network = 'all'
-		else:
-			network = self.getNetworkName(inid)
-		if outid == 0:
-			output_network = 'all'
-		else:
-			output_network = self.getNetworkName(outid)
-
-		key = '%s-%s-%s-%s-%s-%s-%s' % \
-			(inid, outid, service, protocol, chain, action, flags)
-		rules[key] = (service, protocol, chain, action, network,
-			output_network, flags, comment, source)
-
 
 	def run(self, params, args):
 		self.beginOutput()
 
 		for host in self.getHostnames(args):
+			# """ Get all rules """
 			rules = {}
+			comments = {}
+	
+			# Use stored procedure to create this host's TEMPTABLES.fwresolved with
+			# rules resolved from all levels. Get all rules except NAT
+	
+			self.db.execute("""CALL resolvefirewalls('%s','default')""" % host)
+			self.db.execute("""SELECT rulename, categoryName, insubnet, outsubnet, service,
+				protocol, action, chain, flags, comment
+				FROM TEMPTABLES.fwresolved ORDER BY rulename""" )
 
-			# global
-			self.db.execute("""select insubnet, outsubnet, service,
-				protocol, chain, action, flags, comment from
-				global_firewall""")
-
-			for i, o, s, p, c, a, f, cmt in self.db.fetchall():
-				self.formatRule(rules, i, o, s, p, c, a, f,
-					cmt, 'G')
-
-			# os
-			self.db.execute("""select insubnet, outsubnet,
-				service, protocol, chain, action,
-				flags, comment from os_firewall where os =
-				(select os from nodes where name = '%s')"""
-				% (host))
-
-			for i, o, s, p, c, a, f, cmt in self.db.fetchall():
-				self.formatRule(rules, i, o, s, p, c, a, f,
-					cmt, 'O')
-
-			# appliance
-			self.db.execute("""select insubnet, outsubnet,
-				service, protocol, chain, action,
-				flags, comment from appliance_firewall where
-				appliance = (select a.id from appliances a,
-				nodes n, memberships m where n.name = '%s' and
-				n.membership = m.id and m.appliance = a.id)"""
-				% (host))
-
-			for i, o, s, p, c, a, f, cmt in self.db.fetchall():
-				self.formatRule(rules, i, o, s, p, c, a, f,
-					cmt, 'A')
-
-			# host
-			self.db.execute("""select insubnet, outsubnet,
-				service, protocol, chain, action,
-				flags, comment from node_firewall where node =
-				(select id from nodes where name = '%s')"""
-				% (host))
-
-			for i, o, s, p, c, a, f, cmt in self.db.fetchall():
-				self.formatRule(rules, i, o, s, p, c, a, f,
-					cmt, 'H')
-
-			#
-			# output the 'ACCEPT' actions first, the 'REJECT'
-			# actions last and all the others in the middle
-			#
-			for (key, rule) in rules.items():
-				s, p, c, a, n, o, f, cmt, source = rule
-				if a == 'ACCEPT':
-					self.addOutput(host, (s, p, c, a, n,
-						o, f, cmt, source))
-
-			for (key, rule) in rules.items():
-				s, p, c, a, n, o, f, cmt, source = rule
-				if a not in [ 'ACCEPT', 'REJECT' ]:
-					self.addOutput(host, (s, p, c, a, n,
-						o, f, cmt, source))
-
-			for (key, rule) in rules.items():
-				s, p, c, a, n, o, f, cmt, source = rule
-				if a == 'REJECT':
-					self.addOutput(host, (s, p, c, a, n,
-						o, f, cmt, source))
-
-		self.endOutput(header=['host', 'service', 'protocol', 'chain',
+			for rulename, catname, i, o, s, p, c, a, f, cmt in self.db.fetchall():
+				network = self.getNetworkName(i)
+				output_network = self.getNetworkName(o)
+	
+				self.addOutput('',(rulename, s, p, c, a, network,
+					output_network, f, cmt, '%s' % (catname)))
+	
+		self.endOutput(header=['', 'rulename', 'service', 'protocol', 'chain',
 			'action', 'network', 'output-network', 'flags',
-			'comment', 'source' ])
+			'comment', 'category'])
 
