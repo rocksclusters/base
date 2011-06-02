@@ -1,7 +1,7 @@
 #
 # insert-ethers plugin module for generating pxelinux cfg files
 
-# $Id: 00-pxecfg.py,v 1.9 2010/09/07 23:53:09 bruno Exp $
+# $Id: 00-pxecfg.py,v 1.10 2011/06/02 21:45:05 anoop Exp $
 # 
 # @Copyright@
 # 
@@ -57,6 +57,9 @@
 # @Copyright@
 #
 # $Log: 00-pxecfg.py,v $
+# Revision 1.10  2011/06/02 21:45:05  anoop
+# Move creation of install action to jumpstart node file
+#
 # Revision 1.9  2010/09/07 23:53:09  bruno
 # star power for gb
 #
@@ -109,14 +112,6 @@ class Plugin(rocks.sql.InsertEthersPlugin):
 		w.close()
 		osname = r.read().strip()
 		if osname == 'sunos':
-			for action in [ 'install_sol', 'rescue_sol' ]:
-				cmd = ("/opt/rocks/bin/rocks add "
-					"bootaction action='%s' " 
-					"kernel='kernel pxegrub.0'"
-					%(action))
-
-				os.system(cmd)
-
 			cmd  = ('/opt/rocks/bin/rocks set '
 				'host installaction '
 				'%s install_sol'% (nodename))
