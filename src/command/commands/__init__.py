@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.95 2011/05/28 06:39:50 phil Exp $
+# $Id: __init__.py,v 1.96 2011/06/03 02:34:39 anoop Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.96  2011/06/03 02:34:39  anoop
+# Added code for secure_attributes
+#
 # Revision 1.95  2011/05/28 06:39:50  phil
 # properly handle the wildcarded index.
 #
@@ -1389,7 +1392,33 @@ class DatabaseConnection:
 		
 		return self.getHostAttrs(host).get(key)
 
-		
+
+	def getHostSecAttrs(self, host):
+		attrs = {}
+		self.execute('select attr, value, enc from sec_global_attributes')
+		for (a, v, e) in self.fetchall():
+			attrs[a] = (v, e)
+		self.execute('select s.attr, s.value, s.enc from sec_node_attributes s, nodes n ' +\
+			'where s.node=n.id and n.name="%s"' % host)
+		for (a, v, e) in self.fetchall():
+			attrs[a] = (v, e)
+
+		return attrs
+
+	def getHostSecAttr(self, host, attr = None):
+		if attr is None:
+			return {}
+		attrs = {}
+		self.execute('select value, enc from sec_global_attributes ' +\
+			'where attr="%s"' % attr)
+		for (v, e) in self.fetchone():
+			attrs[a] = (v, e)
+		self.execute('select s.value, s.enc from sec_node_attributes s, nodes n ' +\
+			'where s.attr="%s" s.node=n.id and n.name="%s"' % (attr, host))
+		for (v, e) in self.fetchone():
+			attrs[a] = (v, e)
+	
+		return attrs	
 
 	def getGlobalVars(self, service, hostname=''):
 		"""Returns a dictionary of COMPONENT x VALUES for all
@@ -2160,3 +2189,15 @@ class PluginOrderIterator(rocks.graph.GraphIterator):
 		self.time = self.time + 1
 		self.nodes.append((self.time, node))
 		
+
+class sec_attr_plugin:
+	"""Base Plugin class for processing secure attributes
+	This is based on the 411 plugin architecture"""
+	def __init__(self):
+		pass
+
+	def get_sec_attr(self):
+		return None
+
+	def filter(self, value = None):
+		return None
