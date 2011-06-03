@@ -8,6 +8,9 @@ Create a Login appliance
 
 <changelog>
 $Log: login-server.xml,v $
+Revision 1.5  2011/06/03 16:48:40  phil
+Update firewall rules to new style
+
 Revision 1.4  2011/01/04 22:27:31  bruno
 typo in comment
 
@@ -45,40 +48,42 @@ the start of the login appliance
 
 <!-- define the login appliance specific firewall rules -->
 
+
 <![CDATA[
 
-/opt/rocks/bin/rocks add appliance firewall login chain=INPUT \
+/opt/rocks/bin/rocks add firewall appliance=login chain=INPUT \
 	flags="-m state --state NEW --source &Kickstart_PublicNetwork;/&Kickstart_PublicNetmask;" \
-	protocol=tcp service=https action=ACCEPT network=public
+	protocol=tcp service=https action=ACCEPT network=public rulename="A40-HTTPS-PUBLIC-LAN"
 
-/opt/rocks/bin/rocks add appliance firewall login chain=INPUT \
+/opt/rocks/bin/rocks add firewall appliance=login chain=INPUT \
 	flags="-m state --state NEW --source &Kickstart_PublicNetwork;/&Kickstart_PublicNetmask;" \
-	protocol=tcp service=www action=ACCEPT network=public
+	protocol=tcp service=www action=ACCEPT network=public rulename="A40-WWW-PUBLIC_LAN"
 
 ]]>
 
-/opt/rocks/bin/rocks add appliance firewall login network=public \
+/opt/rocks/bin/rocks add firewall appliance=login network=public \
 	output-network=private service="all" protocol="all" action="ACCEPT" \
-	chain="FORWARD" flags="-m state --state RELATED,ESTABLISHED"
+	chain="FORWARD" flags="-m state --state RELATED,ESTABLISHED" rulename="A50-FORWARD-RELATED"
 
-/opt/rocks/bin/rocks add appliance firewall login network=private \
-	service="all" protocol="all" action="ACCEPT" chain="FORWARD"
+/opt/rocks/bin/rocks add firewall appliance=login network=private \
+	service="all" protocol="all" action="ACCEPT" chain="FORWARD" rulename="A60-FORWARD"
 
-/opt/rocks/bin/rocks add appliance firewall login output-network=public \
-	service="nat" protocol="all" action="MASQUERADE" chain="POSTROUTING"
+/opt/rocks/bin/rocks add firewall appliance=login output-network=public \
+	service="nat" protocol="all" action="MASQUERADE" chain="POSTROUTING" rulename="MASQUERADE"
 
-/opt/rocks/bin/rocks add appliance firewall login network=all service="8649" \
+/opt/rocks/bin/rocks add firewall appliance=login network=all service="8649" \
 	protocol="udp" action="REJECT" chain="INPUT" \
-	comment="block ganglia traffic from non-private interfaces"
+	comment="block ganglia traffic from non-private interfaces" rulename="R10-GANGLIA-UDP"
 
-/opt/rocks/bin/rocks add appliance firewall login network=all service="3306" \
-	protocol="udp" action="REJECT" chain="INPUT" \
-	comment="block mysql traffic from non-private interfaces"
+/opt/rocks/bin/rocks add firewall appliance=login network=all service="3306" \
+	protocol="tcp" action="REJECT" chain="INPUT" \
+	comment="block mysql traffic from non-private interfaces" rulename="R20-MYSQL-TCP"
 
-/opt/rocks/bin/rocks add appliance firewall login network=all service="40000" \
-	protocol="udp" action="REJECT" chain="INPUT" \
-	comment="block foundation mysql traffic from non-private interfaces"
+/opt/rocks/bin/rocks add firewall appliance=login network=all service="40000" \
+	protocol="tcp" action="REJECT" chain="INPUT" \
+	comment="block foundation mysql traffic from non-private interfaces" rulename="R30-FOUNDATION-MYSQL"
 
+</post>
 </post>
 
 </kickstart> 

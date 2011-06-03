@@ -9,6 +9,9 @@ Server node firewall rules
 
 <changelog>
 $Log: server-firewall.xml,v $
+Revision 1.13  2011/06/03 16:48:40  phil
+Update firewall rules to new style
+
 Revision 1.12  2011/04/23 23:26:53  phil
 with specific port (e.g. --dport), iptables needs a port-based protocol
 explicitly specified
@@ -55,64 +58,64 @@ this also includes changes to help build and configure VMs for V.
 <post>
 
 <!-- Disallow 411 traffic from non-privileged ports -->
-/opt/rocks/bin/rocks add host firewall	\
-&Kickstart_PrivateHostname; network=private	\
+/opt/rocks/bin/rocks add firewall	\
+host=&Kickstart_PrivateHostname; network=private	\
 service="all" protocol="tcp" action="REJECT"	\
-chain="INPUT" flags="--dport 372 --sport 1024:65535"
-/opt/rocks/bin/rocks add host firewall	\
-&Kickstart_PrivateHostname; network=private	\
+chain="INPUT" flags="--dport 372 --sport 1024:65535" rulename="A10REJECT-411-TCP"
+/opt/rocks/bin/rocks add firewall	\
+host=&Kickstart_PrivateHostname; network=private	\
 service="all" protocol="udp" action="REJECT"	\
-chain="INPUT" flags="--dport 372 --sport 1024:65535"
+chain="INPUT" flags="--dport 372 --sport 1024:65535" rulename="A10REJECT-411-UDP"
 
 
 <!-- define the global firewall rules -->
 
-/opt/rocks/bin/rocks add firewall network=private service="all" \
-	protocol="all" action="ACCEPT" chain="INPUT"
+/opt/rocks/bin/rocks add firewall global network=private service="all" \
+	protocol="all" action="ACCEPT" chain="INPUT" rulename="A20-ALL-PRIVATE"
 
-/opt/rocks/bin/rocks add firewall network=public service="ssh" \
+/opt/rocks/bin/rocks add firewall global network=public service="ssh" \
 	protocol="tcp" action="ACCEPT" chain="INPUT" \
-	flags="-m state --state NEW"
+	flags="-m state --state NEW" rulename="A20-SSH-PUBLIC"
 
-/opt/rocks/bin/rocks add firewall network=public service="all" \
+/opt/rocks/bin/rocks add firewall global network=public service="all" \
 	protocol="all" action="ACCEPT" chain="INPUT" \
-	flags="-m state --state RELATED,ESTABLISHED"
+	flags="-m state --state RELATED,ESTABLISHED" rulename="A30-RELATED-PUBLIC"
 
 <!-- define the frontend-specific firewall rules -->
 
 <![CDATA[
 
-/opt/rocks/bin/rocks add host firewall localhost chain=INPUT \
+/opt/rocks/bin/rocks add firewall host=localhost chain=INPUT \
 	flags="-m state --state NEW --source &Kickstart_PublicNetwork;/&Kickstart_PublicNetmask;" \
-	protocol=tcp service=https action=ACCEPT network=public
+	protocol=tcp service=https action=ACCEPT network=public rulename="A40-HTTPS-PUBLIC-LAN"
 
-/opt/rocks/bin/rocks add host firewall localhost chain=INPUT \
+/opt/rocks/bin/rocks add firewall host=localhost chain=INPUT \
 	flags="-m state --state NEW --source &Kickstart_PublicNetwork;/&Kickstart_PublicNetmask;" \
-	protocol=tcp service=www action=ACCEPT network=public
+	protocol=tcp service=www action=ACCEPT network=public rulename="A40-WWW-PUBLIC_LAN"
 
 ]]>
 
-/opt/rocks/bin/rocks add host firewall localhost network=public \
+/opt/rocks/bin/rocks add firewall host=localhost network=public \
 	output-network=private service="all" protocol="all" action="ACCEPT" \
-	chain="FORWARD" flags="-m state --state RELATED,ESTABLISHED"
+	chain="FORWARD" flags="-m state --state RELATED,ESTABLISHED" rulename="A50-FORWARD-RELATED"
 
-/opt/rocks/bin/rocks add host firewall localhost network=private \
-	service="all" protocol="all" action="ACCEPT" chain="FORWARD"
+/opt/rocks/bin/rocks add firewall host=localhost network=private \
+	service="all" protocol="all" action="ACCEPT" chain="FORWARD" rulename="A60-FORWARD"
 
-/opt/rocks/bin/rocks add host firewall localhost output-network=public \
-	service="nat" protocol="all" action="MASQUERADE" chain="POSTROUTING"
+/opt/rocks/bin/rocks add firewall host=localhost output-network=public \
+	service="nat" protocol="all" action="MASQUERADE" chain="POSTROUTING" rulename="MASQUERADE"
 
-/opt/rocks/bin/rocks add host firewall localhost network=all service="8649" \
+/opt/rocks/bin/rocks add firewall host=localhost network=all service="8649" \
 	protocol="udp" action="REJECT" chain="INPUT" \
-	comment="block ganglia traffic from non-private interfaces"
+	comment="block ganglia traffic from non-private interfaces" rulename="R10-GANGLIA-UDP"
 
-/opt/rocks/bin/rocks add host firewall localhost network=all service="3306" \
+/opt/rocks/bin/rocks add firewall host=localhost network=all service="3306" \
 	protocol="tcp" action="REJECT" chain="INPUT" \
-	comment="block mysql traffic from non-private interfaces"
+	comment="block mysql traffic from non-private interfaces" rulename="R20-MYSQL-TCP"
 
-/opt/rocks/bin/rocks add host firewall localhost network=all service="40000" \
+/opt/rocks/bin/rocks add firewall host=localhost network=all service="40000" \
 	protocol="tcp" action="REJECT" chain="INPUT" \
-	comment="block foundation mysql traffic from non-private interfaces"
+	comment="block foundation mysql traffic from non-private interfaces" rulename="R30-FOUNDATION-MYSQL"
 
 </post>
 
