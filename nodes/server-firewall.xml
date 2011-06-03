@@ -9,6 +9,9 @@ Server node firewall rules
 
 <changelog>
 $Log: server-firewall.xml,v $
+Revision 1.14  2011/06/03 18:18:36  phil
+Firewall rules in new style
+
 Revision 1.13  2011/06/03 16:48:40  phil
 Update firewall rules to new style
 
@@ -80,6 +83,14 @@ chain="INPUT" flags="--dport 372 --sport 1024:65535" rulename="A10REJECT-411-UDP
 /opt/rocks/bin/rocks add firewall global network=public service="all" \
 	protocol="all" action="ACCEPT" chain="INPUT" \
 	flags="-m state --state RELATED,ESTABLISHED" rulename="A30-RELATED-PUBLIC"
+
+/opt/rocks/bin/rocks add firewall global network=public service="all" \
+	protocol="tcp" action="REJECT" chain="INPUT" \
+	flags="--dport 0:1023" rulename="R900-PRIVILEGED-TCP"
+
+/opt/rocks/bin/rocks add firewall global network=public service="all" \
+	protocol="udp" action="REJECT" chain="INPUT" \
+	flags="--dport 0:1023" rulename="R900-PRIVILEGED-UDP"
 
 <!-- define the frontend-specific firewall rules -->
 

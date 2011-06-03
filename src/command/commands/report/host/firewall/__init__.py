@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.9 2011/05/28 03:41:45 phil Exp $
+# $Id: __init__.py,v 1.10 2011/06/03 18:18:36 phil Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.10  2011/06/03 18:18:36  phil
+# Firewall rules in new style
+#
 # Revision 1.9  2011/05/28 03:41:45  phil
 # Print out rulename and category in comment line for each rule that comes from the DB
 #
@@ -279,17 +282,6 @@ class Command(rocks.commands.HostArgumentProcessor,
 					self.addOutput(host, commentLine) 
 
 				self.addOutput(host, rules[key])
-
-			#
-			# default reject rules
-			#
-			rule = self.buildRule(None, None, None, '0:1023',
-				'tcp', 'REJECT', 'INPUT', None, None)
-			self.addOutput(host, rule)
-
-			rule = self.buildRule(None, None, None, '0:1023',
-				'udp', 'REJECT', 'INPUT', None, None)
-			self.addOutput(host, rule)
 
 			self.addOutput(host, 'COMMIT')
 			self.addOutput(host, '</file>')

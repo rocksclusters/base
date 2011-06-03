@@ -18,6 +18,9 @@
 
   <changelog>
   $Log: database-schema.xml,v $
+  Revision 1.53  2011/06/03 18:18:36  phil
+  Firewall rules in new style
+
   Revision 1.52  2011/05/28 03:25:26  phil
   Add Firewall, report firewall now working with resolved rules.
   Created a TEMPTABLES database for temporary SQL tables.
@@ -815,6 +818,9 @@ BEGIN
 	RETURN (SELECT IFNULL(myIndex,0));
 END //
 DELIMITER ; 
+GRANT EXECUTE ON FUNCTION cluster.mapCategory TO 'apache'@'localhost';
+GRANT EXECUTE ON FUNCTION cluster.mapCategory TO ''@'localhost';
+GRANT EXECUTE ON FUNCTION cluster.mapCategory TO ''@'%.local';
 
 
 DROP FUNCTION IF EXISTS mapCategoryIndex;
@@ -830,6 +836,9 @@ BEGIN
 	RETURN (SELECT IFNULL(myIndex,0));
 END //
 DELIMITER ; 
+GRANT EXECUTE ON FUNCTION cluster.mapCategoryIndex TO 'apache'@'localhost';
+GRANT EXECUTE ON FUNCTION cluster.mapCategoryIndex  TO ''@'localhost';
+GRANT EXECUTE ON FUNCTION cluster.mapCategoryIndex TO ''@'%.local';
 
 <!-- Part II: Resolvers.
      resolveattributes - builds a temporary table of resolved attributes for a
