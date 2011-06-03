@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.5 2010/11/19 16:15:17 bruno Exp $
+# $Id: __init__.py,v 1.6 2011/06/03 16:27:59 phil Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.6  2011/06/03 16:27:59  phil
+# Update to new firewall schema
+#
 # Revision 1.5  2010/11/19 16:15:17  bruno
 # fix to remove a firewall rule with 'all' as its 'network' or 'output-network'
 #
@@ -75,117 +78,62 @@
 
 import rocks.commands
 
-class command(rocks.commands.remove.command):
-	def deleteRule(self, table, extrawhere, service, network, outnetwork,
-		chain, action, protocol):
-
-		if not service:
-			self.abort('service required')
-		if not network and not outnetwork:
-			self.abort('network or output-network required')
-		if not chain:
-			self.abort('chain required')
-		if not action:
-			self.abort('action required')
-		if not protocol:
-			self.abort('protocol required')
-
-		if network:
-			if network == 'all':
-				inid = '0'
-			else:
-				rows = self.db.execute("""select id from
-					subnets where name = '%s'""" % network)
-
-				if rows == 0:
-					self.abort('network "%s" not in ' +
-						'database' % network)
-
-				inid, = self.db.fetchone()
-		else:
-			inid = 'NULL'
-
-		if outnetwork:
-			if outnetwork == 'all':
-				outid = '0'
-			else:
-				rows = self.db.execute("""select id from
-					subnets where name = '%s'""" %
-					outnetwork)
-
-				if rows == 0:
-					self.abort('output-network "%s" not ' +
-						'in database' % network)
-
-				outid, = self.db.fetchone()
-		else:
-			outid = 'NULL'
-
-		rows = self.db.execute("""delete from %s where %s
-			service = '%s' and if ('%s' = 'NULL', insubnet is NULL,
-			insubnet = %s) and if ('%s' = 'NULL', outsubnet is NULL,
-			outsubnet = %s) and chain = '%s' and action = '%s' and
-			protocol = '%s'""" % (table, extrawhere, service, inid,
-			inid, outid, outid, chain, action, protocol))
-
-		if rows == 0:
-			netname = []
-			if network:
-				netname.append(network)
-			if outnetwork:
-				netname.append(outnetwork)
-
-			self.abort('no service in database that matches %s/%s/%s/%s/%s' % (service, protocol, '/'.join(netname), chain, action)) 
-
-
-
-class Command(command):
+class Command(rocks.commands.CategoryArgumentProcessor,
+	rocks.commands.remove.command):
 	"""
-	Remove a global firewall rule. To remove a rule,
-	one must supply the service, protocol, network, chain and action. See
-	"rocks list firewall" for the current global rules.
+	Remove a named firewall rule
 
-	<param type='string' name='service'>
-	The service identifier, for example "www".
-	</param>
+	<arg type='string' name='category=index' optional='1'>
+	[global,os,appliance,host]=index.
 
-        <param type='string' name='protocol'>
-        The protocol associated with the service to be removed (e.g, "tcp"
-	or "udp").
-	</param>
+	Specify which version of rulename to remove
+	os=linux, appliance=login, or host=compute-0-0.
+        global, global=, and global=global all refer
+        to the global category.
 
-        <param type='string' name='network'>
-        The network associated with the rule. This is a
-	named network (e.g., 'private') and must be one listed by the command
-        'rocks list network'.
-	</param>
+	cannot be wildcarded. Specifying just a rulename defaults to the global
+	category
+	</arg>
 
-        <param type='string' name='output-network' optional='1'>
-        The output network associated with the rule. This is a
-	named network (e.g., 'private') and must be one listed by the command
-        'rocks list network'.
-	</param>
+	<arg type='stringe' name='rulename'>
+	The particular rule to remove. Cannot be wildcarded
+	</arg>
 
-        <param type='string' name='chain'>
-	The chain associated with the rule (e.g., "INPUT").
-	</param>
+	<example cmd='remove firewall global ZZDRACONIAN'>
+	Remove the rule named ZZDRACONIAN from the global category
+	</example>
 
-        <param type='string' name='action'>
-	The action associated with the rule (e.g., "ACCEPT").
-	</param>
+	<example cmd='remove firewall appliance=compute MYRULE'>
+	Remove the rule named MYRULE from compute appliances
+	</example>
+
+	<related>list firewall</related>
+	<related>list host firewall</related>
+
 	"""
+
 
 	def run(self, params, args):
-		(service, network, outnetwork, chain, action, protocol) = \
-			self.fillParams([
-				('service', ),
-				('network', ),
-				('output-network', ),
-				('chain', ),
-				('action', ),
-				('protocol', )
-			 ])
 
-		self.deleteRule('global_firewall', '', service, network,
-			outnetwork, chain, action, protocol)
+                (args, rulename) = self.fillPositionalArgs(('rulename',))
+		if params.has_key('@ROCKSPARAM0'):
+			args.append(params['@ROCKSPARAM0'])
+
+		indices =  self.getCategoryIndices(args, wildcard=0)
+	
+		if rulename is None:
+			self.abort("no rulename specified")
+	
+		for category,catindex in indices:
+			try:
+				nrows=self.db.execute("""DELETE FROM firewalls 
+					 WHERE rulename='%s' AND category=mapCategory('%s')
+					AND catindex=mapCategoryIndex('%s','%s') """ % 
+					(rulename, category, category, catindex)) 
+				if nrows == 0:
+					raise notFound
+			except:
+				self.abort("Rule '%s' not found for %s=%s" % (rulename,category,catindex))
+	
+
 
