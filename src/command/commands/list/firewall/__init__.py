@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.7 2011/05/28 05:34:53 phil Exp $
+# $Id: __init__.py,v 1.8 2011/06/06 15:02:30 phil Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.8  2011/06/06 15:02:30  phil
+# add parameter to limit maxwidth of comment and flags field for easier reading
+#
 # Revision 1.7  2011/05/28 05:34:53  phil
 # allow wildcards for categories so that rocks list firewall appliance
 # gives the rules for all indices at the appliance level
@@ -102,12 +105,18 @@ class Command(command):
 
 	</arg>
 
+	<param type='integer' name='maxwidth' optional='1' default='24'>
+	Maximum width of comment and flags field. Default is 24.
+	</param>
 	"""
 
 	def run(self, params, args):
 		self.beginOutput()
 		if params.has_key('@ROCKSPARAM0'):
-			args.append(params['@ROCKSPARAM0'])
+			if not params['@ROCKSPARAM0'].startswith('maxwidth'):
+				args.append(params['@ROCKSPARAM0'])
+		(maxwidth,) = self.fillParams([('maxwidth',24),])
+		maxwidth = int(maxwidth)
 
 		indices =  self.getCategoryIndices(args, wildcard=1)
 
@@ -121,6 +130,8 @@ class Command(command):
 				network = self.getNetworkName(i)
 				output_network = self.getNetworkName(o)
 	
+			 	if f is not None: f = f[0:maxwidth]
+				if cmt is not None: cmt = cmt[0:maxwidth]
 				self.addOutput('',(rulename, s, p, c, a, network,
 					output_network, f, cmt, '%s:%s' % (cat,idx)))
 	

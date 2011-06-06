@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.8 2011/06/02 21:49:35 phil Exp $
+# $Id: __init__.py,v 1.9 2011/06/06 15:02:31 phil Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.9  2011/06/06 15:02:31  phil
+# add parameter to limit maxwidth of comment and flags field for easier reading
+#
 # Revision 1.8  2011/06/02 21:49:35  phil
 # Update to new firewall resolution method
 #
@@ -94,11 +97,19 @@ class Command(rocks.commands.NetworkArgumentProcessor,
 	Zero, one or more host names. If no host names are supplied, the 
 	firewall rules for all the known hosts are listed.
 	</arg>
+
+	<param type='integer' name='maxwidth' optional='1'>
+	Maximum width of comment and flags field. Default is 24.
+	</param>
+
 	"""
 
 
 	def run(self, params, args):
 		self.beginOutput()
+
+		(maxwidth,) = self.fillParams([('maxwidth',24),])
+		maxwidth = int(maxwidth)
 
 		for host in self.getHostnames(args):
 			# """ Get all rules """
@@ -116,7 +127,9 @@ class Command(rocks.commands.NetworkArgumentProcessor,
 			for rulename, catname, i, o, s, p, c, a, f, cmt in self.db.fetchall():
 				network = self.getNetworkName(i)
 				output_network = self.getNetworkName(o)
-	
+			 	if f is not None: f = f[0:maxwidth]
+				if cmt is not None: cmt = cmt[0:maxwidth]
+
 				self.addOutput('',(rulename, s, p, c, a, network,
 					output_network, f, cmt, '%s' % (catname)))
 	
