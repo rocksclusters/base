@@ -29,6 +29,9 @@
 # ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #################################################################################
 # $Log: password.py,v $
+# Revision 1.3  2011/06/07 22:14:50  anoop
+# Bug fix
+#
 # Revision 1.2  2011/05/12 18:03:50  anoop
 # Added different encryption schemes to pylib
 #
@@ -42,6 +45,7 @@ import sys
 import string
 import sha
 import crypt
+import random
 
 class Password:
 	def __init__(self):

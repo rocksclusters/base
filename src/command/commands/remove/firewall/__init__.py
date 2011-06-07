@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.6 2011/06/03 16:27:59 phil Exp $
+# $Id: __init__.py,v 1.7 2011/06/07 22:16:11 anoop Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.7  2011/06/07 22:16:11  anoop
+# Bug fix
+#
 # Revision 1.6  2011/06/03 16:27:59  phil
 # Update to new firewall schema
 #
@@ -78,8 +81,11 @@
 
 import rocks.commands
 
-class Command(rocks.commands.CategoryArgumentProcessor,
+class command(rocks.commands.CategoryArgumentProcessor,
 	rocks.commands.remove.command):
+	pass
+
+class Command(command):
 	"""
 	Remove a named firewall rule
 
