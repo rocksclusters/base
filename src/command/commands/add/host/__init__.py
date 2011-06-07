@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.21 2011/05/25 19:09:31 anoop Exp $
+# $Id: __init__.py,v 1.22 2011/06/07 17:25:32 phil Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.22  2011/06/07 17:25:32  phil
+# add missing parenthesis
+#
 # Revision 1.21  2011/05/25 19:09:31  anoop
 # Missing brackets can ruin your whole day
 #
@@ -295,7 +298,7 @@ class Command(command):
 			Category, Selection) VALUES (
 			mapCategoryIndex('host','%s'), mapCategory('appliance'),
 			mapCategoryIndex('appliance',
-			(SELECT a.name FROM memberships m JOIN appliances a ON m.appliance=a.id AND m.name='%s'))""" 
+			(SELECT a.name FROM memberships m JOIN appliances a ON m.appliance=a.id AND m.name='%s')))""" 
 				% (host,membership))
 		self.db.execute("""INSERT INTO hostselections(Host,
 			Category, Selection) VALUES (
