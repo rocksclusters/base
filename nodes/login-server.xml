@@ -8,6 +8,10 @@ Create a Login appliance
 
 <changelog>
 $Log: login-server.xml,v $
+Revision 1.6  2011/06/07 15:38:13  phil
+
+One extra post tag can ruin your whole day.
+
 Revision 1.5  2011/06/03 16:48:40  phil
 Update firewall rules to new style
 
@@ -83,7 +87,6 @@ the start of the login appliance
 	protocol="tcp" action="REJECT" chain="INPUT" \
 	comment="block foundation mysql traffic from non-private interfaces" rulename="R30-FOUNDATION-MYSQL"
 
-</post>
 </post>
 
 </kickstart> 
