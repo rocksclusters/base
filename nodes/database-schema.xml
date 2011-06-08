@@ -18,6 +18,9 @@
 
   <changelog>
   $Log: database-schema.xml,v $
+  Revision 1.54  2011/06/08 03:00:42  phil
+  Populate catindex with global, os defaults.
+
   Revision 1.53  2011/06/03 18:18:36  phil
   Firewall rules in new style
 
@@ -910,10 +913,9 @@ INSERT INTO `categories`(`Name`,`Description`) VALUES ('appliance','Logical Appl
 INSERT INTO `categories`(`Name`,`Description`) VALUES ('rack','Machine Room Racks');
 INSERT INTO `categories`(`Name`,`Description`) VALUES ('host','Hosts - Physical AND Virtual');
 
-INSERT INTO resolvechain(name, category, precedence) VALUES('default',mapCategory('global'), 10);
-INSERT INTO resolvechain(name, category, precedence) VALUES('default',mapCategory('os'), 20);
-INSERT INTO resolvechain(name, category, precedence) VALUES('default',mapCategory('appliance'), 30);
-INSERT INTO resolvechain(name, category, precedence) VALUES('default',mapCategory('host'), 40);
+INSERT INTO `catindex`(`Name`,`Category`) VALUES('global',mapCategory('global'));
+INSERT INTO `catindex`(`Name`,`Category`) VALUES('linux',mapCategory('os'));
+INSERT INTO `catindex`(`Name`,`Category`) VALUES('sunos',mapCategory('os'));
 
 INSERT INTO resolvechain(name, category, precedence) VALUES('default',mapCategory('global'), 10);
 INSERT INTO resolvechain(name, category, precedence) VALUES('default',mapCategory('os'), 20);
