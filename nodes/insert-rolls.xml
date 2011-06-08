@@ -16,6 +16,12 @@ Populates the frontend database with initially selected rolls.
 
   <changelog>
   $Log: insert-rolls.xml,v $
+  Revision 1.19  2011/06/08 00:35:59  anoop
+  bug fix. Only root can create tables in cluster db
+  Also, use the rocks.my.cnf file to connect to db as root,
+  because the db is already secured by the time this xml file
+  is parsed
+
   Revision 1.18  2010/09/07 23:52:46  bruno
   star power for gb
 
@@ -116,17 +122,9 @@ for name, version, arch, url, diskid in generator.rolls:
 </file>
 
 
-if [ -f "/opt/rocks/etc/my.cnf" ]; then
-	clupass=`/bin/awk -F= '/password/{print $2}' /opt/rocks/etc/my.cnf`
-fi
-
-if [ "x$clupass" != "x" ]; then 
-	/opt/rocks/bin/mysql -u apache -p$clupass cluster \
-		&lt; /tmp/insert-rolls.sql
-else
-	/opt/rocks/bin/mysql --user=root --password='' cluster \
-		&lt; /tmp/insert-rolls.sql
-fi
+/opt/rocks/bin/mysql --defaults-extra-file=/root/.rocks.my.cnf \
+	-u root cluster \
+	&lt; /tmp/insert-rolls.sql
 
 rm -f /tmp/insert-rolls.sql
 
