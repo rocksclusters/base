@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.5 2011/05/10 05:12:47 anoop Exp $
+# $Id: __init__.py,v 1.6 2011/06/08 19:37:56 anoop Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.6  2011/06/08 19:37:56  anoop
+# Syntax error fix
+#
 # Revision 1.5  2011/05/10 05:12:47  anoop
 # Move shadow attributes out of attributes tables.
 # Seperate secure attributes table for all attributes
@@ -127,5 +130,5 @@ class Command(rocks.commands.add.command):
 			self.abort('attribute "%s" exists' % attr)
 
 		self.db.execute("""insert into global_attributes
-			values ('%s', %s)""" % (attr, value))
+			values ('%s', '%s')""" % (attr, value))
 
