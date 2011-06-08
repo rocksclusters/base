@@ -2,56 +2,6 @@
 
 <kickstart>
 
-<!-- Set permissions on the database -->
-<post interpreter='/opt/rocks/bin/python'>
-import os
-import sys
-import re
-import string
-import base64
-
-import MySQLdb
-
-# Connect to the database to set permissions
-d = MySQLdb.connect(user='root', db='cluster', passwd='',
-	unix_socket='/var/opt/rocks/mysql/mysql.sock')
-
-try:
-	db = d.cursor()
-except:
-	sys.exit(-1)
-
-# Get a list of all tables in the database
-db.execute('show tables')
-tables = db.fetchall()
-
-# Reg-exp to match secure attributes tables
-sec_re = re.compile('sec_[a-zA-Z]*_attributes')
-
-# Set of commands that will set db permissions
-cmd_set = []
-
-# For each table set permissions
-for (tab_name,) in tables:
-	# If the table is a secure attributes table, move on
-	if sec_re.match(tab_name):
-		continue
-	# Otherwise explicitly grant some privileges
-	else:
-		cmd_set.append('grant select on cluster.%s to ""@"localhost"' % tab_name)
-		cmd_set.append('grant select on cluster.%s to ""@"%%.local"' % tab_name)
-		cmd_set.append('grant select,insert,update,delete on cluster.%s to "apache"@"localhost"' % tab_name)
-		cmd_set.append('grant select,insert,update,delete on cluster.%s to "apache"@"&Kickstart_PrivateHostname;"' % tab_name)
-
-# Finally grant apache the ability to lock a table if necessary
-cmd_set.append('grant lock tables on cluster.* to "apache"@"localhost"')
-cmd_set.append('grant lock tables on cluster.* to "apache"@"&Kickstart_PrivateHostname;"')
-
-# Run through the command set
-for cmd in cmd_set:
-	db.execute(cmd)
-
-</post>
 
 <!-- Access control on the database -->
 <post interpreter='/opt/rocks/bin/python'>
@@ -103,8 +53,10 @@ for cmd in cmd_set:
 <post>
 chown root:apache /opt/rocks/etc/my.cnf
 chmod 0640 /opt/rocks/etc/my.cnf
+chmod 0400 /root/.rocks.my.cnf
 
-chmod 0600 /root/.rocks.my.cnf
+<!-- Set access controls on database tables -->
+/opt/rocks/sbin/rocks-db-perms
 
 <!-- use long passwords in the database -->
 <file name="/tmp/my.cnf" expr="grep -v '^old_passwords' /etc/my.cnf"/>

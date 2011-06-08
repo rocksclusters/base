@@ -1,5 +1,5 @@
 # --------------------------------------------------- -*- Makefile -*- --
-# $Id: Makefile,v 1.28 2011/05/10 17:15:12 anoop Exp $
+# $Id: Makefile,v 1.29 2011/06/08 19:47:23 anoop Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,10 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.29  2011/06/08 19:47:23  anoop
+# Moved script for setting up rocks db table access to
+# admin scripts from node XML files
+#
 # Revision 1.28  2011/05/10 17:15:12  anoop
 # Stupid permissions
 #
@@ -322,7 +326,7 @@ ROCKSROOT       = ../devel/devel
 -include $(ROCKSROOT)/etc/Rules.mk
 include Rules.mk
 
-ROOTONLY	= big-red-button rocks-user-sync shoot-node
+ROOTONLY	= big-red-button rocks-user-sync shoot-node rocks-db-perms
 ANYONE		= cluster-fork cluster-kill rocks-console gen_root_pw
 SCRIPTS		= $(ANYONE) $(ROOTONLY)
 
