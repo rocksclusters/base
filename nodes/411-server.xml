@@ -12,6 +12,9 @@
 
   <changelog>
   $Log: 411-server.xml,v $
+  Revision 1.10  2011/06/08 00:50:27  anoop
+  plugins for secure attributes processing
+
   Revision 1.9  2011/04/21 00:21:29  phil
   Close eval tag.
   XML entities cannot begin with a numeric digit. Who woulda thunk that.
@@ -142,6 +145,7 @@
 
   <package>rocks-411-master</package>
   <package>rocks-sec-channel-server</package>
+  <package>rocks-secattr-plugins</package>
 
 
 <post arg="--nochroot">
