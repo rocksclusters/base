@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: build.py,v $
+# Revision 1.42  2011/06/08 03:04:12  phil
+# Sort listing for easier human reading
+#
 # Revision 1.41  2010/11/05 18:19:45  bruno
 # added more files to packages.md5 (e.g., comps.xml, stage2.img, etc.)
 #
@@ -931,7 +934,9 @@ out += '<html>'
 out += '<body>'
 out += '<table>'
 
-for file in os.listdir(dir):
+listing = os.listdir(dir)
+listing.sort(key=str.lower)
+for file in listing:
 	if file not in [ 'index.cgi' ]:
 		out += '<tr><td>\\n'
 
