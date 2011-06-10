@@ -18,6 +18,12 @@
 
   <changelog>
   $Log: database-schema.xml,v $
+  Revision 1.55  2011/06/10 19:30:28  anoop
+  -All grants now moved to rocks-db-perms.py
+  -Changed ordering so that database-security
+   is setup before any database accesses
+  -Bug fixes
+
   Revision 1.54  2011/06/08 03:00:42  phil
   Populate catindex with global, os defaults.
 
@@ -821,10 +827,6 @@ BEGIN
 	RETURN (SELECT IFNULL(myIndex,0));
 END //
 DELIMITER ; 
-GRANT EXECUTE ON FUNCTION cluster.mapCategory TO 'apache'@'localhost';
-GRANT EXECUTE ON FUNCTION cluster.mapCategory TO ''@'localhost';
-GRANT EXECUTE ON FUNCTION cluster.mapCategory TO ''@'%.local';
-
 
 DROP FUNCTION IF EXISTS mapCategoryIndex;
 DELIMITER //
@@ -839,9 +841,6 @@ BEGIN
 	RETURN (SELECT IFNULL(myIndex,0));
 END //
 DELIMITER ; 
-GRANT EXECUTE ON FUNCTION cluster.mapCategoryIndex TO 'apache'@'localhost';
-GRANT EXECUTE ON FUNCTION cluster.mapCategoryIndex  TO ''@'localhost';
-GRANT EXECUTE ON FUNCTION cluster.mapCategoryIndex TO ''@'%.local';
 
 <!-- Part II: Resolvers.
      resolveattributes - builds a temporary table of resolved attributes for a
@@ -853,7 +852,6 @@ GRANT EXECUTE ON FUNCTION cluster.mapCategoryIndex TO ''@'%.local';
 
 DROP DATABASE IF EXISTS TEMPTABLES;
 CREATE DATABASE TEMPTABLES;
-GRANT SELECT, INSERT, UPDATE, DELETE, DROP, ALTER, CREATE TEMPORARY TABLES ON TEMPTABLES.* to ''@'localhost','apache'@'localhost',''@'%.local';
 
 DROP PROCEDURE IF EXISTS resolveattributes;
 DELIMITER //
@@ -874,9 +872,6 @@ BEGIN
     SET @@session.max_error_count=64;
 END //
 DELIMITER ; 
-GRANT EXECUTE ON PROCEDURE cluster.resolveattributes TO 'apache'@'localhost';
-GRANT EXECUTE ON PROCEDURE cluster.resolveattributes TO ''@'localhost';
-GRANT EXECUTE ON PROCEDURE cluster.resolveattributes TO ''@'%.local';
 
 DROP PROCEDURE IF EXISTS resolvefirewalls;
 DELIMITER //
@@ -899,10 +894,6 @@ BEGIN
     SET @@session.max_error_count=64;
 END //
 DELIMITER ; 
-
-GRANT EXECUTE ON PROCEDURE cluster.resolvefirewalls TO 'apache'@'localhost';
-GRANT EXECUTE ON PROCEDURE cluster.resolvefirewalls TO ''@'localhost';
-GRANT EXECUTE ON PROCEDURE cluster.resolvefirewalls TO ''@'%.local';
 
 </file>
 <file name='/tmp/categories.sql'>

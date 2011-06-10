@@ -2,6 +2,28 @@
 
 <kickstart>
 
+<description>
+$Id: database-sec.xml,v 1.6 2011/06/10 19:30:28 anoop Exp $
+This xml file sets database access permissions
+and grants table and procedure privileges to
+apache and other users
+</description>
+
+<copyright>
+</copyright>
+
+<log>
+$Log: database-sec.xml,v $
+Revision 1.6  2011/06/10 19:30:28  anoop
+-All grants now moved to rocks-db-perms.py
+-Changed ordering so that database-security
+ is setup before any database accesses
+-Bug fixes
+
+</log>
+
+<!-- Required to run the rocks-db-perms command -->
+<package>rocks-admin</package>
 
 <!-- Access control on the database -->
 <post interpreter='/opt/rocks/bin/python'>
@@ -24,20 +46,11 @@ except:
 
 cmd_set = []
 
-# Password Access for the apache
-apache_pass = string.strip(base64.b64encode(os.urandom(16), './')[0:16])
-cmd_set.append('set password for apache@localhost=PASSWORD("%s")' % apache_pass)
-cmd_set.append('set password for apache@&Kickstart_PrivateHostname;=PASSWORD("%s")' % apache_pass)
-
-# Add password to the common MySQL config file
-f = open('/opt/rocks/etc/my.cnf', 'a')
-f.write("password\t= %s\n" % apache_pass)
-f.close()
-
 # Password Access for root
 root_pass = string.strip(base64.b64encode(os.urandom(16), './')[0:16])
-cmd_set.append('set password for root@localhost=PASSWORD("%s")' % root_pass)
-cmd_set.append('set password for root@&Kickstart_PrivateHostname;=PASSWORD("%s")' % root_pass)
+cmd_set.append('set password for "root"@"localhost"=PASSWORD("%s")' % root_pass)
+cmd_set.append('set password for "root"@"127.0.0.1"=PASSWORD("%s")' % root_pass)
+cmd_set.append('set password for "root"@"&hostname;"=PASSWORD("%s")' % root_pass)
 
 # Add root password access to root MySQL config file
 f = open('/root/.rocks.my.cnf', 'w')
@@ -45,16 +58,30 @@ f.write('[client]\n')
 f.write('password\t= %s\n' % root_pass)
 f.close()
 
-for cmd in cmd_set:
-	db.execute(cmd)
+# Password Access for the apache
+apache_pass = string.strip(base64.b64encode(os.urandom(16), './')[0:16])
+cmd_set.append('create user "apache"@"localhost" identified by "%s"' % apache_pass)
+cmd_set.append('create user "apache"@"&hostname;" identified by "%s"' % apache_pass)
 
+# Add password to the common MySQL config file
+f = open('/opt/rocks/etc/my.cnf', 'a')
+f.write("password\t= %s\n" % apache_pass)
+f.close()
+
+for cmd in cmd_set:
+	try:
+		db.execute(cmd)
+	except:
+		sys.stderr.write("Could not execute %s\n" % cmd)
 </post>
 
 <post>
 chown root:apache /opt/rocks/etc/my.cnf
 chmod 0640 /opt/rocks/etc/my.cnf
 chmod 0400 /root/.rocks.my.cnf
+</post>
 
+<post>
 <!-- Set access controls on database tables -->
 /opt/rocks/sbin/rocks-db-perms
 

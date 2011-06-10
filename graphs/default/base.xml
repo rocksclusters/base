@@ -4,6 +4,12 @@
 
 	<changelog>
 	$Log: base.xml,v $
+	Revision 1.68  2011/06/10 19:30:28  anoop
+	-All grants now moved to rocks-db-perms.py
+	-Changed ordering so that database-security
+	 is setup before any database accesses
+	-Bug fixes
+	
 	Revision 1.67  2011/05/12 21:46:30  anoop
 	Set security before putting data in. This way the command
 	line will function properly
@@ -310,7 +316,7 @@
 		<tail>devel-server</tail>
 	</order>
 
-	<order head="autofs">
+	<order head="database-sec">
 		<tail>devel-appliance</tail>
 	</order>
 

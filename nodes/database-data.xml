@@ -17,6 +17,12 @@
 
 <changelog>
   $Log: database-data.xml,v $
+  Revision 1.71  2011/06/10 19:30:28  anoop
+  -All grants now moved to rocks-db-perms.py
+  -Changed ordering so that database-security
+   is setup before any database accesses
+  -Bug fixes
+
   Revision 1.70  2011/05/26 23:19:35  phil
   use unambiguous add host command.
 
@@ -482,6 +488,7 @@
   </changelog>
 
 
+<!-- Copy the site.attrs file. -->
 <post arg="--nochroot" os='linux'>
 
 cp /tmp/site.attrs /mnt/sysimage/tmp
@@ -489,7 +496,6 @@ chmod 400 /mnt/sysimage/tmp/site.attrs
 cp /tmp/rolls.xml /mnt/sysimage/tmp
 
 </post>
-
 <!--
 	Solaris specific. This will populate the database
 	attributes table from the attributes table on the
