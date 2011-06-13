@@ -1,4 +1,4 @@
-# $Id: passwd.py,v 1.9 2011/05/11 19:29:16 anoop Exp $
+# $Id: passwd.py,v 1.10 2011/06/13 20:10:26 anoop Exp $
 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 
 # $Log: passwd.py,v $
+# Revision 1.10  2011/06/13 20:10:26  anoop
+# Ignore blank lines
+#
 # Revision 1.9  2011/05/11 19:29:16  anoop
 # Bug fix. Make sure even new entries get propogated
 #
@@ -156,6 +159,9 @@ class Plugin(rocks.service411.Plugin):
 		f.close()
 		new_pw = []
 		for line in lp:
+			# Ignore blank lines
+			if len(line.split(':')) == 0:
+				continue
 			u_name = line.split(':')[0].strip()
 			if self.uid_f(line) and recv_pw.has_key(u_name):
 				new_pw.append(recv_pw.pop(u_name))
