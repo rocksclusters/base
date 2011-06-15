@@ -1,11 +1,14 @@
 #!@PYTHON@
 
-# $Id: rocks-db-perms.py,v 1.2 2011/06/10 19:30:29 anoop Exp $
+# $Id: rocks-db-perms.py,v 1.3 2011/06/15 16:50:58 phil Exp $
 
 # @Copyright@
 # @Copyright@
 
 # $Log: rocks-db-perms.py,v $
+# Revision 1.3  2011/06/15 16:50:58  phil
+# Different way to grant permissions on temporary tables.
+#
 # Revision 1.2  2011/06/10 19:30:29  anoop
 # -All grants now moved to rocks-db-perms.py
 # -Changed ordering so that database-security
@@ -103,9 +106,10 @@ for row in db.fetchall():
 	cmd_set.append('grant execute on function cluster.%s to ""@"%%.local"' % row[1])
 
 # Grant all access to temporary tables
-cmd_set.append('grant select, insert, update, delete, drop, alter, ' +\
-	'create temporary tables on temptables.* to ""@"localhost",' +\
-	'"apache"@"localhost",""@"%.local"')
+cmd_set.append('GRANT CREATE TEMPORARY TABLES ' +\
+	'on TEMPTABLES.* to ""@"localhost","apache"@"localhost",""@"%%.local"') 
+cmd_set.append('GRANT SELECT, INSERT, UPDATE, DELETE, DROP, ALTER ' +\
+	'on TEMPTABLES.* to ""@"localhost","apache"@"localhost",""@"%%.local"') 
 
 # Run through the command set
 for cmd in cmd_set:
