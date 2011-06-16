@@ -1,9 +1,12 @@
-# $Id: shadow.py,v 1.3 2011/05/11 19:29:16 anoop Exp $
+# $Id: shadow.py,v 1.4 2011/06/16 22:47:27 anoop Exp $
 #
 # @Copyright@
 # @Copyright@
 #
 # $Log: shadow.py,v $
+# Revision 1.4  2011/06/16 22:47:27  anoop
+# Bug fixes. Remove empty lines and malformed lines while processing
+#
 # Revision 1.3  2011/05/11 19:29:16  anoop
 # Bug fix. Make sure even new entries get propogated
 #
@@ -69,7 +72,7 @@ class Plugin(rocks.service411.Plugin):
 			if key in lp:
 				filtered_content.append(shadow_dict[key])
 
-		return string.join(filtered_content, '\n') + '\n'
+		return string.join(filtered_content, '\n')
 
 	# Function that returns true if UID >= 500
 	def uid_f(self, x):
@@ -90,10 +93,16 @@ class Plugin(rocks.service411.Plugin):
 		content = content.rstrip('\n')
 		content_lines = content.split('\n')
 
+		# Remove empty and malformed lines in input
+		filter_empty = lambda(x): (len(x.split(':')) == 9)
+		content_lines = filter(filter_empty, content_lines)
+
 		# Open shadow file.
 		f = open('/etc/shadow', 'r')
 		ls = f.readlines()
 		f.close()
+		# Ignore blank/malformed lines
+		ls = filter(filter_empty, ls)
 
 		# This lambda function returns a tuple
 		# of the form (username, user_entry_in_shadow)

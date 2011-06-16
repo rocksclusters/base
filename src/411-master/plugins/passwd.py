@@ -1,4 +1,4 @@
-# $Id: passwd.py,v 1.10 2011/06/13 20:10:26 anoop Exp $
+# $Id: passwd.py,v 1.11 2011/06/16 22:47:27 anoop Exp $
 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 
 # $Log: passwd.py,v $
+# Revision 1.11  2011/06/16 22:47:27  anoop
+# Bug fixes. Remove empty lines and malformed lines while processing
+#
 # Revision 1.10  2011/06/13 20:10:26  anoop
 # Ignore blank lines
 #
@@ -131,7 +134,7 @@ class Plugin(rocks.service411.Plugin):
 		# Reduce lines to only those whose UID >= 500
 		lp = filter(self.uid_f, content_lines)
 
-		return string.join(lp, '\n') + '\n'
+		return string.join(lp, '\n')
 
 	# Function that returns true if UID >= 500
 	def uid_f(self, x):
@@ -148,6 +151,10 @@ class Plugin(rocks.service411.Plugin):
 		content = content.rstrip('\n')
 		content_lines = content.split('\n')
 		
+		# Remove empty and malformed lines in input
+		filter_empty = lambda(x): (len(x.split(':')) == 7)
+		content_lines = filter(filter_empty, content_lines)
+
 		# Merge entries from existing passwd file and
 		# passwd file that we just downloaded.
 		pw_lam = lambda(x): (x.split(':')[0].strip(), x)
@@ -157,11 +164,10 @@ class Plugin(rocks.service411.Plugin):
 		f = open('/etc/passwd', 'r')
 		lp = map(string.strip, f.readlines())
 		f.close()
+		# Ignore blank/malformed lines
+		lp = filter(filter_empty, lp)
 		new_pw = []
 		for line in lp:
-			# Ignore blank lines
-			if len(line.split(':')) == 0:
-				continue
 			u_name = line.split(':')[0].strip()
 			if self.uid_f(line) and recv_pw.has_key(u_name):
 				new_pw.append(recv_pw.pop(u_name))
