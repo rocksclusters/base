@@ -1,4 +1,4 @@
-# $Id: Rules-linux.mk,v 1.2 2010/09/07 23:53:04 bruno Exp $
+# $Id: Rules-linux.mk,v 1.3 2011/06/16 17:59:32 anoop Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: Rules-linux.mk,v $
+# Revision 1.3  2011/06/16 17:59:32  anoop
+# Moving away from foundation-perl
+#
 # Revision 1.2  2010/09/07 23:53:04  bruno
 # star power for gb
 #
@@ -145,7 +148,6 @@ __RULES_LINUX_MK = yes
 # --------------------------------------------------------------------- #
 
 PYTHON	= /opt/rocks/bin/python
-PERL	= /opt/rocks/bin/perl
 WEBSERVER_ROOT = /var/www/html
 PATCH	= patch
 # --------------------------------------------------------------------- #
