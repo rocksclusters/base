@@ -1,9 +1,15 @@
-# $Id: shadow.py,v 1.4 2011/06/16 22:47:27 anoop Exp $
+# $Id: shadow.py,v 1.5 2011/06/17 05:46:32 anoop Exp $
 #
 # @Copyright@
 # @Copyright@
 #
 # $Log: shadow.py,v $
+# Revision 1.5  2011/06/17 05:46:32  anoop
+# -Bug fixes to passwd and shadow filters.
+# -The filters now correctly add and remove
+#  users with UID > 500 who are not system
+#  users.
+#
 # Revision 1.4  2011/06/16 22:47:27  anoop
 # Bug fixes. Remove empty lines and malformed lines while processing
 #
@@ -32,13 +38,30 @@ class Plugin(rocks.service411.Plugin):
 
 	# List of usernames to avoid transferring
 	# that may have UIDs greater than 500
-	def avoid_uname(self):
+	@staticmethod
+	def avoid_uname():
 		return [
 			'nobody',
 			'nobody4',
 			'noaccess',
 			'nfsnobody',
 			]
+
+	def get_uid_map(self):
+		# Get a list of all usernames in passwd file
+		# that are over UID 500
+		f = open('/etc/passwd', 'r')
+		lp = f.readlines()
+		f.close()
+		
+		p_lam = lambda(x): len(x.split(':')) == 7
+		lp = filter(p_lam, lp)
+
+		# Get only usernames, and UIDs out of list
+		s = lambda(x):	\
+			(x.split(':')[0].strip(),x.split(':')[2].strip())
+		passwd_map = map(s, lp)
+		return passwd_map
 
 	def pre_send(self, content):
 		
@@ -50,38 +73,21 @@ class Plugin(rocks.service411.Plugin):
 		shadow_lam = self.get_shadow_lambda()
 		shadow_dict = dict(map(shadow_lam, content_lines))
 
-		# Get a list of all usernames in passwd file
-		# that are over UID 500
-		f = open('/etc/passwd', 'r')
-		lp = f.readlines()
-		f.close()
-		
-		# Reduce lines to only those whose UID >= 500
-		lp = filter(self.uid_f, lp)
+		lp = self.get_uid_map()
 
-		# Get only usernames out of list
-		s = lambda(x):	\
-			x.split(':')[0].strip()
+		# Filter out all shadow entries for
+		# users with UID < 500
+		p = lambda(x): ( int(x[1]) >= 500 and \
+			not x[0] in self.avoid_uname())
+		lp = filter(p, lp)
+		u_names = map((lambda(x): x[0]), lp)
 
-		lp = map(s, lp)
-
-		# Reduce shadow dictionary using only the
-		# remaining entries in passwd lines
 		filtered_content = []
 		for key in shadow_dict:
-			if key in lp:
+			if key in u_names:
 				filtered_content.append(shadow_dict[key])
 
-		return string.join(filtered_content, '\n')
-
-	# Function that returns true if UID >= 500
-	def uid_f(self, x):
-		l = x.split(':')
-		if int(l[2]) < 500:
-			return False
-		if l[0] in self.avoid_uname():
-			return False
-		return True
+		return  string.join(filtered_content, '\n')
 
 	@staticmethod
 	def get_shadow_lambda():
@@ -94,15 +100,15 @@ class Plugin(rocks.service411.Plugin):
 		content_lines = content.split('\n')
 
 		# Remove empty and malformed lines in input
-		filter_empty = lambda(x): (len(x.split(':')) == 9)
-		content_lines = filter(filter_empty, content_lines)
+		f_malformed= lambda(x): (len(x.split(':')) == 9)
+		content_lines = filter(f_malformed, content_lines)
 
 		# Open shadow file.
 		f = open('/etc/shadow', 'r')
 		ls = f.readlines()
 		f.close()
 		# Ignore blank/malformed lines
-		ls = filter(filter_empty, ls)
+		ls = filter(f_malformed, ls)
 
 		# This lambda function returns a tuple
 		# of the form (username, user_entry_in_shadow)
@@ -111,6 +117,15 @@ class Plugin(rocks.service411.Plugin):
 		# Get a list of tuples from /etc/shadow
 		shadow = map(shadow_lam, ls)
 
+		lp = self.get_uid_map()
+
+		# Filter out all shadow entries for
+		# users with UID < 500
+		#p = lambda(x): ( int(x[1]) >= 500 and \
+		#	not x[0] in self.avoid_uname())
+		#lp = filter(p, lp)
+		u_names = map((lambda(x): x[0]), lp)
+	
 		# The received list of shadow entries are also
 		# subject to the lambda filter, and then a dictionary
 		# is created from the list of tuples. This will help
@@ -122,13 +137,19 @@ class Plugin(rocks.service411.Plugin):
 		# Merge existing entries in original shadow file
 		# with existing entries in received content
 		for entry in shadow:
-			u_name = entry[0]
-			if recv_shadow_dict.has_key(u_name):
-				new_shadow.append(recv_shadow_dict.pop(u_name))
+			u = entry[0]
+			e = entry[1]
+			# If we don't find the username in the password
+			# file, remove from shadow as well
+			if not u in u_names:
+				continue
 			else:
-				new_shadow.append(entry[1])
+				if u in recv_shadow_dict.keys():
+					new_shadow.append(recv_shadow_dict.pop(u))
+				else:
+					new_shadow.append(e)
 
-		for sh in recv_shadow_dict:
-			new_shadow.append(recv_shadow_dict[sh])
+		for s in recv_shadow_dict:
+			new_shadow.append(recv_shadow_dict[s])
 			
 		return string.join(new_shadow, '\n') + '\n'

@@ -1,4 +1,4 @@
-# $Id: passwd.py,v 1.11 2011/06/16 22:47:27 anoop Exp $
+# $Id: passwd.py,v 1.12 2011/06/17 05:46:32 anoop Exp $
 
 # @Copyright@
 # 
@@ -54,6 +54,12 @@
 # @Copyright@
 
 # $Log: passwd.py,v $
+# Revision 1.12  2011/06/17 05:46:32  anoop
+# -Bug fixes to passwd and shadow filters.
+# -The filters now correctly add and remove
+#  users with UID > 500 who are not system
+#  users.
+#
 # Revision 1.11  2011/06/16 22:47:27  anoop
 # Bug fixes. Remove empty lines and malformed lines while processing
 #
@@ -113,9 +119,18 @@ class Plugin(rocks.service411.Plugin):
 	def get_filename(self):
 		return "/etc/passwd"
 
+	@staticmethod
+	def filter_malformed():
+		return lambda(x): len(x.split(':')) == 7
+
+	@staticmethod
+	def passwd_lambda():
+		return lambda(x): (x.split(':')[0].strip(), x)
+
 	# List of usernames to avoid transferring
 	# that may have UIDs greater than 500
-	def avoid_uname(self):
+	@staticmethod
+	def avoid_uname():
 		return [
 			'nobody',
 			'nobody4',
@@ -124,15 +139,15 @@ class Plugin(rocks.service411.Plugin):
 			]
 
 	def pre_send(self, content):
-		
 		content = content.rstrip('\n')
 		content_lines = content.split('\n')
 
+		# Remove all malformed/empty lines
+		lp = filter(self.filter_malformed(), content_lines)
+
 		# Get a list of all usernames in passwd file
-		# that are over UID 500
-		
-		# Reduce lines to only those whose UID >= 500
-		lp = filter(self.uid_f, content_lines)
+		# and keep only those whose UID >= 500
+		lp = filter(self.uid_f, lp)
 
 		return string.join(lp, '\n')
 
@@ -152,31 +167,35 @@ class Plugin(rocks.service411.Plugin):
 		content_lines = content.split('\n')
 		
 		# Remove empty and malformed lines in input
-		filter_empty = lambda(x): (len(x.split(':')) == 7)
-		content_lines = filter(filter_empty, content_lines)
+		content_lines = filter(self.filter_malformed(), content_lines)
 
 		# Merge entries from existing passwd file and
 		# passwd file that we just downloaded.
-		pw_lam = lambda(x): (x.split(':')[0].strip(), x)
-		recv_pw = dict(map(pw_lam, content_lines))
+		passwd_recv = dict(map(self.passwd_lambda(), content_lines))
 		
 		# Original Password file
 		f = open('/etc/passwd', 'r')
 		lp = map(string.strip, f.readlines())
 		f.close()
 		# Ignore blank/malformed lines
-		lp = filter(filter_empty, lp)
+		lp = filter(self.filter_malformed(), lp)
+
 		new_pw = []
+
 		for line in lp:
 			u_name = line.split(':')[0].strip()
-			if self.uid_f(line) and recv_pw.has_key(u_name):
-				new_pw.append(recv_pw.pop(u_name))
-
-			else:
+			# If we're under 500, add the line
+			if not self.uid_f(line):
 				new_pw.append(line)
-		
-		for pw in recv_pw:
-			new_pw.append(recv_pw[pw])
+			# If we're over UID 500, and present
+			# in the received passwd lines, then add
+			else:
+				if passwd_recv.has_key(u_name):
+					new_pw.append(passwd_recv.pop(u_name))
+				else:
+					continue
+		for pw in passwd_recv:
+			new_pw.append(passwd_recv[pw])
 
 		return string.join(new_pw, '\n') + '\n'
 		
