@@ -3,7 +3,7 @@
 # Retrives a file using HTTPS for the 411 service. Assumes
 # the master servers are running Apache with mod_ssl.
 # 
-# $Id: 411get.py,v 1.8 2011/04/26 03:30:26 anoop Exp $
+# $Id: 411get.py,v 1.9 2011/06/17 18:17:47 anoop Exp $
 #
 # @Copyright@
 # 
@@ -59,6 +59,10 @@
 # @Copyright@
 #
 # $Log: 411get.py,v $
+# Revision 1.9  2011/06/17 18:17:47  anoop
+# band-aid to force password file to be pulled
+# before shadow file
+#
 # Revision 1.8  2011/04/26 03:30:26  anoop
 # Support for pre-send filtering of content,
 # and post receive actions.
@@ -163,7 +167,7 @@ If no filename is given, a list of 411 files is returned."""
 				(meta['name'], meta['mode'], meta['owner'])
 			else:
 				files = self.find()
-				for file in files.keys():
+				for file in sorted(files.keys()):
 					if not self.getall:
 						print file
 						continue
