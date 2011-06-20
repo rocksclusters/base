@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.8 2011/05/28 03:25:26 phil Exp $RAM
+# $Id: __init__.py,v 1.9 2011/06/20 05:50:04 phil Exp $RAM
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.9  2011/06/20 05:50:04  phil
+# Add a field for source of firewall. Will only dump 'custom' firewall rules
+#
 # Revision 1.8  2011/05/28 03:25:26  phil
 # Add Firewall, report firewall now working with resolved rules.
 # Created a TEMPTABLES database for temporary SQL tables.
@@ -200,7 +203,7 @@ class command(rocks.commands.CategoryArgumentProcessor, rocks.commands.add.comma
 			protocol, flags, comment)
 
 
-	def insertRule(self, category, index, rulename,  
+	def insertRule(self, category, index, rulename, rulesrc,  
 		service, network, outnetwork, chain, action, protocol, 
 		flags, comment):
 
@@ -210,15 +213,15 @@ class command(rocks.commands.CategoryArgumentProcessor, rocks.commands.add.comma
 		try: 
 			self.db.execute("""INSERT INTO firewalls 
 				(category, catindex, 
-				rulename, insubnet, outsubnet, service, 
+				rulename, rulesrc, insubnet, outsubnet, service, 
 				protocol, action, chain, flags, 
 				comment) 
 				VALUES (mapCategory('%s'), mapCategoryIndex('%s','%s'), 
-				'%s', %s, %s, '%s', 
+				'%s', '%s', %s, %s, '%s', 
 	                        %s, '%s', '%s', %s,
 	                        %s )""" %
 				(category, category, index, 
-				rulename, network, outnetwork, service, 
+				rulename, rulesrc, network, outnetwork, service, 
 				protocol, action, chain, flags, 
 				comment))
 		except:
@@ -241,10 +244,14 @@ class Command(command):
         to the global category
 	</arg>
 
-	<param type='string' name='rulename' optional='1'>
-	User-defined name of rule. If omitted, defined as 
-        CHAIN&lt;NN&gt; where NN is
-        arbitrary. Firewall rules are ordered lexicographically. 
+	<param type='string' name='rulename'>
+	User-defined name of rule. Required.
+        Firewall rules are ordered lexicographically. 
+	</param>
+
+	<param type='string' name='rulesrc' optional='1'>
+	system or custom. Default is 'custom'. Rules defined as
+	'system' are not dumped with rocks dump firewall. 
 	</param>
 
 	<param type='string' name='service'>
@@ -322,9 +329,10 @@ class Command(command):
 	</example>
 	"""
 	def run(self, params, args):
-		(rulename,service, network, outnetwork, chain, action, 
+		(rulename, rulesrc, service, network, outnetwork, chain, action, 
 			protocol, flags, comment) = self.fillParams([
 				('rulename',),
+				('rulesrc','custom'),
 				('service', ),
 				('network', ),
 				('output-network', ),
@@ -350,7 +358,7 @@ class Command(command):
 		indices =  self.getCategoryIndices(myargs)
 
 		for category,index in indices:
-			self.insertRule(category,index,rulename,service, 
+			self.insertRule(category,index,rulename, rulesrc, service, 
 				network, outnetwork, chain, action, protocol, flags, comment)
 
 			
