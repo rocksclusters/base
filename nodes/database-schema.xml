@@ -18,6 +18,9 @@
 
   <changelog>
   $Log: database-schema.xml,v $
+  Revision 1.56  2011/06/20 05:56:07  phil
+  support rulesrc for system-defined rules.
+
   Revision 1.55  2011/06/10 19:30:28  anoop
   -All grants now moved to rocks-db-perms.py
   -Changed ordering so that database-security
@@ -763,6 +766,7 @@ DROP TABLE IF EXISTS `firewalls`;
 CREATE TABLE `firewalls` (
 	`ID`  int(11) NOT NULL AUTO_INCREMENT,
 	`Rulename` varchar(128) NOT NULL, 
+	`Rulesrc`  enum('system','custom') NOT NULL default 'custom',
 	`InSubnet`  int(11),
 	`OutSubnet` int(11),
 	`Service` varchar(256),
@@ -804,7 +808,7 @@ DROP VIEW IF EXISTS `vattributes`;
 CREATE VIEW `vattributes` AS SELECT a.id, attr, value, shadow, cat.name AS category, ci.name AS catindex FROM attributes a, catindex ci, categories cat WHERE a.catindex=ci.id AND a.category=cat.id order by attr,catindex,category;
 
 DROP VIEW IF EXISTS `vfirewalls`;
-CREATE VIEW `vfirewalls` AS SELECT f.ID, f.Rulename, f.InSubnet, f.OutSubnet, f.Service, f.protocol, f.Action, f.Chain, f.Flags, f.Comment,
+CREATE VIEW `vfirewalls` AS SELECT f.ID, f.Rulename, f.Rulesrc, f.InSubnet, f.OutSubnet, f.Service, f.protocol, f.Action, f.Chain, f.Flags, f.Comment,
 	cat.name AS category, ci.name AS catindex FROM firewalls f, catindex ci, categories cat WHERE 
 	f.catindex=ci.id AND f.category=cat.id ORDER BY f.Rulename,category,catindex;
 

@@ -8,6 +8,9 @@ Create a Login appliance
 
 <changelog>
 $Log: login-server.xml,v $
+Revision 1.7  2011/06/20 05:56:07  phil
+support rulesrc for system-defined rules.
+
 Revision 1.6  2011/06/07 15:38:13  phil
 
 One extra post tag can ruin your whole day.
@@ -57,35 +60,35 @@ the start of the login appliance
 
 /opt/rocks/bin/rocks add firewall appliance=login chain=INPUT \
 	flags="-m state --state NEW --source &Kickstart_PublicNetwork;/&Kickstart_PublicNetmask;" \
-	protocol=tcp service=https action=ACCEPT network=public rulename="A40-HTTPS-PUBLIC-LAN"
+	protocol=tcp service=https action=ACCEPT network=public rulename="A40-HTTPS-PUBLIC-LAN" rulesrc="system"
 
 /opt/rocks/bin/rocks add firewall appliance=login chain=INPUT \
 	flags="-m state --state NEW --source &Kickstart_PublicNetwork;/&Kickstart_PublicNetmask;" \
-	protocol=tcp service=www action=ACCEPT network=public rulename="A40-WWW-PUBLIC_LAN"
+	protocol=tcp service=www action=ACCEPT network=public rulename="A40-WWW-PUBLIC_LAN" rulesrc="system"
 
 ]]>
 
 /opt/rocks/bin/rocks add firewall appliance=login network=public \
 	output-network=private service="all" protocol="all" action="ACCEPT" \
-	chain="FORWARD" flags="-m state --state RELATED,ESTABLISHED" rulename="A50-FORWARD-RELATED"
+	chain="FORWARD" flags="-m state --state RELATED,ESTABLISHED" rulename="A50-FORWARD-RELATED" rulesrc="system"
 
 /opt/rocks/bin/rocks add firewall appliance=login network=private \
-	service="all" protocol="all" action="ACCEPT" chain="FORWARD" rulename="A60-FORWARD"
+	service="all" protocol="all" action="ACCEPT" chain="FORWARD" rulename="A60-FORWARD" rulesrc="system"
 
 /opt/rocks/bin/rocks add firewall appliance=login output-network=public \
-	service="nat" protocol="all" action="MASQUERADE" chain="POSTROUTING" rulename="MASQUERADE"
+	service="nat" protocol="all" action="MASQUERADE" chain="POSTROUTING" rulename="MASQUERADE" rulesrc="system"
 
 /opt/rocks/bin/rocks add firewall appliance=login network=all service="8649" \
 	protocol="udp" action="REJECT" chain="INPUT" \
-	comment="block ganglia traffic from non-private interfaces" rulename="R10-GANGLIA-UDP"
+	comment="block ganglia traffic from non-private interfaces" rulename="R10-GANGLIA-UDP" rulesrc="system"
 
 /opt/rocks/bin/rocks add firewall appliance=login network=all service="3306" \
 	protocol="tcp" action="REJECT" chain="INPUT" \
-	comment="block mysql traffic from non-private interfaces" rulename="R20-MYSQL-TCP"
+	comment="block mysql traffic from non-private interfaces" rulename="R20-MYSQL-TCP" rulesrc="system"
 
 /opt/rocks/bin/rocks add firewall appliance=login network=all service="40000" \
 	protocol="tcp" action="REJECT" chain="INPUT" \
-	comment="block foundation mysql traffic from non-private interfaces" rulename="R30-FOUNDATION-MYSQL"
+	comment="block foundation mysql traffic from non-private interfaces" rulename="R30-FOUNDATION-MYSQL" rulesrc="system"
 
 </post>
 
