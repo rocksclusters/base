@@ -21,6 +21,9 @@
 
   <changelog>
   $Log: base.xml,v $
+  Revision 1.53  2011/06/20 04:54:46  phil
+  iostat for all nodes. Very useful for all kinds of things.
+
   Revision 1.52  2011/03/08 15:29:43  phil
   support disableServices attribute so that users can optionally control additional services that are removed via ckhconfig.
 
@@ -451,6 +454,7 @@
   <package>nspr.&arch;</package>
 
   <package os="linux">jdk</package>
+  <package os="linux">sysstat</package>
 
 <pre>
 
