@@ -286,6 +286,7 @@ ps (PyObject *self, PyObject *args)
 	int pid, npids=0;
 	int i=0, rval;
 	int nprocs = 1;
+	long totcpus = 1;
 	struct process *procs;      /* The top N processes by cpu usage */
 	struct process *p;
 	DIR *d;
@@ -342,13 +343,14 @@ ps (PyObject *self, PyObject *args)
 		}
 	closedir (d);
 
+	totcpus = sysconf( _SC_NPROCESSORS_ONLN);
 	/* Fill in the remaining process fields. */
 	for (i=0; i<npids; i++) {
 		p=&procs[i];
 		/* Remember we have stored the new ticks of this process in
 		 * p->percent_cpu. */
 		p->percent_cpu = (p->percent_cpu * 100/HZ) / delta;
-		if (p->percent_cpu > 99.9) p->percent_cpu=99.9;
+		if (p->percent_cpu > totcpus*99.9) p->percent_cpu=totcpus*99.9;
 
 		p->percent_mem = 100.0 * (p->resident / (float) total_mem_kb());
 		if (p->percent_mem > 99.9) p->percent_mem=99.9;
