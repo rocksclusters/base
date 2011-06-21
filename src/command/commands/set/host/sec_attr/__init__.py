@@ -1,9 +1,12 @@
-# $Id: __init__.py,v 1.1 2011/06/03 02:34:39 anoop Exp $
+# $Id: __init__.py,v 1.2 2011/06/21 22:12:42 anoop Exp $
 
 # @Copyright@
 # @Copyright@
 
 # $Log: __init__.py,v $
+# Revision 1.2  2011/06/21 22:12:42  anoop
+# Bug fix
+#
 # Revision 1.1  2011/06/03 02:34:39  anoop
 # Added code for secure_attributes
 #
@@ -75,8 +78,8 @@ class Command(rocks.commands.set.host.command):
 		# Check if value is supposed to be crypted
 		crypted = self.str2bool(crypted)
 
+		self.enc = rocks.password.Enc()
 		if enc is not None:
-			self.enc = rocks.password.Enc()
 			if hasattr(self.enc, 'enc_%s' % enc):
 				f = getattr(self.enc, 'enc_%s' % enc)
 			else:
@@ -120,19 +123,3 @@ class Command(rocks.commands.set.host.command):
 				self.db.execute('insert into sec_node_attributes ' +\
 				'values ((select id from nodes where name="%s"), "%s", "%s", "%s")' \
 				% (host, attr, enc_value, enc))
-
-	def enc_sha(self, value):
-		s = sha.sha(value)
-		return s.hexdigest()
-
-	def enc_crypt(self, value):
-		salt = '$1$'
-		for i in range(0, 8):
-			salt += random.choice(
-			string.ascii_letters +
-			string.digits + './')
-		return crypt.crypt(value, salt)
-	
-	def enc_portable(self, value):
-		p = rocks.password.Password()
-		return p.create_password(value)
