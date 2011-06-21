@@ -1,6 +1,16 @@
 <?xml version='1.0' standalone='no'?>
 
 <kickstart>
+<description>
+	$Id: server-rootpw.xml,v 1.2 2011/06/21 23:26:04 anoop Exp $
+	Root Password for the frontend
+</description>
+<changelog>
+	$Log: server-rootpw.xml,v $
+	Revision 1.2  2011/06/21 23:26:04  anoop
+	Add description
+	
+</changelog>
 <main os='linux'>
 	<rootpw>--iscrypted &Kickstart_PrivateRootPassword;</rootpw>
 </main>
