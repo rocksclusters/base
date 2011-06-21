@@ -6,7 +6,7 @@
 #
 # Requires Python 2.1 or better
 #
-# $Id: 411put.py,v 1.14 2011/05/13 21:56:08 anoop Exp $
+# $Id: 411put.py,v 1.15 2011/06/21 06:05:05 anoop Exp $
 #
 # @Copyright@
 # 
@@ -62,6 +62,10 @@
 # @Copyright@
 #
 # $Log: 411put.py,v $
+# Revision 1.15  2011/06/21 06:05:05  anoop
+# Obtain IP address and 411 port information from the database
+# as opposed to divining it from archaic gmon interfaces
+#
 # Revision 1.14  2011/05/13 21:56:08  anoop
 # If plugin doesn't match reset plugin instance to None
 #
@@ -244,7 +248,7 @@ import sys
 import stat
 import time
 import base64
-import rocks.net
+import rocks.sql
 import rocks.service411
 from rocks.service411 import Error411
 import socket
@@ -252,11 +256,11 @@ from rocks.util import mkdir
 from urllib import quote
 
 # Multiple inheritance with a bias towards rocks.Application.
-class App(rocks.net.Application, rocks.service411.Service411):
+class App(rocks.sql.Application, rocks.service411.Service411):
 	"Can encrypt and publish a 411 file."
 
 	def __init__(self, argv):
-		rocks.net.Application.__init__(self, argv)
+		rocks.sql.Application.__init__(self, argv)
 		rocks.service411.Service411.__init__(self)
 		self.usage_name = "411 Publisher"
 		self.usage_version = '@VERSION@'
@@ -298,12 +302,17 @@ absolute path (after any chroots) will be maintained on clients."""
 	def parseArgs(self):
 		"""Point ourselves at the rocksrc config file, so 
 		we dont need our own."""
-		rocks.net.Application.parseArgs(self, rcbase='four11put')
-
+		rocks.sql.Application.parseArgs(self, rcbase='four11put')
+		self.port411 = None
 		# This is more complicated than I originally thought.
 		# Always use the private cluster address for 411 HTTP alerts.
 		try:
-			self.ip = self.privateIP()
+			self.connect()
+			self.db.execute('select nodename, ip from '	+\
+				'vnet where appliance="frontend" and '	+\
+				'subnet="private"')
+			(nodename, self.ip,) = self.db.fetchone()
+			self.port411 = int(self.db.getHostAttr(nodename, 'port411'))
 		except Exception, msg:
 			self.doAlert = 0
 			if not self.doName:
@@ -483,7 +492,11 @@ absolute path (after any chroots) will be maintained on clients."""
 		if self.group:
 			urldir = quote("%s/%s" % (self.urldir, self.group))
 
-		alert = "http://%s/%s/%s" % (self.ip, urldir, filename411)
+		if self.port411 is None:
+			alert = "http://%s/%s/%s" % (self.ip, urldir, filename411)
+		else:
+			alert = "http://%s:%d/%s/%s" % (self.ip, self.port411,
+				urldir, filename411)
 		sig   = self.sign(alert)
 
 		# replace ganglia channel with the rocks rpc channel
@@ -502,6 +515,8 @@ files = app.getArgs()
 try:
 	if not files:
 		raise Error411, "Please specify a file."
+	# Connect to the Rocks database
+	app.connect()
 	for f in files:
 		app.run(f)
 except Error411, msg:
