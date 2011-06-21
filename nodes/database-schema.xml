@@ -18,6 +18,11 @@
 
   <changelog>
   $Log: database-schema.xml,v $
+  Revision 1.57  2011/06/21 06:03:31  anoop
+  Create a giant spreadsheet of nodes,network, appliance, memberhip,
+  and subnets information. This reduces complex SQL queries spanning
+  multiple tables into simple ones spanning a single table
+
   Revision 1.56  2011/06/20 05:56:07  phil
   support rulesrc for system-defined rules.
 
@@ -525,6 +530,22 @@ CREATE TABLE subnets (
 	PRIMARY KEY(ID)
 ) TYPE=MyISAM;
 
+<!--	Meta table consisting of information from
+	nodes, networks, subnets table	-->
+create view vnet as (select
+	n.name as nodename,
+	m.name as membership,
+	a.name as appliance,
+	n.rack, n.rank,
+	s.name as subnet, 
+	nt.ip, nt.device, nt.module,
+	nt.name as hostname,
+	s.dnszone as domainname,
+	s.netmask, s.mtu from 
+	nodes n, networks nt, subnets s,
+	memberships m, appliances a where
+	n.membership=m.id and m.appliance=a.id
+	and nt.node=n.id and nt.subnet=s.id);
 
 <!-- Routes -->
 
