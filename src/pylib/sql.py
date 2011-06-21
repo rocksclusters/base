@@ -57,6 +57,10 @@
 # @Copyright@
 #
 # $Log: sql.py,v $
+# Revision 1.31  2011/06/21 06:04:25  anoop
+# Let the sql library access through the rocks commandline database
+# interface as well. This gives us access to more info from the database
+#
 # Revision 1.30  2011/05/19 18:39:29  anoop
 # reading the password file should be done correctly, with or without spaces
 #
@@ -210,6 +214,7 @@ import types
 import popen2
 import rocks.util
 import rocks.app
+import rocks.commands
 
 # Allow this code to work on machine that don't have mysql installed.
 # We do this to allow debuging on developer machines.
@@ -252,6 +257,8 @@ class Application(rocks.app.Application):
 	self.shortFlagsAlias={}
 	self.shortFlagsAlias['v'] = 'verbose'
 	self.shortFlagsAlias['h'] = 'help'
+
+	self.db = None
 
 	self.formatOptions()
 
@@ -311,30 +318,35 @@ class Application(rocks.app.Application):
         return self.params['host'][0]
     
     def getPassword(self):
-        rval = self.params['password'][0]
+	rval = self.params['password'][0]
 	if len(rval) > 0:
 		return rval
+
+	filename = None
+	username = pwd.getpwuid(os.geteuid())[0].strip()
+	if username == 'root':
+		filename = '/root/.rocks.my.cnf'
+	if username == 'apache':
+		filename = '/opt/rocks/etc/my.cnf'
 	try:
-		file=open('/opt/rocks/etc/my.cnf','r')
-		for line in file.readlines():
-			l=line.split('=')
-			if len(l) > 1 and l[0].strip() == "password" :
-				rval=l[1].strip()
-				break
-		file.close()
+		if filename is not None:
+			file = open(filename, 'r')
+			for line in file.readlines():
+				l=line.split('=')
+				if len(l) > 1 and l[0].strip() == "password" :
+					rval=l[1].strip()
+					break
+			file.close()
 	except:
 		pass
-
 	return rval 
 
     def getUsername(self):
         username = self.params['user'][0]
 	if len(username) > 0:
 		return username
-	if os.geteuid() == 0:
-		username = 'apache'
-	else:
-		username = pwd.getpwuid(os.geteuid())[0]
+
+	username = pwd.getpwuid(os.geteuid())[0]
 	return username
 
     def getDatabase(self):
@@ -360,7 +372,6 @@ class Application(rocks.app.Application):
 
         return 0
 
-
     def connect(self):
         if hasSQL:
             self.link = connect(host='%s' % self.getHost(),\
@@ -369,10 +380,13 @@ class Application(rocks.app.Application):
 				passwd='%s' % self.getPassword(),\
 				unix_socket='/var/opt/rocks/mysql/mysql.sock')
 
+            # This is the database cursor for the rocks command line interface
+            self.db = rocks.commands.DatabaseConnection(self.link)
+	    # This is the database cursor for the rocks.sql.app interface
             # Get a database cursor which is used to manage the context of
             # a fetch operation
 	    if self.flags['verbose'][0]:
-	    	print "connect:connected",self.link
+	     	print "connect:connected",self.link
             self.cursor = self.link.cursor()
             return 1
         return 0
