@@ -8,6 +8,7 @@ os.environ['PYTHONPATH'] = ''
 
 import cgi
 import rocks.sql
+import rocks.password
 
 class App(rocks.sql.Application):
 
@@ -31,37 +32,11 @@ class App(rocks.sql.Application):
 				#
 				# encrypt the root password
 				#
-				import sha
-				import rocks.password
-				import random
-				import crypt
-				import string
 
-				salt = '$1$'
-				for i in range(0, 8):
-					salt += random.choice(
-						string.ascii_letters +
-						string.digits + './')
-
+				enc=rocks.password.Enc()
 				str = 'Kickstart_PrivateRootPassword:%s' \
-					% crypt.crypt(xmlvalue, salt)
+					% enc.enc_crypt(xmlvalue)
 				file.write('%s\n' % (str))
-
-				#
-				# mysql requires a sha(sha()) password
-				#
-				a = sha.new(xmlvalue)
-				sha_sha = sha.new(a.digest())
-
-				str = 'Kickstart_PrivateSHARootPassword:%s' \
-					% (sha_sha.hexdigest())
-				file.write('%s\n' % (str))
-
-				pw = rocks.password.Password()
-				str = 'Kickstart_PrivatePortableRootPassword:'
-				str += '%s' % (pw.create_password(xmlvalue))
-				file.write('%s\n' % (str))
-
 				continue
 			elif xmlname == 'Confirm_Private_PureRootPassword':
 				#

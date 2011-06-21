@@ -17,6 +17,11 @@
 
 <changelog>
   $Log: database-data.xml,v $
+  Revision 1.72  2011/06/21 23:27:06  anoop
+  Store only kickstartrootpassword in site.attrs
+  Remove KickstartRootPassword when moving site.attrs
+  to local disk
+
   Revision 1.71  2011/06/10 19:30:28  anoop
   -All grants now moved to rocks-db-perms.py
   -Changed ordering so that database-security
@@ -490,8 +495,9 @@
 
 <!-- Copy the site.attrs file. -->
 <post arg="--nochroot" os='linux'>
-
-cp /tmp/site.attrs /mnt/sysimage/tmp
+cat /tmp/site.attrs  | \
+	sed -e '/^Kickstart_PrivateRootPassword/d' > \
+	/mnt/sysimage/tmp/site.attrs
 chmod 400 /mnt/sysimage/tmp/site.attrs
 cp /tmp/rolls.xml /mnt/sysimage/tmp
 
@@ -542,15 +548,8 @@ if os.path.exists('/tmp/site.attrs'):
 				else:
 					value += i
 			
-			if key in [ 'Kickstart_PrivatePortableRootPassword', \
-					'Kickstart_PrivateRootPassword', \
-					'Kickstart_PrivateSHARootPassword' ]:
-				extra = 'shadow=y'
-			else:
-				extra = ''
-
-			os.system("/opt/rocks/bin/rocks set attr %s '%s' '%s'"
-				% (extra, key, value))
+			os.system("/opt/rocks/bin/rocks set attr '%s' '%s'"
+				% (key, value))
 
 	file.close()
 
