@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.5 2010/10/28 21:11:36 bruno Exp $
+# $Id: __init__.py,v 1.6 2011/06/22 23:37:15 phil Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.6  2011/06/22 23:37:15  phil
+# firewall dump command
+#
 # Revision 1.5  2010/10/28 21:11:36  bruno
 # no need to protect the firewall dump output with CDATA, the restore roll
 # already does that and embedded CDATA statements is an XML error.
@@ -79,8 +82,8 @@ import rocks.commands
 class command(rocks.commands.NetworkArgumentProcessor, 
 	rocks.commands.dump.command):
 
-	def dump_firewall(self, level='', id=''):
-		for i, o, s, p, a, c, f, cmt in self.db.fetchall():
+	def dump_firewall(self):
+		for rule, i, o, s, p, a, c, f, cmt, category, catindex in self.db.fetchall():
 			cmd = []
 			if i == 0:
 				name = 'all'
@@ -109,18 +112,21 @@ class command(rocks.commands.NetworkArgumentProcessor,
 			if cmt:
 				cmd.append('comment="%s"' % cmt)
 
-			self.dump('add %s firewall %s %s' % (level, id,
-				' '.join(cmd)))
+			cmd.append('rulename="%s"' % rule)
+
+			self.dump('add firewall "%s=%s" %s' % (category, 
+				catindex, ' '.join(cmd)))
 
 
 class Command(command):
 	"""
-	Dump the global firewall services and rules
+	Dump firewall rules defined as 'custom'.
+
 	"""
 	def run(self, params, args):
-		self.db.execute("""select insubnet, outsubnet,
+		self.db.execute("""SELECT rulename, insubnet, outsubnet,
 			service, protocol, action, chain, flags,
-			comment from global_firewall""")
+			comment, category, catindex FROM vfirewalls
+			WHERE Rulesrc = 'custom'""")
 
 		self.dump_firewall()
-
