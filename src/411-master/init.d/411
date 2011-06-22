@@ -4,7 +4,11 @@
 # change. We do this to be symmetric to NIS (yp).
 #
 # chkconfig: 2345 27 15
+### BEGIN INIT INFO
+# Provides: 411
+# Required-Start: foundation-mysql
 # description: Publish various files via 411
+### END INIT INFO
 #
 # @Copyright@
 # 
@@ -60,6 +64,11 @@
 # @Copyright@
 #
 # $Log: 411,v $
+# Revision 1.6  2011/06/22 18:55:15  anoop
+# Added init script dependency
+# Added config file information to the RPM build
+# Removed spec.in files. Seriously, who uses these anymore?
+#
 # Revision 1.5  2010/09/07 23:52:48  bruno
 # star power for gb
 #
