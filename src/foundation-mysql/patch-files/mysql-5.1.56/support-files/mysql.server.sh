@@ -15,7 +15,7 @@
 
 # Comments to support LSB init script conventions
 ### BEGIN INIT INFO
-# Provides: mysql
+# Provides: foundation-mysql
 # Required-Start: $local_fs $network $remote_fs
 # Should-Start: ypbind nscd ldap ntpd xntpd
 # Required-Stop: $local_fs $network $remote_fs
