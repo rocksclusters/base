@@ -1,9 +1,16 @@
-# $Id: __init__.py,v 1.1 2011/06/03 02:34:39 anoop Exp $
+# $Id: __init__.py,v 1.2 2011/06/22 19:22:23 anoop Exp $
 
 # @Copyright@
 # @Copyright@
 
 # $Log: __init__.py,v $
+# Revision 1.2  2011/06/22 19:22:23  anoop
+# Make default encryption for secure attributes "crypt"
+# We expect this feature to be mainly used to change
+# root passwords, which require "crypt" as the encryption
+# mode. So making crypt default instead of sha makes for
+# lesser typing
+#
 # Revision 1.1  2011/06/03 02:34:39  anoop
 # Added code for secure_attributes
 #
@@ -67,7 +74,7 @@ class Command(rocks.commands.add.host.command):
 		# Get params
 		(attr, value, crypted, enc) = self.fillParams([('attr', None),
 						('value', None),
-						('crypted','n'), ('enc', 'sha')])
+						('crypted','n'), ('enc', 'crypt')])
 
 		if attr is None:
 			self.abort('missing attribute name')

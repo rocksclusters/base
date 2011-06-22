@@ -1,9 +1,16 @@
-# $Id: __init__.py,v 1.2 2011/06/21 22:12:42 anoop Exp $
+# $Id: __init__.py,v 1.3 2011/06/22 19:22:23 anoop Exp $
 
 # @Copyright@
 # @Copyright@
 
 # $Log: __init__.py,v $
+# Revision 1.3  2011/06/22 19:22:23  anoop
+# Make default encryption for secure attributes "crypt"
+# We expect this feature to be mainly used to change
+# root passwords, which require "crypt" as the encryption
+# mode. So making crypt default instead of sha makes for
+# lesser typing
+#
 # Revision 1.2  2011/06/21 22:12:42  anoop
 # Bug fix
 #
@@ -117,7 +124,7 @@ class Command(rocks.commands.set.host.command):
 					'"%s") and attr="%s"' % (host, attr))
 			else:
 				if enc is None and crypted == 0:
-					enc = 'sha'
+					enc = 'crypt'
 					f = getattr(self.enc, 'enc_%s' % enc)
 					enc_value = f(value)
 				self.db.execute('insert into sec_node_attributes ' +\
