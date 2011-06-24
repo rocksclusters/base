@@ -5,96 +5,330 @@
 <para>
 The firewall for all cluster nodes (including the frontend) is managed with
 the Rocks command line.
-In this section, we'll describe how to open and close ports for cluster nodes.
+
+As of Rocks 5.4.3, all firewall rules  must have a name associated. The name
+is used as the handle for deleting and redefined rules. For example, a rule named 'MYRULE' can be defined globally, but a particular host can redefine 'MYRULE'
+to do something else.
+
+As of Rocks 5.4.3 rules are associated by category and single 'add firewall' 
+command handles global, os, appliance, and host categories. 
 </para>
 
 <section>
-<title> Opening a Port in a Node's Firewall </title>
+<title> Categories. Subtle Syntax </title>
+
+<para> 
+In Rocks 5.4.3 and newer releases, the concept of "categories" is used by
+the database. 
+Prior to Rocks 5.4.3, there were several different add firewall commands.
+Namely, 
+</para>
+<orderedlist>
+<listitem> <para>rocks add firewall </para> </listitem>
+<listitem><para> rocks add os firewall </para></listitem>
+<listitem><para> rocks add appliance firewall </para></listitem>
+<listitem><para> rocks add host firewall </para></listitem>
+</orderedlist>
 
 <para>
-We'll use the example of opening port 80 (the 'www' service) for the public
-network of compute-0-0.
-To open the port, execute:
+Logically, these were defined to add a firewall command to  one of 
+[global, os , appliance, host ]. When firewall rules were resolved from the 
+database, rules would be inherited from global, then os, then appliance, and
+finally host-specific rules.    
+</para>
+
+<note> 
+<para>
+As of 5.4.3, these have been replaced by a single command that looks like
+</para>
+</note>
+
+<screen>
+# rocks add firewall category=index ... 
+</screen>
+<para>
+Here categories are [global, os, appliance, host ]. This means that adding firewall rule to a particular host (say, compute-0-0) becomes
+</para>
+<para>
+<screen>
+# rocks add firewall host=compute-0-0 ... 
+</screen>
+</para>
+<para>
+This rule applies only to the compute-0-0 host. To 
+add a rule to the Compute appliance becomes:
+</para>
+<para>
+<screen>
+# rocks add firewall appliance=Compute ... 
+</screen>
+</para>
+<para>
+The appliance rule applies to all Compute appliances. 
+</para> 
+
+
+<section> 
+<title>Listing Firewall Rules. Resolved Rules.</title>
+<para> There are two commands for listing firewall rules for a host and 
+they differ in subtle, but important, ways. Again we'll use compute-0-0 as 
+an example.
+</para>
+<para>
+<screen>
+# rocks list firewall host=compute-0-0
+# rocks list host firewall compute-0-0
+</screen>
+</para>
+<para>
+The first command lists all firewall rules that are specific to host compute-0-0 only. By default, this is the empty set.    The second command list all <emphasis>inherited</emphasis> commmands and is, by default not empty. For example,
+</para>
+<para>
+<screen>
+# rocks list firewall host=compute-0-0
+# 
+</screen>
+and 
+<screen>
+# rocks list host firewall compute-0-0 maxwidth=15
+# rocks list host firewall compute-0-0-0 maxwidth=15
+RULENAME            SERVICE PROTOCOL CHAIN  ACTION NETWORK OUTPUT-NETWORK FLAGS           COMMENT CATEGORY
+A20-ALL-PRIVATE     all     all      ACCEPT INPUT  private -------------- --------------- ------- global  
+A20-SSH-PUBLIC      ssh     tcp      ACCEPT INPUT  public  -------------- -m state --stat ------- global  
+A30-RELATED-PUBLIC  all     all      ACCEPT INPUT  public  -------------- -m state --stat ------- global  
+R900-PRIVILEGED-TCP all     tcp      REJECT INPUT  public  -------------- --dport 0:1023  ------- global  
+R900-PRIVILEGED-UDP all     udp      REJECT INPUT  public  -------------- --dport 0:1023  ------- global  
+
+</screen>
+</para>
+<para>
+Notice that in the second form, the source of the firewall (global, in this
+example) is listed so that an administrator can see where a rule is defined.
+One should also notice that list host firewall will output all possible 
+firewall rules that <emphasis>might</emphasis> apply.  For example, the above has rules defined for both the "public" and "private" networks in the global scope. If compute-0-0 does not have an interface on the public network, then those 
+rules will not appear in the final firewall configuration. 
+</para>
+<para>
+The list commands (like all list commands in Rocks) are intended for human
+readability. While the report commmands are machine readable. The actual firewall rules written for compute-0-0 would are generated with <computeroutput>rocks report host firewall</computeroutput>. The report command resolves that actual interface for the named network. For example:
+</para>
+<para>
+<screen>
+#rocks report host firewall compute-0-0            
+&lt;file name="/etc/sysconfig/iptables" perms="500"&gt;
+*filter
+:INPUT ACCEPT [0:0]
+:FORWARD DROP [0:0]
+:OUTPUT ACCEPT [0:0]
+-A INPUT -i lo -j ACCEPT
+#  A20-ALL-PRIVATE (global) : 
+-A INPUT -i eth0 -j ACCEPT
+COMMIT
+&lt;/file&gt;
+</screen>
+</para>
+<para>
+A comment is put into this file for each applicable firewall rule.
+Notice that compute-0-0 has only a private network, so that all firewall rules
+bound to a public network are ignored. <computeroutput>rocks report host firewall</computeroutput> is used internally during node build and by 
+<computeroutput>rocks sync host firewall</computeroutput>
+</para>
+
+</section>
+</section>
+<section>
+<title> Adding Rules. Ordering Rules.  Examples </title>
+<para>
+Firewall concepts are taken from linux iptables.  The defined chains are 
+INPUT, OUTPUT, FORWARD, ACCEPT, REJECT, DROP. The most common is to define
+how to match a packet on the INPUT chain and then either ACCEPT, REJECT, or
+DROP.   
+</para>
+<para>
+Overall order of rule definition matters and this is where the rulename is
+important. Suppose that on the frontend, we want to accept ftp connections 
+from all hosts, instead of the rocks default. First lets list the rules  for
+a frontend (COMMENT field has been edited out) 
 </para>
 
 <screen>
-# rocks open host firewall compute-0-0 network=public protocol=tcp service=www
+RULENAME             SERVICE PROTOCOL CHAIN      ACTION      NETWORK OUTPUT-NETWORK FLAGS                     CATEGORY
+A10-REJECT-411-TCP   all     tcp      REJECT     INPUT       private -------------- --dport 372 --sport 1024 host    
+A10-REJECT-411-UDP   all     udp      REJECT     INPUT       private -------------- --dport 372 --sport 1024 host    
+A20-ALL-PRIVATE      all     all      ACCEPT     INPUT       private -------------- ------------------------ global  
+A20-SSH-PUBLIC       ssh     tcp      ACCEPT     INPUT       public  -------------- -m state --state NEW     global  
+A30-RELATED-PUBLIC   all     all      ACCEPT     INPUT       public  -------------- -m state --state RELATED global  
+A40-HTTPS-PUBLIC-LAN https   tcp      ACCEPT     INPUT       public  -------------- -m state --state NEW --s host    
+A40-WWW-PUBLIC_LAN   www     tcp      ACCEPT     INPUT       public  -------------- -m state --state NEW --s host    
+A50-FORWARD-RELATED  all     all      ACCEPT     FORWARD     public  private        -m state --state RELATED host    
+A60-FORWARD          all     all      ACCEPT     FORWARD     private -------------- ------------------------ host    
+MASQUERADE           nat     all      MASQUERADE POSTROUTING ------- public         ------------------------ host    
+R10-GANGLIA-UDP      8649    udp      REJECT     INPUT       ------- -------------- ------------------------ host    
+R20-MYSQL-TCP        3306    tcp      REJECT     INPUT       ------- -------------- ------------------------ host    
+R30-FOUNDATION-MYSQL 40000   tcp      REJECT     INPUT       ------- -------------- ------------------------ host    
+R900-PRIVILEGED-TCP  all     tcp      REJECT     INPUT       public  -------------- --dport 0:1023           global  
+R900-PRIVILEGED-UDP  all     udp      REJECT     INPUT       public  -------------- --dport 0:1023           global  
 </screen>
 
 <para>
-Then we can see the what the resulting firewall rules will look like:
+The R900-PRIVILEGED* rules are the last ones interpreted by iptables. They
+ instruct iptables to reject all packets destined for privileged ports on
+the public network <computeroutput>(--dport 0:1023)</computeroutput>. To accept
+ftp traffic (port 21) we need to add rules for both UDP and TCP traffic that
+are named <emphasis>alphabetically</emphasis> before the R900 rules. It is the
+rulename that determines order. Typically ACCEPT rules are labeled A&lt;nn&gt;-
+and REJECT rules are labeled R&lt;nn&gt;-. But that is only convention for Rocks
+system rules. Any name is valid. 
 </para>
 
 <screen>
+# rocks add firewall host=frontend network=public protocol=tcp service=ftp  chain=INPUT action=ACCEPT rulename=A90-PUBLIC-FTP-TCP
+# rocks add firewall host=frontend network=public protocol=udp service=ftp  chain=INPUT action=ACCEPT rulename=A100-PUBLIC-FTP-UDP
+</screen>
+
+<note>
+<para>
+It is sometimes simpler on the screen to look at the actual machine report
+via <computeroutput>rocks report host firewall</computeroutput>
+</para>
+</note>
+
+<screen>
 <![CDATA[
-# rocks report host firewall compute-0-0
+# rocks report host firewall frontend
+<file name="/etc/sysconfig/iptables" perms="500">
+*nat
+#  MASQUERADE (host) : 
+-A POSTROUTING -o eth1 -j MASQUERADE
+COMMIT
+
+*filter
+:INPUT ACCEPT [0:0]
+:FORWARD DROP [0:0]
+:OUTPUT ACCEPT [0:0]
+-A INPUT -i lo -j ACCEPT
+#  A10-REJECT-411-TCP (host) : 
+-A INPUT -i eth0 -p tcp --dport 372 --sport 1024:65535 -j REJECT
+#  A10-REJECT-411-UDP (host) : 
+-A INPUT -i eth0 -p udp --dport 372 --sport 1024:65535 -j REJECT
+#  A100-PUBLIC-FTP-UDP (host) : 
+-A INPUT -i eth1 -p udp --dport ftp -j ACCEPT
+#  A20-ALL-PRIVATE (global) : 
+-A INPUT -i eth0 -j ACCEPT
+#  A20-SSH-PUBLIC (global) : 
+-A INPUT -i eth1 -p tcp --dport ssh -m state --state NEW -j ACCEPT
+#  A30-RELATED-PUBLIC (global) : 
+-A INPUT -i eth1 -m state --state RELATED,ESTABLISHED -j ACCEPT
+#  A40-HTTPS-PUBLIC-LAN (host) : 
+-A INPUT -i eth1 -p tcp --dport https -m state --state NEW --source &Kickstart_PublicNetwork;/&Kickstart_PublicNetmask; -j ACCEPT
+#  A40-WWW-PUBLIC_LAN (host) : 
+-A INPUT -i eth1 -p tcp --dport www -m state --state NEW --source &Kickstart_PublicNetwork;/&Kickstart_PublicNetmask; -j ACCEPT
+#  A50-FORWARD-RELATED (host) : 
+-A FORWARD -i eth1 -o eth0 -m state --state RELATED,ESTABLISHED -j ACCEPT
+#  A60-FORWARD (host) : 
+-A FORWARD -i eth0 -j ACCEPT
+#  A90-PUBLIC-FTP-TCP (host) : 
+-A INPUT -i eth1 -p tcp --dport ftp -j ACCEPT
+#  R10-GANGLIA-UDP (host) : block ganglia traffic from non-private interfaces
+-A INPUT -p udp --dport 8649 -j REJECT
+#  R20-MYSQL-TCP (host) : block mysql traffic from non-private interfaces
+-A INPUT -p tcp --dport 3306 -j REJECT
+#  R30-FOUNDATION-MYSQL (host) : block foundation mysql traffic from non-private interfaces
+-A INPUT -p tcp --dport 40000 -j REJECT
+#  R900-PRIVILEGED-TCP (global) : 
+-A INPUT -i eth1 -p tcp --dport 0:1023 -j REJECT
+#  R900-PRIVILEGED-UDP (global) : 
+-A INPUT -i eth1 -p udp --dport 0:1023 -j REJECT
+]]>
+</screen>
+
+<note>
+<para>
+There are four things to notice. First, the ordering is alphabetical not numerical. A100 is after A10-R but before A20. A90 is after A60.  Second, both of the accept rules for ftp come before the reject rules. Third, the public network has been 
+resolved for this host to be eth1. See <computeroutput>
+rocks list host interface frontend </computeroutput>. And, fourth, each lists
+where it comes from. 
+</para>
+</note>
+
+<para>
+Now apply the configuration to the host:
+</para>
+
+<screen>
+# rocks sync host firewall frontend
+</screen>
+
+<para>
+The host will now accept ftp traffic on its public interface.
+</para>
+
+
+
+<section>
+<title> How to affect a particular appliance </title>
+
+<para>
+Suppose we wanted to close ftp on <emphasis>all</emphasis> networks for compute appliances (even private). First, let's look at the default rules for a compute node.
+</para>
+
+<screen>
+rocks list host firewall compute-0-0
+RULENAME            SERVICE PROTOCOL CHAIN  ACTION NETWORK OUTPUT-NETWORK FLAGS                    COMMENT CATEGORY
+A20-ALL-PRIVATE     all     all      ACCEPT INPUT  private -------------- ------------------------ ------- global  
+A20-SSH-PUBLIC      ssh     tcp      ACCEPT INPUT  public  -------------- -m state --state NEW     ------- global  
+A30-RELATED-PUBLIC  all     all      ACCEPT INPUT  public  -------------- -m state --state RELATED ------- global  
+R900-PRIVILEGED-TCP all     tcp      REJECT INPUT  public  -------------- --dport 0:1023           ------- global  
+R900-PRIVILEGED-UDP all     udp      REJECT INPUT  public  -------------- --dport 0:1023           ------- global  
+</screen>
+
+<para>
+Here you can use the "appliance=&lt;appliance-name&gt;" argument for adding a
+firewall.  Use <computeroutput>rocks list appliance</computeroutput> to get 
+the valid names. Notice that by default all traffic is accepted on the compute
+node on the private network.  If we want our REJECT rule to properly apply 
+to all network interfaces, it must come before the A20-ALL-PRIVATE rule.  
+</para>
+
+<screen>
+# rocks add firewall appliance=compute protocol=tcp service=ftp network=all chain=INPUT action=REJECT rulename=A19-REJECT-FTP-TCP
+# rocks add firewall appliance=compute protocol=udp service=ftp network=all chain=INPUT action=REJECT rulename=A19-REJECT-FTP-UDP
+</screen>
+
+<para>
+This now rejects. FTP traffic. You can check the actual firewall rule for a particular compute host. 
+</para>
+
+<screen>
+rocks report host firewall compute-0-0
+<![CDATA[
 <file name="/etc/sysconfig/iptables" perms="500">
 *filter
 :INPUT ACCEPT [0:0]
 :FORWARD DROP [0:0]
 :OUTPUT ACCEPT [0:0]
+-A INPUT -i lo -j ACCEPT
+#  A19-REJECT-FTP-TCP (appliance) : 
+-A INPUT -p tcp --dport ftp -j REJECT
+#  A19-REJECT-FTP-UDP (appliance) : 
+-A INPUT -p udp --dport ftp -j REJECT
+#  A20-ALL-PRIVATE (global) : 
 -A INPUT -i eth0 -j ACCEPT
--A INPUT -i eth1 -m state --state RELATED,ESTABLISHED -j ACCEPT
--A INPUT -i eth1 -p tcp --dport ssh -m state --state NEW -j ACCEPT
--A INPUT -i eth1 -p tcp --dport www -j ACCEPT
--A INPUT -p tcp --dport 0:1024 -j REJECT
--A INPUT -p udp --dport 0:1024 -j REJECT
 COMMIT
 </file>
-]]>
+ ]]>
 </screen>
-
 <para>
-In the above example, eth0 is associated with the private network and
-eth1 is associated with the public network.
+Now apply the firewall on all compute nodes.
 </para>
-
-<para>
-Notice the line: "-A INPUT -i eth1 -p tcp --dport www -j ACCEPT".
-This is the line in the firewall configuration that will allow web traffic to
-flow in and out of compute-0-0.
-</para>
-
-<para>
-Now apply the configuration to the host:
-</para>
-
 <screen>
-# rocks sync host firewall compute-0-0
+# rocks sync host firewall compute
 </screen>
-
 <para>
-The host will now accept web traffic on its public interface.
+Firewall is now set to reject FTP on all networks for all compute nodes.
 </para>
 
 </section>
-
-
-<section>
-<title> Closing a Port in a Node's Firewall </title>
-
-<para>
-We'll use the example of closing port 3306 (the 'mysql' service) for the public
-network of compute-0-0.
-To close the port, execute:
-</para>
-
-<screen>
-# rocks close host firewall compute-0-0 network=public protocol=tcp service=3306
-</screen>
-
-<para>
-Now apply the configuration to the host:
-</para>
-
-<screen>
-# rocks sync host firewall compute-0-0
-</screen>
-
-<para>
-The host will now block all traffic to port 3306 on its public interface.
-</para>
-
 </section>
 
 </section>

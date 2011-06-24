@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: build.py,v $
+# Revision 1.43  2011/06/24 19:25:07  phil
+# Firewall documentation. Fix some typos in rulenames.
+#
 # Revision 1.42  2011/06/08 03:04:12  phil
 # Sort listing for easier human reading
 #
@@ -1248,8 +1251,11 @@ class DistributionBuilder(Builder):
 
 		self.insertNetstage()
 		self.buildKickstart()
+		print '     Calling Yum genpkgmetadata.py'
 		self.createrepo()
+		print '     Rebuilding Product Image including md5 sums'
 		self.buildProductImg()
+		print '     Creating Directory Listing'
 		self.makeDirListing()
 	
 		return

@@ -8,6 +8,9 @@ Create a Login appliance
 
 <changelog>
 $Log: login-server.xml,v $
+Revision 1.8  2011/06/24 19:25:07  phil
+Firewall documentation. Fix some typos in rulenames.
+
 Revision 1.7  2011/06/20 05:56:07  phil
 support rulesrc for system-defined rules.
 
@@ -64,7 +67,7 @@ the start of the login appliance
 
 /opt/rocks/bin/rocks add firewall appliance=login chain=INPUT \
 	flags="-m state --state NEW --source &Kickstart_PublicNetwork;/&Kickstart_PublicNetmask;" \
-	protocol=tcp service=www action=ACCEPT network=public rulename="A40-WWW-PUBLIC_LAN" rulesrc="system"
+	protocol=tcp service=www action=ACCEPT network=public rulename="A40-WWW-PUBLIC-LAN" rulesrc="system"
 
 ]]>
 
