@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.5 2010/09/07 23:53:01 bruno Exp $
+# $Id: __init__.py,v 1.6 2011/06/28 04:28:08 phil Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,11 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.6  2011/06/28 04:28:08  phil
+# Remove inefficiency on larger clusters.
+# Do not regenerate ALL pxeboot files. Just those for the hosts
+# specified on the command line.
+#
 # Revision 1.5  2010/09/07 23:53:01  bruno
 # star power for gb
 #
@@ -124,7 +129,8 @@ class Command(rocks.commands.set.host.command):
 					action)
 			installaction = "'%s'" % action
 			
-		for host in self.getHostnames(args):
+		hosts = self.getHostnames(args)
+		for host in hosts:
 			self.db.execute("""update nodes set installaction=%s
 				where name='%s'""" % (installaction, host))
 		
@@ -132,5 +138,5 @@ class Command(rocks.commands.set.host.command):
 		# regenerate all the pxe boot configuration files for the
 		# hosts specified in this command
 		#
-		self.command('set.host.boot', self.getHostnames())
+		self.command('set.host.boot', hosts)
 
