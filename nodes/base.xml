@@ -21,6 +21,11 @@
 
   <changelog>
   $Log: base.xml,v $
+  Revision 1.54  2011/06/29 19:03:10  phil
+  Update Java in the base roll.
+  Enable java plugins in firefox
+  Fix MANPATH for java manpages
+
   Revision 1.53  2011/06/20 04:54:46  phil
   iostat for all nodes. Very useful for all kinds of things.
 
@@ -607,7 +612,7 @@ chmod o+t /state/partition*
 rm -f /usr/bin/java
 
 <file name="/etc/man.config" mode="append">
-MANPATH /usr/java/jdk1.5/man
+MANPATH /usr/java/latest/man
 </file>
 
 <file name="/etc/profile.d/java.sh" perms="0755">
@@ -620,6 +625,19 @@ setenv JAVA_HOME /usr/java/latest
 set path = ($JAVA_HOME/bin $path)
 </file>
 
+<!-- Enable Java Plugins for Firefox (Mozilla) --> 
+for i in `find -L /usr/java/latest -name 'libnpjp2*so'`; do 
+	echo $i | grep 64 > /dev/null 
+	if [ $? = 0 ]; then 
+		MOZPATH=/usr/lib64/mozilla/plugins 
+	else 
+		MOZPATH=/usr/lib/mozilla/plugins
+	fi 
+
+	if [ -d $MOZPATH ]; then
+		ln -s $i $MOZPATH
+	fi
+done
 </post>
 
 
