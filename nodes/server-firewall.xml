@@ -9,6 +9,10 @@ Server node firewall rules
 
 <changelog>
 $Log: server-firewall.xml,v $
+Revision 1.18  2011/06/29 22:35:50  anoop
+Re-add local access as a rule, just in the event a sysadmin
+wants to enable a draconian catch-all rule at the end.
+
 Revision 1.17  2011/06/29 20:58:27  anoop
 Block non-priviledged traffic to 411 port from all networks, including
 localhost
@@ -74,9 +78,12 @@ this also includes changes to help build and configure VMs for V.
 /opt/rocks/bin/rocks add firewall	\
 host=&Kickstart_PrivateHostname; network=all	\
 service="all" protocol="all" action="REJECT"	\
-chain="INPUT" flags="--dport 372 --sport 1024:65535" rulename="A10-REJECT-411-TCP" rulesrc="system"
+chain="INPUT" flags="--dport 372 --sport 1024:65535" rulename="A10-REJECT-411" rulesrc="system"
 
 <!-- define the global firewall rules -->
+
+/opt/rocks/bin/rocks add firewall global network=all service="all" flags="-i lo"\
+	protocol="all" action="ACCEPT" chain="INPUT" rulename="A15-ALL-LOCAL" rulesrc="system"
 
 /opt/rocks/bin/rocks add firewall global network=private service="all" \
 	protocol="all" action="ACCEPT" chain="INPUT" rulename="A20-ALL-PRIVATE" rulesrc="system"
