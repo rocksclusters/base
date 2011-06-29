@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.6 2011/06/28 04:28:09 phil Exp $
+# $Id: __init__.py,v 1.7 2011/06/29 20:03:59 phil Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.7  2011/06/29 20:03:59  phil
+# Typo
+#
 # Revision 1.6  2011/06/28 04:28:09  phil
 # Remove inefficiency on larger clusters.
 # Do not regenerate ALL pxeboot files. Just those for the hosts
@@ -129,7 +132,7 @@ class Command(rocks.commands.set.host.command):
 					action)
 			runaction = "'%s'" % action
 			
-		hosts = self.getHostnames(args):
+		hosts = self.getHostnames(args)
 
 		for host in hosts:
 			self.db.execute("""update nodes set runaction=%s
