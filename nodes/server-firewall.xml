@@ -9,6 +9,10 @@ Server node firewall rules
 
 <changelog>
 $Log: server-firewall.xml,v $
+Revision 1.17  2011/06/29 20:58:27  anoop
+Block non-priviledged traffic to 411 port from all networks, including
+localhost
+
 Revision 1.16  2011/06/24 19:25:07  phil
 Firewall documentation. Fix some typos in rulenames.
 
@@ -68,14 +72,9 @@ this also includes changes to help build and configure VMs for V.
 
 <!-- Disallow 411 traffic from non-privileged ports -->
 /opt/rocks/bin/rocks add firewall	\
-host=&Kickstart_PrivateHostname; network=private	\
-service="all" protocol="tcp" action="REJECT"	\
+host=&Kickstart_PrivateHostname; network=all	\
+service="all" protocol="all" action="REJECT"	\
 chain="INPUT" flags="--dport 372 --sport 1024:65535" rulename="A10-REJECT-411-TCP" rulesrc="system"
-/opt/rocks/bin/rocks add firewall	\
-host=&Kickstart_PrivateHostname; network=private	\
-service="all" protocol="udp" action="REJECT"	\
-chain="INPUT" flags="--dport 372 --sport 1024:65535" rulename="A10-REJECT-411-UDP" rulesrc="system"
-
 
 <!-- define the global firewall rules -->
 
