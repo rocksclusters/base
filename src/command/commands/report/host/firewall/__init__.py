@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.10 2011/06/03 18:18:36 phil Exp $
+# $Id: __init__.py,v 1.11 2011/06/29 20:57:47 anoop Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.11  2011/06/29 20:57:47  anoop
+# Remove localhost accepts. This is automatic and does not need a rule
+#
 # Revision 1.10  2011/06/03 18:18:36  phil
 # Firewall rules in new style
 #
@@ -112,7 +115,6 @@ class Command(rocks.commands.HostArgumentProcessor,
 		self.addOutput(host, ':INPUT ACCEPT [0:0]')
 		self.addOutput(host, ':FORWARD DROP [0:0]')
 		self.addOutput(host, ':OUTPUT ACCEPT [0:0]')
-		self.addOutput(host, '-A INPUT -i lo -j ACCEPT')
 
 
 	def translateService(self, service):
