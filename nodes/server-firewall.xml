@@ -9,6 +9,9 @@ Server node firewall rules
 
 <changelog>
 $Log: server-firewall.xml,v $
+Revision 1.19  2011/06/30 04:43:54  phil
+When you have --sport or --dport, you must specify a protocol (tcp,udp)
+
 Revision 1.18  2011/06/29 22:35:50  anoop
 Re-add local access as a rule, just in the event a sysadmin
 wants to enable a draconian catch-all rule at the end.
@@ -77,8 +80,14 @@ this also includes changes to help build and configure VMs for V.
 <!-- Disallow 411 traffic from non-privileged ports -->
 /opt/rocks/bin/rocks add firewall	\
 host=&Kickstart_PrivateHostname; network=all	\
-service="all" protocol="all" action="REJECT"	\
-chain="INPUT" flags="--dport 372 --sport 1024:65535" rulename="A10-REJECT-411" rulesrc="system"
+service="372" protocol="tcp" action="REJECT"	\
+chain="INPUT" flags="--sport 1024:65535" rulename="A10-REJECT-411-TCP" rulesrc="system"
+
+/opt/rocks/bin/rocks add firewall	\
+host=&Kickstart_PrivateHostname; network=all	\
+service="372" protocol="udp" action="REJECT"	\
+chain="INPUT" flags="--sport 1024:65535" rulename="A10-REJECT-411-UDP" rulesrc="system"
+
 
 <!-- define the global firewall rules -->
 
