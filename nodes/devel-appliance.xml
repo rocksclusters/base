@@ -10,6 +10,9 @@
 
   <changelog>
   $Log: devel-appliance.xml,v $
+  Revision 1.7  2011/06/30 22:10:14  phil
+  Correct path name if you want a local repository
+
   Revision 1.6  2011/04/23 23:30:48  phil
   Another package: readline-devel
 
@@ -80,7 +83,7 @@ MYSQL_HOME=/opt/rocks/etc /usr/bin/mysqldump -u apache cluster rolls
 <!-- Modify yum.conf to point locally. Self-containment -->
 /bin/sed -i '/^baseurl/d' /etc/yum.conf
 <file name="/etc/yum.conf" mode="append">
-baseurl=file:/localhost/export/rocks/install/&arch;
+baseurl=file:/export/rocks/install/rocks-dist/&arch;
 </file>
 
 </post>
