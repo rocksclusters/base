@@ -9,17 +9,11 @@ The 411 Secure Information Service provides NIS-like functionality for Rocks clu
 411 uses Public Key Cryptography to protect file contents. It operates on a file level, rather than the RPC-based per-line maps of NIS. 411 does not rely on RPC, and instead distributes the files themselves using HTTP (web service). Its central task is to securely maintain critical login/password files on the worker nodes of a cluster. It does this by implementing a file-based distributed database with weak consistency semantics. The design goals of 411 include scalability, security, low-latency when changes occur, and resilience to failures. 
 </para>
 
-<tip>
-<para>
-Beginning with the Rocks 3.1.0 Matterhorn release, 411 replaces NIS as the default method of distributing /etc/passwd and other login files. We no longer support NIS.
-</para>
-</tip>
-
 <section>
 <title>Using the 411 Service</title>
 
 <para>
-The 411 system intentionally mimics the NIS interface for system administrators. Of course there are elements in 411 which are not present in NIS, namely RSA public and private cryptographic keys. However we have attempted to make 411 as easy to use as an NIS replacement.
+The 411 system intentionally mimics the NIS interface for system administrators. Of course there are elements in 411 which are not present in NIS, namely RSA cryptographic keys. However we have attempted to make 411 as easy to use as an NIS replacement.
 </para>
 
 <para>
@@ -48,7 +42,7 @@ nodes, run this on the frontend
 <tip>
 <para>
 The 411 service uses IP broadcast messages on your cluster's private network to
-achieve optimal performance. 
+achieve optimal performance.
 </para>
 <para>
 To force all compute nodes to retrieve the latest files from the frontend,
@@ -56,7 +50,7 @@ execute:
 </para>
 <para>
 <screen>
-# cluster-fork 411get --all
+# rocks run host command="411get --all"
 </screen>
 </para>
 </tip>
@@ -77,13 +71,13 @@ client nodes that a file has changed and needs to be retrieved. In this way the
 411 system generally achieves a low-latency response to changes. 411 alerts are
 resent periodically to compensate for lost messages.
 </para>
-
+<!--
 <mediaobject>
 	<imageobject>
 	<imagedata fileref="images/411-listener.png" scale=50>
 	</imageobject>
 </mediaobject>
-
+-->
 <blockquote>
 <para>
 <emphasis>Figure:</emphasis> The 411 listener architecture. When the frontend
@@ -156,7 +150,7 @@ the default in Rocks.
 
 </section>
 
-
+<!--
 <section>
 <title>Security</title>
 
@@ -166,7 +160,6 @@ See the 411 paper in the <xref linkend="Bibliography"> section for details of
 </para>
 
 </section>
-
 
 <section id="four11-groups">
 <title>411 Groups</title>
@@ -212,7 +205,7 @@ several groups looks like:
 </para>
 <para>
 <screen>
-&lt;!-- Configuration file for the 411 Information Service --&gt;
+&lt;!-\- Configuration file for the 411 Information Service -\-&gt;
 &lt;config&gt;
 &lt;master url="http://10.1.1.1/411.d/" score="0"/&gt;
 &lt;group&gt;/light/blue&lt;/group&gt;
@@ -238,6 +231,7 @@ Multi-element group names have a simple inheritance model: specific groups imply
 </blockquote>
 
 </section>
+-->
 
 
 <section>

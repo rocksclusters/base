@@ -1,0 +1,239 @@
+<appendix id="passwd_sec" xreflabel="Rocks Password Security Infrastructure">
+	<title>Changes to Rocks Security Infrastructure</title>
+
+<section id="rocks_pw"><title>Rocks Password Infrastructure</title>
+<para>
+Starting with Rocks v5.4.3, we have attempted to improve the security of the
+Rocks system by making changes to the way some of the important passwords are
+generated and stored.
+</para>
+<section id="rocks_pw_current_design"><title>Current Design</title>
+<para>
+Currently, the root password for the frontend is elicited from the user during
+the frontend installation. Once the password is obtained, 3 crypted versions are
+generated from the root password. One version is the UNIX crypt version, which
+forms the root password for the cluster, another is the portable password format
+which is used for wordpress access. The third is an SHA version which is used as
+the MySQL root password. These three crypted passwords are stored in the
+database as shadow attributes.
+</para>
+<para>
+When compute nodes are installed the root password that is stored in the
+database is transferred over to the compute node as an XML entity. This way we
+maintain root password consistency between client nodes and frontend. Any
+changes made to the root password on the frontend using the
+<command>passwd</command> command is propogated to the compute
+nodes using the 411 system.
+</para>
+</section>
+<section id="rocks_pw_changes"><title>Changes to the Design</title>
+<para>
+From the above description of the existing design, we can see that the root
+password is stored in multiple places and used for multiple purposes. We
+determined that this was not the optimal security situation, and could use
+changes.
+</para>
+<para>
+The way we've implemented changes are as follows:
+</para>
+<orderedlist>
+	<listitem>
+		<para>
+		As soon as the root password is obtained from the admin, it is
+		converted to only the UNIX crypt format. It is used during the
+		installation to set the root password, and is not used for any
+		other purposes, and is not stored in the database.
+		</para>
+	</listitem>
+	<listitem>
+		<para>
+		Random passwords are generated for root access to the database
+		and access to the wordpress engine.
+		</para>
+	</listitem>
+	<listitem>
+		<para>
+		The root account on each compute node gets a random root
+		password.
+		</para>
+	</listitem>
+	<listitem>
+		<para>
+		The 411 system uses plugins to filter the content of the
+		password and shadow files so that it does not transmit
+		information about any accounts with UID under 500. Therefore,
+		any changes made to the root password on the frontend is not
+		propagated to the compute nodes.
+		</para>
+	</listitem>
+	<listitem>
+		<para>
+		To change the root password for the compute nodes, the admin may
+		now use the "secure attribute" infrastructure in Rocks. The
+		admin may also use the <command>passwd</command>
+		command on the compute nodes to change the password without fear
+		of override.
+		</para>
+		<note><para>You may NOT use both the secure attributes and the
+		passwd command to change the password on the compute nodes. If
+		you do, the value in the secure attributes table always
+		wins.</para></note>
+	</listitem>
+	<listitem>
+		<para>To change the root password on the frontend, you can now
+		use the <command>passwd</command>command, and not worry about
+		changing any of the other passwords in the cluster.</para>
+	</listitem>
+</orderedlist>
+</section>
+<section id="root_pw_changes"><title>Changing the root password on a compute node</title>
+	<para>
+	This section describes how to change the root password for compute
+	nodes. It uses the <link linkend="rocks_sec_attr">rocks secure attribute
+	infrastructure</link></para>
+<screen>
+# rocks set host sec_attr compute attr=root_pw
+  Enter root_pw: 
+Confirm root_pw: 
+# rocks list host sec_attr compute
+HOST         ATTR    VALUE                              ENC  
+compute-0-0: root_pw $1$G55uZRrO$5MI7Nv14U5yWfKAlauqPE0 crypt
+compute-0-1: root_pw $1$G55uZRrO$5MI7Nv14U5yWfKAlauqPE0 crypt
+# rocks sync host sec_attr compute
+</screen>
+<orderedlist>
+	<listitem><para><command>rocks set host sec_attr</command> creates the
+	entry in the database.</para>
+	</listitem>
+	<listitem><para><command>rocks sync host sec_attr</command> changes the
+	root password on the compute nodes.</para>
+	</listitem>
+</orderedlist>
+<note><para>The admin can also set different root password for each node</para></note>
+</section>
+</section>
+<section id="rocks_sec_attr">
+	<title>Rocks Secure Attribute Infrastructure</title>
+	<para>
+	As a replacement for shadow attributes, we introduced the Rocks secure
+	attributes infrastructure. The reason for the change was internal, as
+	shadow attributes were still accessible by the apache user. Secure
+	attributes are not accessible by anyone but the root user. 
+	</para>
+	<para>
+	The secure attributes are not synced along with any of the other regular
+	attributes. The secure attributes are synced between hosts completely
+	out of band using standard SSH.
+	</para>
+	<section id="rocks_sec_attr_struct"><title>Structure</title>
+	<para>
+	The secure attributes infrastructure consists of two parts.
+	</para>
+	<orderedlist>
+	<listitem>
+	<para>
+	The secure attribute itself, which is stored in the database.
+	</para>
+	</listitem>
+	<listitem>
+	<para>
+	Plugins, in the form of python code, which defines how to act on the
+	secure attribute. These plugins reside in
+	<filename class="directory">/opt/rocks/var/plugins/sec_attr/</filename>. The
+	plugins have a very simple API.
+	</para>
+	</listitem>
+	</orderedlist>
+	</section>
+	<section id="rocks_sec_attr_plugins">
+	<title>Plugins API</title>
+	<para>
+	The Rocks secure attribute plugin class inherits a single class called
+	<function>rocks.commands.sec_attr_plugin</function>.
+	</para>
+	<para>
+	This example is a very simple fictitious use-case.
+	A service called
+	<command>fake_service</command> runs on
+	all compute nodes, and stores an SHA password in it's configuration
+	file. The configuration file for this service is called
+	<filename>/etc/fake_service.conf</filename>. These are the
+	contents of the config file.
+<screen># cat /etc/fake_service.conf
+password=150b95f90c06f127a040a40f98582231369b6fda</screen>
+	</para>
+	<section>
+	<title>Setting the Secure Attribute</title>
+	<para>
+	This password can be stored in the database as a secure attribute.
+	To store the password as a secure attribute, run
+	<screen># rocks set host sec_attr compute attr=fake_svc_pw enc=sha
+  Enter fake_svc_pw: 
+Confirm fake_svc_pw: 
+</screen>
+	</para>
+	<para>
+	  Enter the password string and confirm it (the same way you would when
+	  changing the root password).
+	</para>
+	</section>
+	<section>
+		<title>Creating the plugin</title>
+	<para>
+	Secure attribute plugins are located in the
+	<computeroutput>/opt/rocks/var/plugins/sec_attr</computeroutput>
+	directory. These plugins are written in python, and contain very simple
+	API. There are two functions that must be a part of all plugins.
+	</para>
+	<orderedlist>
+		<listitem>
+		<para><function>get_sec_attr</function>: This
+		function returns a the name of the secure attribute as stored in
+		the database. In the example, this would return
+		<function>fake_svc_pw</function>. <note><para>This name
+		should match exactly the attribute name in the database. If
+		multiple plugins return the same value for this function, then
+		the last match wins.</para></note>
+		</para>
+		</listitem>
+		<listitem>
+		<para><function>filter</function>: This function is
+		the workhorse of the plugin. This takes in a single value , and
+		performs the desired manipulation, filtering, and storage on it.
+		</para>
+		</listitem>
+	</orderedlist>
+	<para>
+	The plugin for the above example is
+	<filename>/opt/rocks/var/plugins/sec_attr/fake.py</filename>.
+	The name of the file is irrelevant. The command iterates over all
+	available plugins and uses the last match on the return value of
+	<function>get_sec_attr</function> function.
+	</para>
+	<example><title>Plugin code for fake_svc_pw - fake.py</title>
+<programlisting><![CDATA[import rocks.commands
+import os, sys, string
+
+class plugin(rocks.commands.sec_attr_plugin):
+	def get_sec_attr(self):
+		return 'fake_svc_pw'
+
+	def filter(self, value):
+		f = open('/etc/fake_service.conf','w')
+		f.write('password=%s\n' % value)
+		f.close()]]>
+	</programlisting></example>
+	</section>
+	<section><title>Syncing the attribute</title>
+	<para>
+	Once the plugin has been created and the attribute has been assigned in
+	the database, you can sync the plugin using the command
+	<screen># rocks sync host sec_attr
+# rocks run host compute command="cat /etc/fake_service.conf" collate=yes
+compute-0-1: password=150b95f90c06f127a040a40f98582231369b6fda
+compute-0-0: password=150b95f90c06f127a040a40f98582231369b6fda</screen>
+	</para>
+	</section>
+	</section>
+</section>
+</appendix>

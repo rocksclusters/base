@@ -1,6 +1,7 @@
 &rocks-faq;
 &changelog;
-
+&service-411;
+&passwd_sec;
 <appendix id="appendix-b" xreflabel="node-reference">
 	<title>Kickstart Nodes Reference</title>
 &base-nodes;
