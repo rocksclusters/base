@@ -6,10 +6,10 @@ The 411 Secure Information Service provides NIS-like functionality for Rocks clu
 </para>
 
 <para>
-411 uses Public Key Cryptography to protect file contents. It operates on a file level, rather than the RPC-based per-line maps of NIS. 411 does not rely on RPC, and instead distributes the files themselves using HTTP (web service). Its central task is to securely maintain critical login/password files on the worker nodes of a cluster. It does this by implementing a file-based distributed database with weak consistency semantics. The design goals of 411 include scalability, security, low-latency when changes occur, and resilience to failures. 
+411 uses Public Key Cryptography to verify file contents, and shared key cryptography to protect transport. It operates on a file level, rather than the RPC-based per-line maps of NIS. 411 does not rely on RPC, and instead distributes the files themselves using HTTP (web service). Its central task is to securely maintain critical login/password files on the worker nodes of a cluster. It does this by implementing a file-based distributed database with weak consistency semantics. The design goals of 411 include scalability, security, low-latency when changes occur, and resilience to failures. 
 </para>
 
-<section>
+<section> <!-- Start Usage Section -->
 <title>Using the 411 Service</title>
 
 <para>
@@ -55,7 +55,7 @@ execute:
 </para>
 </tip>
 
-</section>
+</section> <!-- End Section Usage -->
 
 <section>
 <title>Structure</title>
@@ -64,12 +64,11 @@ execute:
 <title>Listener</title>
 
 <para>
-Client nodes listen on the IP broadcast channel for "411alert" messages from the
-master (the frontend). The master will send 411alerts during a 411put operation,
-just after it has encrypted a 411 file. The alert message serves as a cue to the
-client nodes that a file has changed and needs to be retrieved. In this way the
-411 system generally achieves a low-latency response to changes. 411 alerts are
-resent periodically to compensate for lost messages.
+The 411 system uses a Rocks RPC service called channeld to communicate with
+client nodes. The client nodes run the RPC service, and the frontend has a RPC
+client which sends out alerts on its multicast channel. When the clients receive
+a 411-alert RPC message, along with the name of the file that changed, it does a
+pull of the file using 411get.
 </para>
 <!--
 <mediaobject>
@@ -77,7 +76,6 @@ resent periodically to compensate for lost messages.
 	<imagedata fileref="images/411-listener.png" scale=50>
 	</imageobject>
 </mediaobject>
--->
 <blockquote>
 <para>
 <emphasis>Figure:</emphasis> The 411 listener architecture. When the frontend
@@ -86,13 +84,7 @@ cluster nodes notifying of the event. Nodes then pull the file from the frontend
 via HTTP. 
 </para>
 </blockquote>
-
-<para>
-To prevent flooding the master server with requests, the listeners keep an
-estimate of the cluster size, and use it to calibrate a random backoff for
-their requests. A client does not immediately request the changed file, but
-waits some amount of time before asking for it. 
-</para>
+-->
 
 <caution>
 <para>
@@ -103,49 +95,6 @@ changed file depends on cluster size. A large password file on a cluster
 with many nodes can take up to a minute to fully synchronize on all nodes.
 </para>
 </caution>
-</section>
-
-<section>
-<title>Poller</title>
-
-<para>
-In addition to the 411 listener agent on nodes, another agent retrieves all
-messages from the frontend at a regular interval, regardless of whether the
-files have changed or not.
-</para>
-
-<para>
-The polling interval at nodes is set to 5 hours by default. To change it, set
-the "interval" option in the 411 configuration file on nodes.
-</para>
-
-<para>
-<screen>
-/etc/411.conf:
-
-...
-&lt;interval sec="300"&gt;
-...
-</screen>
-</para>
-
-<para>
-There is automatically some randomness introduced to the polling interval to
-avoid storms on the network.
-</para>
-
-<para>
-The poller is implemented as a <literal>greceptor</literal> event module, and relies on the operation of that daemon. 411 pollers obtain their master servers by reading a configuration file on their local disk. This file, written in XML, is generated automatically by the 411 listener. 
-</para>
-
-<warning>
-<para>
-Because the 411 polling daemon runs as root on client nodes, it is
-essential that the 411 http directory on a master server be writable only by
-root to avoid any chance of <emphasis>privilege elevation</emphasis>. This is
-the default in Rocks.
-</para>
-</warning>
 </section>
 
 </section>
@@ -160,6 +109,7 @@ See the 411 paper in the <xref linkend="Bibliography"> section for details of
 </para>
 
 </section>
+-->
 
 <section id="four11-groups">
 <title>411 Groups</title>
@@ -207,7 +157,7 @@ several groups looks like:
 <screen>
 &lt;!-\- Configuration file for the 411 Information Service -\-&gt;
 &lt;config&gt;
-&lt;master url="http://10.1.1.1/411.d/" score="0"/&gt;
+&lt;master url="http://10.1.1.1:372/411.d/" score="0"/&gt;
 &lt;group&gt;/light/blue&lt;/group&gt;
 &lt;group&gt;Compute&lt;/group&gt;
 &lt;/config&gt;
@@ -218,22 +168,115 @@ several groups looks like:
 Multi-element group names have a simple inheritance model: specific groups imply more general ones. For example, if you are a member of the group <literal>/compute/light</literal>, you will automatically be interested in messages in group "/compute/light" and "/compute". You will not be interested in messages from group "/compute/heavy". In this case "/compute/light" is the specific group, and "/compute" is the more general one.
 </para>
 
+<!--
 <mediaobject>
 	<imageobject>
 	<imagedata fileref="images/411-groups.png" scale=50>
 	</imageobject>
 </mediaobject>
-
 <blockquote>
 <para>
 <emphasis>Figure:</emphasis> 411 groups. The client uses registered groups from its local configuration file to filter a stream of offered messages from the master. The messages with the dashed border represent newly changed 411 files on the master, the solid messages at the bottom have been chosen by the client. Note that group "/compute/light" implies "/compute".
 </para>
 </blockquote>
-
-</section>
 -->
 
+</section>
 
+<section> <!-- Start of Plugins Section -->
+<title>Plugins</title>
+<para>Starting with Rocks 5.4, file specific plugins have been introduced into
+the 411 system. These plugins manipulate the content of files before sending
+files on the frontend, and after reception of the file on the client nodes. The
+plugins also mangle name of the file, ownership and mode of the file.</para>
+<section><title>Plugin API</title> <!-- Plugin API Section -->
+<para>The 411 Plugin architecture follows a very simple API. Each plugin is
+written in Python and the plugins reside in <filename
+class="directory">/opt/rocks/var/plugins/411/</filename>. All plugins inherit the
+<function>rocks.service411.Plugin</function> class.</para>
+<orderedlist>
+	<listitem><para><function>get_filename</function>:This function returns
+	a the filename on the frontend on which this plugin will function. This
+	is the only required function in the plugin. All other functions are
+	optional.</para>
+	<programlisting><![CDATA[
+import os
+import sys
+import stat
+import rocks.service411
+
+class Plugin(rocks.service411.Plugin):
+	def get_filename(self):
+			return '/etc/auto.master']]></programlisting>
+	</listitem>
+	<listitem>
+		<para><function>filter_name</function>: This function mangles
+		the filename of the file at the destination, and returns the
+		mangled name
+		</para>
+		<programlisting><![CDATA[
+def filter_name(self, fname):
+	if fname == '/etc/auto.master' && self.attrs['os'] == 'sunos':
+		return '/etc/auto_master']]></programlisting>
+	</listitem>
+	<listitem>
+	<para><function>filter_owner</function>: This function takes the Owner
+	UID and group ID of the file as a string argument and returns a mangled
+	version of the "UID.GID" string. This string is in the format that the
+	<command>chown</command> command understands.
+	</para>
+	<programlisting><![CDATA[
+def filter_owner(self, oid): 
+	if self.attrs['os'] == 'linux':
+		return oid
+	if self.attrs['os'] == 'sunos':
+		return '0.0']]></programlisting>
+	</listitem>
+	<listitem><para><function>filter_mode</function>: This function takes
+	the mode information as a string, and returns a mangled mode information
+	string. This should be in the numerical format that the
+	<command>chmod</command> command understands.</para>
+	<programlisting><![CDATA[
+def filter_mode(self, mode):
+	return '010644'
+	]]></programlisting>
+	</listitem>
+	<listitem><para><function>filter_content</function>: This function takes
+	the contents of the file as a string, manipulates it and returns the
+	final string to be stored in the file. The example below illustrates
+	insertion of a blank line between every line of the input content.
+	</para>
+	<example><title>filter_content</title>
+	<programlisting><![CDATA[
+def filter_content(self, content):
+	new_content = []
+	for line in content.split('\n'):
+		new_content.append(line + '\n' + '\n')
+	return ''.join(new_content).strip()
+	]]></programlisting>
+	</example>
+	</listitem>
+	<listitem><para><function>pre_send</function>: This function manipulates
+	the contents of the file before the file is made available for download
+	over 411. The example below illustrates how deletion of all blank lines
+	from the content.
+	</para>
+	<example><title>pre_send</title>
+	<programlisting><![CDATA[
+def pre_send(self, content):
+	new_content = []
+	for line in content.split('\n'):
+		if line.strip() is '':
+			continue
+		else:
+			new_content.append(line)
+	return '\n'.join(new_content).strip()
+	]]></programlisting>
+	</example>
+	</listitem>
+</orderedlist>
+</section> <!-- End of Plugin API section -->
+</section> <!-- End of Plugins Section -->
 <section>
 <title>Commands</title>
 
@@ -261,7 +304,9 @@ The following options are available:
 
 <listitem>
 <para>
-<emphasis>--master</emphasis> The url of a 411 master server to use. Defaults to "http://10.1.1.1/411.d/" or whatever is present in "/etc/411.conf". If given, this master takes precedence over those listed in the configuration file.
+<emphasis>--master</emphasis> The url of a 411 master server to use. Defaults to
+"http://10.1.1.1:372/411.d/" or whatever is present in "/etc/411.conf". If
+given, this master takes precedence over those listed in the configuration file.
 </para>
 </listitem>
 
@@ -281,20 +326,22 @@ the file contents.
 
 <listitem>
 <para>
-<emphasis>--pub</emphasis> The location of the cluster public RSA key. Defaults to "/etc/security/cluster-public-key.pem". 
+<emphasis>--pub</emphasis> The location of the cluster public RSA key. Defaults
+to <filename>/etc/411-security/master.pub</filename>.
 </para>
 </listitem>
 
 <listitem>
 <para>
 <emphasis>--shared</emphasis> The location of the cluster shared key. Defaults
-to "/etc/411-security/shared.key"
+to <filename>/etc/411-security/shared.key</filename>
 </para>
 </listitem>
 </itemizedlist>
 
 <para>
-The master servers, along with their quality score, are listed in the "/etc/411.conf" file on compute nodes.
+The master servers, along with their quality score, are listed in the
+<filename>/etc/411.conf</filename> file on compute nodes.
 </para>
 
 </section>
@@ -321,7 +368,9 @@ The following options are available:
 <itemizedlist>
 <listitem>
 <para>
-<emphasis>--chroot=dir</emphasis> Turn "dir" into the root directory of the destination file. This allows files to be located in a different place on the master and clients.
+<emphasis>--chroot=dir</emphasis> Turn "dir" into the root directory of the
+destination file. This allows files to be located in a different place on the
+master and clients.
 </para>
 
 <para>
@@ -381,13 +430,6 @@ Will put "/var/411/groups/compute/etc/passwd" on compute nodes as "/etc/passwd".
 
 <listitem>
 <para>
-<emphasis>--alert</emphasis> Specifies the alert channel, which can be multicast
-or unicast UDP. Defaults to the IP broadcast channel (255.255.255.255).
-</para>
-</listitem>
-
-<listitem>
-<para>
 <emphasis>--411name</emphasis> Prints the 411 message name for the file. Provided for convenience.
 </para>
 </listitem>
@@ -395,7 +437,8 @@ or unicast UDP. Defaults to the IP broadcast channel (255.255.255.255).
 <listitem>
 <para>
 <emphasis>--pub</emphasis> The location of the 411 master public RSA key.
-Defaults to a 1024 bit key in "/etc/411-security/master.pub". This file should have permissions 0444 (read by all) and be owned by root.
+Defaults to a 1024 bit key in "/etc/411-security/master.pub". This file should
+have permissions 0444 (read by all) and be owned by root.
 </para>
 </listitem>
 
@@ -414,7 +457,6 @@ exist only on the master node and be owned by root and have permissions 0400
 is a 256 random number encoded in base64.
 </para>
 </listitem>
-
 </itemizedlist>
 
 </section>
@@ -422,4 +464,3 @@ is a 256 random number encoded in base64.
 </section>
 
 </appendix>
-
