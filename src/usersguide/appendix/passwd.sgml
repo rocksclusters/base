@@ -2,11 +2,6 @@
 	<title>Changes to Rocks Security Infrastructure</title>
 
 <section id="rocks_pw"><title>Rocks Password Infrastructure</title>
-<para>
-Starting with Rocks v5.4.3, we have attempted to improve the security of the
-Rocks system by making changes to the way some of the important passwords are
-generated and stored.
-</para>
 <section id="rocks_pw_current_design"><title>Current Design</title>
 <para>
 Currently, the root password for the frontend is elicited from the user during

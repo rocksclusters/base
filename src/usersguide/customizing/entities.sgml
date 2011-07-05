@@ -11,3 +11,4 @@
 <!ENTITY customization-adding-appliance SYSTEM "adding-appliance.sgml">
 <!ENTITY customization-driver SYSTEM "device-driver.sgml">
 <!ENTITY customization-dns SYSTEM "dns.sgml">
+<!ENTITY customization-passwd SYSTEM "password.sgml">
