@@ -16,6 +16,9 @@
 
   <changelog>
   $Log: firewall.xml,v $
+  Revision 1.11  2011/07/06 17:50:59  anoop
+  Turn of ip6tables
+
   Revision 1.10  2010/09/07 23:52:46  bruno
   star power for gb
 
@@ -72,6 +75,8 @@
 	
 <!-- configure and turn on iptables -->
 /sbin/chkconfig iptables on
+<!-- turn off ip6tables -->
+/sbin/chkconfig ip6tables off
 
 </post>
 
