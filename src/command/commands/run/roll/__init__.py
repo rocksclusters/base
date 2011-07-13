@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.4 2011/01/24 22:47:34 mjk Exp $
+# $Id: __init__.py,v 1.5 2011/07/13 18:36:29 anoop Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,11 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.5  2011/07/13 18:36:29  anoop
+# Honour .<arch> directive to yum install.
+# When installing packages use,
+# "yum install <package>" instead of "yum install <packagefile>.rpm"
+#
 # Revision 1.4  2011/01/24 22:47:34  mjk
 # Use YUM instead of RPM for rocks run roll
 # This fixes two issues
@@ -120,20 +125,22 @@ class Command(rocks.commands.run.command):
 		distPath = os.path.join(self.command('report.distro')[:-1],
 			'rocks-dist')
                 tree = rocks.file.Tree(distPath)
-                dict = {}
+		rpm_list = []
 		for file in tree.getFiles(os.path.join(self.arch, 
 			'RedHat', 'RPMS')):
 			if isinstance(file, rocks.file.RPMFile):
-				dict[file.getBaseName()] = file.getFullName()
+				rpm_list.append(file.getBaseName())
+				rpm_list.append("%s.%s" % (file.getBaseName(), \
+					file.getPackageArch()))
 			
 		rpms = []
 		for line in gen.generate('packages'):
 			if line.find('%package') == -1:
 				rpms.append(line)			
 		for rpm in rpms:
-			if rpm in dict:
+			if rpm in rpm_list:
 				script.append('yum install %s' %
-					dict[rpm])
+					rpm)
 
 
 		for line in gen.generate('post'):
