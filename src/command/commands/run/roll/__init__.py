@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.5 2011/07/13 18:36:29 anoop Exp $
+# $Id: __init__.py,v 1.6 2011/07/15 23:48:00 anoop Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.6  2011/07/15 23:48:00  anoop
+# Rocks run roll needs to honour the "--interpreter" flag
+# to the post sections
+#
 # Revision 1.5  2011/07/13 18:36:29  anoop
 # Honour .<arch> directive to yum install.
 # When installing packages use,
@@ -82,6 +86,7 @@ import popen2
 import rocks.gen
 import rocks.file
 import rocks.commands
+import tempfile
 from xml.dom.ext.reader import Sax2
 
 	
@@ -143,9 +148,23 @@ class Command(rocks.commands.run.command):
 					rpm)
 
 
+		cur_proc = False
 		for line in gen.generate('post'):
-			if line.find('%post') == -1:
+			if not line.startswith('%post'):
 				script.append(line)
+			else:
+				if cur_proc == True:
+					script.append('__POSTEOF__')
+					script.append('%s %s' % (interpreter, t_name))
+					cur_proc = False
+				try:
+					i = line.split().index('--interpreter')
+				except ValueError:
+					continue
+				interpreter = line.split()[i+1]
+				t_name = tempfile.mktemp()
+				cur_proc = True
+				script.append('cat > %s << "__POSTEOF__"' % t_name)
 		
 		if dryrun:
 			self.addText(string.join(script, '\n'))
