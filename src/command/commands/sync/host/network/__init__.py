@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.22 2011/04/21 02:31:39 anoop Exp $
+# $Id: __init__.py,v 1.23 2011/07/18 20:20:24 phil Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.23  2011/07/18 20:20:24  phil
+# Don't always restart the ipmi service. It may not exist and hence causes very
+# long delay on nodes with ipmi. May hang because IPMI is not the most stable interface.
+#
 # Revision 1.22  2011/04/21 02:31:39  anoop
 # sync commands now take advantage of new parallel class
 #
@@ -206,8 +210,7 @@ class Command(rocks.commands.sync.host.command):
 		for host in hosts:
 
 			cmd = 'ssh %s "/sbin/service network restart ' % host
-			cmd += '> /dev/null 2>&1 ; '
-			cmd += '/sbin/service ipmi restart > /dev/null 2>&1" '
+			cmd += '> /dev/null 2>&1" '
 
 			p = Parallel(cmd, host)
 			threads.append(p)
@@ -234,3 +237,5 @@ class Command(rocks.commands.sync.host.command):
 			self.command('run.host', [ 'localhost',
 				'service gmond restart > /dev/null 2>&1' ] )
 
+
+RollName = "base"
