@@ -1,5 +1,5 @@
 #
-# $Id: Makefile,v 1.17 2010/09/07 23:53:09 bruno Exp $
+# $Id: Makefile,v 1.18 2011/07/18 21:53:15 phil Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,10 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.18  2011/07/18 21:53:15  phil
+# Support version'ed centrals as
+# central-rocksversion-arch.rocksclusters.org
+#
 # Revision 1.17  2010/09/07 23:53:09  bruno
 # star power for gb
 #
@@ -152,6 +156,9 @@ SCRIPTS		= rocks-buildscreens rocks-getroll.cgi sitexml2entities
 build:
 	$(MAKE) $(SCRIPTS)
 
+rolls.html:	rolls.html.in
+	$(SED) $(SEDSCRIPT) $^ > $@
+
 rocks-getroll.cgi:	rocks-getroll.cgi.in
 	$(SED) $(SEDSCRIPT) $^ > $@
 	chmod +x $@
@@ -167,6 +174,7 @@ install::
 	)
 
 clean::
+	rm -f rocks-getroll.cgi rolls.html
 	rm -f $(NAME).spec.in
 	rm -f $(SCRIPTS)
 

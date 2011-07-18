@@ -13,14 +13,18 @@ function setmore(value)
 function setcentral()
 {
 	var	cpuinfo = navigator.oscpu.split(" ");
-	var	central = "central-i386.rocksclusters.org";
+	var	central = "-i386.rocksclusters.org";
+	var	rocksversion = "@VERSION@";
 
+	rocksversion = rocksversion.replace(/\056/g,"-");
+	
 	if (cpuinfo[1] == "x86_64") {
-		central = "central-x86-64.rocksclusters.org";
+		central = "-x86-64.rocksclusters.org";
 	} else if (cpuinfo[1] == "ia64") {
-		central = "central-ia64.rocksclusters.org";
+		central = "-ia64.rocksclusters.org";
 	}
 
+	central = "central-" + rocksversion + central;
 	self.document.rollform.rollserver.value = central;
 }
 </script>
