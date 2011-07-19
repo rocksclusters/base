@@ -1,5 +1,5 @@
 #
-# $Id: Makefile,v 1.18 2011/07/18 21:53:15 phil Exp $
+# $Id: Makefile,v 1.19 2011/07/19 22:22:41 phil Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,10 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.19  2011/07/19 22:22:41  phil
+# Fixed dependency for build. Make sure rolls.html is created from
+# rolls.html.in
+#
 # Revision 1.18  2011/07/18 21:53:15  phil
 # Support version'ed centrals as
 # central-rocksversion-arch.rocksclusters.org
@@ -153,7 +157,7 @@ include Rules.mk
 SCRIPTS		= rocks-buildscreens rocks-getroll.cgi sitexml2entities
 
 
-build:
+build: rolls.html
 	$(MAKE) $(SCRIPTS)
 
 rolls.html:	rolls.html.in
