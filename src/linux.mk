@@ -1,4 +1,4 @@
-# $Id: linux.mk,v 1.27 2011/04/23 18:36:32 phil Exp $
+# $Id: linux.mk,v 1.28 2011/07/22 23:55:58 anoop Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: linux.mk,v $
+# Revision 1.28  2011/07/22 23:55:58  anoop
+# Finally removed foundation-perl, and CPAN from base roll.
+#
 # Revision 1.27  2011/04/23 18:36:32  phil
 # build devel-env by default
 #
@@ -178,11 +181,7 @@ SRCDIRS = `find . -type d -maxdepth 1 \
 	-not -name bittorrent \
 	-not -name postfix \
 	-not -name lsof \
-	-not -name channel \
-	-not -name foundation-perl \
-	-not -name foundation-perl-tk \
-	-not -name cpan	\
-	-not -name cpan-support`
+	-not -name channel`
 
 #
 # make sure we build anaconda last, that's because it includes many packages
