@@ -1,14 +1,14 @@
 #! /opt/rocks/bin/python
 #
-# $Id: profile.py,v 1.33 2010/09/29 18:39:08 bruno Exp $
+# $Id: profile.py,v 1.34 2011/07/23 02:30:49 phil Exp $
 #
 # @Copyright@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		         version 5.4 (Maverick)
+# 		         version 5.4.3 (Viper)
 # 
-# Copyright (c) 2000 - 2010 The Regents of the University of California.
+# Copyright (c) 2000 - 2011 The Regents of the University of California.
 # All rights reserved.	
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -27,7 +27,7 @@
 # features or use of this software must display the following acknowledgement: 
 # 
 # 	"This product includes software developed by the Rocks(r)
-# 	Cluster Group at the San Diego Supercomputer Center at the
+# 	Development Team at the San Diego Supercomputer Center at the
 # 	University of California, San Diego and its contributors."
 # 
 # 4. Except as permitted for the purposes of acknowledgment in paragraph 3,
@@ -56,6 +56,9 @@
 # @Copyright@
 #
 # $Log: profile.py,v $
+# Revision 1.34  2011/07/23 02:30:49  phil
+# Viper Copyright
+#
 # Revision 1.33  2010/09/29 18:39:08  bruno
 # print a message that points the user to the XML file name and line number
 # when there is a parser error.

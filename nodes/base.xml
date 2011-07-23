@@ -14,13 +14,16 @@
   </description>
 
         <copyright>
-        Copyright (c) 2000 - 2010 The Regents of the University of California.
-        All rights reserved. Rocks(r) v5.4 www.rocksclusters.org
+        Copyright (c) 2000 - 2011 The Regents of the University of California.
+        All rights reserved. Rocks(r) v5.4.3 www.rocksclusters.org
         
         </copyright>
 
   <changelog>
   $Log: base.xml,v $
+  Revision 1.55  2011/07/23 02:30:14  phil
+  Viper Copyright
+
   Revision 1.54  2011/06/29 19:03:10  phil
   Update Java in the base roll.
   Enable java plugins in firefox

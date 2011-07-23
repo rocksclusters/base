@@ -9,13 +9,16 @@ Configure yum
 
 
         <copyright>
-        Copyright (c) 2000 - 2010 The Regents of the University of California.
-        All rights reserved. Rocks(r) v5.4 www.rocksclusters.org
+        Copyright (c) 2000 - 2011 The Regents of the University of California.
+        All rights reserved. Rocks(r) v5.4.3 www.rocksclusters.org
         
         </copyright>
 
 <changelog>
 $Log: yum.xml,v $
+Revision 1.14  2011/07/23 02:30:15  phil
+Viper Copyright
+
 Revision 1.13  2010/10/01 20:12:10  phil
 Make the yum repo the public side. Thus, non-tunneled EC2 clients can
 yum install/update from their home cluster.

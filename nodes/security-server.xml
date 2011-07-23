@@ -10,13 +10,16 @@ Parent node for server security elements.
   </description>
 
         <copyright>
-        Copyright (c) 2000 - 2010 The Regents of the University of California.
-        All rights reserved. Rocks(r) v5.4 www.rocksclusters.org
+        Copyright (c) 2000 - 2011 The Regents of the University of California.
+        All rights reserved. Rocks(r) v5.4.3 www.rocksclusters.org
         
         </copyright>
 
   <changelog>
   $Log: security-server.xml,v $
+  Revision 1.8  2011/07/23 02:30:15  phil
+  Viper Copyright
+
   Revision 1.7  2010/09/07 23:52:47  bruno
   star power for gb
 

@@ -3,15 +3,15 @@
 # Retrives a file using HTTPS for the 411 service. Assumes
 # the master servers are running Apache with mod_ssl.
 # 
-# $Id: 411get.py,v 1.9 2011/06/17 18:17:47 anoop Exp $
+# $Id: 411get.py,v 1.10 2011/07/23 02:30:22 phil Exp $
 #
 # @Copyright@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		         version 5.4 (Maverick)
+# 		         version 5.4.3 (Viper)
 # 
-# Copyright (c) 2000 - 2010 The Regents of the University of California.
+# Copyright (c) 2000 - 2011 The Regents of the University of California.
 # All rights reserved.	
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -30,7 +30,7 @@
 # features or use of this software must display the following acknowledgement: 
 # 
 # 	"This product includes software developed by the Rocks(r)
-# 	Cluster Group at the San Diego Supercomputer Center at the
+# 	Development Team at the San Diego Supercomputer Center at the
 # 	University of California, San Diego and its contributors."
 # 
 # 4. Except as permitted for the purposes of acknowledgment in paragraph 3,
@@ -59,6 +59,9 @@
 # @Copyright@
 #
 # $Log: 411get.py,v $
+# Revision 1.10  2011/07/23 02:30:22  phil
+# Viper Copyright
+#
 # Revision 1.9  2011/06/17 18:17:47  anoop
 # band-aid to force password file to be pulled
 # before shadow file

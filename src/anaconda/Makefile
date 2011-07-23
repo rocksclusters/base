@@ -1,13 +1,13 @@
 #
-# $Id: Makefile,v 1.20 2011/04/15 19:41:58 phil Exp $
+# $Id: Makefile,v 1.21 2011/07/23 02:30:23 phil Exp $
 #
 # @Copyright@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		         version 5.4 (Maverick)
+# 		         version 5.4.3 (Viper)
 # 
-# Copyright (c) 2000 - 2010 The Regents of the University of California.
+# Copyright (c) 2000 - 2011 The Regents of the University of California.
 # All rights reserved.	
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -26,7 +26,7 @@
 # features or use of this software must display the following acknowledgement: 
 # 
 # 	"This product includes software developed by the Rocks(r)
-# 	Cluster Group at the San Diego Supercomputer Center at the
+# 	Development Team at the San Diego Supercomputer Center at the
 # 	University of California, San Diego and its contributors."
 # 
 # 4. Except as permitted for the purposes of acknowledgment in paragraph 3,
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.21  2011/07/23 02:30:23  phil
+# Viper Copyright
+#
 # Revision 1.20  2011/04/15 19:41:58  phil
 # Updates to build under CentOS 5.6 and new anaconda version.
 # Calling this version5.4.3. Codename Viper.

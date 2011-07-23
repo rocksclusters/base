@@ -9,14 +9,17 @@ Append rules to logrotate to prune files in /var/log
 </description>
 
         <copyright>
-        Copyright (c) 2000 - 2010 The Regents of the University of California.
-        All rights reserved. Rocks(r) v5.4 www.rocksclusters.org
+        Copyright (c) 2000 - 2011 The Regents of the University of California.
+        All rights reserved. Rocks(r) v5.4.3 www.rocksclusters.org
         
         </copyright>
 
 <changelog>
 
 $Log: logrotate.xml,v $
+Revision 1.10  2011/07/23 02:30:14  phil
+Viper Copyright
+
 Revision 1.9  2010/09/07 23:52:46  bruno
 star power for gb
 

@@ -1,4 +1,4 @@
-static char rcsid[] = "$Id: read-411-shared-key.c,v 1.11 2010/09/07 23:53:07 bruno Exp $";
+static char rcsid[] = "$Id: read-411-shared-key.c,v 1.12 2011/07/23 02:30:47 phil Exp $";
 /* -----------------------------------------------------------------------
  *
  * Allow a non-root user (depending on the permissions for this executable)
@@ -8,9 +8,9 @@ static char rcsid[] = "$Id: read-411-shared-key.c,v 1.11 2010/09/07 23:53:07 bru
  * 
  * 				Rocks(r)
  * 		         www.rocksclusters.org
- * 		         version 5.4 (Maverick)
+ * 		         version 5.4.3 (Viper)
  * 
- * Copyright (c) 2000 - 2010 The Regents of the University of California.
+ * Copyright (c) 2000 - 2011 The Regents of the University of California.
  * All rights reserved.	
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -29,7 +29,7 @@ static char rcsid[] = "$Id: read-411-shared-key.c,v 1.11 2010/09/07 23:53:07 bru
  * features or use of this software must display the following acknowledgement: 
  * 
  * 	"This product includes software developed by the Rocks(r)
- * 	Cluster Group at the San Diego Supercomputer Center at the
+ * 	Development Team at the San Diego Supercomputer Center at the
  * 	University of California, San Diego and its contributors."
  * 
  * 4. Except as permitted for the purposes of acknowledgment in paragraph 3,
@@ -59,6 +59,9 @@ static char rcsid[] = "$Id: read-411-shared-key.c,v 1.11 2010/09/07 23:53:07 bru
  *
  * test with: gcc -o read-private-key read-private-key.c
  * $Log: read-411-shared-key.c,v $
+ * Revision 1.12  2011/07/23 02:30:47  phil
+ * Viper Copyright
+ *
  * Revision 1.11  2010/09/07 23:53:07  bruno
  * star power for gb
  *

@@ -1,13 +1,13 @@
 #
-# $Id: rocks-version.mk,v 1.5 2011/04/15 19:41:59 phil Exp $
+# $Id: rocks-version.mk,v 1.6 2011/07/23 02:30:43 phil Exp $
 #
 # @Copyright@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		         version 5.4 (Maverick)
+# 		         version 5.4.3 (Viper)
 # 
-# Copyright (c) 2000 - 2010 The Regents of the University of California.
+# Copyright (c) 2000 - 2011 The Regents of the University of California.
 # All rights reserved.	
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -26,7 +26,7 @@
 # features or use of this software must display the following acknowledgement: 
 # 
 # 	"This product includes software developed by the Rocks(r)
-# 	Cluster Group at the San Diego Supercomputer Center at the
+# 	Development Team at the San Diego Supercomputer Center at the
 # 	University of California, San Diego and its contributors."
 # 
 # 4. Except as permitted for the purposes of acknowledgment in paragraph 3,
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: rocks-version.mk,v $
+# Revision 1.6  2011/07/23 02:30:43  phil
+# Viper Copyright
+#
 # Revision 1.5  2011/04/15 19:41:59  phil
 # Updates to build under CentOS 5.6 and new anaconda version.
 # Calling this version5.4.3. Codename Viper.
@@ -302,9 +305,9 @@ rocks-copyright.txt:
 	@echo '' >> $@
 	@echo '				Rocks(r)' >> $@
 	@echo '		         www.rocksclusters.org' >> $@
-	@echo '		         version 5.4 (Maverick)' >> $@
+	@echo '		         version 5.4.3 (Viper)' >> $@
 	@echo '' >> $@
-	@echo 'Copyright (c) 2000 - 2010 The Regents of the University of California.' >> $@
+	@echo 'Copyright (c) 2000 - 2011 The Regents of the University of California.' >> $@
 	@echo 'All rights reserved.	' >> $@
 	@echo '' >> $@
 	@echo 'Redistribution and use in source and binary forms, with or without' >> $@
@@ -323,7 +326,7 @@ rocks-copyright.txt:
 	@echo 'features or use of this software must display the following acknowledgement: ' >> $@
 	@echo '' >> $@
 	@echo '	"This product includes software developed by the Rocks(r)' >> $@
-	@echo '	Cluster Group at the San Diego Supercomputer Center at the' >> $@
+	@echo '	Development Team at the San Diego Supercomputer Center at the' >> $@
 	@echo '	University of California, San Diego and its contributors."' >> $@
 	@echo '' >> $@
 	@echo '4. Except as permitted for the purposes of acknowledgment in paragraph 3,' >> $@

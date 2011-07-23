@@ -11,13 +11,16 @@ This file is used as a connection point for other XML configuration nodes.
 </description>
 
         <copyright>
-        Copyright (c) 2000 - 2010 The Regents of the University of California.
-        All rights reserved. Rocks(r) v5.4 www.rocksclusters.org
+        Copyright (c) 2000 - 2011 The Regents of the University of California.
+        All rights reserved. Rocks(r) v5.4.3 www.rocksclusters.org
         
         </copyright>
 
 <changelog>
 $Log: client.xml,v $
+Revision 1.17  2011/07/23 02:30:14  phil
+Viper Copyright
+
 Revision 1.16  2011/05/12 18:19:21  anoop
 dbhost set for all clients except devel-servers.
 Needs to be made more generic to support all

@@ -2,15 +2,15 @@
 #
 # This file should remain OS independent
 #
-# $Id: bootstrap.sh,v 1.23 2010/10/20 21:30:46 mjk Exp $
+# $Id: bootstrap.sh,v 1.24 2011/07/23 02:30:14 phil Exp $
 #
 # @Copyright@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		         version 5.4 (Maverick)
+# 		         version 5.4.3 (Viper)
 # 
-# Copyright (c) 2000 - 2010 The Regents of the University of California.
+# Copyright (c) 2000 - 2011 The Regents of the University of California.
 # All rights reserved.	
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -29,7 +29,7 @@
 # features or use of this software must display the following acknowledgement: 
 # 
 # 	"This product includes software developed by the Rocks(r)
-# 	Cluster Group at the San Diego Supercomputer Center at the
+# 	Development Team at the San Diego Supercomputer Center at the
 # 	University of California, San Diego and its contributors."
 # 
 # 4. Except as permitted for the purposes of acknowledgment in paragraph 3,
@@ -58,6 +58,9 @@
 # @Copyright@
 #
 # $Log: bootstrap.sh,v $
+# Revision 1.24  2011/07/23 02:30:14  phil
+# Viper Copyright
+#
 # Revision 1.23  2010/10/20 21:30:46  mjk
 # - fix typos
 # - added rocks-channel and librocks packages
