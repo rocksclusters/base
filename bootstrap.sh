@@ -2,7 +2,7 @@
 #
 # This file should remain OS independent
 #
-# $Id: bootstrap.sh,v 1.24 2011/07/23 02:30:14 phil Exp $
+# $Id: bootstrap.sh,v 1.25 2011/07/25 23:54:24 anoop Exp $
 #
 # @Copyright@
 # 
@@ -58,6 +58,9 @@
 # @Copyright@
 #
 # $Log: bootstrap.sh,v $
+# Revision 1.25  2011/07/25 23:54:24  anoop
+# Removed perl from bootstrapping
+#
 # Revision 1.24  2011/07/23 02:30:14  phil
 # Viper Copyright
 #
@@ -171,7 +174,6 @@ compile_and_install foundation-readline
 compile_and_install foundation-wget
 compile_and_install foundation-mysql
 compile_and_install foundation-python
-compile_and_install foundation-perl
 compile_and_install foundation-libxml2
 compile_and_install foundation-python-xml
 compile_and_install foundation-python-extras
@@ -186,12 +188,6 @@ install rocks-command
 
 compile dnet
 install libdnet
-
-if [ `./_os` == "linux" ]; then
-	compile cpan
-	install rocks-cpan
-	(cd src/cpan-support && gmake bootstrap)
-fi
 
 if [ `./_os` == "linux" ]; then
 	ignore_os_package ntp
