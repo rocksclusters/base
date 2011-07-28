@@ -1,4 +1,4 @@
-# $Id: Rules-linux-centos.mk,v 1.6 2011/07/23 02:30:43 phil Exp $
+# $Id: Rules-linux-centos.mk,v 1.7 2011/07/28 21:38:00 phil Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: Rules-linux-centos.mk,v $
+# Revision 1.7  2011/07/28 21:38:00  phil
+# Allow us to specify RPM.FILESLIST as a list of files for rpm to package.
+# This is allows us to have RPMS with files, but not owning upper directories.
+#
 # Revision 1.6  2011/07/23 02:30:43  phil
 # Viper Copyright
 #
@@ -413,6 +417,7 @@ $(NAME).spec: $(NAME).spec.mk
 	else \
 	echo "BUILDROOT=$(BUILDROOT) make install" >> $@; \
 	fi
+ifeq ($(RPM.FILESLIST),)
 	@$(PF) "%%files $(RPM.PACKAGE)\n" >> $@
 ifeq ($(RPM.PREFIX),)
 	@$(PF) "/\n" >> $@
@@ -420,6 +425,9 @@ else
 	@$(PF) "$(RPM.PREFIX)\n" >> $@
 endif
 	echo -e "$(RPM.FILE.EXTRAS)" >> $@
+else	
+	@$(PF) "%%files $(RPM.PACKAGE) -f $(RPM.FILESLIST)\n" >> $@
+endif
 
 $(NAME).spec.mk:
 	@$(PF) "# This file is called from the generated spec file.\n" > $@
