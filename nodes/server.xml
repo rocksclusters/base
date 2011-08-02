@@ -110,4 +110,15 @@ rm -f /etc/rc.d/rocksconfig.d/post-02-on-the-fly
 	max_parallel_proc 64
 </post>
 
+<post>
+
+<!-- Hard link /root/.ssh/id_rsa.pub. Allows us a way to
+always read the public ssh key even if /root directory permissions
+are changed  --> 
+
+if [ ! -d /etc/ssh/authorized_keys ]; then
+	mkdir -p /etc/ssh/authorized_keys
+fi
+/bin/ln /root/.ssh/id_rsa.pub /etc/ssh/authorized_keys/id_rsa.pub
+</post>
 </kickstart> 

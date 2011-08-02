@@ -14,6 +14,11 @@
 
   <changelog>
   $Log: node-certs.xml,v $
+  Revision 1.3  2011/08/02 23:58:52  phil
+  Hard link /etc/ssh/authorized_keys/id_rsa.pub to /root/.ssh/id_rsa.pub.
+  If a user (or update) sets root's directory permissions tightly, still read the pub
+  key.
+
   Revision 1.2  2009/03/31 00:23:29  anoop
   Merged the remainder of the solaris XML files to the base roll
 
@@ -73,9 +78,9 @@ done
 
 <!-- propagate root's public ssh key -->
 
-<file name="/root/.ssh/authorized_keys">
+<file name="/root/.ssh/authorized_keys" perms="0600">
 <eval shell="sh">
-cat /root/.ssh/id_rsa.pub
+cat /etc/ssh/authorized_keys/id_rsa.pub
 </eval>
 </file>
 
@@ -84,12 +89,15 @@ cat /root/.ssh/id_rsa.pub
 <post os='sunos'>
 
 <!-- make sure the appropriate directories exist -->
-mkdir -p /.ssh
+if  [ ! -d /.ssh ]; then 
+	mkdir -p /.ssh
+fi
+
 
 <!-- propagate root's public ssh key -->
-<file name="/.ssh/authorized_keys">
+<file name="/.ssh/authorized_keys" perms="0600">
 <eval shell="sh">
-cat /root/.ssh/id_rsa.pub
+cat /etc/ssh/authorized_keys/id_rsa.pub
 </eval>
 </file>
 
