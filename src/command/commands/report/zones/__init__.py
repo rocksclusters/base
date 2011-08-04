@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.7 2011/07/23 02:30:36 phil Exp $
+# $Id: __init__.py,v 1.8 2011/08/04 03:40:28 anoop Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,14 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.8  2011/08/04 03:40:28  anoop
+# Bug fixes to named config file generation.
+# Now supports subnets that are on non-octet
+# boundaries.
+# Also supports multiple networks that share
+# same/similar classless subnets
+# Requires extensive testing
+#
 # Revision 1.7  2011/07/23 02:30:36  phil
 # Viper Copyright
 #
@@ -146,8 +154,7 @@ import string
 import types
 import rocks.commands
 
-preamble_template = """
-$TTL 3D
+preamble_template = """$TTL 3D
 @ IN SOA ns.%s. root.ns.%s. (
 	%s ; Serial
 	8H ; Refresh
@@ -180,8 +187,6 @@ class Command(rocks.commands.report.command):
 		"Lists the name->IP mappings for all hosts"
 
 		s = ""
-		s += 'localhost A 127.0.0.1\n'
-		s += 'ns A 127.0.0.1\n\n'
 
 		self.db.execute("select n.name, nt.ip, nt.name "+\
 			"from subnets s, nodes n, networks nt "	+\
@@ -232,94 +237,110 @@ class Command(rocks.commands.report.command):
 
 		return s
 
-	def writeForward(self, serial, name, dnszone):
-		filename = '/var/named/%s.domain' % name
-		s = ''
-		s += '<file name="%s" perms="0644">\n' % filename
-		s += preamble_template % (dnszone, dnszone, serial,
-				dnszone, dnszone)
-		s += self.hostlines(name, dnszone)
-		s += self.hostlocal(name, dnszone)
-		s += '</file>\n'
-		self.addOutput('localhost', s)
+	def writeForward(self, serial, networks):
+		for n in networks:
+			dnszone = n.dnszone
+			name = n.name
+			filename = '/var/named/%s.domain' % name
+			s = ''
+			s += '<file name="%s" perms="0644">\n' % filename
+			s += preamble_template % (dnszone, dnszone, serial,
+					dnszone, dnszone)
+			s += self.hostlines(name, dnszone)
+			s += self.hostlocal(name, dnszone)
+			s += '</file>\n'
+			self.addOutput('localhost', s)
 
 
-	def reversehostlines(self, subnet, dnszone):
+	def reversehostlines(self, r_sn, s_name):
 		"Lists the IP -> name mappings for all hosts. "
 		"Handles only IPv4 addresses."
 
 		s = ''
-		self.db.execute('select nt.name, nt.ip from '	+\
-				'networks nt, subnets s where ' +\
-				's.dnszone="%s" ' % (dnszone)	+\
+		subnet_len = len(r_sn.split('.'))
+		self.db.execute('select nt.name, nt.ip, s.dnszone ' +\
+				'from networks nt, subnets s where ' +\
+				's.name="%s" ' % (s_name)	+\
 				'and nt.subnet=s.id')
 
 		# Remove all elements of the IP address that are
 		# present in the subnet. This is done by counting
 		# the number of elements in the subnet, and popping
 		# that many from the IP address
-		for (name, ip) in self.db.fetchall():
+		for (name, ip, dnszone) in self.db.fetchall():
 			if ip is None:
 				continue
 
 			if name is None:
 				continue
 
-			t_ip = ip.split('.')[len(subnet):]
+			t_ip = ip.split('.')[subnet_len:]
 			t_ip.reverse()
 			
 			s += '%s PTR %s.%s.\n' % (string.join(t_ip, '.'), name, dnszone)
-
-		return s
-
-	def writeReverse(self, serial, name, dnszone):
-		self.db.execute('select subnet, netmask from ' +\
-			'subnets where subnets.name="%s"' % name)
-		subnet, netmask = self.db.fetchone()
-		sn = self.getSubnet(subnet, netmask)
-		sn.reverse()
-		r_sn = string.join(sn, '.')
-
-		filename = '/var/named/reverse.%s.domain.%s'\
-			% (name, r_sn)
-		s = ''
-		s += '<file name="%s" perms="0644">\n' % filename
-		s += preamble_template % (dnszone, dnszone, serial,
-			dnszone, dnszone)
-		
-		s += self.reversehostlines(sn, dnszone)
 
 		#
 		# handle reverse local additions
 		#
 		filename = '/var/named/reverse.%s.domain.%s.local' \
-			% (name, r_sn)
-
-		# first check if there is a local file present, if not
-		# then create a stub file
-		if not os.path.exists(filename):
-			s += '</file>\n'
-			s += '<file name="%s" perms="0644">\n' % filename
-			s += '; Extra reverse host mappings here. Like \n'
-			s += ';2.2.2 PTR myhost.local.\n'
-		else:
+			% (s_name, r_sn)
+		if os.path.exists(filename):
 			s += '\n;Imported from %s\n\n' % filename
 			f = open(filename, 'r')
 			s += f.read()
 			f.close()
 			s += '\n'
+		else:
+			s += '\n'
+			s += '; Custom entries for network %s\n' % s_name
+			s += '; can be placed in %s\n' % filename
+			s += '; These entries will be sourced on sync\n'
 
-		s += '</file>\n'
+		return s
+
+	def writeReverse(self, serial, networks):
+		subnet_list = {}
+		for n in networks:
+			sn = self.getSubnet(n.subnet, n.netmask)
+			sn.reverse()
+			r_sn = string.join(sn, '.')
+			if not subnet_list.has_key(r_sn):
+				subnet_list[r_sn] = []
+			subnet_list[r_sn].append(n)
+			
+		for r_sn in subnet_list:
+			if len(subnet_list[r_sn]) == 1:
+				n = subnet_list[r_sn][0]
+				name = n.name
+				dnszone = n.dnszone
+				hl = self.reversehostlines(r_sn, name)
+			else:
+				name = ''
+				hl = ''
+				for nt in subnet_list[r_sn]:
+					name += nt.name + '-'
+					hl += '; Entries for subnet:%s, zone:%s\n' % \
+						(nt.name, nt.dnszone)
+					hl += self.reversehostlines(r_sn, nt.name)
+					hl += '\n'
+				name = name.rstrip('-')
+			filename = '/var/named/reverse.%s.domain.%s'\
+				% (name, r_sn)
+			s = ''
+			s += '<file name="%s" perms="0644">\n' % filename
+			s += preamble_template % (name, name, serial,
+				name, name)
+			s += hl
+
+			s += '</file>\n'
 		self.addOutput('localhost', s)
 			
 
 	def run(self, params, args):
 		serial = int(time.time())
-		self.db.execute("select name, subnet, dnszone " +\
-			"from subnets where subnets.servedns=True")
 
+		networks = self.getNetworks()
 		self.beginOutput()
-		for (name, subnet, dnszone) in self.db.fetchall():	
-			self.writeForward(serial, name, dnszone)
-			self.writeReverse(serial, name, dnszone)
+		self.writeForward(serial, networks)
+		self.writeReverse(serial, networks)
 		self.endOutput(padChar = '')
