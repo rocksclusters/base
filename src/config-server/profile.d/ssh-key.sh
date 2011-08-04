@@ -1,5 +1,5 @@
 #
-# $Id: ssh-key.sh,v 1.6 2011/07/23 02:30:42 phil Exp $
+# $Id: ssh-key.sh,v 1.7 2011/08/04 02:03:51 anoop Exp $
 #
 # generate a ssh key if one doesn't exist
 #
@@ -59,6 +59,10 @@
 #
 #
 # $Log: ssh-key.sh,v $
+# Revision 1.7  2011/08/04 02:03:51  anoop
+# Move creation of hard link to ssh public key
+# from node file to profile.d startup script.
+#
 # Revision 1.6  2011/07/23 02:30:42  phil
 # Viper Copyright
 #
@@ -213,3 +217,19 @@ then
 	chmod g-w $HOME
 fi
 
+# If we're the root user, create a hard link to public key
+# outside the root directory, and make it readable by apache.
+# This way, if the permissions on root's ssh directory are locked
+# down, we can still read the public key.
+if [ $UID -eq 0 ]; then
+	# Check if hard link exists
+	[ ! -f /etc/ssh/authorized_keys/id_rsa.pub ] || (\
+	# Check if hard link exists but is stale
+	[ `stat -c %h /etc/ssh/authorized_keys/id_rsa.pub 2>/dev/null` -eq 1 ] && (\
+		echo "Removing existing hardlink";
+		rm -rf /etc/ssh/authorized_keys/id_rsa.pub;
+	) ) &&	(\
+		echo "Creating hardlink to id_rsa.pub in /etc/ssh/authorized_keys/";
+		ln $HOME/.ssh/id_rsa.pub /etc/ssh/authorized_keys/id_rsa.pub;
+	)
+fi
