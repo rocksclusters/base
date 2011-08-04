@@ -19,6 +19,10 @@
 
   <changelog>
   $Log: 411-client.xml,v $
+  Revision 1.14  2011/08/04 23:14:29  phil
+  Need to wait longer for the shared key to show up in the file system on
+  VMs. Timing Race.
+
   Revision 1.13  2011/06/17 23:14:45  phil
   Restart autofs. Needed because we don't transfer /etc/auto.master in the kickstart file.
 
@@ -182,8 +186,8 @@ do not have to resend alerts for every new node in the cluster. -->
 /opt/rocks/bin/get-411-key &Kickstart_PrivateAddress;
 
 # Wait 10 seconds for shared key to get populated
-for i in 1 2 3 4 5 6 7 8 9 10; do \
-	[ ! -f /etc/411-security/shared.key ] &amp;&amp; sleep 1; \
+for i in 1 2 3 4 5 6 7 8 9 10 11 12; do 
+	[ ! -f /etc/411-security/shared.key ] &amp;&amp; sleep 10 
 done
 
 # If shared key got transferred, do a 411get and pull information
