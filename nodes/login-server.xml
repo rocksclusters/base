@@ -8,6 +8,9 @@ Create a Login appliance
 
 <changelog>
 $Log: login-server.xml,v $
+Revision 1.9  2011/08/04 22:28:32  phil
+Set primary interface of login servers back to private
+
 Revision 1.8  2011/06/24 19:25:07  phil
 Firewall documentation. Fix some typos in rulenames.
 
@@ -48,8 +51,17 @@ the start of the login appliance
 <!--
 	set the login node's primary network to be the public network. this
 	network will be used to generate the hostname for the machine.
+
+	This causes unfun behaviour for updated SGE. So set to private.
+	Can set to public,  but then one MUST EDIT 
+	 /opt/gridengine/default/common/host_aliases 
+	on BOTH gridengine master AND login node
+	to alias the public name to the private name
+	e.g. with entry that looks like:
+
+        login-0-0.local  <public name of login> login-0-0 
 -->
-/opt/rocks/bin/rocks set appliance attr login primary_net public
+/opt/rocks/bin/rocks set appliance attr login primary_net private
 
 </post>
 
