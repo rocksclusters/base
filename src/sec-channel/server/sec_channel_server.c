@@ -1,5 +1,5 @@
 /*
- * $Id: sec_channel_server.c,v 1.3 2011/07/23 02:30:50 phil Exp $
+ * $Id: sec_channel_server.c,v 1.4 2011/08/04 02:02:47 anoop Exp $
  *
  * @Copyright@
  * 
@@ -55,6 +55,10 @@
  * @Copyright@
  *
  * $Log: sec_channel_server.c,v $
+ * Revision 1.4  2011/08/04 02:02:47  anoop
+ * Use ip address instead of hostname. This way, failure
+ * during host lookup does not screw with request.
+ *
  * Revision 1.3  2011/07/23 02:30:50  phil
  * Viper Copyright
  *
@@ -74,7 +78,6 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
-#include <netdb.h>
 
 int *
 sec_channel_ping_1_svc(struct svc_req *rqstp)
@@ -84,7 +87,6 @@ sec_channel_ping_1_svc(struct svc_req *rqstp)
 	char *ipaddr;
 	int status;
 	int pid;
-	struct hostent *h;
 	
 	switch(pid = fork()){
 		case -1:		/*Fork failed*/
@@ -96,12 +98,9 @@ sec_channel_ping_1_svc(struct svc_req *rqstp)
 			addr = &rqstp->rq_xprt->xp_raddr;
 			ipaddr = (char *)malloc(sizeof(char)*INET_ADDRSTRLEN);
 			ipaddr = (char *)inet_ntop(AF_INET, &addr->sin_addr, ipaddr, INET_ADDRSTRLEN);
-			h = (struct hostent *)gethostbyaddr(&addr->sin_addr, INET_ADDRSTRLEN, AF_INET);
-
-			printf("%s\t%s\n", h->h_name, ipaddr);
 
 			status = execl("/opt/rocks/bin/rocks", "rocks",
-				"sync","host","sharedkey",h->h_name, NULL);
+				"sync","host","sharedkey",ipaddr, NULL);
 			exit(status);
 
 		default:		/* Parent */
