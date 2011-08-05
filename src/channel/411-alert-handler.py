@@ -58,6 +58,9 @@
 # @Copyright@
 #
 # $Log: 411-alert-handler.py,v $
+# Revision 1.5  2011/08/05 00:33:08  anoop
+# Run post section of a filter once the file is written
+#
 # Revision 1.4  2011/07/23 02:30:24  phil
 # Viper Copyright
 #
@@ -300,6 +303,11 @@ class Listen411(rocks.service411.Service411):
 				contents, meta = self.get(url)
 				self.write(contents, meta)
 				syslog.syslog(syslog.LOG_INFO, 'wrote (file="%s")' % url)
+				try:
+					f = getattr(self.plugin, 'post')
+					f()
+				except:
+					pass
 				retry = 0
 			except:
 				time.sleep(random.uniform(0, 30))
