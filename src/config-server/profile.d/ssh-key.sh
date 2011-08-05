@@ -1,5 +1,5 @@
 #
-# $Id: ssh-key.sh,v 1.7 2011/08/04 02:03:51 anoop Exp $
+# $Id: ssh-key.sh,v 1.8 2011/08/05 22:26:06 anoop Exp $
 #
 # generate a ssh key if one doesn't exist
 #
@@ -59,6 +59,12 @@
 #
 #
 # $Log: ssh-key.sh,v $
+# Revision 1.8  2011/08/05 22:26:06  anoop
+# - Cleanup
+# - Check for private key
+# - Check UID: If root, create key without passphrase
+# 	     If normal user, create key interactively
+#
 # Revision 1.7  2011/08/04 02:03:51  anoop
 # Move creation of hard link to ssh public key
 # from node file to profile.d startup script.
@@ -198,38 +204,33 @@
 # initial release
 #
 
-# If we are interactive and don't have a public key, send prompt.
-if [[ $INTERACTIVE != "false" ]] && [ ! -f $HOME/.ssh/id_rsa.pub ]
-then
-	echo
-	echo "It doesn't appear that you have set up your ssh key."
-	echo "This process will make the files:"
-	echo "    " $HOME/.ssh/id_rsa.pub
-	echo "    " $HOME/.ssh/id_rsa
-	echo "    " $HOME/.ssh/authorized_keys
-	echo
+# If rsa key exists, exit
+[ -f $HOME/.ssh/id_rsa ] && return 0
 
-	ssh-keygen -t rsa
+echo
+echo "It appears that you have not set up your ssh key."
+echo "This process will make the files:"
+echo "    " $HOME/.ssh/id_rsa.pub
+echo "    " $HOME/.ssh/id_rsa
+echo "    " $HOME/.ssh/authorized_keys
+echo
+SSH_CMD="ssh-keygen -t rsa -f $HOME/.ssh/id_rsa -v"
 
-	cat $HOME/.ssh/id_rsa.pub >> $HOME/.ssh/authorized_keys
+# If root, create ssh key with blank passphrase
+# Otherwise interact with user to ask passphrase
+[ $UID -eq 0 ] && $SSH_CMD -N "" || $SSH_CMD
 
-	chmod 600 $HOME/.ssh/authorized_keys
-	chmod g-w $HOME
-fi
+# Copy public key to authorized_keys file.
+cat $HOME/.ssh/id_rsa.pub >> $HOME/.ssh/authorized_keys
 
+chmod 600 $HOME/.ssh/authorized_keys
+chmod g-w $HOME
 # If we're the root user, create a hard link to public key
 # outside the root directory, and make it readable by apache.
 # This way, if the permissions on root's ssh directory are locked
 # down, we can still read the public key.
 if [ $UID -eq 0 ]; then
-	# Check if hard link exists
-	[ ! -f /etc/ssh/authorized_keys/id_rsa.pub ] || (\
-	# Check if hard link exists but is stale
-	[ `stat -c %h /etc/ssh/authorized_keys/id_rsa.pub 2>/dev/null` -eq 1 ] && (\
-		echo "Removing existing hardlink";
-		rm -rf /etc/ssh/authorized_keys/id_rsa.pub;
-	) ) &&	(\
-		echo "Creating hardlink to id_rsa.pub in /etc/ssh/authorized_keys/";
-		ln $HOME/.ssh/id_rsa.pub /etc/ssh/authorized_keys/id_rsa.pub;
-	)
+	mkdir -p /etc/ssh/authorized_keys
+	rm -rf /etc/ssh/authorized_keys/id_rsa.pub
+	ln $HOME/.ssh/id_rsa.pub /etc/ssh/authorized_keys/id_rsa.pub
 fi
