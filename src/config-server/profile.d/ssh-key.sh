@@ -1,5 +1,5 @@
 #
-# $Id: ssh-key.sh,v 1.8 2011/08/05 22:26:06 anoop Exp $
+# $Id: ssh-key.sh,v 1.9 2011/08/06 14:56:25 phil Exp $
 #
 # generate a ssh key if one doesn't exist
 #
@@ -59,6 +59,9 @@
 #
 #
 # $Log: ssh-key.sh,v $
+# Revision 1.9  2011/08/06 14:56:25  phil
+# more defensive about when to make hard link
+#
 # Revision 1.8  2011/08/05 22:26:06  anoop
 # - Cleanup
 # - Check for private key
@@ -229,8 +232,8 @@ chmod g-w $HOME
 # outside the root directory, and make it readable by apache.
 # This way, if the permissions on root's ssh directory are locked
 # down, we can still read the public key.
-if [ $UID -eq 0 ]; then
+if [ $UID -eq 0 ] && [ -f /root/.ssh/id_rsa.pub ]; then
 	mkdir -p /etc/ssh/authorized_keys
 	rm -rf /etc/ssh/authorized_keys/id_rsa.pub
-	ln $HOME/.ssh/id_rsa.pub /etc/ssh/authorized_keys/id_rsa.pub
+	ln /root/.ssh/id_rsa.pub /etc/ssh/authorized_keys/id_rsa.pub
 fi
