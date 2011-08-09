@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.7 2011/07/23 02:30:37 phil Exp $
+# $Id: __init__.py,v 1.8 2011/08/09 01:03:16 anoop Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.8  2011/08/09 01:03:16  anoop
+# If yum install fails due to dependency error,
+# force install using rpm --nodeps
+#
 # Revision 1.7  2011/07/23 02:30:37  phil
 # Viper Copyright
 #
@@ -92,6 +96,9 @@ import rocks.commands
 import tempfile
 from xml.dom.ext.reader import Sax2
 
+rpm_force_template = """[ $? -ne 0 ] && \\
+echo "# YUM failed - trying with RPM" && \\
+rpm -Uvh --force --nodeps %s"""
 	
 class Command(rocks.commands.run.command):
 	"""
@@ -133,22 +140,23 @@ class Command(rocks.commands.run.command):
 		distPath = os.path.join(self.command('report.distro')[:-1],
 			'rocks-dist')
                 tree = rocks.file.Tree(distPath)
-		rpm_list = []
+		rpm_list = {}
 		for file in tree.getFiles(os.path.join(self.arch, 
 			'RedHat', 'RPMS')):
 			if isinstance(file, rocks.file.RPMFile):
-				rpm_list.append(file.getBaseName())
-				rpm_list.append("%s.%s" % (file.getBaseName(), \
-					file.getPackageArch()))
+				rpm_list[file.getBaseName()] = file.getFullName()
+				rpm_list["%s.%s" % (file.getBaseName(), \
+					file.getPackageArch())] = file.getFullName()
 			
 		rpms = []
 		for line in gen.generate('packages'):
 			if line.find('%package') == -1:
-				rpms.append(line)			
+				rpms.append(line)
 		for rpm in rpms:
-			if rpm in rpm_list:
+			if rpm in rpm_list.keys():
 				script.append('yum install %s' %
 					rpm)
+				script.append(rpm_force_template % rpm_list[rpm])
 
 
 		cur_proc = False
