@@ -2,6 +2,425 @@
 	<title>Release Notes</title>
 
 <section>
+<title>Release 5.4.3 - changes from 5.4</title>
+
+<section>
+	<title>New Features</title>
+
+<itemizedlist>
+	<listitem>
+	<para>Rocks Security</para>
+	<para>  The root password supplied during the frontend
+		installation is now used only for the root password of the
+		frontend. Earlier, this password would be used for the MySQL
+		database, Wordpress, and as root passwords for all compute
+		nodes. All these services now get randomly generated passwords.
+	</para>
+	<para> To set the root passwords for individual backend nodes, the user
+	can now use command line tools to set them, and sync the
+	passwords.</para>
+	<para>
+	The rationale behind setting random root passwords for all backend nodes
+	was that, if by some means, an attacker gained access to the root
+	account of a backend node, and ran an offline attack against the crypted
+	version of the root password, none of the other nodes would be
+	compromised.
+	</para>
+	<para>We've introduced the concept of secure attributes in the
+	database. Any attribute such as passwords, private keys, etc can be
+	stored in the secure attributes table in the database. This table is
+	locked down to be readable only by root, and no one else. It's contents
+	are not transferred during kickstart, and can only be synced using
+	"rocks sync host sec_attr", which will update the host specific secure
+	attributes. Each attribute must also have a plugin associated with it,
+	to specify the action to be performed on the backend nodes with the
+	secure attribute as its data.</para></listitem>
+	<listitem>
+	<para>Changes to 411 infrastructure</para>
+	<para>
+	411 files can now only be requested by root accounts on backend nodes.
+	The way we enforce this is by checking that 411 requests come in only
+	from privileged ports, and using iptables to filter out requests that
+	come in from non-privileged ports.
+	</para>
+	<para>
+	411 filters now support pre-send, filter, and post-receive functions.
+	These functions are used to modify the contents of the 411 files being
+	distributed, and to perform local system actions once the 411 files have
+	been received and written to disk. These filters are present in the form
+	of 411 plugins which are stored, modified, and enhanced on the frontend.
+	</para>
+	<para>
+	411 shared key is now distributed outside the kickstart file. This is
+	driven by the command line. The client makes an RPC request to the
+	frontend, and the frontend transfers the 411 shared key out-of-band. It
+	uses rocks command line tools to verify that the request is coming from
+	within the cluster.
+	</para>
+	</listitem>
+	<listitem><para>Introduction of the categories and indicies for
+	resolving host specific properties in the database.</para>
+	<para>
+		With this release, we've laid the foundation for creating and
+		using random categories of host groups.
+	</para>
+	<para>
+		In the previous releases of rocks, the only categories available
+		to system administrators by which they could group hosts were -
+		Global category, Appliance category, OS category, and Hosts
+		category.
+	</para>
+	<para>
+		With this release, we've introduced the capability of being able
+		to create user specified categories. Some examples are - rack
+		category, where hosts are grouped by rack, a bio category -
+		where hosts can be grouped by whether or not a set of hosts have
+		the bio roll installed, etc.
+	</para>
+	<para>
+		We've also introduced the concept of category resolution, where
+		when resolving all the categories that a host can belong to, we
+		can specify an chain of resolution. For example - we can state
+		that compute-0-0 belongs to categories [global, linux, compute,
+		rack0, bio]. In our resolution, we can state that we want the
+		properties of the hosts to be picked up from [global, compute,
+		rack0]. This way compute-0-0 picks up only the properties that
+		are part of its resolution chain of categories.
+	</para>
+	<para>
+	Since this feature is still prototypical, at the moment, we're using
+	this internally, and have not fully documented how to use it, and take
+	advantage of it.
+	</para>
+	</listitem>
+	<listitem><para>Changes to Firewall commands</para>
+	<para>
+		The rocks firewall commands now require the presence of a
+		rulename for every iptables rule. These rules are then ordered
+		lexicographically by rule name.
+	</para>
+	<para>
+		The firewall command structure has some minor changes to reflect
+		the categories and indicies feature mentioned in the previous
+		bullet point. Please look at the rocks command line
+		documentation for more details on how to run the rocks firewall
+		commands.
+	</para>
+	</listitem>
+	<listitem><para>Introduction of Perl and Python rolls</para>
+	<para>
+		Two new rolls have been added to Rocks.
+	</para>
+	<itemizedlist>
+		<listitem>
+		<para>Perl Roll - 
+		The Perl roll contains Perl 5.14.1, and plenty of CPAN modules
+		that are required for the application software in Rocks to
+		function properly. This version of Perl in installed in
+		<computeroutput>/opt/perl</computeroutput>.
+		</para>
+		</listitem>
+		<listitem>
+		<para>Python Roll - The version of Python that the core rocks
+		utils depend on, is version 2.4.2. This is a rather dated
+		version of Python. To provide users with the latest versions of
+		python, we've create a Python roll which contains Python version
+		2.7.2 and version 3.2.1. These are both installed in
+		<computeroutput>/opt/python/</computeroutput>.
+		</para>
+		</listitem>
+	</itemizedlist>
+	</listitem>
+</itemizedlist>
+</section>
+
+<section>
+	<title>Enhancements and Bug Fixes</title>
+	<para>
+	Base: Updated anaconda to v11.1.2.224
+	</para>
+	<para>
+	Base: Built against CentOS 5.6 with Updates as of August 7, 2011
+	</para>
+	<para>
+	Base: database secured during installation. DB security now setup using
+	script.
+	</para>
+	<para>
+	Base: Only root can create tables in cluster db. Use the rocks.my.cnf
+	file to connect to db as root, because the db is already secured by the
+	time this xml file.
+	</para>
+	<para>
+	Base: Default random root passwords for client nodes
+	</para>
+	<para>
+	Base: Default the yum repository to local, but override this with
+	attribute RepositoryLocal
+	</para>
+	<para>
+	Base: Add the development appliance
+	</para>
+	<para>
+	Base: Removed foundation-perl, cpan, and cpan-support. These have been
+	moved to the Perl roll
+	</para>
+	<para>
+	Base: Save the debug files from the ramdisk onto /root of the hard disk,
+	so we can use them for post-install analysis.
+	</para>
+	<para>
+	Base: Properly report disk partitions into the database for software
+	RAID file systems. Increase installation speeds for clients with
+	software RAID file systems.
+	</para>
+	<para>
+	Base: 411 shared key is no longer transferred through kickstart.
+	It is transferred through "rocks sync host sharedkey"
+	411 configuration is now generated through "rocks report host config411"
+	411 files are not transferred during kickstart. They are now transferred
+	at first boot.
+	</para>
+	<para>
+	Base: Unambiguous add host command
+	</para>
+	<para>
+	Base: giant spreadsheet of nodes,network, appliance, memberhip, and
+	subnets information using views. This reduces complex SQL queries
+	spanning multiple tables into simple ones spanning a single table.
+	</para>
+	<para>
+	Base: Remove shadow attributes from attributes tables and added secure
+	attributes tables.
+	</para>
+	<para>
+	Base: Set primary interface of login servers back to private. Otherwise
+	SGE behaves badly.
+	</para>
+	<para>
+	Base: Firewall rules now have rulenames and lexical ordering.
+	</para>
+	<para>
+	Base: Add profile.d/ssh-keygen to login appliances
+	</para>
+	<para>
+	Base: Hard link /etc/ssh/authorized_keys/id_rsa.pub to
+	/root/.ssh/id_rsa.pub. If a user (or update) sets root's directory
+	permissions tightly, we still read the public key.
+	</para>
+	<para>
+	Base: Block non-priviledged traffic to 411 port from all networks,
+	including localhost.
+	</para>
+	<para>
+	Base: Add variable to manage number parallel instances of "rocks sync
+	host" commands.
+	</para>
+	<para>
+	Base: Support for pre-send, filtering, and post receive actions in 411.
+	</para>
+	<para>
+	Base: Minor modification to 411put. Use a get_filename function instead
+	of a filename constant.
+	</para>
+	<para>
+	Base: 411 plugins can access host attributes
+	</para>
+	<para>
+	Base: 411 filters user password, and shadow information of users with
+	UID &lt; 500
+	</para>
+	<para>
+	Base: Initial Support for host categories and indicies.
+	</para>
+	<para>
+	Base: named.conf bug fixes - Now supports multiple subnets on non-octet
+	boundaries.
+	</para>
+	<para>
+	Base: If yum install fails due to dependency error, force install using
+	rpm --nodeps.
+	</para>
+	<para>
+	Base: Rocks run roll needs to honour the "--interpreter" flag to the
+	post sections.
+	</para>
+	<para>
+	Base: Honour .&lt;arch&gt; directive to yum install.
+	When installing packages use,
+	"yum install &lt;package&gt;" instead of "yum install
+	&lt;packagefile&gt;.rpm"
+	</para>
+	<para>
+	Base: Use YUM instead of RPM for rocks run roll
+	This fixes two issues - On 64bit we were not installing the 32bit RPMs,
+	and name.arch packages were not being installed.
+	</para>
+	<para>
+	Base: Support for HVM.
+	</para>
+	<para>
+	Base: Do not regenerate ALL pxeboot files. Just those for the hosts
+	specified on the command line.
+	</para>
+	<para>
+	Base: Parallel class now takes care of serializing
+	tasks that may overrun the system. If more than
+	a set number of tasks are running, then requesting
+	tasks will wait till slots are available to run
+	Each task now prints out error messages if they fail
+	on remote hosts. This way, we can track which syncs failed
+	and which ones succeeded.
+	</para>
+	<para>
+	Base: If root, create ssh key without passphrase. If normal user, create
+	key interactively.
+	</para>
+	<para>
+	Base: Updated Java to 1.6 update 26
+	</para>
+	<para>
+	Base: Support for versioned centrals
+	</para>
+
+	<para>
+	HPC: Removed ganglia-web-frontend-addons from HPC roll
+	</para>
+	<para>
+	HPC: Update IOZone to 3.397
+	</para>
+	<para>
+	HPC: Update MPICH2 to v1.4
+	</para>
+	<para>
+	HPC: Update OpenMPI to v1.4.3
+	</para>
+	<para>
+	Ganglia: Updated to v3.2.0
+	</para>
+	<para>
+	Ganglia: gmond.conf cleanup
+	</para>
+	<para>
+	Ganglia: Updated apr to v1.4.5
+	</para>
+	<para>
+	Ganglia: Updated apr-utils to v1.3.13
+	</para>
+	<para>
+	Java: Tomcat-connectors rpm bug fix. Now no longer generates conflicts
+	when installing tomcat httpd configuration.
+	</para>
+	<para>
+	SGE: Upgraded SGE to Open Grid Scheduler v6.2 update 5p2
+	</para>
+	<para>
+	SGE: Move the login appliance configuration out of the SGE roll and into
+	the Base roll.
+	</para>
+	<para>
+	Web Server: Updated Wordpress to 3.1.3
+	</para>
+	<para>
+	Web Server: Updated Rocks Theme for Wordpress (Phil, you rock!)
+	</para>
+	<para>
+	Web Server: Scrub root password from the installation and set the admin
+	password to a string that never hashes.
+	</para>
+	<para>
+	Web Server: Wordpress admin password can be reset only if valid admin
+	email is supplied.
+	</para>
+	<para>
+	Xen: Now support HVM as well as paravirtual instances
+	</para>
+	<para>
+	Xen: no longer need 'rocks-create-vlan'
+	</para>
+	<para>
+	Xen: added a report to create the xendomains configuration file
+	</para>
+	<para>
+	Xen: save the CA key and CA certificate that are used to authenticate
+	</para>
+	<para>
+	libvirt messages.
+	Xen: touch /var/lock/subsys/xendomains in order to save running VMs
+	</para>
+	<para>
+	Xen: Ability to put frontend on arbitrary vm-container and set its name
+	</para>
+	<para>
+	Xen: Explicitly state default for virtualization type
+	</para>
+	<para>
+	Area51: set the right attr for the default tripwire email address
+	</para>
+	<para>
+	Area51: send tripwire reports to multiple recipients
+	</para>
+	<para>
+	Bio: Login appliance gets Bio Roll
+	</para>
+	<para>
+	Bio: Biopython now depends on Python Roll
+	</para>
+	<para>
+	Bio: BioPython upgraded to v1.5.7
+	</para>
+	<para>
+	Bio: BioPerl now depends on Perl Roll
+	</para>
+	<para>
+	Bio: BioPerl CPAN support utils updated
+	</para>
+	<para>
+	Bio: All BioPerl CPAN utils now built with cpan2dist
+	</para>
+	<para>
+	Bio: Updated EMBOSS to v6.3.1
+	</para>
+	<para>
+	Bio: Updated Autodock suite to v4.2.3
+	</para>
+	<para>
+	Bio: Update CGView to v2.0
+	</para>
+	<para>
+	Bio: Update fasta to v36.3.5a
+	</para>
+	<para>
+	Bio: Update MrBayes to v3.1.2
+	</para>
+	<para>
+	Bio: Update Blast to v2.2.25
+	</para>
+	<para>
+	Bio: Update reportlab to v2.5
+	</para>
+	<para>
+	Bio: Update t_coffee to v8.99
+	</para>
+	<para>
+	Bio: Update WGS to v6.1
+	</para>
+	<para>
+	Condor: Update Condor to v7.6.2
+	</para>
+	<para>
+	Condor: rocks login appliance submits jobs to condor
+	</para>
+	<para>
+	Condor: Support submission to EC2
+	</para>
+	<para>
+	Condor: Add RANK parameter
+	</para>
+</section>
+</section>
+
+<section>
 <title>Release 5.4 - changes from 5.3</title>
 
 <section>
