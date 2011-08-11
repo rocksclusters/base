@@ -14,33 +14,41 @@
 		installation is now used only for the root password of the
 		frontend. Earlier, this password would be used for the MySQL
 		database, Wordpress, and as root passwords for all compute
-		nodes. All these services now get randomly generated passwords.
+		nodes. All these services are now configured 
+		randomly-generated passwords.
 	</para>
 	<para> To set the root passwords for individual backend nodes, the user
-	can now use command line tools to set them, and sync the
-	passwords.</para>
+	can now use command line tool 
+	<computeroutput>rocks add host sec_attr ... attr=root_pw</computeroutput> 
+	to add a specific root password. 
+	<computeroutput>rocks sync host sec_attr ... </computeroutput> for
+	the password to be set.  Root passwd on the frontend is changed using
+	the OS-supplied <computeroutput>passwd</computeroutput> command.
+	 </para>
 	<para>
 	The rationale behind setting random root passwords for all backend nodes
-	was that, if by some means, an attacker gained access to the root
-	account of a backend node, and ran an offline attack against the crypted
-	version of the root password, none of the other nodes would be
-	compromised.
+	is that, if by some means, an attacker gained access to the root
+	account of a backend node, and then the adversary could ran an 
+	offline attack against the crypted version of the root password, 
+	none of the other nodes would be compromised.
 	</para>
 	<para>We've introduced the concept of secure attributes in the
 	database. Any attribute such as passwords, private keys, etc can be
 	stored in the secure attributes table in the database. This table is
 	locked down to be readable only by root, and no one else. It's contents
 	are not transferred during kickstart, and can only be synced using
-	"rocks sync host sec_attr", which will update the host specific secure
+	<computeroutput>rocks sync host sec_attr</computeroutput>, 
+	which will update the host specific secure
 	attributes. Each attribute must also have a plugin associated with it,
 	to specify the action to be performed on the backend nodes with the
 	secure attribute as its data.</para></listitem>
 	<listitem>
 	<para>Changes to 411 infrastructure</para>
 	<para>
-	411 files can now only be requested by root accounts on backend nodes.
-	The way we enforce this is by checking that 411 requests come in only
-	from privileged ports, and using iptables to filter out requests that
+	411 files can now only be requested by privileged accounts 
+	on backend nodes.
+	This is enforced by checking that 411 requests originate only
+	from privileged ports. Iptables is used to filter out requests that
 	come in from non-privileged ports.
 	</para>
 	<para>
@@ -51,7 +59,7 @@
 	of 411 plugins which are stored, modified, and enhanced on the frontend.
 	</para>
 	<para>
-	411 shared key is now distributed outside the kickstart file. This is
+	The 411 shared key is now distributed outside the kickstart file. This is
 	driven by the command line. The client makes an RPC request to the
 	frontend, and the frontend transfers the 411 shared key out-of-band. It
 	uses rocks command line tools to verify that the request is coming from
@@ -88,9 +96,9 @@
 		are part of its resolution chain of categories.
 	</para>
 	<para>
-	Since this feature is still prototypical, at the moment, we're using
-	this internally, and have not fully documented how to use it, and take
-	advantage of it.
+	Since this feature is still prototypical, at the moment, it is used only
+	internally for firewall commands and single resolution chain. Subsequent
+	releases will apply the same technique to attributes and routes.
 	</para>
 	</listitem>
 	<listitem><para>Changes to Firewall commands</para>
@@ -100,8 +108,9 @@
 		lexicographically by rule name.
 	</para>
 	<para>
-		The firewall command structure has some minor changes to reflect
-		the categories and indicies feature mentioned in the previous
+		The firewall command structure has some significant changes 
+		to reflect
+		the categories and indicies feature described in the previous
 		bullet point. Please look at the rocks command line
 		documentation for more details on how to run the rocks firewall
 		commands.
@@ -155,11 +164,10 @@
 	Base: Default random root passwords for client nodes
 	</para>
 	<para>
-	Base: Default the yum repository to local, but override this with
-	attribute RepositoryLocal
-	</para>
-	<para>
-	Base: Add the development appliance
+	Base: Added a Development Appliance. This is a backend appliance 
+	designed for building rolls without impacting the frontend. The 
+	appliance uses the frontend yum repository by default but can be
+	configured to use it own local repository for full isolation. 
 	</para>
 	<para>
 	Base: Removed foundation-perl, cpan, and cpan-support. These have been
@@ -182,12 +190,10 @@
 	at first boot.
 	</para>
 	<para>
-	Base: Unambiguous add host command
-	</para>
-	<para>
-	Base: giant spreadsheet of nodes,network, appliance, memberhip, and
-	subnets information using views. This reduces complex SQL queries
-	spanning multiple tables into simple ones spanning a single table.
+	Base: Unambiguous add host command. Previously it was not possible add
+	hostnames that were command line actions. For example, you could not
+	add a host called "attr" because the command "rocks add host attr" 
+	exists. 
 	</para>
 	<para>
 	Base: Remove shadow attributes from attributes tables and added secure
@@ -242,11 +248,11 @@
 	rpm --nodeps.
 	</para>
 	<para>
-	Base: Rocks run roll needs to honour the "--interpreter" flag to the
+	Base: Rocks run roll now honors the "--interpreter" flag to the
 	post sections.
 	</para>
 	<para>
-	Base: Honour .&lt;arch&gt; directive to yum install.
+	Base: Honor .&lt;arch&gt; directive to yum install.
 	When installing packages use,
 	"yum install &lt;package&gt;" instead of "yum install
 	&lt;packagefile&gt;.rpm"
@@ -257,10 +263,11 @@
 	and name.arch packages were not being installed.
 	</para>
 	<para>
-	Base: Support for HVM.
+	Base: Support for HVM when using the Xen roll.
 	</para>
 	<para>
-	Base: Do not regenerate ALL pxeboot files. Just those for the hosts
+	Base: Runtime optimization: Do not regenerate ALL pxeboot files. 
+	Just those for the hosts
 	specified on the command line.
 	</para>
 	<para>
@@ -273,7 +280,8 @@
 	and which ones succeeded.
 	</para>
 	<para>
-	Base: If root, create ssh key without passphrase. If normal user, create
+	Base: Root ssh key needs to be passwordless to allow command/sync access
+	to backend nodes. If root, create ssh key without passphrase. If normal user, create
 	key interactively.
 	</para>
 	<para>
@@ -299,7 +307,7 @@
 	Ganglia: Updated to v3.2.0
 	</para>
 	<para>
-	Ganglia: gmond.conf cleanup
+	Ganglia: gmond.conf cleaned to support updated version. 
 	</para>
 	<para>
 	Ganglia: Updated apr to v1.4.5
@@ -322,7 +330,7 @@
 	Web Server: Updated Wordpress to 3.1.3
 	</para>
 	<para>
-	Web Server: Updated Rocks Theme for Wordpress (Phil, you rock!)
+	Web Server: Updated Rocks Theme for Wordpress.
 	</para>
 	<para>
 	Web Server: Scrub root password from the installation and set the admin
@@ -412,7 +420,7 @@
 	Condor: rocks login appliance submits jobs to condor
 	</para>
 	<para>
-	Condor: Support submission to EC2
+	Condor: Experimental: Support submission to EC2
 	</para>
 	<para>
 	Condor: Add RANK parameter
