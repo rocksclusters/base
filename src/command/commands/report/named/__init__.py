@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.4 2011/08/04 03:40:28 anoop Exp $
+# $Id: __init__.py,v 1.5 2011/08/18 05:44:23 anoop Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.5  2011/08/18 05:44:23  anoop
+# GODDAMNIT!! HOW THE F*&K DID I MISS THIS ???
+#
 # Revision 1.4  2011/08/04 03:40:28  anoop
 # Bug fixes to named config file generation.
 # Now supports subnets that are on non-octet
@@ -223,7 +226,7 @@ class Command(rocks.commands.report.command):
 			if len(subnet_list[sn]) == 1:
 				n = subnet_list[sn][0]
 				s += zone_template % (n.dnszone, n.name, \
-				r_sn, n.name, r_sn)
+				sn, n.name, sn)
 			else:
 				overlapping_subnets[sn] = subnet_list[sn]
 
