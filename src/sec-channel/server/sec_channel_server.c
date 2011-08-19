@@ -1,5 +1,5 @@
 /*
- * $Id: sec_channel_server.c,v 1.4 2011/08/04 02:02:47 anoop Exp $
+ * $Id: sec_channel_server.c,v 1.5 2011/08/19 06:04:38 anoop Exp $
  *
  * @Copyright@
  * 
@@ -55,6 +55,10 @@
  * @Copyright@
  *
  * $Log: sec_channel_server.c,v $
+ * Revision 1.5  2011/08/19 06:04:38  anoop
+ * - Added debugging support.
+ * - Does not create zombie processes anymore
+ *
  * Revision 1.4  2011/08/04 02:02:47  anoop
  * Use ip address instead of hostname. This way, failure
  * during host lookup does not screw with request.
@@ -78,6 +82,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
+#include <signal.h>
 
 int *
 sec_channel_ping_1_svc(struct svc_req *rqstp)
@@ -87,26 +92,25 @@ sec_channel_ping_1_svc(struct svc_req *rqstp)
 	char *ipaddr;
 	int status;
 	int pid;
-	
+
 	switch(pid = fork()){
 		case -1:		/*Fork failed*/
 			result = -1;
-			break;
+			return &result;
 
 		case 0:			/* Child */
-
-			addr = &rqstp->rq_xprt->xp_raddr;
-			ipaddr = (char *)malloc(sizeof(char)*INET_ADDRSTRLEN);
-			ipaddr = (char *)inet_ntop(AF_INET, &addr->sin_addr, ipaddr, INET_ADDRSTRLEN);
-
-			status = execl("/opt/rocks/bin/rocks", "rocks",
-				"sync","host","sharedkey",ipaddr, NULL);
-			exit(status);
-
+			break;
 		default:		/* Parent */
 			result = 0;
-			break;
-		}
-
-	return &result;
+			return &result;
+	}
+	
+	addr = &rqstp->rq_xprt->xp_raddr;
+	ipaddr = (char *)malloc(sizeof(char)*INET_ADDRSTRLEN);
+	ipaddr = (char *)inet_ntop(AF_INET, &addr->sin_addr, ipaddr, INET_ADDRSTRLEN);
+	fprintf(stderr, "Received request from %s\n", ipaddr);
+	signal(SIGCHLD, SIG_DFL);
+	status = execl("/opt/rocks/bin/rocks", "rocks",
+		"sync","host","sharedkey",ipaddr, NULL);
+	exit(status);
 }

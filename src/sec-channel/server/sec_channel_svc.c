@@ -14,6 +14,7 @@
 
 #include <sys/types.h>
 #include <unistd.h>
+#include <signal.h>
 
 #ifndef SIG_PF
 #define SIG_PF void(*)(int)
@@ -71,7 +72,18 @@ main (int argc, char **argv)
 {
 	register SVCXPRT *transp;
 	pid_t pid;
+	int i;
 
+	int debug = 0;
+	
+	if (argc > 1){
+		for(i = 0; i<argc; i++){
+			if(strcmp(argv[i], "-d")){
+				debug = 1;
+				break;
+			}
+		}
+	}
 	pmap_unset (SEC_CHANNEL, SEC_CHANNEL_VERS);
 
 	transp = svcudp_create(RPC_ANYSOCK);
@@ -94,6 +106,7 @@ main (int argc, char **argv)
 		exit(1);
 	}
 
+	if(!debug){
 	switch(pid = fork()){
 		case -1:		//Fork failed
 			perror("Fork Failed\n");
@@ -106,8 +119,14 @@ main (int argc, char **argv)
 	close(STDIN_FILENO);
 	close(STDOUT_FILENO);
 	close(STDERR_FILENO);
-
+	
+	// Don't wait for child process to complete.
+	// This makes sure that the child does not turn
+	// into a zombie on exit.
+	signal(SIGCHLD, SIG_IGN);
+	}
 	setsid();
+	fprintf(stdout, "Starting SVC_RUN loop\n");
 	svc_run();
 	fprintf (stderr, "%s", "svc_run returned");
 	exit (1);
