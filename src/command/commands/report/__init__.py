@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.8 2011/07/23 02:30:34 phil Exp $
+# $Id: __init__.py,v 1.9 2011/08/20 23:11:26 anoop Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.9  2011/08/20 23:11:26  anoop
+# Missed checking this in.
+#
 # Revision 1.8  2011/07/23 02:30:34  phil
 # Viper Copyright
 #
@@ -110,7 +113,7 @@ class command(rocks.commands.Command):
 		return networks
 		
 		
-	def getSubnet_deprecated(self, subnet, netmask):
+	def getSubnet(self, subnet, netmask):
 		s_list = subnet.split('.')
 		s_list = map(int, s_list)
 		
@@ -129,7 +132,7 @@ class command(rocks.commands.Command):
 	# 8. This means subnets smaller than /24 (25-32)
 	# will result in the correct subnet being
 	# computed for named.conf.
-	def getSubnet(self, subnet, netmask):
+	def getSubnet_deprecated(self, subnet, netmask):
 		s_list = subnet.split('.')
 		s_list = map(int, s_list)
 		
