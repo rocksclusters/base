@@ -1,5 +1,5 @@
 PKGROOT		= /opt
 NAME    	= pdsh
-VERSION 	= 2.24
+VERSION 	= 2.26
 RELEASE 	= 1
 TARBALL_POSTFIX	= tar.bz2

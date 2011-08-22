@@ -1,4 +1,4 @@
-# $Id: pdsh.csh,v 1.2 2011/07/23 02:30:48 phil Exp $
+# $Id: pdsh.csh,v 1.3 2011/08/22 18:23:33 anoop Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: pdsh.csh,v $
+# Revision 1.3  2011/08/22 18:23:33  anoop
+# Bug fix in pdsh csh script
+# Upgrade pdsh while we're at it
+#
 # Revision 1.2  2011/07/23 02:30:48  phil
 # Viper Copyright
 #
@@ -65,11 +69,9 @@
 #
 
 
-PDSHROOT=/opt/pdsh
+set PDSHROOT=/opt/pdsh
 set BIN=${PDSHROOT}/bin
 
 if ( -d ${BIN}  ) then
         setenv PATH "${PATH}:${BIN}"
 endif
-
-
