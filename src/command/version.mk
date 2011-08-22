@@ -1,2 +1,2 @@
 NAME = rocks-command
-RELEASE = 3
+RELEASE = 4
