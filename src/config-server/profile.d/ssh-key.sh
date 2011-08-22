@@ -1,5 +1,5 @@
 #
-# $Id: ssh-key.sh,v 1.9 2011/08/06 14:56:25 phil Exp $
+# $Id: ssh-key.sh,v 1.10 2011/08/22 23:44:00 anoop Exp $
 #
 # generate a ssh key if one doesn't exist
 #
@@ -59,6 +59,9 @@
 #
 #
 # $Log: ssh-key.sh,v $
+# Revision 1.10  2011/08/22 23:44:00  anoop
+# Cleaner re-implementation of creating ssh keys. Now supports tcsh correctly
+#
 # Revision 1.9  2011/08/06 14:56:25  phil
 # more defensive about when to make hard link
 #
@@ -205,11 +208,13 @@
 #
 # Revision 1.1  2000/12/12 23:36:49  bruno
 # initial release
-#
 
-# If rsa key exists, exit
-[ -f $HOME/.ssh/id_rsa ] && return 0
+# Some constants
+SSH_CMD="ssh-keygen -t rsa -f $HOME/.ssh/id_rsa -v"
+SSH_KEY_LINK=/etc/ssh/authorized_keys/id_rsa.pub
 
+# Function to create ssh keys
+create_key(){
 echo
 echo "It appears that you have not set up your ssh key."
 echo "This process will make the files:"
@@ -217,8 +222,6 @@ echo "    " $HOME/.ssh/id_rsa.pub
 echo "    " $HOME/.ssh/id_rsa
 echo "    " $HOME/.ssh/authorized_keys
 echo
-SSH_CMD="ssh-keygen -t rsa -f $HOME/.ssh/id_rsa -v"
-
 # If root, create ssh key with blank passphrase
 # Otherwise interact with user to ask passphrase
 [ $UID -eq 0 ] && $SSH_CMD -N "" || $SSH_CMD
@@ -228,12 +231,38 @@ cat $HOME/.ssh/id_rsa.pub >> $HOME/.ssh/authorized_keys
 
 chmod 600 $HOME/.ssh/authorized_keys
 chmod g-w $HOME
-# If we're the root user, create a hard link to public key
-# outside the root directory, and make it readable by apache.
-# This way, if the permissions on root's ssh directory are locked
-# down, we can still read the public key.
-if [ $UID -eq 0 ] && [ -f /root/.ssh/id_rsa.pub ]; then
-	mkdir -p /etc/ssh/authorized_keys
-	rm -rf /etc/ssh/authorized_keys/id_rsa.pub
-	ln /root/.ssh/id_rsa.pub /etc/ssh/authorized_keys/id_rsa.pub
+}
+
+# Function to check existence of ssh key
+check_key(){
+[ -f $HOME/.ssh/id_rsa ] && return 0 || return 1
+}
+
+# Checks for hard link to root's ssh-key
+check_hard_link(){
+[ ! -f $SSH_KEY_LINK ] && return 1
+[ `stat -c "%h" $SSH_KEY_LINK` -eq 2 ] && return 0 || return 1
+}
+
+# Creates hard link to root's ssh-key
+create_hard_link(){
+	d=`dirname $SSH_KEY_LINK`
+	mkdir -p $d
+	rm -rf $SSH_KEY_LINK
+	ln /root/.ssh/id_rsa.pub $SSH_KEY_LINK
+	chmod a+r $d
+}
+
+[ $SHLVL -gt 1 ] && EXIT=exit || EXIT=return
+
+# If we're a normal user, and the ssh-key exists, return
+if [ $UID -ge 500 ]; then
+	check_key || create_key
+	$EXIT $?
 fi
+
+if [ $UID -eq 0 ]; then
+	check_key || create_key
+	check_hard_link || create_hard_link
+fi
+$EXIT $?
