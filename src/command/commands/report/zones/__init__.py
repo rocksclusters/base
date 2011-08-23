@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.8 2011/08/04 03:40:28 anoop Exp $
+# $Id: __init__.py,v 1.9 2011/08/23 06:17:04 anoop Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.9  2011/08/23 06:17:04  anoop
+# Include all zones, not just the last one, when writing the reverse
+# map files
+#
 # Revision 1.8  2011/08/04 03:40:28  anoop
 # Bug fixes to named config file generation.
 # Now supports subnets that are on non-octet
@@ -300,6 +304,7 @@ class Command(rocks.commands.report.command):
 
 	def writeReverse(self, serial, networks):
 		subnet_list = {}
+		s = ''
 		for n in networks:
 			sn = self.getSubnet(n.subnet, n.netmask)
 			sn.reverse()
@@ -326,7 +331,6 @@ class Command(rocks.commands.report.command):
 				name = name.rstrip('-')
 			filename = '/var/named/reverse.%s.domain.%s'\
 				% (name, r_sn)
-			s = ''
 			s += '<file name="%s" perms="0644">\n' % filename
 			s += preamble_template % (name, name, serial,
 				name, name)
