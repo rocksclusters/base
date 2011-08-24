@@ -1,6 +1,6 @@
 #!@PYTHON@
 
-# $Id: rocks-db-perms.py,v 1.4 2011/07/23 02:30:23 phil Exp $
+# $Id: rocks-db-perms.py,v 1.5 2011/08/24 23:21:10 anoop Exp $
 
 # @Copyright@
 # 
@@ -56,6 +56,9 @@
 # @Copyright@
 
 # $Log: rocks-db-perms.py,v $
+# Revision 1.5  2011/08/24 23:21:10  anoop
+# Root directory is different on Linux and solaris
+#
 # Revision 1.4  2011/07/23 02:30:23  phil
 # Viper Copyright
 #
@@ -81,10 +84,15 @@ import base64
 
 import MySQLdb
 
+root_dir = '/root'
+
+if os.uname()[0].lower() is 'sunos':
+	root_dir = '/'
+
 # Set access permissions to the database tables
 
 # Get password
-f = open('/root/.rocks.my.cnf','r')
+f = open('/%s/.rocks.my.cnf' % root_dir,'r')
 password = ''
 for line in f.readlines():
 	if line.split('=')[0].strip() == 'password':
