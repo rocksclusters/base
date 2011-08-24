@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.3 2011/08/24 05:08:20 anoop Exp $
+# $Id: Makefile,v 1.4 2011/08/24 05:16:27 anoop Exp $
 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 
 # $Log: Makefile,v $
+# Revision 1.4  2011/08/24 05:16:27  anoop
+# *** empty log message ***
+#
 # Revision 1.3  2011/08/24 05:08:20  anoop
 # Split linux and solaris building
 #
@@ -64,10 +67,10 @@
 # RPC service that initiates transfer of shared 411 key
 #
 
+SRCDIRS = client
+
 -include $(shell $(ROCKSROOT)/bin/arch).mk
 -include $(shell $(ROCKSROOT)/bin/os).mk
-
-SRCDIRS = client
 
 rpm pkg::
 	for i in $(SRCDIRS); do		\
