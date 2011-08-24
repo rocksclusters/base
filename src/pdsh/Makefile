@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.2 2011/07/23 02:30:48 phil Exp $
+# $Id: Makefile,v 1.3 2011/08/24 22:22:33 anoop Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.3  2011/08/24 22:22:33  anoop
+# Cleanup
+#
 # Revision 1.2  2011/07/23 02:30:48  phil
 # Viper Copyright
 #
@@ -74,7 +77,10 @@ build:
 	bunzip2 -c $(NAME)-$(VERSION).$(TARBALL_POSTFIX) | $(TAR) -xf -
 	( 							\
 		cd $(NAME)-$(VERSION);				\
-		./configure --prefix=$(PKGROOT)/$(NAME) --with-ssh --with-readline --with-fanout=64 --with-timeout=30 --with-rcmd-rank-list=ssh,exec,rsh ;					\
+		./configure --prefix=$(PKGROOT)/$(NAME)		\
+			--with-ssh --with-readline		\
+			--with-fanout=64 --with-timeout=30 	\
+			--with-rcmd-rank-list=ssh,exec,rsh ;	\
 		$(MAKE);					\
 	)
 	echo $(PKGROOT)/$(NAME)/lib/$(NAME) > pdsh.conf
