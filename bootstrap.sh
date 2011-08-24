@@ -2,7 +2,7 @@
 #
 # This file should remain OS independent
 #
-# $Id: bootstrap.sh,v 1.25 2011/07/25 23:54:24 anoop Exp $
+# $Id: bootstrap.sh,v 1.26 2011/08/24 06:08:19 anoop Exp $
 #
 # @Copyright@
 # 
@@ -58,6 +58,10 @@
 # @Copyright@
 #
 # $Log: bootstrap.sh,v $
+# Revision 1.26  2011/08/24 06:08:19  anoop
+# Don't build librocks on Solaris
+# Build pcre during bootstrap on Solaris
+#
 # Revision 1.25  2011/07/25 23:54:24  anoop
 # Removed perl from bootstrapping
 #
@@ -178,7 +182,9 @@ compile_and_install foundation-libxml2
 compile_and_install foundation-python-xml
 compile_and_install foundation-python-extras
 compile_and_install foundation-rcs
-compile_and_install librocks
+if [ `./_os` == "linux" ]; then
+	compile_and_install librocks
+fi
 
 compile pylib
 install rocks-pylib
@@ -188,6 +194,10 @@ install rocks-command
 
 compile dnet
 install libdnet
+
+if [ `./_os` == "sunos" ]; then
+	compile_and_install pcre
+fi
 
 if [ `./_os` == "linux" ]; then
 	ignore_os_package ntp
