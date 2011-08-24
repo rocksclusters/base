@@ -5,4 +5,7 @@
 <main os='linux'>
 	<rootpw>--iscrypted <eval>/opt/rocks/sbin/gen_root_pw</eval></rootpw>
 </main>
+<main os='sunos'>
+	<rootpw><eval>/opt/rocks/sbin/gen_root_pw</eval></rootpw>
+</main>
 </kickstart>
