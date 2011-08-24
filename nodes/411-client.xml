@@ -19,6 +19,9 @@
 
   <changelog>
   $Log: 411-client.xml,v $
+  Revision 1.15  2011/08/24 05:57:23  anoop
+  Use get-411-key to obtain shared key from frontend on Solaris
+
   Revision 1.14  2011/08/04 23:14:29  phil
   Need to wait longer for the shared key to show up in the file system on
   VMs. Timing Race.
@@ -152,7 +155,8 @@
 
   </changelog>
 
-<package>rocks-sec-channel-client</package>
+<package os="linux">rocks-sec-channel-client</package>
+<package os="sunos">ROCKSrocks-sec-channel-client</package>
 
 <post os="linux">
 /sbin/chkconfig channeld on
@@ -178,7 +182,9 @@ do not have to resend alerts for every new node in the cluster. -->
 <eval mode="xml">
 /opt/rocks/bin/rocks report host config411 &hostname;
 </eval>
+</post>
 
+<post os="linux">
 <file name="/etc/rc.d/rocksconfig.d/post-02-411get" perms="0700">
 #!/bin/bash
 
@@ -202,4 +208,35 @@ fi
 rm -rf /etc/rc.d/rocksconfig.d/post-02-411get
 </file>
 </post>
+
+<post os="sunos">
+<file name="/opt/rocks/share/post-411get.sh" perms="0700">
+#!/bin/bash
+
+case $1 in
+'-c')
+	mkdir -p /etc/411-security
+	# Tell frontend to send you the 411 shared key
+	/opt/rocks/bin/get-411-key &Kickstart_PrivateAddress;
+
+	# Wait 10 seconds for shared key to get populated
+	for i in 1 2 3 4 5 6 7 8 9 10 11 12; do 
+		[ ! -f /etc/411-security/shared.key ] &amp;&amp; sleep 10 
+	done
+
+	# If shared key got transferred, do a 411get and pull information
+	# from frontend
+
+	[ -f /etc/411-security/shared.key ] &amp;&amp; /opt/rocks/bin/411get --all
+	svcadm restart autofs
+	;;
+
+'-u')
+	rm -rf /etc/411-security/shared.key
+	;;
+esac
+</file>
+sysidconfig -a /opt/rocks/share/post-411get.sh
+</post>
+
 </kickstart>
