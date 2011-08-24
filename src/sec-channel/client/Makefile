@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.2 2011/07/23 02:30:50 phil Exp $
+# $Id: Makefile,v 1.3 2011/08/24 05:00:57 anoop Exp $
 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 
 # $Log: Makefile,v $
+# Revision 1.3  2011/08/24 05:00:57  anoop
+# Build on sunos
+#
 # Revision 1.2  2011/07/23 02:30:50  phil
 # Viper Copyright
 #
@@ -66,11 +69,15 @@ REDHAT.ROOT =	$(CURDIR)/../../../
 -include $(ROCKSROOT)/etc/Rules.mk
 include Rules.mk
 
-sec_channel_clnt.c : sec_channel.x
-	rpcgen -M -N $<
+ifeq ($(OS),sunos)
+CFLAGS=-lnsl
+endif
+
+sec_channel_clnt.c: sec_channel.x
+	rpcgen -C -M -N $<
 
 sec_channel_client.c: sec_channel.x
-	rpcgen -Sc -M -N -o $@ $<
+	rpcgen -Sc -C -M -N -o $@ $<
 
 get-411-key: sec_channel_client.c sec_channel_clnt.c
 	$(CC) $(CFLAGS) -c $^
