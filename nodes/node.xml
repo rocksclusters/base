@@ -18,6 +18,9 @@
 
   <changelog>
   $Log: node.xml,v $
+  Revision 1.22  2011/08/24 21:59:38  anoop
+  Really, really remove foundation-perl and foundation-cpan
+
   Revision 1.21  2011/07/23 02:30:14  phil
   Viper Copyright
 
@@ -318,7 +321,6 @@
   <package os='linux'>rocks-config</package>
   <package os='linux'>sudo</package>
 
-  <package os='sunos'>ROCKSrocks-config</package>
   <package os='sunos'>SFWsudo</package>
 
 <post os='linux'>

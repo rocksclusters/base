@@ -17,6 +17,9 @@
 
 	<changelog>
 	$Log: foundation-base.xml,v $
+	Revision 1.32  2011/08/24 21:59:38  anoop
+	Really, really remove foundation-perl and foundation-cpan
+	
 	Revision 1.31  2011/07/23 02:30:14  phil
 	Viper Copyright
 	
@@ -129,8 +132,6 @@
 	<package os='linux'>foundation-python</package>
 	<package os='linux'>foundation-python-extras</package>
 	<package os='linux'>foundation-python-xml</package>
-	<package os='linux'>foundation-perl</package>
-	<package os='linux'>foundation-perl-Tk</package>
 	<package os='linux'>foundation-graphviz</package>
 	<package os='linux'>foundation-coreutils</package>
 	<package os='linux'>foundation-rcs</package>
@@ -147,7 +148,6 @@
 	<package os='sunos'>ROCKSfoundation-python</package>
 	<package os='sunos'>ROCKSfoundation-python-xml</package>
 	<package os='sunos'>ROCKSfoundation-python-extras</package>
-	<package os='sunos'>ROCKSfoundation-perl</package>
 	<package os='sunos'>ROCKSfoundation-graphviz</package>
 	<package os='sunos'>ROCKSfoundation-coreutils</package>
 	<package os='sunos'>ROCKSfoundation-rcs</package>

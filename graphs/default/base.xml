@@ -4,6 +4,9 @@
 
 	<changelog>
 	$Log: base.xml,v $
+	Revision 1.69  2011/08/24 21:59:38  anoop
+	Really, really remove foundation-perl and foundation-cpan
+	
 	Revision 1.68  2011/06/10 19:30:28  anoop
 	-All grants now moved to rocks-db-perms.py
 	-Changed ordering so that database-security
@@ -447,8 +450,6 @@
 		<to os="linux">partition</to>
 		<to os="linux">yum</to>
 	</edge>
-
-	<edge from="foundation-base" to="foundation-cpan"/>
 
 	<edge from="client" to="x11" cond="x11"/>
 
