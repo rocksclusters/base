@@ -1,4 +1,4 @@
-# $Id: sunos.mk,v 1.20 2011/07/23 02:30:22 phil Exp $
+# $Id: sunos.mk,v 1.21 2011/08/24 06:04:33 anoop Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: sunos.mk,v $
+# Revision 1.21  2011/08/24 06:04:33  anoop
+# Include sec-channel client for solaris
+#
 # Revision 1.20  2011/07/23 02:30:22  phil
 # Viper Copyright
 #
@@ -179,4 +182,4 @@ SRCDIRS = foundation-coreutils foundation-gawk	\
 	  pcre pylib command 411	\
 	  411-master bittorrent tentakel dnet	\
 	  ganglia-pylib receptor ssl lsof \
-	  channel
+	  channel sec-channel
