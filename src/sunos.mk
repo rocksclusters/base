@@ -1,4 +1,4 @@
-# $Id: sunos.mk,v 1.21 2011/08/24 06:04:33 anoop Exp $
+# $Id: sunos.mk,v 1.22 2011/08/24 06:12:09 anoop Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: sunos.mk,v $
+# Revision 1.22  2011/08/24 06:12:09  anoop
+# Need rocks-admin package for solaris
+#
 # Revision 1.21  2011/08/24 06:04:33  anoop
 # Include sec-channel client for solaris
 #
@@ -179,7 +182,7 @@ SRCDIRS = foundation-coreutils foundation-gawk	\
 	  foundation-python-xml phpMyAdmin	\
 	  foundation-graphviz foundation-rcs	\
 	  foundation-mercurial devel cpan	\
-	  pcre pylib command 411	\
+	  pcre pylib command admin 411	\
 	  411-master bittorrent tentakel dnet	\
 	  ganglia-pylib receptor ssl lsof \
 	  channel sec-channel

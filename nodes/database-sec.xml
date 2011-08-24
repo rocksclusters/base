@@ -3,7 +3,7 @@
 <kickstart>
 
 <description>
-$Id: database-sec.xml,v 1.6 2011/06/10 19:30:28 anoop Exp $
+$Id: database-sec.xml,v 1.7 2011/08/24 06:12:09 anoop Exp $
 This xml file sets database access permissions
 and grants table and procedure privileges to
 apache and other users
@@ -14,6 +14,9 @@ apache and other users
 
 <log>
 $Log: database-sec.xml,v $
+Revision 1.7  2011/08/24 06:12:09  anoop
+Need rocks-admin package for solaris
+
 Revision 1.6  2011/06/10 19:30:28  anoop
 -All grants now moved to rocks-db-perms.py
 -Changed ordering so that database-security
@@ -23,7 +26,8 @@ Revision 1.6  2011/06/10 19:30:28  anoop
 </log>
 
 <!-- Required to run the rocks-db-perms command -->
-<package>rocks-admin</package>
+<package os="linux">rocks-admin</package>
+<package os="sunos">ROCKSrocks-admin</package>
 
 <!-- Access control on the database -->
 <post interpreter='/opt/rocks/bin/python'>
