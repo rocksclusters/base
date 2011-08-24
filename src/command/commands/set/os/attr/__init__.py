@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.8 2011/07/23 02:30:39 phil Exp $
+# $Id: __init__.py,v 1.9 2011/08/24 19:09:48 anoop Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.9  2011/08/24 19:09:48  anoop
+# Need quotes around values
+#
 # Revision 1.8  2011/07/23 02:30:39  phil
 # Viper Copyright
 #
@@ -136,7 +139,7 @@ class Command(rocks.commands.set.os.command):
 			os='%s' and attr='%s'""" % (os, attr))
 		if not rows:
 			self.db.execute("""insert into os_attributes values 
-				('%s', '%s', %s)""" % (os, attr, value))
+				('%s', '%s', '%s')""" % (os, attr, value))
 		else:
 			self.db.execute("""update os_attributes set
 				value = '%s' where os = '%s' and
