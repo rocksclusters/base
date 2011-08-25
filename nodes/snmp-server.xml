@@ -17,6 +17,9 @@
 
   <changelog>
   $Log: snmp-server.xml,v $
+  Revision 1.12  2011/08/25 23:39:02  anoop
+  Don't need this on Solaris
+
   Revision 1.11  2011/07/23 02:30:15  phil
   Viper Copyright
 
@@ -126,13 +129,6 @@ access  notConfigGroup  "" any noauth exact all all all
 syslocation "&Info_CertificateLocality;, &Info_CertificateState;, &Info_CertificateCountry;"
 syscontact "&Info_ClusterContact;"
 </file>
-
-<!-- CentOS Team says do this to make syslog shutup -->
-
-<file name="/etc/sysconfig/snmpd.options">
-OPTIONS="-LS4d -Lf /dev/null -p /var/run/snmpd.pid"
-</file>
-
 
 </post>
 
