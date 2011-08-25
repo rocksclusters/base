@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.33 2011/07/23 02:30:27 phil Exp $
+# $Id: __init__.py,v 1.34 2011/08/25 21:13:31 anoop Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.34  2011/08/25 21:13:31  anoop
+# Since sunos rolls are present in separate jumpstart location,
+# we dont need osname in the directory hierarchy
+#
 # Revision 1.33  2011/07/23 02:30:27  phil
 # Viper Copyright
 #
@@ -831,9 +835,7 @@ class RollBuilder_sunos(Builder, rocks.dist.Arch):
 			self.config.getRollName())
 		self.vers_dir = os.path.join(self.roll_dir,
 			self.config.getRollVersion())
-		self.os_dir = os.path.join(self.vers_dir,
-			self.config.getRollOS())
-		self.arch_dir = os.path.join(self.os_dir,
+		self.arch_dir = os.path.join(self.vers_dir,
 			self.config.getRollArch())
 		self.prod_dir = os.path.join(self.arch_dir,
 			'Solaris_10', 'Product')
