@@ -1,11 +1,14 @@
 #!/bin/bash
 
-# $Id: postfix.init,v 1.1 2008/05/20 01:03:08 anoop Exp $
+# $Id: postfix.init,v 1.2 2011/08/25 00:23:24 anoop Exp $
 
 # @COPYRIGHT@
 # @COPYRIGHT@
 
 # $Log: postfix.init,v $
+# Revision 1.2  2011/08/25 00:23:24  anoop
+# Bug fix: Wrong path to newasliases now fixed.
+#
 # Revision 1.1  2008/05/20 01:03:08  anoop
 # Added pcre postfix and php for solaris
 #
@@ -21,7 +24,7 @@
 start() {
 	# Start daemons.
 	echo $"Starting postfix "
-        /usr/sbin/newaliases >/dev/null 2>&1
+        /usr/bin/newaliases >/dev/null 2>&1
 	/usr/sbin/postfix start 2>/dev/null 1>&2
 	return $?
 }
