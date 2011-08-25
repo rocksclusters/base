@@ -1,6 +1,6 @@
 #!@PYTHON@
 
-# $Id: rocks-db-perms.py,v 1.5 2011/08/24 23:21:10 anoop Exp $
+# $Id: rocks-db-perms.py,v 1.6 2011/08/25 19:31:24 anoop Exp $
 
 # @Copyright@
 # 
@@ -56,6 +56,11 @@
 # @Copyright@
 
 # $Log: rocks-db-perms.py,v $
+# Revision 1.6  2011/08/25 19:31:24  anoop
+# Revert back to using /root as root directory.
+# Better to make a symlink on Solaris rather than
+# changing the entire code base to use / as root directory
+#
 # Revision 1.5  2011/08/24 23:21:10  anoop
 # Root directory is different on Linux and solaris
 #
@@ -84,15 +89,10 @@ import base64
 
 import MySQLdb
 
-root_dir = '/root'
-
-if os.uname()[0].lower() is 'sunos':
-	root_dir = '/'
-
 # Set access permissions to the database tables
 
 # Get password
-f = open('/%s/.rocks.my.cnf' % root_dir,'r')
+f = open('/root/.rocks.my.cnf' ,'r')
 password = ''
 for line in f.readlines():
 	if line.split('=')[0].strip() == 'password':
