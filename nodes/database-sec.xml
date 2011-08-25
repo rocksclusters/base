@@ -3,7 +3,7 @@
 <kickstart>
 
 <description>
-$Id: database-sec.xml,v 1.8 2011/08/24 19:20:30 anoop Exp $
+$Id: database-sec.xml,v 1.9 2011/08/25 00:12:12 anoop Exp $
 This xml file sets database access permissions
 and grants table and procedure privileges to
 apache and other users
@@ -14,6 +14,10 @@ apache and other users
 
 <log>
 $Log: database-sec.xml,v $
+Revision 1.9  2011/08/25 00:12:12  anoop
+Create urandom device during installation. Otherwise,
+random passwords cannot be generated.
+
 Revision 1.8  2011/08/24 19:20:30  anoop
 sunos does not have the apache user setup.
 
@@ -34,8 +38,13 @@ Revision 1.6  2011/06/10 19:30:28  anoop
 
 <post os="sunos">
 <!-- Create apache user on Solaris -->
-groupadd apache
-useradd -g apache -s /bin/false -d &HttpRoot; apache
+groupadd -g 425 apache
+useradd -u 425 -g apache -s /bin/false -d &HttpRoot; apache
+
+<!--	Create a urandom device in chrooted environment
+	This is usually created on first boot, but we need
+	it installation -->
+/usr/sbin/mknod random\@0\:urandom c 149 1
 </post>
 
 <!-- Access control on the database -->
@@ -66,7 +75,7 @@ cmd_set.append('set password for "root"@"127.0.0.1"=PASSWORD("%s")' % root_pass)
 cmd_set.append('set password for "root"@"&hostname;"=PASSWORD("%s")' % root_pass)
 
 # Add root password access to root MySQL config file
-f = open('/root/.rocks.my.cnf', 'w')
+f = open('/&RootDir;/.rocks.my.cnf', 'w')
 f.write('[client]\n')
 f.write('password\t= %s\n' % root_pass)
 f.close()
@@ -91,7 +100,7 @@ for cmd in cmd_set:
 <post>
 chown root:apache /opt/rocks/etc/my.cnf
 chmod 0640 /opt/rocks/etc/my.cnf
-chmod 0400 /root/.rocks.my.cnf
+chmod 0400 /&RootDir;/.rocks.my.cnf
 </post>
 
 <post>
