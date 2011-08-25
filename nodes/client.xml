@@ -18,6 +18,9 @@ This file is used as a connection point for other XML configuration nodes.
 
 <changelog>
 $Log: client.xml,v $
+Revision 1.18  2011/08/25 23:38:45  anoop
+Made a few section linux specific
+
 Revision 1.17  2011/07/23 02:30:14  phil
 Viper Copyright
 
@@ -137,7 +140,7 @@ touch /tmp/rocks-skip-welcome
 
 <post>
 
-<file name="/etc/ld.so.conf.d/foundation-mysql.conf">
+<file name="/etc/ld.so.conf.d/foundation-mysql.conf" os="linux">
 /opt/rocks/lib/mysql
 </file>
 
