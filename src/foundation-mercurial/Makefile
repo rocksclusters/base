@@ -1,5 +1,5 @@
 # --------------------------------------------------- -*- Makefile -*- --
-# $Id: Makefile,v 1.12 2011/07/23 02:30:45 phil Exp $
+# $Id: Makefile,v 1.13 2011/08/26 19:21:04 anoop Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.13  2011/08/26 19:21:04  anoop
+# Make building mercurial a bit easier
+#
 # Revision 1.12  2011/07/23 02:30:45  phil
 # Viper Copyright
 #
@@ -97,25 +100,22 @@ PKGROOT	= /opt/rocks
 REDHAT.ROOT = $(CURDIR)/../../
 -include $(ROCKSROOT)/etc/Rules.mk
 include Rules.mk
--include $(ROCKSROOT)/etc/python.mk
-include python.mk
+#-include $(ROCKSROOT)/etc/python.mk
+#include python.mk
 
 build:
 	gunzip -c mercurial-$(VERSION).tar.gz | $(TAR) -x
-	(							\
-		cd mercurial-$(VERSION);			\
-		export PYTHON=$(PY.PATH);			\
-		PATH=/opt/rocks/bin:$$PATH;			\
-		$(MAKE) all;					\
+	(\
+		cd mercurial-$(VERSION);	\
+		$(PY.PATH) setup.py build;		\
 	)
 
 install::
 	mkdir -p $(ROOT)/$(PKGROOT)
-	(							\
-		cd mercurial-$(VERSION);			\
-		export PYTHON=$(PY.PATH);			\
-		PATH=/opt/rocks/bin:$$PATH;			\
-		$(MAKE) PREFIX=$(ROOT)/$(PKGROOT) install;		\
+	(					\
+		cd mercurial-$(VERSION);	\
+		$(PY.PATH) setup.py install 	\
+			--root=$(ROOT);		\
 	)
 
 clean::
