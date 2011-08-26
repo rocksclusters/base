@@ -3,7 +3,7 @@
 <kickstart>
 
 <description>
-$Id: database-sec.xml,v 1.10 2011/08/25 19:31:23 anoop Exp $
+$Id: database-sec.xml,v 1.11 2011/08/26 00:05:50 anoop Exp $
 This xml file sets database access permissions
 and grants table and procedure privileges to
 apache and other users
@@ -14,6 +14,9 @@ apache and other users
 
 <log>
 $Log: database-sec.xml,v $
+Revision 1.11  2011/08/26 00:05:50  anoop
+mknod needs full path to create urandom device
+
 Revision 1.10  2011/08/25 19:31:23  anoop
 Revert back to using /root as root directory.
 Better to make a symlink on Solaris rather than
@@ -49,7 +52,7 @@ useradd -u 425 -g apache -s /bin/false -d &HttpRoot; apache
 <!--	Create a urandom device in chrooted environment
 	This is usually created on first boot, but we need
 	it installation -->
-/usr/sbin/mknod random\@0\:urandom c 149 1
+/usr/sbin/mknod /devices/pseudo/random\@0\:urandom c 149 1
 
 </post>
 
