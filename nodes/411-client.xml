@@ -19,6 +19,11 @@
 
   <changelog>
   $Log: 411-client.xml,v $
+  Revision 1.16  2011/08/26 06:11:19  anoop
+  It's not possible to do get-411-key using sysidconfig configure
+  script, as ssh is not running at the time. So instead, we start
+  it as an SMF service after SSH has started.
+
   Revision 1.15  2011/08/24 05:57:23  anoop
   Use get-411-key to obtain shared key from frontend on Solaris
 
@@ -210,33 +215,90 @@ rm -rf /etc/rc.d/rocksconfig.d/post-02-411get
 </post>
 
 <post os="sunos">
-<file name="/opt/rocks/share/post-411get.sh" perms="0700">
-#!/bin/bash
+<file name="/lib/svc/method/sync_411_key" perms="0755" owner="root:bin">
+#!/sbin/sh
 
-case $1 in
-'-c')
-	mkdir -p /etc/411-security
-	# Tell frontend to send you the 411 shared key
-	/opt/rocks/bin/get-411-key &Kickstart_PrivateAddress;
+. /lib/svc/share/smf_include.sh
+. /lib/svc/share/fs_include.sh
 
-	# Wait 10 seconds for shared key to get populated
-	for i in 1 2 3 4 5 6 7 8 9 10 11 12; do 
-		[ ! -f /etc/411-security/shared.key ] &amp;&amp; sleep 10 
-	done
+# If the sharedkey exists, exit
+[ -f /etc/411-security/shared.key ] &amp;&amp; exit $SMF_EXIT_OK
 
-	# If shared key got transferred, do a 411get and pull information
-	# from frontend
+mkdir -p /etc/411-security
 
-	[ -f /etc/411-security/shared.key ] &amp;&amp; /opt/rocks/bin/411get --all
-	svcadm restart autofs
-	;;
+# Tell frontend to send you the 411 shared key
+/opt/rocks/bin/get-411-key &Kickstart_PrivateAddress;
 
-'-u')
-	rm -rf /etc/411-security/shared.key
-	;;
-esac
+# Wait 10 seconds for shared key to get populated
+for i in 1 2 3 4 5 6 7 8 9 10; do 
+	[ ! -f /etc/411-security/shared.key ] &amp;&amp; sleep 1
+done
+
+# If shared key got transferred,
+# do a 411get and pull information
+# from frontend
+[ -f /etc/411-security/shared.key ] || exit $SMF_EXIT_ERR_CONFIG
+/opt/rocks/bin/411get --all
+exit $SMF_EXIT_OK
 </file>
-sysidconfig -a /opt/rocks/share/post-411get.sh
+
+<file name="/opt/rocks/share/sync-411-key.xml" perms="0644" owner=""><![CDATA[
+<?xml version="1.0"?>
+<!DOCTYPE service_bundle SYSTEM "/usr/share/lib/xml/dtd/service_bundle.dtd.1">
+<service_bundle type='manifest' name='ROCKSsvc:sync-411-key'>
+<service
+	name='system/sync-411-key'
+	type='service'
+	version='1'>
+
+	<create_default_instance enabled='true' />
+
+	<single_instance/>
+
+	<dependency name='ssh' grouping='require_all'
+		restart_on='none' type='service'>
+		<service_fmri value='svc:/network/ssh' />
+	</dependency>
+	<exec_method
+		type='method'
+		name='start'
+		exec='/lib/svc/method/sync_411_key'
+		timeout_seconds='60' />
+
+	<exec_method
+		type='method'
+		name='stop'
+		exec=':true'
+		timeout_seconds='3' />
+
+	<property_group name='startd' type='framework'>
+		<propval name='duration' type='astring' value='transient' />
+	</property_group>
+
+	<stability value='Unstable' />
+
+	<template>
+		<common_name>
+			<loctext xml:lang='C'>
+				Synchronize the 411 shared key
+			</loctext>
+		</common_name>
+		<description>
+			<loctext xml:lang='C'>
+				This service requests the 411 shared key
+				from the frontend, which then synchronizes
+				the key using ssh.
+			</loctext>
+		</description>
+	</template>
+</service>
+</service_bundle>
+]]>
+</file>
+cp -rf /opt/rocks/share/sync-411-key.xml \
+	/var/svc/manifest/system/sync-411-key.xml
+<service name="system/sync-411-key" enabled='yes'/>
+
 </post>
 
 </kickstart>
