@@ -1,4 +1,4 @@
-# $Id: sunos.mk,v 1.10 2011/07/23 02:30:45 phil Exp $
+# $Id: sunos.mk,v 1.11 2011/08/26 21:39:26 anoop Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: sunos.mk,v $
+# Revision 1.11  2011/08/26 21:39:26  anoop
+# Use sun studio 12.2
+#
 # Revision 1.10  2011/07/23 02:30:45  phil
 # Viper Copyright
 #
@@ -112,7 +115,7 @@
 #
 
 build:
-MYSQL_LDFLAGS  = "-L/opt/sunstudio12.1/lib -lCstd -lCrun"
+MYSQL_LDFLAGS  = "-L/opt/solstudio12.2/lib -lCstd -lCrun"
 
 install::
 	mkdir -p $(ROOT)/$(PKGROOT)/share/mysql/
