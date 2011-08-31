@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.3 2011/07/23 02:30:25 phil Exp $
+# $Id: __init__.py,v 1.4 2011/08/31 00:51:46 anoop Exp $
 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 
 # $Log: __init__.py,v $
+# Revision 1.4  2011/08/31 00:51:46  anoop
+# An extra space can ruin your whole day
+#
 # Revision 1.3  2011/07/23 02:30:25  phil
 # Viper Copyright
 #
@@ -175,6 +178,6 @@ class Command(rocks.commands.add.host.command):
 		for host in hosts:
 			self.db.execute('insert into sec_node_attributes ' +\
 				'values ((select id from nodes where name='+\
-				'"%s"), "%s", "%s", "%s ")' \
+				'"%s"), "%s", "%s", "%s")' \
 				% (host, attr, enc_value, enc))
 
