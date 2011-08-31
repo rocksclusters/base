@@ -1,4 +1,4 @@
-# $Id: root_pw.py,v 1.1 2011/06/08 00:51:33 anoop Exp $
+# $Id: root_pw.py,v 1.2 2011/08/31 00:53:22 anoop Exp $
 
 import rocks.commands
 
@@ -26,4 +26,5 @@ class plugin(rocks.commands.sec_attr_plugin):
 		f.close()
 		os.close(tf)
 		# Move temporary file back to original file
-		os.rename(tfname, '/etc/shadow')
+		import shutil
+		shutil.move(tfname, '/etc/shadow')
