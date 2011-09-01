@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.12 2011/07/23 02:30:35 phil Exp $
+# $Id: __init__.py,v 1.13 2011/09/01 21:55:27 anoop Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.13  2011/09/01 21:55:27  anoop
+# Solaris network information made a little more flexible
+#
 # Revision 1.12  2011/07/23 02:30:35  phil
 # Viper Copyright
 #
@@ -152,12 +155,24 @@ class Command(rocks.commands.HostArgumentProcessor,
 		self.endOutput(padChar='')
 
 	def run_sunos(self, host):
- 
-		domain = self.db.getHostAttr(host, 'Kickstart_PrivateDNSDomain')
 
+		subnet = self.db.getHostAttr(host, 'primary_net')
+		if subnet is None:
+			subnet = 'private'
+
+		cmd = 'select nt.name, s.dnszone from ' +\
+			'networks nt, subnets s, nodes n where '  +\
+			'n.name="%s" and s.name="%s" ' % (host, subnet) +\
+			'and nt.node=n.id and nt.subnet=s.id'
+
+		self.db.execute(cmd)
+
+		(hostname, domain) = self.db.fetchone()
+		if hostname is None:
+			hostname = host
  		# Print the /etc/nodename file
 		self.addOutput(host, '<file name="/etc/nodename">')
-		self.addOutput(host, host)
+		self.addOutput(host, hostname)
 		self.addOutput(host, '</file>')
 
 		# Print out the /etc/defaultdomain file
@@ -178,6 +193,13 @@ class Command(rocks.commands.HostArgumentProcessor,
 		self.addOutput(host, '<file name="/etc/netmasks">')
 		for row in self.db.fetchall():
 			self.addOutput(host, '%s\t%s' % row)
+		self.addOutput(host, '</file>')
+
+		defaultrouter = self.db.getHostAttr(host, 'defaultrouter')
+		if defaultrouter is None:
+			defaultrouter = self.db.getHostAttr(host, 'Kickstart_PrivateGateway')
+		self.addOutput(host, '<file name="/etc/defaultrouter">')
+		self.addOutput(host, defaultrouter)
 		self.addOutput(host, '</file>')
 
 	def run_linux(self, host):
