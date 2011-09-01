@@ -57,6 +57,10 @@
 # @Copyright@
 #
 # $Log: backup-cluster-db.sh,v $
+# Revision 1.15  2011/09/01 21:20:53  phil
+# Root needs to dump the database to get views and secure attributes.
+# Need to lock down the dumped data and RCS dir to root rw only
+#
 # Revision 1.14  2011/07/23 02:30:50  phil
 # Viper Copyright
 #
@@ -108,8 +112,10 @@
 export HOME=/root
 cd /var/db
 
-/opt/rocks/bin/mysqldump -u apache --opt cluster > mysql-backup-cluster
+/opt/rocks/bin/mysqldump --defaults-extra-file=/root/.rocks.my.cnf -u root --opt cluster > mysql-backup-cluster
 
 # To check in multiple versions, you need to have a lock on the
 # file. RCS will automatically ignore checkins for unchanged files.
 ci -l -t-'Rocks Cluster Database' -m`date +"%Y-%m-%d"` mysql-backup-cluster > /dev/null 2>&1
+
+/bin/chmod -R go-rwx mysql-backup-cluster RCS
