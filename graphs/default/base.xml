@@ -4,6 +4,9 @@
 
 	<changelog>
 	$Log: base.xml,v $
+	Revision 1.70  2011/09/06 16:20:14  phil
+	From Tim Theissen -- NFS-server should be come before autofs-server
+	
 	Revision 1.69  2011/08/24 21:59:38  anoop
 	Really, really remove foundation-perl and foundation-cpan
 	
@@ -362,6 +365,10 @@
 
 	<order head="yum">
 		<tail>devel-appliance</tail>
+	</order>
+
+	<order head="nfs-server">
+		<tail>autofs-server</tail>
 	</order>
 
 	<!-- order the screens -->
