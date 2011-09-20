@@ -258,7 +258,7 @@ def filter_content(self, content):
 	</listitem>
 	<listitem><para><function>pre_send</function>: This function manipulates
 	the contents of the file before the file is made available for download
-	over 411. The example below illustrates how deletion of all blank lines
+	over 411. The example below illustrates deletion of all blank lines
 	from the content.
 	</para>
 	<example><title>pre_send</title>
@@ -271,6 +271,18 @@ def pre_send(self, content):
 		else:
 			new_content.append(line)
 	return '\n'.join(new_content).strip()
+	]]></programlisting>
+	</example>
+	</listitem>
+	<listitem><para><function>post</function>: This function is run after
+	the file is received, filtered and written to disk. The example below
+	illustrates restarting the autofs service after a file has been written to
+	disk. 
+	</para>
+	<example><title>post</title>
+	<programlisting><![CDATA[
+def post(self):
+	os.system("service autofs restart")
 	]]></programlisting>
 	</example>
 	</listitem>
