@@ -4,6 +4,9 @@
 
 	<changelog>
 	$Log: base.xml,v $
+	Revision 1.71  2011/09/23 05:33:56  phil
+	Schema must be laid down before security
+	
 	Revision 1.70  2011/09/06 16:20:14  phil
 	From Tim Theissen -- NFS-server should be come before autofs-server
 	
@@ -301,6 +304,10 @@
 
 	<order head="database-schema">
 		<tail>database-data</tail>
+	</order>
+
+	<order head="database-schema">
+		<tail>database-sec</tail>
 	</order>
 
 	<order head="database-sec">
