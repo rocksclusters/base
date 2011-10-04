@@ -1,2 +1,2 @@
 NAME = rocks-secattr-plugins
-RELEASE = 0
+RELEASE = 1
