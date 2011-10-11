@@ -13,6 +13,12 @@
 
   <changelog>
   $Log: mail-client.xml,v $
+  Revision 1.4  2011/10/11 23:29:45  anoop
+  postfix bug fixes on Solaris
+  Need to include a myorigin parameter in the main.cf file
+  Also need to setup permissions correctly for postfix to
+  function
+
   Revision 1.3  2010/07/07 02:01:01  anoop
   Postfix on Solaris cannot handle "hash" type maps.
   So we need to change that to "dbm" type maps
@@ -54,6 +60,7 @@
 # Rocks Postfix configuration for cluster nodes.
 #
 mydestination = 
+myorigin = &Kickstart_PrivateDNSDomain;
 relayhost = &Kickstart_PrivateGateway;
 masquerade_domains = &Kickstart_PrivateDNSDomain;
 append_dot_mydomain = no
