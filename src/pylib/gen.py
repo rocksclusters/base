@@ -54,6 +54,14 @@
 # @Copyright@
 #
 # $Log: gen.py,v $
+# Revision 1.68  2011/11/02 05:08:56  phil
+# First take on bootstrap0. Packages, command line and processing to
+# bring up the rocks database on a non-Rocks installed host.
+# Also reworked generation of post sections to work more like Solaris:
+# Each post section now creates a shell script with the desired interpreter.
+# Report post command creates a shell script from the post section of a
+# (set of) node xml files.
+#
 # Revision 1.67  2011/07/23 02:30:49  phil
 # Viper Copyright
 #
@@ -395,6 +403,7 @@ import string
 import types
 import sys
 import os
+import tempfile
 import time
 import xml.dom.NodeFilter
 import xml.dom.ext.reader.Sax2
@@ -939,6 +948,12 @@ class Generator_linux(Generator):
 	def handle_debug(self, node):
 		self.ks['debug'].append(self.getChildText(node))
 	
+	# <description>
+	
+	def handle_description(self, node):
+	 	dummy=self.getChildText(node)
+
+	
 	# <package>
 		
 	def handle_package(self, node):
@@ -996,10 +1011,10 @@ class Generator_linux(Generator):
 		attr = node.attributes
 		# Parse the interpreter attribute
 		if attr.getNamedItem((None, 'interpreter')):
-			interpreter = '--interpreter ' + \
+			interpreter = \
 				attr.getNamedItem((None, 'interpreter')).value
 		else:
-			interpreter = ''
+			interpreter = '/bin/bash'
 		# Parse any additional arguments to the interpreter
 		# or to the post section
 		if attr.getNamedItem((None, 'arg')):
@@ -1007,8 +1022,10 @@ class Generator_linux(Generator):
 		else:
 			arg = ''
 		list = []
-		# Add the interpreter and args to the %post line
-		list.append(string.strip(string.join([interpreter, arg])))
+		# Add the args to the %post line
+		list.append(string.strip(arg))
+		# Add the interpreter to use for this post section
+		list.append(string.strip('#!%s' % interpreter))
 		list.append(self.getChildText(node))
 		self.ks['post'].append(list)
 		
@@ -1057,9 +1074,20 @@ class Generator_linux(Generator):
 		post_list.append('')
 
 		for list in self.ks['post']:
-			post_list.append('%%post --log=%s %s' %
+			tmpfile=tempfile.mktemp()
+			post_list.append('%%post --log=%s %s\n' % \
 				(self.log, list[0]))
-			post_list.append(string.join(list[1:], '\n'))
+			# Create a 'HERE' document that is executed
+			post_list.append("cat > %s << 'ROCKS-KS-POST'\n" % tmpfile)
+			# Shell interpreter (python, bash, etc)
+			post_list.append('%s\n' % list[1])
+			post_list.append(string.join(list[2:], '\n'))
+			post_list.append('ROCKS-KS-POST\n')
+			# Chmod and execute the shell script just created
+			post_list.append('/bin/chmod +x %s\n' % tmpfile)
+			post_list.append('%s \n' % tmpfile)
+			# clean up
+			post_list.append('/bin/rm %s \n' % tmpfile)
 			
 		return post_list
 

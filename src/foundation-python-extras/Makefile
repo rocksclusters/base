@@ -1,5 +1,5 @@
 # --------------------------------------------------- -*- Makefile -*- --
-# $Id: Makefile,v 1.20 2011/07/23 02:30:45 phil Exp $
+# $Id: Makefile,v 1.21 2011/11/02 05:08:56 phil Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,14 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.21  2011/11/02 05:08:56  phil
+# First take on bootstrap0. Packages, command line and processing to
+# bring up the rocks database on a non-Rocks installed host.
+# Also reworked generation of post sections to work more like Solaris:
+# Each post section now creates a shell script with the desired interpreter.
+# Report post command creates a shell script from the post section of a
+# (set of) node xml files.
+#
 # Revision 1.20  2011/07/23 02:30:45  phil
 # Viper Copyright
 #
@@ -138,6 +146,7 @@
 
 PKGROOT		= /opt/rocks
 REDHAT.ROOT     = $(CURDIR)/../../
+ROCKSROOT       = ../devel/devel
 -include $(ROCKSROOT)/etc/Rules.mk
 include Rules.mk
 
