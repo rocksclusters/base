@@ -2,8 +2,9 @@
 #
 # This file should remain OS independent
 # Bootstrap0: designed for "pristine" systems (aka no rocks)
+# NOTE: This should not be used on ANY Rocks appliance. 
 #
-# $Id: bootstrap0.sh,v 1.2 2011/11/02 16:43:38 phil Exp $
+# $Id: bootstrap0.sh,v 1.3 2011/11/02 21:10:54 phil Exp $
 #
 # @Copyright@
 # 
@@ -59,6 +60,9 @@
 # @Copyright@
 #
 # $Log: bootstrap0.sh,v $
+# Revision 1.3  2011/11/02 21:10:54  phil
+# Some tweaks and updates to bootstrap0 so that bootstrap works properly
+#
 # Revision 1.2  2011/11/02 16:43:38  phil
 # In bootstrap0, create an OS and Updates roll after the Rocks database is up and running.
 #
@@ -118,4 +122,9 @@ fi
 # 5. Create OS Roll and Latest Updates Roll from Mirror
 make -C OSROLL base updates
 
+# 6. Create a fake bootstrap appliance, network, and host in the database
+rocks add appliance bootstrap node=server
+/opt/rocks/bin/rocks add host localhost rack=0 rank=0 membership=bootstrap
+/opt/rocks/bin/rocks add network bootstrap 127.0.0.1 netmask=255.255.255.255
+/opt/rocks/bin/rocks add host interface localhost lo subnet=bootstrap ip=127.0.0.1
 

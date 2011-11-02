@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.97 2011/07/23 02:30:24 phil Exp $
+# $Id: __init__.py,v 1.98 2011/11/02 21:10:54 phil Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.98  2011/11/02 21:10:54  phil
+# Some tweaks and updates to bootstrap0 so that bootstrap works properly
+#
 # Revision 1.97  2011/07/23 02:30:24  phil
 # Viper Copyright
 #
@@ -1472,6 +1475,8 @@ class DatabaseConnection:
 		# name in the nodes table.  This should speed up the
 		# installer w/ the restore roll
 
+		arghostname = hostname 
+
 		if hostname and self.link:
 			rows = self.link.execute("""select * from nodes where
 				name='%s'""" % hostname)
@@ -1600,7 +1605,11 @@ class DatabaseConnection:
 					
 		
 		if addr == '127.0.0.1': # allow localhost to be valid
-			return self.getHostname()
+			if arghostname == None:
+				# break out of recursive loop
+				return 'localhost'
+			else:
+				return self.getHostname()
 			
 		if self.link:
 			# Look up the IP address in the networks table
