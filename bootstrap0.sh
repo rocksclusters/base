@@ -3,7 +3,7 @@
 # This file should remain OS independent
 # Bootstrap0: designed for "pristine" systems (aka no rocks)
 #
-# $Id: bootstrap0.sh,v 1.1 2011/11/02 05:08:56 phil Exp $
+# $Id: bootstrap0.sh,v 1.2 2011/11/02 16:43:38 phil Exp $
 #
 # @Copyright@
 # 
@@ -59,6 +59,9 @@
 # @Copyright@
 #
 # $Log: bootstrap0.sh,v $
+# Revision 1.2  2011/11/02 16:43:38  phil
+# In bootstrap0, create an OS and Updates roll after the Rocks database is up and running.
+#
 # Revision 1.1  2011/11/02 05:08:56  phil
 # First take on bootstrap0. Packages, command line and processing to
 # bring up the rocks database on a non-Rocks installed host.
@@ -79,7 +82,7 @@ fi
 
 # 1. other system packages (need similar for solaris)
 if [ `./_os` == "linux" ]; then
-	yum install rpm-build rpm-devel gcc gcc-c++ ncurses-devel swig glib2 glib2-devel openssl-devel pygobject2 pygobject2-devel cairo cairo-devel
+	yum install rpm-build rpm-devel gcc gcc-c++ ncurses-devel swig glib2 glib2-devel openssl-devel pygobject2 pygobject2-devel cairo cairo-devel createrepo
 fi
 
 # 2. Foundation Packages
@@ -112,5 +115,7 @@ fi
 /bin/sh $tmpfile
 /bin/rm $tmpfile
 
+# 5. Create OS Roll and Latest Updates Roll from Mirror
+make -C OSROLL base updates
 
 
