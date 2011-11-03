@@ -4,6 +4,9 @@
 
 	<changelog>
 	$Log: base.xml,v $
+	Revision 1.72  2011/11/03 16:32:02  phil
+	Getting closer to functional bootstrap on a non-Rocks build host
+	
 	Revision 1.71  2011/09/23 05:33:56  phil
 	Schema must be laid down before security
 	
@@ -399,6 +402,10 @@
 	</order>
 
 	<!-- Graph OO Framework -->
+
+	<edge from="bootstrap-packages">
+		<to>bootstrap-dummy</to>
+	</edge>
 
 	<edge from="compute">
 		<to>compute-appliance</to>

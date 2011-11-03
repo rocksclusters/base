@@ -2,7 +2,7 @@
 #
 # This file should remain OS independent
 #
-# $Id: bootstrap.sh,v 1.26 2011/08/24 06:08:19 anoop Exp $
+# $Id: bootstrap.sh,v 1.27 2011/11/03 16:32:01 phil Exp $
 #
 # @Copyright@
 # 
@@ -58,6 +58,9 @@
 # @Copyright@
 #
 # $Log: bootstrap.sh,v $
+# Revision 1.27  2011/11/03 16:32:01  phil
+# Getting closer to functional bootstrap on a non-Rocks build host
+#
 # Revision 1.26  2011/08/24 06:08:19  anoop
 # Don't build librocks on Solaris
 # Build pcre during bootstrap on Solaris
@@ -207,4 +210,5 @@ if [ `./_os` == "linux" ]; then
 	ignore_os_package openssh-server
 	ignore_os_package openssh-askpass
 	install_os_packages server
+	install_os_packages bootstrap-packages
 fi
