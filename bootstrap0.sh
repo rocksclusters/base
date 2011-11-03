@@ -4,7 +4,7 @@
 # Bootstrap0: designed for "pristine" systems (aka no rocks)
 # NOTE: This should not be used on ANY Rocks appliance. 
 #
-# $Id: bootstrap0.sh,v 1.3 2011/11/02 21:10:54 phil Exp $
+# $Id: bootstrap0.sh,v 1.4 2011/11/03 21:03:13 phil Exp $
 #
 # @Copyright@
 # 
@@ -60,6 +60,9 @@
 # @Copyright@
 #
 # $Log: bootstrap0.sh,v $
+# Revision 1.4  2011/11/03 21:03:13  phil
+# Small tweaks and typo.
+#
 # Revision 1.3  2011/11/02 21:10:54  phil
 # Some tweaks and updates to bootstrap0 so that bootstrap works properly
 #
@@ -86,7 +89,7 @@ fi
 
 # 1. other system packages (need similar for solaris)
 if [ `./_os` == "linux" ]; then
-	yum install rpm-build rpm-devel gcc gcc-c++ ncurses-devel swig glib2 glib2-devel openssl-devel pygobject2 pygobject2-devel cairo cairo-devel createrepo
+	yum -y install rpm-build rpm-devel gcc gcc-c++ ncurses-devel swig glib2 glib2-devel openssl-devel pygobject2 pygobject2-devel cairo cairo-devel createrepo
 fi
 
 # 2. Foundation Packages
@@ -111,7 +114,7 @@ install rocks-command
 
 # 4. Bootstrap the database
 tmpfile=$(/bin/mktemp)
-/bin/cat nodes/database.xml nodes/database-schema.xml nodes/database-sec.xml | /opt/rocks/bin/rocks report post attrs="{'hostname':'', 'HttpRoot':'/var/www/html','os':'linux}"  > $tmpfile
+/bin/cat nodes/database.xml nodes/database-schema.xml nodes/database-sec.xml | /opt/rocks/bin/rocks report post attrs="{'hostname':'', 'HttpRoot':'/var/www/html','os':'linux'}"  > $tmpfile
 if [ $? != 0 ]; then
 	echo "FAILURE to create script for bootstrapping the Database"
 	exit -1
