@@ -16,6 +16,9 @@
 
 	<changelog>
 	$Log: bootstrap-packages.xml,v $
+	Revision 1.2  2011/11/03 22:48:15  phil
+	More packages for non-Rocks build system bootstrap
+	
 	Revision 1.1  2011/11/03 16:32:02  phil
 	Getting closer to functional bootstrap on a non-Rocks build host
 	
@@ -24,18 +27,36 @@
 	<package os="linux">alsa</package>
 	<package os="linux">alsa-devel</package>
 	<package os="linux">alsa-lib-devel</package>
+	<package os="linux">atk-devel</package>
 	<package os="linux">apr</package>
 	<package os="linux">apr-devel</package>
 	<package os="linux">apr-util-devel</package>
 	<package os="linux">audit-libs-devel</package>
+	<package os="linux">beecrypt-devel</package>
+	<package os="linux">booty</package>
+	<package os="linux">bzip2-devel</package>
+	<package os="linux">elfutils-devel</package>
+	<package os="linux">gtk2-devel</package>
+	<package os="linux">gtk+-devel</package>
+	<package os="linux">intltool</package>
+	<package os="linux">kudzu-devel</package>
+	<package os="linux">libdhcp-devel</package>
 	<package os="linux">libdhcp4client</package>
 	<package os="linux">libdhcp4client-devel</package>
 	<package os="linux">libdhcp6client</package>
 	<package os="linux">libdhcp6client-devel</package>
+	<package os="linux">libnl-devel</package>
 	<package os="linux">libXt-devel</package>
 	<package os="linux">libXext-devel</package>
 	<package os="linux">libXxf86misc-devel</package>
+	<package os="linux">mkinitrd-devel</package>
+	<package os="linux">newt-devel</package>
+	<package os="linux">pango-devel</package>
 	<package os="linux">pcre-devel</package>
+	<package os="linux">pciutils-devel</package>
+	<package os="linux">pykickstart</package>
+	<package os="linux">python-devel</package>
+	<package os="linux">slang-devel</package>
 
 </kickstart>
 
