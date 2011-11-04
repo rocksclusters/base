@@ -16,6 +16,9 @@
 
 	<changelog>
 	$Log: bootstrap-packages.xml,v $
+	Revision 1.4  2011/11/04 18:21:09  phil
+	A few more packages
+	
 	Revision 1.3  2011/11/04 03:06:35  phil
 	Couple of more files for Non-Rocks build host bootstrap
 	
@@ -38,10 +41,12 @@
 	<package os="linux">beecrypt-devel</package>
 	<package os="linux">booty</package>
 	<package os="linux">bzip2-devel</package>
+	<package os="linux">dialog</package>
 	<package os="linux">elfutils-devel</package>
 	<package os="linux">gtk2-devel</package>
 	<package os="linux">gtk+-devel</package>
 	<package os="linux">intltool</package>
+	<package os="linux">jadetex</package>
 	<package os="linux">kudzu-devel</package>
 	<package os="linux">libdhcp-devel</package>
 	<package os="linux">libdhcp4client</package>
@@ -61,8 +66,11 @@
 	<package os="linux">pciutils-devel</package>
 	<package os="linux">pykickstart</package>
 	<package os="linux">python-devel</package>
+	<package os="linux">readline-devel</package>
 	<package os="linux">slang-devel</package>
-
-
+	<package os="linux">tetex</package>
+	<package os="linux">tetex-dvips</package>
+	<package os="linux">tetex-fonts</package>
+	<package os="linux">tetex-latex</package>
 </kickstart>
 
