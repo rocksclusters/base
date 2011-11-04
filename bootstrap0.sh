@@ -4,7 +4,7 @@
 # Bootstrap0: designed for "pristine" systems (aka no rocks)
 # NOTE: This should not be used on ANY Rocks appliance. 
 #
-# $Id: bootstrap0.sh,v 1.5 2011/11/03 22:48:15 phil Exp $
+# $Id: bootstrap0.sh,v 1.6 2011/11/04 20:41:30 phil Exp $
 #
 # @Copyright@
 # 
@@ -60,6 +60,9 @@
 # @Copyright@
 #
 # $Log: bootstrap0.sh,v $
+# Revision 1.6  2011/11/04 20:41:30  phil
+# full pathnames for no ambiguity
+#
 # Revision 1.5  2011/11/03 22:48:15  phil
 # More packages for non-Rocks build system bootstrap
 #
@@ -134,7 +137,7 @@ if [ `./_os` == "linux" ]; then
 fi
 
 # 7. Create a fake bootstrap appliance, network, and host in the database
-rocks add appliance bootstrap node=server
+/opt/rocks/bin/rocks add appliance bootstrap node=server
 /opt/rocks/bin/rocks add host localhost rack=0 rank=0 membership=bootstrap
 /opt/rocks/bin/rocks add network bootstrap 127.0.0.1 netmask=255.255.255.255
 /opt/rocks/bin/rocks add host interface localhost lo subnet=bootstrap ip=127.0.0.1

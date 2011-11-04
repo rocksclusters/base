@@ -5,7 +5,7 @@
 # parsing.  This script starts out as shell code but it generates some
 # simple python code to handle the installation of required packages.
 #
-# $Id: bootstrap-functions.sh,v 1.3 2011/07/23 02:30:43 phil Exp $
+# $Id: bootstrap-functions.sh,v 1.4 2011/11/04 20:41:31 phil Exp $
 #
 # @Copyright@
 # 
@@ -61,6 +61,9 @@
 # @Copyright@
 #
 # $Log: bootstrap-functions.sh,v $
+# Revision 1.4  2011/11/04 20:41:31  phil
+# full pathnames for no ambiguity
+#
 # Revision 1.3  2011/07/23 02:30:43  phil
 # Viper Copyright
 #
@@ -131,8 +134,8 @@ function compile_linux() {
 }
 
 function install_os_packages_linux() {
-	for pkg in `rocks list node xml $1 basedir=$PWD |	\
-		kgen --section packages |			\
+	for pkg in `/opt/rocks/bin/rocks list node xml $1 basedir=$PWD |	\
+		/opt/rocks/sbin/kgen --section packages |			\
 		grep "^[a-zA-Z]"`; do				\
 		echo "needed.append(\"$pkg\")" >> $BOOTSTRAP_PY;\
 	done
