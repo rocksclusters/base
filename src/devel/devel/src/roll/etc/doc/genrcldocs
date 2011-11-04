@@ -1,6 +1,6 @@
 #!/bin/env python
 #
-# $Id: genrcldocs,v 1.4 2011/07/23 02:30:43 phil Exp $
+# $Id: genrcldocs,v 1.5 2011/11/04 18:18:42 phil Exp $
 #
 # @Copyright@
 # 
@@ -56,6 +56,9 @@
 # @Copyright@
 #
 # $Log: genrcldocs,v $
+# Revision 1.5  2011/11/04 18:18:42  phil
+# When no commands for a roll, still generate valid sgml
+#
 # Revision 1.4  2011/07/23 02:30:43  phil
 # Viper Copyright
 #
@@ -133,6 +136,12 @@ for line in list:
 
 if prevVerb:
 	file.write('</section>\n')
+
+# If no commands, still generate good sgml
+if len(list) == 0:
+	file.write('\n<section><title>No Commands Installed at BUILD</title>\n')
+	file.write('\n<para>install rocks-command-%s</para></section>\n' % roll)
+
 file.write('</chapter>\n')
 file.close()
 
