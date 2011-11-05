@@ -2,7 +2,7 @@
 #
 # This file should remain OS independent
 #
-# $Id: bootstrap.sh,v 1.27 2011/11/03 16:32:01 phil Exp $
+# $Id: bootstrap.sh,v 1.28 2011/11/05 01:14:43 phil Exp $
 #
 # @Copyright@
 # 
@@ -58,6 +58,9 @@
 # @Copyright@
 #
 # $Log: bootstrap.sh,v $
+# Revision 1.28  2011/11/05 01:14:43  phil
+# Add foundation-ant
+#
 # Revision 1.27  2011/11/03 16:32:01  phil
 # Getting closer to functional bootstrap on a non-Rocks build host
 #
@@ -185,6 +188,8 @@ compile_and_install foundation-libxml2
 compile_and_install foundation-python-xml
 compile_and_install foundation-python-extras
 compile_and_install foundation-rcs
+compile_and_install foundation-ant
+
 if [ `./_os` == "linux" ]; then
 	compile_and_install librocks
 fi
