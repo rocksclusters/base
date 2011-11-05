@@ -16,6 +16,9 @@
 
 	<changelog>
 	$Log: bootstrap-packages.xml,v $
+	Revision 1.5  2011/11/05 04:14:13  phil
+	Packages to build rrdtool, graphviz
+	
 	Revision 1.4  2011/11/04 18:21:09  phil
 	A few more packages
 	
@@ -43,6 +46,7 @@
 	<package os="linux">bzip2-devel</package>
 	<package os="linux">dialog</package>
 	<package os="linux">elfutils-devel</package>
+	<package os="linux">expat-devel</package>
 	<package os="linux">gtk2-devel</package>
 	<package os="linux">gtk+-devel</package>
 	<package os="linux">intltool</package>
@@ -56,8 +60,16 @@
 	<package os="linux">libICE-devel</package>
 	<package os="linux">libnl-devel</package>
 	<package os="linux">libSM-devel</package>
-	<package os="linux">libXt-devel</package>
+	<package os="linux">libXaw</package>
+	<package os="linux">libXaw-devel</package>
 	<package os="linux">libXext-devel</package>
+	<package os="linux">libxml2</package>
+	<package os="linux">libxml2-devel</package>
+	<package os="linux">libXmu</package>
+	<package os="linux">libXmu-devel</package>
+	<package os="linux">libXpm</package>
+	<package os="linux">libXpm-devel</package>
+	<package os="linux">libXt-devel</package>
 	<package os="linux">libXxf86misc-devel</package>
 	<package os="linux">mkinitrd-devel</package>
 	<package os="linux">newt-devel</package>
@@ -72,5 +84,6 @@
 	<package os="linux">tetex-dvips</package>
 	<package os="linux">tetex-fonts</package>
 	<package os="linux">tetex-latex</package>
+	<package os="linux">xorg-x11-util-macros</package>
 </kickstart>
 
