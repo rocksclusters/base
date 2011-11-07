@@ -1,5 +1,5 @@
 #
-# $Id: ssh-key.sh,v 1.10 2011/08/22 23:44:00 anoop Exp $
+# $Id: ssh-key.sh,v 1.11 2011/11/07 21:43:29 anoop Exp $
 #
 # generate a ssh key if one doesn't exist
 #
@@ -59,6 +59,9 @@
 #
 #
 # $Log: ssh-key.sh,v $
+# Revision 1.11  2011/11/07 21:43:29  anoop
+# Don't try to be too efficient or clever
+#
 # Revision 1.10  2011/08/22 23:44:00  anoop
 # Cleaner re-implementation of creating ssh keys. Now supports tcsh correctly
 #
@@ -247,22 +250,20 @@ check_hard_link(){
 # Creates hard link to root's ssh-key
 create_hard_link(){
 	d=`dirname $SSH_KEY_LINK`
+	SSH_PUB_KEY=/root/.ssh/id_rsa.pub
 	mkdir -p $d
 	rm -rf $SSH_KEY_LINK
-	ln /root/.ssh/id_rsa.pub $SSH_KEY_LINK
+	echo "Creating hard link to $SSH_PUB_KEY in $d"
+	ln $SSH_PUB_KEY $SSH_KEY_LINK
 	chmod a+r $d
 }
-
-[ $SHLVL -gt 1 ] && EXIT=exit || EXIT=return
 
 # If we're a normal user, and the ssh-key exists, return
 if [ $UID -ge 500 ]; then
 	check_key || create_key
-	$EXIT $?
 fi
 
 if [ $UID -eq 0 ]; then
 	check_key || create_key
 	check_hard_link || create_hard_link
 fi
-$EXIT $?
