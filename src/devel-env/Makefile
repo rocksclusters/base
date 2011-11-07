@@ -1,5 +1,5 @@
 #
-# $Id: Makefile,v 1.13 2011/07/23 02:30:44 phil Exp $
+# $Id: Makefile,v 1.14 2011/11/07 18:33:59 phil Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,10 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.14  2011/11/07 18:33:59  phil
+# Make checkout from CVS optional. Default to expecting that restore roll
+# is in local tree (common when building rocks itself)
+#
 # Revision 1.13  2011/07/23 02:30:44  phil
 # Viper Copyright
 #
@@ -131,15 +135,32 @@ CVSROOT = -d $(USER)@fyp.rocksclusters.org:/home/cvs/CVSROOT
 TAG =
 # uncomment/change for Release
 # TAG = -r ROCKS_4_2
+# uncomment if you want to checkout the latest restore roll instead of
+# copying from the local
+# RETRIEVECVS = True
 
 
+pretar::
+	( if [ ! -d rocks/src/roll/restore ]; then \
+		mkdir -p rocks/src/roll/restore; \
+	fi )
+	(cd ../../../restore; $(TAR) cf - * ) | \
+		(cd rocks/src/roll/restore; $(TAR) xvfBp - ) 
 build:
-	$(CVS) $(CVSROOT) checkout -P $(TAG) rocks/src/roll/restore
+	( if [ "x$(RETRIEVECVS)" == "xTrue" ]; then \
+		if [ -d rocks ]; then /bin/rm -r rocks; fi; \
+		$(CVS) $(CVSROOT) checkout -P $(TAG) rocks/src/roll/restore; \
+	  fi \
+	)
 	for i in `find . -type d -name CVS` ; do \
 		rm -rf $$i ; \
 	done
+	(cd rocks/src/roll/restore; $(MAKE) clean )
 
 install::
 	mkdir -p $(ROOT)/export/site-roll/
 	cp -R rocks $(ROOT)/export/site-roll/
+
+clean::
+	/bin/rm -rf rocks
 
