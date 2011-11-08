@@ -46,6 +46,9 @@ rocks-kpp
 rocks-piece-pipe
 rocks-pxeboot
 rocks-pylib
+rocks-secattr-plugins
+rocks-sec-channel-client
+rocks-sec-channel-server
 rocks-screens
 rocks-snmp-status
 rocks-sql
