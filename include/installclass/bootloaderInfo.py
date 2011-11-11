@@ -32,6 +32,8 @@ import rhpl.executil
 import booty
 import checkbootloader
 
+from bootyutil import getDiskPart
+
 if rhpl.getArch() not in ("s390", "s390x"):
     import block
 
@@ -758,7 +760,6 @@ class x86BootloaderInfo(bootloaderInfo):
                     "to /boot/, eg.\n")
 
         bootDevs = self.getPhysicalDevices(bootDev.device.getDevice())
-        bootDev = bootDev.device.getDevice()
         
         f.write('#          root %s\n' % self.grubbyPartitionName(bootDevs[0]))
         f.write("#          kernel %svmlinuz-version ro "
@@ -938,21 +939,83 @@ class x86BootloaderInfo(bootloaderInfo):
             f.write("forcelba=0\n")
         f.close()
             
+        stage1Devs = self.getPhysicalDevices(grubTarget)
+
+        installs = [(None,
+                     self.grubbyPartitionName(stage1Devs[0]),
+                     self.grubbyPartitionName(bootDevs[0]))]
+
+        if bootDev.device.getName() == 'RAIDDevice':
+
+            matches = self.matchingBootTargets(stage1Devs, bootDevs)
+
+            # If the stage1 target disk contains member of boot raid array (mbr
+            # case) or stage1 target partition is member of boot raid array
+            # (partition case)
+            if matches:
+                # 1) install stage1 on target disk/partiton
+                stage1Dev, mdMemberBootPart = matches[0]
+                installs = [(None,
+                             self.grubbyPartitionName(stage1Dev),
+                             self.grubbyPartitionName(mdMemberBootPart))]
+                firstMdMemberDiskGrubbyName = self.grubbyDiskName(getDiskPart(mdMemberBootPart)[0])
+
+                # 2) and install stage1 on other members' disks/partitions too
+                # NOTES:
+                # - the goal is to be able to boot after a members' disk removal
+                # - so we have to use grub device names as if after removal
+                #   (i.e. the same disk name (e.g. (hd0)) for both member disks)
+                # - if member partitions have different numbers only removal of
+                #   specific one of members will work because stage2 containing
+                #   reference to config file is shared and therefore can contain
+                #   only one value
+
+                # if target is mbr, we want to install also to mbr of other
+                # members, so extend the matching list
+                matches = self.addMemberMbrs(matches, bootDevs)
+                for stage1Target, mdMemberBootPart in matches[1:]:
+                    # prepare special device mapping corresponding to member removal
+                    mdMemberBootDisk = getDiskPart(mdMemberBootPart)[0]
+                    # It can happen due to ks --driveorder option, but is it ok?
+                    if not mdMemberBootDisk in self.drivelist:
+                        continue
+                    mdRaidDeviceRemap = (firstMdMemberDiskGrubbyName,
+                                         mdMemberBootDisk)
+
+                    stage1TargetGrubbyName = self.grubbyPartitionName(stage1Target)
+                    rootPartGrubbyName = self.grubbyPartitionName(mdMemberBootPart)
+
+                    # now replace grub disk name part according to special device
+                    # mapping
+                    old = self.grubbyDiskName(mdMemberBootDisk).strip('() ')
+                    new = firstMdMemberDiskGrubbyName.strip('() ')
+                    rootPartGrubbyName = rootPartGrubbyName.replace(old, new)
+                    stage1TargetGrubbyName = stage1TargetGrubbyName.replace(old, new)
+
+                    installs.append((mdRaidDeviceRemap,
+                                     stage1TargetGrubbyName,
+                                     rootPartGrubbyName))
+
+                # This is needed for case when /boot member partitions have
+                # different numbers. Shared stage2 can contain only one reference
+                # to grub.conf file, so let's ensure that it is reference to partition
+                # on disk which we will boot from - that is, install grub to
+                # this disk as last so that its reference is not overwritten.
+                installs.reverse()
+
         cmds = []
-        for bootDev in bootDevs:
-            gtPart = self.getMatchingPart(bootDev, grubTarget)
-            gtDisk = self.grubbyPartitionName(getDiskPart(gtPart)[0])
-            bPart = self.grubbyPartitionName(bootDev)
-            cmd = "root %s\n" % (bPart,)
-
-            stage1Target = gtDisk
-            if target == "partition":
-                stage1Target = self.grubbyPartitionName(gtPart)
-
+        for mdRaidDeviceRemap, stage1Target, rootPart in installs:
+            if mdRaidDeviceRemap:
+                cmd = "device (%s) /dev/%s\n" % tuple(mdRaidDeviceRemap)
+            else:
+                cmd = ''
+            cmd += "root %s\n" % (rootPart,)
             cmd += "install %s%s/stage1 d %s %s/stage2 p %s%s/grub.conf" % \
-                (forcelba, grubPath, stage1Target, grubPath, bPart, grubPath)
+                (forcelba, grubPath, stage1Target, grubPath, rootPart, grubPath)
             cmds.append(cmd)
-            
+
+        bootDev = bootDev.device.getDevice()
+
         if not justConfigFile:
             #log("GRUB commands:")
             #for cmd in cmds:
@@ -1022,14 +1085,21 @@ class x86BootloaderInfo(bootloaderInfo):
 
         return ""
 
-    def getMatchingPart(self, bootDev, target):
-        bootName, bootPartNum = getDiskPart(bootDev)
-        devices = self.getPhysicalDevices(target)
-        for device in devices:
-            name, partNum = getDiskPart(device)
-            if name == bootName:
-                return device
-        return devices[0]
+    def matchingBootTargets(self, stage1Devs, bootDevs):
+        matches = []
+        for stage1Dev in stage1Devs:
+            for mdBootPart in bootDevs:
+                if getDiskPart(stage1Dev)[0] == getDiskPart(mdBootPart)[0]:
+                    matches.append((stage1Dev, mdBootPart))
+        return matches
+
+    def addMemberMbrs(self, matches, bootDevs):
+        updatedMatches = list(matches)
+        bootDevsHavingStage1Dev = [match[1] for match in matches]
+        for mdBootPart in bootDevs:
+            if mdBootPart not in bootDevsHavingStage1Dev:
+               updatedMatches.append((getDiskPart(mdBootPart)[0], mdBootPart))
+        return updatedMatches
 
     def grubbyDiskName(self, name):
         return "hd%d" % self.drivelist.index(name)
@@ -2070,38 +2140,6 @@ class sparcBootloaderInfo(bootloaderInfo):
 
 ###############
 # end of boot loader objects... these are just some utility functions used
-
-# return (disk, partition number) eg ('hda', 1)
-def getDiskPart(dev):
-    cut = len(dev)
-    if (dev.startswith('rd/') or dev.startswith('ida/') or
-            dev.startswith('cciss/') or dev.startswith('sx8/') or
-            dev.startswith('mapper/')):
-        if dev[-2] == 'p':
-            cut = -1
-        elif dev[-3] == 'p':
-            cut = -2
-    else:
-        if dev[-2] in string.digits:
-            cut = -2
-        elif dev[-1] in string.digits:
-            cut = -1
-
-    name = dev[:cut]
-    
-    # hack off the trailing 'p' from /dev/cciss/*, for example
-    if name[-1] == 'p':
-        for letter in name:
-            if letter not in string.letters and letter != "/":
-                name = name[:-1]
-                break
-
-    if cut < 0:
-        partNum = int(dev[cut:]) - 1
-    else:
-        partNum = None
-
-    return (name, partNum)
 
 # hackery to determine if we should do root=LABEL=/ or whatnot
 # as usual, knows too much about anaconda

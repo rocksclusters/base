@@ -1,35 +1,47 @@
 ## Makefile to create an OS Roll and Updates
-## $Id: Makefile,v 1.1 2011/11/02 16:43:38 phil Exp $
+## $Id: Makefile,v 1.2 2011/11/11 06:00:24 phil Exp $
 ## $Log: Makefile,v $
+## Revision 1.2  2011/11/11 06:00:24  phil
+## Updated anaconda to RHEL 5.7 base
+##
 ## Revision 1.1  2011/11/02 16:43:38  phil
 ## In bootstrap0, create an OS and Updates roll after the Rocks database is up and running.
 ##
+SHELL = /bin/bash
 include version.mk
-
+WORKDIR = /tmp/OSROLL
 default: updates 
 
 # Create the Base OS Roll
-base: 
-	 /opt/rocks/bin/rocks create mirror $(MIRRORURL)/$(BASEPATH) arch=$(ARCH) rollname=$(DISTRO) version=$(VERSION)
-	/sbin/service httpd stop
-	/opt/rocks/bin/rocks add roll $(DISTRO)-$(VERSION)-*.iso
-	/sbin/service httpd start
+base: workdir
+	( cd $(WORKDIR);\
+	/opt/rocks/bin/rocks create mirror $(MIRRORURL)/$(BASEPATH) arch=$(ARCH) rollname=$(DISTRO) version=$(VERSION) )
+	- /sbin/service httpd stop 
+	/opt/rocks/bin/rocks add roll $(WORKDIR)/$(DISTRO)-$(VERSION)-*.iso
+	- /sbin/service httpd start
 	/opt/rocks/bin/rocks enable roll $(DISTRO)
 
 # Mirror Updates, then add to distro
-updates: cleanupdates
-	/opt/rocks/bin/rocks create mirror $(MIRRORURL)/$(UPDATESPATH) arch=$(ARCH) rollname=Updates-$(DISTRO)-$(VERSION) version="`date +%F`"
+updates: workdir cleanupdates
+	(cd $(WORKDIR) ;\
+	/opt/rocks/bin/rocks create mirror $(MIRRORURL)/$(UPDATESPATH) arch=$(ARCH) rollname=Updates-$(DISTRO)-$(VERSION) version="`date +%F`" )
 	- /sbin/service httpd stop
-	/opt/rocks/bin/rocks add roll Updates-$(DISTRO)-$(VERSION)-*.$(ARCH).*.iso
+	/opt/rocks/bin/rocks add roll $(WORKDIR)/Updates-$(DISTRO)-$(VERSION)-*.$(ARCH).*.iso
 	-/sbin/service httpd start
 	/opt/rocks/bin/rocks enable roll Updates-$(DISTRO)-$(VERSION)
 
 # Remove All Previous Updates Rolls
-cleanupdates:
+cleanupdates: workdir
 	- /sbin/service httpd stop
 	- /opt/rocks/bin/rocks remove roll Updates-$(DISTRO)-$(VERSION) arch=$(ARCH)
-	- /bin/rm Updates-$(DISTRO)-$(VERSION)-*.$(ARCH).*.iso
+	- /bin/rm $(WORKDIR)/Updates-$(DISTRO)-$(VERSION)-*.$(ARCH).*.iso
 	- /sbin/service httpd start
+
+workdir:
+	if [ ! -d $(WORKDIR) ]; then mkdir -p $(WORKDIR); fi
+
+clean: workdir
+	/bin/rm $(WORKDIR)/*iso
 
 testing:
 	echo "arch is " $(ARCH)

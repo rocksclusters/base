@@ -62,7 +62,7 @@ class AnacondaKSScript(Script):
             else:
                 messages = self.logfile
 
-            d = os.path.basename(messages)
+            d = os.path.dirname(messages)
             if not os.path.exists(d):
                 os.makedirs(d)
         else:
@@ -197,7 +197,7 @@ class AnacondaKSHandlers(KickstartHandlers):
         KickstartHandlers.doFirewall(self, args)
         dict = self.ksdata.firewall
 	self.id.instClass.setFirewall(self.id, dict["enabled"], dict["trusts"],
-                                      dict["ports"])
+                                      dict["ports"], disableSsh=dict["disableSsh"])
 
     def doFirstboot(self, args):
         KickstartHandlers.doFirstboot(self, args)
@@ -349,6 +349,9 @@ class AnacondaKSHandlers(KickstartHandlers):
 
     def doMonitor(self, args):
         KickstartHandlers.doMonitor(self, args)
+        if self.id.isHeadless:
+            return
+
         dict = self.ksdata.monitor
         self.skipSteps.extend(["monitor", "checkmonitorok"])
         self.id.instClass.setMonitor(self.id, dict["hsync"], dict["vsync"],
@@ -361,7 +364,8 @@ class AnacondaKSHandlers(KickstartHandlers):
         try:
             self.id.instClass.setNetwork(self.id, nd.bootProto, nd.ip, nd.netmask,
                                          nd.ethtool, nd.device, nd.onboot,
-                                         nd.dhcpclass, nd.essid, nd.wepkey)
+                                         nd.dhcpclass, nd.essid, nd.wepkey,
+                                         nd.ipv4, nd.ipv6)
         except KeyError:
             raise KickstartValueError, formatErrorMsg(self.lineno, msg="The provided network interface %s does not exist" % nd.device)
 
@@ -390,6 +394,10 @@ class AnacondaKSHandlers(KickstartHandlers):
             newname = ""
             it = True
             for path in mpath.paths:
+                if not iutil.valid_dm_name(path.name):
+                    msg = "Invalid name for a multipath device '%s' "\
+                        "(resembles a partition?)." % path.name
+                    raise KickstartValueError, formatErrorMsg(self.lineno, msg)
                 dev = path.device
                 log.debug("Searching for mpath having '%s' as a member, the scsi id or wwpn:lunid" % (dev,))
                 log.debug("mpath '%s' has members %s" % (mp.name, list(mp.members)))
@@ -724,6 +732,9 @@ class AnacondaKSHandlers(KickstartHandlers):
 
     def doXConfig(self, args):
         KickstartHandlers.doXConfig(self, args)
+        if self.id.isHeadless:
+            return
+
         dict = self.ksdata.xconfig
 
         self.id.instClass.configureX(self.id, dict["driver"], dict["videoRam"],

@@ -1,5 +1,5 @@
 #
-# $Id: rocks-version.mk,v 1.6 2011/07/23 02:30:43 phil Exp $
+# $Id: rocks-version.mk,v 1.7 2011/11/11 06:00:25 phil Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: rocks-version.mk,v $
+# Revision 1.7  2011/11/11 06:00:25  phil
+# Updated anaconda to RHEL 5.7 base
+#
 # Revision 1.6  2011/07/23 02:30:43  phil
 # Viper Copyright
 #
@@ -266,8 +269,8 @@ __RELEASE_MK = yes
 # make sure you get the version of Rocks use ROCKS_VERSION.
 
 VERSION.MAJOR = 5
-VERSION.MINOR = 4
-VERSION.PATCH = 3
+VERSION.MINOR = 5
+#VERSION.PATCH = 3
 
 ifeq ($(VERSION.PATCH),)
 VERSION   = $(VERSION.MAJOR).$(VERSION.MINOR)
@@ -281,7 +284,7 @@ ROCKS_VERSION = $(VERSION)
 # A name, not a RPM release id. Added for flair. First releases named
 # after well-known mountains.
 
-RELEASE_NAME = Viper
+RELEASE_NAME = Mamba
 VERSION_NAME = "$(RELEASE_NAME)"
 
 # The project name is used to identify to distribution.  The base 

@@ -17,6 +17,7 @@ import os.path
 import shutil
 import timer
 import warnings
+import time
 import types
 import glob
 import re
@@ -293,6 +294,7 @@ class AnacondaYumRepo(YumRepository):
                     
         else:
             try:
+
 		# ROCKS
                 #result = self.grab.urlgrab(relative, local,
                                          #  keepalive = False,
@@ -609,6 +611,9 @@ class AnacondaYum(YumSorter):
 
         if self.anaconda.isKickstart:
             for ksrepo in self.anaconda.id.ksdata.repoList:
+                if not self.anaconda.id.instClass.repoIsAllowed(ksrepo.name):
+                    continue
+
                 repo = AnacondaYumRepo(uri=ksrepo.baseurl,
                                        mirrorlist=ksrepo.mirrorlist,
                                        repoid=ksrepo.name)
@@ -690,6 +695,14 @@ class AnacondaYum(YumSorter):
     def urlgrabberFailureCB (self, obj, *args, **kwargs):
         log.warning("Try %s/%s for %s failed" % (obj.tries, obj.retry, obj.url))
 
+        delay = 0.25*(2**(obj.tries-1))
+        if delay > 1:
+            w = self.anaconda.intf.waitWindow(_("Retrying"), _("Retrying package download..."))
+            time.sleep(delay)
+            w.pop()
+        else:
+            time.sleep(delay)
+
     def getDownloadPkgs(self):
         downloadpkgs = []
         totalSize = 0
@@ -753,6 +766,13 @@ class AnacondaYum(YumSorter):
                 if i > 0:
                     pkgtup = self.tsInfo.reqmedia[i][0]
                     self.method.switchMedia(i, filename=pkgtup)
+
+                # In the split media case, we need to perform group removals
+                # for every transaction.
+                if self.anaconda.isKickstart:
+                    map(self.anaconda.backend.removeGroupsPackages,
+                        self.anaconda.id.ksdata.excludedGroupList)
+
                 self.populateTs(keepold=0)
                 self.ts.check()
                 self.ts.order()
@@ -766,7 +786,7 @@ class AnacondaYum(YumSorter):
         spaceneeded = {}
 
         try:
-            self.runTransaction(cb=cb)
+            rc = self.runTransaction(cb=cb)
         except YumBaseError, probs:
             # FIXME: we need to actually look at these problems...
             probTypes = { rpm.RPMPROB_NEW_FILE_CONFLICT : _('file conflicts'),
@@ -815,6 +835,16 @@ class AnacondaYum(YumSorter):
                                type="custom", custom_icon="error",
                                custom_buttons=[_("Re_boot")])
             sys.exit(1)
+        else:
+            if rc.return_code == 1:
+                msg = _("An error occurred while installing packages.  Please "
+                        "examine /root/install.log on your installed system for "
+                        "detailed information.")
+                log.error(msg)
+
+                if not self.anaconda.isKickstart:
+                    intf.messageWindow(_("Error running transaction"),
+                                       msg, type="warning")
 
     def doMacros(self):
         for (key, val) in self.macros.items():
@@ -1262,15 +1292,21 @@ class YumBackend(AnacondaBackend):
     def selectAnacondaNeeds(self):
         for pkg in ['authconfig', 'chkconfig', 'mkinitrd', 'rhpl',
                     'system-config-securitylevel-tui']:
-            self.selectPackage(pkg)
+            self.selectPackage("%s.%s" % (pkg, rpmUtils.arch.canonArch))
 
     def doPostSelection(self, anaconda):
         # Only solve dependencies on the way through the installer, not the way back.
         if anaconda.dir == DISPATCH_BACK:
+            self.ayum._undoDepInstalls()
             return
 
         dscb = YumDepSolveProgress(anaconda.intf)
         self.ayum.dsCallback = dscb
+
+        # isDep needs to be reverted to 0 after buildTransaction. It's for _undoDepInstalls()
+        noDepPkgs=[]
+        for txmbr in self.ayum.tsInfo.getMembers():
+            noDepPkgs.append(txmbr)
 
         # do some sanity checks for kernel and bootloader
         self.selectBestKernel(anaconda)
@@ -1305,6 +1341,10 @@ class YumBackend(AnacondaBackend):
 
         try:
             (code, msgs) = self.ayum.buildTransaction()
+            for pkg in noDepPkgs:
+                for txmbr in self.ayum.tsInfo.matchNaevr(name=pkg.name, arch=pkg.arch):
+                    txmbr.isDep=0
+
             (self.dlpkgs, self.totalSize, self.totalFiles)  = self.ayum.getDownloadPkgs()
 
             if not anaconda.id.getUpgrade():
@@ -1336,7 +1376,7 @@ class YumBackend(AnacondaBackend):
 
     def doPreInstall(self, anaconda):
         if anaconda.dir == DISPATCH_BACK:
-            for d in ("/selinux", "/dev"):
+            for d in ("/selinux", "/dev", "/proc/bus/usb"):
                 try:
                     isys.umount(anaconda.rootPath + d, removeDir = 0)
                 except Exception, e:
@@ -1374,7 +1414,7 @@ class YumBackend(AnacondaBackend):
         dirList = ['/var', '/var/lib', '/var/lib/rpm', '/tmp', '/dev', '/etc',
                    '/etc/sysconfig', '/etc/sysconfig/network-scripts',
                    '/etc/X11', '/root', '/var/tmp', '/etc/rpm', '/var/cache',
-                   '/var/cache/yum']
+                   '/var/cache/yum', '/etc/modprobe.d']
 
         # If there are any protected partitions we want to mount, create their
         # mount points now.
@@ -1425,6 +1465,12 @@ class YumBackend(AnacondaBackend):
                 except Exception, e:
                     log.error("error mounting selinuxfs: %s" %(e,))
 
+            # For usbfs
+            try:
+                isys.mount("/proc/bus/usb", anaconda.rootPath + "/proc/bus/usb", "usbfs")
+            except Exception, e:
+                log.error("error mounting usbfs: %s" %(e,))
+
             # we need to have a /dev during install and now that udev is
             # handling /dev, it gets to be more fun.  so just bind mount the
             # installer /dev
@@ -1440,6 +1486,11 @@ class YumBackend(AnacondaBackend):
             if os.access("/tmp/modprobe.conf", os.R_OK):
                 shutil.copyfile("/tmp/modprobe.conf", 
                                 anaconda.rootPath + "/etc/modprobe.conf")
+
+            if os.access("/tmp/anaconda.conf", os.R_OK):
+                shutil.copyfile("/tmp/anaconda.conf",
+                                anaconda.rootPath + "/etc/modprobe.d/anaconda.conf")
+
             anaconda.id.network.write(anaconda.rootPath)
             anaconda.id.iscsi.write(anaconda.rootPath)
             anaconda.id.zfcp.write(anaconda.rootPath)
@@ -1511,7 +1562,6 @@ class YumBackend(AnacondaBackend):
                         match = re.search(mpregex, mpathname)
                         if match is not None:
                             mpathname = match.group()
-                            major = int(match.group(1))
                     else:
                         continue
 
