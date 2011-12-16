@@ -21,6 +21,9 @@
 
   <changelog>
   $Log: base.xml,v $
+  Revision 1.56  2011/12/16 20:51:57  phil
+  look at the correct variable when disabling services.
+
   Revision 1.55  2011/07/23 02:30:14  phil
   Viper Copyright
 
@@ -567,7 +570,7 @@ python -c 'import time; print "%.7f" % time.time()'
 </file>
 
 serviceList="&disableServices;"
-if [ "x&serviceList;" == "x" ]; then
+if [ "x$serviceList" == "x" ]; then
 	serviceList="kudzu canna cWnn FreeWnn kWnn tWnn mDNSResponder"
 fi
 
