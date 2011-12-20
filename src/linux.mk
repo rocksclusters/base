@@ -1,4 +1,4 @@
-# $Id: linux.mk,v 1.29 2011/07/23 02:30:16 phil Exp $
+# $Id: linux.mk,v 1.30 2011/12/20 19:19:44 phil Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: linux.mk,v $
+# Revision 1.30  2011/12/20 19:19:44  phil
+# Remove rebuild of kudzu
+#
 # Revision 1.29  2011/07/23 02:30:16  phil
 # Viper Copyright
 #
@@ -178,6 +181,7 @@ SRCDIRS = `find . -type d -maxdepth 1 \
 	-not -name rocks-pxe \
 	-not -name updates.img \
 	-not -name anaconda \
+	-not -name kudzu \
 	-not -name pcre \
 	-not -name php \
 	-not -name sun-java \
