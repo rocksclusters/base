@@ -19,6 +19,9 @@
 
   <changelog>
   $Log: 411-client.xml,v $
+  Revision 1.17  2011/12/20 19:17:06  phil
+  proper bash or syntax. Bug report from Rick Wagner
+
   Revision 1.16  2011/08/26 06:11:19  anoop
   It's not possible to do get-411-key using sysidconfig configure
   script, as ssh is not running at the time. So instead, we start
@@ -206,7 +209,7 @@ done
 
 [ -f /etc/411-security/shared.key ] &amp;&amp; /opt/rocks/bin/411get --all
 
-if [ -f /etc/rc3.d/S*autofs || -f /etc/rc5.d/S*autofs ]; then
+if [ -f /etc/rc3.d/S*autofs -o -f /etc/rc5.d/S*autofs ]; then
 	/sbin/service autofs restart
 fi
 	
