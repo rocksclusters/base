@@ -2,7 +2,7 @@
 #
 # This file should remain OS independent
 #
-# $Id: bootstrap.sh,v 1.28 2011/11/05 01:14:43 phil Exp $
+# $Id: bootstrap.sh,v 1.29 2011/12/21 23:30:46 phil Exp $
 #
 # @Copyright@
 # 
@@ -58,6 +58,9 @@
 # @Copyright@
 #
 # $Log: bootstrap.sh,v $
+# Revision 1.29  2011/12/21 23:30:46  phil
+# make it is so we can call install_os_packages twice.
+#
 # Revision 1.28  2011/11/05 01:14:43  phil
 # Add foundation-ant
 #
@@ -215,5 +218,6 @@ if [ `./_os` == "linux" ]; then
 	ignore_os_package openssh-server
 	ignore_os_package openssh-askpass
 	install_os_packages server
+	bootstrap_py_init
 	install_os_packages bootstrap-packages
 fi

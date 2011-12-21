@@ -5,7 +5,7 @@
 # parsing.  This script starts out as shell code but it generates some
 # simple python code to handle the installation of required packages.
 #
-# $Id: bootstrap-functions.sh,v 1.4 2011/11/04 20:41:31 phil Exp $
+# $Id: bootstrap-functions.sh,v 1.5 2011/12/21 23:30:45 phil Exp $
 #
 # @Copyright@
 # 
@@ -61,6 +61,9 @@
 # @Copyright@
 #
 # $Log: bootstrap-functions.sh,v $
+# Revision 1.5  2011/12/21 23:30:45  phil
+# make it is so we can call install_os_packages twice.
+#
 # Revision 1.4  2011/11/04 20:41:31  phil
 # full pathnames for no ambiguity
 #
@@ -252,12 +255,16 @@ function compile_and_install() {
 	install $1
 }
 
-function init() {
+function bootstrap_py_init() {
+	echo "installed = []" > $BOOTSTRAP_PY
+	echo "ignored   = []" >> $BOOTSTRAP_PY
+}	
+
+function bootstrap_init() {
 	gmake clean
 	gmake Rolls.mk
-	echo "installed = []" >> $BOOTSTRAP_PY
-	echo "ignored   = []" >> $BOOTSTRAP_PY
+	bootstrap_py_init
 }
 
-init
+bootstrap_init
 
