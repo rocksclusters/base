@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: file.py,v $
+# Revision 1.27  2011/12/22 22:14:19  phil
+# Hopefully, only a temporary CentOS build problem, but some files in the base tree and updates tree have the same timestamp.  when we detect RPM files that are close in time, go look at the buildtime in the RPMs to make a determination.
+#
 # Revision 1.26  2011/07/23 02:30:49  phil
 # Viper Copyright
 #
@@ -515,7 +518,21 @@ class RPMFile(RPMBaseFile):
 		if self.getPackageArch() != file.getPackageArch():
 			rc = 0
 		else:
+			# For RPM Files, if the timestamps are within 2 minutes
+			# of each other check
+			# the Buildtime of the RPM
+
+		 	if abs(int(self.timestamp) - int(file.timestamp)) < 120 :
+				# print "CMP %s:%s" % (self.getFullName(), file.getFullName())
+				f1=os.popen("rpm -qp --qf '%%{BUILDTIME}' %s" % self.getFullName())
+				self.timestamp=f1.readline()
+				f1.close()
+				f2=os.popen("rpm -qp --qf '%%{BUILDTIME}' %s" % file.getFullName())
+				file.timestamp=f2.readline()
+				f2.close()
+
 			rc = File.__cmp__(self, file)
+
 		return rc
 
 	def getPackageName(self):
