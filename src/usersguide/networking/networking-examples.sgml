@@ -1,5 +1,5 @@
 <!-- 
-$Id: networking-examples.sgml,v 1.7 2010/10/26 17:50:05 bruno Exp $
+$Id: networking-examples.sgml,v 1.8 2012/01/03 21:22:18 phil Exp $
 
 Administration guide
 
@@ -7,6 +7,9 @@ Administration guide
 @Copyright@
 
 $Log: networking-examples.sgml,v $
+Revision 1.8  2012/01/03 21:22:18  phil
+Updated syntax for host route command
+
 Revision 1.7  2010/10/26 17:50:05  bruno
 doc fix
 
@@ -43,14 +46,14 @@ In this section, we describe some common networking configurations and how to us
 Often, owners want the second ethernet adapter to be on the public network and for the default routing to
 be in the public network. Assuming that the public network is 1.2.3.0/255.255.255.0 and the default
 gateway for that network is 1.2.3.1, the following set of commands define the second interface of a compute
-to have address 1.2.3.25 with name mypublic.myuniversity.edu, update all required configuration files on the
+to have address 1.2.3.25 with name mypublic.&lt;public domain of frontend&gt; update all required configuration files on the
 frontend, update all required configuration files on the node compute-0-0 and restart the network on compute-0-0.
 </para>
 <screen>
 # rocks set host interface ip compute-0-0 iface=eth1 ip=1.2.3.25 
-# rocks set host interface name compute-0-0 iface=eth1 name=mypublic.myuniversity.edu
+# rocks set host interface name compute-0-0 iface=eth1 name=mypublic
 # rocks set host interface subnet compute-0-0 eth1 public
-# rocks add host route compute-0-0 1.2.3.0 eth1 netmask=255.255.255.0
+# rocks add host route compute-0-0 0.0.0.0 1.2.3.1 netmask=0.0.0.0
 # rocks sync config
 # rocks sync host network compute-0-0 
 </screen>
@@ -88,4 +91,21 @@ re-installation of nodes.
 </para>
 </section>
 
+<section>
+<title>Setting the Default Gateway on a Node </title>
+<para>
+When adding a second (public) interface on nodes, it is sometimes desireable to change the default route or gateway.  Suppose that your gateway=1.2.3.4,
+the the following will set gateway on a particular host
+</para>
+<screen>
+rocks add host route compute-0-0 0.0.0.0 1.2.3.4 netmask=0.0.0.0 
+rocks sync host network compute-0-0
+</screen>
+<warning>
+<para>
+the 1.2.3.4 address must be directly reachable (Same LAN) from one of 
+the host's ethernet interfaces.
+</para>
+</warning>
+</section>
 </section>
