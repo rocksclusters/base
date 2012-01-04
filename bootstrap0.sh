@@ -4,7 +4,7 @@
 # Bootstrap0: designed for "pristine" systems (aka no rocks)
 # NOTE: This should not be used on ANY Rocks appliance. 
 #
-# $Id: bootstrap0.sh,v 1.7 2011/11/07 22:34:40 phil Exp $
+# $Id: bootstrap0.sh,v 1.8 2012/01/04 22:51:29 phil Exp $
 #
 # @Copyright@
 # 
@@ -60,6 +60,10 @@
 # @Copyright@
 #
 # $Log: bootstrap0.sh,v $
+# Revision 1.8  2012/01/04 22:51:29  phil
+# Reverse last two steps. Can't use install_os_packages macro until the
+# buildhost  is in the database
+#
 # Revision 1.7  2011/11/07 22:34:40  phil
 # add the default distro
 #
@@ -98,7 +102,9 @@ fi
 
 # 1. other system packages (need similar for solaris)
 if [ `./_os` == "linux" ]; then
-	yum -y install rpm-build rpm-devel gcc gcc-c++ ncurses-devel swig glib2 glib2-devel openssl-devel pygobject2 pygobject2-devel cairo cairo-devel createrepo
+	yum -y install rpm-build rpm-devel gcc gcc-c++ ncurses-devel swig glib2 glib2-devel openssl-devel pygobject2 pygobject2-devel cairo cairo-devel createrepo apr apr-devel expat-devel
+	# packages required to build anaconda on 6
+	yum -y install e2fsprogs-devel isomd5sum-devel libarchive-devel libXxf86misc-devel libblkid-devel libnl-devel newt-devel pykickstart slang-devel NetworkManager-devel NetworkManager-glib-devel iscsi-initiator-utils-devel device-mapper-devel
 fi
 
 # 2. Foundation Packages
@@ -134,15 +140,17 @@ fi
 # 5. Create OS Roll and Latest Updates Roll from Mirror
 make -C OSROLL base updates
 
-# 6. Rest of packages for full build
+# 6. Create a fake bootstrap appliance, network, and host in the database
+MYNAME=`hostname`
+/opt/rocks/bin/rocks add distribution rocks-dist
+/opt/rocks/bin/rocks add appliance bootstrap node=server
+/opt/rocks/bin/rocks add host $MYNAME rack=0 rank=0 membership=bootstrap
+/opt/rocks/bin/rocks add network private 127.0.0.1 netmask=255.255.255.255
+/opt/rocks/bin/rocks add host interface $MYNAME lo subnet=private ip=127.0.0.1
+
+# 7. Rest of packages for full build
 if [ `./_os` == "linux" ]; then
         install_os_packages bootstrap-packages
 fi
 
-# 7. Create a fake bootstrap appliance, network, and host in the database
-/opt/rocks/bin/rocks add distribution rocks-dist
-/opt/rocks/bin/rocks add appliance bootstrap node=server
-/opt/rocks/bin/rocks add host localhost rack=0 rank=0 membership=bootstrap
-/opt/rocks/bin/rocks add network bootstrap 127.0.0.1 netmask=255.255.255.255
-/opt/rocks/bin/rocks add host interface localhost lo subnet=bootstrap ip=127.0.0.1
 
