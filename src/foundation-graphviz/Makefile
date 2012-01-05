@@ -1,5 +1,5 @@
 # --------------------------------------------------- -*- Makefile -*- --
-# $Id: Makefile,v 1.15 2011/07/23 02:30:45 phil Exp $
+# $Id: Makefile,v 1.16 2012/01/05 04:49:14 phil Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.16  2012/01/05 04:49:14  phil
+# Newer version of graphviz
+#
 # Revision 1.15  2011/07/23 02:30:45  phil
 # Viper Copyright
 #
@@ -143,7 +146,7 @@ install::
 	(								\
 		cd graphviz-$(VERSION);					\
 		LD_LIBRARY_PATH=$(ROOT)/$(PKGROOT)/lib/graphviz		\
-			$(MAKE) prefix=$(ROOT)/$(PKGROOT) install;		\
+			$(MAKE) DESTDIR=$(ROOT) install;		\
 	)
 
 clean::
