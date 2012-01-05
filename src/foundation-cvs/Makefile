@@ -1,5 +1,5 @@
 # --------------------------------------------------- -*- Makefile -*- --
-# $Id: Makefile,v 1.13 2011/07/23 02:30:45 phil Exp $
+# $Id: Makefile,v 1.14 2012/01/05 02:20:17 phil Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.14  2012/01/05 02:20:17  phil
+# Patch 'em up.
+#
 # Revision 1.13  2011/07/23 02:30:45  phil
 # Viper Copyright
 #
@@ -136,6 +139,7 @@ include Rules.mk
 
 build:
 	gunzip -c cvs-$(VERSION).tar.gz | $(TAR) -xf -
+	(cd patch-files && find . -type f | grep -v CVS | cpio -pduv ../)
 	( 								\
 		cd cvs-$(VERSION);					\
 		./configure --prefix=$(PKGROOT);			\
