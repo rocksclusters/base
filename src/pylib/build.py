@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: build.py,v $
+# Revision 1.45  2012/01/06 21:58:14  phil
+# Build a proper repo when no comps.xml file. Useful when bootstrapping
+# and you don't have the base roll built yet.
+#
 # Revision 1.44  2011/07/23 02:30:49  phil
 # Viper Copyright
 #
@@ -1422,8 +1426,17 @@ class DistributionBuilder(Builder):
 	if not os.path.exists(createrepo):
 		createrepo = '/usr/share/createrepo/genpkgmetadata.py'
 
+
+	groupfile = "%s/RedHat/base/comps.xml" % releasedir
+	if os.path.exists(groupfile):
+		gf = "--groupfile %s/RedHat/base/comps.xml " % (releasedir)
+	else:
+		print "Couldn't find the groupfile %s" % groupfile
+		print "\tIf you are bootstrapping, this is not a problem"
+		gf = " "
+
 	os.system('%s ' % (createrepo) + 
-		'--groupfile %s/RedHat/base/comps.xml ' % (releasedir) + 
+		gf + 
 		'--cachedir %s --quiet .' % (cachedir))
 
 	os.chdir(cwd)
