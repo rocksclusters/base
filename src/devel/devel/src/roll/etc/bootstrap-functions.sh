@@ -5,7 +5,7 @@
 # parsing.  This script starts out as shell code but it generates some
 # simple python code to handle the installation of required packages.
 #
-# $Id: bootstrap-functions.sh,v 1.5 2011/12/21 23:30:45 phil Exp $
+# $Id: bootstrap-functions.sh,v 1.6 2012/01/06 19:20:07 phil Exp $
 #
 # @Copyright@
 # 
@@ -61,6 +61,9 @@
 # @Copyright@
 #
 # $Log: bootstrap-functions.sh,v $
+# Revision 1.6  2012/01/06 19:20:07  phil
+# Use yum to install OS packages when bootstrapping
+#
 # Revision 1.5  2011/12/21 23:30:45  phil
 # make it is so we can call install_os_packages twice.
 #
@@ -162,10 +165,8 @@ class App(rocks.app.Application):
 				list.append(e)
 		dist = rocks.roll.Distribution(self.getArch())
 		dist.generate('--notorrent --with-rolls-only')
-		for e in list:
-			if dist.getRPM(e):
-				for pkg in dist.getRPM(e):
-					pkg.installPackage(os.sep)
+		if len(list) > 0:
+			dist.installPackagesYum(list)
 
 app = App(sys.argv)
 app.parseArgs()

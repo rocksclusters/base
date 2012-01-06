@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: roll.py,v $
+# Revision 1.22  2012/01/06 19:20:06  phil
+# Use yum to install OS packages when bootstrapping
+#
 # Revision 1.21  2011/07/23 02:30:49  phil
 # Viper Copyright
 #
@@ -127,6 +130,10 @@
 #
 
 import os
+import sys
+import re
+import string
+import tempfile
 import rocks.file
 import rocks.util
 
@@ -180,11 +187,40 @@ class Distribution:
 	def getPath(self):
 		return os.path.join(self.name, self.arch)
 		
+	def systemRepoList(self):
+		""" Generate the list of Enabled Repos from the system yum configuration.
+                    Can use this list to explicitly disable these repos when installing from
+                    a purely local repo """
+		preamble = 1
+		repolist = []
+		a = os.popen("yum repolist")
+		for line in a.readlines():
+			if preamble and re.search("repo id", line):
+				preamble = 0
+				continue
+			if not preamble:
+				if not re.search("repolist:",line):
+					repolist.append(string.split(line)[0])
+		return repolist
+
+	def createLocalYumConf(self):
+		""" Create a yum conf file to enable this distribution """
+		(fd, self.yumConfFile) = tempfile.mkstemp()
+		confstr = "[temprepo] \n"
+		confstr += "name=tempRepo \n"
+		confstr += "baseurl=file://%s \n"
+		confstr += "enabled=1 \n"
+		confstr += "gpgcheck=0 \n"
+		os.write(fd, confstr % self.tree.getRoot())
+		os.close(fd)
+		 
+	 
 	def generate(self, flags=""):
 		rocks.util.system('/opt/rocks/bin/rocks create distro ' + \
 			'dist=%s %s' % (self.name, flags))
 		self.tree = rocks.file.Tree(os.path.join(os.getcwd(), 
 			self.getPath()))
+		self.createLocalYumConf()
 		
 	def getRPMS(self):
 		return self.tree.getFiles(os.path.join('RedHat', 'RPMS'))
@@ -203,6 +239,21 @@ class Distribution:
 		if len(l) > 0:
 			return l
 		return None
+
+	def installPackagesYum(self,pkgList):
+		""" Given a package list (no version #s, but could have an arch tag), attempt to install
+		the pkgList via yum.  Have to disable the system repos, if there are any """
+		cmd = "yum -y install -c %s" % self.yumConfFile
+		ignoreRepos = self.systemRepoList()
+		if len(ignoreRepos) > 0:
+			cmd += " --disablerepo=%s" % (','.join(ignoreRepos))
+		cmd += " %s" % ' '.join(pkgList) 
+		print 'cmd', cmd
+		return os.system(cmd)
+		
+		
+		
+
 
 #
 # used to parse rolls.xml file
