@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: roll.py,v $
+# Revision 1.23  2012/01/07 05:03:21  phil
+#
+# Fixups
+#
 # Revision 1.22  2012/01/06 19:20:06  phil
 # Use yum to install OS packages when bootstrapping
 #
@@ -240,13 +244,14 @@ class Distribution:
 			return l
 		return None
 
-	def installPackagesYum(self,pkgList):
+	def installPackagesYum(self,pkgList, options=' '):
 		""" Given a package list (no version #s, but could have an arch tag), attempt to install
 		the pkgList via yum.  Have to disable the system repos, if there are any """
 		cmd = "yum -y install -c %s" % self.yumConfFile
 		ignoreRepos = self.systemRepoList()
 		if len(ignoreRepos) > 0:
 			cmd += " --disablerepo=%s" % (','.join(ignoreRepos))
+		cmd += " %s" % options
 		cmd += " %s" % ' '.join(pkgList) 
 		print 'cmd', cmd
 		return os.system(cmd)
