@@ -1,5 +1,5 @@
 # --------------------------------------------------- -*- Makefile -*- --
-# $Id: Makefile,v 1.28 2012/01/22 05:28:46 phil Exp $
+# $Id: Makefile,v 1.29 2012/01/22 06:08:31 phil Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.29  2012/01/22 06:08:31  phil
+# Hack to also install into python2.6
+#
 # Revision 1.28  2012/01/22 05:28:46  phil
 # Have version reported by app object be the same at the rocks version it is built on
 #
@@ -281,6 +284,8 @@ else
 	SEDSCRIPT +=	-e s%@VERSION_MICRO@%$(VERSION.MICRO)%g 
 endif 
 
+ROCKSPYTHON26SED = -e 's%! /opt/rocks/bin/python%! /opt/rocks/bin/python2.6%'
+
 build: $(RCFILES) __init__.py
 	mkdir -p $(ROOT)/$(PY.ROCKS)/rocks
 	mkdir -p $(ROOT)/$(PKGROOT)/etc
@@ -288,6 +293,12 @@ build: $(RCFILES) __init__.py
 
 install:: build
 	$(INSTALL) -m 0444 $(PYLIB) $(ROOT)/$(PY.ROCKS)/rocks
+	# Install into python2.6, too
+	mkdir -p $(ROOT)/opt/rocks/lib/python2.6/site-packages/rocks
+	$(INSTALL) -m 0444 $(PYLIB) $(ROOT)/opt/rocks/lib/python2.6/site-packages/rocks
+	( for i in $(PYLIB); do \
+		sed -i $(ROCKSPYTHON26SED) $(ROOT)/opt/rocks/lib/python2.6/site-packages/rocks/$$i; \
+	done )
 	(\
 		if [ $(OS) == 'sunos' ]; then \
 		sed -e 's/var.lib.mysql/var\/opt\/rocks\/mysql/g' sql.py > \
