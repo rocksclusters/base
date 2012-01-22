@@ -1,5 +1,5 @@
 # --------------------------------------------------- -*- Makefile -*- --
-# $Id: Makefile,v 1.27 2011/07/23 02:30:48 phil Exp $
+# $Id: Makefile,v 1.28 2012/01/22 05:28:46 phil Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.28  2012/01/22 05:28:46  phil
+# Have version reported by app object be the same at the rocks version it is built on
+#
 # Revision 1.27  2011/07/23 02:30:48  phil
 # Viper Copyright
 #
@@ -269,12 +272,19 @@ include Rules.mk
 RCFILES		= rocksrc
 SEDSCRIPT +=	-e s%@VERSION_MAJOR@%$(VERSION.MAJOR)%g \
 		-e s%@VERSION_MINOR@%$(VERSION.MINOR)%g \
-		-e s%@VERSION_MICRO@%$(VERSION.MICRO)%g \
 		-e s%@VERSION_NAME@%$(VERSION_NAME)%g
+
+# If MICRO_VERSION isn't defined, then force it to zero
+ifndef VERSION.MICRO
+	SEDSCRIPT +=	-e s%@VERSION_MICRO@%0%g 
+else
+	SEDSCRIPT +=	-e s%@VERSION_MICRO@%$(VERSION.MICRO)%g 
+endif 
 
 build: $(RCFILES) __init__.py
 	mkdir -p $(ROOT)/$(PY.ROCKS)/rocks
 	mkdir -p $(ROOT)/$(PKGROOT)/etc
+	sed -i $(SEDSCRIPT) app.py
 
 install:: build
 	$(INSTALL) -m 0444 $(PYLIB) $(ROOT)/$(PY.ROCKS)/rocks

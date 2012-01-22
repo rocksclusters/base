@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: app.py,v $
+# Revision 1.15  2012/01/22 05:28:47  phil
+# Have version reported by app object be the same at the rocks version it is built on
+#
 # Revision 1.14  2011/07/23 02:30:48  phil
 # Viper Copyright
 #
@@ -280,9 +283,9 @@ class Application:
 
         self.projectName	 = 'rocks'
         self.projectVersionName  = 'base'
-        self.projectVersionMajor = '0'
-        self.projectVersionMinor = '0'
-        self.projectVersionMicro = '0'
+        self.projectVersionMajor = '@VERSION_MAJOR@'
+        self.projectVersionMinor = '@VERSION_MINOR@'
+        self.projectVersionMicro = '@VERSION_MICRO@'
         
 
         self.getopt		= rocks.util.Struct()
