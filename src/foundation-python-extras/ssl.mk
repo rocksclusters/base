@@ -1,5 +1,5 @@
 #
-# $Id: ssl.mk,v 1.3 2011/07/23 02:30:45 phil Exp $
+# $Id: ssl.mk,v 1.4 2012/01/23 20:02:44 phil Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: ssl.mk,v $
+# Revision 1.4  2012/01/23 20:02:44  phil
+# Update M2Crypto version. fix build bugs on 6 for M2Crypto and SSL
+#
 # Revision 1.3  2011/07/23 02:30:45  phil
 # Viper Copyright
 #
@@ -70,6 +73,7 @@ build::
 	gunzip -c ssl-1.15.tar.gz | $(TAR) -xf -
 	(								\
 		cd ssl-1.15;						\
+		sed -i "s%'/usr/lib'%'/usr/lib64', '/usr/lib'%" setup.py;\
 		if [ $(OS) == 'sunos' ]; then				\
 		CPPFLAGS=-I/usr/sfw/include LDFLAGS=-L/usr/sfw/lib 	\
 			 $(PY.PATH) setup.py build;			\

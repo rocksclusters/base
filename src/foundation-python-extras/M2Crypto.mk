@@ -1,5 +1,5 @@
 #
-# $Id: M2Crypto.mk,v 1.3 2011/07/23 02:30:45 phil Exp $
+# $Id: M2Crypto.mk,v 1.4 2012/01/23 20:02:44 phil Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: M2Crypto.mk,v $
+# Revision 1.4  2012/01/23 20:02:44  phil
+# Update M2Crypto version. fix build bugs on 6 for M2Crypto and SSL
+#
 # Revision 1.3  2011/07/23 02:30:45  phil
 # Viper Copyright
 #
@@ -66,22 +69,27 @@
 #
 #
 
-M2OPTIONS	= build_ext "-I/usr/include/openssl"
+M2OPTIONS	= build_ext "-I/usr/include/openssl -DOPENSSL_NO_EC"
+CRYPTOVERSION	= 0.21.1
 
 build::
-	gunzip -c M2Crypto-0.20.2.tar.gz | $(TAR) -xf -
+	gunzip -c M2Crypto-$(CRYPTOVERSION).tar.gz | $(TAR) -xf -
 	(								\
-		cd M2Crypto-0.20.2;					\
-		$(PY.PATH) setup.py build $(M2OPTIONS);			\
+		cd M2Crypto-$(CRYPTOVERSION);				\
+		for f in `find . -exec grep -l opensslconf.h {} \;`;  	\
+		do 						\
+		    sed -i "s/opensslconf.h/opensslconf-$(ARCH).h/" $$f; \
+		done; 							\
+		SWIG_FEATURES="-cpperraswarn -DOPENSSL_NO_EC" $(PY.PATH) setup.py build $(M2OPTIONS);			\
 	)
 	
 install::
 	(								\
-		cd M2Crypto-0.20.2;					\
+		cd M2Crypto-$(CRYPTOVERSION);				\
 		$(PY.PATH) setup.py $(M2OPTIONS) install --root=$(ROOT); \
 	)
 
 
 clean::
-	rm -rf M2Crypto-0.20.2
+	rm -rf M2Crypto-$(CRYPTOVERSION)
 
