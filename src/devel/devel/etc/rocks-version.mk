@@ -1,5 +1,5 @@
 #
-# $Id: rocks-version.mk,v 1.7 2011/11/11 06:00:25 phil Exp $
+# $Id: rocks-version.mk,v 1.8 2012/01/23 19:57:50 phil Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,12 @@
 # @Copyright@
 #
 # $Log: rocks-version.mk,v $
+# Revision 1.8  2012/01/23 19:57:50  phil
+# Updates for rpm version 4
+# Set Rocks version to 6.0
+# XXX -- Version should really be set from a bootstrap build to we can easily
+# flip between 5 and 6 builds. editing rocks-version.mk is cumbersome
+#
 # Revision 1.7  2011/11/11 06:00:25  phil
 # Updated anaconda to RHEL 5.7 base
 #
@@ -268,8 +274,8 @@ __RELEASE_MK = yes
 # can override this with their own version numbers.  If you want to
 # make sure you get the version of Rocks use ROCKS_VERSION.
 
-VERSION.MAJOR = 5
-VERSION.MINOR = 5
+VERSION.MAJOR = 6
+VERSION.MINOR = 0
 #VERSION.PATCH = 3
 
 ifeq ($(VERSION.PATCH),)

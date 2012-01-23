@@ -1,4 +1,4 @@
-# $Id: Rules-linux-centos.mk,v 1.7 2011/07/28 21:38:00 phil Exp $
+# $Id: Rules-linux-centos.mk,v 1.8 2012/01/23 19:57:50 phil Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,12 @@
 # @Copyright@
 #
 # $Log: Rules-linux-centos.mk,v $
+# Revision 1.8  2012/01/23 19:57:50  phil
+# Updates for rpm version 4
+# Set Rocks version to 6.0
+# XXX -- Version should really be set from a bootstrap build to we can easily
+# flip between 5 and 6 builds. editing rocks-version.mk is cumbersome
+#
 # Revision 1.7  2011/07/28 21:38:00  phil
 # Allow us to specify RPM.FILESLIST as a list of files for rpm to package.
 # This is allows us to have RPMS with files, but not owning upper directories.
@@ -232,6 +238,8 @@ HOME		= $(CURDIR)
 $(HOME)/.rpmmacros:
 	rm -f $@
 	@echo "%_topdir $(REDHAT.ROOT)" > $@
+	@echo "%_buildrootdir $(BUILDROOT)" >> $@
+	@echo "%buildroot $(BUILDROOT)" >> $@
 	@echo "%_var	$(REDHAT.VAR)" >> $@
 	@echo "%debug_package	%{nil}" >> $@
 
