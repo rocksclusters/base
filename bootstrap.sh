@@ -2,7 +2,7 @@
 #
 # This file should remain OS independent
 #
-# $Id: bootstrap.sh,v 1.29 2011/12/21 23:30:46 phil Exp $
+# $Id: bootstrap.sh,v 1.30 2012/01/23 20:07:18 phil Exp $
 #
 # @Copyright@
 # 
@@ -58,6 +58,10 @@
 # @Copyright@
 #
 # $Log: bootstrap.sh,v $
+# Revision 1.30  2012/01/23 20:07:18  phil
+# Makefile now supports version specific files in include directory.
+# Bootstrap.sh adds foundation-python-26
+#
 # Revision 1.29  2011/12/21 23:30:46  phil
 # make it is so we can call install_os_packages twice.
 #
@@ -192,6 +196,7 @@ compile_and_install foundation-python-xml
 compile_and_install foundation-python-extras
 compile_and_install foundation-rcs
 compile_and_install foundation-ant
+compile_and_install foundation-python-26
 
 if [ `./_os` == "linux" ]; then
 	compile_and_install librocks

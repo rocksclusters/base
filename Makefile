@@ -1,5 +1,5 @@
 #
-# $Id: Makefile,v 1.20 2011/07/23 02:30:14 phil Exp $
+# $Id: Makefile,v 1.21 2012/01/23 20:07:18 phil Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,10 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.21  2012/01/23 20:07:18  phil
+# Makefile now supports version specific files in include directory.
+# Bootstrap.sh adds foundation-python-26
+#
 # Revision 1.20  2011/07/23 02:30:14  phil
 # Viper Copyright
 #
@@ -140,5 +144,8 @@ ROLLSROOT = $(CURDIR)/src/devel/devel/src/roll
 -include $(ROLLSROOT)/etc/Rolls.mk
 include Rolls.mk
 
-default: roll
+default: version-prefetch roll
+
+version-prefetch:
+	make -C include-version default
 
