@@ -1,5 +1,5 @@
 # --------------------------------------------------- -*- Makefile -*- --
-# $Id: Makefile,v 1.14 2011/07/23 02:30:45 phil Exp $
+# $Id: Makefile,v 1.15 2012/01/23 20:01:42 phil Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.15  2012/01/23 20:01:42  phil
+# Use system perl. We ditched foundation-perl as a requirement in 5.4.3. This fixes that
+#
 # Revision 1.14  2011/07/23 02:30:45  phil
 # Viper Copyright
 #
@@ -142,6 +145,7 @@ ROCKSROOT       = ../devel/devel
 -include $(ROCKSROOT)/etc/Rules.mk
 include Rules.mk
 
+PERL		= /usr/bin/perl
 
 build:
 	gunzip -c libxml2-$(VERSION).tar.gz | $(TAR) -xf - 
