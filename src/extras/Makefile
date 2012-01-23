@@ -1,5 +1,5 @@
 #
-# $Id: Makefile,v 1.11 2011/07/23 02:30:44 phil Exp $
+# $Id: Makefile,v 1.12 2012/01/23 20:00:27 phil Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.12  2012/01/23 20:00:27  phil
+# caching named package changed from 5 to 6. Do we really need this anymore?
+#
 # Revision 1.11  2011/07/23 02:30:44  phil
 # Viper Copyright
 #
@@ -112,8 +115,8 @@ include Rules.mk
 rpm::
 	rocks create distro 
 	mkdir -p $(REDHAT.RPMS)/$(ARCH)
-	cp $(DISTPATH)/caching-nameserver*rpm $(REDHAT.RPMS)/$(ARCH)
-	touch -t 197012310000 $(REDHAT.RPMS)/$(ARCH)/caching-nameserver*rpm
+	cp $(DISTPATH)/$(CACHENAMED)*rpm $(REDHAT.RPMS)/$(ARCH)
+	touch -t 197012310000 $(REDHAT.RPMS)/$(ARCH)/$(CACHENAMED)*rpm
 
 
 clean::
