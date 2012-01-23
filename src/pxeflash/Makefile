@@ -1,5 +1,5 @@
 # --------------------------------------------------- -*- Makefile -*- --
-# $Id: Makefile,v 1.8 2011/07/23 02:30:48 phil Exp $
+# $Id: Makefile,v 1.9 2012/01/23 20:05:43 phil Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,10 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.9  2012/01/23 20:05:43  phil
+# The kids decided to change the locale of syslinux images. Guess the old pathname
+# had bad karma. Proper pathing for 5 and 6
+#
 # Revision 1.8  2011/07/23 02:30:48  phil
 # Viper Copyright
 #
@@ -99,7 +103,6 @@ include Rules.mk
 
 FLASHFILES 	= addon 
 CP		= /bin/cp
-
 build:
 	make -f Makefile.disk BOOTIMG=$(DOSBOOT) build
 
@@ -108,7 +111,7 @@ install::
 	mkdir -p $(ROOT)/$(PKGROOT)/addon
 	$(CP) $(DOSBOOT) $(ROOT)/$(PKGROOT)
 	mkdir -p $(ROOT)/tftpboot/pxelinux
-	install -m755 /usr/lib/syslinux/memdisk $(ROOT)/tftpboot/pxelinux
+	install -m755 $(MEMDISK) $(ROOT)/tftpboot/pxelinux
 	make -f Makefile.disk ROOT=$(ROOT) BOOTIMG=$(DOSBOOT) install
 	install -m644 Makefile.disk $(ROOT)/$(PKGROOT)/Makefile
 	install -m644 version.mk $(ROOT)/$(PKGROOT)/version.mk
