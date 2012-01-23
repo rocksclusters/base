@@ -1,4 +1,4 @@
-# $Id: linux.mk,v 1.30 2011/12/20 19:19:44 phil Exp $
+# $Id: linux.mk,v 1.31 2012/01/23 19:50:59 phil Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: linux.mk,v $
+# Revision 1.31  2012/01/23 19:50:59  phil
+# On 6, also build anaconda-yum-plugins package
+#
 # Revision 1.30  2011/12/20 19:19:44  phil
 # Remove rebuild of kudzu
 #
@@ -188,6 +191,7 @@ SRCDIRS = `find . -type d -maxdepth 1 \
 	-not -name bittorrent \
 	-not -name postfix \
 	-not -name lsof \
+	-not -name anaconda-yum-plugins \
 	-not -name channel`
 
 #
@@ -195,3 +199,8 @@ SRCDIRS = `find . -type d -maxdepth 1 \
 # from the base roll
 #
 SRCDIRS += anaconda updates.img channel
+
+ifeq ($strip $(VERSION.MAJOR), 6)
+SRCDIRS += anaconda-yum-plugins
+endif
+
