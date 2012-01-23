@@ -25,6 +25,7 @@
 
 <package>createrepo</package>
 <package>squashfs-tools</package>
+<package>syslinux-perl</package>
 
 <package>swig</package>
 

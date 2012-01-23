@@ -16,6 +16,9 @@
 
 	<changelog>
 	$Log: bootstrap-packages.xml,v $
+	Revision 1.6  2012/01/23 19:50:17  phil
+	Added additional bootstrap packages for 6.  syslinux-perl (for 6, doesn't hurt on 5)
+	
 	Revision 1.5  2011/11/05 04:14:13  phil
 	Packages to build rrdtool, graphviz
 	
@@ -42,6 +45,7 @@
 	<package os="linux">apr-util-devel</package>
 	<package os="linux">audit-libs-devel</package>
 	<package os="linux">beecrypt-devel</package>
+	<package os="linux">binutils-devel</package>
 	<package os="linux">booty</package>
 	<package os="linux">bzip2-devel</package>
 	<package os="linux">dialog</package>
@@ -52,16 +56,19 @@
 	<package os="linux">intltool</package>
 	<package os="linux">jadetex</package>
 	<package os="linux">kudzu-devel</package>
+	<package os="linux">libcurl-devel</package>
 	<package os="linux">libdhcp-devel</package>
 	<package os="linux">libdhcp4client</package>
 	<package os="linux">libdhcp4client-devel</package>
 	<package os="linux">libdhcp6client</package>
 	<package os="linux">libdhcp6client-devel</package>
 	<package os="linux">libICE-devel</package>
+	<package os="linux">libIDL-devel</package>
 	<package os="linux">libnl-devel</package>
 	<package os="linux">libSM-devel</package>
 	<package os="linux">libXaw</package>
 	<package os="linux">libXaw-devel</package>
+	<package os="linux">libXcomposite-devel</package>
 	<package os="linux">libXext-devel</package>
 	<package os="linux">libxml2</package>
 	<package os="linux">libxml2-devel</package>
@@ -73,17 +80,25 @@
 	<package os="linux">libXxf86misc-devel</package>
 	<package os="linux">mkinitrd-devel</package>
 	<package os="linux">newt-devel</package>
+	<package os="linux">openjade</package>
+	<package os="linux">opensp</package>
 	<package os="linux">pango-devel</package>
+	<package os="linux">pycairo-devel</package>
 	<package os="linux">pcre-devel</package>
 	<package os="linux">pciutils-devel</package>
+	<package os="linux">pycairo-devel</package>
 	<package os="linux">pykickstart</package>
 	<package os="linux">python-devel</package>
 	<package os="linux">readline-devel</package>
 	<package os="linux">slang-devel</package>
+	<package os="linux">syslinux</package>
+	<package os="linux">telnet</package>
 	<package os="linux">tetex</package>
 	<package os="linux">tetex-dvips</package>
 	<package os="linux">tetex-fonts</package>
 	<package os="linux">tetex-latex</package>
+	<package os="linux">xmlto</package>
 	<package os="linux">xorg-x11-util-macros</package>
+
 </kickstart>
 
