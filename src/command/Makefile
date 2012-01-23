@@ -1,5 +1,5 @@
 # --------------------------------------------------- -*- Makefile -*- --
-# $Id: Makefile,v 1.22 2011/07/23 02:30:24 phil Exp $
+# $Id: Makefile,v 1.23 2012/01/23 19:54:49 phil Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.23  2012/01/23 19:54:49  phil
+# Tweak for new RPM building macros
+#
 # Revision 1.22  2011/07/23 02:30:24  phil
 # Viper Copyright
 #
@@ -191,6 +194,7 @@ install::
 	$(INSTALL) -m0444 rocks-copyright.txt \
 		$(ROOT)/$(PY.ROCKS)/rocks/commands/list/license/license.txt
 	find $(ROOT) -type d -exec chmod a+rx {} \;
+	#find $(ROOT) | sed "s%$(ROOT)%%" > $(RPM.FILESLIST) 
 
 clean::
 	rm -f $(SCRIPTS)
