@@ -1,5 +1,5 @@
 #
-# $Id: Makefile,v 1.21 2011/07/23 02:30:23 phil Exp $
+# $Id: Makefile,v 1.22 2012/01/23 19:52:33 phil Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.22  2012/01/23 19:52:33  phil
+# Build on 5 or 6. Exact version to be build dependent on VERSION.MAJOR of Rocks itself
+#
 # Revision 1.21  2011/07/23 02:30:23  phil
 # Viper Copyright
 #
@@ -169,7 +172,7 @@ rpm::	$(HOME)/.rpmmacros patch
 #
 # Unpack the source tree, patch it, rebundle
 patch:
-	rpm -Uvh $(NAME)-$(VERSION)-$(RELEASE).src.rpm
+	rpm -Uvh $(NAME)-$(VERSION)-$(SRPMRELEASE).src.rpm
 	bunzip2 -c $(REDHAT.ROOT)/SOURCES/$(NAME)-$(VERSION).tar.bz2 | $(TAR) xvf -
 	(								\
 		if [ ! -d patch-files/anaconda-$(VERSION) ]; then exit; fi; \
