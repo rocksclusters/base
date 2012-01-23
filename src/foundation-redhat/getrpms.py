@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: getrpms.py,v $
+# Revision 1.10  2012/01/23 20:04:38  phil
+# Exception handling in getrpms.    Small change in base packages between 5/6
+#
 # Revision 1.9  2011/07/23 02:30:46  phil
 # Viper Copyright
 #
@@ -117,12 +120,15 @@ class App(rocks.app.Application):
 		root = self.args[0]
 		rpms = self.args[1:]
 		dist = rocks.roll.Distribution(self.getArch())
+		print "Arch is %s" % self.getArch()
 		dist.generate('--notorrent')
 		
 		for name in rpms:
-			for rpm in dist.getRPM(name):
-				rpm.installPackage(root, '--excludedocs')
-			
+			try:
+				for rpm in dist.getRPM(name):
+					rpm.installPackage(root, '--excludedocs')
+			except:
+				print "failed on rpm %s" % name 
 
 app = App(sys.argv)
 app.parseArgs()
