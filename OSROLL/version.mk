@@ -1,8 +1,16 @@
 ## Create 
 DISTRO=CentOS
 ARCH=x86_64
+ifeq ($strip $(VERSION.MAJOR), 5)
 VERSION=5.7
-MIRRORURL=http://mirror.hmc.edu
+PKGS=RPMS
 BASEPATH=centos/$(VERSION)/os/$(ARCH)/CentOS
-UPDATESPATH=centos/$(VERSION)/updates/$(ARCH)/RPMS
+else
+VERSION=6.2
+PKGS=Packages
+BASEPATH=centos/$(VERSION)/os/$(ARCH)/$(PKGS)
+endif
+
+MIRRORURL=http://mirror.hmc.edu
+UPDATESPATH=centos/$(VERSION)/updates/$(ARCH)/$(PKGS)
 
