@@ -1,5 +1,5 @@
 #
-# $Id: Makefile,v 1.28 2011/07/23 02:30:44 phil Exp $
+# $Id: Makefile,v 1.29 2012/01/23 19:59:24 phil Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,10 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.29  2012/01/23 19:59:24  phil
+# Different models of "hacking anaconda" in 5 v. 6. For 6, adopting the model from
+# StackIQ's public repo. For 5, keeping the original setup.
+#
 # Revision 1.28  2011/07/23 02:30:44  phil
 # Viper Copyright
 #
@@ -345,7 +349,10 @@ include Rules.mk
 include python.mk
 
 
-build:	make-bootable-disks make-unbootable-disks check_port
+build:	make-bootable-disks make-unbootable-disks check_port anaconda
+
+anaconda: 
+	/bin/cp $(VERSION.MAJOR)/anaconda .
 
 make-bootable-disks: make-bootable-disks.o
 	$(CC) $(CFLAGS) -o$@ $^
@@ -386,7 +393,7 @@ install::
 	cp /$(LIB)/libutil* $(ROOT)/$(PKGROOT)/usr/$(LIB)/
 	cp /$(LIB)/libpam.so* $(ROOT)/$(PKGROOT)/usr/$(LIB)/
 	cp /$(LIB)/security/pam_permit.so $(ROOT)/$(PKGROOT)/usr/$(LIB)/
-	cp /usr/$(LIB)/libwrap.so* $(ROOT)/$(PKGROOT)/usr/$(LIB)/
+	cp $(LIBWRAP) $(ROOT)/$(PKGROOT)/usr/$(LIB)/
 
 	mkdir -p $(ROOT)/$(PKGROOT)/usr/share/terminfo/v
 	$(INSTALL) -m644 /usr/share/terminfo/v/vt100 \

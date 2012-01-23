@@ -1,14 +1,14 @@
 #!/bin/sh
 #
-# $Id: anaconda,v 1.36 2011/07/23 02:30:44 phil Exp $
+# $Id: anaconda,v 1.1 2012/01/23 19:59:24 phil Exp $
 #
 # @Copyright@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		         version 5.4.3 (Viper)
+# 		         version 5.4 (Maverick)
 # 
-# Copyright (c) 2000 - 2011 The Regents of the University of California.
+# Copyright (c) 2000 - 2010 The Regents of the University of California.
 # All rights reserved.	
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -27,7 +27,7 @@
 # features or use of this software must display the following acknowledgement: 
 # 
 # 	"This product includes software developed by the Rocks(r)
-# 	Development Team at the San Diego Supercomputer Center at the
+# 	Cluster Group at the San Diego Supercomputer Center at the
 # 	University of California, San Diego and its contributors."
 # 
 # 4. Except as permitted for the purposes of acknowledgment in paragraph 3,
@@ -56,8 +56,9 @@
 # @Copyright@
 #
 # $Log: anaconda,v $
-# Revision 1.36  2011/07/23 02:30:44  phil
-# Viper Copyright
+# Revision 1.1  2012/01/23 19:59:24  phil
+# Different models of "hacking anaconda" in 5 v. 6. For 6, adopting the model from
+# StackIQ's public repo. For 5, keeping the original setup.
 #
 # Revision 1.35  2011/01/05 19:00:53  bruno
 # Properly report disk partitions into the database for software RAID file
@@ -330,7 +331,7 @@ echo "export PATH" >> /.profile
 echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/tmp/updates/lib:/tmp/updates/usr/lib64:/tmp/updates/usr/lib" >> /.profile
 echo "export LD_LIBRARY_PATH" >> /.profile
 
-LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/tmp/updates/lib:/tmp/updates/usr/lib64:/tmp/updates/usr/lib
+LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/tmp/updates/lib:/tmp/updates/usr/lib64:/tmp/updates/usr/lib:/lib64_old:/lib_old
 export LD_LIBRARY_PATH
 
 FOUNDATION=`/tmp/updates/opt/rocks/bin/python -c "
@@ -348,7 +349,7 @@ print string.join(sys.path, ':')
 # EXTRAPYTHON=/tmp/updates/usr/lib/anaconda:/tmp/updates/usr/lib/python2.3/site-packages/rhpl:/tmp/updates/usr/lib64/python2.3/site-packages/rhpl
 # export PYTHONPATH=$INSTALLEDPYTHON:$FOUNDATION:$EXTRAPYTHON
 
-export PYTHONPATH=$INSTALLEDPYTHON:$FOUNDATION
+# export PYTHONPATH=$INSTALLEDPYTHON:$FOUNDATION
 
 
 #
@@ -357,13 +358,6 @@ export PYTHONPATH=$INSTALLEDPYTHON:$FOUNDATION
 # (e.g., i686 vs. athlon)
 #
 rm -f /etc/rpm/platform
-
-#
-# ssh server support
-#
-# the server needs '/bin/bash', so let's fake it out
-#
-ln -s /bin/sh /bin/bash
 
 #
 # make sure there is a home directory for root
@@ -451,6 +445,23 @@ then
 	fi
 fi
 
+chmod a+x /tmp/product/anaconda_rocks.py
+
+if [ -f /tmp/updates/storage/devicetree.py ]
+then
+	(
+		cd /tmp/updates/storage ;
+		cp -r -n /mnt/runtime/usr/lib/anaconda/storage/* .
+	)
+fi
+
+#
+# make sure a dummy /tmp/partition-info file exists, otherwise the
+# installer will throw an exception
+#
+touch /tmp/partition-info
+
+
 rescue()
 {
 	#
@@ -464,7 +475,8 @@ rescue()
 	rm -f /etc/nsswitch.conf
 	rm -f /etc/protocols
 
-	/usr/bin/anaconda $* --rescue --method=http://127.0.0.1/mnt/cdrom
+	/tmp/product/anaconda_rocks.py $* --rescue \
+		--method=http://127.0.0.1/mnt/cdrom
 }
 
 start_sshd()
@@ -472,16 +484,16 @@ start_sshd()
 	#
 	# startup an ssh server
 	#
-	ssh-keygen -t rsa1 -b 1024 -f /tmp/ssh_install_host_key -N "" > \
+	/sbin/ssh-keygen -t rsa1 -b 1024 -f /tmp/ssh_install_host_key -N "" > \
 		/dev/null 2>&1
-	ssh-keygen -d -f /tmp/ssh_host_dsa_key -N "" > /dev/null 2>&1
+	/sbin/ssh-keygen -d -f /tmp/ssh_host_dsa_key -N "" > /dev/null 2>&1
 
 	case "`/usr/bin/uname -m`" in
 	x86_64)
-		lib="/tmp/updates/usr/lib64"
+		lib="/lib64/security"
 		;;
 	*)
-		lib="/tmp/updates/usr/lib"
+		lib="/lib/security"
 		;;
 	esac
 
@@ -490,8 +502,9 @@ start_sshd()
 	echo "sshd password   required     $lib/pam_permit.so" >> /etc/pam.conf
 	echo "sshd session    required     $lib/pam_permit.so" >> /etc/pam.conf
 
-	/tmp/updates/rocks/bin/sshd -f /tmp/sshd_install_config \
-		>> /tmp/ssh.debug 2>&1
+	# /tmp/updates/rocks/bin/sshd -f /tmp/sshd_install_config \
+	#	>> /tmp/ssh.debug 2>&1
+	/sbin/sshd -f /tmp/sshd_install_config >> /tmp/ssh.debug 2>&1
 }
 
 ekv()
@@ -504,8 +517,7 @@ ekv()
 	unset LANGUAS
 	export TERM=vt100
 
-	csp "pty-wrapper.py $* | \
-		/tmp/updates/rocks/bin/tee /dev/console | \
+	csp "pty-wrapper.py $* | /usr/bin/tee /dev/console | \
 		detach \"draino | detour -p 8000\" 2> /dev/null "
 }
 
@@ -524,8 +536,7 @@ server()
 	mkdir /export
 	mount /tmp/ram2 /export
 	( cd /tmp/updates/export ; \
-		find . | /tmp/updates/rocks/bin/cpio -pdu /export \
-			> /dev/null 2>&1 )
+		find . | /usr/bin/cpio -pdu /export > /dev/null 2>&1 )
 	
 	grep -q "ekv" /proc/cmdline
 	if [ $? -eq 0 ]; then
@@ -535,20 +546,14 @@ server()
 		EKV=""
 	fi
 
-	#
-	# make sure a dummy /tmp/partition-info file exists, otherwise the
-	# installer will throw an exception
-	#
-	touch /tmp/partition-info
-
-	echo "#!/usr/bin/ash
-/usr/bin/anaconda $*
+	echo "#!/sbin/bash
+/tmp/product/anaconda_rocks.py $*
 if [ -f /tmp/rolls.xml ] ; then
 	# Change the method as well. Needed for WAN kickstart.
 	rm -f /sbin/mpath_prio_*
-	/usr/bin/anaconda $* -m http://127.0.0.1/mnt/cdrom
+	/tmp/product/anaconda_rocks.py $* -m http://127.0.0.1/mnt/cdrom
 fi
-/tmp/updates/rocks/bin/killall --quiet pty-wrapper.py" > /tmp/rocks-install.sh
+/usr/bin/killall --quiet pty-wrapper.py" > /tmp/rocks-install.sh
 
 	chmod a+x /tmp/rocks-install.sh
 	$EKV /tmp/rocks-install.sh
@@ -562,11 +567,11 @@ client()
 	#
 	start_sshd
 
-	PARAMS=`echo $* | sed 's/http:\/\/[^/]*\//http:\/\/127.0.0.1\//'` 
+	PARAMS=`echo $* | sed 's/http:\/\/[^/]*\//http:\/\/127.0.0.1\//g'`
 
-	echo "ekv /usr/bin/anaconda $PARAMS" >> /tmp/ekv.debug
+	echo "ekv /tmp/product/anaconda_rocks.py $PARAMS" >> /tmp/ekv.debug
 
-	ekv /usr/bin/anaconda $PARAMS
+	ekv /tmp/product/anaconda_rocks.py $PARAMS
 
 	#
 	# before exiting, tell the Avalanche tracker that this node is no
@@ -601,5 +606,5 @@ rescue)
 esac
 
 
-/tmp/updates/rocks/bin/killall --quiet lighttpd
+/usr/bin/killall --quiet lighttpd
 
