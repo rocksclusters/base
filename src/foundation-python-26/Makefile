@@ -1,5 +1,5 @@
 # --------------------------------------------------- -*- Makefile -*- --
-# $Id: Makefile,v 1.1 2012/01/22 04:55:52 phil Exp $
+# $Id: Makefile,v 1.2 2012/01/24 04:31:46 phil Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.2  2012/01/24 04:31:46  phil
+# fPIC is your friend
+#
 # Revision 1.1  2012/01/22 04:55:52  phil
 # Start of python 2.6 as part of the foundation
 #
@@ -72,7 +75,7 @@ build:
 	-cd patch-files-$(ARCH) && find . -type f | grep -v CVS | cpio -pduv ../
 	( 								\
 		cd Python-$(VERSION);					\
-		./configure --prefix=$(PKGROOT)				\
+		./configure CFLAGS="-fPIC" --prefix=$(PKGROOT);			\
 		$(MAKE);							\
 	)
 
