@@ -1,4 +1,4 @@
-# $Id: linux.mk,v 1.31 2012/01/23 19:50:59 phil Exp $
+# $Id: linux.mk,v 1.32 2012/01/24 05:07:40 phil Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: linux.mk,v $
+# Revision 1.32  2012/01/24 05:07:40  phil
+# Add anaconda-yum-plugins for version 6
+#
 # Revision 1.31  2012/01/23 19:50:59  phil
 # On 6, also build anaconda-yum-plugins package
 #
@@ -177,6 +180,8 @@
 # - added os makefiles
 #
 
+-include $(CURDIR)/devel/devel/etc/rocks-version.mk
+
 SRCDIRS = `find . -type d -maxdepth 1 \
 	-not -name CVS \
 	-not -name . \
@@ -198,9 +203,9 @@ SRCDIRS = `find . -type d -maxdepth 1 \
 # make sure we build anaconda last, that's because it includes many packages
 # from the base roll
 #
-SRCDIRS += anaconda updates.img channel
+SRCDIRS += anaconda updates.img channel 
 
-ifeq ($strip $(VERSION.MAJOR), 6)
+ifeq ($(VERSION.MAJOR),6)
 SRCDIRS += anaconda-yum-plugins
 endif
 
