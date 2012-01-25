@@ -4,9 +4,13 @@ ROCKSROOT       = ../devel/devel
 -include $(ROCKSROOT)/etc/Rules.mk
 include Rules.mk
 
+SEDSPEC =  -e 's%@VERSION.MAJOR@%$(VERSION.MAJOR)%g'
+
+
 IMAGESDIR	= ../web-server/src/www.rockclusters.org/images
 IMAGES		= nsfwantsyou.png \
 		  pyramids.png rocks-avalanche-logo.png
+
 
 
 install-images:
@@ -14,8 +18,12 @@ install-images:
 		cp $(REDHAT.ROOT)/$(IMAGESDIR)/$$i pixmaps/rnotes/ ; \
 	done
 
-build:	install-images
-	./build-updates-img.py
+build-updates-img: build-updates-img.py
+	$(SED) $(SEDSPEC) $^ > $@
+	chmod +x $@
+
+build:	build-updates-img install-images
+	./build-updates-img
 	dd if=/dev/zero of=updates.img bs=1024 \
 		count=`du -s -k extra | awk '{ print int($$1*1.1) }'`
 	echo y | /sbin/mkfs -t ext2 updates.img
@@ -36,6 +44,7 @@ install::
 
 clean::
 	rm -f updates.img
+	rm -f build-updates-img
 	rm -f $(SPECFILE).in
 	rm -rf mnt
 	rm -rf extra

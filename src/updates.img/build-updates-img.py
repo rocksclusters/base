@@ -1,6 +1,6 @@
 #!/opt/rocks/usr/bin/python
 #
-# $Id: build-updates-img.py,v 1.14 2011/07/23 02:30:51 phil Exp $
+# $Id: build-updates-img.py,v 1.15 2012/01/25 22:42:58 phil Exp $
 #
 # @Copyright@
 # 
@@ -56,6 +56,9 @@
 # @Copyright@
 #
 # $Log: build-updates-img.py,v $
+# Revision 1.15  2012/01/25 22:42:58  phil
+# Need some additional packages for version 6 updates.img vs. version 5.
+#
 # Revision 1.14  2011/07/23 02:30:51  phil
 # Viper Copyright
 #
@@ -215,7 +218,7 @@ class App(rocks.app.Application):
 	def __init__(self, argv):
 		rocks.app.Application.__init__(self, argv)
 		self.usage_name = 'Build updates.img'
-		self.usage_version = '@VERSION@'
+		self.usage_version = '@VERSION.MAJOR@'
 		
 
 	def thinkLocally(self, name):
@@ -266,6 +269,10 @@ class App(rocks.app.Application):
 			'sharutils',
 			'squashfs-tools'
 		]
+
+		if self.usage_version == '6':
+			rpms.append('foundation-python-xml-26')	
+			rpms.append('tigervnc-server')	
 
 		for rpmname in rpms:
 			rpm = self.thinkLocally(rpmname)
