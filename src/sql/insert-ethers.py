@@ -8,9 +8,9 @@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		         version 5.4.3 (Viper)
+# 		         version 5.4 (Maverick)
 # 
-# Copyright (c) 2000 - 2011 The Regents of the University of California.
+# Copyright (c) 2000 - 2010 The Regents of the University of California.
 # All rights reserved.	
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -29,7 +29,7 @@
 # features or use of this software must display the following acknowledgement: 
 # 
 # 	"This product includes software developed by the Rocks(r)
-# 	Development Team at the San Diego Supercomputer Center at the
+# 	Cluster Group at the San Diego Supercomputer Center at the
 # 	University of California, San Diego and its contributors."
 # 
 # 4. Except as permitted for the purposes of acknowledgment in paragraph 3,
@@ -58,8 +58,8 @@
 # @Copyright@
 #
 # $Log: insert-ethers.py,v $
-# Revision 1.51  2011/07/23 02:30:50  phil
-# Viper Copyright
+# Revision 1.52  2012/01/30 06:15:07  phil
+# should work on both 5 (python 2.4) and 6 (python 2.6)
 #
 # Revision 1.50  2010/09/07 23:53:09  bruno
 # star power for gb
@@ -548,7 +548,6 @@
 
 import sys
 import os
-import popen2
 import string
 import time
 import signal
@@ -561,9 +560,13 @@ import rocks.kickstart
 import rocks.clusterdb
 from syslog import syslog
 
-from rhpl.translate import _, N_
-import rhpl.translate as translate
-translate.textdomain ('insert-ethers')
+try:
+	from rhpl.translate import _, N_
+	import rhpl.translate as translate
+	translate.textdomain ('insert-ethers')
+except:
+	from gettext import gettext as _
+
 
 class InsertError(Exception):
 	pass
@@ -910,7 +913,7 @@ class InsertEthers(GUI):
 		# Check if the appliance is kickstartable. We only need
 		# to check the appliance_attributes table in this instance
 		# since this value cannot be in any other table yet.
-		query = 'select if(aa.value="true", True, False) from '	+\
+		query = 'select if(aa.value="yes", True, False) from '	+\
 			'appliance_attributes aa, appliances a where '	+\
 			'a.name="%s" and aa.appliance=a.id ' % basename+\
 			'and aa.attr="kickstartable"'
@@ -1140,6 +1143,9 @@ class InsertEthers(GUI):
 
 
 	def getnetmask(self, dev):
+		import subprocess
+		import shlex
+
 		#
 		# check if bcast,netmask already specified
 		#
@@ -1152,9 +1158,10 @@ class InsertEthers(GUI):
 		bcast = ''
 		mask  = ''
 
-		r, w = popen2.popen2('/sbin/ifconfig %s' % (dev))
+		cmd = '/sbin/ifconfig %s' % dev
+		p = subprocess.Popen(shlex.split(cmd), stdout = subprocess.PIPE)
 
-		for line in r.readlines():
+		for line in p.stdout.readlines():
 			tokens = string.split(line)
 
 			for i in tokens:
@@ -1164,9 +1171,6 @@ class InsertEthers(GUI):
 					bcast = values[1]
 				elif values[0] == 'Mask':
 					mask = values[1]
-
-		r.close()
-		w.close()
 
 		# Set the values into this node's in-memory object
 		self.setNetmask(mask)
