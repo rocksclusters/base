@@ -1,5 +1,5 @@
 # --------------------------------------------------- -*- Makefile -*- --
-# $Id: Makefile,v 1.12 2011/07/23 02:30:46 phil Exp $
+# $Id: Makefile,v 1.13 2012/02/01 20:41:27 phil Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.13  2012/02/01 20:41:27  phil
+# update
+#
 # Revision 1.12  2011/07/23 02:30:46  phil
 # Viper Copyright
 #
@@ -116,7 +119,7 @@ include Rules.mk
 build: 
 	./getrpms.py $(ROOT)/$(PKGROOT)/redhat $(RPMS)
 
-install::
+install:: $(DOWNGRDE)
 
 clean::
 	rm -rf rocks-dist
