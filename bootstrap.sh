@@ -2,7 +2,7 @@
 #
 # This file should remain OS independent
 #
-# $Id: bootstrap.sh,v 1.30 2012/01/23 20:07:18 phil Exp $
+# $Id: bootstrap.sh,v 1.31 2012/02/01 19:58:54 phil Exp $
 #
 # @Copyright@
 # 
@@ -58,6 +58,9 @@
 # @Copyright@
 #
 # $Log: bootstrap.sh,v $
+# Revision 1.31  2012/02/01 19:58:54  phil
+# Add foundation-python-setuptools
+#
 # Revision 1.30  2012/01/23 20:07:18  phil
 # Makefile now supports version specific files in include directory.
 # Bootstrap.sh adds foundation-python-26
@@ -191,6 +194,7 @@ compile_and_install foundation-readline
 compile_and_install foundation-wget
 compile_and_install foundation-mysql
 compile_and_install foundation-python
+compile_and_install foundation-python-setuptools
 compile_and_install foundation-libxml2
 compile_and_install foundation-python-xml
 compile_and_install foundation-python-extras
