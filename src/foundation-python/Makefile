@@ -1,5 +1,5 @@
 # --------------------------------------------------- -*- Makefile -*- --
-# $Id: Makefile,v 1.21 2011/07/23 02:30:45 phil Exp $
+# $Id: Makefile,v 1.22 2012/02/01 20:38:18 phil Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.22  2012/02/01 20:38:18  phil
+# Support Python-2.6.7 as foundation for version 6. 2.4.2 for version 5
+#
 # Revision 1.21  2011/07/23 02:30:45  phil
 # Viper Copyright
 #
@@ -163,18 +166,24 @@ build:
 	-cd patch-files-$(ARCH) && find . -type f | grep -v CVS | cpio -pduv ../
 	( 								\
 		cd Python-$(VERSION);					\
-		./configure --prefix=$(PKGROOT)				\
-			--enable-ipv6					\
-			--enable-unicode=ucs4;				\
-		$(MAKE);							\
+		./configure $(ADDFLAGS) --prefix=$(PKGROOT) 		\
+				$(CONFIGFLAGS);				\
+		$(MAKE);						\
 	)
 
-install::
+install:: 
 	mkdir -p $(ROOT)/$(PKGROOT)
+ifeq ($(strip $(VERSION.MAJOR)),5)
 	(								\
 		cd Python-$(VERSION);					\
-		$(MAKE) prefix=$(ROOT)/$(PKGROOT) install;			\
+		$(MAKE) prefix=$(ROOT)/$(PKGROOT) install;		\
 	)
+else
+	(								\
+		cd Python-$(VERSION);					\
+		$(MAKE) DESTDIR=$(ROOT) install;			\
+	)
+endif
 	mkdir -p $(ROOT)/$(PKGROOT)/usr/bin;
 	(								\
 		cd $(ROOT)/$(PKGROOT)/usr/bin;				\
