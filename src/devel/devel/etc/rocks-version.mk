@@ -1,5 +1,5 @@
 #
-# $Id: rocks-version.mk,v 1.8 2012/01/23 19:57:50 phil Exp $
+# $Id: rocks-version.mk,v 1.9 2012/02/01 19:45:03 phil Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: rocks-version.mk,v $
+# Revision 1.9  2012/02/01 19:45:03  phil
+# Support python 2.4 on 5, 2.6 on 6. Split out the rocks version major, minor and release name to a separate file (rocks-version-common.mk) used by both python.mk and rocks-version.mk
+#
 # Revision 1.8  2012/01/23 19:57:50  phil
 # Updates for rpm version 4
 # Set Rocks version to 6.0
@@ -266,17 +269,8 @@
 ifndef __RELEASE_MK
 __RELEASE_MK = yes
 
-
-# Set these to the major.minor release of rocks and all the RPMS will have 
-# the correct version number. 
-
-# The VERSION defaults to the version of Rocks but individual packages
-# can override this with their own version numbers.  If you want to
-# make sure you get the version of Rocks use ROCKS_VERSION.
-
-VERSION.MAJOR = 6
-VERSION.MINOR = 0
-#VERSION.PATCH = 3
+-include $(ROCKSROOT)/etc/rocks-version-common.mk
+include rocks-version-common.mk
 
 ifeq ($(VERSION.PATCH),)
 VERSION   = $(VERSION.MAJOR).$(VERSION.MINOR)
@@ -286,12 +280,6 @@ VERSION   = $(VERSION.MAJOR).$(VERSION.MINOR).$(VERSION.PATCH)
 ROCKS_TAG = ROCKS_$(VERSION.MAJOR)_$(VERSION.MINOR)_$(VERSION.PATCH)
 endif
 ROCKS_VERSION = $(VERSION)
-
-# A name, not a RPM release id. Added for flair. First releases named
-# after well-known mountains.
-
-RELEASE_NAME = Mamba
-VERSION_NAME = "$(RELEASE_NAME)"
 
 # The project name is used to identify to distribution.  The base 
 # distribution is controlled by the "rocks" projects.  If you want to

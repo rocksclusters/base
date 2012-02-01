@@ -1,4 +1,4 @@
-# $Id: Rules-linux-centos.mk,v 1.8 2012/01/23 19:57:50 phil Exp $
+# $Id: Rules-linux-centos.mk,v 1.9 2012/02/01 19:45:03 phil Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: Rules-linux-centos.mk,v $
+# Revision 1.9  2012/02/01 19:45:03  phil
+# Support python 2.4 on 5, 2.6 on 6. Split out the rocks version major, minor and release name to a separate file (rocks-version-common.mk) used by both python.mk and rocks-version.mk
+#
 # Revision 1.8  2012/01/23 19:57:50  phil
 # Updates for rpm version 4
 # Set Rocks version to 6.0
@@ -333,6 +336,10 @@ ifneq ($(shell echo *.spec.in),*.spec.in)
 oldstylespecfiles = 1
 endif
 
+ifdef MAKEPRESPEC
+oldstylespecfiles = 1
+endif
+
 ifdef oldstylespecfiles
 #
 # Old Style: Rocks provides a .spec.in file
@@ -350,10 +357,16 @@ SEDSPEC = \
 	-e 's%^Buildarch:$$%$(rpm.arch)%g' \
 	-e 's%^Requires:$$%$(rpm.requires)%g'
 
-%.spec:%.spec.in
+
+.PHONY: prespec
+prespec::
+
+%.spec:  %.spec.in
+	make prespec
 	$(SED) $(SEDSPEC) $^ > $@
 
-$(NAME).spec: $(NAME).spec.in
+$(NAME).spec:  $(NAME).spec.in
+	make prespec
 	$(SED) $(SEDSPEC) $^ > $@
 
 $(NAME).spec.in:
