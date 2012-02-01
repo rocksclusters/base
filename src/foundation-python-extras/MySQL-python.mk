@@ -1,5 +1,5 @@
 # --------------------------------------------------- -*- Makefile -*- --
-# $Id: MySQL-python.mk,v 1.11 2011/07/23 02:30:45 phil Exp $
+# $Id: MySQL-python.mk,v 1.12 2012/02/01 20:40:18 phil Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: MySQL-python.mk,v $
+# Revision 1.12  2012/02/01 20:40:18  phil
+# extras to build on 5 and 6. Updated MYSQL-python for use with Pyver 2.6.
+#
 # Revision 1.11  2011/07/23 02:30:45  phil
 # Viper Copyright
 #
@@ -106,21 +109,26 @@
 # - more source built foundations
 # - scipy stuff is here now (may move to hpc roll)
 #
+ifeq ($strip $(VERSION.MAJOR), 5)
+MYSQLPYVERSION=1.2.1_p2
+else
+MYSQLPYVERSION=1.2.3
+endif
 
 build::
-	gunzip -c MySQL-python-1.2.1_p2.tar.gz | $(TAR) -xf -
+	gunzip -c MySQL-python-$(MYSQLPYVERSION).tar.gz | $(TAR) -xf -
 	( 								\
-		cd MySQL-python-1.2.1_p2;					\
+		cd MySQL-python-$(MYSQLPYVERSION);			\
 		PATH=$(PKGROOT)/bin:$$PATH 				\
 			$(PY.PATH) setup.py build;			\
 	)
 	
 install::
 	(								\
-		cd MySQL-python-1.2.1_p2;					\
+		cd MySQL-python-$(MYSQLPYVERSION);			\
 		PATH=$(PKGROOT)/bin:$$PATH				\
 			$(PY.PATH) setup.py install --root=$(ROOT);	\
 	)
 
 clean::
-	rm -rf MySQL-python-1.2.1_p2
+	rm -rf MySQL-python-$(MYSQLPYVERSION)
