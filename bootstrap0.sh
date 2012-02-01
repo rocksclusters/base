@@ -4,7 +4,7 @@
 # Bootstrap0: designed for "pristine" systems (aka no rocks)
 # NOTE: This should not be used on ANY Rocks appliance. 
 #
-# $Id: bootstrap0.sh,v 1.8 2012/01/04 22:51:29 phil Exp $
+# $Id: bootstrap0.sh,v 1.9 2012/02/01 19:59:50 phil Exp $
 #
 # @Copyright@
 # 
@@ -60,6 +60,9 @@
 # @Copyright@
 #
 # $Log: bootstrap0.sh,v $
+# Revision 1.9  2012/02/01 19:59:50  phil
+# add foundation-python-setuptools.  Source rocks-binaries.sh at the appropriate place
+#
 # Revision 1.8  2012/01/04 22:51:29  phil
 # Reverse last two steps. Can't use install_os_packages macro until the
 # buildhost  is in the database
@@ -110,6 +113,7 @@ fi
 # 2. Foundation Packages
 compile_and_install foundation-mysql
 compile_and_install foundation-python
+compile_and_install foundation-python-setuptools
 compile_and_install foundation-libxml2
 compile_and_install foundation-python-xml
 compile_and_install foundation-python-extras
@@ -127,7 +131,10 @@ install rocks-kickstart
 compile command
 install rocks-command
 
-# 4. Bootstrap the database
+# 4. Make sure we have updated paths
+. /etc/profile.d/rocks-binaries.sh
+
+# 5. Bootstrap the database
 tmpfile=$(/bin/mktemp)
 /bin/cat nodes/database.xml nodes/database-schema.xml nodes/database-sec.xml | /opt/rocks/bin/rocks report post attrs="{'hostname':'', 'HttpRoot':'/var/www/html','os':'linux'}"  > $tmpfile
 if [ $? != 0 ]; then
@@ -137,10 +144,10 @@ fi
 /bin/sh $tmpfile
 /bin/rm $tmpfile
 
-# 5. Create OS Roll and Latest Updates Roll from Mirror
+# 6. Create OS Roll and Latest Updates Roll from Mirror
 make -C OSROLL base updates
 
-# 6. Create a fake bootstrap appliance, network, and host in the database
+# 7. Create a fake bootstrap appliance, network, and host in the database
 MYNAME=`hostname`
 /opt/rocks/bin/rocks add distribution rocks-dist
 /opt/rocks/bin/rocks add appliance bootstrap node=server
@@ -148,7 +155,7 @@ MYNAME=`hostname`
 /opt/rocks/bin/rocks add network private 127.0.0.1 netmask=255.255.255.255
 /opt/rocks/bin/rocks add host interface $MYNAME lo subnet=private ip=127.0.0.1
 
-# 7. Rest of packages for full build
+# 8. Rest of packages for full build
 if [ `./_os` == "linux" ]; then
         install_os_packages bootstrap-packages
 fi
