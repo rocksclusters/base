@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.34 2011/08/25 21:13:31 anoop Exp $
+# $Id: __init__.py,v 1.35 2012/02/01 20:01:26 phil Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.35  2012/02/01 20:01:26  phil
+# use subprocess instead of popen2
+#
 # Revision 1.34  2011/08/25 21:13:31  anoop
 # Since sunos rolls are present in separate jumpstart location,
 # we dont need osname in the directory hierarchy
@@ -205,7 +208,7 @@ import string
 import time
 import tempfile
 import shutil
-import popen2
+import subprocess
 import pexpect
 import socket
 import rocks
@@ -265,11 +268,11 @@ class Builder:
 	def copyRoll(self, roll, dir):
 		tmp = self.mktemp()
 		os.makedirs(tmp)
-		os.system('mount -o loop -t iso9660 %s %s' %
-			  (roll.getFullName(), tmp))
+		subprocess.call('mount -o loop -t iso9660 %s %s' %
+			  (roll.getFullName(), tmp), shell=True)
 		tree = rocks.file.Tree(tmp)
 		tree.apply(self.copyFile, dir)
-		os.system('umount %s' % tmp)
+		subprocess.call('umount %s' % tmp, shell=True)
 		shutil.rmtree(tmp)
 
 
@@ -305,7 +308,7 @@ class RollBuilder_linux(Builder, rocks.dist.Arch):
 		# not be signed by the Roll builder.
 		
 		cmd = "rpm -q --qf '%%{BUILDHOST}' -p %s" % rpm.getFullName()
-		buildhost = os.popen(cmd).readline()
+		buildhost = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE).stdout.readline()
 		hostname  = socket.gethostname()
 		
 		if buildhost == hostname:
@@ -318,10 +321,10 @@ class RollBuilder_linux(Builder, rocks.dist.Arch):
 				child.close()
 			except:
 				pass
-			os.system("rpm -qp %s --qf " 
+			subprocess.call("rpm -qp %s --qf " 
 				"'%%{name}-%%{version}-%%{release}: "
 				"%%{sigmd5}\n'"
-				% rpm.getFullName())
+				% rpm.getFullName(), shell=True)
 		
 
 	def getRPMS(self, path):
@@ -850,9 +853,9 @@ class RollBuilder_sunos(Builder, rocks.dist.Arch):
 		
 		# Transfer all packages from PKGS to Products
 		# directory. All packages are in file-system format.
-		os.system('pkgtrans %s %s all' %
+		subprocess.call('pkgtrans %s %s all' %
 			(os.path.join(self.tmp_dir,'PKGS'),
-			 self.prod_dir))
+			 self.prod_dir), shell=True)
 
 		# Look for the patches directory. Some Solaris packages,
 		# such as Sun Studio 12u1 will need to patch Solaris 10.
@@ -864,7 +867,7 @@ class RollBuilder_sunos(Builder, rocks.dist.Arch):
 			os.makedirs(self.patch_dir)
 			cwd = os.getcwd()
 			os.chdir('PATCHES')
-			os.system('find . | cpio -mpud %s' % self.patch_dir)
+			subprocess.call('find . | cpio -mpud %s' % self.patch_dir, shell=True)
 			os.chdir(cwd)
 		# Copy the roll-rollname.xml  file
 		shutil.copy(os.path.join(self.tmp_dir, self.xml_file),
