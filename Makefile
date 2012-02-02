@@ -1,5 +1,5 @@
 #
-# $Id: Makefile,v 1.21 2012/01/23 20:07:18 phil Exp $
+# $Id: Makefile,v 1.22 2012/02/02 16:50:23 phil Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.22  2012/02/02 16:50:23  phil
+# Add a preroll:: target so that we can put some files in place before roll starts building.
+#
 # Revision 1.21  2012/01/23 20:07:18  phil
 # Makefile now supports version specific files in include directory.
 # Bootstrap.sh adds foundation-python-26
@@ -144,8 +147,9 @@ ROLLSROOT = $(CURDIR)/src/devel/devel/src/roll
 -include $(ROLLSROOT)/etc/Rolls.mk
 include Rolls.mk
 
-default: version-prefetch roll
+default: roll
 
-version-prefetch:
+preroll::
 	make -C include-version default
+
 

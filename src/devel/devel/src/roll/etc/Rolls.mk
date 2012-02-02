@@ -1,4 +1,4 @@
-# $Id: Rolls.mk,v 1.3 2011/07/23 02:30:43 phil Exp $
+# $Id: Rolls.mk,v 1.4 2012/02/02 16:50:24 phil Exp $
 #
 # Common Make rules for Rocks rolls.
 #
@@ -56,6 +56,9 @@
 # @Copyright@
 #
 # $Log: Rolls.mk,v $
+# Revision 1.4  2012/02/02 16:50:24  phil
+# Add a preroll:: target so that we can put some files in place before roll starts building.
+#
 # Revision 1.3  2011/07/23 02:30:43  phil
 # Viper Copyright
 #
@@ -277,7 +280,7 @@ endif
 # --------------------------------------------------------------------- #
 
 .PHONY: roll
-roll:: $(TARGET_PKG)s profile
+roll:: preroll $(TARGET_PKG)s profile
 	env GNUPGHOME=$(ROCKSROOT.ABSOLUTE)/../.gnupg \
 		Kickstart_Lang=$(KICKSTART_LANG) \
 		Kickstart_Langsupport=$(KICKSTART_LANGSUPPORT) \
@@ -308,6 +311,8 @@ ifneq ($(INCLUDE_PROFILES),0)
 	$(MAKE) MAKE.rpmflag=-bb MAKE.nonuke=1 pkg
 endif
 
+.PHONY: preroll 
+preroll::
 
 clean::
 	rm -f $(ROLLNAME)-$(VERSION)-$(RELEASE).$(ARCH).disk*.iso

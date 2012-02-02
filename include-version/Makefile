@@ -1,5 +1,5 @@
 #
-# $Id: Makefile,v 1.1 2012/01/23 19:48:57 phil Exp $
+# $Id: Makefile,v 1.2 2012/02/02 16:50:24 phil Exp $
 #
 # @Copyright@
 # 
@@ -55,12 +55,16 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.2  2012/02/02 16:50:24  phil
+# Add a preroll:: target so that we can put some files in place before roll starts building.
+#
 # Revision 1.1  2012/01/23 19:48:57  phil
 # directory for Rocks version 5 and Rocks version 6 specific include files.
 # initiall installclass and installclasses. could also be node files
 #
 #
 
+ROCKSROOT = ../src/devel/devel
 include ../src/devel/devel/etc/rocks-version.mk
 
 default: 
