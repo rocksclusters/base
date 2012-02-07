@@ -1,6 +1,6 @@
 #!/opt/rocks/usr/bin/python
 #
-# $Id: build-updates-img.py,v 1.15 2012/01/25 22:42:58 phil Exp $
+# $Id: build-updates-img.py,v 1.16 2012/02/07 16:24:57 phil Exp $
 #
 # @Copyright@
 # 
@@ -56,6 +56,10 @@
 # @Copyright@
 #
 # $Log: build-updates-img.py,v $
+# Revision 1.16  2012/02/07 16:24:57  phil
+# use subprocess module. Handle differences between 5 and 6.
+# Clean out more files to reduce image size
+#
 # Revision 1.15  2012/01/25 22:42:58  phil
 # Need some additional packages for version 6 updates.img vs. version 5.
 #
@@ -150,7 +154,7 @@
 #
 
 import string
-import popen2
+import subprocess
 import rocks.kickstart
 import os
 import os.path
@@ -271,8 +275,12 @@ class App(rocks.app.Application):
 		]
 
 		if self.usage_version == '6':
-			rpms.append('foundation-python-xml-26')	
 			rpms.append('tigervnc-server')	
+			pyver 	= "python2.6"
+			pyverpath = "opt/rocks/lib/python2.6"
+		else:
+			pyver 	= "python2.4"
+			pyverpath = "opt/rocks/lib/python2.4"
 
 		for rpmname in rpms:
 			rpm = self.thinkLocally(rpmname)
@@ -295,27 +303,33 @@ class App(rocks.app.Application):
 		os.chdir('extra')
 
 		cmd = 'find . -type f -name *.pyc -or -name *.pyo | xargs rm -f'
-		os.system(cmd)
+		subprocess.call(cmd, shell=True)
 		
 		cmd = 'rm -f opt/rocks/redhat/var/lib/rpm/__db*'
-		os.system(cmd)
+		subprocess.call(cmd, shell=True)
 
-		cmd = 'rm -f opt/rocks/lib/python2.4/' + \
-					'distutils/command/wininst-*exe'
-		os.system(cmd)
+		cmd = 'rm -f %s/distutils/command/wininst-*exe' % pyverpath
+		subprocess.call(cmd, shell=True)
 
 		cmd = 'find . -type d -name Doc -or -name docs -or -name doc' +\
 			' | xargs rm -rf'
-		os.system(cmd)
+		subprocess.call(cmd, shell=True)
 
-		cmd = 'find opt/rocks/lib/python2.4 -type d ' + \
-			'-name test -or -name tests | xargs rm -rf'
-		os.system(cmd)
+		cmd = 'find %s -type d -name test -or -name tests | xargs rm -rf' % pyverpath
+		subprocess.call(cmd, shell=True)
 
-		for i in [ 'numarray', 'Numeric', 'numpy', 'POW', 'gtk-2.0' ]:
-			cmd = 'rm -rf opt/rocks/lib/python2.4/site-packages/'
+		# remove unneeded static libs
+		cmd = "find opt/rocks/lib -type f -name '*.a' | xargs rm -rf" 
+		subprocess.call(cmd, shell=True)
+
+		# remove second copy of python exe
+		os.unlink('opt/rocks/bin/python')
+		os.symlink(pyver, 'opt/rocks/bin/python')
+
+		for i in [ 'numarray', 'Numeric', 'numpy', 'POW', 'gtk-2.0', 'mx' ]:
+			cmd = 'rm -rf %s/site-packages/' % pyverpath
 			cmd += '%s' % (i)
-			os.system(cmd)
+			subprocess.call(cmd, shell=True)
 
 
 		os.chdir(cwd)
