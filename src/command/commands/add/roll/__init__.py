@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.43 2011/07/23 02:30:25 phil Exp $
+# $Id: __init__.py,v 1.44 2012/02/09 21:45:38 phil Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.44  2012/02/09 21:45:38  phil
+# subprocess mods
+#
 # Revision 1.43  2011/07/23 02:30:25  phil
 # Viper Copyright
 #
@@ -249,7 +252,7 @@ import sys
 import string
 import rocks.commands
 import rocks.file
-import popen2
+import subprocess
 import re
 
 class RollHandler:
@@ -279,13 +282,16 @@ class RollHandler:
 
 	def mount_iso_linux(self, iso):
 		"""Mount the ISO Image on Linux"""
-		os.system('mount -o loop %s %s' % (iso, self.cdrom_mount))
+		subprocess.call('mount -o loop %s %s' % (iso, self.cdrom_mount), shell=True)
 
 	def mount_iso_sunos(self, iso):
 		"""Mount the ISO Image on Solaris"""
-		r, w = popen2.popen2('lofiadm -a %s' % os.path.abspath(iso))
+		cmd = 'lofiadm -a %s' % os.path.abspath(iso)
+		p = subprocess.Popen(cmd, shell=True, bufsize=bufsize,
+          		stdin=subprocess.PIPE, stdout=subprocess.PIPE, close_fds=True)
+		w, r  = (p.stdin, p.stdout)
 		self.lofidev = r.read().strip()
-		os.system('mount -F hsfs %s %s' % (self.lofidev, self.cdrom_mount))
+		subprocess.call('mount -F hsfs %s %s' % (self.lofidev, self.cdrom_mount), shell=True)
 	
 	def umount_iso(self):
 		"""Unmount the ISO Image. Calls the host OS specific umount
@@ -295,12 +301,12 @@ class RollHandler:
 
 	def umount_iso_linux(self):
 		"""Unmount the ISO image on linux"""
-		os.system('umount %s' % self.cdrom_mount)
+		subprocess.call('umount %s' % self.cdrom_mount, shell=True)
 
 	def umount_iso_sunos(self):
 		"""Unmount the ISO image on Solaris"""
-		os.system('umount %s' % self.cdrom_mount)
-		os.system('lofiadm -d %s' % self.lofidev)
+		subprocess.call('umount %s' % self.cdrom_mount, shell=True)
+		subprocess.call('lofiadm -d %s' % self.lofidev, shell=True)
 
 	def is_cd_mounted(self):
 		f = getattr(self, 'is_cd_mounted_%s' % self.host_os)
@@ -308,7 +314,7 @@ class RollHandler:
 
 	def is_cd_mounted_linux(self):
 		cmd = 'mount | grep %s' % self.cdrom_mount
-		if os.system(cmd):
+		if subprocess.call(cmd, shell=True):
 			return False
 		return True
 
@@ -318,7 +324,7 @@ class RollHandler:
 		# Run the mount command, and check if the mount
 		# point is specified in the list of mounted filesystems
 		cmd = 'mount | grep \\^%s' % self.cdrom_mount
-		if os.system(cmd):
+		if subprocess.call(cmd, shell=True):
 			return False
 		return True
 
@@ -389,13 +395,13 @@ class RollHandler:
 		sys.stdout.flush()
 		cwd = os.getcwd()
 		os.chdir(os.path.join(self.cdrom_mount,roll_name))
-		os.system('find . ! -name TRANS.TBL -print'
+		subprocess.call('find . ! -name TRANS.TBL -print'
 						' | cpio -mpud %s'
-						% roll_dir)
+						% roll_dir, shell=True)
 
 		# after copying the roll, make sure everyone (apache included)
 		# can traverse the directories
-		os.system('find %s -type d -exec chmod a+rx {} \;' % roll_dir)
+		subprocess.call('find %s -type d -exec chmod a+rx {} \;' % roll_dir, shell=True)
 
 		# Insert the roll information into the database. Insert
 		# into the database only in case it already doesn't exist
@@ -446,12 +452,12 @@ class RollHandler:
 		cwd = os.getcwd()
 		os.chdir(os.path.join(self.cdrom_mount, roll_name))
 		print 'Copying SunOS: %s to %s' % (roll_name, roll_dir) 
-		os.system('find . ! -name TRANS.TBL'
-				' | cpio -mpud %s' % roll_dir)
+		subprocess.call('find . ! -name TRANS.TBL'
+				' | cpio -mpud %s' % roll_dir, shell=True)
 
 		# after copying the roll, make sure everyone (apache included)
 		# can traverse the directories
-		os.system('find %s -type d -exec chmod a+rx {} \;' % roll_dir)
+		subprocess.call('find %s -type d -exec chmod a+rx {} \;' % roll_dir, shell=True)
 
 		rows = self.db.execute(
 				"select * from rolls where"
@@ -470,7 +476,10 @@ class RollHandler:
 		information about the rolls that are on the CD"""
 
 		# Check to see if roll-<name>.xml files are present
-		r, w = popen2.popen2('find %s -type f -name roll-\*.xml' % self.cdrom_mount)
+		cmd = 'find %s -type f -name roll-\*.xml' % self.cdrom_mount
+		p = subprocess.Popen(cmd, shell=True, 
+          		stdin=subprocess.PIPE, stdout=subprocess.PIPE, close_fds=True)
+		w, r = (p.stdin, p.stdout)
 		f_list = r.readlines()
 		
 		# Get roll information from all the Rolls present on the CD
@@ -547,9 +556,9 @@ class RollHandler:
 					file.getBaseName() != 'anaconda-runtime' \
 					and not (roll_arch == 'i386' and \
 					re.match('^kudzu.*', file.getBaseName())):
-						os.system('cp -p %s %s' % (
+						subprocess.call('cp -p %s %s' % (
 							file.getFullName(), 
-							destdir))
+							destdir), shell=True)
 
 		# Add roll information to the database
 		rows = self.db.execute(
@@ -643,7 +652,7 @@ class RollHandler:
 		# ... and now copy the CD over to the HDD.
 		cwd = os.getcwd()
 		os.chdir(cpio_src_dir)
-		os.system('find . -print | cpio -mpud %s' % cpio_dest_dir)
+		subprocess.call('find . -print | cpio -mpud %s' % cpio_dest_dir, shell=True)
 		os.chdir(cwd)
 		return
 
