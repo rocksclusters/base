@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: build.py,v $
+# Revision 1.46  2012/02/09 21:20:38  phil
+# convert to use subprocess module
+#
 # Revision 1.45  2012/01/06 21:58:14  phil
 # Build a proper repo when no comps.xml file. Useful when bootstrapping
 # and you don't have the base roll built yet.
@@ -862,7 +865,7 @@ import re
 import tempfile
 import string
 import time
-import popen2
+import subprocess 
 import xml
 import socket
 import rocks.dist
@@ -921,7 +924,7 @@ class MirrorBuilder(Builder):
                 if self.verbose or self.debug:
                 	print cmd
 		if not self.debug:
-			os.system(cmd)
+			subprocess.call(cmd, shell=True)
 
 
 #
@@ -1109,7 +1112,7 @@ class DistributionBuilder(Builder):
 	
 	print "Building Roll Links"
 	rollLocation = self.dist.getRollsPath()
-	os.system('mkdir -p %s' % rollLocation)
+	subprocess.call('mkdir -p %s' % rollLocation, shell=True)
 
 	rolls = []
 	for mirror in self.dist.getMirrors():
@@ -1124,7 +1127,7 @@ class DistributionBuilder(Builder):
 	here = os.getcwd()
 	os.chdir(rollLocation)
 	for r in rolls:
-		os.system('ln -sf %s .' % (r))
+		subprocess.call('ln -sf %s .' % (r), shell=True)
 	os.chdir(here)
 	
 	
@@ -1133,9 +1136,9 @@ class DistributionBuilder(Builder):
     	
     	print "Linking boot stages from lan"
     	wanbase = self.dist.getBasePath()
-    	os.system('rm -rf %s' % wanbase)
-    	os.system('mkdir -p %s' % wanbase)
-    	os.system('ln -s %s/* %s' % (lanbase, wanbase)) 
+    	subprocess.call('rm -rf %s' % wanbase, shell=True)
+    	subprocess.call('mkdir -p %s' % wanbase, shell=True)
+    	subprocess.call('ln -s %s/* %s' % (lanbase, wanbase), shell=True) 
     	
 
     def buildBase(self):
@@ -1189,7 +1192,7 @@ class DistributionBuilder(Builder):
 	print 'Applying stage2.img'
 	
 	cmd = 'rm -f %s/RedHat/base/stage2.img' % (self.dist.getReleasePath())
-	os.system(cmd)
+	subprocess.call(cmd, shell=True)
 
 	try:
 		self.applyRPM('rocks-boot-netstage', self.dist.getReleasePath())
@@ -1201,7 +1204,7 @@ class DistributionBuilder(Builder):
 
 	print 'Applying updates.img'
 	cmd = 'rm -f %s/RedHat/base/updates.img' % (self.dist.getReleasePath())
-	os.system(cmd)
+	subprocess.call(cmd, shell=True)
 
 	try:
 		self.applyRPM('rocks-anaconda-updates',
@@ -1325,8 +1328,8 @@ class DistributionBuilder(Builder):
         if not os.path.isdir(dbdir):
             os.makedirs(dbdir)
 
-        reloc = os.system("rpm -q --queryformat '%{prefixes}\n' -p " +
-                        rpm.getFullName() + "| grep none > /dev/null")
+        reloc = subprocess.call("rpm -q --queryformat '%{prefixes}\n' -p " +
+                        rpm.getFullName() + "| grep none > /dev/null", shell=True)
 
 	cmd = 'rpm -i --ignoresize --nomd5 --force --nodeps --ignorearch '
 	cmd += '--dbpath %s ' % dbdir
@@ -1336,7 +1339,7 @@ class DistributionBuilder(Builder):
         else:
 	    cmd = cmd + '--badreloc --relocate /=%s %s %s' % (root, flags,
 							      rpm.getFullName())
-        retval = os.system(cmd + ' > /dev/null 2>&1')
+        retval = subprocess.call(cmd + ' > /dev/null 2>&1', shell=True)
 
         shutil.rmtree(os.path.join(root, 'var'))
 		
@@ -1374,7 +1377,7 @@ class DistributionBuilder(Builder):
 	cmd = '/usr/bin/md5sum `find -L . -type f | sed "s/^\.\///" | '
 	cmd += 'egrep -v "^build|^SRPMS|^force"` '
 	cmd += '> %s/packages.md5' % (productfilesdir)
-	os.system(cmd)
+	subprocess.call(cmd, shell=True)
 
 	#
 	# create the product.img file
@@ -1384,11 +1387,11 @@ class DistributionBuilder(Builder):
 	if not os.path.exists('../../images'):
 		os.makedirs('../../images')
 
-	os.system('rm -f %s' % (product))
+	subprocess.call('rm -f %s' % (product), shell=True)
 	cmd = '/sbin/mksquashfs packages.md5 installclass/*py installclasses '
 	cmd += '%s ' % (product)
 	cmd += '-keep-as-directory > /dev/null 2>&1'
-	os.system(cmd)
+	subprocess.call(cmd,shell=True)
 
 	if os.path.exists(product):
 		#
@@ -1435,9 +1438,9 @@ class DistributionBuilder(Builder):
 		print "\tIf you are bootstrapping, this is not a problem"
 		gf = " "
 
-	os.system('%s ' % (createrepo) + 
+	subprocess.call('%s ' % (createrepo) + 
 		gf + 
-		'--cachedir %s --quiet .' % (cachedir))
+		'--cachedir %s --quiet .' % (cachedir), shell=True)
 
 	os.chdir(cwd)
 
@@ -1561,30 +1564,30 @@ class USBBuilder(DistributionBuilder):
 		cd = os.path.normpath(
 			os.path.join(self.dist.getReleasePath(), '..'))
 		thisdir = os.path.join(cd,'usb-key')
-		os.system('mkdir -p %s' % thisdir)
+		subprocess.call('mkdir -p %s' % thisdir, shell=True)
 		os.chdir(thisdir)
 		
 		self.applyRPM('rocks-boot-cdrom', thisdir)
-		os.system('/sbin/mkfs.vfat -C usb.img '
-			+ '-n "Rocks USB Boot" %s > /dev/null' % size)
-		os.system('rm -rf key-img')
-		os.system('mkdir -p key-img')
-		os.system('mount -o loop usb.img key-img')
-		os.system('cp -a isolinux/* key-img/')
+		subprocess.call('/sbin/mkfs.vfat -C usb.img '
+			+ '-n "Rocks USB Boot" %s > /dev/null' % size, shell=True)
+		subprocess.call('rm -rf key-img', shell=True)
+		subprocess.call('mkdir -p key-img', shell=True)
+		subprocess.call('mount -o loop usb.img key-img', shell=True)
+		subprocess.call('cp -a isolinux/* key-img/', shell=True)
 		os.rename('key-img/isolinux.cfg','key-img/syslinux.cfg')
-		os.system('touch key-img/rocks-usbkey')
+		subprocess.call('touch key-img/rocks-usbkey', shell=True)
 		try:
 			self.writeKeys('key-img')
 		except Exception, msg:
 			print 'warning - could not find key: %s' % msg
-		os.system('umount key-img')
-		os.system('/usr/bin/syslinux usb.img')
+		subprocess.call('umount key-img', shell=True)
+		subprocess.call('/usr/bin/syslinux usb.img', shell=True)
 		imgname = 'rocks-usb-%s.%s.img' %  \
 				(self.version, self.dist.getArch())
 		imgpath = os.path.join(cd,imgname)
 		os.rename('usb.img', imgpath)
 		os.chmod(imgpath,0444)
-		os.system('rm -rf %s' % thisdir)
+		subprocess.call('rm -rf %s' % thisdir, shell=True)
 			
 		print "Wrote:", imgpath
 		print "Copy this image directly onto a usb key: "
@@ -1594,8 +1597,8 @@ class USBBuilder(DistributionBuilder):
 	def writeKeys(self, root):
 		"Copy essential cluster keys to usb drive"
 
-		os.system('mkdir -p %s/security/server' % root)
-		os.system('mkdir -p %s/security/client' % root)
+		subprocess.call('mkdir -p %s/security/server' % root, shell=True)
+		subprocess.call('mkdir -p %s/security/client' % root, shell=True)
 		self.newCert('%s/security' % root)
 		
 		# For Server: our CA and 411 master.
@@ -1643,7 +1646,7 @@ class USBBuilder(DistributionBuilder):
 		cmd = ('/usr/bin/openssl req -new -nodes '
 			+ '-config %s/ca.cfg -batch -subj "%s" ' % (ca, self.dn)
 			+ '-keyout cluster-cert.key > cert.csr 2> /dev/null')
-		os.system(cmd)
+		subprocess.call(cmd, shell=True)
 		os.chmod('cluster-cert.key',0400)
 		
 		print ' Signing the certificate with our CA'
@@ -1652,7 +1655,7 @@ class USBBuilder(DistributionBuilder):
 			+ '-CA %s/ca.crt -CAkey %s/ca.key -CAserial %s/ca.serial ' 
 				% (ca, ca, ca)
 			+ ' < cert.csr > cluster-cert.crt 2> /dev/null')
-		os.system(cmd)
+		subprocess.call(cmd, shell=True)
 		os.chmod('cluster-cert.crt', 0444)
 		os.unlink('cert.csr')
 		
