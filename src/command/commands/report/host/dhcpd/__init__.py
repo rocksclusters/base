@@ -1,5 +1,5 @@
 #
-# $Id: __init__.py,v 1.19 2011/07/23 02:30:35 phil Exp $
+# $Id: __init__.py,v 1.20 2012/02/09 17:34:47 phil Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.20  2012/02/09 17:34:47  phil
+# Handle new location of dhcpd.conf for 6. Retain ability to write correctly on 5
+#
 # Revision 1.19  2011/07/23 02:30:35  phil
 # Viper Copyright
 #
@@ -207,7 +210,12 @@ class Command(rocks.commands.HostArgumentProcessor,
 		
 
 	def writeDhcpDotConf(self, hosts):
-		self.addOutput('', '<file name="/etc/dhcpd.conf">')
+		# Handle Path Name Fun
+		RocksVersion = self.db.getHostAttr('localhost', 'rocks_version')
+		if int(RocksVersion.split('.')[0]) < 6:
+			self.addOutput('', '<file name="/etc/dhcpd.conf">')
+		else:
+			self.addOutput('', '<file name="/etc/dhcp/dhcpd.conf">')
 
 		dn = self.db.getHostAttr('localhost',
 			'Kickstart_PrivateDNSDomain')
