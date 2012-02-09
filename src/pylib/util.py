@@ -1,4 +1,4 @@
-#! /opt/rocks/bin/python2.6
+#! /opt/rocks/bin/python
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: util.py,v $
+# Revision 1.19  2012/02/09 21:50:03  phil
+# subprocess fixups.
+#
 # Revision 1.18  2012/02/01 20:42:12  phil
 # use subprocess module instead of popen2
 #
@@ -318,7 +321,7 @@ def startSpinner(cmd):
 	p = subprocess.Popen(cmd, shell=True, 
           	stdin=subprocess.PIPE, stdout=subprocess.PIPE, 
 		stderr=subprocess.PIPE, close_fds=True)
-	r, w ,e = (p.stdin, p.stdout, p.stderr)
+	w, r ,e = (p.stdin, p.stdout, p.stderr)
 	currLength  = 0
 	prevLength  = 0
 	spinChars   = '-\|/'

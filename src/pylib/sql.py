@@ -57,6 +57,9 @@
 # @Copyright@
 #
 # $Log: sql.py,v $
+# Revision 1.34  2012/02/09 21:50:03  phil
+# subprocess fixups.
+#
 # Revision 1.33  2012/02/09 21:11:44  phil
 # popen to subprocess conversion
 #
@@ -434,7 +437,7 @@ class Application(rocks.app.Application):
 
 	p = subprocess.Popen(cmd, shell=True, 
                 stdin=subprocess.PIPE, stdout=subprocess.PIPE, close_fds=True)
-	r, w =  (p.stdin, p.stdout)
+	w, r =  (p.stdin, p.stdout)
         value = r.readline()
 
         return value.strip()
