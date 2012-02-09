@@ -14,6 +14,10 @@ Provides pre-execution environment (PXE) support for frontend machines.
 
 <changelog>
 $Log: pxe.xml,v $
+Revision 1.28  2012/02/09 20:27:50  phil
+pxelinux.0 might be in one of two places. Set an explicit block size on
+tftpd config
+
 Revision 1.27  2011/07/23 02:30:15  phil
 Viper Copyright
 
@@ -199,7 +203,7 @@ service tftp
         wait                    = yes
         user                    = root
         server                  = /usr/sbin/in.tftpd
-        server_args             = -s /tftpboot/pxelinux
+        server_args             = -s /tftpboot/pxelinux -B 1468
         instances               = 1
 	per_source		= 11
 	cps			= 1000 2
@@ -230,7 +234,16 @@ chown root.apache /tftpboot/pxelinux/pxelinux.cfg
 chmod 775 /tftpboot/pxelinux/pxelinux.cfg
 
 <!-- need pxelinux.0 , this is the file that PXE boot roms load first -->
-cp /usr/lib/syslinux/pxelinux.0 /tftpboot/pxelinux/
+
+<!-- older versions of RHEL/CentOS -->
+if [ -f /usr/lib/syslinux/pxelinux.0 ]; then
+	cp /usr/lib/syslinux/pxelinux.0 /tftpboot/pxelinux/
+fi
+<!-- newer versions of RHEL/CentOS -->
+if [ -f /usr/share/syslinux/pxelinux.0 ]; then
+	cp /usr/share/syslinux/pxelinux.0 /tftpboot/pxelinux/
+fi
+
 
 </post>
 
