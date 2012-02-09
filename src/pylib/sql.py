@@ -57,6 +57,9 @@
 # @Copyright@
 #
 # $Log: sql.py,v $
+# Revision 1.33  2012/02/09 21:11:44  phil
+# popen to subprocess conversion
+#
 # Revision 1.32  2011/07/23 02:30:49  phil
 # Viper Copyright
 #
@@ -214,7 +217,7 @@ import sys
 import string
 import getopt
 import types
-import popen2
+import subprocess
 import rocks.util
 import rocks.app
 import rocks.commands
@@ -429,7 +432,9 @@ class Application(rocks.app.Application):
         cmd = '/opt/rocks/bin/rocks report host attr localhost '
         cmd += 'attr=%s_%s' % (service, component)
 
-        r, w = popen2.popen2(cmd)
+	p = subprocess.Popen(cmd, shell=True, 
+                stdin=subprocess.PIPE, stdout=subprocess.PIPE, close_fds=True)
+	r, w =  (p.stdin, p.stdout)
         value = r.readline()
 
         return value.strip()
