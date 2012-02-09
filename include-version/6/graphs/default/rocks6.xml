@@ -1,0 +1,6 @@
+<!-- Edges specific to Rocks Version 6 -->
+<!--$Id: rocks6.xml,v 1.1 2012/02/09 21:00:51 phil Exp $ -->
+<graph>
+	<edge from="base" to="upstart"/>
+	<order head="base" tail="upstart"/>
+</graph>
