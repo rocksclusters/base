@@ -1,5 +1,5 @@
 #
-# $Id: __init__.py,v 1.1 2011/11/02 05:08:56 phil Exp $
+# $Id: __init__.py,v 1.2 2012/02/13 21:05:40 phil Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.2  2012/02/13 21:05:40  phil
+# Improvement in Entity handling
+#
 # Revision 1.1  2011/11/02 05:08:56  phil
 # First take on bootstrap0. Packages, command line and processing to
 # bring up the rocks database on a non-Rocks installed host.
@@ -152,28 +155,39 @@ class Command(rocks.commands.report.command):
 			self.attrs = eval(attributes)
 		else:
 			# OR implicit from os and arch (common case)
+			self.attrs = {}
 			self.attrs['os'] = self.os
 			self.attrs['arch'] = self.arch
 
 		self.beginOutput()
 
-		xml = '<?xml version="1.0" standalone="no"?>\n'
+		xmlheader = '<?xml version="1.0" standalone="no"?>\n'
+		xmlentities = ''
+		xml = ''
 
 		if attributes:
-			xml += '<!DOCTYPE rocks-graph [\n'
 			for (k, v) in self.attrs.items():
-				xml += '\t<!ENTITY %s "%s">\n' % (k, v)
-			xml += ']>\n'
-			xml += '<%s>\n' % starter_tag
+				xmlentities += '\t<!ENTITY %s "%s">\n' % (k, v)
 
 		xmlhdr =re.compile('^<\?xml')
 		kstag = re.compile('</?kickstart')
+		entity = re.compile('<!ENTITY')
 		for line in sys.stdin.readlines():
 			if xmlhdr.match(line.lower()) is None and kstag.match(line.lower()) is None:
-				xml += line
+				if entity.match(line.upper()):
+					xmlentities += line
+				else:
+					xml += line
 
 		xml += '</%s>\n' % starter_tag
-		self.runXML(self.scrub(xml))
+
+		if ( len(xmlentities) > 0 ):  
+			xmlheader += '<!DOCTYPE rocks-graph [\n'
+			xmlheader += xmlentities
+			xmlheader += ']>\n'
+		xmlheader += '<%s>\n' % starter_tag
+
+		self.runXML(self.scrub(xmlheader + xml))
 
 		self.endOutput(padChar='')
 
