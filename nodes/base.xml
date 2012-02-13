@@ -21,6 +21,9 @@
 
   <changelog>
   $Log: base.xml,v $
+  Revision 1.57  2012/02/13 21:25:41  phil
+  Turn off NetworkManager. Create /etc/rndc.key if it doesn't exist
+
   Revision 1.56  2011/12/16 20:51:57  phil
   look at the correct variable when disabling services.
 
@@ -571,7 +574,7 @@ python -c 'import time; print "%.7f" % time.time()'
 
 serviceList="&disableServices;"
 if [ "x$serviceList" == "x" ]; then
-	serviceList="kudzu canna cWnn FreeWnn kWnn tWnn mDNSResponder"
+	serviceList="kudzu canna cWnn FreeWnn kWnn tWnn mDNSResponder NetworkManager"
 fi
 
 for i in $serviceList 
@@ -670,7 +673,6 @@ set path = ($JAVA_HOME/bin $path)
 
 rm /tmp/mdmonitor
 </post>
-
 
 <post os="linux">
 <file name="/etc/rc.d/rocksconfig.d/post-01-cleanup-ks-scripts" perms="0755">
