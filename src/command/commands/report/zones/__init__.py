@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.9 2011/08/23 06:17:04 anoop Exp $
+# $Id: __init__.py,v 1.10 2012/02/13 20:06:57 phil Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.10  2012/02/13 20:06:57  phil
+# Update for more picky RHEL 6 configuration
+#
 # Revision 1.9  2011/08/23 06:17:04  anoop
 # Include all zones, not just the last one, when writing the reverse
 # map files
@@ -190,7 +193,7 @@ class Command(rocks.commands.report.command):
 
 		"Lists the name->IP mappings for all hosts"
 
-		s = ""
+		s = "ns\t A \t127.0.0.1\n"
 
 		self.db.execute("select n.name, nt.ip, nt.name "+\
 			"from subnets s, nodes n, networks nt "	+\
@@ -207,7 +210,7 @@ class Command(rocks.commands.report.command):
 			
 			record = network_name
 
-			s += '%s A %s\n' % (record, ip)
+			s += '%s\t A \t%s\n' % (record, ip)
 
 			# Now record the aliases. We always substitute 
 			# network names with aliases. Nothing else will
