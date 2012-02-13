@@ -1,5 +1,5 @@
 #
-# $Id: __init__.py,v 1.2 2012/02/13 21:05:40 phil Exp $
+# $Id: __init__.py,v 1.3 2012/02/13 23:05:17 phil Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.3  2012/02/13 23:05:17  phil
+# Closer to proper post extraction. Need to handle eval sections
+#
 # Revision 1.2  2012/02/13 21:05:40  phil
 # Improvement in Entity handling
 #
@@ -163,29 +166,43 @@ class Command(rocks.commands.report.command):
 
 		xmlheader = '<?xml version="1.0" standalone="no"?>\n'
 		xmlentities = ''
+		needEntityHeader = True 
 		xml = ''
 
 		if attributes:
 			for (k, v) in self.attrs.items():
 				xmlentities += '\t<!ENTITY %s "%s">\n' % (k, v)
 
-		xmlhdr =re.compile('^<\?xml')
+		xmlhdr =re.compile('<\?xml')
 		kstag = re.compile('</?kickstart')
 		entity = re.compile('<!ENTITY')
+
 		for line in sys.stdin.readlines():
-			if xmlhdr.match(line.lower()) is None and kstag.match(line.lower()) is None:
-				if entity.match(line.upper()):
-					xmlentities += line
-				else:
-					xml += line
+			if xmlhdr.match(line.lower().strip()) is None and  \
+				kstag.match(line.lower().strip()) is None:
+				# Add Command-line Entities before XML entities
+				if entity.match(line.upper().strip()):
+					if needEntityHeader:
+						xml += xmlentities
+						needEntityHeader = False
+				xml += line
 
 		xml += '</%s>\n' % starter_tag
 
-		if ( len(xmlentities) > 0 ):  
+		if ( len(xmlentities) > 0  and needEntityHeader ):  
 			xmlheader += '<!DOCTYPE rocks-graph [\n'
 			xmlheader += xmlentities
 			xmlheader += ']>\n'
-		xmlheader += '<%s>\n' % starter_tag
+			xmlheader += '<%s>\n' % starter_tag
+
+		# if the input had ENTITYs, then we need to find the split
+                # and add the starter tag
+		if ( not needEntityHeader ):
+			(entities, body) = xml.split(']>')
+			xmlheader += entities
+			xmlheader += ']>\n'
+			xmlheader += '<%s>\n' % starter_tag
+			xml = body
 
 		self.runXML(self.scrub(xmlheader + xml))
 
