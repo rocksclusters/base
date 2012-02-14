@@ -1,6 +1,6 @@
 #! /opt/rocks/bin/python
 #
-# $Id: profile.py,v 1.34 2011/07/23 02:30:49 phil Exp $
+# $Id: profile.py,v 1.35 2012/02/14 23:09:33 phil Exp $
 #
 # @Copyright@
 # 
@@ -56,6 +56,10 @@
 # @Copyright@
 #
 # $Log: profile.py,v $
+# Revision 1.35  2012/02/14 23:09:33  phil
+# Clean up popen2 --> subprocess.
+# yuminstall.py -- don't get .treeinfo
+#
 # Revision 1.34  2011/07/23 02:30:49  phil
 # Viper Copyright
 #
@@ -216,7 +220,7 @@ import os
 import sys
 import string
 import xml
-import popen2
+import subprocess
 import socket
 import base64
 import rocks.sql
@@ -874,7 +878,10 @@ class Pass1NodeHandler(handler.ContentHandler,
 			return
 		for key in self.entities.keys():
 			os.environ[key] = self.entities[key]
-		r, w = popen2.popen2(self.evalShell)
+		p = subprocess.Popen(self.evalShell, shell=True,
+				stdin=subprocess.PIPE, stdout=subprocess.PIPE, 
+				close_fds=True)
+		w, r = (p.stdin, p.stdout)
 
 		if os.environ.has_key('ROCKSDEBUG'):
 			for line in string.join(self.evalText, '').split('\n'):

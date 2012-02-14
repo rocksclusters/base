@@ -1,5 +1,5 @@
 #
-# $Id: rocks_getrolls.py,v 1.1 2012/01/23 19:48:57 phil Exp $
+# $Id: rocks_getrolls.py,v 1.2 2012/02/14 23:09:32 phil Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,10 @@
 # @Copyright@
 #
 # $Log: rocks_getrolls.py,v $
+# Revision 1.2  2012/02/14 23:09:32  phil
+# Clean up popen2 --> subprocess.
+# yuminstall.py -- don't get .treeinfo
+#
 # Revision 1.1  2012/01/23 19:48:57  phil
 # directory for Rocks version 5 and Rocks version 6 specific include files.
 # initiall installclass and installclasses. could also be node files
@@ -94,6 +98,7 @@
 import os
 import os.path
 import string
+import subprocess
 
 import gettext
 _ = lambda x: gettext.ldgettext("anaconda", x)
@@ -236,10 +241,10 @@ def RocksGetRolls(anaconda):
 	if arch in ['i386', 'i486', 'i586', 'i686']:
 		arch = 'i386'
 
-	os.system('umount /mnt/cdrom')
-	os.system('rm -rf /mnt/cdrom')
+	subprocess.call('umount /mnt/cdrom', shell=True)
+	subprocess.call('rm -rf /mnt/cdrom', shell=True)
 	dir = '/mnt/sysimage/%s/rocks-dist/%s/' % (distrodir, arch)
-	os.system('ln -s %s /mnt/cdrom' % (dir))
+	subprocess.call('ln -s %s /mnt/cdrom' % (dir), shell=True)
 
 	w.pop()
 
@@ -331,7 +336,7 @@ def downloadRoll(anaconda, roll):
 		#
 		cutdirs -= 1
 
-	os.system('mkdir -p %s' % localpath)
+	subprocess.call('mkdir -p %s' % localpath, shell=True)
 	os.chdir(localpath)
 
 	if os.path.exists('/tmp/updates/rocks/bin/wget'):
@@ -348,9 +353,9 @@ def downloadRoll(anaconda, roll):
 	cmd = '%s -m -nv -np -nH %s --cut-dirs=%d %s' \
 		% (wget, flags, cutdirs, url)
 	cmd += ' >> /tmp/wget.debug'
-	os.system(cmd)
+	subprocess.call(cmd, shell=True)
 
-	os.system('echo "%s" >> /tmp/wget.debug' % (cmd))
+	subprocess.call('echo "%s" >> /tmp/wget.debug' % (cmd), shell=True)
 
 	w.pop()
 	return

@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.6 2012/02/13 20:06:57 phil Exp $
+# $Id: __init__.py,v 1.7 2012/02/14 23:09:33 phil Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.7  2012/02/14 23:09:33  phil
+# Clean up popen2 --> subprocess.
+# yuminstall.py -- don't get .treeinfo
+#
 # Revision 1.6  2012/02/13 20:06:57  phil
 # Update for more picky RHEL 6 configuration
 #
@@ -114,7 +118,7 @@ config_preamble = """options {
 };
 
 controls {
-	inet 127.0.0.1 allow { localhost; } keys { rndc-key; };
+	inet 127.0.0.1 allow { localhost; } keys { rndckey; };
 };
 
 zone "." IN {

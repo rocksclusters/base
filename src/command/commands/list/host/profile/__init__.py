@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.22 2011/07/23 02:30:31 phil Exp $
+# $Id: __init__.py,v 1.23 2012/02/14 23:09:32 phil Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.23  2012/02/14 23:09:32  phil
+# Clean up popen2 --> subprocess.
+# yuminstall.py -- don't get .treeinfo
+#
 # Revision 1.22  2011/07/23 02:30:31  phil
 # Viper Copyright
 #
@@ -144,7 +148,6 @@
 
 import os
 import sys
-import popen2
 import rocks.commands
 import rocks.gen
 
