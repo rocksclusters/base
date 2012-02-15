@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: vm.py,v $
+# Revision 1.19  2012/02/15 22:33:31  clem
+# moved from import sha to import hashlib
+#
 # Revision 1.18  2011/07/23 02:30:49  phil
 # Viper Copyright
 #
@@ -228,7 +231,7 @@ class VM:
 		return rows
 
 import socket
-import sha
+import hashlib
 import ssl
 import select
 import re
@@ -437,7 +440,7 @@ class VMControl:
 		#
 		# now add the signed digest
 		#
-		digest = sha.sha(msg).digest()
+		digest = hashlib.sha1(msg).digest()
 		signature = self.key.sign(digest, 'ripemd160')
 
 		#
