@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.8 2011/08/09 01:03:16 anoop Exp $
+# $Id: __init__.py,v 1.9 2012/02/15 20:09:00 clem Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.9  2012/02/15 20:09:00  clem
+# removed useless popen2
+#
 # Revision 1.8  2011/08/09 01:03:16  anoop
 # If yum install fails due to dependency error,
 # force install using rpm --nodeps
@@ -89,7 +92,6 @@
 
 import os
 import string
-import popen2
 import rocks.gen
 import rocks.file
 import rocks.commands
