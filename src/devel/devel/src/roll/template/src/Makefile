@@ -62,5 +62,7 @@ default:	pkg
 
 copyright pkg rpm clean::
 	for i in $(SRCDIRS) ; do \
-		(cd $$i; $(MAKE) $@) ; \
+		cd $$i; \
+		$(MAKE) $@ || exit 2 ; \
+		cd ..; \
 	done
