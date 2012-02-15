@@ -29,6 +29,9 @@
 # ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #################################################################################
 # $Log: password.py,v $
+# Revision 1.4  2012/02/15 21:23:33  clem
+# moving from import sha to import hashlib
+#
 # Revision 1.3  2011/06/07 22:14:50  anoop
 # Bug fix
 #
@@ -43,7 +46,7 @@
 import os
 import sys
 import string
-import sha
+import hashlib
 import crypt
 import random
 
@@ -181,12 +184,12 @@ class Enc:
 		pass
 
 	def enc_sha(self, value):
-        	s = sha.sha(value)
+        	s = hashlib.sha1(value)
         	return s.hexdigest()
                                                 
         def enc_shasha(self, value):
-        	s = sha.sha(value)
-		t = sha.sha(s.digest())
+        	s = hashlib.sha1(value)
+		t = hashlib.sha1(s.digest())
 		return t.hexdigest()
 
         def enc_crypt(self, value):

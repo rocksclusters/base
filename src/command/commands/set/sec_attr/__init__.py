@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.2 2011/07/23 02:30:40 phil Exp $
+# $Id: __init__.py,v 1.3 2012/02/15 21:23:58 clem Exp $
 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 
 # $Log: __init__.py,v $
+# Revision 1.3  2012/02/15 21:23:58  clem
+# moving from import sha to import hashlib
+#
 # Revision 1.2  2011/07/23 02:30:40  phil
 # Viper Copyright
 #
@@ -64,7 +67,6 @@
 import os
 import sys
 import rocks.commands
-import sha
 import crypt
 import rocks.password
 import getpass

@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.4 2011/08/31 00:51:46 anoop Exp $
+# $Id: __init__.py,v 1.5 2012/02/15 21:23:57 clem Exp $
 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 
 # $Log: __init__.py,v $
+# Revision 1.5  2012/02/15 21:23:57  clem
+# moving from import sha to import hashlib
+#
 # Revision 1.4  2011/08/31 00:51:46  anoop
 # An extra space can ruin your whole day
 #
@@ -74,7 +77,6 @@
 import os
 import sys
 import rocks.commands
-import sha
 import crypt
 import rocks.password
 import getpass
