@@ -1,7 +1,7 @@
 ## Create 
 DISTRO=CentOS
 ARCH=x86_64
-ifeq ($strip $(VERSION.MAJOR), 5)
+ifeq ($(VERSION.MAJOR), 5)
 VERSION=5.7
 PKGS=RPMS
 BASEPATH=centos/$(VERSION)/os/$(ARCH)/CentOS
