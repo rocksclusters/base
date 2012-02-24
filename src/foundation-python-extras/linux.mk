@@ -1,4 +1,4 @@
-ifeq ($strip $(VERSION.MAJOR), 5)
+ifeq ($(strip $(VERSION.MAJOR)), 5)
 SSLMK = ssl.mk
 else
 SSLMK =

@@ -1,5 +1,5 @@
 # --------------------------------------------------- -*- Makefile -*- --
-# $Id: MySQL-python.mk,v 1.12 2012/02/01 20:40:18 phil Exp $
+# $Id: MySQL-python.mk,v 1.13 2012/02/24 23:31:12 clem Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: MySQL-python.mk,v $
+# Revision 1.13  2012/02/24 23:31:12  clem
+# wrong sytax used with strip function
+#
 # Revision 1.12  2012/02/01 20:40:18  phil
 # extras to build on 5 and 6. Updated MYSQL-python for use with Pyver 2.6.
 #
@@ -109,7 +112,7 @@
 # - more source built foundations
 # - scipy stuff is here now (may move to hpc roll)
 #
-ifeq ($strip $(VERSION.MAJOR), 5)
+ifeq ($(strip $(VERSION.MAJOR)), 5)
 MYSQLPYVERSION=1.2.1_p2
 else
 MYSQLPYVERSION=1.2.3

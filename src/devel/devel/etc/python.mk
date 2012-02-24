@@ -13,7 +13,7 @@ __PYTHON_MK = yes
 -include $(ROCKSROOT)/etc/rocks-version-common.mk
 include rocks-version-common.mk
 
-ifeq ($strip $(VERSION.MAJOR), 5)
+ifeq ($(strip $(VERSION.MAJOR)), 5)
 PY.VERSION	= 2.4
 else
 PY.VERSION	= 2.6
