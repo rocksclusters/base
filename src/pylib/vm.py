@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: vm.py,v $
+# Revision 1.20  2012/02/29 18:33:47  clem
+# Support both python2.4 and python2.6
+#
 # Revision 1.19  2012/02/15 22:33:31  clem
 # moved from import sha to import hashlib
 #
@@ -231,7 +234,6 @@ class VM:
 		return rows
 
 import socket
-import hashlib
 import ssl
 import select
 import re
@@ -440,7 +442,13 @@ class VMControl:
 		#
 		# now add the signed digest
 		#
-		digest = hashlib.sha1(msg).digest()
+		try: 
+			import hashlib
+			digest = hashlib.sha1(msg).digest()
+		except ImportError:
+			#support python2.4 and python2.6
+			import sha
+			digest = sha.sha(msg).digest()
 		signature = self.key.sign(digest, 'ripemd160')
 
 		#
