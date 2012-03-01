@@ -1,5 +1,5 @@
 /*
- * $Id: sec_channel_server.c,v 1.5 2011/08/19 06:04:38 anoop Exp $
+ * $Id: sec_channel_server.c,v 1.6 2012/03/01 22:19:11 phil Exp $
  *
  * @Copyright@
  * 
@@ -55,6 +55,10 @@
  * @Copyright@
  *
  * $Log: sec_channel_server.c,v $
+ * Revision 1.6  2012/03/01 22:19:11  phil
+ * Use sigaction instead of signal.
+ * Setting signal process in the child process of sec_channel_svc is not needed.
+ *
  * Revision 1.5  2011/08/19 06:04:38  anoop
  * - Added debugging support.
  * - Does not create zombie processes anymore
@@ -109,7 +113,6 @@ sec_channel_ping_1_svc(struct svc_req *rqstp)
 	ipaddr = (char *)malloc(sizeof(char)*INET_ADDRSTRLEN);
 	ipaddr = (char *)inet_ntop(AF_INET, &addr->sin_addr, ipaddr, INET_ADDRSTRLEN);
 	fprintf(stderr, "Received request from %s\n", ipaddr);
-	signal(SIGCHLD, SIG_DFL);
 	status = execl("/opt/rocks/bin/rocks", "rocks",
 		"sync","host","sharedkey",ipaddr, NULL);
 	exit(status);

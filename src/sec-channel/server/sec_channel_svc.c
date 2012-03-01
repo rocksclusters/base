@@ -120,10 +120,15 @@ main (int argc, char **argv)
 	close(STDOUT_FILENO);
 	close(STDERR_FILENO);
 	
-	// Don't wait for child process to complete.
+	// Don't wait for child processes to complete.
 	// This makes sure that the child does not turn
 	// into a zombie on exit.
-	signal(SIGCHLD, SIG_IGN);
+
+	struct sigaction sa;
+	sigaction(SIGCHLD, NULL, &sa);
+	sa.sa_handler = SIG_IGN;
+	sigaction(SIGCHLD, &sa, NULL);
+
 	}
 	setsid();
 	fprintf(stdout, "Starting SVC_RUN loop\n");
