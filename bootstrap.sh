@@ -2,7 +2,7 @@
 #
 # This file should remain OS independent
 #
-# $Id: bootstrap.sh,v 1.31 2012/02/01 19:58:54 phil Exp $
+# $Id: bootstrap.sh,v 1.32 2012/03/02 04:01:39 phil Exp $
 #
 # @Copyright@
 # 
@@ -58,6 +58,9 @@
 # @Copyright@
 #
 # $Log: bootstrap.sh,v $
+# Revision 1.32  2012/03/02 04:01:39  phil
+# remove foundation-python-26. now in foundation-python
+#
 # Revision 1.31  2012/02/01 19:58:54  phil
 # Add foundation-python-setuptools
 #
@@ -200,7 +203,6 @@ compile_and_install foundation-python-xml
 compile_and_install foundation-python-extras
 compile_and_install foundation-rcs
 compile_and_install foundation-ant
-compile_and_install foundation-python-26
 
 if [ `./_os` == "linux" ]; then
 	compile_and_install librocks
