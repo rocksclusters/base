@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.7 2012/02/14 23:09:33 phil Exp $
+# $Id: __init__.py,v 1.8 2012/03/02 03:54:23 clem Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.8  2012/03/02 03:54:23  clem
+# minor fix so that report named works on 5.7 and 6.X
+#
 # Revision 1.7  2012/02/14 23:09:33  phil
 # Clean up popen2 --> subprocess.
 # yuminstall.py -- don't get .treeinfo
@@ -213,7 +216,12 @@ class Command(rocks.commands.report.command):
 		# Get a list of all the Public DNS servers
 		fwds = self.db.getHostAttr('localhost','Kickstart_PublicDNSServers')
 		forwarders = string.join(fwds.split(','), ';')
-		
+
+		#for rocks 5.7 we need to use named.local
+		global config_preamble	
+		if rocks.version[0] == '5':
+			config_preamble = config_preamble.replace("named.localhost","named.local")
+			
 		# Create the preamble from the template
 		s += config_preamble % (forwarders)
 
