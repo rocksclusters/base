@@ -1,5 +1,5 @@
 # --------------------------------------------------- -*- Makefile -*- --
-# $Id: Makefile,v 1.22 2012/02/01 20:38:18 phil Exp $
+# $Id: Makefile,v 1.23 2012/03/02 02:39:18 clem Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.23  2012/03/02 02:39:18  clem
+# Fix for the python unicode ucs4 problem (aka --enable-unicode=ucs4)
+#
 # Revision 1.22  2012/02/01 20:38:18  phil
 # Support Python-2.6.7 as foundation for version 6. 2.4.2 for version 5
 #
@@ -167,7 +170,7 @@ build:
 	( 								\
 		cd Python-$(VERSION);					\
 		./configure $(ADDFLAGS) --prefix=$(PKGROOT) 		\
-				$(CONFIGFLAGS);				\
+				$(CONFIGOPTS);				\
 		$(MAKE);						\
 	)
 
