@@ -13,6 +13,9 @@
 
   <changelog>
   $Log: dns-server.xml,v $
+  Revision 1.9  2012/03/03 03:19:15  phil
+  key file needs to be owned by named.
+
   Revision 1.8  2012/02/13 21:25:41  phil
   Turn off NetworkManager. Create /etc/rndc.key if it doesn't exist
 
@@ -133,6 +136,7 @@
 <!-- need to create /etc/rndc.key file if it doesn't exist -->
 if [ ! -f /etc/rndc.key ]; then
 	/usr/sbin/rndc-confgen -a -k rndckey
+	/bin/chown named /etc/rndc.key
 fi
 
 <!-- now write the DNS files -->
