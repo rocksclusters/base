@@ -17,6 +17,9 @@
 
 	<changelog>
 	$Log: foundation-base.xml,v $
+	Revision 1.34  2012/03/06 20:19:28  clem
+	Added GIT to the base roll and modified the documentation accordingly
+	
 	Revision 1.33  2011/08/25 23:38:46  anoop
 	Made a few section linux specific
 	
@@ -146,6 +149,7 @@
 	<package os='linux'>foundation-wget</package>
 	<package os='linux'>foundation-ant</package>
 	<package os='linux'>foundation-mercurial</package>
+	<package os='linux'>foundation-git</package>
 	<package os='linux'>libdnet</package>
 
 	<package os='sunos'>ROCKSfoundation-python</package>

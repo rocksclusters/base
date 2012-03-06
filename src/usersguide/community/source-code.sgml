@@ -2,32 +2,41 @@
 <title> Access to Rocks Source Code </title>
 
 <para>
-The source code for Rocks is available from a public read-only <ulink url="http://www.selenic.com/mercurial/wiki/">Mercurial</ulink> repository.  
-As of Rocks 5.0 Mercurial (hg) is installed on your frontend machine, for older version of Rocks (or non-Rocks platforms) you will need to install the Mercurial package yourself.
-Binary packages for Mercurial are available <ulink url="http://www.selenic.com/mercurial/wiki/index.cgi/BinaryPackages">here</ulink>.
+The source code for Rocks is available from a public read-only <ulink url="http://git-scm.com/">GIT</ulink> repository.  
+As of Rocks 5.7 GIT (git) is installed on your frontend machine, for older version of Rocks (or non-Rocks platforms) you will need to install the Git package yourself.
+You can download rpm packages from the EPEL Red Hat web site at <ulink url="http://dl.fedoraproject.org/pub/epel/5/x86_64/repoview/git.html">http://dl.fedoraproject.org/pub/epel/5/x86_64/repoview/git.html</ulink>
 </para>
 
 <para>
-Mercurial is a distributed source control system.  
-A very good explanation on how this differs from CVS is available on the Mercurial <ulink url="http://www.selenic.com/mercurial/wiki/index.cgi/CvsConcepts">site</ulink>.
+Git is a a distributed source control system.  
+Several tutorials are provided on the GIT web site <ulink url="http://git-scm.com/documentation">http://git-scm.com/documentation</ulink>.
 Fundamentally, distributed source control turns your checked out source code from a read-only copy into a repository and then grants read-write access to others based on your checked out repository.
 In the context of Rocks this means individual Roll developers can independently control who has access to their code.
 </para>
 
 <para>
-To check out the current source code you will first need to clone the master Rocks read-only repository as follows.  This operation will take several minutes (if not hours) and unlike a CVS checkout it may appear to hang, be patient.
+You can use the Git Web interface to view the source code using your browser at <ulink url="http://git.rocksclusters.org">http://git.rocksclusters.org</ulink>.
+To check out the current source code you will first need to clone one of the read-only repository listed on the main web page of the Git Web interface. This operation will take several minutes (if not hours) and unlike a CVS checkout it may appear to hang, be patient.
 </para>
 
 <screen>
-$ hg clone http://fyp.rocksclusters.org/hg/rocks-&document-version;
-destination directory: rocks-&document-version;
-real URL is http://fyp.rocksclusters.org/hg/rocks-&document-version;/
-requesting all changes
-adding changesets
-adding manifests
-adding file changes
-added 1 changesets with 2815 changes to 2815 files
-2815 files updated, 0 files merged, 0 files removed, 0 files unresolved
+ $ git clone http://git.rocksclusters.org/git/core/base/.git;
+git clone http://git.rocksclusters.org/git/core/base/.git
+Cloning into base...
+ $ cd base
+ $ git status
+# On branch master
+nothing to commit (working directory clean)
+ $ vi DESCRIPTION 
+ $ git status
+# On branch master
+# Changes not staged for commit:
+#   (use "git add &lt;file&gt;..." to update what will be committed)
+#   (use "git checkout -- &lt;file&gt;..." to discard changes in working directory)
+#
+#	modified:   DESCRIPTION
+#
+no changes added to commit (use "git add" and/or "git commit -a")
 </screen>
 
 </section>
