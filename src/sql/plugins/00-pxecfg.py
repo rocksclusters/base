@@ -1,7 +1,7 @@
 #
 # insert-ethers plugin module for generating pxelinux cfg files
 
-# $Id: 00-pxecfg.py,v 1.11 2011/07/23 02:30:50 phil Exp $
+# $Id: 00-pxecfg.py,v 1.12 2012/03/08 20:33:14 clem Exp $
 # 
 # @Copyright@
 # 
@@ -57,6 +57,9 @@
 # @Copyright@
 #
 # $Log: 00-pxecfg.py,v $
+# Revision 1.12  2012/03/08 20:33:14  clem
+# popen2 with subprocess cleanup
+#
 # Revision 1.11  2011/07/23 02:30:50  phil
 # Viper Copyright
 #
@@ -102,7 +105,7 @@ import os
 import sys
 import string
 import rocks.sql
-import popen2
+import subprocess
 
 class Plugin(rocks.sql.InsertEthersPlugin):
 	"Controls the PXE configuration when nodes are added and removed."
@@ -111,17 +114,19 @@ class Plugin(rocks.sql.InsertEthersPlugin):
 		cmd = ("/opt/rocks/bin/rocks report "
 			"host attr %s | grep os\: | "
 			"cut -f2 -d:" %(nodename))
-		r,w = popen2.popen2(cmd)
+		r,w = subprocess.Popen(cmd, shell=True,stdin=subprocess.PIPE, 
+					stdout=subprocess.PIPE, close_fds=True)
+		w, r = (p.stdin, p.stdout)
 		w.close()
 		osname = r.read().strip()
 		if osname == 'sunos':
 			cmd  = ('/opt/rocks/bin/rocks set '
 				'host installaction '
 				'%s install_sol'% (nodename))
-			os.system(cmd)
+			subprocess.call(cmd, shell=True)
 
-		os.system("/opt/rocks/bin/rocks set host boot " + \
-			"%s action=%s" % (nodename, "install"))
+		subprocess.call("/opt/rocks/bin/rocks set host boot " + \
+			"%s action=%s" % (nodename, "install"), shell=True)
 
 	def removed(self, nodename, id):
 		pass
