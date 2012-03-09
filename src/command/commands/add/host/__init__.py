@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.23 2011/07/23 02:30:25 phil Exp $
+# $Id: __init__.py,v 1.24 2012/03/09 01:44:12 clem Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.24  2012/03/09 01:44:12  clem
+# fix bug fix in MySQL-python 1.2.3 where sets are not anymore returned as
+# python sets
+#
 # Revision 1.23  2011/07/23 02:30:25  phil
 # Viper Copyright
 #
@@ -262,7 +266,12 @@ class Command(command):
 		self.db.execute("""select a.os from appliances a,
 			memberships m where m.appliance = a.id and
 			m.name='%s'""" % (membership))
-		supported_os = list(self.db.fetchone()[0])
+
+		#bug fix in the MySQL libraries over sql sets
+		if rocks.version[0] == '6' :
+			supported_os = self.db.fetchone()[0]
+		else:
+			supported_os = list(self.db.fetchone()[0])
 
 		if osname is not None and osname not in supported_os:
 			self.abort("%s does not support %s" % (membership,
