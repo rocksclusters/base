@@ -13,6 +13,9 @@
 
 <changelog>
 $Log: screen-timezone.xml,v $
+Revision 1.12  2012/03/10 02:30:22  clem
+best new future of rocks ;-) Los_Angeles first time zone when installing
+
 Revision 1.11  2011/07/23 02:30:15  phil
 Viper Copyright
 
@@ -61,6 +64,7 @@ screen updates
 		<name>Kickstart_Timezone</name>
 		<type>menu</type>
 		<size>1</size>
+		<option>America/Los_Angeles</option>
 		<option>Africa/Abidjan</option>
 		<option>Africa/Accra</option>
 		<option>Africa/Addis_Ababa</option>
@@ -182,7 +186,6 @@ screen updates
 		<option>America/Kentucky/Monticello</option>
 		<option>America/La_Paz</option>
 		<option>America/Lima</option>
-		<option>America/Los_Angeles</option>
 		<option>America/Maceio</option>
 		<option>America/Managua</option>
 		<option>America/Manaus</option>
