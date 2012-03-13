@@ -1,5 +1,5 @@
 #
-# $Id: Makefile,v 1.20 2011/07/23 02:30:49 phil Exp $
+# $Id: Makefile,v 1.21 2012/03/13 06:05:58 phil Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,11 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.21  2012/03/13 06:05:58  phil
+# Look at /tmp/interfaces and create list of interfaces so that user can
+# select public and private interfaces.   On single physical interface frontends,
+# create a virtual interface for the private.
+#
 # Revision 1.20  2011/07/23 02:30:49  phil
 # Viper Copyright
 #
@@ -157,7 +162,7 @@ ROCKSROOT       = ../devel/devel
 -include $(ROCKSROOT)/etc/Rules.mk
 include Rules.mk
 
-SCRIPTS		= rocks-buildscreens rocks-getroll.cgi sitexml2entities
+SCRIPTS		= rocks-buildscreens rocks-getroll.cgi sitexml2entities rocks-interface-menu
 
 
 build: rolls.html
