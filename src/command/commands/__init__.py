@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.98 2011/11/02 21:10:54 phil Exp $
+# $Id: __init__.py,v 1.99 2012/03/13 06:09:02 phil Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.99  2012/03/13 06:09:02  phil
+# Be more tolerant -- or don't emit errors in particular benign cases
+#
 # Revision 1.98  2011/11/02 21:10:54  phil
 # Some tweaks and updates to bootstrap0 so that bootstrap works properly
 #
@@ -718,7 +721,9 @@ class HostArgumentProcessor:
 				return managed_list
 			return list
 
-	
+		if len(list) == 0:
+			return list
+
 		# The names list was not empty so we now need to build
 		# a list of acceptable group names based on the rack numbers
 		# and appliance names (not membership names).  This 

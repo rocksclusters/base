@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.8 2011/07/23 02:30:35 phil Exp $
+# $Id: __init__.py,v 1.9 2012/03/13 06:09:02 phil Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.9  2012/03/13 06:09:02  phil
+# Be more tolerant -- or don't emit errors in particular benign cases
+#
 # Revision 1.8  2011/07/23 02:30:35  phil
 # Viper Copyright
 #
@@ -129,27 +132,30 @@ class Command(rocks.commands.HostArgumentProcessor,
 
 		self.beginOutput()
 		
-		for host in self.getHostnames(args):
-		
-
-			if not attr:
-				if pyformat:
-					fmt="'%s':'%s',"
+		try:
+			for host in self.getHostnames(args):
+	
+				if not attr:
+					if pyformat:
+						fmt="'%s':'%s',"
+					else:
+						fmt="%s:%s"
+					attrs = self.db.getHostAttrs(host)
+					keys = attrs.keys()
+					keys.sort()
+					if pyformat:
+						self.addOutput(host, '{')
+					for key in keys:
+						self.addOutput(host,
+							fmt % (key, attrs[key]))
+					if pyformat:
+						self.addOutput(host,'}')
 				else:
-					fmt="%s:%s"
-				attrs = self.db.getHostAttrs(host)
-				keys = attrs.keys()
-				keys.sort()
-				if pyformat:
-					self.addOutput(host, '{')
-				for key in keys:
 					self.addOutput(host,
-						fmt % (key, attrs[key]))
-				if pyformat:
-					self.addOutput(host,'}')
-			else:
-				self.addOutput(host,
-					self.db.getHostAttr(host, attr))
+						self.db.getHostAttr(host, attr))
+	
+		except:
+			pass
 
 		self.endOutput(padChar='')
 
