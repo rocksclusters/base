@@ -4,6 +4,9 @@
 
 	<changelog>
 	$Log: base.xml,v $
+	Revision 1.73  2012/03/13 06:07:55  phil
+	Now ask for public and then private interfaces
+	
 	Revision 1.72  2011/11/03 16:32:02  phil
 	Getting closer to functional bootstrap on a non-Rocks build host
 	
@@ -383,12 +386,12 @@
 
 	<!-- order the screens -->
 	<order head="screen-clusterinfo">
-		<tail>screen-network-eth0</tail>
+		<tail>screen-network-public</tail>
 	</order>
-	<order head="screen-network-eth0">
-		<tail>screen-network-eth1</tail>
+	<order head="screen-network-public">
+		<tail>screen-network-private</tail>
 	</order>
-	<order head="screen-network-eth1">
+	<order head="screen-network-private">
 		<tail>screen-network-misc</tail>
 	</order>
 	<order head="screen-network-misc">
@@ -509,8 +512,8 @@
 
 	<edge from="server">
 		<to>screen-clusterinfo</to>
-		<to>screen-network-eth0</to>
-		<to>screen-network-eth1</to>
+		<to>screen-network-public</to>
+		<to>screen-network-private</to>
 		<to>screen-network-misc</to>
 		<to>screen-root-password</to>
 		<to>screen-timezone</to>
