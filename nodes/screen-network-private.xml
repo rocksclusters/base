@@ -1,0 +1,150 @@
+<?xml version="1.0" standalone="no"?>
+
+<kickstart>
+
+<description>
+</description>
+
+        <copyright>
+        Copyright (c) 2000 - 2011 The Regents of the University of California.
+        All rights reserved. Rocks(r) v5.4.3 www.rocksclusters.org
+        
+        </copyright>
+
+<changelog>
+$Log: screen-network-private.xml,v $
+Revision 1.1  2012/03/13 06:04:14  phil
+Support user selecting public and private interfaces on frontend
+
+</changelog>
+
+<screen>
+
+	<title>Ethernet Configuration for Private Network</title>
+
+	<code>
+		<!-- the 'validate' functions are in this file -->
+		<include file="javascript/private.js"/>
+	</code>
+
+	<variable>
+		<label>Private Network Interface</label>
+		<name>Kickstart_PrivateInterface</name>
+		<type>menu</type>
+		<size>1</size>
+		<eval mode='xml'>
+			/opt/rocks/screens/rocks-interface-menu private &Kickstart_PrivateInterface;
+		</eval>
+		<value>&Kickstart_PrivateInterface;</value>
+		<help>This is the Ethernet network that physically connects your frontend to compute nodes</help>
+	</variable>
+	
+	<variable>
+		<label>IP address</label>
+		<name>Kickstart_PrivateAddress</name>
+		<type>ipv4-address</type>
+		<size>20</size>
+		<default>10.1.1.1</default>
+		<value>&Kickstart_PrivateAddress;</value>
+		<help>Enter the IP address for Private (cluster) Network. This is the interface that connects the frontend to the compute nodes.</help>
+		<validate>check_private_ip</validate>
+	</variable>
+
+	<variable>
+		<label>Netmask</label>
+		<name>Kickstart_PrivateNetmask</name>
+		<type>ipv4-address</type>
+		<size>20</size>
+		<default>255.255.0.0</default>
+		<value>&Kickstart_PrivateNetmask;</value>
+		<validate>process_private_eth</validate>
+		<help>Enter the netmask for private network.</help>
+	</variable>
+
+
+	<!-- hidden variables -->
+	<variable>
+		<label>Private Network</label>
+		<name>Kickstart_PrivateNetwork</name>
+		<type>hidden</type>
+		<size>20</size>
+		<default>10.0.0.0</default>
+		<value>&Kickstart_PrivateNetwork;</value>
+	</variable>
+
+	<variable>
+		<label>Private Broadcast</label>
+		<name>Kickstart_PrivateBroadcast</name>
+		<type>hidden</type>
+		<size>20</size>
+		<default>10.255.255.255</default>
+		<value>&Kickstart_PrivateBroadcast;</value>
+	</variable>
+
+	<variable>
+		<label>Private Netmask CIDR</label>
+		<name>Kickstart_PrivateNetmaskCIDR</name>
+		<type>hidden</type>
+		<size>20</size>
+		<default>8</default>
+		<value>&Kickstart_PrivateNetmaskCIDR;</value>
+	</variable>
+
+	<variable>
+		<label>Private Kickstart Host</label>
+		<name>Kickstart_PrivateKickstartHost</name>
+		<type>hidden</type>
+		<size>20</size>
+		<default>10.1.1.1</default>
+		<value>&Kickstart_PrivateKickstartHost;</value>
+	</variable>
+
+	<variable>
+		<label>Private NTP Host</label>
+		<name>Kickstart_PrivateNTPHost</name>
+		<type>hidden</type>
+		<size>20</size>
+		<default>10.1.1.1</default>
+		<value>&Kickstart_PrivateNTPHost;</value>
+	</variable>
+
+	<variable>
+		<label>Private Gateway</label>
+		<name>Kickstart_PrivateGateway</name>
+		<type>hidden</type>
+		<size>20</size>
+		<default>10.1.1.1</default>
+		<value>&Kickstart_PrivateGateway;</value>
+	</variable>
+
+	<variable>
+		<label>Private DNS Servers</label>
+		<name>Kickstart_PrivateDNSServers</name>
+		<type>hidden</type>
+		<size>20</size>
+		<default>10.1.1.1</default>
+		<value>&Kickstart_PrivateDNSServers;</value>
+	</variable>
+
+	<variable>
+		<label>Private Syslog Host</label>
+		<name>Kickstart_PrivateSyslogHost</name>
+		<type>hidden</type>
+		<size>20</size>
+		<default>10.1.1.1</default>
+		<value>&Kickstart_PrivateSyslogHost;</value>
+	</variable>
+
+	<variable>
+		<label>Ganglia Multicast Channel</label>
+		<name>Kickstart_Multicast</name>
+		<type>hidden</type>
+		<size>20</size>
+		<validate>generate_multicast</validate>
+		<value>&Kickstart_Multicast;</value>
+	</variable>
+
+</screen>
+
+</kickstart> 
+

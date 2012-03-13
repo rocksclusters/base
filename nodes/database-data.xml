@@ -17,6 +17,9 @@
 
 <changelog>
   $Log: database-data.xml,v $
+  Revision 1.74  2012/03/13 06:04:14  phil
+  Support user selecting public and private interfaces on frontend
+
   Revision 1.73  2011/07/23 02:30:14  phil
   Viper Copyright
 
@@ -644,16 +647,16 @@ if os.path.exists('/tmp/site.attrs'):
 	&Kickstart_PrivateAddress; netmask=255.255.255.255
 	
 <!-- frontend eth0 -->
-/opt/rocks/bin/rocks add host interface &Kickstart_PrivateHostname; eth0
+/opt/rocks/bin/rocks add host interface &Kickstart_PrivateHostname; &Kickstart_PrivateInterface; 
 
 /opt/rocks/bin/rocks set host interface subnet &Kickstart_PrivateHostname; \
-	eth0 private
+	&Kickstart_PrivateInterface; private
 
-/opt/rocks/bin/rocks set host interface ip &Kickstart_PrivateHostname; eth0 \
-	&Kickstart_PrivateAddress;
+/opt/rocks/bin/rocks set host interface ip &Kickstart_PrivateHostname; \
+	&Kickstart_PrivateInterface; &Kickstart_PrivateAddress;
 
-/opt/rocks/bin/rocks set host interface name &Kickstart_PrivateHostname; eth0 \
-	&Kickstart_PrivateHostname;
+/opt/rocks/bin/rocks set host interface name &Kickstart_PrivateHostname; \
+	&Kickstart_PrivateInterface; &Kickstart_PrivateHostname;
 
 <!-- SSH settings -->
 
@@ -689,7 +692,7 @@ for line in file.readlines():
 		module = l[3]
                 
 		ks = ''
-		if iface == 'eth0':
+		if iface == '&Kickstart_PrivateInterface;':
 			ks = 'ks'
 
 		ifaces.append(iface)
@@ -706,17 +709,17 @@ os.system('/opt/rocks/bin/rocks config host interface localhost iface="%s" \
 
 
 <post os='linux'>
-<!-- now assign public network info to eth1 -->
-/opt/rocks/bin/rocks add host interface &Kickstart_PrivateHostname; eth1
+<!-- now assign public network info to public -->
+/opt/rocks/bin/rocks add host interface &Kickstart_PrivateHostname; &Kickstart_PublicInterface;
 
 /opt/rocks/bin/rocks set host interface subnet &Kickstart_PrivateHostname; \
-	eth1 public
+	&Kickstart_PublicInterface; public
 
-/opt/rocks/bin/rocks set host interface ip &Kickstart_PrivateHostname; eth1 \
-	&Kickstart_PublicAddress;
+/opt/rocks/bin/rocks set host interface ip &Kickstart_PrivateHostname; \
+	&Kickstart_PublicInterface; &Kickstart_PublicAddress;
 
-/opt/rocks/bin/rocks set host interface name  &Kickstart_PrivateHostname; eth1 \
-	&Kickstart_PrivateHostname;
+/opt/rocks/bin/rocks set host interface name  &Kickstart_PrivateHostname; \
+	&Kickstart_PublicInterface; &Kickstart_PrivateHostname;
 </post>
 
 <post>

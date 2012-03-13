@@ -1,0 +1,92 @@
+<?xml version="1.0" standalone="no"?>
+
+<kickstart>
+
+<description>
+</description>
+
+        <copyright>
+        Copyright (c) 2000 - 2011 The Regents of the University of California.
+        All rights reserved. Rocks(r) v5.4.3 www.rocksclusters.org
+        
+        </copyright>
+
+<changelog>
+$Log: screen-network-public.xml,v $
+Revision 1.1  2012/03/13 06:04:14  phil
+Support user selecting public and private interfaces on frontend
+
+</changelog>
+
+<screen>
+
+	<title>Ethernet Configuration for Public Network</title>
+
+	<code>
+		<!-- validate functions are in this file -->
+		<include file="javascript/public.js"/>
+	</code>
+
+
+	<variable>
+		<label>Public Network Interface</label>
+		<name>Kickstart_PublicInterface</name>
+		<type>menu</type>
+		<size>1</size>
+		<eval mode='xml'>
+			/opt/rocks/screens/rocks-interface-menu public &Kickstart_PublicInterface;
+		</eval>
+		<value>&Kickstart_PublicInterface;</value>
+		<help>This is the Ethernet network that physically connects your frontend to the outside world</help>
+	</variable>
+	<variable>
+		<label>IP address</label>
+		<name>Kickstart_PublicAddress</name>
+		<type>ipv4-address</type>
+		<size>20</size>
+		<value>&Kickstart_PublicAddress;</value>
+		<help>Enter the IP address for eth1. This is the interface that connects the frontend to the outside network.</help>
+		<validate>check_public_ip</validate>
+	</variable>
+
+	<variable>
+		<label>Netmask</label>
+		<name>Kickstart_PublicNetmask</name>
+		<type>ipv4-address</type>
+		<size>20</size>
+		<validate>process_public</validate>
+		<value>&Kickstart_PublicNetmask;</value>
+		<help>Enter the netmask for eth1.</help>
+	</variable>
+
+
+	<!-- hidden variables -->
+	<variable>
+		<label>Public Network</label>
+		<name>Kickstart_PublicNetwork</name>
+		<type>hidden</type>
+		<size>20</size>
+		<value>&Kickstart_PublicNetwork;</value>
+	</variable>
+
+	<variable>
+		<label>Public Broadcast</label>
+		<name>Kickstart_PublicBroadcast</name>
+		<type>hidden</type>
+		<size>20</size>
+		<value>&Kickstart_PublicBroadcast;</value>
+	</variable>
+
+	<variable>
+		<label>Public Netmask CIDR</label>
+		<name>Kickstart_PublicNetmaskCIDR</name>
+		<type>hidden</type>
+		<size>20</size>
+		<default>8</default>
+		<value>&Kickstart_PublicNetmaskCIDR;</value>
+	</variable>
+
+</screen>
+
+</kickstart> 
+
