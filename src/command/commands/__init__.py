@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.99 2012/03/13 06:09:02 phil Exp $
+# $Id: __init__.py,v 1.100 2012/03/13 18:41:43 phil Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.100  2012/03/13 18:41:43  phil
+# Back-out previous change. Bad idea. Or worse -- breaks things.
+#
 # Revision 1.99  2012/03/13 06:09:02  phil
 # Be more tolerant -- or don't emit errors in particular benign cases
 #
@@ -719,9 +722,6 @@ class HostArgumentProcessor:
 						'managed') == 'true':
 						managed_list.append(hostname)
 				return managed_list
-			return list
-
-		if len(list) == 0:
 			return list
 
 		# The names list was not empty so we now need to build
