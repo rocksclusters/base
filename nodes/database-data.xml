@@ -17,6 +17,9 @@
 
 <changelog>
   $Log: database-data.xml,v $
+  Revision 1.75  2012/03/15 17:05:43  phil
+  Support single interface frontends
+
   Revision 1.74  2012/03/13 06:04:14  phil
   Support user selecting public and private interfaces on frontend
 
@@ -678,6 +681,7 @@ ifaces = []
 macs = []
 modules = []
 flags = []
+nifs = 0
 
 file = open('/tmp/interfaces', 'r')
 
@@ -686,6 +690,7 @@ for line in file.readlines():
 	l = string.split(line)
 
 	if len(l) > 3 and l[0][0:len(macstr)] == macstr:
+		nifs = nifs + 1
 		tag = l[0][:-1]
 		iface = l[1]
 		macaddr = l[2]
@@ -701,6 +706,13 @@ for line in file.readlines():
 		flags.append(ks)
 
 file.close()
+
+if nifs == 1:
+	# build a virtual interface for the private Network
+	ifaces.append("%s:0" % ifaces[0])
+	macs.append('')
+	modules.append('none')
+	flags.append('ks')
 
 os.system('/opt/rocks/bin/rocks config host interface localhost iface="%s" \
 	mac="%s" module="%s" flag="%s"' % (','.join(ifaces), ','.join(macs), \
