@@ -1,4 +1,4 @@
-# $Id: plugin_physical_host.py,v 1.12 2011/07/23 02:30:37 phil Exp $
+# $Id: plugin_physical_host.py,v 1.13 2012/03/16 21:09:42 clem Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: plugin_physical_host.py,v $
+# Revision 1.13  2012/03/16 21:09:42  clem
+# Fix for HVM based virtual cluster on xen
+#
 # Revision 1.12  2011/07/23 02:30:37  phil
 # Viper Copyright
 #
@@ -354,8 +357,8 @@ class Plugin(rocks.commands.Plugin):
 				'vm_nodes' """)
 
 			if nrows == 1:
-				# HVM Virtual Machines act like Physical Hosts. Treat them
-				# that way
+				# so we do not create a pxe file if 
+				#(virt_type==para //aka pygrub
 				nrows = self.db.execute("""select vn.id from
 					vm_nodes vn, nodes n
 					where vn.node = n.id and
@@ -363,6 +366,17 @@ class Plugin(rocks.commands.Plugin):
 					n.name = "%s" """ % (host))
 				if nrows == 1:
 					physnode = 0
+				#or if
+				#(virt_type==hvm and membership==hosted-vm)) 
+				#//aka this is a compute node of a virtual cluster
+				nrows = self.db.execute("""select vn.id from
+					vm_nodes vn, nodes n, memberships mem
+					where vn.node = n.id and
+					vn.virt_type = 'hvm' and mem.name = 'Hosted VM' and mem.id = n.Membership
+					and n.name = "%s" """ % (host))
+				if nrows == 1:
+					physnode = 0
+
 
 			if physnode:
 				node_os = self.db.getHostAttr(host, "os")
