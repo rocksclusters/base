@@ -1,6 +1,6 @@
 #!/opt/rocks/usr/bin/python
 #
-# $Id: build-updates-img.py,v 1.16 2012/02/07 16:24:57 phil Exp $
+# $Id: build-updates-img.py,v 1.17 2012/03/17 05:05:07 phil Exp $
 #
 # @Copyright@
 # 
@@ -56,6 +56,10 @@
 # @Copyright@
 #
 # $Log: build-updates-img.py,v $
+# Revision 1.17  2012/03/17 05:05:07  phil
+# eject was not working in 6.
+# Backed out the "hack" installed rocks-pylib in two places
+#
 # Revision 1.16  2012/02/07 16:24:57  phil
 # use subprocess module. Handle differences between 5 and 6.
 # Clean out more files to reduce image size
@@ -255,6 +259,7 @@ class App(rocks.app.Application):
 
 		rpms = [
 			'createrepo',
+			'eject', 
 			'firerox', 
 			'foundation-libxml2',
 			'foundation-python',

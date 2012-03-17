@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: media.py,v $
+# Revision 1.15  2012/03/17 05:05:07  phil
+# eject was not working in 6.
+# Backed out the "hack" installed rocks-pylib in two places
+#
 # Revision 1.14  2011/07/23 02:30:49  phil
 # Viper Copyright
 #
@@ -112,12 +116,15 @@ import string
 class Media:
 
 	def mounted(self):
-		"Returns true if the /tmp/rocks-cdrom device is mounted"
+		"Returns true if /tmp/rocks-cdrom device or /mnt/cdrom is mounted"
 
 		rv = 0
 		f = open('/proc/mounts','r')
 		for line in f:
 			if line.find('/tmp/rocks-cdrom') == 0:
+				rv = 1
+				break
+			if line.find('/mnt/cdrom') == 0:
 				rv = 1
 				break
 		f.close()
@@ -173,7 +180,12 @@ class Media:
 		#
 		# loader creates the cdrom device '/tmp/rocks-cdrom'
 		#
-		cmd = '/usr/bin/eject /tmp/rocks-cdrom > /dev/null 2>&1'
+		if @VERSION_MAJOR@ == 6:
+			ejectcmd = '/tmp/updates/usr/sbin/eject'
+		else:
+			ejectcmd = '/usr/bin/eject'
+
+		cmd = '%s /tmp/rocks-cdrom > /dev/null 2>&1' % ejectcmd
 		os.system(cmd)
 
 		return
