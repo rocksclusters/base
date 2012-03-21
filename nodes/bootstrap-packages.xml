@@ -16,6 +16,9 @@
 
 	<changelog>
 	$Log: bootstrap-packages.xml,v $
+	Revision 1.7  2012/03/21 18:42:53  phil
+	Added glibc-static and nspr-devel to support building of new version of firerox
+	
 	Revision 1.6  2012/01/23 19:50:17  phil
 	Added additional bootstrap packages for 6.  syslinux-perl (for 6, doesn't hurt on 5)
 	
@@ -51,6 +54,7 @@
 	<package os="linux">dialog</package>
 	<package os="linux">elfutils-devel</package>
 	<package os="linux">expat-devel</package>
+	<package os="linux">glibc-static</package>
 	<package os="linux">gtk2-devel</package>
 	<package os="linux">gtk+-devel</package>
 	<package os="linux">intltool</package>
@@ -80,6 +84,7 @@
 	<package os="linux">libXxf86misc-devel</package>
 	<package os="linux">mkinitrd-devel</package>
 	<package os="linux">newt-devel</package>
+	<package os="linux">nspr-devel</package>
 	<package os="linux">openjade</package>
 	<package os="linux">opensp</package>
 	<package os="linux">pango-devel</package>
