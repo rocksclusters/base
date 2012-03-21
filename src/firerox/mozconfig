@@ -1,4 +1,6 @@
 ac_add_options --enable-application=browser
 ac_add_options --prefix=/opt/rocks/firerox
-ac_add_options --disable-tests --disable-dbus
+ac_add_options --disable-tests --disable-dbus --disable-crashreporter --disable-oji --with-system-nspr
+ac_add_options  --disable-postscript --disable-gnomevfs --disable-gnomeui 
+ac_add_options  --disable-printing --disable-plugins
 mk_add_options MOZ_CO_PROJECT=browser

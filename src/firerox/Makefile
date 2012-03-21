@@ -1,5 +1,5 @@
 # --------------------------------------------------- -*- Makefile -*- --
-# $Id: Makefile,v 1.22 2011/07/23 02:30:44 phil Exp $
+# $Id: Makefile,v 1.23 2012/03/21 16:51:42 phil Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.23  2012/03/21 16:51:42  phil
+# Updated firefox to build on Centos6 32-bit. Needs testing.
+#
 # Revision 1.22  2011/07/23 02:30:44  phil
 # Viper Copyright
 #
@@ -171,13 +174,13 @@ build:
 	( 								\
 		cd mozilla-$(MOZILLA_VERSION);				\
 		cp ../mozconfig .mozconfig;				\
-		$(MAKE) -f client.mk build;				\
+		$(MAKE) -j 4 -f client.mk build;				\
 	)
 
 install::
 	(								\
 		cd mozilla-$(MOZILLA_VERSION);				\
-		$(MAKE) package;					\
+		$(MAKE) -j  package;					\
 	)
 	mkdir -p $(ROOT)/$(PKGROOT)
 	(								\
