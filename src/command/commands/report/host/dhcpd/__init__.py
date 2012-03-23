@@ -1,5 +1,5 @@
 #
-# $Id: __init__.py,v 1.20 2012/02/09 17:34:47 phil Exp $
+# $Id: __init__.py,v 1.21 2012/03/23 16:46:59 phil Exp $
 #
 # @Copyright@
 # 
@@ -55,8 +55,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
-# Revision 1.20  2012/02/09 17:34:47  phil
-# Handle new location of dhcpd.conf for 6. Retain ability to write correctly on 5
+# Revision 1.21  2012/03/23 16:46:59  phil
+# Almost 10X faster on large clusters. Single query for all interfaces.
+# Reduce number of attribute retrievals to one-per-host
 #
 # Revision 1.19  2011/07/23 02:30:35  phil
 # Viper Copyright
@@ -183,7 +184,7 @@ class Command(rocks.commands.HostArgumentProcessor,
 				'Kickstart_PrivateBroadcast')))
 
 
-	def printHost(self, name, hostname, mac, ip):
+	def printHost(self, name, hostname, mac, ip, filename, nextserver):
 		self.addOutput('', '\t\thost %s {' % name)
 		if mac:
 			self.addOutput('', '\t\t\thardware ethernet %s;' % mac)
@@ -191,31 +192,17 @@ class Command(rocks.commands.HostArgumentProcessor,
 		self.addOutput('', '\t\t\toption host-name "%s";' % hostname)
 		self.addOutput('', '\t\t\tfixed-address %s;' % ip)
 
-		kickstartable = self.db.getHostAttr(hostname, 'kickstartable')
-		if kickstartable:
-			kickstartable = self.str2bool(kickstartable)
-		else:
-			kickstartable = False
-
-		if kickstartable:
-			filename = self.db.getHostAttr(hostname, 'dhcp_filename')
-			if filename:
-				self.addOutput('','\t\t\tfilename "%s";' % filename)
-			nextserver = self.db.getHostAttr(hostname, 'dhcp_nextserver')
-			if nextserver:
-				self.addOutput('','\t\t\tnext-server %s;' % nextserver)
+		if filename:
+			self.addOutput('','\t\t\tfilename "%s";' % filename)
+		if nextserver:
+			self.addOutput('','\t\t\tnext-server %s;' % nextserver)
 		self.addOutput('', '\t\t}')
 
 		return
 		
 
 	def writeDhcpDotConf(self, hosts):
-		# Handle Path Name Fun
-		RocksVersion = self.db.getHostAttr('localhost', 'rocks_version')
-		if int(RocksVersion.split('.')[0]) < 6:
-			self.addOutput('', '<file name="/etc/dhcpd.conf">')
-		else:
-			self.addOutput('', '<file name="/etc/dhcp/dhcpd.conf">')
+		self.addOutput('', '<file name="/etc/dhcpd.conf">')
 
 		dn = self.db.getHostAttr('localhost',
 			'Kickstart_PrivateDNSDomain')
@@ -246,74 +233,62 @@ class Command(rocks.commands.HostArgumentProcessor,
 		self.addOutput('', '\tgroup "%s" {' % dn)
 		ip  = rocks.ip.IPGenerator(network, netmask)
 		
-		self.db.execute("""select nodes.id, nodes.name, nodes.rack,
-			nodes.rank from nodes, appliances, memberships where
-			nodes.membership=memberships.id and 
-			memberships.appliance=appliances.id
-			order by nodes.id""")
+		curnode = 0
+		self.db.execute("""
+			SELECT n.id,n.name,n.rack,n.rank,net.device,net.mac,
+			net.ip,sub.name FROM nodes n INNER JOIN networks net 
+			ON net.node=n.id, subnets sub WHERE net.subnet=sub.id
+			AND (net.vlanid IS NULL OR net.vlanid=0) 
+			AND sub.name="private" 
+			UNION
+			SELECT n.id,n.name,n.rack,n.rank,net.device,net.mac,
+			net.ip, NULL FROM nodes n INNER JOIN networks net 
+			ON net.node=n.id where net.subnet IS NULL
+			AND (net.vlanid IS NULL or net.vlanid=0) 
+			ORDER BY 1,7 DESC; """)
 
 		for row in self.db.fetchall():
 			node = rocks.util.Struct()
 			node.id		= row[0]
 			node.name	= row[1]
 			node.rack	= row[2]
+			netdevice	= row[4]
 			node.rank	= row[3]
+			node.mac	= row[5]
+			node.ip		= row[6]
+			netname		= row[7]
+			hostname = node.name
 
-			#
-			# look for a physical private interface that has an
-			# IP address assigned to it.
-			#
-			self.db.execute("""select mac,ip from networks,subnets
-				where networks.node = %d and
-				subnets.name = "private" and
-				networks.subnet = subnets.id and
-				networks.ip is not NULL and
-				(networks.vlanid is NULL or
-				networks.vlanid = 0)""" % (node.id))
+			if curnode != node.id :
+				curnode = node.id
+				unassignedidx = 0
+				attrs = self.db.getHostAttrs(hostname)
+				kickstartable = attrs.get('kickstartable')
+				if kickstartable:
+					kickstartable = self.str2bool(kickstartable)
+				else:
+					kickstartable = False
+					nextserver = None
+					filename = None
 
-			t_info = self.db.fetchone()
-			if t_info == None:
-				node.ip = None
-				node.mac = None
-				pass
-			else:
-				(node.mac, node.ip) = t_info
+				if kickstartable:
+					filename = attrs.get('dhcp_filename')
+					nextserver = attrs.get('dhcp_nextserver')
+			if netname == "private":
+				privateIP = node.ip
 
-			if not node.ip:
-				#
-				# if the machine doesn't have an IP address,
-				# there is nothing for our DHCP server to do
-				#
+			# if both netname and IP are empty then this is 
+                        # an unassigned MAC
+			if netname is None and  node.ip is None:
+				node.name = '%s-%i' %(node.name,unassignedidx)
+				unassignedidx = unassignedidx + 1
+				node.ip = privateIP
+
+			# Check that we have valid values
+			if node.name is None or node.mac is None or node.ip is None:
 				continue
 
-			if not node.name:
-				name  = node.modelname
-				if node.rack != None:
-					name  = name + '-%d' % node.rack
-				if node.rank != None:
-					name  = name + '-%d' % node.rank
-				node.name = name
-
-			# Go fully-qualified.
-			node.name = node.name + "." + dn
-
-			self.printHost(node.name, node.name, node.mac, node.ip)
-
-			#
-			# associate all unassigned macs to this node
-			#
-			self.db.execute("""select mac from networks where
-				node = %d and ip is NULL""" % (node.id))
-			extramacs = self.db.fetchall()
-	
-			i = 1
-			for row in extramacs:
-				extramac = row[0]
-				if extramac is None:
-					continue
-				self.printHost(node.name + '-%d' % (i),
-					node.name, extramac, node.ip)
-				i = i + 1
+			self.printHost(node.name, hostname, node.mac, node.ip, filename, nextserver)
 
 		self.addOutput('', '\t}')
 		self.addOutput('', '}')
@@ -360,4 +335,3 @@ class Command(rocks.commands.HostArgumentProcessor,
 		self.writeDhcpDotConf(hosts)
 		self.writeDhcpSysconfig()
 		self.endOutput(padChar='')
-
