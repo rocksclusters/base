@@ -1,5 +1,5 @@
 #
-# $Id: __init__.py,v 1.21 2012/03/23 16:46:59 phil Exp $
+# $Id: __init__.py,v 1.22 2012/03/23 21:35:59 phil Exp $
 #
 # @Copyright@
 # 
@@ -55,9 +55,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
-# Revision 1.21  2012/03/23 16:46:59  phil
-# Almost 10X faster on large clusters. Single query for all interfaces.
-# Reduce number of attribute retrievals to one-per-host
+# Revision 1.22  2012/03/23 21:35:59  phil
+# dhcpd.conf now down to two big (UNION) select statements instead of
+# N. Takes less < 1 sec to complete on a 300 node test.
 #
 # Revision 1.19  2011/07/23 02:30:35  phil
 # Viper Copyright
@@ -162,6 +162,40 @@ class Command(rocks.commands.HostArgumentProcessor,
 	</example>
 	"""
 
+	def makeAttrDictionary(self):
+		# Read all the attributes global, os, app, host
+		self.db.execute("""
+			SELECT n.id, n.name, g.attr, g.value, 100 
+			FROM nodes n JOIN global_attributes g  WHERE 
+			g.attr="kickstartable" OR g.attr="dhcp_nextserver" 
+			OR g.attr="dhcp_filename"
+			UNION
+			SELECT n.id, n.name, a.attr, a.value, 300 from nodes n,
+			memberships m JOIN appliances app 
+			ON m.appliance=app.id, appliance_attributes a 
+			WHERE n.membership=m.id  AND a.appliance=app.id
+			AND a.attr="kickstartable" OR a.attr="dhcp_nextserver"
+		 	OR a.attr="dhcp_filename"
+			UNION
+			SELECT n.id, n.name, o.attr, o.value, 200 from nodes n,
+			memberships m JOIN appliances app 
+			ON m.appliance=app.id, os_attributes o 
+			WHERE n.membership=m.id  AND (app.OS=o.OS)
+			AND o.attr="kickstartable" OR o.attr="dhcp_nextserver" 
+			OR o.attr="dhcp_filename"
+			UNION
+			SELECT n.id, n.name, na.attr, na.value, 400 
+			from nodes n JOIN node_attributes na ON na.node=n.id
+			AND na.attr="kickstartable" OR na.attr="dhcp_nextserver"
+			OR na.attr="dhcp_filename"
+			ORDER by 1,3,5; """)
+
+		self.attrdict = {}
+		for row in self.db.fetchall():
+			key="%d-%s" %(row[0],row[2])
+			self.attrdict[key]=row[3]
+			
+			
 	def printOptions(self, prefix):
 		self.addOutput('', '%soption routers %s;' %
 			(prefix, self.db.getHostAttr('localhost',
@@ -234,6 +268,7 @@ class Command(rocks.commands.HostArgumentProcessor,
 		ip  = rocks.ip.IPGenerator(network, netmask)
 		
 		curnode = 0
+		self.makeAttrDictionary()
 		self.db.execute("""
 			SELECT n.id,n.name,n.rack,n.rank,net.device,net.mac,
 			net.ip,sub.name FROM nodes n INNER JOIN networks net 
@@ -262,18 +297,19 @@ class Command(rocks.commands.HostArgumentProcessor,
 			if curnode != node.id :
 				curnode = node.id
 				unassignedidx = 0
-				attrs = self.db.getHostAttrs(hostname)
-				kickstartable = attrs.get('kickstartable')
+				kickstartable = self.attrdict.get('%d-kickstartable' % node.id)
 				if kickstartable:
 					kickstartable = self.str2bool(kickstartable)
 				else:
 					kickstartable = False
+
+				if not kickstartable:
 					nextserver = None
 					filename = None
 
 				if kickstartable:
-					filename = attrs.get('dhcp_filename')
-					nextserver = attrs.get('dhcp_nextserver')
+					filename = self.attrdict.get('%d-dhcp_filename' % node.id)
+					nextserver = self.attrdict.get('%d-dhcp_nextserver' %node.id)
 			if netname == "private":
 				privateIP = node.ip
 
