@@ -10,6 +10,9 @@
 
   <changelog>
   $Log: devel-appliance.xml,v $
+  Revision 1.8  2012/03/26 17:19:44  phil
+  Rocks local repo definition moved
+
   Revision 1.7  2011/06/30 22:10:14  phil
   Correct path name if you want a local repository
 
@@ -81,8 +84,8 @@ MYSQL_HOME=/opt/rocks/etc /usr/bin/mysqldump -u apache cluster rolls
 </post>
 <post cond="RepositoryLocal">
 <!-- Modify yum.conf to point locally. Self-containment -->
-/bin/sed -i '/^baseurl/d' /etc/yum.conf
-<file name="/etc/yum.conf" mode="append">
+/bin/sed -i '/^baseurl/d' /etc/yum.repos.d/rocks-local.repo
+<file name="/etc/yum.repos.d/rocks-local.repo" mode="append">
 baseurl=file:/export/rocks/install/rocks-dist/&arch;
 </file>
 
