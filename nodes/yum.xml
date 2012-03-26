@@ -16,6 +16,9 @@ Configure yum
 
 <changelog>
 $Log: yum.xml,v $
+Revision 1.15  2012/03/26 17:16:20  phil
+Don't remove alternate repo definitions, disable instead. Then add the rocks-local distro as the only enabled repo
+
 Revision 1.14  2011/07/23 02:30:15  phil
 Viper Copyright
 
@@ -83,12 +86,30 @@ tolerant=1
 exactarch=1
 assumeyes=1
 
+</file>
+
+pushd /etc/yum.repos.d
+if [ ! -d RCS ]; then
+	mkdir -m 700 RCS
+	chown 0:0 RCS
+fi
+
+ext=$$
+for repo in *repo; do
+  /opt/rocks/bin/ci -l -m"Original File"  $repo
+  /bin/sed -e 's/^enabled[[:print:]]*//' $repo &gt; $repo.$ext
+  /bin/awk '{print};/^\[[[:print:]]*\]/ {print "enabled = 0 "}' $repo.$ext &gt; $repo 
+  /bin/rm $repo.$ext
+  /opt/rocks/bin/ci -l -m"Disabled by Rocks Post Config"  $repo
+done 
+popd
+
+<file name="/etc/yum.repos.d/rocks-local.repo">
 [Rocks-&version;]
 name=Rocks &version;
 baseurl=http://&Kickstart_PublicAddress;/install/&distribution;/&arch;
-</file>
-
-rm -f /etc/yum.repos.d/*repo
+enabled = 1
+</file> 
 
 </post>
 
