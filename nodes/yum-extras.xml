@@ -1,0 +1,30 @@
+<?xml version="1.0" standalone="no"?>
+
+<kickstart>
+
+
+<description>
+Extra Yum Repositories. Yum.xml disables by default
+</description>
+
+
+        <copyright>
+        Copyright (c) 2000 - 2011 The Regents of the University of California.
+        All rights reserved. Rocks(r) v5.4.3 www.rocksclusters.org
+        
+        </copyright>
+
+<changelog>
+$Log: yum-extras.xml,v $
+Revision 1.1  2012/03/26 17:52:38  phil
+Add extra repositories. Disabled by yum.xml
+
+
+</changelog>
+
+<package>elrepo-release</package>
+<package>epel-release</package>
+<package>rpmforge-release</package>
+
+</kickstart> 
+
