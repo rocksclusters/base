@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: build.py,v $
+# Revision 1.47  2012/03/26 19:46:00  phil
+# Do not create cachedir. Test if not needed on 5 and 6.
+#
 # Revision 1.46  2012/02/09 21:20:38  phil
 # convert to use subprocess module
 #
@@ -1415,13 +1418,6 @@ class DistributionBuilder(Builder):
 	os.chdir(releasedir)
 
 	#
-	# make sure the cache directory exists
-	#
-	cachedir = os.path.join(self.dist.getRootPath(), 'cachedir')
-	if not os.path.exists(cachedir):
-		os.makedirs(cachedir)
-
-	#
 	# first check in the install environment (/tmp/updates), then
 	# look in the 'normal' place (on a running frontend).
 	#
@@ -1440,7 +1436,7 @@ class DistributionBuilder(Builder):
 
 	subprocess.call('%s ' % (createrepo) + 
 		gf + 
-		'--cachedir %s --quiet .' % (cachedir), shell=True)
+		'--quiet .', shell=True)
 
 	os.chdir(cwd)
 
