@@ -4,6 +4,9 @@
 
 	<changelog>
 	$Log: base.xml,v $
+	Revision 1.74  2012/03/26 17:53:57  phil
+	Wire yum-extras into the graph
+	
 	Revision 1.73  2012/03/13 06:07:55  phil
 	Now ask for public and then private interfaces
 	
@@ -378,6 +381,7 @@
 
 	<order head="yum">
 		<tail>devel-appliance</tail>
+		<tail>yum-extras</tail>
 	</order>
 
 	<order head="nfs-server">
@@ -473,6 +477,7 @@
 		<to>mail</to>
 		<to os="linux">partition</to>
 		<to os="linux">yum</to>
+		<to os="linux">yum-extras</to>
 	</edge>
 
 	<edge from="client" to="x11" cond="x11"/>
