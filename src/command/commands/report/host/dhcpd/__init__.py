@@ -1,5 +1,5 @@
 #
-# $Id: __init__.py,v 1.22 2012/03/23 21:35:59 phil Exp $
+# $Id: __init__.py,v 1.23 2012/03/27 02:22:18 clem Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.23  2012/03/27 02:22:18  clem
+# dhcpd.conf proper path name handlying recovered from previous commit
+#
 # Revision 1.22  2012/03/23 21:35:59  phil
 # dhcpd.conf now down to two big (UNION) select statements instead of
 # N. Takes less < 1 sec to complete on a 300 node test.
@@ -334,7 +337,12 @@ class Command(rocks.commands.HostArgumentProcessor,
 
 
 	def writeDhcpSysconfig(self):
-		self.addOutput('', '<file name="/etc/sysconfig/dhcpd">')
+		# Handle Path Name Fun
+		RocksVersion = self.db.getHostAttr('localhost', 'rocks_version')
+		if int(RocksVersion.split('.')[0]) < 6:
+			self.addOutput('', '<file name="/etc/dhcpd.conf">')
+		else:
+			self.addOutput('', '<file name="/etc/dhcp/dhcpd.conf">')
 
 		fe_name = self.db.getHostname('localhost')
 
