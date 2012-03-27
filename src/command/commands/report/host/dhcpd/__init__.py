@@ -1,5 +1,5 @@
 #
-# $Id: __init__.py,v 1.24 2012/03/27 17:11:22 clem Exp $
+# $Id: __init__.py,v 1.25 2012/03/27 21:33:56 phil Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.25  2012/03/27 21:33:56  phil
+# Right path name ... is now in the right place
+#
 # Revision 1.24  2012/03/27 17:11:22  clem
 # Now even faster (variable lookup instead of DB lookup) ;-)
 #
@@ -242,7 +245,12 @@ class Command(rocks.commands.HostArgumentProcessor,
 		
 
 	def writeDhcpDotConf(self, hosts):
-		self.addOutput('', '<file name="/etc/dhcpd.conf">')
+		# Handle Path Name Fun
+		RocksVersion = self.db.getHostAttr('localhost', 'rocks_version')
+		if int(RocksVersion.split('.')[0]) < 6:
+			self.addOutput('', '<file name="/etc/dhcp.conf">')
+		else:
+			self.addOutput('', '<file name="/etc/dhcp/dhcpd.conf">')
 
 		dn = self.db.getHostAttr('localhost',
 			'Kickstart_PrivateDNSDomain')
@@ -340,12 +348,7 @@ class Command(rocks.commands.HostArgumentProcessor,
 
 
 	def writeDhcpSysconfig(self):
-		# Handle Path Name Fun
-		RocksVersion = rocks.version
-		if int(RocksVersion.split('.')[0]) < 6:
-			self.addOutput('', '<file name="/etc/dhcpd.conf">')
-		else:
-			self.addOutput('', '<file name="/etc/dhcp/dhcpd.conf">')
+		self.addOutput('', '<file name="/etc/sysconfig/dhcp">')
 
 		fe_name = self.db.getHostname('localhost')
 
