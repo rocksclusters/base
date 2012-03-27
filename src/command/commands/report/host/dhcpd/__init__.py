@@ -1,5 +1,5 @@
 #
-# $Id: __init__.py,v 1.23 2012/03/27 02:22:18 clem Exp $
+# $Id: __init__.py,v 1.24 2012/03/27 17:11:22 clem Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.24  2012/03/27 17:11:22  clem
+# Now even faster (variable lookup instead of DB lookup) ;-)
+#
 # Revision 1.23  2012/03/27 02:22:18  clem
 # dhcpd.conf proper path name handlying recovered from previous commit
 #
@@ -338,7 +341,7 @@ class Command(rocks.commands.HostArgumentProcessor,
 
 	def writeDhcpSysconfig(self):
 		# Handle Path Name Fun
-		RocksVersion = self.db.getHostAttr('localhost', 'rocks_version')
+		RocksVersion = rocks.version
 		if int(RocksVersion.split('.')[0]) < 6:
 			self.addOutput('', '<file name="/etc/dhcpd.conf">')
 		else:
