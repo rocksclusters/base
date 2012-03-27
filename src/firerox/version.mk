@@ -1,5 +1,9 @@
 NAME		= firerox
 RELEASE		= 0
 
+ifeq ($(VERSION.MAJOR), 5)
+FIREFOX_VERSION	= 3.5.3
+else
 FIREFOX_VERSION	= 3.5.19
+endif
 MOZILLA_VERSION	= 1.9.1
