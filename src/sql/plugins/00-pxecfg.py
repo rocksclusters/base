@@ -1,7 +1,7 @@
 #
 # insert-ethers plugin module for generating pxelinux cfg files
 
-# $Id: 00-pxecfg.py,v 1.12 2012/03/08 20:33:14 clem Exp $
+# $Id: 00-pxecfg.py,v 1.13 2012/03/28 19:49:17 phil Exp $
 # 
 # @Copyright@
 # 
@@ -57,6 +57,10 @@
 # @Copyright@
 #
 # $Log: 00-pxecfg.py,v $
+# Revision 1.13  2012/03/28 19:49:17  phil
+# Correct the subprocess call.
+# use attr=os to get just the os attr for the host
+#
 # Revision 1.12  2012/03/08 20:33:14  clem
 # popen2 with subprocess cleanup
 #
@@ -112,9 +116,8 @@ class Plugin(rocks.sql.InsertEthersPlugin):
 
 	def added(self, nodename, id):
 		cmd = ("/opt/rocks/bin/rocks report "
-			"host attr %s | grep os\: | "
-			"cut -f2 -d:" %(nodename))
-		r,w = subprocess.Popen(cmd, shell=True,stdin=subprocess.PIPE, 
+			"host attr attr=os %s " %(nodename))
+		p = subprocess.Popen(cmd, shell=True,stdin=subprocess.PIPE, 
 					stdout=subprocess.PIPE, close_fds=True)
 		w, r = (p.stdin, p.stdout)
 		w.close()
