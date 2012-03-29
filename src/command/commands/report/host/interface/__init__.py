@@ -1,4 +1,4 @@
-#$Id: __init__.py,v 1.23 2011/07/23 02:30:35 phil Exp $
+#$Id: __init__.py,v 1.24 2012/03/29 03:44:06 clem Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.24  2012/03/29 03:44:06  clem
+# bootproto can be only none bootp or dhcp
+#
 # Revision 1.23  2011/07/23 02:30:35  phil
 # Viper Copyright
 #
@@ -269,7 +272,7 @@ class Command(rocks.commands.HostArgumentProcessor,
 			else:	
 				self.addOutput(host, 'IPADDR=%s' % ip)
 				self.addOutput(host, 'NETMASK=%s' % netmask)
-				self.addOutput(host, 'BOOTPROTO=static')
+				self.addOutput(host, 'BOOTPROTO=none')
 
 			self.addOutput(host, 'ONBOOT=yes')
 
