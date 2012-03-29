@@ -1,8 +1,14 @@
 ## Create 
 DISTRO=CentOS
-ARCH=x86_64
+TSTARCH=$(shell /bin/arch)
+ifeq ($(TSTARCH),i686)
+ARCH=i386
+else
+ARCH=$(TSTARCH)
+endif
+
 ifeq ($(VERSION.MAJOR), 5)
-VERSION=5.7
+VERSION=5.8
 PKGS=RPMS
 BASEPATH=centos/$(VERSION)/os/$(ARCH)/CentOS
 else
