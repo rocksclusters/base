@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.35 2012/02/01 20:01:26 phil Exp $
+# $Id: __init__.py,v 1.36 2012/03/30 06:04:03 phil Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.36  2012/03/30 06:04:03  phil
+# update python path to properly import yum
+#
 # Revision 1.35  2012/02/01 20:01:26  phil
 # use subprocess instead of popen2
 #
@@ -475,8 +478,14 @@ class RollBuilder_linux(Builder, rocks.dist.Arch):
 		#
 		# use yum to resolve dependencies
 		#
-		sys.path.append('/usr/lib/python2.4/site-packages')
-		sys.path.append('/usr/lib64/python2.4/site-packages')
+		if rocks.version.split('.')[0] == '5':
+			pyver='2.4'
+		else:
+			pyver='2.6'
+		sys.path.append('/usr/lib/python%s/site-packages' % pyver)
+		sys.path.append('/usr/lib64/python%s/site-packages' % pyver)
+		sys.path.append('/usr/lib/python%s/lib-dynload' % pyver)
+		sys.path.append('/usr/lib64/python%s/lib-dynload' % pyver)
 		import yum
 
 		a = yum.YumBase()
