@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: media.py,v $
+# Revision 1.16  2012/04/01 16:45:04  phil
+# Eject CD now looks to be working on 6.
+#
 # Revision 1.15  2012/03/17 05:05:07  phil
 # eject was not working in 6.
 # Backed out the "hack" installed rocks-pylib in two places
@@ -120,11 +123,11 @@ class Media:
 
 		rv = 0
 		f = open('/proc/mounts','r')
-		for line in f:
-			if line.find('/tmp/rocks-cdrom') == 0:
+		for line in f.readlines():
+			if line.find('/tmp/rocks-cdrom') >= 0:
 				rv = 1
 				break
-			if line.find('/mnt/cdrom') == 0:
+			if line.find('/mnt/cdrom') >= 0:
 				rv = 1
 				break
 		f.close()
