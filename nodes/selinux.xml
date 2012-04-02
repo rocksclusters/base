@@ -15,6 +15,9 @@ Configure SELinux
 
 <changelog>
 $Log: selinux.xml,v $
+Revision 1.9  2012/04/02 05:16:55  phil
+Not sure why the second config is sometimes needed... but it is.
+
 Revision 1.8  2011/07/23 02:30:15  phil
 Viper Copyright
 
@@ -44,6 +47,9 @@ new files
 <post os='linux'>
 <!-- disable SELinux -->
 <file name="/etc/sysconfig/selinux">
+SELINUX=disabled
+</file>
+<file name="/etc/selinux/config">
 SELINUX=disabled
 </file>
 </post>
