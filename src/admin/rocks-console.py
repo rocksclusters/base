@@ -1,6 +1,6 @@
 #! @PYTHON@
 #
-# $Id: rocks-console.py,v 1.16 2011/07/23 02:30:23 phil Exp $
+# $Id: rocks-console.py,v 1.17 2012/04/03 23:30:36 phil Exp $
 # 
 # @Copyright@
 # 
@@ -56,6 +56,9 @@
 # @Copyright@
 #
 # $Log: rocks-console.py,v $
+# Revision 1.17  2012/04/03 23:30:36  phil
+# Should now work on 5 and 6.
+#
 # Revision 1.16  2011/07/23 02:30:23  phil
 # Viper Copyright
 #
@@ -120,7 +123,7 @@ import sys
 import rocks.app
 import socket
 import time
-import popen2
+import subprocess 
 		        
 class App(rocks.app.Application):
 
@@ -133,6 +136,10 @@ class App(rocks.app.Application):
 		self.nodename = ''
 		self.known_hosts = '/tmp/.known_hosts'
 		self.defaultport = 5901
+		if self.usage_version.split('.')[0] == '6':	
+			self.remotedefaultport = 5900
+		else:
+			self.remotedefaultport = self.defaultport 
 		self.localport = 0
 		self.remoteport = 0
 		self.ekv = 0
@@ -228,13 +235,16 @@ class App(rocks.app.Application):
 
 
 	def createSecureTunnel(self):
-		r,w = popen2.popen2('rocks list host attr %s ' % self.nodename +
-				" | awk '{if ($2==\"os\") print $3;}'")
+
+		cmd = "rocks report host attr attr=os %s " % self.nodename 
+		p = subprocess.Popen(cmd, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, close_fds=True)
+	
+		r,w = (p.stdout, p.stdin)
 		w.close()
 		osname = r.readline().strip()
 		if osname == '':
 			osname = 'linux'
-		f = getattr(self, "createSecureTunnel_%s" % osname)
+		f = getattr(self, "createSecureTunnel_%s" % osname)	
 		f()
 		return
 
@@ -256,7 +266,7 @@ class App(rocks.app.Application):
 		else:
 			if self.localport == 0:
 				self.localport = self.defaultport
-			self.remoteport = self.defaultport
+			self.remoteport = self.remotedefaultport
 
 		# Check ports to see which one is open. If ports are already bound
 		# go to the next one to check. Whatever binds is successfully is used.
