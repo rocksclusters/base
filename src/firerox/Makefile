@@ -1,5 +1,5 @@
 # --------------------------------------------------- -*- Makefile -*- --
-# $Id: Makefile,v 1.24 2012/03/27 18:38:28 phil Exp $
+# $Id: Makefile,v 1.25 2012/04/04 15:51:04 phil Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,10 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.25  2012/04/04 15:51:04  phil
+# Hmmm... Trying another combination to see if we can get a common build
+# for 5 and 6.
+#
 # Revision 1.24  2012/03/27 18:38:28  phil
 # For 5, revert to older version of firefox
 #
@@ -177,13 +181,13 @@ build:
 	( 								\
 		cd mozilla-$(MOZILLA_VERSION);				\
 		cp ../mozconfig .mozconfig;				\
-		CFLAGS=-fPIC $(MAKE) -j 4 -f client.mk build;				\
+		$(MAKE) -j 4 -f client.mk build;				\
 	)
 
 install::
 	(								\
 		cd mozilla-$(MOZILLA_VERSION);				\
-		CFLAGS=-fPIC $(MAKE) -j  package;					\
+		$(MAKE) -j 4  package;					\
 	)
 	mkdir -p $(ROOT)/$(PKGROOT)
 	(								\
