@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.13 2011/07/23 02:30:26 phil Exp $
+# $Id: __init__.py,v 1.14 2012/04/05 22:00:36 phil Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.14  2012/04/05 22:00:36  phil
+# Now have flag to not create packages.md5. Temporary distributions don't need
+# them.
+#
 # Revision 1.13  2011/07/23 02:30:26  phil
 # Viper Copyright
 #
@@ -146,7 +150,11 @@ class Command(rocks.commands.create.command):
 	The directory name of the distribution. The default is: "rocks-dist".
 	</param>
 
+	<param type='bool' name='md5'>
+	Calculate MD5SUM of all packages. Default is 'yes'.
+	</param>
 	<example cmd='create distro'>
+
 	Create a distribution in the current directory.
 	</example>
 	"""
@@ -169,6 +177,7 @@ class Command(rocks.commands.create.command):
 
 		builder.setRolls(rolls)
 		builder.setSiteProfiles(1)
+		builder.setCalcMD5(self.md5)
 		builder.build()
 
 		return builder
@@ -181,11 +190,12 @@ class Command(rocks.commands.create.command):
 		lockfile = '/var/lock/rocks-dist'
 		os.system('touch %s' % lockfile)
 
-		(arch, version, withrolls, root, dist) = self.fillParams(
+		(arch, version, withrolls, root, calcmd5, dist) = self.fillParams(
 			[ ('arch', self.arch),
 			('version', rocks.version),
 			('rolls', None),
 			('root', '/export/rocks/install'),
+			('md5', 'yes'),
 			('dist', 'rocks-dist') ])
 
 		rolls = []
@@ -195,6 +205,8 @@ class Command(rocks.commands.create.command):
 		else:
 			for i in withrolls.split(' '):
 				rolls.append(i.split(',') + [ 'yes' ] )
+
+		self.md5 = self.str2bool(calcmd5)
 
 		mirror = rocks.dist.Mirror()
 		mirror.setHost('rolls')

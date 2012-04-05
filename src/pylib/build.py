@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: build.py,v $
+# Revision 1.48  2012/04/05 22:00:37  phil
+# Now have flag to not create packages.md5. Temporary distributions don't need
+# them.
+#
 # Revision 1.47  2012/03/26 19:46:00  phil
 # Do not create cachedir. Test if not needed on 5 and 6.
 #
@@ -987,6 +991,7 @@ class DistributionBuilder(Builder):
 	self.onlyRolls		= 0
 	self.withSiteProfiles   = 0
 	self.version	 = '1.0'
+	self.calcmd5		= 1
 
         # Build the Tree objects for the Mirror and Distribution
         # trees.  The actual files for the distibution may or may not
@@ -1017,6 +1022,9 @@ class DistributionBuilder(Builder):
 
     def setSiteProfiles(self, bool):
 	    self.withSiteProfiles = bool
+	    
+    def setCalcMD5(self, bool):
+	    self.calcmd5 = bool
 	    
     def clean(self):
         # Nuke the previous distribution.  The cleaner() method will
@@ -1377,9 +1385,13 @@ class DistributionBuilder(Builder):
 	# don't include the build, SRPMS and force directories
 	#
 	os.chdir(self.dist.getReleasePath())
-	cmd = '/usr/bin/md5sum `find -L . -type f | sed "s/^\.\///" | '
-	cmd += 'egrep -v "^build|^SRPMS|^force"` '
-	cmd += '> %s/packages.md5' % (productfilesdir)
+	if self.calcmd5:
+		cmd = '/usr/bin/md5sum `find -L . -type f | sed "s/^\.\///" | '
+		cmd += 'egrep -v "^build|^SRPMS|^force"` '
+		cmd += '> %s/packages.md5' % (productfilesdir)
+	else:
+		cmd = 'touch %s/packages.md5' % (productfilesdir)
+
 	subprocess.call(cmd, shell=True)
 
 	#

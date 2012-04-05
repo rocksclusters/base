@@ -1,6 +1,6 @@
 #!/opt/rocks/usr/bin/python
 #
-# $Id: build-updates-img.py,v 1.17 2012/03/17 05:05:07 phil Exp $
+# $Id: build-updates-img.py,v 1.18 2012/04/05 22:00:37 phil Exp $
 #
 # @Copyright@
 # 
@@ -56,6 +56,10 @@
 # @Copyright@
 #
 # $Log: build-updates-img.py,v $
+# Revision 1.18  2012/04/05 22:00:37  phil
+# Now have flag to not create packages.md5. Temporary distributions don't need
+# them.
+#
 # Revision 1.17  2012/03/17 05:05:07  phil
 # eject was not working in 6.
 # Backed out the "hack" installed rocks-pylib in two places
@@ -193,7 +197,7 @@ class Distribution:
 		return os.path.join(self.name, self.arch)
 		
 	def generate(self, flags=""):
-		rocks.util.system('/opt/rocks/bin/rocks create distro')
+		rocks.util.system('/opt/rocks/bin/rocks create distro md5=no')
 		self.tree = rocks.file.Tree(os.path.join(os.getcwd(), 
 			self.getPath()))
 		

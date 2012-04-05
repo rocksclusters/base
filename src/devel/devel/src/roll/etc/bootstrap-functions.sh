@@ -5,7 +5,7 @@
 # parsing.  This script starts out as shell code but it generates some
 # simple python code to handle the installation of required packages.
 #
-# $Id: bootstrap-functions.sh,v 1.7 2012/01/07 05:03:21 phil Exp $
+# $Id: bootstrap-functions.sh,v 1.8 2012/04/05 22:00:37 phil Exp $
 #
 # @Copyright@
 # 
@@ -61,6 +61,10 @@
 # @Copyright@
 #
 # $Log: bootstrap-functions.sh,v $
+# Revision 1.8  2012/04/05 22:00:37  phil
+# Now have flag to not create packages.md5. Temporary distributions don't need
+# them.
+#
 # Revision 1.7  2012/01/07 05:03:21  phil
 #
 # Fixups
@@ -168,7 +172,7 @@ class App(rocks.app.Application):
 			if e not in installed and e not in ignored:
 				list.append(e)
 		dist = rocks.roll.Distribution(self.getArch())
-		dist.generate('--notorrent --with-rolls-only')
+		dist.generate('md5=False')
 		pkglist = []
 		for e in list:
 			if dist.getRPM(e):
