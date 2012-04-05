@@ -4,7 +4,7 @@
 # Bootstrap0: designed for "pristine" systems (aka no rocks)
 # NOTE: This should not be used on ANY Rocks appliance. 
 #
-# $Id: bootstrap0.sh,v 1.10 2012/04/05 20:59:24 phil Exp $
+# $Id: prepdevel.sh,v 1.1 2012/04/05 20:59:24 phil Exp $
 #
 # @Copyright@
 # 
@@ -59,8 +59,8 @@
 # 
 # @Copyright@
 #
-# $Log: bootstrap0.sh,v $
-# Revision 1.10  2012/04/05 20:59:24  phil
+# $Log: prepdevel.sh,v $
+# Revision 1.1  2012/04/05 20:59:24  phil
 # Now call prepdevel.sh.
 #
 # Revision 1.9  2012/02/01 19:59:50  phil
@@ -100,54 +100,37 @@
 
 . src/devel/devel/src/roll/etc/bootstrap-functions.sh
 
-# 0. directory structure
-# 
-if [ ! -d /export/rocks/install ]; then
-	mkdir -p /export/rocks/install
+# 1. Create OS Roll and Latest Updates Roll from Mirror
+# set the workdir
+if [ -z "$WORKDIR" ]; then 
+	TMPDIR=/tmp
+else
+	TMPDIR=$WORKDIR
 fi
 
-# 1. other system packages (need similar for solaris)
+make -C OSROLL WORKDIR=$TMPDIR base updates
+
+# 2. Create a fake bootstrap appliance, network, and host in the database
+MYNAME=`hostname`
+/opt/rocks/bin/rocks add distribution rocks-dist
+/opt/rocks/bin/rocks add appliance bootstrap node=server
+/opt/rocks/bin/rocks add host $MYNAME rack=0 rank=0 membership=bootstrap
+/opt/rocks/bin/rocks add network private 127.0.0.1 netmask=255.255.255.255
+/opt/rocks/bin/rocks add host interface $MYNAME lo subnet=private ip=127.0.0.1
+/opt/rocks/bin/rocks add host interface $MYNAME lo subnet=private ip=127.0.0.1
+/opt/rocks/bin/rocks add attr os `./_os` 
+
+# 3. Add appliance types so that we can build the OS Roll
+/opt/rocks/bin/rocks add attr Kickstart_DistroDir /export/rocks
+/opt/rocks/bin/rocks add attr Kickstart_PrivateKickstartBasedir install
+/opt/rocks/bin/rocks add appliance compute graph=default node=compute membership=Compute public=yes
+/opt/rocks/bin/rocks add appliance nas graph=default node=nas membership=NAS\ Appliance public=yes
+/opt/rocks/bin/rocks add appliance devel-server graph=default node=devel-appliance membership=Development\ Appliance public=yes
+/opt/rocks/bin/rocks add appliance login graph=default node=login membership=Login public=yes
+
+# 4. Rest of packages for full build
 if [ `./_os` == "linux" ]; then
-	yum -y install rpm-build rpm-devel gcc gcc-c++ ncurses-devel swig glib2 glib2-devel openssl-devel pygobject2 pygobject2-devel cairo cairo-devel createrepo apr apr-devel expat-devel
-	# packages required to build anaconda on 6
-	yum -y install e2fsprogs-devel isomd5sum-devel libarchive-devel libXxf86misc-devel libblkid-devel libnl-devel newt-devel pykickstart slang-devel NetworkManager-devel NetworkManager-glib-devel iscsi-initiator-utils-devel device-mapper-devel
+        install_os_packages bootstrap-packages
 fi
 
-# 2. Foundation Packages
-compile_and_install foundation-mysql
-compile_and_install foundation-python
-compile_and_install foundation-python-setuptools
-compile_and_install foundation-libxml2
-compile_and_install foundation-python-xml
-compile_and_install foundation-python-extras
-compile_and_install foundation-rcs
 
-# 3. Rocks  config, pylib, and kickstart, commands  
-compile admin 
-install rocks-admin
-compile config
-install rocks-config
-compile pylib
-install rocks-pylib
-compile kickstart
-install rocks-kickstart
-compile command
-install rocks-command
-
-# 4. Make sure we have updated paths
-. /etc/profile.d/rocks-binaries.sh
-
-# 5. Bootstrap the database
-tmpfile=$(/bin/mktemp)
-/bin/cat nodes/database.xml nodes/database-schema.xml nodes/database-sec.xml | /opt/rocks/bin/rocks report post attrs="{'hostname':'', 'HttpRoot':'/var/www/html','os':'linux'}"  > $tmpfile
-if [ $? != 0 ]; then
-	echo "FAILURE to create script for bootstrapping the Database"
-	exit -1
-fi
-/bin/sh $tmpfile
-/bin/rm $tmpfile
-
-# 6. Prep as if this were a devel server
-# this creates OS and updates roll, adds some appliance definitions,
-# and adds various packages needed for bootstrapping. 
-./prepdevel.sh
