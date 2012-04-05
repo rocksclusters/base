@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.2 2011/07/23 02:30:38 phil Exp $
+# $Id: __init__.py,v 1.3 2012/04/05 20:57:41 phil Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.3  2012/04/05 20:57:41  phil
+# Fix bug where catindex was not updated when the host name was changed
+#
 # Revision 1.2  2011/07/23 02:30:38  phil
 # Viper Copyright
 #
@@ -102,6 +105,11 @@ class Command(rocks.commands.set.host.command):
 			self.abort('must supply only one host')
 		host = hosts[0]
 
-		self.db.execute("""update nodes set name='%s' where
-			name='%s'""" % (name, host))
+		self.db.execute("""UPDATE catindex SET name='%s'  
+			WHERE name='%s' AND 
+			category=(SELECT id FROM categories WHERE name='host')
+			""" % (name,host))
+
+		self.db.execute("""UPDATE nodes SET name='%s' 
+			WHERE name='%s'""" % (name, host))
 		
