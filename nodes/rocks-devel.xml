@@ -10,6 +10,9 @@
 
   <changelog>
   $Log: rocks-devel.xml,v $
+  Revision 1.6  2012/04/05 20:49:16  phil
+  alphabetize and add some packages
+
   Revision 1.5  2008/08/01 23:09:00  bruno
   more changes for new anaconda
 
@@ -113,49 +116,50 @@
 
   </changelog>
 
-  <package arch="i386">nasm</package>
-  <package arch="i386, x86_64">netpbm-progs</package>
-
-  <package>tcl-devel</package>
-  <package>rpm-python</package>
-
-  <package>ghostscript</package>
-  <package>ghostscript-fonts</package>
-  <package>Omni</package>
-  <package>urw-fonts</package>
-
+  <package>anaconda</package>
+  <package>apr</package>
+  <package>apr-devel</package>
+  <package>apr-util-devel</package>
+  <package>atk-devel</package>
+  <package>beecrypt-devel</package>
+  <package>binutils-devel</package>
+  <package>booty</package>
   <package>bogl</package>
   <package>bogl-devel</package>
   <package>bogl-bterm</package>
-  <package>beecrypt-devel</package>
-  <package>atk-devel</package>
-  <package>glib2-devel</package>
-  <package>gtk2</package>
-  <package>pango-devel</package>
-  <package>gtk2-devel</package>
+  <package>busybox-anaconda</package>
+  <package>cairo-devel</package>
+  <package>cups-libs</package>
+  <package>expat-devel</package>
   <package>fontconfig-devel</package>
   <package>freetype-devel</package>
-  <package>anaconda</package>
-  <package>booty</package>
-  <package>busybox-anaconda</package>
-  <package>netpbm</package>
-  <package>libjpeg-devel</package>
-  <package>libpng-devel</package>
-  <package>tk-devel</package>
-  <package>cups-libs</package>
+  <package>ghostscript</package>
+  <package>ghostscript-fonts</package>
+  <package>glib2-devel</package>
+  <package>gtk2</package>
+  <package>gtk2-devel</package>
   <package>ImageMagick</package>
-  <package>libpcap</package>
   <package>intltool</package>
+  <package>libdhcp-devel</package>
+  <package>libglade2-devel</package>
+  <package>libnl-devel</package>
+  <package>libjpeg-devel</package>
+  <package>libpcap</package>
+  <package>libpng-devel</package>
+  <package>libtool-ltdl</package>
   <package>mkinitrd-devel</package>
+  <package arch="i386">nasm</package>
+  <package>netpbm</package>
+  <package arch="i386, x86_64">netpbm-progs</package>
+  <package>Omni</package>
+  <package>pango-devel</package>
   <package>pygobject2-devel</package>
   <package>pycairo-devel</package>
-  <package>binutils-devel</package>
-  <package>libglade2-devel</package>
-  <package>libtool-ltdl</package>
-  <package>libdhcp-devel</package>
-  <package>libnl-devel</package>
-
-
+  <package>rpm-devel</package>
+  <package>rpm-python</package>
+  <package>tcl-devel</package>
+  <package>tk-devel</package>
+  <package>urw-fonts</package>
 <post>
 ln -s /usr/share/latex2html /usr/lib/latex2html
 </post>
