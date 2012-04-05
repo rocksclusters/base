@@ -10,6 +10,9 @@
 
   <changelog>
   $Log: rocks-devel.xml,v $
+  Revision 1.7  2012/04/05 22:53:55  phil
+  nspr-devel package
+
   Revision 1.6  2012/04/05 20:49:16  phil
   alphabetize and add some packages
 
@@ -150,6 +153,7 @@
   <package>mkinitrd-devel</package>
   <package arch="i386">nasm</package>
   <package>netpbm</package>
+  <package>nspr-devel</package>
   <package arch="i386, x86_64">netpbm-progs</package>
   <package>Omni</package>
   <package>pango-devel</package>
