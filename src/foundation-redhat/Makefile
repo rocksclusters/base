@@ -1,5 +1,5 @@
 # --------------------------------------------------- -*- Makefile -*- --
-# $Id: Makefile,v 1.13 2012/02/01 20:41:27 phil Exp $
+# $Id: Makefile,v 1.14 2012/04/05 20:35:51 phil Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.14  2012/04/05 20:35:51  phil
+# make build empty and install do all the work
+#
 # Revision 1.13  2012/02/01 20:41:27  phil
 # update
 #
@@ -117,9 +120,12 @@ PKGROOT		= /opt/rocks
 include Rules.mk
 
 build: 
-	./getrpms.py $(ROOT)/$(PKGROOT)/redhat $(RPMS)
+	echo "Nothing to build. Work done in getrpms.py"
 
-install:: $(DOWNGRDE)
+install:: 
+	./getrpms.py $(ROOT)/$(PKGROOT)/redhat $(RPMS)
+	if [ -d $(ROOT)/opt/rocks/redhat/var/lib/rpm ]; then \
+		/bin/rm -rf $(ROOT)/opt/rocks/redhat/var/lib/rpm; fi
 
 clean::
 	rm -rf rocks-dist
