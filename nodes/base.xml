@@ -21,6 +21,9 @@
 
   <changelog>
   $Log: base.xml,v $
+  Revision 1.58  2012/04/06 18:52:02  phil
+  environment-modules package
+
   Revision 1.57  2012/02/13 21:25:41  phil
   Turn off NetworkManager. Create /etc/rndc.key if it doesn't exist
 
@@ -469,6 +472,7 @@
 
   <package os="linux">jdk</package>
   <package os="linux">sysstat</package>
+  <package os="linux">environment-modules</package>
 
 <pre>
 
