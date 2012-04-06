@@ -16,6 +16,9 @@
 
 	<changelog>
 	$Log: bootstrap-packages.xml,v $
+	Revision 1.8  2012/04/06 00:15:10  phil
+	More packages for bootstrapping a build
+	
 	Revision 1.7  2012/03/21 18:42:53  phil
 	Added glibc-static and nspr-devel to support building of new version of firerox
 	
@@ -51,6 +54,8 @@
 	<package os="linux">binutils-devel</package>
 	<package os="linux">booty</package>
 	<package os="linux">bzip2-devel</package>
+	<package os="linux">dbus-devel</package>
+	<package os="linux">device-mapper-devel</package>
 	<package os="linux">dialog</package>
 	<package os="linux">elfutils-devel</package>
 	<package os="linux">expat-devel</package>
@@ -58,8 +63,11 @@
 	<package os="linux">gtk2-devel</package>
 	<package os="linux">gtk+-devel</package>
 	<package os="linux">intltool</package>
+	<package os="linux">isomd5sum-devel</package>
 	<package os="linux">jadetex</package>
 	<package os="linux">kudzu-devel</package>
+	<package os="linux">libarchive-devel</package>
+	<package os="linux">libblkid-devel</package>
 	<package os="linux">libcurl-devel</package>
 	<package os="linux">libdhcp-devel</package>
 	<package os="linux">libdhcp4client</package>
@@ -68,6 +76,7 @@
 	<package os="linux">libdhcp6client-devel</package>
 	<package os="linux">libICE-devel</package>
 	<package os="linux">libIDL-devel</package>
+	<package os="linux">iscsi-initiator-utils-devel</package>
 	<package os="linux">libnl-devel</package>
 	<package os="linux">libSM-devel</package>
 	<package os="linux">libXaw</package>
@@ -83,6 +92,8 @@
 	<package os="linux">libXt-devel</package>
 	<package os="linux">libXxf86misc-devel</package>
 	<package os="linux">mkinitrd-devel</package>
+	<package os="linux">NetworkManager-devel</package>
+	<package os="linux">NetworkManager-glib-devel</package>
 	<package os="linux">newt-devel</package>
 	<package os="linux">nspr-devel</package>
 	<package os="linux">openjade</package>
