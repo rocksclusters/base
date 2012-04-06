@@ -1,4 +1,4 @@
-#$Id: __init__.py,v 1.24 2012/03/29 03:44:06 clem Exp $
+#$Id: __init__.py,v 1.25 2012/04/06 01:53:32 clem Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.25  2012/04/06 01:53:32  clem
+# Modified verision of the report interface to support kvm networking
+#
 # Revision 1.24  2012/03/29 03:44:06  clem
 # bootproto can be only none bootp or dhcp
 #
@@ -203,6 +206,26 @@ class Command(rocks.commands.HostArgumentProcessor,
 		return retval
 
 
+	def isKVMContainer(self, host):
+		"""return True if host can run kvm vm host 
+		(aka it means that we have different networking) """
+		#TODO move this function probably vm.py is a good candidate
+		try:
+			import rocks.vmconstant
+			if rocks.vmconstant.virt_engine != "kvm":
+				return False
+		except ImportError:
+			#xen or kvm roll not installed
+			return False
+		appliance = self.db.getHostAttr(host, 'appliance' )
+		if appliance and appliance == 'vm-container':
+			#we could use getHostAttr(host, 'kvm')
+			return True
+		if appliance and appliance == 'frontend':
+			return True
+		return False
+
+
 	def writeIPMI(self, host, ip, channel, netmask):
 		defaults = [ ('IPMI_SI', 'yes'),
 			('DEV_IPMI', 'yes'),
@@ -245,6 +268,70 @@ class Command(rocks.commands.HostArgumentProcessor,
 			% (channel))
 
 		self.addOutput(host, '</file>')
+
+	def writeBridgedConfig(self, host, mac, ip, device,
+                                                netmask, vlanid, mtu, options, channel, active):
+		""" called when the interface is on a host that can host KVM VM """
+		brName = device
+		device = "p" + device
+		testOptions="%s" % options
+		if re.match('dhcp', testOptions.lower()):
+			dhcp = 1 # tell device to dhcp, explicitly
+		else:
+			dhcp = 0
+
+		#    ------      physical dev in promisc mode
+		s = '<file name="/etc/sysconfig/network-scripts/ifcfg-'
+		s += '%s">' % (device)
+		self.addOutput(host, s)
+		#add output
+		self.addOutput(host, 'DEVICE=%s' % device)
+		if mac:
+			self.addOutput(host, 'HWADDR=%s' % mac)
+		if vlanid:
+			#if this is a vlan we don't create the bridge 
+			#and we use the macvtap driver for kvm
+			self.addOutput(host, 'VLAN=yes')
+			if ip and netmask:
+				self.addOutput(host, 'IPADDR=%s' % ip)
+				self.addOutput(host, 'NETMASK=%s' % netmask)
+			if dhcp:
+				self.addOutput(host, 'BOOTPROTO=dhcp')
+		else:
+			self.addOutput(host, 'BRIDGE="%s"' % brName)
+		if active :
+			self.addOutput(host, 'ONBOOT=yes')
+		else : 
+			self.addOutput(host, 'ONBOOT=no' )
+		self.addOutput(host, 'BOOTPROTO=none' )
+		if mtu:
+			self.addOutput(host, 'MTU=%s' % mtu)
+		self.addOutput(host, '</file>')
+
+		if not vlanid:
+			#    ------      bridge dev with IP
+			s = '<file name="/etc/sysconfig/network-scripts/ifcfg-'
+			s += '%s">' % brName
+			self.addOutput(host, s)
+			self.addOutput(host, 'DEVICE=%s' % brName)
+			self.addOutput(host, 'TYPE=Bridge')
+			if ip and netmask:
+				self.addOutput(host, 'IPADDR=%s' % ip)
+				self.addOutput(host, 'NETMASK=%s' % netmask)
+			if dhcp:
+				self.addOutput(host, 'BOOTPROTO=dhcp')
+			else:
+				self.addOutput(host, 'BOOTPROTO=none' )
+			if active :
+				self.addOutput(host, 'ONBOOT=yes')
+			else : 
+				self.addOutput(host, 'ONBOOT=no' )
+			if mtu:
+				self.addOutput(host, 'MTU=%s' % mtu)
+			self.addOutput(host, '</file>')
+		
+
+
 
 
 	def writeConfig(self, host, mac, ip, device, netmask, vlanid, mtu,
@@ -410,7 +497,6 @@ class Command(rocks.commands.HostArgumentProcessor,
 			(mac, ip, device, netmask, vlanid, subnetid, module,
 				mtu, options, channel) = row
 
-
 			testOptions="%s" % options
 			if re.match('noreport', testOptions.lower()):
 				continue # don't do anything if noreport set
@@ -452,13 +538,27 @@ class Command(rocks.commands.HostArgumentProcessor,
 						netmask, vlanid, mtu, options,
 						channel)
 			else:
-				s = '<file name="'
-				s += '/etc/sysconfig/network-scripts/ifcfg-'
-				s += '%s">' % (device)
-
-				self.addOutput(host, s)
-				self.writeConfig(host, mac, ip, device,
-					netmask, vlanid, mtu, options, channel)
-				self.addOutput(host, '</file>')
+				if self.isKVMContainer(host):
+					#we have to set up bridged devices
+					if vlanid != None and ip == None:
+						#vlan interface are not configured by RH network script!
+						pass
+					else:
+						if subnetid:
+							#active interface
+							self.writeBridgedConfig(host, mac, ip, device,
+								netmask, vlanid, mtu, options, channel, True)
+						else:
+							#inactive... don't bring it up when you boot
+							self.writeBridgedConfig(host, mac, ip, device,
+								netmask, vlanid, mtu, options, channel, False)
+				else:
+					s = '<file name="'
+					s += '/etc/sysconfig/network-scripts/ifcfg-'
+					s += '%s">' % (device)
+					self.addOutput(host, s)
+					self.writeConfig(host, mac, ip, device,
+						netmask, vlanid, mtu, options, channel)
+					self.addOutput(host, '</file>')
 
 
