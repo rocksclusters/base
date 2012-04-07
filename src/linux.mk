@@ -1,4 +1,4 @@
-# $Id: linux.mk,v 1.32 2012/01/24 05:07:40 phil Exp $
+# $Id: linux.mk,v 1.33 2012/04/07 02:59:33 phil Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: linux.mk,v $
+# Revision 1.33  2012/04/07 02:59:33  phil
+# Build environment-modules for 5
+#
 # Revision 1.32  2012/01/24 05:07:40  phil
 # Add anaconda-yum-plugins for version 6
 #
@@ -189,6 +192,7 @@ SRCDIRS = `find . -type d -maxdepth 1 \
 	-not -name rocks-pxe \
 	-not -name updates.img \
 	-not -name anaconda \
+	-not -name environment-modules \
 	-not -name kudzu \
 	-not -name pcre \
 	-not -name php \
@@ -199,6 +203,10 @@ SRCDIRS = `find . -type d -maxdepth 1 \
 	-not -name anaconda-yum-plugins \
 	-not -name channel`
 
+## Build environment modules on 5, it is part of 6 in the OS
+ifeq ($(VERSION.MAJOR),5)
+SRCDIRS += environment-modules
+endif
 #
 # make sure we build anaconda last, that's because it includes many packages
 # from the base roll
