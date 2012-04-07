@@ -1,5 +1,5 @@
 #
-# $Id: __init__.py,v 1.25 2012/03/27 21:33:56 phil Exp $
+# $Id: __init__.py,v 1.26 2012/04/07 04:06:37 phil Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.26  2012/04/07 04:06:37  phil
+# Fix file names -- a missing d can ruin your day.
+#
 # Revision 1.25  2012/03/27 21:33:56  phil
 # Right path name ... is now in the right place
 #
@@ -248,7 +251,7 @@ class Command(rocks.commands.HostArgumentProcessor,
 		# Handle Path Name Fun
 		RocksVersion = self.db.getHostAttr('localhost', 'rocks_version')
 		if int(RocksVersion.split('.')[0]) < 6:
-			self.addOutput('', '<file name="/etc/dhcp.conf">')
+			self.addOutput('', '<file name="/etc/dhcpd.conf">')
 		else:
 			self.addOutput('', '<file name="/etc/dhcp/dhcpd.conf">')
 
@@ -348,7 +351,7 @@ class Command(rocks.commands.HostArgumentProcessor,
 
 
 	def writeDhcpSysconfig(self):
-		self.addOutput('', '<file name="/etc/sysconfig/dhcp">')
+		self.addOutput('', '<file name="/etc/sysconfig/dhcpd">')
 
 		fe_name = self.db.getHostname('localhost')
 
