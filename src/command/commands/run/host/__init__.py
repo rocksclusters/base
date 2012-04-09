@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.21 2011/07/23 02:30:37 phil Exp $
+# $Id: __init__.py,v 1.22 2012/04/09 21:33:18 phil Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.22  2012/04/09 21:33:18  phil
+# Test for running locally. If so, simply run the command.
+#
 # Revision 1.21  2011/07/23 02:30:37  phil
 # Viper Copyright
 #
@@ -336,8 +339,11 @@ class Command(command):
 		i = 0
 		work = len(hosts)
 		while work:
+			localhost = socket.gethostname().split('.')[0]
 			while i < numthreads and i < len(hosts):
 				host = hosts[i]
+				# Is this host me?
+				runlocal = (localhost == host.split('.')[0])
 				i += 1	
 
 				try:
@@ -351,7 +357,7 @@ class Command(command):
 				# first test if the node is up and responding
 				# to ssh
 				#
-				if not self.nodeup(host,hostif):
+				if not runlocal and not self.nodeup(host,hostif):
 					if collate:
 						self.addOutput(host, 'down')
 					else:
@@ -364,7 +370,10 @@ class Command(command):
 				#
 				# fire off the command
 				#
-				cmd = 'ssh %s "%s"' % (hostif, command)
+				if runlocal:
+					cmd = '"%s"' % command
+				else:
+					cmd = 'ssh %s "%s"' % (hostif, command)
 
 				p = Parallel(self, cmd, host, hostif, stats, collate)
 				p.start()
