@@ -1,5 +1,5 @@
 # --------------------------------------------------- -*- Makefile -*- --
-# $Id: Makefile,v 1.10 2011/07/23 02:30:51 phil Exp $
+# $Id: Makefile,v 1.11 2012/04/09 18:56:07 phil Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,10 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.11  2012/04/09 18:56:07  phil
+#
+# Needed new tpg (toy python parser) code to work on python2.6
+#
 # Revision 1.10  2011/07/23 02:30:51  phil
 # Viper Copyright
 #
@@ -116,6 +120,9 @@ include python.mk
 
 build:
 	gunzip -c $(NAME)-$(VERSION).tar.gz | $(TAR) -xf -
+	gunzip -c TPG-$(TPG-VERSION).tar.gz | $(TAR) -xf -
+	mkdir -p patch-files/$(NAME)-$(VERSION)/py/lekatnet/
+	cp TPG-$(TPG-VERSION)/tpg.py patch-files/$(NAME)-$(VERSION)/py/lekatnet
 	cd patch-files && find . -type f | grep -v CVS | cpio -pduv ../
 	( 								\
 		cd $(NAME)-$(VERSION);					\
