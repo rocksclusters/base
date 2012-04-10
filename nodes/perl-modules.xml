@@ -1,0 +1,32 @@
+<?xml version="1.0" standalone="no"?>
+
+
+<kickstart>
+
+  <description>
+
+  Perl Modules to include in the OS roll 
+
+  </description>
+
+        <copyright>
+        Copyright (c) 2000 - 2011 The Regents of the University of California.
+        All rights reserved. Rocks(r) v5.4.3 www.rocksclusters.org
+        
+        </copyright>
+
+  <changelog>
+  $Log: perl-modules.xml,v $
+  Revision 1.1  2012/04/10 21:00:43  phil
+  Perl modules to add to the OS roll.
+
+
+  </changelog>
+
+  <package os='linux'>perl-DBI</package>
+  <package os='linux'>perl-Pod-Escapes</package>
+  <package os='linux'>perl-ExtUtils-ParseXS</package>
+  <package os='linux'>perl-Pod-Simple</package>
+  <package os='linux'>perl-version</package>
+
+</kickstart> 
