@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: gen.py,v $
+# Revision 1.69  2012/04/12 05:36:21  phil
+# mv the chmod when creating a file
+#
 # Revision 1.68  2011/11/02 05:08:56  phil
 # First take on bootstrap0. Packages, command line and processing to
 # bring up the rocks database on a non-Rocks installed host.
@@ -524,9 +527,6 @@ class Generator:
 			l.append('chown %s %s' % (owner, file))
 			l.append('chown %s %s' % (owner, rcsfile))
 
-		if perms:
-			l.append('chmod %s %s' % (perms, file))
-
 		l.append('')
 
 		return string.join(l, '\n')
@@ -654,6 +654,9 @@ class Generator:
 				if fileText[-1] != '\n':
 					s += '\n'
 				s += 'EOF\n'
+
+			if filePerms:
+				s += 'chmod %s %s' % (filePerms, fileName)
 
 		return s
 	
