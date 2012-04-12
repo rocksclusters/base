@@ -2,7 +2,7 @@
 #
 # This file should remain OS independent
 #
-# $Id: bootstrap.sh,v 1.33 2012/04/12 04:25:33 phil Exp $
+# $Id: bootstrap.sh,v 1.34 2012/04/12 05:20:44 phil Exp $
 #
 # @Copyright@
 # 
@@ -58,6 +58,9 @@
 # @Copyright@
 #
 # $Log: bootstrap.sh,v $
+# Revision 1.34  2012/04/12 05:20:44  phil
+# rocks-java now in base roll
+#
 # Revision 1.33  2012/04/12 04:25:33  phil
 # Compile environment-modules on 5.
 # Install JDK.
@@ -224,6 +227,8 @@ install libdnet
 
 compile java
 install jdk 
+
+compile_and_install rocks-java
 
 if [ `./_os` == "linux" ]; then
 	OS_RELEASE=`lsb_release -rs  | cut -d . -f 1`	

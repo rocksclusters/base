@@ -21,6 +21,9 @@
 
   <changelog>
   $Log: base.xml,v $
+  Revision 1.59  2012/04/12 05:20:44  phil
+  rocks-java now in base roll
+
   Revision 1.58  2012/04/06 18:52:02  phil
   environment-modules package
 
@@ -471,8 +474,11 @@
   <package>nspr.&arch;</package>
 
   <package os="linux">jdk</package>
+  <package os="linux">rocks-java</package>
   <package os="linux">sysstat</package>
   <package os="linux">environment-modules</package>
+
+  <package os="sunos">ROCKSrocks-java</package>
 
 <pre>
 
