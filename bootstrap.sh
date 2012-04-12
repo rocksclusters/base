@@ -2,7 +2,7 @@
 #
 # This file should remain OS independent
 #
-# $Id: bootstrap.sh,v 1.32 2012/03/02 04:01:39 phil Exp $
+# $Id: bootstrap.sh,v 1.33 2012/04/12 04:25:33 phil Exp $
 #
 # @Copyright@
 # 
@@ -58,6 +58,10 @@
 # @Copyright@
 #
 # $Log: bootstrap.sh,v $
+# Revision 1.33  2012/04/12 04:25:33  phil
+# Compile environment-modules on 5.
+# Install JDK.
+#
 # Revision 1.32  2012/03/02 04:01:39  phil
 # remove foundation-python-26. now in foundation-python
 #
@@ -188,6 +192,7 @@
 
 . src/devel/devel/src/roll/etc/bootstrap-functions.sh
 
+
 if [ `./_os` == "linux" ]; then
 	compile_and_install foundation-redhat
 fi
@@ -216,6 +221,16 @@ install rocks-command
 
 compile dnet
 install libdnet
+
+compile java
+install jdk 
+
+if [ `./_os` == "linux" ]; then
+	OS_RELEASE=`lsb_release -rs  | cut -d . -f 1`	
+	if [ "$OS_RELEASE" == "5" ]; then
+		compile_and_install environment-modules
+	fi
+fi
 
 if [ `./_os` == "sunos" ]; then
 	compile_and_install pcre
