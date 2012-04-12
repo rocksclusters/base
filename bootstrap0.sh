@@ -4,7 +4,7 @@
 # Bootstrap0: designed for "pristine" systems (aka no rocks)
 # NOTE: This should not be used on ANY Rocks appliance. 
 #
-# $Id: bootstrap0.sh,v 1.10 2012/04/05 20:59:24 phil Exp $
+# $Id: bootstrap0.sh,v 1.11 2012/04/12 21:27:12 phil Exp $
 #
 # @Copyright@
 # 
@@ -60,6 +60,9 @@
 # @Copyright@
 #
 # $Log: bootstrap0.sh,v $
+# Revision 1.11  2012/04/12 21:27:12  phil
+# Some fixes for 5 -- tcl for environment-modules bootstrap
+#
 # Revision 1.10  2012/04/05 20:59:24  phil
 # Now call prepdevel.sh.
 #
@@ -146,6 +149,10 @@ if [ $? != 0 ]; then
 fi
 /bin/sh $tmpfile
 /bin/rm $tmpfile
+
+# 5a. On CentOS 5.8 64 bit, need to remove dbus-devel. It will be added
+# back by prepdevel
+yum -y erase dbus-devel
 
 # 6. Prep as if this were a devel server
 # this creates OS and updates roll, adds some appliance definitions,

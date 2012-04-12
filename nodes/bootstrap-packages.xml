@@ -16,6 +16,9 @@
 
 	<changelog>
 	$Log: bootstrap-packages.xml,v $
+	Revision 1.9  2012/04/12 21:27:12  phil
+	Some fixes for 5 -- tcl for environment-modules bootstrap
+	
 	Revision 1.8  2012/04/06 00:15:10  phil
 	More packages for bootstrapping a build
 	
@@ -108,6 +111,9 @@
 	<package os="linux">readline-devel</package>
 	<package os="linux">slang-devel</package>
 	<package os="linux">syslinux</package>
+	<package os="linux">tcl</package>
+	<package os="linux">tcl-devel</package>
+	<package os="linux">tclx</package>
 	<package os="linux">telnet</package>
 	<package os="linux">tetex</package>
 	<package os="linux">tetex-dvips</package>
