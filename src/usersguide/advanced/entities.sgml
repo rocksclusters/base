@@ -6,4 +6,5 @@
 <!ENTITY ipmi SYSTEM "ipmi.sgml">
 <!ENTITY bonding SYSTEM "bonding.sgml">
 <!ENTITY firewall SYSTEM "firewall.sgml">
+<!ENTITY updates SYSTEM "updates.sgml">
 

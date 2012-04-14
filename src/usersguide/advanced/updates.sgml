@@ -1,0 +1,135 @@
+<section id="update" xreflabel="System Updates">
+
+	<title> System Update </title>
+
+<para>
+There are two ways in which packages can be updated on rocks. You can create a 
+update roll and then add it to the distribution (preferred method) or you can 
+update your frontend and then add the update packages to your distribution.
+</para>
+
+
+<section id="update-roll" xreflabel="Update Roll">
+
+<title> System update using update roll </title>
+
+
+<para>This apporach is preferred over the other because it 
+allows to test the effect of updates on the compute nodes
+and in case of problem it is easy to roll back the system to the 
+previous configuration.
+</para>
+
+<orderedlist>
+<listitem>
+    <para>Use rocks create to create an update roll</para>
+    <screen>
+    # rocks create mirror URL rollname=update-currentDate </screen>
+    <para>You should use the URL  </para>
+</listitem>
+
+<listitem>
+    <para>
+    Add the update roll created by the previous command to your 
+    distribution
+    </para>
+    <screen>
+    # rocks add roll update-currentDate.iso
+    # cd /export/rocks/install
+    # rocks create distro </screen>
+</listitem>
+
+<listitem>
+    <para>
+    New installed node will automatically receive the updated packages. 
+    Or if you force a node to reinstall, it will also get the updates. 
+    To reinstall a node you can run:
+    </para>
+    <screen>
+    # ssh hostname-0-0 /boot/kickstart/cluster-kickstart </screen>
+</listitem>
+
+<listitem>
+    <para>
+    If something goes wrong you can always revert the updates 
+    removing the update roll.
+    </para>
+    <screen>
+    # rocks remove roll update-currentDate
+    # cd /export/rocks/install
+    # rocks create distro </screen>
+</listitem>
+
+<listitem>
+    <para>
+    After you tested the update on some nodes with the previous step, you can try to 
+    update the frontend using the standard yum command
+    </para>
+    <screen>
+    # yum update </screen>
+</listitem>
+
+</orderedlist>
+</section>
+
+
+<section id="updates-yum" xreflabel="Updates using YUM">
+
+<title> System update using YUM </title>
+
+<para>
+To update using YUM you first have to update packages on your frontend 
+(for this reason this approach is more risky). 
+</para>
+
+<orderedlist>
+<listitem>
+    <para>
+    For this you need to enable the Update repository in the file 
+    <filename>/etc/yum.repos.d/CentOS-Base.repo</filename>.
+    If you look at the section <filename>[updates]</filename> you will notice that
+    <filename>"enable = 0"</filename>. To make active the updates you should change to
+    <filename>"enable = 1"</filename>.
+    </para>
+    <screen>
+    # yum clean all
+    # yum update </screen>
+</listitem>
+
+<listitem>
+    <para>
+    After that you can find the downloaded packages un the folder 
+    <filename>/var/cache/yum/updates/packages</filename>. It is necessary to add 
+    this packages to the distribution.
+    </para>
+    <screen>
+    # cp /var/cache/yum/updates/packages/*  /export/rocks/install/contrib/&document-version;/&lt;arch&gt;/RPMS/ </screen>
+    <para>
+    Where <emphasis>arch</emphasis> is your current architecture (x86_64, i386).
+    </para>
+</listitem>
+
+<listitem>
+    <para>
+    Finally rebuild your distribution:
+    </para>
+    <screen>
+    # cd /export/rocks/install
+    # rocks create distro </screen>
+</listitem>
+
+<listitem>
+    <para>
+    New installed node will automatically receive the updated packages.
+    Moreover if you reinstall a node, it will have updated packages too.
+    To reinstall a node you can run:
+    </para>
+    <screen>
+    # ssh hostname-0-0 /boot/kickstart/cluster-kickstart </screen>
+</listitem>
+
+</orderedlist>
+</section>
+
+</section>
+
