@@ -1,5 +1,5 @@
 # 
-# $Id: Makefile,v 1.14 2011/07/23 02:30:51 phil Exp $
+# $Id: Makefile,v 1.15 2012/04/16 17:55:34 clem Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.15  2012/04/16 17:55:34  clem
+# Last fixes on the updates page.
+#
 # Revision 1.14  2011/07/23 02:30:51  phil
 # Viper Copyright
 #
@@ -155,7 +158,7 @@ html: predoc
 pdf: predoc
 	jw --backend pdf --dsl $(PWD)/rocks.dsl#print index.sgml
 
-install::
+install:: build
 	mkdir -p $(ROOT)/$(PKGROOT)/images/install
 	mkdir -p $(ROOT)/$(PKGROOT)/stylesheet-images
 	mkdir -p $(ROOT)/$(PKGROOT)/examples
