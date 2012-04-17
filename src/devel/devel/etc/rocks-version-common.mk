@@ -1,5 +1,5 @@
 #
-# $Id: rocks-version-common.mk,v 1.1 2012/02/01 19:45:03 phil Exp $
+# $Id: rocks-version-common.mk,v 1.2 2012/04/17 03:40:10 phil Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: rocks-version-common.mk,v $
+# Revision 1.2  2012/04/17 03:40:10  phil
+# Auto define VERSION.MAJOR based on the OS version.
+#
 # Revision 1.1  2012/02/01 19:45:03  phil
 # Support python 2.4 on 5, 2.6 on 6. Split out the rocks version major, minor and release name to a separate file (rocks-version-common.mk) used by both python.mk and rocks-version.mk
 #
@@ -74,9 +77,16 @@ __ROCKS_VERSION_COMMON_MK = yes
 # can override this with their own version numbers.  If you want to
 # make sure you get the version of Rocks use ROCKS_VERSION.
 
+ROCKS.OS.VERSION.MAJOR=$(shell lsb_release -rs | cut -d . -f 1)
+ifeq ($(ROCKS.OS.VERSION.MAJOR),"5")
+VERSION.MAJOR = 5
+VERSION.MINOR = 5
+#VERSION.PATCH = 3
+else
 VERSION.MAJOR = 6
 VERSION.MINOR = 0
 #VERSION.PATCH = 3
+endif
 
 RELEASE_NAME = Mamba
 VERSION_NAME = "$(RELEASE_NAME)"
