@@ -1,5 +1,5 @@
 #
-# $Id: rocks-version-common.mk,v 1.2 2012/04/17 03:40:10 phil Exp $
+# $Id: rocks-version-common.mk,v 1.3 2012/04/17 07:47:52 phil Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: rocks-version-common.mk,v $
+# Revision 1.3  2012/04/17 07:47:52  phil
+# Syntax fix.
+#
 # Revision 1.2  2012/04/17 03:40:10  phil
 # Auto define VERSION.MAJOR based on the OS version.
 #
@@ -78,7 +81,7 @@ __ROCKS_VERSION_COMMON_MK = yes
 # make sure you get the version of Rocks use ROCKS_VERSION.
 
 ROCKS.OS.VERSION.MAJOR=$(shell lsb_release -rs | cut -d . -f 1)
-ifeq ($(ROCKS.OS.VERSION.MAJOR),"5")
+ifeq ($(strip $(ROCKS.OS.VERSION.MAJOR)), 5)
 VERSION.MAJOR = 5
 VERSION.MINOR = 5
 #VERSION.PATCH = 3
