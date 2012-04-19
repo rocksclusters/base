@@ -1,4 +1,4 @@
-#$Id: __init__.py,v 1.25 2012/04/06 01:53:32 clem Exp $
+#$Id: __init__.py,v 1.26 2012/04/19 22:21:32 clem Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.26  2012/04/19 22:21:32  clem
+# Minor fix to get vlan interface with IP address working with vm-container-0-0
+# Remove interface now removes also the peth* file if present
+#
 # Revision 1.25  2012/04/06 01:53:32  clem
 # Modified verision of the report interface to support kvm networking
 #
@@ -270,7 +274,7 @@ class Command(rocks.commands.HostArgumentProcessor,
 		self.addOutput(host, '</file>')
 
 	def writeBridgedConfig(self, host, mac, ip, device,
-                                                netmask, vlanid, mtu, options, channel, active):
+			netmask, vlanid, mtu, options, channel, active):
 		""" called when the interface is on a host that can host KVM VM """
 		brName = device
 		device = "p" + device
@@ -292,12 +296,7 @@ class Command(rocks.commands.HostArgumentProcessor,
 			#if this is a vlan we don't create the bridge 
 			#and we use the macvtap driver for kvm
 			self.addOutput(host, 'VLAN=yes')
-			if ip and netmask:
-				self.addOutput(host, 'IPADDR=%s' % ip)
-				self.addOutput(host, 'NETMASK=%s' % netmask)
-			if dhcp:
-				self.addOutput(host, 'BOOTPROTO=dhcp')
-		else:
+		if ip and netmask:
 			self.addOutput(host, 'BRIDGE="%s"' % brName)
 		if active :
 			self.addOutput(host, 'ONBOOT=yes')
@@ -308,7 +307,7 @@ class Command(rocks.commands.HostArgumentProcessor,
 			self.addOutput(host, 'MTU=%s' % mtu)
 		self.addOutput(host, '</file>')
 
-		if not vlanid:
+		if ip and netmask:
 			#    ------      bridge dev with IP
 			s = '<file name="/etc/sysconfig/network-scripts/ifcfg-'
 			s += '%s">' % brName

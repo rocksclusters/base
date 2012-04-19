@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.15 2011/07/23 02:30:33 phil Exp $
+# $Id: __init__.py,v 1.16 2012/04/19 22:21:31 clem Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.16  2012/04/19 22:21:31  clem
+# Minor fix to get vlan interface with IP address working with vm-container-0-0
+# Remove interface now removes also the peth* file if present
+#
 # Revision 1.15  2011/07/23 02:30:33  phil
 # Viper Copyright
 #
@@ -171,6 +175,7 @@ class Command(rocks.commands.remove.host.command):
 		#
 		# now try to remove the ifcfg-* file on the nodes
 		#
-		cmd = 'rm -f /etc/sysconfig/network-scripts/ifcfg-%s' % iface
+		cmd = ('rm -f /etc/sysconfig/network-scripts/ifcfg-%s' + \
+			' /etc/sysconfig/network-scripts/ifcfg-p%s') % (iface, iface)
 		self.command('run.host', hosts + [ cmd ] )
 
