@@ -24,7 +24,7 @@ configuration.
 
 <orderedlist>
 <listitem>
-    <para>Use rocks create to create an update roll</para>
+    <para>Use rocks create mirror to create an update roll</para>
     <screen>
     # rocks create mirror http://mirror.centos.org/centos/6.2/updates/&lt;arch&gt;/Packages/ rollname=update-currentDate </screen>
     <para>    Where <emphasis>arch</emphasis> is your current architecture (x86_64, i386).

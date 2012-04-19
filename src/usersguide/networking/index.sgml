@@ -3,7 +3,6 @@
 
 &networking-overview;
 &networking-vlan;
-&networking-vm;
 &networking-examples;
 
 </chapter>
