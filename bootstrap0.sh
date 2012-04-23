@@ -4,7 +4,7 @@
 # Bootstrap0: designed for "pristine" systems (aka no rocks)
 # NOTE: This should not be used on ANY Rocks appliance. 
 #
-# $Id: bootstrap0.sh,v 1.11 2012/04/12 21:27:12 phil Exp $
+# $Id: bootstrap0.sh,v 1.12 2012/04/23 18:15:03 clem Exp $
 #
 # @Copyright@
 # 
@@ -60,6 +60,9 @@
 # @Copyright@
 #
 # $Log: bootstrap0.sh,v $
+# Revision 1.12  2012/04/23 18:15:03  clem
+# we need redhat-lsb to determine CentOS version
+#
 # Revision 1.11  2012/04/12 21:27:12  phil
 # Some fixes for 5 -- tcl for environment-modules bootstrap
 #
@@ -111,7 +114,7 @@ fi
 
 # 1. other system packages (need similar for solaris)
 if [ `./_os` == "linux" ]; then
-	yum -y install rpm-build rpm-devel gcc gcc-c++ ncurses-devel swig glib2 glib2-devel openssl-devel pygobject2 pygobject2-devel cairo cairo-devel createrepo apr apr-devel expat-devel
+	yum -y install rpm-build rpm-devel gcc gcc-c++ ncurses-devel swig glib2 glib2-devel openssl-devel pygobject2 pygobject2-devel cairo cairo-devel createrepo apr apr-devel expat-devel redhat-lsb
 	# packages required to build anaconda on 6
 	yum -y install e2fsprogs-devel isomd5sum-devel libarchive-devel libXxf86misc-devel libblkid-devel libnl-devel newt-devel pykickstart slang-devel NetworkManager-devel NetworkManager-glib-devel iscsi-initiator-utils-devel device-mapper-devel
 fi
