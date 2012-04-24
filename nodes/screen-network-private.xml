@@ -13,6 +13,10 @@
 
 <changelog>
 $Log: screen-network-private.xml,v $
+Revision 1.2  2012/04/24 19:08:16  phil
+
+check for existence of rocks-interface-menu. This should make rocks run roll "quiet"
+
 Revision 1.1  2012/03/13 06:04:14  phil
 Support user selecting public and private interfaces on frontend
 
@@ -33,7 +37,7 @@ Support user selecting public and private interfaces on frontend
 		<type>menu</type>
 		<size>1</size>
 		<eval mode='xml'>
-			/opt/rocks/screens/rocks-interface-menu private &Kickstart_PrivateInterface;
+			if [ -x /opt/rocks/screens/rocks-interface-menu ]; then /opt/rocks/screens/rocks-interface-menu private &Kickstart_PrivateInterface; ; fi
 		</eval>
 		<value>&Kickstart_PrivateInterface;</value>
 		<help>This is the Ethernet network that physically connects your frontend to compute nodes</help>
