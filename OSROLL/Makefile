@@ -1,6 +1,9 @@
 ## Makefile to create an OS Roll and Updates
-## $Id: Makefile,v 1.3 2012/02/24 02:01:53 clem Exp $
+## $Id: Makefile,v 1.4 2012/04/24 00:06:20 clem Exp $
 ## $Log: Makefile,v $
+## Revision 1.4  2012/04/24 00:06:20  clem
+## Delete mirrored data after creation of roll
+##
 ## Revision 1.3  2012/02/24 02:01:53  clem
 ## os roll and update roll was always built for 6.2 (now it build also for 5.7)
 ##
@@ -29,6 +32,8 @@ base: workdir
 	/opt/rocks/bin/rocks add roll $(WORKDIR)/$(DISTRO)-$(VERSION)-*.iso
 	- /sbin/service httpd start
 	/opt/rocks/bin/rocks enable roll $(DISTRO)
+	- rm -rf $(WORKDIR)/$(subst http://,,$(MIRRORURL))/$(BASEPATH)/../..
+
 
 # Mirror Updates, then add to distro
 updates: workdir cleanupdates
@@ -38,6 +43,8 @@ updates: workdir cleanupdates
 	/opt/rocks/bin/rocks add roll $(WORKDIR)/Updates-$(DISTRO)-$(VERSION)-*.$(ARCH).*.iso
 	-/sbin/service httpd start
 	/opt/rocks/bin/rocks enable roll Updates-$(DISTRO)-$(VERSION)
+	- rm -rf $(WORKDIR)/$(subst http://,,$(MIRRORURL))/$(UPDATESPATH)/../..
+
 
 # Remove All Previous Updates Rolls
 cleanupdates: workdir
