@@ -17,6 +17,9 @@
 
   <changelog>
   $Log: emacs.xml,v $
+  Revision 1.8  2012/04/24 18:43:51  phil
+  add libotf package explicitly for emacs.
+
   Revision 1.7  2011/07/23 02:30:14  phil
   Viper Copyright
 
@@ -62,6 +65,7 @@
 
   </changelog>
 
+  <package cond="rocks_version_major > 5">libotf</package>
   <package type="meta">Emacs</package>
 
 </kickstart> 
