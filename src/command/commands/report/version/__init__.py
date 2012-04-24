@@ -1,5 +1,5 @@
 #
-# $Id: __init__.py,v 1.5 2011/07/23 02:30:36 phil Exp $
+# $Id: __init__.py,v 1.6 2012/04/24 18:40:39 phil Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.6  2012/04/24 18:40:39  phil
+# support parameter to just print the major version
+#
 # Revision 1.5  2011/07/23 02:30:36  phil
 # Viper Copyright
 #
@@ -79,13 +82,27 @@ class Command(rocks.commands.report.command):
 	"""
 	Output the version of Rocks.
 
+
+	<param optional='1' type='boolean' name='major'>
+	Just print the Major Version. Default is 'no'
+	</param>
+
 	<example cmd='report version'>
 	Output the current Rocks version.
 	</example>
 	"""
 
 	def run(self, params, args):
+		
+		self.major, = self.fillParams([
+			('major', 'no'), ])
+		majoronly = self.str2bool(self.major)
+
 		self.beginOutput()
-		self.addOutput('', rocks.version)
+		if majoronly:
+			self.addOutput('', rocks.version.split('.')[0])
+		else:
+			self.addOutput('', rocks.version)
+			
 		self.endOutput(padChar='')
 
