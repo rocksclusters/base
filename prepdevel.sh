@@ -4,7 +4,7 @@
 # Bootstrap0: designed for "pristine" systems (aka no rocks)
 # NOTE: This should not be used on ANY Rocks appliance. 
 #
-# $Id: prepdevel.sh,v 1.1 2012/04/05 20:59:24 phil Exp $
+# $Id: prepdevel.sh,v 1.2 2012/04/24 18:47:03 phil Exp $
 #
 # @Copyright@
 # 
@@ -60,6 +60,9 @@
 # @Copyright@
 #
 # $Log: prepdevel.sh,v $
+# Revision 1.2  2012/04/24 18:47:03  phil
+# Add rocks_version and rocks_version_major to attributes
+#
 # Revision 1.1  2012/04/05 20:59:24  phil
 # Now call prepdevel.sh.
 #
@@ -127,6 +130,8 @@ MYNAME=`hostname`
 /opt/rocks/bin/rocks add appliance nas graph=default node=nas membership=NAS\ Appliance public=yes
 /opt/rocks/bin/rocks add appliance devel-server graph=default node=devel-appliance membership=Development\ Appliance public=yes
 /opt/rocks/bin/rocks add appliance login graph=default node=login membership=Login public=yes
+/opt/rocks/bin/rocks add attr rocks_version `/opt/rocks/bin/rocks report version`
+/opt/rocks/bin/rocks add attr rocks_version_major `/opt/rocks/bin/rocks report version major=1`
 
 # 4. Rest of packages for full build
 if [ `./_os` == "linux" ]; then
