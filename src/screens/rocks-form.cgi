@@ -67,6 +67,12 @@ class App(rocks.sql.Application):
 			file.write('rocks_version:%s\n' % line[:-1])
 
 		#
+		# add the rocks_version_major attribute
+		#
+		cmd = '/opt/rocks/bin/rocks report version major=1'
+		for line in os.popen(cmd).readlines():
+			file.write('rocks_version_major:%s\n' % line[:-1])
+		#
 		# add the os attribute
 		#
 		file.write('os:linux\n')
