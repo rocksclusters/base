@@ -1,5 +1,5 @@
 #
-# $Id: __init__.py,v 1.26 2012/04/07 04:06:37 phil Exp $
+# $Id: __init__.py,v 1.27 2012/04/25 05:04:18 phil Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.27  2012/04/25 05:04:18  phil
+# filter out long mac addresses coming from IB adapters.
+#
 # Revision 1.26  2012/04/07 04:06:37  phil
 # Fix file names -- a missing d can ruin your day.
 #
@@ -338,7 +341,7 @@ class Command(rocks.commands.HostArgumentProcessor,
 				node.ip = privateIP
 
 			# Check that we have valid values
-			if node.name is None or node.mac is None or node.ip is None:
+			if node.name is None or node.mac is None or node.ip is None or len(node.mac) > 20:
 				continue
 
 			self.printHost(node.name, hostname, node.mac, node.ip, filename, nextserver)
