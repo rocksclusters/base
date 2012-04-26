@@ -1,4 +1,4 @@
-# $Id: plugin_fixnewusers.py,v 1.12 2011/07/23 02:30:41 phil Exp $
+# $Id: plugin_fixnewusers.py,v 1.13 2012/04/26 21:21:46 phil Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,10 @@
 # @Copyright@
 #
 # $Log: plugin_fixnewusers.py,v $
+# Revision 1.13  2012/04/26 21:21:46  phil
+# default to nfsvers=3 for the time being. Can be overwritten
+# with Info_HomeDirOptions
+#
 # Revision 1.12  2011/07/23 02:30:41  phil
 # Viper Copyright
 #
@@ -149,6 +153,12 @@ class Plugin(rocks.commands.Plugin):
 		if not homedirloc:
 			homedirloc = '/export/home'
 			
+		# if there is a mount option specified in the database
+		# use it. otherwise, use the default.
+		options = self.db.getHostAttr('localhost', 'Info_HomeDirOptions')
+		if not options:
+			options="nfsvers=3"
+
 		for user in new_users:
 
 			# for each new user, change their default directory to
@@ -164,8 +174,8 @@ class Plugin(rocks.commands.Plugin):
 			# then update the auto.home file
 
 			new_user_dir = os.path.join(homedirloc, user)
-			autofs_entry = '%s\t%s:%s' % \
-				(user, hostname, new_user_dir)
+			autofs_entry = '%s\t-%s\t%s:%s' % \
+				(user, options, hostname, new_user_dir)
 
 			cmd = 'echo "%s" >> /etc/auto.home' % (autofs_entry)
 			for line in os.popen(cmd).readlines():
