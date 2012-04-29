@@ -17,6 +17,9 @@
 
   <changelog>
   $Log: ssh.xml,v $
+  Revision 1.16  2012/04/29 17:48:50  phil
+  Don't create intermediate /tmp/sshd_config file.
+
   Revision 1.15  2011/07/23 02:30:15  phil
   Viper Copyright
 
@@ -182,10 +185,10 @@ mkdir /root/.ssh
 chmod a+rx /root/.ssh
 
 <!-- Turn off challenge-response so we get normal passwd auth. -->
-sed -e 's/#ChallengeResponseAuthentication yes/ChallengeResponseAuthentication no/' \
-	/etc/ssh/sshd_config > /tmp/sshd_config
-sed -e 's/#PermitUserEnvironment no/PermitUserEnvironment yes/' \
-	/tmp/sshd_config > /etc/ssh/sshd_config
+sed -i -e 's/#ChallengeResponseAuthentication yes/ChallengeResponseAuthentication no/' \
+	/etc/ssh/sshd_config 
+sed -i -e 's/#PermitUserEnvironment no/PermitUserEnvironment yes/' \
+	/etc/ssh/sshd_config
 
 </post>
 
