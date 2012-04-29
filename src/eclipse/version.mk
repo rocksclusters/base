@@ -1,3 +1,0 @@
-NAME = eclipse
-RELEASE = 0
-VERSION = 3.5.1
