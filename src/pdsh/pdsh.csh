@@ -1,4 +1,4 @@
-# $Id: pdsh.csh,v 1.3 2011/08/22 18:23:33 anoop Exp $
+# $Id: pdsh.csh,v 1.4 2012/04/29 21:40:52 phil Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: pdsh.csh,v $
+# Revision 1.4  2012/04/29 21:40:52  phil
+# Check if bin directory is already in the path
+#
 # Revision 1.3  2011/08/22 18:23:33  anoop
 # Bug fix in pdsh csh script
 # Upgrade pdsh while we're at it
@@ -73,5 +76,8 @@ set PDSHROOT=/opt/pdsh
 set BIN=${PDSHROOT}/bin
 
 if ( -d ${BIN}  ) then
-        setenv PATH "${PATH}:${BIN}"
+	echo ${PATH} | /bin/grep -q ${BIN} 
+	if ( $? != 0) then
+        	setenv PATH "${PATH}:${BIN}"
+	endif
 endif

@@ -1,4 +1,4 @@
-# $Id: pdsh.sh,v 1.2 2011/07/23 02:30:48 phil Exp $
+# $Id: pdsh.sh,v 1.3 2012/04/29 21:40:52 phil Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: pdsh.sh,v $
+# Revision 1.3  2012/04/29 21:40:52  phil
+# Check if bin directory is already in the path
+#
 # Revision 1.2  2011/07/23 02:30:48  phil
 # Viper Copyright
 #
@@ -66,7 +69,9 @@ export PDSHROOT=/opt/pdsh
 
 BIN=$PDSHROOT/bin
 
-if [ -d $BIN ]; then
-        export PATH=$PATH:$BIN
+if [ -d ${BIN} ]; then
+	if ! echo ${PATH} | /bin/grep -q ${BIN} ; then
+        	export PATH=$PATH:$BIN
+	fi
 fi
 
