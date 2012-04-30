@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: build.py,v $
+# Revision 1.49  2012/04/30 17:07:20  phil
+# See if product.img only needs to be readable.
+#
 # Revision 1.48  2012/04/05 22:00:37  phil
 # Now have flag to not create packages.md5. Temporary distributions don't need
 # them.
@@ -1416,7 +1419,7 @@ class DistributionBuilder(Builder):
 		# off the CD, so it will not be needed for the remainder of
 		# the server installation.
 		#
-		os.chmod(product, 0666)
+		os.chmod(product, 0664)
 
 	os.chdir(cwd)
 	return
