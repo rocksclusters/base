@@ -1,5 +1,5 @@
 #
-# $Id: rocks-binaries.sh,v 1.12 2011/07/23 02:30:41 phil Exp $
+# $Id: rocks-binaries.sh,v 1.13 2012/04/30 16:42:04 phil Exp $
 #
 # @Copyright@
 # 
@@ -56,6 +56,9 @@
 #
 #
 # $Log: rocks-binaries.sh,v $
+# Revision 1.13  2012/04/30 16:42:04  phil
+# Only add rocks/[bin/sbin] to path if it doesn't exist
+#
 # Revision 1.12  2011/07/23 02:30:41  phil
 # Viper Copyright
 #
@@ -132,12 +135,19 @@
 
 export ROCKS_ROOT=/opt/rocks
 
-if [ -d $ROCKS_ROOT/bin ]; then
-	export PATH=$PATH:$ROCKS_ROOT/bin
+BIN=${ROCKS_ROOT}/bin
+SBIN=${ROCKS_ROOT}/sbin
+
+if [ -d ${BIN} ]; then
+	if ! echo ${PATH} | /bin/grep -q ${BIN} ; then
+        	export PATH=${PATH}:${BIN}
+	fi
 fi
 
-if [ -d $ROCKS_ROOT/sbin ]; then
-	export PATH=$PATH:$ROCKS_ROOT/sbin
+if [ -d ${SBIN} ]; then
+	if ! echo ${PATH} | /bin/grep -q ${SBIN} ; then
+        	export PATH=${PATH}:${SBIN}
+	fi
 fi
 
 

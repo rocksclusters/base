@@ -1,5 +1,5 @@
 #
-# $Id: rocks-binaries.csh,v 1.12 2011/07/23 02:30:41 phil Exp $
+# $Id: rocks-binaries.csh,v 1.13 2012/04/30 16:42:04 phil Exp $
 #
 # @Copyright@
 # 
@@ -56,6 +56,9 @@
 #
 #
 # $Log: rocks-binaries.csh,v $
+# Revision 1.13  2012/04/30 16:42:04  phil
+# Only add rocks/[bin/sbin] to path if it doesn't exist
+#
 # Revision 1.12  2011/07/23 02:30:41  phil
 # Viper Copyright
 #
@@ -129,12 +132,19 @@
 
 setenv ROCKS_ROOT /opt/rocks
 
-if ( -d $ROCKS_ROOT/bin ) then
-	setenv PATH "${PATH}:$ROCKS_ROOT/bin"
+set BIN=${ROCKS_ROOT}/bin
+set SBIN=${ROCKS_ROOT}/bin
+
+if ( -d ${BIN}  ) then
+	echo ${PATH} | /bin/grep -q ${BIN} 
+	if ( $? != 0) then
+        	setenv PATH "${PATH}:${BIN}"
+	endif
 endif
 
-if ( -d $ROCKS_ROOT/sbin ) then
-	setenv PATH "${PATH}:$ROCKS_ROOT/sbin"
+if ( -d ${SBIN}  ) then
+	echo ${PATH} | /bin/grep -q ${SBIN} 
+	if ( $? != 0) then
+        	setenv PATH "${PATH}:${SBIN}"
+	endif
 endif
-
-
