@@ -21,6 +21,9 @@
 
   <changelog>
   $Log: base.xml,v $
+  Revision 1.60  2012/04/30 16:36:08  phil
+  Only have java path updated once
+
   Revision 1.59  2012/04/12 05:20:44  phil
   rocks-java now in base roll
 
@@ -636,12 +639,25 @@ MANPATH /usr/java/latest/man
 
 <file name="/etc/profile.d/java.sh" perms="0755">
 export JAVA_HOME=/usr/java/latest
-export PATH=$JAVA_HOME/bin:$PATH
+BIN=${JAVA_HOME}/bin
+
+if [ -d ${BIN} ]; then
+	if ! echo ${PATH} | /bin/grep -q ${BIN} ; then
+        	export PATH=${PATH}:${BIN}
+	fi
+fi
 </file>
 
 <file name="/etc/profile.d/java.csh" perms="0755">
 setenv JAVA_HOME /usr/java/latest
-set path = ($JAVA_HOME/bin $path)
+set BIN=${JAVA_HOME}/bin
+
+if ( -d ${BIN}  ) then
+	echo ${PATH} | /bin/grep -q ${BIN} 
+	if ( $? != 0) then
+        	setenv PATH "${PATH}:${BIN}"
+	endif
+endif
 </file>
 
 <!-- Enable Java Plugins for Firefox (Mozilla) --> 
