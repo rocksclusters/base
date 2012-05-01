@@ -1,5 +1,5 @@
 #
-# $Id: java.sh.linux,v 1.1 2012/04/12 05:17:40 phil Exp $
+# $Id: java.sh.linux,v 1.2 2012/05/01 03:40:49 phil Exp $
 #
 # @Copyright@
 # 
@@ -56,6 +56,9 @@
 #
 #
 # $Log: java.sh.linux,v $
+# Revision 1.2  2012/05/01 03:40:49  phil
+# Make sure path is only added once
+#
 # Revision 1.1  2012/04/12 05:17:40  phil
 # Moved to base roll from java roll
 #
@@ -148,4 +151,10 @@
 #
 
 export JAVA_HOME=/usr/java/latest
-export PATH=$JAVA_HOME/bin:$PATH
+BIN=${JAVA_HOME}/bin
+
+if [ -d ${BIN} ]; then
+	if ! echo ${PATH} | /bin/grep -q ${BIN} ; then
+        	export PATH=${PATH}:${BIN}
+	fi
+fi

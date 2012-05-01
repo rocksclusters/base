@@ -1,5 +1,5 @@
 #
-# $Id: java.csh.linux,v 1.1 2012/04/12 05:17:40 phil Exp $
+# $Id: java.csh.linux,v 1.2 2012/05/01 03:40:49 phil Exp $
 #
 # @Copyright@
 # 
@@ -56,6 +56,9 @@
 #
 #
 # $Log: java.csh.linux,v $
+# Revision 1.2  2012/05/01 03:40:49  phil
+# Make sure path is only added once
+#
 # Revision 1.1  2012/04/12 05:17:40  phil
 # Moved to base roll from java roll
 #
@@ -148,4 +151,11 @@
 #
 
 setenv JAVA_HOME  /usr/java/latest
-set path = ( $JAVA_HOME/bin $path)
+set BIN=${JAVA_HOME}/bin
+
+if ( -d ${BIN}  ) then
+	echo ${PATH} | /bin/grep -q ${BIN} 
+	if ( $? != 0) then
+        	setenv PATH "${PATH}:${BIN}"
+	endif
+endif
