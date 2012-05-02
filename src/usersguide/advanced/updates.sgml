@@ -90,15 +90,68 @@ the modification to the rest of the cluster.
 <orderedlist>
 <listitem>
     <para>
-    To begin it is necessary to enable the Update repository in the file 
-    <filename>/etc/yum.repos.d/CentOS-Base.repo</filename>.
-    If you look at the section <filename>[updates]</filename> you will notice that
-    <filename>"enable = 0"</filename>. To enable updates updates it is necessary to 
-    change to <filename>"enable = 1"</filename>. After that you can run:
+    Several repositories are configured, but then disabled by Rocks
+    at install time. This is done so that the user can have full control
+    over the distribution. The local distribution IS a yum repository.
+    If you have created an updates roll as in the previous section, then
     </para>
     <screen>
     # yum clean all
-    # yum update </screen>
+    # yum check-update 
+    </screen>
+    <para> might produce output that resembles the following
+    </para>
+
+    <screen>
+[root@ ~]# yum check-update
+Rocks-6.0                                                | 1.9 kB     00:00     
+Rocks-6.0/primary                                        | 1.1 MB     00:00     
+Rocks-6.0                                                             2183/2183
+keyutils.x86_64                             1.4-3.el6                  Rocks-6.0
+keyutils-libs.x86_64                        1.4-3.el6                  Rocks-6.0
+keyutils-libs-devel.x86_64                  1.4-3.el6                  Rocks-6.0
+[root@ ~]# 
+    </screen> 
+    <para> Alternatively, you can enable the CentOS updates repo and do
+    the following
+    </para>
+    <screen>
+    # yum clean all
+    # yum --enablerepo=updates check-update 
+    </screen>
+    <para> might produce output that resembles the following
+    </para>
+    <screen>
+[root@ ~]# yum --enablerepo=updates check-update
+updates                                                  | 3.5 kB     00:00     
+
+firefox.x86_64                      10.0.4-1.el6.centos                updates  
+keyutils.x86_64                             1.4-3.el6                  Rocks-6.0
+keyutils-libs.x86_64                        1.4-3.el6                  Rocks-6.0
+keyutils-libs-devel.x86_64                  1.4-3.el6                  Rocks-6.0
+libpng.x86_64                       2:1.2.49-1.el6_2                   updates  
+libpng-devel.x86_64                 2:1.2.49-1.el6_2                   updates  
+libsmbclient.x86_64                 3.5.10-116.el6_2                   updates  
+openssl.x86_64                      1.0.0-20.el6_2.4                   updates  
+openssl-devel.x86_64                1.0.0-20.el6_2.4                   updates  
+qemu-kvm.x86_64                     2:0.12.1.2-2.209.el6_2.4           updates  
+samba-winbind-clients.x86_64        3.5.10-116.el6_2                   updates  
+xorg-x11-server-Xephyr.x86_64       1.10.4-6.el6_2.1.0.1.centos        updates  
+xorg-x11-server-Xorg.x86_64         1.10.4-6.el6_2.1.0.1.centos        updates  
+xorg-x11-server-common.x86_64       1.10.4-6.el6_2.1.0.1.centos        updates  
+xulrunner.x86_64                    10.0.4-1.el6.centos                updates  
+[root@ ~]# 
+    </screen> 
+
+</listitem>
+
+<listitem>
+    <para>
+    Now, Actually install the updates on your frontend
+    </para>
+    <screen>
+    # yum --enablerepo=updates update
+    </screen>
 </listitem>
 
 <listitem>

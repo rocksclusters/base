@@ -14,25 +14,17 @@ rolls:
 <itemizedlist>
 	<listitem> <para> Kernel/Boot Roll CD </para> </listitem>
 	<listitem> <para> Base Roll CD </para> </listitem>
-	<listitem> <para> Web Server Roll CD </para> </listitem>
 	<listitem> <para> OS Roll CD - Disk 1 </para> </listitem>
 	<listitem> <para> OS Roll CD - Disk 2 </para> </listitem>
 </itemizedlist>
 
 <para>
-The Core Meta Roll CD can be substituted for the individual
-Base and Web-Server Rolls.
-</para>
-
-<para>
-Additionally, the official Red Hat Enterprise Linux 5 update 4 CDs can be
-substituted for the OS Rolls.
-Also, any <emphasis>true</emphasis> rebuild of RHEL 5 update 4 can be
-used -- distributions known to work are: CentOS 5 update 4 and
-Scientific Linux 5 update 4.
+Additionally, the official Red Hat Enterprise Linux 5 (5.8) or Linux (6.2)
+can be substituted substituted for the OS Rolls.
+Also, any <emphasis>true</emphasis> rebuild of RHEL 5 update 8 or RHEL 6 Update 2 can be used.
 If you substitute the OS Rolls with one of the above distributions, you
 must supply <emphasis>all</emphasis> the CDs from the distribution (which
-usually is 6 or 7 CDs).
+usually is 6 to 9 CDs).
 </para>
 </warning>
 
@@ -49,7 +41,7 @@ usually is 6 or 7 CDs).
 	<para>
 	For the remainder of this section, we'll use the example of installing
 	a <emphasis>bare-bones</emphasis> frontend, that is, we'll be using
-	the Kernel/Boot Roll, Core Roll, OS - Disk 1 Roll and the
+	the Kernel/Boot Roll, base Roll, OS - Disk 1 Roll and the
 	OS - Disk 2 Roll.
 	</para>
 	</note>
@@ -89,6 +81,18 @@ build
 	the node).
 	</para>
 	</warning>
+
+	<tip>
+	<para>
+ 	It is possible to bypass the DHCP process and have the install 
+	ask for network parameters.
+	If you know the name of device used by the kernel for public access
+	(e.g. <literal>eth1</literal>,<literal>p2p1</literal>,...), then 
+	specify as follows (using <literal>p2p1</literal> for the public net):	
+	<literal>build ksdevice=p2p1 asknetwork</literal>
+	respectively.
+	</para>
+	</tip>
 
 	<tip>
 	<para>
