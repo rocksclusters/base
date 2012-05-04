@@ -23,7 +23,8 @@
 <package>firefox</package>
 <package>pdsh</package>
 <!-- needed bacause eclipse rpm in the java roll provides libcairo -->
-<package>cairo.x86_64</package>
+<package arch="x86_64">cairo.x86_64</package>
+<package>cairo.i386</package>
 
 
 <post>
