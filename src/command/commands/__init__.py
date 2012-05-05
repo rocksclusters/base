@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.100 2012/03/13 18:41:43 phil Exp $
+# $Id: __init__.py,v 1.101 2012/05/05 16:38:27 phil Exp $
 # 
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.101  2012/05/05 16:38:27  phil
+# When printing a python dictionary, suppress newline
+#
 # Revision 1.100  2012/03/13 18:41:43  phil
 # Back-out previous change. Bad idea. Or worse -- breaks things.
 #
@@ -1963,7 +1966,7 @@ class Command:
 		self.output.append(list)
 		
 		
-	def endOutput(self, header=[], padChar='-', trimOwner=1):
+	def endOutput(self, header=[], padChar='-', trimOwner=1,linesep='\n'):
 		"""Pretty prints the output list buffer."""
 
 		# Handle the simple case of no output, and bail out
@@ -2035,7 +2038,7 @@ class Command:
 				else:
 					o = s
 				list.append(o)
-			self.addText('%s\n' % self.outputRow(list))
+			self.addText('%s%s' % (self.outputRow(list),linesep))
 
 	def outputRow(self, list):
 		return string.join(list, ' ')

@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.9 2012/03/13 06:09:02 phil Exp $
+# $Id: __init__.py,v 1.10 2012/05/05 16:38:28 phil Exp $
 #
 # @Copyright@
 # 
@@ -54,6 +54,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.10  2012/05/05 16:38:28  phil
+# When printing a python dictionary, suppress newline
+#
 # Revision 1.9  2012/03/13 06:09:02  phil
 # Be more tolerant -- or don't emit errors in particular benign cases
 #
@@ -157,5 +160,8 @@ class Command(rocks.commands.HostArgumentProcessor,
 		except:
 			pass
 
-		self.endOutput(padChar='')
+		if pyformat:
+			self.endOutput(padChar='',linesep='')
+		else:
+			self.endOutput(padChar='')
 
