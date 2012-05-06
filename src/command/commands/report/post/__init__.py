@@ -1,5 +1,5 @@
 #
-# $Id: __init__.py,v 1.3 2012/02/13 23:05:17 phil Exp $
+# $Id: __init__.py,v 1.4 2012/05/06 05:20:16 phil Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.4  2012/05/06 05:20:16  phil
+# Now support eval tags.
+#
 # Revision 1.3  2012/02/13 23:05:17  phil
 # Closer to proper post extraction. Need to handle eval sections
 #
@@ -77,6 +80,11 @@ import os.path
 import re
 import rocks.commands
 import rocks.gen
+import rocks.profile
+from xml.sax import saxutils
+from xml.sax import handler
+from xml.sax import make_parser
+
 
 class Command(rocks.commands.report.command):
 	"""
@@ -95,13 +103,31 @@ class Command(rocks.commands.report.command):
 	Attributes to be used while building the output shell script.
 	</param>
 
-	<example cmd='cat database.xml | rocks report post'>
+	<example cmd="cat database.xml | rocks report post attrs={'os':'linux'}">
 	Take database.xml file in the base roll and create a script from the
 	post section. Adding attrs="{'os':'linux'}'" to the command will
 	also expand os=linux tags.
 	</example>
+
+	<example cmd="cat database.xml | rocks report post attrs=`rocks report host attr localhost`">
+	Take database.xml file in the base roll and create a script from the
+	post section. Take all attributes from the database 
+	</example>
 	"""
 
+	
+	def prescrub(self, xml, attrs):
+		# This handles eval tags
+		parser = make_parser()
+		graphnode = rocks.profile.Node("temppost")
+		handler=rocks.profile.Pass1NodeHandler(graphnode,"report-post",{},attrs, eval=1)
+		parser.setContentHandler(handler)
+		for line in xml:
+			parser.feed(line)
+		newxml = handler.getXML()
+		return newxml
+
+		
 	def scrub(self, xml):
 		filename = tempfile.mktemp()
 
@@ -119,6 +145,7 @@ class Command(rocks.commands.report.command):
 		return scrubbed
 		
 
+	
 	def runXML(self, xml):
 		list = []
 
@@ -204,7 +231,7 @@ class Command(rocks.commands.report.command):
 			xmlheader += '<%s>\n' % starter_tag
 			xml = body
 
-		self.runXML(self.scrub(xmlheader + xml))
+		self.runXML(self.scrub(self.prescrub(xmlheader + xml, self.attrs)))
 
 		self.endOutput(padChar='')
 
