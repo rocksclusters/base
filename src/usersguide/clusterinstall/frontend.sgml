@@ -322,6 +322,40 @@ build
 
 <listitem>
 	<para>
+	The public cluster network configuration screen allows you to
+	set up the networking parameters for the ethernet network that connects
+	the frontend to the outside network (e.g., the internet).
+	</para>
+
+	<para>
+	<mediaobject>
+		<imageobject>
+		<imagedata fileref="images/install/27.png" scale=50>
+		</imageobject>
+	</mediaobject>
+	</para>
+
+	<para>
+	The above window is an example of how we configured the external
+	network on one of our frontend machines.
+	</para>
+	<tip>
+	<para>The installer allows you select which physical interface is
+        the public interface, if there is more than one interface. 
+        the network interface is a pull down menu as below
+	</para>
+	<para>
+	<mediaobject>
+		<imageobject>
+		<imagedata fileref="images/install/271.png" scale=50>
+		</imageobject>
+	</mediaobject>
+	</para>
+	</tip>
+
+</listitem>
+<listitem>
+	<para>
 	The private cluster network configuration screen allows you to
 	set up the networking parameters for the ethernet network that connects
 	the frontend to the compute nodes.
@@ -345,28 +379,22 @@ build
 	</para>
 	</note>
 
+	<note>
+	<para>
+	If you have only one physical interface, the installer will create
+        a virtual ethernet interface 
+	(e.g. <computeroutput>eth0:0</computeroutput>).
+	</para>
+	</note>
+
+	<warning>
+	<para>
+	The installer does not check if you selected the identical interface 
+	for your public and private interfaces. It is an error to do this
+	</para>
+	</warning>
 </listitem>
 
-<listitem>
-	<para>
-	The public cluster network configuration screen allows you to
-	set up the networking parameters for the ethernet network that connects
-	the frontend to the outside network (e.g., the internet).
-	</para>
-
-	<para>
-	<mediaobject>
-		<imageobject>
-		<imagedata fileref="images/install/27.png" scale=50>
-		</imageobject>
-	</mediaobject>
-	</para>
-
-	<para>
-	The above window is an example of how we configured the external
-	network on one of our frontend machines.
-	</para>
-</listitem>
 
 <listitem>
 	<para>
