@@ -383,9 +383,10 @@ When you edit "valgrind-base.xml", you'll see:
         
         				Rocks(r)
         		         www.rocksclusters.org
-        		         version 5.4.3 (Viper)
+        		         version 5.5 (Mamba)
+        		         version 6.0 (Mamba)
         
-        Copyright (c) 2000 - 2011 The Regents of the University of California.
+        Copyright (c) 2000 - 2012 The Regents of the University of California.
         All rights reserved.	
         
         Redistribution and use in source and binary forms, with or without
@@ -404,7 +405,7 @@ When you edit "valgrind-base.xml", you'll see:
         features or use of this software must display the following acknowledgement: 
         
         	"This product includes software developed by the Rocks(r)
-        	Development Team at the San Diego Supercomputer Center at the
+        	Cluster Group at the San Diego Supercomputer Center at the
         	University of California, San Diego and its contributors."
         
         4. Except as permitted for the purposes of acknowledgment in paragraph 3,
@@ -434,6 +435,9 @@ When you edit "valgrind-base.xml", you'll see:
 
         <changelog>
         $Log: internals.sgml,v $
+        Revision 1.9  2012/05/06 05:48:40  phil
+        Copyright Storm for Mamba
+
         Revision 1.8  2011/07/23 02:30:44  phil
         Viper Copyright
 
@@ -482,9 +486,10 @@ Now let's add a <constant>&lt;post&gt;</constant> section to it:
         
         				Rocks(r)
         		         www.rocksclusters.org
-        		         version 5.4.3 (Viper)
+        		         version 5.5 (Mamba)
+        		         version 6.0 (Mamba)
         
-        Copyright (c) 2000 - 2011 The Regents of the University of California.
+        Copyright (c) 2000 - 2012 The Regents of the University of California.
         All rights reserved.	
         
         Redistribution and use in source and binary forms, with or without
@@ -503,7 +508,7 @@ Now let's add a <constant>&lt;post&gt;</constant> section to it:
         features or use of this software must display the following acknowledgement: 
         
         	"This product includes software developed by the Rocks(r)
-        	Development Team at the San Diego Supercomputer Center at the
+        	Cluster Group at the San Diego Supercomputer Center at the
         	University of California, San Diego and its contributors."
         
         4. Except as permitted for the purposes of acknowledgment in paragraph 3,
@@ -533,6 +538,9 @@ Now let's add a <constant>&lt;post&gt;</constant> section to it:
 
         <changelog>
         $Log: internals.sgml,v $
+        Revision 1.9  2012/05/06 05:48:40  phil
+        Copyright Storm for Mamba
+
         Revision 1.8  2011/07/23 02:30:44  phil
         Viper Copyright
 
@@ -637,9 +645,10 @@ Now edit the file "valgrind.xml":
         
         				Rocks(r)
         		         www.rocksclusters.org
-        		         version 5.4.3 (Viper)
+        		         version 5.5 (Mamba)
+        		         version 6.0 (Mamba)
         
-        Copyright (c) 2000 - 2011 The Regents of the University of California.
+        Copyright (c) 2000 - 2012 The Regents of the University of California.
         All rights reserved.	
         
         Redistribution and use in source and binary forms, with or without
@@ -658,7 +667,7 @@ Now edit the file "valgrind.xml":
         features or use of this software must display the following acknowledgement: 
         
         	"This product includes software developed by the Rocks(r)
-        	Development Team at the San Diego Supercomputer Center at the
+        	Cluster Group at the San Diego Supercomputer Center at the
         	University of California, San Diego and its contributors."
         
         4. Except as permitted for the purposes of acknowledgment in paragraph 3,
@@ -688,6 +697,9 @@ Now edit the file "valgrind.xml":
 
         <changelog>
         $Log: internals.sgml,v $
+        Revision 1.9  2012/05/06 05:48:40  phil
+        Copyright Storm for Mamba
+
         Revision 1.8  2011/07/23 02:30:44  phil
         Viper Copyright
 
@@ -733,9 +745,10 @@ nodes, we'll make an edge from the "base" node XML file to "valgrind-base":
         
         				Rocks(r)
         		         www.rocksclusters.org
-        		         version 5.4.3 (Viper)
+        		         version 5.5 (Mamba)
+        		         version 6.0 (Mamba)
         
-        Copyright (c) 2000 - 2011 The Regents of the University of California.
+        Copyright (c) 2000 - 2012 The Regents of the University of California.
         All rights reserved.	
         
         Redistribution and use in source and binary forms, with or without
@@ -754,7 +767,7 @@ nodes, we'll make an edge from the "base" node XML file to "valgrind-base":
         features or use of this software must display the following acknowledgement: 
         
         	"This product includes software developed by the Rocks(r)
-        	Development Team at the San Diego Supercomputer Center at the
+        	Cluster Group at the San Diego Supercomputer Center at the
         	University of California, San Diego and its contributors."
         
         4. Except as permitted for the purposes of acknowledgment in paragraph 3,
@@ -784,6 +797,9 @@ nodes, we'll make an edge from the "base" node XML file to "valgrind-base":
 
         <changelog>
         $Log: internals.sgml,v $
+        Revision 1.9  2012/05/06 05:48:40  phil
+        Copyright Storm for Mamba
+
         Revision 1.8  2011/07/23 02:30:44  phil
         Viper Copyright
 
@@ -880,9 +896,10 @@ Here's the contents of "valgrind-client.xml":
 	
 					Rocks(r)
 			         www.rocksclusters.org
-			         version 5.4.3 (Viper)
+			         version 5.5 (Mamba)
+			         version 6.0 (Mamba)
 	
-	Copyright (c) 2000 - 2011 The Regents of the University of California.
+	Copyright (c) 2000 - 2012 The Regents of the University of California.
 	All rights reserved.	
 	
 	Redistribution and use in source and binary forms, with or without
@@ -901,7 +918,7 @@ Here's the contents of "valgrind-client.xml":
 	features or use of this software must display the following acknowledgement: 
 	
 		"This product includes software developed by the Rocks(r)
-		Development Team at the San Diego Supercomputer Center at the
+		Cluster Group at the San Diego Supercomputer Center at the
 		University of California, San Diego and its contributors."
 	
 	4. Except as permitted for the purposes of acknowledgment in paragraph 3,
@@ -931,6 +948,9 @@ Here's the contents of "valgrind-client.xml":
 
 	<changelog>
 	$Log: internals.sgml,v $
+	Revision 1.9  2012/05/06 05:48:40  phil
+	Copyright Storm for Mamba
+	
 	Revision 1.8  2011/07/23 02:30:44  phil
 	Viper Copyright
 	
@@ -978,9 +998,10 @@ And here is the contents of "valgrind-server.xml":
 	
 					Rocks(r)
 			         www.rocksclusters.org
-			         version 5.4.3 (Viper)
+			         version 5.5 (Mamba)
+			         version 6.0 (Mamba)
 	
-	Copyright (c) 2000 - 2011 The Regents of the University of California.
+	Copyright (c) 2000 - 2012 The Regents of the University of California.
 	All rights reserved.	
 	
 	Redistribution and use in source and binary forms, with or without
@@ -999,7 +1020,7 @@ And here is the contents of "valgrind-server.xml":
 	features or use of this software must display the following acknowledgement: 
 	
 		"This product includes software developed by the Rocks(r)
-		Development Team at the San Diego Supercomputer Center at the
+		Cluster Group at the San Diego Supercomputer Center at the
 		University of California, San Diego and its contributors."
 	
 	4. Except as permitted for the purposes of acknowledgment in paragraph 3,
@@ -1029,6 +1050,9 @@ And here is the contents of "valgrind-server.xml":
 
 	<changelog>
 	$Log: internals.sgml,v $
+	Revision 1.9  2012/05/06 05:48:40  phil
+	Copyright Storm for Mamba
+	
 	Revision 1.8  2011/07/23 02:30:44  phil
 	Viper Copyright
 	
@@ -1080,9 +1104,10 @@ graph XML file "valgrind.xml" to look like:
         
         				Rocks(r)
         		         www.rocksclusters.org
-        		         version 5.4.3 (Viper)
+        		         version 5.5 (Mamba)
+        		         version 6.0 (Mamba)
         
-        Copyright (c) 2000 - 2011 The Regents of the University of California.
+        Copyright (c) 2000 - 2012 The Regents of the University of California.
         All rights reserved.	
         
         Redistribution and use in source and binary forms, with or without
@@ -1101,7 +1126,7 @@ graph XML file "valgrind.xml" to look like:
         features or use of this software must display the following acknowledgement: 
         
         	"This product includes software developed by the Rocks(r)
-        	Development Team at the San Diego Supercomputer Center at the
+        	Cluster Group at the San Diego Supercomputer Center at the
         	University of California, San Diego and its contributors."
         
         4. Except as permitted for the purposes of acknowledgment in paragraph 3,
@@ -1131,6 +1156,9 @@ graph XML file "valgrind.xml" to look like:
 
         <changelog>
         $Log: internals.sgml,v $
+        Revision 1.9  2012/05/06 05:48:40  phil
+        Copyright Storm for Mamba
+
         Revision 1.8  2011/07/23 02:30:44  phil
         Viper Copyright
 
@@ -1221,9 +1249,10 @@ We can enforce this ordering by adding two
 	
 					Rocks(r)
 			         www.rocksclusters.org
-			         version 5.4.3 (Viper)
+			         version 5.5 (Mamba)
+			         version 6.0 (Mamba)
 	
-	Copyright (c) 2000 - 2011 The Regents of the University of California.
+	Copyright (c) 2000 - 2012 The Regents of the University of California.
 	All rights reserved.	
 	
 	Redistribution and use in source and binary forms, with or without
@@ -1242,7 +1271,7 @@ We can enforce this ordering by adding two
 	features or use of this software must display the following acknowledgement: 
 	
 		"This product includes software developed by the Rocks(r)
-		Development Team at the San Diego Supercomputer Center at the
+		Cluster Group at the San Diego Supercomputer Center at the
 		University of California, San Diego and its contributors."
 	
 	4. Except as permitted for the purposes of acknowledgment in paragraph 3,
@@ -1272,6 +1301,9 @@ We can enforce this ordering by adding two
 
 	<changelog>
 	$Log: internals.sgml,v $
+	Revision 1.9  2012/05/06 05:48:40  phil
+	Copyright Storm for Mamba
+	
 	Revision 1.8  2011/07/23 02:30:44  phil
 	Viper Copyright
 	

@@ -4,15 +4,16 @@
 # Bootstrap0: designed for "pristine" systems (aka no rocks)
 # NOTE: This should not be used on ANY Rocks appliance. 
 #
-# $Id: prepdevel.sh,v 1.2 2012/04/24 18:47:03 phil Exp $
+# $Id: prepdevel.sh,v 1.3 2012/05/06 05:48:08 phil Exp $
 #
 # @Copyright@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		         version 5.4.3 (Viper)
+# 		         version 5.5 (Mamba)
+# 		         version 6.0 (Mamba)
 # 
-# Copyright (c) 2000 - 2011 The Regents of the University of California.
+# Copyright (c) 2000 - 2012 The Regents of the University of California.
 # All rights reserved.	
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -31,7 +32,7 @@
 # features or use of this software must display the following acknowledgement: 
 # 
 # 	"This product includes software developed by the Rocks(r)
-# 	Development Team at the San Diego Supercomputer Center at the
+# 	Cluster Group at the San Diego Supercomputer Center at the
 # 	University of California, San Diego and its contributors."
 # 
 # 4. Except as permitted for the purposes of acknowledgment in paragraph 3,
@@ -60,6 +61,9 @@
 # @Copyright@
 #
 # $Log: prepdevel.sh,v $
+# Revision 1.3  2012/05/06 05:48:08  phil
+# Copyright Storm for Mamba
+#
 # Revision 1.2  2012/04/24 18:47:03  phil
 # Add rocks_version and rocks_version_major to attributes
 #

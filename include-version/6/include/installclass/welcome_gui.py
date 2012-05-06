@@ -1,5 +1,5 @@
 #
-# $Id: welcome_gui.py,v 1.1 2012/01/23 19:48:57 phil Exp $
+# $Id: welcome_gui.py,v 1.2 2012/05/06 05:48:10 phil Exp $
 #
 # Our patch to redhat's installer
 #
@@ -7,9 +7,10 @@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		         version 5.4 (Maverick)
+# 		         version 5.5 (Mamba)
+# 		         version 6.0 (Mamba)
 # 
-# Copyright (c) 2000 - 2010 The Regents of the University of California.
+# Copyright (c) 2000 - 2012 The Regents of the University of California.
 # All rights reserved.	
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -57,6 +58,9 @@
 # @Copyright@
 #
 # $Log: welcome_gui.py,v $
+# Revision 1.2  2012/05/06 05:48:10  phil
+# Copyright Storm for Mamba
+#
 # Revision 1.1  2012/01/23 19:48:57  phil
 # directory for Rocks version 5 and Rocks version 6 specific include files.
 # initiall installclass and installclasses. could also be node files

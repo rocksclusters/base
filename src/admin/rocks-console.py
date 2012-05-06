@@ -1,14 +1,15 @@
 #! @PYTHON@
 #
-# $Id: rocks-console.py,v 1.17 2012/04/03 23:30:36 phil Exp $
+# $Id: rocks-console.py,v 1.18 2012/05/06 05:48:17 phil Exp $
 # 
 # @Copyright@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		         version 5.4.3 (Viper)
+# 		         version 5.5 (Mamba)
+# 		         version 6.0 (Mamba)
 # 
-# Copyright (c) 2000 - 2011 The Regents of the University of California.
+# Copyright (c) 2000 - 2012 The Regents of the University of California.
 # All rights reserved.	
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -27,7 +28,7 @@
 # features or use of this software must display the following acknowledgement: 
 # 
 # 	"This product includes software developed by the Rocks(r)
-# 	Development Team at the San Diego Supercomputer Center at the
+# 	Cluster Group at the San Diego Supercomputer Center at the
 # 	University of California, San Diego and its contributors."
 # 
 # 4. Except as permitted for the purposes of acknowledgment in paragraph 3,
@@ -56,6 +57,9 @@
 # @Copyright@
 #
 # $Log: rocks-console.py,v $
+# Revision 1.18  2012/05/06 05:48:17  phil
+# Copyright Storm for Mamba
+#
 # Revision 1.17  2012/04/03 23:30:36  phil
 # Should now work on 5 and 6.
 #

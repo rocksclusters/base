@@ -11,13 +11,16 @@ This file is used as a connection point for other XML configuration nodes.
 </description>
 
         <copyright>
-        Copyright (c) 2000 - 2011 The Regents of the University of California.
-        All rights reserved. Rocks(r) v5.4.3 www.rocksclusters.org
+        Copyright (c) 2000 - 2012 The Regents of the University of California.
+        All rights reserved. Rocks(r) v5.5/v6.0 www.rocksclusters.org
         
         </copyright>
 
 <changelog>
 $Log: client.xml,v $
+Revision 1.20  2012/05/06 05:48:10  phil
+Copyright Storm for Mamba
+
 Revision 1.19  2011/08/25 23:41:32  anoop
 conditional on the wrong tag fixed
 

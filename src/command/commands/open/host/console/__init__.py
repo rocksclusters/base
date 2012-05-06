@@ -1,12 +1,13 @@
-# $Id: __init__.py,v 1.8 2011/08/18 00:57:20 anoop Exp $
+# $Id: __init__.py,v 1.9 2012/05/06 05:48:28 phil Exp $
 #
 # @Copyright@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		         version 5.4 (Maverick)
+# 		         version 5.5 (Mamba)
+# 		         version 6.0 (Mamba)
 # 
-# Copyright (c) 2000 - 2010 The Regents of the University of California.
+# Copyright (c) 2000 - 2012 The Regents of the University of California.
 # All rights reserved.	
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -54,6 +55,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.9  2012/05/06 05:48:28  phil
+# Copyright Storm for Mamba
+#
 # Revision 1.8  2011/08/18 00:57:20  anoop
 # Re-adding open host console command.
 # This was accidentally removed in the cleanup of firewall commands

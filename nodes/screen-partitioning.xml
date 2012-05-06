@@ -6,13 +6,16 @@
 </description>
 
         <copyright>
-        Copyright (c) 2000 - 2011 The Regents of the University of California.
-        All rights reserved. Rocks(r) v5.4.3 www.rocksclusters.org
+        Copyright (c) 2000 - 2012 The Regents of the University of California.
+        All rights reserved. Rocks(r) v5.5/v6.0 www.rocksclusters.org
         
         </copyright>
 
 <changelog>
 $Log: screen-partitioning.xml,v $
+Revision 1.14  2012/05/06 05:48:10  phil
+Copyright Storm for Mamba
+
 Revision 1.13  2011/07/23 02:30:15  phil
 Viper Copyright
 

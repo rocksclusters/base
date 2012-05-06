@@ -7,9 +7,10 @@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		         version 5.4.3 (Viper)
+# 		         version 5.5 (Mamba)
+# 		         version 6.0 (Mamba)
 # 
-# Copyright (c) 2000 - 2011 The Regents of the University of California.
+# Copyright (c) 2000 - 2012 The Regents of the University of California.
 # All rights reserved.	
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -28,7 +29,7 @@
 # features or use of this software must display the following acknowledgement: 
 # 
 # 	"This product includes software developed by the Rocks(r)
-# 	Development Team at the San Diego Supercomputer Center at the
+# 	Cluster Group at the San Diego Supercomputer Center at the
 # 	University of California, San Diego and its contributors."
 # 
 # 4. Except as permitted for the purposes of acknowledgment in paragraph 3,
@@ -57,6 +58,9 @@
 # @Copyright@
 #
 # $Log: backup-cluster-db.sh,v $
+# Revision 1.16  2012/05/06 05:48:49  phil
+# Copyright Storm for Mamba
+#
 # Revision 1.15  2011/09/01 21:20:53  phil
 # Root needs to dump the database to get views and secure attributes.
 # Need to lock down the dumped data and RCS dir to root rw only

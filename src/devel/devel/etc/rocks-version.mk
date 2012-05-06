@@ -1,13 +1,14 @@
 #
-# $Id: rocks-version.mk,v 1.9 2012/02/01 19:45:03 phil Exp $
+# $Id: rocks-version.mk,v 1.10 2012/05/06 05:48:39 phil Exp $
 #
 # @Copyright@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		         version 5.4.3 (Viper)
+# 		         version 5.5 (Mamba)
+# 		         version 6.0 (Mamba)
 # 
-# Copyright (c) 2000 - 2011 The Regents of the University of California.
+# Copyright (c) 2000 - 2012 The Regents of the University of California.
 # All rights reserved.	
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -26,7 +27,7 @@
 # features or use of this software must display the following acknowledgement: 
 # 
 # 	"This product includes software developed by the Rocks(r)
-# 	Development Team at the San Diego Supercomputer Center at the
+# 	Cluster Group at the San Diego Supercomputer Center at the
 # 	University of California, San Diego and its contributors."
 # 
 # 4. Except as permitted for the purposes of acknowledgment in paragraph 3,
@@ -55,6 +56,9 @@
 # @Copyright@
 #
 # $Log: rocks-version.mk,v $
+# Revision 1.10  2012/05/06 05:48:39  phil
+# Copyright Storm for Mamba
+#
 # Revision 1.9  2012/02/01 19:45:03  phil
 # Support python 2.4 on 5, 2.6 on 6. Split out the rocks version major, minor and release name to a separate file (rocks-version-common.mk) used by both python.mk and rocks-version.mk
 #
@@ -302,9 +306,10 @@ rocks-copyright.txt:
 	@echo '' >> $@
 	@echo '				Rocks(r)' >> $@
 	@echo '		         www.rocksclusters.org' >> $@
-	@echo '		         version 5.4.3 (Viper)' >> $@
+	@echo '		         version 5.5 (Mamba)' >> $@
+	@echo '		         version 6.0 (Mamba)' >> $@
 	@echo '' >> $@
-	@echo 'Copyright (c) 2000 - 2011 The Regents of the University of California.' >> $@
+	@echo 'Copyright (c) 2000 - 2012 The Regents of the University of California.' >> $@
 	@echo 'All rights reserved.	' >> $@
 	@echo '' >> $@
 	@echo 'Redistribution and use in source and binary forms, with or without' >> $@
@@ -323,7 +328,7 @@ rocks-copyright.txt:
 	@echo 'features or use of this software must display the following acknowledgement: ' >> $@
 	@echo '' >> $@
 	@echo '	"This product includes software developed by the Rocks(r)' >> $@
-	@echo '	Development Team at the San Diego Supercomputer Center at the' >> $@
+	@echo '	Cluster Group at the San Diego Supercomputer Center at the' >> $@
 	@echo '	University of California, San Diego and its contributors."' >> $@
 	@echo '' >> $@
 	@echo '4. Except as permitted for the purposes of acknowledgment in paragraph 3,' >> $@

@@ -1,5 +1,5 @@
 #
-# $Id: ssh-key.sh,v 1.11 2011/11/07 21:43:29 anoop Exp $
+# $Id: ssh-key.sh,v 1.12 2012/05/06 05:48:39 phil Exp $
 #
 # generate a ssh key if one doesn't exist
 #
@@ -8,9 +8,10 @@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		         version 5.4.3 (Viper)
+# 		         version 5.5 (Mamba)
+# 		         version 6.0 (Mamba)
 # 
-# Copyright (c) 2000 - 2011 The Regents of the University of California.
+# Copyright (c) 2000 - 2012 The Regents of the University of California.
 # All rights reserved.	
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -29,7 +30,7 @@
 # features or use of this software must display the following acknowledgement: 
 # 
 # 	"This product includes software developed by the Rocks(r)
-# 	Development Team at the San Diego Supercomputer Center at the
+# 	Cluster Group at the San Diego Supercomputer Center at the
 # 	University of California, San Diego and its contributors."
 # 
 # 4. Except as permitted for the purposes of acknowledgment in paragraph 3,
@@ -59,6 +60,9 @@
 #
 #
 # $Log: ssh-key.sh,v $
+# Revision 1.12  2012/05/06 05:48:39  phil
+# Copyright Storm for Mamba
+#
 # Revision 1.11  2011/11/07 21:43:29  anoop
 # Don't try to be too efficient or clever
 #
