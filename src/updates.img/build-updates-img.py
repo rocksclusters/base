@@ -1,6 +1,6 @@
 #!/opt/rocks/usr/bin/python
 #
-# $Id: build-updates-img.py,v 1.19 2012/05/06 05:48:49 phil Exp $
+# $Id: build-updates-img.py,v 1.20 2012/05/07 03:32:27 phil Exp $
 #
 # @Copyright@
 # 
@@ -57,6 +57,9 @@
 # @Copyright@
 #
 # $Log: build-updates-img.py,v $
+# Revision 1.20  2012/05/07 03:32:27  phil
+# libnih for reboot on 6.
+#
 # Revision 1.19  2012/05/06 05:48:49  phil
 # Copyright Storm for Mamba
 #
@@ -289,6 +292,7 @@ class App(rocks.app.Application):
 
 		if self.usage_version == '6':
 			rpms.append('tigervnc-server')	
+			rpms.append('libnih')	
 			pyver 	= "python2.6"
 			pyverpath = "opt/rocks/lib/python2.6"
 		else:
