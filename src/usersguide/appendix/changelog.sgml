@@ -200,7 +200,7 @@
 	Kernel:  build keyutils only on 5, not on 6. 
 	</para>
 	<para>
-	SGE: Added Security Patched to Open Grid Scheduler v6.2 update 5p2
+	SGE: Added Security Patched to Open Grid Scheduler v6.2 update 5p3
 	</para>
 	<para>
 	SGE: Fix compilation to work on both 5.8 and 6.2 
