@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.23 2012/05/06 05:48:33 phil Exp $
+# $Id: __init__.py,v 1.24 2012/05/08 01:08:34 clem Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.24  2012/05/08 01:08:34  clem
+# Too many quotes (when running rocks run host localhost "ls -l" was throwing
+# an IOException)
+#
 # Revision 1.23  2012/05/06 05:48:33  phil
 # Copyright Storm for Mamba
 #
@@ -375,7 +379,7 @@ class Command(command):
 				# fire off the command
 				#
 				if runlocal:
-					cmd = '"%s"' % command
+					cmd = '%s' % command
 				else:
 					cmd = 'ssh %s "%s"' % (hostif, command)
 
