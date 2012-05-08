@@ -1,6 +1,237 @@
 <appendix id="release-notes" xreflabel="release-notes">
 	<title>Release Notes</title>
 
+
+<section>
+<title>Release 5.5/6.0 - changes from 5.4.3</title>
+
+<section>
+	<title>New Features</title>
+
+<itemizedlist>
+	<listitem>
+	<para>Same Code base for CentOS 5 and CentOS 6 Systems</para>
+
+	<para>While there are significant differences beteween CentOS 5 and 
+        CentOS 6, Rocks now supports both from the same source code.  5 and 6
+	Rolls are <emphasis> not interchangeable </emphasis>.
+	</para>
+	</listitem>
+
+	<listitem>
+	<para>KVM Roll (virtualization)for CentOS 6 64-bit Systems</para>
+
+	<para>
+	Xen is no longer supported by RedHat/CentOS 6 system and KVM (Kernel
+	Virtual Machine) is only supported for 64-bit machines.  KVM is 
+        hardware-only virtualization and requires both capability and
+	BIOS to be enabled.
+	</para>
+	</listitem>
+
+	<listitem>
+	<para>Environment Modules</para>
+	<para>  
+	CentOS 6 natively supports environment modules instead of *-selector.
+	For Rocks 5.5, the indentical version of modules is compiled and 
+        included in the base roll.
+	</para>
+	</listitem>
+	<listitem>
+	<para> New support for Yum repositories</para>
+	<para>
+		Standard OS-defined Repositories are no longer removed, but
+                are instead disabled. the command
+		<computeroutput> yum repolist all</computeroutput>, describes
+		configured repos. 
+	</para>
+	</listitem>
+	<listitem>
+	<para>Selectable Public and Private Networks at Install</para>
+	<para>
+		Users are no longer required to select eth0 as the private
+                and eth1 as the public networks for frontend installation.
+                Install screens have drop-down menus to select the detected
+                interface.
+	</para>
+	</listitem>
+
+	<listitem>
+	<para>Support of BIOS-named Ethernet devices</para>
+	<para>
+		Version 6 kernels name Ethernet devices differently from
+        Version 5. Devices may have names like p2p1, p35p2, and/or eth0. 
+	If you prefer standard device names for 6, you must install a node
+        using the standard kernel flag of <computeroutput>biosdevname=0</computeroutput>
+	</para>
+	</listitem>
+
+	<listitem>
+	<para>Support of Frontends with One Physical Interface</para>
+	<para>
+	The installer will configure a logical Ethernet device (e.g. eth0:0) if
+	only one physical network device is detected during frontend
+	installation.
+	</para>
+	</listitem>
+
+	<listitem>
+	<para>Creation of Upstart Scripts for CentOS 6</para>
+	<para>
+	CentOS 6 use upstart to define to boot characteristics
+	</para>
+	</listitem>
+
+	<listitem>
+	<para>New Command: rocks report post</para>
+	<para>
+	<computeroutput>rocks report post</computeroutput> will convert
+	the post section of an xml file to an executable shell script.
+	This is an advanced user feature.
+	</para>
+	</listitem>
+
+	<listitem>
+	<para>New Package: foundation-sqlite</para>
+	<para>
+	This implements the SQLite3 single file database. See Upgraded 
+	Tracker.
+	</para>
+	</listitem>
+
+</itemizedlist>
+</section>
+
+<section>
+	<title>Enhancements and Bug Fixes</title>
+	<para>
+	Base: Updated anaconda 
+	</para>
+	<para>
+	Base: Built against CentOS 5.8/6.2 with Updates as of May 8, 2012
+	</para>
+	<para>
+	Base: Java Updated to Version 7 Update 3 
+	</para>
+	<para>
+	Base:  Eclipse Moved to Java Roll and Updated to version 3.7.1
+	</para>
+	<para>
+	Base: Profile scripts only add once to PATH variables 
+	</para>
+	<para>
+	Base: <computeroutput>rocks run host localhost </computeroutput>
+        performs a fork instead of an ssh. 
+	</para>
+	<para>
+	Base: Utilize subprocess and hashlib for newer version of Python 
+	</para>
+	<para>
+	Base: Improve performance of report host dhcpd by nearly a factor of
+        10 on large clusters.
+	</para>
+	<para>
+	Base:  Added Git RPM.
+	</para>
+	<para>
+	Base:  Really fixed Zombie Processes in 411 service
+	</para>
+	<para>
+	Base:  Patched foundation-python to remove a requirement on /usr/local/bin/python.
+	</para>
+	<para>
+	Base:  Updated Version of M2Crypto to 0.21.1
+	</para>
+	<para>
+	Base:  Better Bootstrapping support for building Rocks. Supports 
+        "bootstrap0" which starts on a bare OS install. Use yum whenever
+	possible in package installation.
+	</para>
+	<para>
+	Base: Removed rebuild of Kudzu. CentOS fixed their internal 
+        build problems. 
+	</para>
+	<para>
+	Base: Only have 32-bit or 64-bit version of Java. Not both. Works
+        around broken Oracle-supplied RPMs where only one can be installed. 
+	</para>
+	<para>
+	Base: Fixed various graph ordering issues.
+	</para>
+
+	<para>
+	HPC: Use environment modules. Set rocks-openmpi as default MPI
+        Module 
+	</para>
+	<para>
+	HPC: Added PVM RPMs for Version 6. PVM dropped from Native OS. 
+	</para>
+	<para>
+	HPC: OpenMPI compiled with SGE integration 
+	</para>
+	<para>
+	Ganglia: Updated profile.d scripts to only add once to PATH  
+	</para>
+	<para>
+	Ganglia: rrdtool renamed to foundation-rrdtool to avoid conflicts with
+        external reposistories. 
+	</para>
+	<para>
+	Ganglia: Removed a Package Conflict with ganglia-pylib
+	</para>
+	<para>
+	Ganglia: Insured that ganglia linkes with Rocks-compiled rrdtool 
+	</para>
+	<para>
+	Java: Eclipse updated to 3.7.1 
+	</para>
+	<para>
+	Java:  JBOSS updated to 6.1.0.  Version 5 was deprecated and 
+        would not build on CentOS 6 
+	</para>
+	<para>
+	Kernel: Rewrote the rocks tracker to use SQLite for storing hashes.
+        Eliminated segmentation faults of older code. 
+	</para>
+	<para>
+	Kernel: handle difference between syslog and rsyslog 
+	</para>
+	<para>
+	Kernel:  build keyutils only on 5, not on 6. 
+	</para>
+	<para>
+	SGE: Added Security Patched to Open Grid Scheduler v6.2 update 5p2
+	</para>
+	<para>
+	SGE: Fix compilation to work on both 5.8 and 6.2 
+	</para>
+	<para>
+	Bio: Many build fixes for Perl modules. 
+	</para>
+	<para>
+	Bio: Extracted profile scripts to an RPM for easier management 
+	</para>
+	<para>
+	Bio: mpi-blast compiled with the rocks-opemmpi module loaded 
+	</para>
+	<para>
+	Bio: BioPerl now depends on Perl Roll
+	</para>
+	<para>
+	Bio: BioPerl CPAN support utils updated
+	</para>
+	<para>
+	Condor: Update Condor to v7.6.6
+	</para>
+	<para>
+	Condor: No support for CentOS 6/32-bit.  
+	</para>
+	<para>
+	Condor: Install simple condor test. 
+	</para>
+</section>
+</section>
+
 <section>
 <title>Release 5.4.3 - changes from 5.4</title>
 
