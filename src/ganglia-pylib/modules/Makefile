@@ -1,5 +1,5 @@
 # --------------------------------------------------- -*- Makefile -*- --
-# $Id: Makefile,v 1.10 2012/05/06 05:48:44 phil Exp $
+# $Id: Makefile,v 1.11 2012/05/08 15:58:03 phil Exp $
 #
 # @Copyright@
 # 
@@ -56,6 +56,10 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.11  2012/05/08 15:58:03  phil
+#
+# Compile Processmodule under 32-bit CentOS/RedHat 6
+#
 # Revision 1.10  2012/05/06 05:48:44  phil
 # Copyright Storm for Mamba
 #
@@ -180,6 +184,7 @@ SRCDIRS = `find * -prune -type d ! -name "CVS" ! -name "."`
 
 include $(OS).mk
 
+
 modules:: these_modules
 	for i in $(SRCDIRS) ; do \
 		(cd $$i; $(MAKE) PY_INCLUDE=$(PY_INCLUDE) $@) ; \
@@ -189,7 +194,7 @@ modules:: these_modules
 these_modules: $(MODULES:.c=.so)
 
 %.so: %.c $(HEADERS)
-	$(CC) $(CCOPTS) -g -I$(PY_INCLUDE) -I$(GANGLIA_INCLUDE) -c $<
+	$(CC) $(CCOPTS) -g -I$(PY_INCLUDE) -I$(GANGLIA_INCLUDE) -DRHEL$(OSVERSION) -c $<
 	$(CC) -shared -o $@ $(<:.c=.o) -L/opt/rocks/lib -ldnet \
 		-L/opt/ganglia/$(LIBARCH) -lganglia
 

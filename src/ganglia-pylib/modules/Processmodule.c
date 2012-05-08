@@ -77,7 +77,7 @@
 #include <dirent.h>
 #include <sys/param.h>     /* for HZ */
 
-#if defined __x86_64__
+#if defined __x86_64__ || defined  RHEL6
 #include <sys/user.h>      /* for PAGE_SHIFT */
 #elif defined (__SVR4) && defined (__sun)
 #include <sys/pcic_reg.h>      /* for PAGE_SHIFT */
