@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.13 2012/05/06 05:48:32 phil Exp $
+# $Id: __init__.py,v 1.14 2012/05/10 22:27:26 clem Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.14  2012/05/10 22:27:26  clem
+# Roy Dragseth firewall patch
+#
 # Revision 1.13  2012/05/06 05:48:32  phil
 # Copyright Storm for Mamba
 #
@@ -206,10 +209,10 @@ class Command(rocks.commands.HostArgumentProcessor,
 			if s:
 				rule += ' -p %s --dport %s' % (protocol, s)
 
+		rule += ' -j %s' % action
+
 		if flags:
 			rule += ' %s' % flags
-
-		rule += ' -j %s' % action
 
 		return rule
 
