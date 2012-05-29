@@ -55,7 +55,7 @@ And replaced with something similar to:
 <note>
 <para>
 Please see
-<ulink url="http://www.redhat.com/docs/manuals/linux/RHL-7.2-Manual/custom-guide/s1-kickstart2-options.html">Red Hat Linux 7.2: The Official Red Hat Linux
+<ulink url="http://docs.redhat.com/docs/en-US/Red_Hat_Enterprise_Linux/5/html/Installation_Guide/s1-kickstart2-options.html#s2-kickstart2-options-part-example">Red Hat Linux 7.2: The Official Red Hat Linux
 Customization Guide</ulink>
 for details on how to specify partitions in kickstart files.
 </para>

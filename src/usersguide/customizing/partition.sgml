@@ -153,7 +153,7 @@ In the above example, the syntax of the data in
 <computeroutput>/tmp/user_partition_info</computeroutput>
 follows directly from Red Hat's kickstart.
 For more information on the <computeroutput>part</computeroutput> keyword, see
-<ulink url="http://www.redhat.com/docs/manuals/enterprise/RHEL-5-manual/en-US/RHEL510/Installation_Guide/s1-kickstart2-options.html">Red Hat Enterprise Linux 5 Installation Guide : Kickstart Options</ulink>.
+<ulink url="http://docs.redhat.com/docs/en-US/Red_Hat_Enterprise_Linux/5/html/Installation_Guide/s1-kickstart2-options.html#s2-kickstart2-options-part-example">Red Hat Enterprise Linux 5 Installation Guide : Kickstart Options</ulink>.
 </para>
 
 <warning>

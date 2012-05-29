@@ -84,7 +84,7 @@ To apply the configuration, execute:
 <para>
 There are several options that can be added to the kernel bonding module (see
 RedHat's documentation 
-<ulink url="http://www.redhat.com/docs/en-US/Red_Hat_Enterprise_Linux/5.5/html/Deployment_Guide/s2-modules-bonding.html"> The Channel Bonding Module </ulink>
+<ulink url="http://docs.redhat.com/docs/en-US/Red_Hat_Enterprise_Linux/5/html/Deployment_Guide/s2-modules-bonding.html"> The Channel Bonding Module </ulink>
 for a full description of all the options).
 </para>
 
