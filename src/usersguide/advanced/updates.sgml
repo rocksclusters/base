@@ -38,6 +38,7 @@ configuration.
     </para>
     <screen>
     # rocks add roll update-currentDate.iso
+    # rocks enable roll update-currentDate
     # cd /export/rocks/install
     # rocks create distro </screen>
 </listitem>

@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.6 2012/05/06 05:48:38 phil Exp $
+# $Id: __init__.py,v 1.7 2012/05/30 21:47:59 clem Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.7  2012/05/30 21:47:59  clem
+# rocks update now checks if the url is valid before going on
+#
 # Revision 1.6  2012/05/06 05:48:38  phil
 # Copyright Storm for Mamba
 #
@@ -78,6 +81,8 @@
 
 import string
 import os
+import httplib
+import urlparse
 import rocks.file
 import rocks.commands
 
@@ -96,6 +101,24 @@ class Command(command):
 	Updates the frontend.
 	</example>
 	"""
+
+	
+	def httpExists(self, url):
+		"""tests wether the URL exist or not on the server"""
+		
+		host, path = urlparse.urlsplit(url)[1:3]
+		try:
+			connection = httplib.HTTPConnection(host)  ## Make HTTPConnection Object
+			connection.request("HEAD", path)
+			responseOb = connection.getresponse()      ## Grab HTTPResponse Object
+
+			if responseOb.status == 200:
+				return True
+			else:
+				return False
+		except Exception, e:
+			return False
+
 	
 	def run(self, params, args):
 		if len(args):
@@ -123,7 +146,10 @@ class Command(command):
 
 		if not os.path.exists(path):
 			os.system('mkdir -p %s' % path)
-
+		
+		if not self.httpExists(url) : 
+			print "No updates are available at the moment..."
+			return
 		os.chdir(path)
 		self.command('create.mirror', [ url, 'rollname=rocks-updates' ])
 		os.system('createrepo %s' % host)
