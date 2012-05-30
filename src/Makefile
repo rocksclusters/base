@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.21 2012/05/30 21:47:58 clem Exp $
+# $Id: Makefile,v 1.22 2012/05/30 21:53:24 clem Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.22  2012/05/30 21:53:24  clem
+# my Makefile commited by mistake. Reverting to old version
+#
 # Revision 1.21  2012/05/30 21:47:58  clem
 # rocks update now checks if the url is valid before going on
 #
@@ -144,7 +147,5 @@ default:
 
 copyright rpm pkg clean::
 	for i in $(SRCDIRS) ; do \
-		cd $$i; \
-		$(MAKE) $@ || exit 2 ; \
-		cd -; \
+		(cd $$i; $(MAKE) $@) ; \
 	done
