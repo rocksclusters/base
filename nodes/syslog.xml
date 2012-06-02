@@ -18,6 +18,9 @@
 
   <changelog>
   $Log: syslog.xml,v $
+  Revision 1.12  2012/06/02 02:43:51  clem
+  broken code it does not work yet but I need it in the CVS
+
   Revision 1.11  2012/05/06 05:48:10  phil
   Copyright Storm for Mamba
 
@@ -84,7 +87,7 @@
   </changelog>
 
 
-<post os='linux'>
+<post os='linux' cond="rocks_version_major == 5">
 <file name="/etc/syslog.conf">
 *.err		/var/log/messages
 auth.info	/var/log/auth
