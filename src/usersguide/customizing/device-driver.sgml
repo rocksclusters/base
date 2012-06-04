@@ -25,7 +25,10 @@ Set up a build environment:
 
 <screen>
 # cd /export
-# hg clone http://fyp.rocksclusters.org/hg/rocks-&document-version;
+# mkdir src
+# git clone http://git.rocksclusters.org/git/core/kernel/.git
+# cd kernel
+# git checkout -b ROCKS_&lt;major_version&gt;_&lt;minor_version&gt;
 </screen>
 </listitem>
 
@@ -35,7 +38,7 @@ Go to the directory which holds the device driver code:
 </para>
 
 <screen>
-# cd /export/rocks-&document-version;/src/roll/kernel/src/rocks-boot/enterprise/5/images/drivers
+# cd src/rocks-boot/enterprise/5/images/drivers
 </screen>
 </listitem>
 
