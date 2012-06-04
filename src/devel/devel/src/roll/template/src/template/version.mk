@@ -1,5 +1,5 @@
 PKGROOT		= /opt/@template@
-NAME    	= @template@
-VERSION 	= @version@
+NAME        = test
+VERSION     = 1.0
 RELEASE 	= 1
 TARBALL_POSTFIX	= tgz
