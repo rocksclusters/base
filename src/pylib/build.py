@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: build.py,v $
+# Revision 1.51  2012/06/06 01:22:33  clem
+# no more md5sum for all the rpm
+#
 # Revision 1.50  2012/05/06 05:48:46  phil
 # Copyright Storm for Mamba
 #
@@ -1394,7 +1397,7 @@ class DistributionBuilder(Builder):
 	os.chdir(self.dist.getReleasePath())
 	if self.calcmd5:
 		cmd = '/usr/bin/md5sum `find -L . -type f | sed "s/^\.\///" | '
-		cmd += 'egrep -v "^build|^SRPMS|^force"` '
+		cmd += 'egrep -v "^build|^SRPMS|^force" | egrep -v "rpm$"` '
 		cmd += '> %s/packages.md5' % (productfilesdir)
 	else:
 		cmd = 'touch %s/packages.md5' % (productfilesdir)
