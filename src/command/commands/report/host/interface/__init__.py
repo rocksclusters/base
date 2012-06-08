@@ -1,4 +1,4 @@
-#$Id: __init__.py,v 1.27 2012/05/06 05:48:32 phil Exp $
+#$Id: __init__.py,v 1.28 2012/06/08 00:51:50 clem Exp $
 # 
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.28  2012/06/08 00:51:50  clem
+# interface modules now go in the proper file (/etc/modprobe/)
+#
 # Revision 1.27  2012/05/06 05:48:32  phil
 # Copyright Storm for Mamba
 #
@@ -403,27 +406,20 @@ class Command(rocks.commands.HostArgumentProcessor,
 		if not module:
 			return
 
-		reg = re.compile('bond[0-9]+')
-
-		self.addOutput(host, '<![CDATA[')
-		self.addOutput(host, 'grep -v "\<%s\>" /etc/modprobe.conf > /tmp/modprobe.conf' % (device))
-
-		self.addOutput(host,
-			"echo 'alias %s %s' >> /tmp/modprobe.conf" %
-			(device, module))
+		#self.isKVMContainer(host)
+		#
+		# new module loading mechanism
+		#
+		self.addOutput(host, '<file name="/etc/modprobe.d/%s.conf">' % device)
+		self.addOutput(host, 'alias %s %s' % (device, module))
 
 		#
 		# don't write the options here if this is a bonded interface,
 		# they written in the ifcfg-bond* file (see writeConfig() above)
 		#
 		if options and not reg.match(device):
-			self.addOutput(host,
-				"echo 'options %s %s' >> /tmp/modprobe.conf" %
-				(module, options))
-
-		self.addOutput(host, 'mv /tmp/modprobe.conf /etc/modprobe.conf')
-		self.addOutput(host, 'chmod 444 /etc/modprobe.conf')
-		self.addOutput(host, ']]>')
+			self.addOutput(host, 'options %s %s' % (module, options))
+		self.addOutput(host, '</file>')
 
 
 	def run(self, params, args):
