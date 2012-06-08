@@ -1,4 +1,4 @@
-#$Id: __init__.py,v 1.28 2012/06/08 00:51:50 clem Exp $
+#$Id: __init__.py,v 1.29 2012/06/08 00:53:54 clem Exp $
 # 
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.29  2012/06/08 00:53:54  clem
+# ipmi default admin user number now comes from an attribute
+#
 # Revision 1.28  2012/06/08 00:51:50  clem
 # interface modules now go in the proper file (/etc/modprobe/)
 #
@@ -268,8 +271,14 @@ class Command(rocks.commands.HostArgumentProcessor,
 		else:
 			password = 'admin'
 
-		self.addOutput(host, 'ipmitool user set password 1 %s'
-			% (password))
+		attr = self.db.getHostAttr(host, 'ipmi_admin_user_number')
+		if attr:
+			user_number = attr
+		else:
+			user_number = '1'
+
+		self.addOutput(host, 'ipmitool user set password %s %s'
+			% (user_number, password))
 
 		self.addOutput(host, 'ipmitool lan set %s access on'
 			% (channel))
