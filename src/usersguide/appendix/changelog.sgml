@@ -2,6 +2,97 @@
 	<title>Release Notes</title>
 
 
+
+
+<section>
+<title>Release 5.6/6.1 - changes from 5.5/6.0</title>
+
+<section>
+	<title>New Features</title>
+
+<itemizedlist>
+	<listitem>
+	<para>Placeolder for new feetures   ----    KVM Roll (virtualization)for CentOS 6 64-bit Systems</para>
+
+	<para>
+	Xen is no longer supported by RedHat/CentOS 6 system and KVM (Kernel
+	Virtual Machine) is only supported for 64-bit machines.  KVM is 
+        hardware-only virtualization and requires both capability and
+	BIOS to be enabled.
+	</para>
+	</listitem>
+
+
+</itemizedlist>
+</section>
+
+<section>
+	<title>Enhancements and Bug Fixes</title>
+	<para>
+	Base: removed md5sum of all rpm packages during rocks create distro 
+	</para>
+	<para>
+	Base: now properly configure rsyslog on Rocks 6 (instead of syslog)
+	</para>
+	<para>
+	Base: properly configure logrotate on Rocks 6
+	</para>
+
+	<para>
+	Kernel: tracker client now checks received rpm with internal rpm md5sum 
+	</para>
+
+	<para>
+	Ganglia: updated Ganglia to 3.3.7
+	</para>
+</section>
+</section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <section>
 <title>Release 5.5/6.0 - changes from 5.4.3</title>
 
