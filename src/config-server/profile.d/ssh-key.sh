@@ -1,5 +1,5 @@
 #
-# $Id: ssh-key.sh,v 1.12 2012/05/06 05:48:39 phil Exp $
+# $Id: ssh-key.sh,v 1.13 2012/06/26 22:45:45 clem Exp $
 #
 # generate a ssh key if one doesn't exist
 #
@@ -60,6 +60,10 @@
 #
 #
 # $Log: ssh-key.sh,v $
+# Revision 1.13  2012/06/26 22:45:45  clem
+# Minor fix on file permission as pointed out by Ventre, Brian D. on 2012-06-14
+# on the mailing list
+#
 # Revision 1.12  2012/05/06 05:48:39  phil
 # Copyright Storm for Mamba
 #
@@ -259,7 +263,8 @@ create_hard_link(){
 	rm -rf $SSH_KEY_LINK
 	echo "Creating hard link to $SSH_PUB_KEY in $d"
 	ln $SSH_PUB_KEY $SSH_KEY_LINK
-	chmod a+r $d
+	chmod a+rx $d
+	chmod a+r $SSH_KEY_LINK
 }
 
 # If we're a normal user, and the ssh-key exists, return
