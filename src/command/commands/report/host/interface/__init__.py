@@ -1,4 +1,4 @@
-#$Id: __init__.py,v 1.29 2012/06/08 00:53:54 clem Exp $
+#$Id: __init__.py,v 1.30 2012/07/07 06:39:02 clem Exp $
 # 
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.30  2012/07/07 06:39:02  clem
+# more fixes to the ipmi tool script (needs to specify ip is static)
+#
 # Revision 1.29  2012/06/08 00:53:54  clem
 # ipmi default admin user number now comes from an attribute
 #
@@ -258,6 +261,8 @@ class Command(rocks.commands.HostArgumentProcessor,
 				attr = default
 			self.addOutput(host, '%s=%s' % (var, attr))
 
+		self.addOutput(host, 'ipmitool lan set %s ipsrc static'
+			% (channel))
 		self.addOutput(host, 'ipmitool lan set %s ipaddr %s'
 			% (channel, ip))
 		self.addOutput(host, 'ipmitool lan set %s netmask %s'
