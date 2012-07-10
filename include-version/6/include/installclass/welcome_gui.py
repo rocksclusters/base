@@ -1,5 +1,5 @@
 #
-# $Id: welcome_gui.py,v 1.2 2012/05/06 05:48:10 phil Exp $
+# $Id: welcome_gui.py,v 1.3 2012/07/10 18:40:19 phil Exp $
 #
 # Our patch to redhat's installer
 #
@@ -58,6 +58,9 @@
 # @Copyright@
 #
 # $Log: welcome_gui.py,v $
+# Revision 1.3  2012/07/10 18:40:19  phil
+# Update Anaconda for CentOS 6.3.  Add lsscsi and pyparted to os roll inventory
+#
 # Revision 1.2  2012/05/06 05:48:10  phil
 # Copyright Storm for Mamba
 #
@@ -264,6 +267,7 @@ class WelcomeWindow(InstallWindow):
 	def restartAnaconda(self):
 		os.system('killall mini-wm')
 		os.system('killall Xorg')
+		os.system('killall Xvnc')
 		sys.exit(0)
 
 	

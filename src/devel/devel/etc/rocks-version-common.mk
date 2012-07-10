@@ -1,5 +1,5 @@
 #
-# $Id: rocks-version-common.mk,v 1.4 2012/05/06 05:48:39 phil Exp $
+# $Id: rocks-version-common.mk,v 1.5 2012/07/10 18:40:19 phil Exp $
 #
 # @Copyright@
 # 
@@ -56,6 +56,9 @@
 # @Copyright@
 #
 # $Log: rocks-version-common.mk,v $
+# Revision 1.5  2012/07/10 18:40:19  phil
+# Update Anaconda for CentOS 6.3.  Add lsscsi and pyparted to os roll inventory
+#
 # Revision 1.4  2012/05/06 05:48:39  phil
 # Copyright Storm for Mamba
 #
@@ -88,14 +91,15 @@ ROCKS.OS.VERSION.MAJOR=$(shell lsb_release -rs | cut -d . -f 1)
 ifeq ($(strip $(ROCKS.OS.VERSION.MAJOR)), 5)
 VERSION.MAJOR = 5
 VERSION.MINOR = 5
+RELEASE_NAME = Mamba
 #VERSION.PATCH = 3
 else
 VERSION.MAJOR = 6
-VERSION.MINOR = 0
+VERSION.MINOR = 1
 #VERSION.PATCH = 3
+RELEASE_NAME = Emerald Boa
 endif
 
-RELEASE_NAME = Mamba
 VERSION_NAME = "$(RELEASE_NAME)"
 
 rocks-version-common.mk: $(wildcard $(ROCKSROOT)/etc/rocks-version-common.mk)

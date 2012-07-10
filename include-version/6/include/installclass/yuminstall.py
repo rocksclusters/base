@@ -173,38 +173,18 @@ class AnacondaCallback:
             self.instLog.flush()
             self.openfile = None
 
-            # ROCKS
-	    # Try several times to get package. Each try should ask a different 
-            # host given by the tracker
-            retries = 0
+            trynumber = 0
             while self.openfile is None:
-                try:
-                    fn = repo.getPackage(po)
-
-                    f = open(fn, 'r')
-                    self.openfile = f
-                except (yum.Errors.NoMoreMirrorsRepoError, IOError):
-                    log.info("ROCKS:getPackage:failed:retries (%d)" % retries)
-
-                    if retries > 10:
-                        self.ayum._handleFailure(po)
-                    else:
-                        retries += 1
-                        continue
-                except yum.Errors.RepoError, e:
-                    continue
-            # ROCKS
-
-            while self.openfile is None:
+                trynumber += 1
                 try:
                     fn = repo.getPackage(po)
 
                     f = open(fn, 'r')
                     self.openfile = f
                 except yum.Errors.NoMoreMirrorsRepoError:
-                    self.ayum._handleFailure(po)
+                    self.ayum._handleFailure(po, trynumber)
                 except IOError:
-                    self.ayum._handleFailure(po)
+                    self.ayum._handleFailure(po, trynumber)
                 except yum.Errors.RepoError, e:
                     continue
             self.inProgressPo = po
@@ -625,12 +605,12 @@ class AnacondaYum(YumSorter):
             raise RepoError, "Repo %s contains -source or -debuginfo, excluding" % name
 
         # this is a little hard-coded, but it's effective
-        if not BETANAG and ("rawhide" in repo.id or "development" in repo.id):
+        if productIsFinal and ("rawhide" in repo.id or "development" in repo.id):
             name = repo.name
             del(repo)
             raise RepoError, "Excluding devel repo %s for non-devel anaconda" % name
 
-        if BETANAG and not repo.enabled:
+        if not productIsFinal and not repo.enabled:
             name = repo.name
             del(repo)
             raise RepoError, "Excluding disabled repo %s for prerelease" % name
@@ -909,6 +889,9 @@ class AnacondaYum(YumSorter):
 
                 if ksrepo.proxy:
                     self.setProxy(ksrepo, repo)
+                elif self.anaconda.proxy:
+                    log.debug("%s will use the global proxy configuration", repo.name)
+                    self.setProxy(self.anaconda, repo)
 
                 repo.enable()
                 extraRepos.append(repo)
@@ -943,40 +926,21 @@ class AnacondaYum(YumSorter):
                 log.warning("failed to clean /boot/upgrade")
 
     def downloadHeader(self, po):
-
-        # ROCKS
-        retries = 0
+        trynumber = 0
         while True:
             # retrying version of download header
+            trynumber += 1
             try:
                 YumSorter.downloadHeader(self, po)
                 break
-            except (yum.Errors.NoMoreMirrorsRepoError, IOError):
-                log.info("ROCKS:downloadHeader:failed:retries (%d)" % retries)
-
-                if retries > 10:
-                    self._handleFailure(po)
-                else:
-                    retries += 1
-                    continue
+            except yum.Errors.NoMoreMirrorsRepoError:
+                self._handleFailure(po, trynumber)
+            except IOError:
+                self._handleFailure(po, trynumber)
             except yum.Errors.RepoError, e:
                 continue
 
-	# -- Comment out code from original yuminstall.py
-        # while True:
-            # retrying version of download header
-            # try:
-                # YumSorter.downloadHeader(self, po)
-                # break
-            # except yum.Errors.NoMoreMirrorsRepoError:
-                # self._handleFailure(po)
-            # except IOError:
-                # self._handleFailure(po)
-            # except yum.Errors.RepoError, e:
-                # continue
-        # ROCKS
-
-    def _handleFailure(self, package):
+    def _handleFailure(self, package, trynumber=YUM_DOWNLOAD_RETRIES):
         if not self.isodir and self.currentMedia:
             buttons = [_("Re_boot"), _("_Eject")]
         else:
@@ -990,15 +954,21 @@ class AnacondaYum(YumSorter):
 
             urlgrabber.grabber.reset_curl_obj()
 
-        rc = self.anaconda.intf.messageWindow(_("Error"),
-                   _("The file %s cannot be opened.  This is due to a missing "
-                     "file, a corrupt package or corrupt media.  Please "
-                     "verify your installation source.\n\n"
-                     "If you exit, your system will be left in an inconsistent "
-                     "state that will likely require reinstallation.\n\n") %
-                                              (pkgFile,),
-                                    type="custom", custom_icon="error",
-                                    custom_buttons=buttons)
+        # only show the retry window after 3 tries
+        if trynumber < YUM_DOWNLOAD_RETRIES:
+            log.warning('package download failure, retrying automatically')
+            time.sleep(YUM_DOWNLOAD_DELAY * trynumber)
+            rc = 1
+        else:
+            rc = self.anaconda.intf.messageWindow(_("Error"),
+                       _("The file %s cannot be opened.  This is due to a missing "
+                         "file, a corrupt package or corrupt media.  Please "
+                         "verify your installation source.\n\n"
+                         "If you exit, your system will be left in an inconsistent "
+                         "state that will likely require reinstallation.\n\n") %
+                                                  (pkgFile,),
+                                        type="custom", custom_icon="error",
+                                        custom_buttons=buttons)
 
         if rc == 0:
             sys.exit(0)
@@ -1034,7 +1004,6 @@ class AnacondaYum(YumSorter):
 
         return
         # ROCKS
-
         # This gets called when a mirror fails, but it cannot know whether
         # or not there are other mirrors left to try, since it cannot know
         # which mirror we were on when we started this particular download. 
@@ -1635,6 +1604,8 @@ debuglevel=6
             self.selectBestKernel(anaconda)
             map(self.selectPackage, anaconda.platform.packages)
             self.selectFSPackages(anaconda.id.storage)
+            if anaconda.id.network.hasActiveIPoIBDevice():
+                self.selectPackage("rdma")
             self.selectAnacondaNeeds()
         else:
             self.ayum.update()
@@ -2102,6 +2073,11 @@ debuglevel=6
     def writeKS(self, f):
         for repo in self.ayum.repos.listEnabled():
             if repo.name == "Installation Repo":
+                continue
+            if repo.name == "Red Hat Enterprise Linux":
+                continue
+            # ignore addon repos from media
+            if repo.anacondaBaseURLs[0].startswith("file://"):
                 continue
 
             line = "repo --name=\"%s\" " % (repo.name or repo.repoid)

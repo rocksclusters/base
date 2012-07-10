@@ -30,13 +30,20 @@
 
 # This toplevel file is a little messy at the moment...
 
-import sys, os, re, time, subprocess
+import sys, os, re, time, subprocess, atexit
 from optparse import OptionParser
 from tempfile import mkstemp
 
 # keep up with process ID of the window manager if we start it
 wm_pid = None
 xserver_pid = None
+
+def return_tty(fd, pgrp_id):
+    try:
+        os.tcsetpgrp(fd, pgrp_id)
+    except OSError as oserr:
+        #fails on s390 and s390x where we don't need it
+        pass
 
 # Make sure messages sent through python's warnings module get logged.
 def AnacondaShowWarning(message, category, filename, lineno, file=sys.stderr, line=None):
@@ -605,6 +612,10 @@ class Anaconda(object):
             return []
 
 if __name__ == "__main__":
+    # Register atexit function before anything bad can happen
+    # We have to return tty control back to init's process group
+    atexit.register(return_tty, sys.stdin.fileno(), os.getpgid(os.getppid()))
+
     anaconda = Anaconda()
 
     setupPythonPath()
@@ -726,6 +737,11 @@ if __name__ == "__main__":
             anaconda.proxyUsername = ret[0].rstrip()
             if len(ret) == 2:
                 anaconda.proxyPassword = ret[1].rstrip()
+
+        # Set environmental variables to be used by pre/post scripts
+        os.environ["PROXY"] = anaconda.proxy
+        os.environ["PROXY_USER"] = anaconda.proxyUsername or ""
+        os.environ["PROXY_PASSWORD"] = anaconda.proxyPassword or ""
 
     if opts.updateSrc:
         anaconda.updateSrc = opts.updateSrc
@@ -1007,7 +1023,6 @@ if __name__ == "__main__":
                 '-HostsFile=/tmp/vnchosts'], close_fds=True, stdout=xout,
                 stderr=xout)
             # ROCKS
-
         except (OSError, RuntimeError):
             stdoutLog.warning(" X startup failed, falling back to text mode")
             opts.display_mode = 't'
@@ -1154,7 +1169,6 @@ if __name__ == "__main__":
     
             storage.storageInitialize(anaconda)
         # ROCKS
-
         # Now having initialized storage, we can apply all the other kickstart
         # commands.  This gives us the ability to check that storage commands
         # are correctly formed and refer to actual devices.

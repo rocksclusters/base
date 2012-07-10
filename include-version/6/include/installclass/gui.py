@@ -1028,15 +1028,13 @@ class InstallInterface(InstallInterfaceBase):
                 log.info('ROCKS: install_device %s' % install_device)
 		# ROCKS
 		# ROCKS Commented out next two lines from original gui.py
-                # install_device = selectInstallNetDeviceDialog(self.anaconda.id.network,
+                #install_device = selectInstallNetDeviceDialog(self.anaconda.id.network,
                 #                                              nm_controlled_devices)
                 if not install_device:
                     break
 
             # update ifcfg files for nm-c-e
             self.anaconda.id.network.setNMControlledDevices(nm_controlled_devices)
-            if not just_setup:
-                self.anaconda.id.network.presetDefaultConfiguration([install_device])
 
             self.anaconda.id.network.writeIfcfgFiles()
             network.logIfcfgFiles(message="Dump before nm-c-e (can race "
@@ -1584,7 +1582,8 @@ class InstallControlWindow:
 
             width = None
             height = None
-            lines = iutil.execWithCapture("xrandr", ["-q"]).splitlines()
+            lines = iutil.execWithCapture("xrandr", ["-q"], stderr="/dev/tty5")
+            lines = lines.splitlines()
             xrandr = filter(lambda x: "current" in x, lines)
             if xrandr and len(xrandr) == 1:
                 fields = xrandr[0].split()
