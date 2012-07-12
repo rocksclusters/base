@@ -13,13 +13,20 @@
 <package>libtool</package>
 <package>autoconf</package>
 <package>automake</package>
+<package>device-mapper-devel</package>
 <package>foundation-tidy</package>
+<package>isomd5sum-devel</package>
+<package>iscsi-initiator-utils-devel</package>
 
 <package>rocks-devel-env</package>
 
+<package>NetworkManager-devel</package>
+<package>NetworkManager-glib-devel</package>
 <package>ncurses</package>
 <package>ncurses-devel</package>
 
+<package>libarchive-devel</package>
+<package>libblkid-devel</package>
 <package>libIDL</package>
 <package>libIDL-devel</package>
 
