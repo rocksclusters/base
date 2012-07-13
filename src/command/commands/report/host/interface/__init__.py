@@ -1,4 +1,4 @@
-#$Id: __init__.py,v 1.30 2012/07/07 06:39:02 clem Exp $
+#$Id: __init__.py,v 1.31 2012/07/13 00:52:21 clem Exp $
 # 
 # @Copyright@
 # 
@@ -55,6 +55,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.31  2012/07/13 00:52:21  clem
+# one more fix to the new module files: on kvm host the interface must be
+# named with the p in front of its name
+#
 # Revision 1.30  2012/07/07 06:39:02  clem
 # more fixes to the ipmi tool script (needs to specify ip is static)
 #
@@ -425,7 +429,11 @@ class Command(rocks.commands.HostArgumentProcessor,
 		# new module loading mechanism
 		#
 		self.addOutput(host, '<file name="/etc/modprobe.d/%s.conf">' % device)
-		self.addOutput(host, 'alias %s %s' % (device, module))
+		if self.isKVMContainer(host):
+			#on a kvm host the device is called p<devicename>
+			self.addOutput(host, 'alias p%s %s' % (device, module))
+		else:
+			self.addOutput(host, 'alias %s %s' % (device, module))
 
 		#
 		# don't write the options here if this is a bonded interface,
