@@ -12,3 +12,4 @@
 <!ENTITY customization-driver SYSTEM "device-driver.sgml">
 <!ENTITY customization-dns SYSTEM "dns.sgml">
 <!ENTITY customization-passwd SYSTEM "password.sgml">
+<!ENTITY customization-insert-ethers SYSTEM "insert-ethers.sgml">

@@ -1,0 +1,142 @@
+<section id="insert-ethers"
+	xreflabel="insert-ethers">
+
+<title>The insert-ethers command line</title>
+
+<para>
+This section describes the various command line argument accepted by 
+insert-ethers which can be used to used to customized hostname, IPs 
+address and other parameters.
+</para>
+
+
+<orderedlist>
+<listitem>
+<para>
+Set up a build environment:
+</para>
+
+<screen>
+
+Insert Ethernet Addresses - 
+Usage: insert-ethers [-hv] [-p password] [-u host] [-d database] [--help]
+ [--list-rcfiles] [--list-project-info] [--verbose] [--update] [--staticip]
+ [--rcfile arg] [--host host] [--password password] [--db database]
+ [--user host] [--baseip ip address] [--basename basename] [--hostname hostname]
+ [--ipaddr ip address] [--cabinet number] [--rack number] [--inc number]
+ [--rank number] [--replace hostname] [--remove hostname]
+ [--os the OS to install on the machines]
+
+</screen>
+</listitem>
+
+<listitem>
+<para>
+  <emphasis>[-p password] [-u host] [-d database]</emphasis> are used to change the hostname the 
+password and the name of the database used to update the MAC address discovered by insert-ethers.
+Users should not use this arguments.
+</para>
+</listitem>
+
+<listitem>
+<para>
+<emphasis>[--list-rcfiles]</emphasis> lists the RC file used by insert-ethers (RC file are internal 
+configuration file used by Rocks)
+</para>
+</listitem>
+
+<listitem>
+<para>
+<emphasis>[--list-project-info]</emphasis> return the Rocks version and the Roll this command belongs to
+</para>
+</listitem>
+
+<listitem>
+<para>
+<emphasis> [--baseip ip address] </emphasis> the IP address that will be used for the first node, when 
+installing multiple nodes insert-ethers start from this IP address and then it uses --inc to get the 
+following IP addresses. Default is the highest IP address available in the private network.
+If the private network is 10.1.0.0 (with netmask 255.255.0.0) it will start from 10.1.255.255.
+</para>
+</listitem>
+
+<listitem>
+<para> 
+<emphasis> [--inc number]</emphasis> the increment value to use when determining the following IP address
+during the installation of multimple nodes. Default to -1. So if the start IP address is 10.1.255.255 
+the following IP address will be 10.1.255.254, 10.1.255.253, 10.1.255.252, and so on.
+</para>
+</listitem>
+
+
+<listitem>
+<para>
+<emphasis> [--basename basename] </emphasis> this is the first part of the 
+final hostname of the hosts that will be installed. The final hostname 
+will be in the form of basename-rack-rank where rack and rank are two 
+counter calculated internally by rocks.
+</para>
+</listitem>
+
+
+<listitem>
+<para>
+<emphasis> [--cabinet number] [--rack number]</emphasis>  this two options 
+are equivalent. They can be used to increment the 'rack' part  of the final
+hostname. insert-ethers --cabinet 2 selecting compute node will install 
+nodes with the hostname equal to: node-2-0, node-2-1, node-2-2, etc.
+</para>
+</listitem>
+
+
+<listitem>
+<para>
+<emphasis>  [--rank number] </emphasis> this can be used to set the rank 
+part of the hostname of the installed node. This number default to 0 at the 
+first installed node and then i
+s automatically incremented by Rocks, but if 
+the user want to skip some number or want to start from another number other 
+than 0, it can use this option.
+</para>
+</listitem>
+
+<listitem>
+<para>
+<emphasis> [--hostname hostname]</emphasis> this is the full hostname that will be
+assigned to the first host you will install with insert-ethers. If you specify 
+this option insert-ethers will install only one host.
+</para>
+</listitem>
+
+<listitem>
+<para>
+<emphasis> [--ipaddr ip address]</emphasis> this is the IP address that will be 
+assigned to the first installed host. If you specify this option insert-ethers 
+will install only one host.
+</para>
+</listitem>
+
+<listitem>
+<para>
+<emphasis> [--replace hostname] </emphasis>
+</para>
+</listitem>
+
+<listitem>
+<para>
+<emphasis> [--remove hostname] </emphasis>
+</para>
+</listitem>
+
+<listitem>
+<para>
+<emphasis>
+    [--os the OS to install on the machines]
+</emphasis>
+</para>
+</listitem>
+</orderedlist>
+
+
+</section>
+
