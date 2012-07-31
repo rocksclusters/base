@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.24 2012/05/08 01:08:34 clem Exp $
+# $Id: __init__.py,v 1.25 2012/07/31 00:10:40 clem Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.25  2012/07/31 00:10:40  clem
+# rocks run host now behaves in the same way whether it runs locally or on a
+# remote node
+#
 # Revision 1.24  2012/05/08 01:08:34  clem
 # Too many quotes (when running rocks run host localhost "ls -l" was throwing
 # an IOException)
@@ -379,7 +383,7 @@ class Command(command):
 				# fire off the command
 				#
 				if runlocal:
-					cmd = '%s' % command
+					cmd = 'bash -c "%s"' % command
 				else:
 					cmd = 'ssh %s "%s"' % (hostif, command)
 
