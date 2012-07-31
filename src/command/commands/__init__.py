@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.102 2012/05/06 05:48:18 phil Exp $
+# $Id: __init__.py,v 1.103 2012/07/31 00:13:11 clem Exp $
 # 
 # @Copyright@
 # 
@@ -55,6 +55,13 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.103  2012/07/31 00:13:11  clem
+# arguments are parsed correctly now
+#
+# Now it checks that when we have:
+# nameagr=valuearg
+# namearg must be only one word
+#
 # Revision 1.102  2012/05/06 05:48:18  phil
 # Copyright Storm for Mamba
 #
@@ -2120,7 +2127,10 @@ class Command:
 			tokens = arg.split()
 			if tokens[0] == 'select':
 				list.append(arg)
-			elif len(arg.split('=',1)) == 2:
+			#there is an equal and 
+			#the left side of the equal does not contains spaces
+			elif len(arg.split('=',1)) == 2 and \
+				len(arg.split('=',1)[0].split()) == 1 :
 				(key, val) = arg.split('=', 1)
 				dict[key] = val
 				if nparams == 0:
