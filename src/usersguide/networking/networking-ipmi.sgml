@@ -1,0 +1,97 @@
+<!-- 
+$Id: networking-ipmi.sgml,v 1.1 2012/07/31 21:32:45 clem Exp $
+
+Administration guide
+
+@Copyright@
+@Copyright@
+
+-->
+
+<section id="networking-ipmi"><title>Configuring IPMI interfaces</title>
+<para>
+The Intelligent Platform Management Interface (IPMI) is a standardized 
+computer system interface used by system administrators to manage a 
+computer system and monitor its operation. IPMI can be used to remotely 
+power cycle a server, remotely connect to its KVM or serial interface and 
+perform other administrative related functionalities.
+The standard is supported by most hardware vendor (Dell, HP, NEC, Intel, 
+SuperMicro, etc.) and it is found on several server platforms under 
+different name (ILOM, BMC, DRAC, etc.).
+
+</para>
+<para>
+
+Rocks by default include <ulink url="http://openipmi.sourceforge.net/"> 
+openIPMI</ulink> an Open Source command line implementation 
+of the standard on all the nodes and it is possible to create the initial 
+configuration of the devices leveraging Rocks database and Rocks command line.
+
+</para>
+
+
+<section id="networking-ipmi-device">
+<title>Configuring a IPMI Device</title>
+<para>
+Rocks uses its data base to keep configuration information regarding the
+various IPMI devices. All interfaces defined in the rocks database named 
+"ipmi" are treated as IPMI devices and not as standard ethernet devices.
+</para>
+<para>
+To configure a IPMI device on a node called compute-0-0 it is 
+good practice to define a network to allocate all the IPMI devices 
+(although not necessary).
+In the following example it is called admin. 
+</para>
+<screen>
+
+ # rocks add network admin subnet=10.10.0.0 netmask=255.255.0.0 mtu=1500
+ # rocks add host interface compute-0-0 ipmi ip=10.10.255.254 name=ipmi-compute-0-0 subnet=admin
+ # rocks set host interface channel compute-0-0 ipmi 1
+
+</screen>
+<para>
+The channel is used to specify which comunication interface should be configured.
+Each IPMI device supports multiple comunication interfaces (Ethernet/IP, serial ports, etc.) so 
+it is necessary to identify which one is associated with the Ethernet interface and 
+use it when setting the channel with the rocks command. Different hardware can have 
+different channels for the same type of device.
+To this purpose it is possible to use ipmitool command repeatedly 
+with different channel numbers, untill the Medium info display 
+802 LAN, as in the following example:
+</para>
+<screen>
+
+ # ipmitool channel info 1
+Channel 0x1 info:
+ Channel Medium Type     : 802.3 LAN
+ Channel Protocol Type   : IPMB-1.0
+ ...
+
+</screen>
+<para>
+The admin password is set by default to "admin", it is possible 
+to change it using the rocks attribute "ipmi_password".
+In most of the IPMI devices the admin user ID is equal to 1.
+If a device set up in a different way it is possible to set the 
+attribute "ipmi_admin_user_number" and change this default behavior.
+</para>
+
+<para>
+The command  rocks sync network compute-0-0-0 will create a script on 
+compute-0-0-0 in /etc/sysconfig/ipmi which should be executed manually 
+on the node to finalize the configuration.
+</para>
+<screen>
+
+ # rocks sync network compute-0-0
+ # ssh compute-0-0
+ # bash /etc/sysconfig/ipmi
+
+</screen>
+<para>
+After this you IPMI interface should be properly configured.
+</para>
+</section>
+
+</section>

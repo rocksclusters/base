@@ -1,3 +1,4 @@
 <!ENTITY networking-overview SYSTEM "networking-overview.sgml">
 <!ENTITY networking-vlan SYSTEM "networking-vlan.sgml">
 <!ENTITY networking-examples SYSTEM "networking-examples.sgml">
+<!ENTITY networking-ipmi SYSTEM "networking-ipmi.sgml">

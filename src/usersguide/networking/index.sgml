@@ -3,6 +3,7 @@
 
 &networking-overview;
 &networking-vlan;
+&networking-ipmi;
 &networking-examples;
 
 </chapter>
