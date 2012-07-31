@@ -37,6 +37,12 @@
 	<para>
 	Base: properly configure logrotate on Rocks 6
 	</para>
+	<para>
+	Base: better handlying of "rocks run host" when running command on the local host
+	</para>
+	<para>
+	Base: new documentation section on ipmi and insert-ethers command line 
+	</para>
 
 	<para>
 	Kernel: tracker client now checks received rpm with internal rpm md5sum 
