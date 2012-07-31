@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.103 2012/07/31 00:13:11 clem Exp $
+# $Id: __init__.py,v 1.104 2012/07/31 23:20:10 phil Exp $
 # 
 # @Copyright@
 # 
@@ -55,6 +55,12 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.104  2012/07/31 23:20:10  phil
+# Generate a cluster-wide ssh [rsa,dsa] keys and put them in
+# the secure attributes database. These are different from frontend's host keys.
+# Place these on nodes with rocks sync host sec_attr (new sec_attr plugins).
+# Add list global sec_attr command
+#
 # Revision 1.103  2012/07/31 00:13:11  clem
 # arguments are parsed correctly now
 #
@@ -1418,11 +1424,30 @@ class DatabaseConnection:
 		return self.getHostAttrs(host).get(key)
 
 
-	def getHostSecAttrs(self, host):
+	def getSecAttr(self, attr = None):
+		""" Get a globally defined named, secure attribute """
+		if attr is None:
+			return {}
+		attrs = {}
+		self.execute('select value, enc from sec_global_attributes ' +\
+			'where attr="%s"' % attr)
+		for (v, e) in self.fetchone():
+			attrs[a] = (v, e)
+		return attrs
+
+	def getSecAttrs(self):
+		""" Get all globally defined secure attribute """
 		attrs = {}
 		self.execute('select attr, value, enc from sec_global_attributes')
 		for (a, v, e) in self.fetchall():
 			attrs[a] = (v, e)
+
+		return attrs
+
+	def getHostSecAttrs(self, host):
+		""" Get all secure attributes for a host """
+		attrs = self.getSecAttrs() 
+
 		self.execute('select s.attr, s.value, s.enc from sec_node_attributes s, nodes n ' +\
 			'where s.node=n.id and n.name="%s"' % host)
 		for (a, v, e) in self.fetchall():
@@ -1431,13 +1456,12 @@ class DatabaseConnection:
 		return attrs
 
 	def getHostSecAttr(self, host, attr = None):
+		""" Get named, secure attribute for a host """
 		if attr is None:
 			return {}
-		attrs = {}
-		self.execute('select value, enc from sec_global_attributes ' +\
-			'where attr="%s"' % attr)
-		for (v, e) in self.fetchone():
-			attrs[a] = (v, e)
+
+		attrs = self.getSecAttr(attr) 
+
 		self.execute('select s.value, s.enc from sec_node_attributes s, nodes n ' +\
 			'where s.attr="%s" s.node=n.id and n.name="%s"' % (attr, host))
 		for (v, e) in self.fetchone():

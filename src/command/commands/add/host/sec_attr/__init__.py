@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.6 2012/05/06 05:48:20 phil Exp $
+# $Id: __init__.py,v 1.7 2012/07/31 23:20:10 phil Exp $
 
 # @Copyright@
 # 
@@ -55,6 +55,12 @@
 # @Copyright@
 
 # $Log: __init__.py,v $
+# Revision 1.7  2012/07/31 23:20:10  phil
+# Generate a cluster-wide ssh [rsa,dsa] keys and put them in
+# the secure attributes database. These are different from frontend's host keys.
+# Place these on nodes with rocks sync host sec_attr (new sec_attr plugins).
+# Add list global sec_attr command
+#
 # Revision 1.6  2012/05/06 05:48:20  phil
 # Copyright Storm for Mamba
 #
@@ -107,7 +113,8 @@ class Command(rocks.commands.add.host.command):
 	</param>
 
 	<param type='string' name='value'>
-	Value of the attribute
+	Value of the attribute. If this is a file name, then read value
+	file
 	</param>
 	
 	<param type='boolean' name='crypted'>
@@ -150,6 +157,14 @@ class Command(rocks.commands.add.host.command):
 		else:
 			self.abort("%s encryption method unsupported" % enc)
 		t_host_list = []
+
+		#
+		# see if the value is a file name
+		#
+		if value is not None and os.path.exists(value):
+			file = open(value, 'r')
+			value = file.read()
+			file.close()
 
 		for host in hosts:
 			rows = self.db.execute('select * from sec_node_attributes ' + \

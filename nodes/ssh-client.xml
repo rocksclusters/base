@@ -25,6 +25,12 @@ generate its own keypair.
 
   <changelog>
   $Log: ssh-client.xml,v $
+  Revision 1.11  2012/07/31 23:20:09  phil
+  Generate a cluster-wide ssh [rsa,dsa] keys and put them in
+  the secure attributes database. These are different from frontend's host keys.
+  Place these on nodes with rocks sync host sec_attr (new sec_attr plugins).
+  Add list global sec_attr command
+
   Revision 1.10  2012/05/06 05:48:10  phil
   Copyright Storm for Mamba
 
@@ -75,55 +81,21 @@ generate its own keypair.
   
 <post>
 
-<!-- The way to pass binary files through Kickstart. Should we
-make this part of the file tag? 
--->
+RSAKEY=/etc/ssh/ssh_host_rsa_key
+DSAKEY=/etc/ssh/ssh_host_dsa_key
+for file in ${RSAKEY}* ${DSAKEY}*; do 
+	if [ -f $file ]; then
+		/bin/rm -f $file 
+	fi 
+done
 
-key="
-<eval>
-/opt/rocks/sbin/read-ssh-private-key RSA1 | python -c '
-import base64 
-import sys 
-base64.encode(sys.stdin, sys.stdout)'
-</eval>"
+/usr/bin/ssh-keygen -t rsa -N '' -f  $RSAKEY
+/usr/bin/ssh-keygen -t dsa -N '' -f  $DSAKEY
 
-echo $key | python -c '
-import base64
-import sys
-base64.decode(sys.stdin, sys.stdout)' > /etc/ssh/ssh_host_key
-
-chmod 0400 /etc/ssh/ssh_host_key
-
-
-<file name="/etc/ssh/ssh_host_key.pub" perms="0444">
-<eval>
-cat /etc/ssh/ssh_host_key.pub
-</eval>
-</file>
-
-<file name="/etc/ssh/ssh_host_rsa_key" perms="0400">
-<eval>
-/opt/rocks/sbin/read-ssh-private-key RSA
-</eval>
-</file>
-
-<file name="/etc/ssh/ssh_host_rsa_key.pub" perms="0444">
-<eval>
-cat /etc/ssh/ssh_host_rsa_key.pub
-</eval>
-</file>
-
-<file name="/etc/ssh/ssh_host_dsa_key" perms="0400">
-<eval>
-/opt/rocks/sbin/read-ssh-private-key DSA
-</eval>
-</file>
-
-<file name="/etc/ssh/ssh_host_dsa_key.pub" perms="0444">
-<eval>
-cat /etc/ssh/ssh_host_dsa_key.pub
-</eval>
-</file>
+for file in ${RSAKEY} ${DSAKEY}; do 
+	chmod 0400 $file
+	chmod 0444 ${file}.pub
+done
 
 </post>
 

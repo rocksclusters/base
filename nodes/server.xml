@@ -112,4 +112,43 @@ rm -f /etc/rc.d/rocksconfig.d/post-02-on-the-fly
 	max_parallel_proc 64
 </post>
 
+<post>
+<file name="/etc/rc.d/rocksconfig.d/post-50-cluster-ssh-keys" perms="700">
+#!/bin/bash
+#
+# create cluster-wide rsa and dsa keys 
+# Put them in the rocks secure attribute database
+#
+MOUNTPOINT=/mnt/priv
+if [ ! -d $MOUNTPOINT ]; then mkdir $MOUNTPOINT; fi
+mount -t ramfs -o size=1m ramfs $MOUNTPOINT
+chmod 700 $MOUNTPOINT
+
+RSAKEY=ssh_host_rsa_key
+DSAKEY=ssh_host_dsa_key
+for file in ${MOUNTPOINT}/${RSAKEY}* ${MOUNTPOINT}/${DSAKEY}*; do 
+	if [ -f $file ]; then
+		/bin/rm -f $file 
+	fi 
+done
+
+# generate the keyfiles 
+/usr/bin/ssh-keygen -q -t rsa -N '' -f  $RSAKEY
+/usr/bin/ssh-keygen -q -t dsa -N '' -f  $DSAKEY
+for file in ${RSAKEY} ${DSAKEY}; do 
+	chmod 0400 $file
+done
+
+# The following will fail if the key is already there, that's OK!
+
+/opt/rocks/bin/rocks add sec_attr $RSAKEY value=${MOUNTPOINT}/${RSAKEY} crypted=true 
+/opt/rocks/bin/rocks add sec_attr $DSAKEY value=${MOUNTPOINT}/${DSAKEY} crypted=true
+
+/bin/umount $MOUNTPOINT
+
+# Run this script  only once
+/bin/rm -f /etc/rc.d/rocksconfig.d/post-50-cluster-ssh-keys
+
+</file>
+</post>
 </kickstart> 
