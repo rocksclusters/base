@@ -11,26 +11,20 @@
 #include <memory.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
-
 #include <sys/types.h>
 #include <unistd.h>
 #include <signal.h>
+
 
 #ifndef SIG_PF
 #define SIG_PF void(*)(int)
 #endif
 
-static int *
-_sec_channel_ping_1 (void  *argp, struct svc_req *rqstp)
-{
-	return (sec_channel_ping_1_svc(rqstp));
-}
-
 static void
 sec_channel_1(struct svc_req *rqstp, register SVCXPRT *transp)
 {
 	union {
-		int fill;
+		int sec_channel_ping_1_arg;
 	} argument;
 	char *result;
 	xdrproc_t _xdr_argument, _xdr_result;
@@ -42,9 +36,9 @@ sec_channel_1(struct svc_req *rqstp, register SVCXPRT *transp)
 		return;
 
 	case SEC_CHANNEL_PING:
-		_xdr_argument = (xdrproc_t) xdr_void;
+		_xdr_argument = (xdrproc_t) xdr_int;
 		_xdr_result = (xdrproc_t) xdr_int;
-		local = (char *(*)(char *, struct svc_req *)) _sec_channel_ping_1;
+		local = (char *(*)(char *, struct svc_req *)) sec_channel_ping_1_svc;
 		break;
 
 	default:

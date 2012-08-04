@@ -1,5 +1,5 @@
 /*
- * $Id: sec_channel_server.c,v 1.7 2012/05/06 05:48:48 phil Exp $
+ * $Id: sec_channel_server.c,v 1.8 2012/08/04 06:34:29 phil Exp $
  *
  * @Copyright@
  * 
@@ -56,6 +56,10 @@
  * @Copyright@
  *
  * $Log: sec_channel_server.c,v $
+ * Revision 1.8  2012/08/04 06:34:29  phil
+ * Have nodes ask to have their secure attributes set as well as the 411 shared
+ * key.
+ *
  * Revision 1.7  2012/05/06 05:48:48  phil
  * Copyright Storm for Mamba
  *
@@ -93,7 +97,7 @@
 #include <signal.h>
 
 int *
-sec_channel_ping_1_svc(struct svc_req *rqstp)
+sec_channel_ping_1_svc(int *argp, struct svc_req *rqstp)
 {
 	static int  result;
 	struct sockaddr_in *addr;
@@ -117,7 +121,11 @@ sec_channel_ping_1_svc(struct svc_req *rqstp)
 	ipaddr = (char *)malloc(sizeof(char)*INET_ADDRSTRLEN);
 	ipaddr = (char *)inet_ntop(AF_INET, &addr->sin_addr, ipaddr, INET_ADDRSTRLEN);
 	fprintf(stderr, "Received request from %s\n", ipaddr);
-	status = execl("/opt/rocks/bin/rocks", "rocks",
-		"sync","host","sharedkey",ipaddr, NULL);
+	if (*argp == 0)
+		status = execl("/opt/rocks/bin/rocks", "rocks",
+			"sync","host","sharedkey",ipaddr, NULL);
+	else
+		status = execl("/opt/rocks/bin/rocks", "rocks",
+			"sync","host","sec_attr",ipaddr, NULL);
 	exit(status);
 }

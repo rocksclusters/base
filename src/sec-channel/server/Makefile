@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.4 2012/05/06 05:48:48 phil Exp $
+# $Id: Makefile,v 1.5 2012/08/04 06:34:29 phil Exp $
 
 # @Copyright@
 # 
@@ -55,6 +55,10 @@
 # @Copyright@
 
 # $Log: Makefile,v $
+# Revision 1.5  2012/08/04 06:34:29  phil
+# Have nodes ask to have their secure attributes set as well as the 411 shared
+# key.
+#
 # Revision 1.4  2012/05/06 05:48:48  phil
 # Copyright Storm for Mamba
 #
@@ -75,6 +79,7 @@ include Rules.mk
 
 sec_channel.h:sec_channel.x
 	rpcgen -h -N -o $@ $^
+	sed -i sec_channel.h -e 's/sec_channel_ping_1_svc(int/sec_channel_ping_1_svc(int*/'
 
 sec_channel_server: sec_channel_svc.c sec_channel_server.c
 	$(CC) $(CFLAGS) -c $^

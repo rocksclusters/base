@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.4 2012/05/06 05:48:48 phil Exp $
+# $Id: Makefile,v 1.5 2012/08/04 06:34:29 phil Exp $
 
 # @Copyright@
 # 
@@ -55,6 +55,10 @@
 # @Copyright@
 
 # $Log: Makefile,v $
+# Revision 1.5  2012/08/04 06:34:29  phil
+# Have nodes ask to have their secure attributes set as well as the 411 shared
+# key.
+#
 # Revision 1.4  2012/05/06 05:48:48  phil
 # Copyright Storm for Mamba
 #
@@ -82,17 +86,23 @@ sec_channel_clnt.c: sec_channel.x
 
 sec_channel_client.c: sec_channel.x
 	rpcgen -Sc -C -M -N -o $@ $<
+	/bin/sed -i $@ -e 's/int sec_channel_ping_1_arg1/int sec_channel_ping_1_arg1 = RQST/'
 
 get-411-key: sec_channel_client.c sec_channel_clnt.c
-	$(CC) $(CFLAGS) -c $^
-	$(CC) $(CFLAGS) -o $@ $(^:%c=%o)
+	$(CC) -DRQST=0 $(CFLAGS) -c $^
+	$(CC) -DRQST=0 $(CFLAGS) -o $@ $(^:%c=%o)
 
-build: get-411-key
+rqst-sec-attrs: sec_channel_client.c sec_channel_clnt.c
+	$(CC) -DRQST=1 $(CFLAGS) -c $^
+	$(CC) -DRQST=1 $(CFLAGS) -o $@ $(^:%c=%o)
+
+build: get-411-key rqst-sec-attrs
 
 install::
 	mkdir -p $(ROOT)/$(PKGROOT)/bin
 	$(INSTALL) -m0500 get-411-key $(ROOT)/$(PKGROOT)/bin
+	$(INSTALL) -m0500 rqst-sec-attrs $(ROOT)/$(PKGROOT)/bin
 
 clean::
 	rm -rf sec_channel_client.c sec_channel_clnt.c get-411-key \
-	sec_channel_svc.c sec_channel.h *.o
+	rqst-sec-attrs sec_channel_svc.c sec_channel.h *.o 

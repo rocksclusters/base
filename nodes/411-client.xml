@@ -19,6 +19,10 @@
 
   <changelog>
   $Log: 411-client.xml,v $
+  Revision 1.18  2012/08/04 06:34:28  phil
+  Have nodes ask to have their secure attributes set as well as the 411 shared
+  key.
+
   Revision 1.17  2011/12/20 19:17:06  phil
   proper bash or syntax. Bug report from Rick Wagner
 
@@ -213,6 +217,9 @@ if [ -f /etc/rc3.d/S*autofs -o -f /etc/rc5.d/S*autofs ]; then
 	/sbin/service autofs restart
 fi
 	
+# Tell frontend to set your secure attributes  
+/opt/rocks/bin/rqst-sec-attrs &Kickstart_PrivateAddress;
+
 rm -rf /etc/rc.d/rocksconfig.d/post-02-411get
 </file>
 </post>
@@ -242,6 +249,10 @@ done
 # from frontend
 [ -f /etc/411-security/shared.key ] || exit $SMF_EXIT_ERR_CONFIG
 /opt/rocks/bin/411get --all
+
+# Tell frontend to set your secure attributes  
+/opt/rocks/bin/rqst-sec-attrs &Kickstart_PrivateAddress;
+
 exit $SMF_EXIT_OK
 </file>
 
