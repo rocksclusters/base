@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.2 2012/05/06 05:48:42 phil Exp $
+# $Id: Makefile,v 1.3 2012/08/06 22:51:02 clem Exp $
 #
 # @Copyright@
 # 
@@ -78,6 +78,8 @@ install::
 		cd git-$(VERSION);				\
 		mount --bind $(ROOT)/$(PKGROOT) $(PKGROOT);\
 		make install;		\
+		cd ..;                   \
+		tar -xvzf git-manpages-$(VERSION).tar.gz -C /opt/rocks/share/man ;\
 		umount $(ROOT)/$(PKGROOT);\
 		rm $(ROOT)/$(PKGROOT)/libexec/git-core/git-svn  \
 	)
