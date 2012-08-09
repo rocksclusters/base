@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.11 2012/05/06 05:48:26 phil Exp $
+# $Id: __init__.py,v 1.12 2012/08/09 22:39:25 phil Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.12  2012/08/09 22:39:25  phil
+# Fix field labeling
+#
 # Revision 1.11  2012/05/06 05:48:26  phil
 # Copyright Storm for Mamba
 #
@@ -140,7 +143,7 @@ class Command(rocks.commands.NetworkArgumentProcessor,
 				self.addOutput('',(rulename, s, p, c, a, network,
 					output_network, f, cmt, '%s' % (catname)))
 	
-		self.endOutput(header=['', 'rulename', 'service', 'protocol', 'chain',
-			'action', 'network', 'output-network', 'flags',
+		self.endOutput(header=['', 'rulename', 'service', 'protocol', 'action',
+			'chain', 'network', 'output-network', 'flags',
 			'comment', 'category'])
 
