@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.13 2012/05/06 05:48:18 phil Exp $
+# $Id: Makefile,v 1.14 2012/08/09 23:16:48 clem Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,12 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.14  2012/08/09 23:16:48  clem
+# bug fix for the following problem:
+#
+# Centos 6.* libtirpc-0.2.1 are bugged cannot get return value from the server
+# https://bugzilla.redhat.com/show_bug.cgi?format=multiple&id=781880
+#
 # Revision 1.13  2012/05/06 05:48:18  phil
 # Copyright Storm for Mamba
 #
@@ -105,6 +111,12 @@ ifeq ($(OS), linux)
 CFLAGS		+= -Wall 
 CPPFLAGS	= -I/opt/rocks/include
 LDFLAGS		= -L/opt/rocks/lib -lrocks
+
+ifeq ($(strip $(VERSION.MAJOR)), 6)
+#Centos 6.* libtirpc-0.2.1 are bugged cannot get return value from the server
+#https://bugzilla.redhat.com/show_bug.cgi?format=multiple&id=781880
+CFLAGS          += -DROCKS6
+endif
 endif
 
 ifeq ($(OS), sunos)

@@ -1,4 +1,4 @@
-/* $Id: 411-alert.c,v 1.9 2012/05/06 05:48:18 phil Exp $
+/* $Id: 411-alert.c,v 1.10 2012/08/09 23:16:48 clem Exp $
  *
  * @Copyright@
  * 
@@ -55,6 +55,12 @@
  * @Copyright@
  * 
  * $Log: 411-alert.c,v $
+ * Revision 1.10  2012/08/09 23:16:48  clem
+ * bug fix for the following problem:
+ *
+ * Centos 6.* libtirpc-0.2.1 are bugged cannot get return value from the server
+ * https://bugzilla.redhat.com/show_bug.cgi?format=multiple&id=781880
+ *
  * Revision 1.9  2012/05/06 05:48:18  phil
  * Copyright Storm for Mamba
  *
@@ -142,10 +148,15 @@ main(int argc, char *argv[])
 				(caddr_t)&args,
 				(xdrproc_t)xdr_int, (caddr_t)&result,
 				callback);
+
+//Centos 6.* libtirpc-0.2.1 are bugged cannot get return value from the server
+//https://bugzilla.redhat.com/show_bug.cgi?format=multiple&id=781880
+#ifndef ROCKS6
 	if ( status != RPC_SUCCESS ) {
 		syslog(LOG_ERR, "call failed (%d)", status);
 		return -1;
 	}
+#endif
 
 	free(args.filename);
 	free(args.signature);
