@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.4 2012/05/06 05:48:38 phil Exp $
+# $Id: __init__.py,v 1.5 2012/08/09 21:20:57 phil Exp $
 
 # @Copyright@
 # 
@@ -55,6 +55,10 @@
 # @Copyright@
 
 # $Log: __init__.py,v $
+# Revision 1.5  2012/08/09 21:20:57  phil
+# fix generation of cluster-wide ssh key
+# when sync host sharekey runs, don't contaminate root's authorized_keys file
+#
 # Revision 1.4  2012/05/06 05:48:38  phil
 # Copyright Storm for Mamba
 #
@@ -88,14 +92,24 @@ class Command(rocks.commands.sync.host.command):
 		fname = '/etc/411-security/shared.key'
 
 
+
+		# create a known hosts temporary file
+		# this is so we don't contaminate the regular known hosts file	
+		# since this sync might change the host keys.
+		(khfid, khfname) = tempfile.mkstemp()
+
 		# Copy the 411 shared key to all nodes
 		threads = []
+
 		for host in hosts:
-			cmd = 'scp -q %s root@%s:%s' % \
-				(fname, host, fname)
+			cmd = 'scp -q -o UserKnowHostsFile=%s %s root@%s:%s' % \
+				(khfname,fname, host, fname)
 			p = Parallel(cmd, host)
 			p.start()
 			threads.append(p)
 
 		for thread in threads:
 			thread.join(timeout)
+
+		if os.path.exists(khfname):
+			os.unlink(khfname)

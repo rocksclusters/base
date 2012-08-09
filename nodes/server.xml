@@ -133,10 +133,10 @@ for file in ${MOUNTPOINT}/${RSAKEY}* ${MOUNTPOINT}/${DSAKEY}*; do
 done
 
 # generate the keyfiles 
-/usr/bin/ssh-keygen -q -t rsa -N '' -f  $RSAKEY
-/usr/bin/ssh-keygen -q -t dsa -N '' -f  $DSAKEY
+/usr/bin/ssh-keygen -q -t rsa -N '' -f  ${MOUNTPOINT}/$RSAKEY
+/usr/bin/ssh-keygen -q -t dsa -N '' -f  ${MOUNTPOINT}/$DSAKEY
 for file in ${RSAKEY} ${DSAKEY}; do 
-	chmod 0400 $file
+	chmod 0400 ${MOUNTPOINT}/$file
 done
 
 # The following will fail if the key is already there, that's OK!
