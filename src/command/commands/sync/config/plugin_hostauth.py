@@ -1,7 +1,5 @@
-#
-# List of files to publish with the 411 
-# Secure Information Service.
-#
+# $Id: plugin_hostauth.py,v 1.1 2012/08/10 23:49:09 phil Exp $
+# 
 # @Copyright@
 # 
 # 				Rocks(r)
@@ -56,18 +54,34 @@
 # 
 # @Copyright@
 #
+# $Log: plugin_hostauth.py,v $
+# Revision 1.1  2012/08/10 23:49:09  phil
+# Support hostbased authentication for ssh.  Inspired by Roy Dragseth.
+#
+#
 
-AUTOMOUNT = $(wildcard /etc/auto.*)
+import rocks.commands
+import os
 
-# These files all take a "#" comment character. 
-# If you alter this list, you must do a 'make clean; make'.
-FILES = $(AUTOMOUNT)
-FILES += /etc/ssh/shosts.equiv
-FILES += /etc/ssh/ssh_known_hosts
 
-# These files do not take a comment header.
-FILES_NOCOMMENT = /etc/passwd \
-	/etc/group \
-	/etc/shadow
-	
-# FILES += /my/file
+class Plugin(rocks.commands.Plugin):
+	def provides(self):
+		return 'hostauth'
+		
+
+	def run(self, args):
+		""" if rocks_autogen_user_keys is true, then touch 
+		    file. Else remove it. Works with /etc/profile.d/ssh-key.sh
+		"""		
+		touchfile = '/etc/ssh/rocks_autogen_user_keys'
+		autogen = self.db.getHostAttr('localhost',
+				'rocks_autogen_user_keys')
+		try:
+			if (autogen.lower() == 'true' ):
+				os.system("/bin/touch %s" % touchfile)
+			else:
+				if os.path.exists(touchfile):
+					os.unlink(touchfile)
+		except:
+			if os.path.exists(touchfile):
+				os.unlink(touchfile)

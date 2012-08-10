@@ -1,5 +1,5 @@
 #
-# $Id: ssh-key.sh,v 1.13 2012/06/26 22:45:45 clem Exp $
+# $Id: ssh-key.sh,v 1.14 2012/08/10 23:49:10 phil Exp $
 #
 # generate a ssh key if one doesn't exist
 #
@@ -60,6 +60,9 @@
 #
 #
 # $Log: ssh-key.sh,v $
+# Revision 1.14  2012/08/10 23:49:10  phil
+# Support hostbased authentication for ssh.  Inspired by Roy Dragseth.
+#
 # Revision 1.13  2012/06/26 22:45:45  clem
 # Minor fix on file permission as pointed out by Ventre, Brian D. on 2012-06-14
 # on the mailing list
@@ -224,6 +227,12 @@
 SSH_CMD="ssh-keygen -t rsa -f $HOME/.ssh/id_rsa -v"
 SSH_KEY_LINK=/etc/ssh/authorized_keys/id_rsa.pub
 
+# Function to check if we should autogen keys
+do_autogen()
+{
+[ -f /etc/ssh/rocks_autogen_user_keys ] && return 1 || return 0
+}
+
 # Function to create ssh keys
 create_key(){
 echo
@@ -267,11 +276,15 @@ create_hard_link(){
 	chmod a+r $SSH_KEY_LINK
 }
 
-# If we're a normal user, and the ssh-key exists, return
+# If we're a normal user, and the ssh-key exists, and
+# we are supposed to autogen the key, then return
 if [ $UID -ge 500 ]; then
-	check_key || create_key
+	do_autogen || check_key || create_key
 fi
 
+# We need special handling of root. We -need- an ssh key pair
+# to be able to bootstrap the 411 shared key, and the 
+# ssh hosts keys kept in the sec_attr database.  
 if [ $UID -eq 0 ]; then
 	check_key || create_key
 	check_hard_link || create_hard_link

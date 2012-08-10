@@ -17,6 +17,9 @@
 
   <changelog>
   $Log: ssh.xml,v $
+  Revision 1.18  2012/08/10 23:49:09  phil
+  Support hostbased authentication for ssh.  Inspired by Roy Dragseth.
+
   Revision 1.17  2012/05/06 05:48:10  phil
   Copyright Storm for Mamba
 
@@ -173,6 +176,8 @@ Host *
 	StrictHostKeyChecking   no
 	UsePrivilegedPort       no
 	Protocol		2,1
+	HostbasedAuthentication yes
+	EnableSSHKeySign        yes
 </file>
 </post>
 
@@ -187,12 +192,22 @@ chmod a+rx /root
 mkdir /root/.ssh
 chmod a+rx /root/.ssh
 
+<!-- Turn off HostbasedAuthentication for Root, Keys/Password Only -->
+<file name="/etc/ssh/sshd_config" mode="append">
+Match User root
+      HostbasedAuthentication no
+</file>
+
 <!-- Turn off challenge-response so we get normal passwd auth. -->
 sed -i -e 's/#ChallengeResponseAuthentication yes/ChallengeResponseAuthentication no/' \
 	/etc/ssh/sshd_config 
 sed -i -e 's/#PermitUserEnvironment no/PermitUserEnvironment yes/' \
 	/etc/ssh/sshd_config
+</post>
 
+<post cond="not rocks_autogen_user_keys">
+# Enable HostbasedAuthentication
+sed -ri -e "/^#?HostbasedAuthentication/ c HostbasedAuthentication yes"  /etc/ssh/sshd_config
 </post>
 
 <post os='sunos'>
@@ -207,6 +222,12 @@ non-root user
 
 mkdir -p /.ssh
 chmod a+rx /.ssh
+
+<!-- Turn off HostbasedAuthentication for Root, Keys/Password Only -->
+<file name="/etc/ssh/sshd_config" mode="append">
+Match User root
+      HostbasedAuthentication no
+</file>
 
 <!-- Turn off challenge-response so we get normal passwd auth. -->
 sed -e '/PermitRootLogin/s/no/yes/g' /etc/ssh/sshd_config > /tmp/sshd_config
