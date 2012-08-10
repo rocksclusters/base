@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.5 2012/08/09 21:20:57 phil Exp $
+# $Id: __init__.py,v 1.6 2012/08/10 18:24:16 phil Exp $
 
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 
 # $Log: __init__.py,v $
+# Revision 1.6  2012/08/10 18:24:16  phil
+# Add two imports
+#
 # Revision 1.5  2012/08/09 21:20:57  phil
 # fix generation of cluster-wide ssh key
 # when sync host sharekey runs, don't contaminate root's authorized_keys file
@@ -76,6 +79,8 @@
 # to compute nodes
 #
 
+import os
+import tempfile
 import rocks.commands
 from rocks.commands.sync.host import Parallel
 from rocks.commands.sync.host import timeout
