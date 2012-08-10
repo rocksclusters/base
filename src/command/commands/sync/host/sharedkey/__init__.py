@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.6 2012/08/10 18:24:16 phil Exp $
+# $Id: __init__.py,v 1.7 2012/08/10 18:55:48 phil Exp $
 
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 
 # $Log: __init__.py,v $
+# Revision 1.7  2012/08/10 18:55:48  phil
+# Typo.
+#
 # Revision 1.6  2012/08/10 18:24:16  phil
 # Add two imports
 #
@@ -107,7 +110,7 @@ class Command(rocks.commands.sync.host.command):
 		threads = []
 
 		for host in hosts:
-			cmd = 'scp -q -o UserKnowHostsFile=%s %s root@%s:%s' % \
+			cmd = 'scp -q -o UserKnownHostsFile=%s %s root@%s:%s' % \
 				(khfname,fname, host, fname)
 			p = Parallel(cmd, host)
 			p.start()
