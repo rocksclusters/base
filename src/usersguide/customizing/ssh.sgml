@@ -1,0 +1,60 @@
+<section id="customization-ssh"
+	xreflabel="Hostbased vs. Key-based SSH Authentication">
+
+<title>Hostbased vs. Key-base SSH Authentication</title>
+
+<para>
+The default Rocks configuration uses host-based ssh key authentication. Prior to Rocks 6.1, supported
+only user-defined ssh keys.   The advantage of host-based authentication is that a common file
+system for user home areas (that hold .ssh/authorized_keys) is no longer needed.   Root still requires
+key-based authentication on all nodes.  
+</para>
+
+<note><para> 
+Rocks defines a single SSH hostkey for all subordinate nodes. This can be overridden by the user to specify a
+unique hostkey for every single node.  The frontend host key is different from the rest of the cluster.
+</para></note>
+
+<para>
+Hostbased authentication is controlled by the contents of  <computeroutput>/etc/ssh/shosts.equiv</computeroutput>.
+This file is served by the 411 service in Rocks. This is automatically updated when nodes are added or removed or
+when <computeroutput> rocks sync config</computeroutput> is run.
+</para>
+
+<para>
+To turn off host-based SSH authentication, execute the following  on your frontend
+</para>
+
+<screen>
+# rocks set attr rocks_autogen_user_keys true
+# rocks sync config
+</screen>
+
+<para>
+this will generate an empty <computeroutput>/etc/ssh/shosts.equiv</computeroutput> file and publish via 411.
+It will also creates the file <computeroutput>/etc/profile.d/rocks_autogen_user_keys</computeroutput>. The existence of
+that file is test for in <computeroutput>/etc/profiles/ssh-keygen.sh</computeroutput>.
+</para>
+
+<section id="generating_per_host_custom_SSH_keys"
+	xreflabel="Generating SSH Host Keys for Every Host">
+
+<title>Per-host SSH Keys</title>
+<para>
+SSH hostkeys are stored in the Rocks Secure Attributes database. By default, Rocks generates a single cluster-wide
+SSH key. The stored key is placed on the host after first boot via scp.
+To generate a key for specific key for a particular node, say compute-0-0,
+repeat the following recipe for every node.
+</para>
+
+<screen>
+/usr/bin/ssh-keygen -q -t rsa -N '' -f  /root/rsakey.tmp 
+/usr/bin/ssh-keygen -q -t dsa -N '' -f  /root/dsakey.tmp 
+/opt/rocks/bin/rocks add host sec_attr compute-0-0 ssh_host_rsa_key value=/root/rsakey.tmp crypted=true
+/opt/rocks/bin/rocks add host sec_attr compute-0-0 ssh_host_dsa_key value=/root/dsakey.tmp crypted=true
+/bin/rm /root/dsakey.tmp /root/rsakey.tmp
+</screen>
+</section>
+
+</section>
+

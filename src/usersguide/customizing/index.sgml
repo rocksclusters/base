@@ -8,6 +8,7 @@
 &customize-partition;
 &customize-kernel;
 &customize-rsh;
+&customize-ssh;
 &customization-adding-appliance;
 &customization-driver;
 &customization-dns;

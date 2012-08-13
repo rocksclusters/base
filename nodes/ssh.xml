@@ -17,6 +17,9 @@
 
   <changelog>
   $Log: ssh.xml,v $
+  Revision 1.19  2012/08/13 05:12:17  phil
+  Hostbased Authentication now default method. Thanks, Roy Dragseth.
+
   Revision 1.18  2012/08/10 23:49:09  phil
   Support hostbased authentication for ssh.  Inspired by Roy Dragseth.
 
@@ -205,7 +208,7 @@ sed -i -e 's/#PermitUserEnvironment no/PermitUserEnvironment yes/' \
 	/etc/ssh/sshd_config
 </post>
 
-<post cond="not rocks_autogen_user_keys">
+<post>
 # Enable HostbasedAuthentication
 sed -ri -e "/^#?HostbasedAuthentication/ c HostbasedAuthentication yes"  /etc/ssh/sshd_config
 </post>

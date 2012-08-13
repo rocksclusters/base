@@ -1,10 +1,13 @@
 <!--
-$Id: attr.sgml,v 1.4 2011/03/08 15:29:43 phil Exp $
+$Id: attr.sgml,v 1.5 2012/08/13 05:12:17 phil Exp $
 
 @Copyright@
 @Copyright@
 
 $Log: attr.sgml,v $
+Revision 1.5  2012/08/13 05:12:17  phil
+Hostbased Authentication now default method. Thanks, Roy Dragseth.
+
 Revision 1.4  2011/03/08 15:29:43  phil
 support disableServices attribute so that users can optionally control additional services that are removed via ckhconfig.
 
@@ -509,6 +512,14 @@ installation.
 Attribute is referenced but not defined so is treated as &false;.				      
 				    </para>
 				  </footnote>
+				</entry>
+				<entry>bool</entry>
+				<entry>&false;</entry>
+			</row>
+			<row>
+				<entry>
+				  <varname>rocks_autogen_user_keys</varname>
+				  <footnoteref linkend="fn-undefined-attr">
 				</entry>
 				<entry>bool</entry>
 				<entry>&false;</entry>

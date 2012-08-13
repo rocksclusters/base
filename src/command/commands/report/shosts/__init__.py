@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.1 2012/08/10 18:26:27 phil Exp $
+# $Id: __init__.py,v 1.2 2012/08/13 05:12:17 phil Exp $
 #
 # @Copyright@
 # 
@@ -81,15 +81,18 @@ class Command(command):
 		self.addOutput('localhost', '# Added by rocks report shosts #')
 		self.addOutput('localhost', '#        DO NOT MODIFY       #')
 
+		gen = self.db.getHostAttr('localhost', 'rocks_autogen_user_keys')
+		self.addOutput('localhost', '# rocks_autogen_user_keys: %s' % gen)
+
 		# Grab all IPs in the database
 		cmd = 'SELECT ip FROM networks WHERE ip IS NOT NULL;'
-
 		self.db.execute(cmd)
 
-		for ip in self.db.fetchall():
-			# Construct the shosts entry we only use the ip
-			h = '%s' % (ip)
-			self.addOutput('localhost', h)
+		if gen is None or gen.lower() != 'true':
+			for ip in self.db.fetchall():
+				# Construct the shosts entry we only use the ip
+				h = '%s' % (ip)
+				self.addOutput('localhost', h)
 		
 		self.addOutput('localhost', '</file>')
 		self.endOutput(padChar='')

@@ -1,4 +1,4 @@
-# $Id: plugin_hostauth.py,v 1.1 2012/08/10 23:49:09 phil Exp $
+# $Id: plugin_hostauth.py,v 1.2 2012/08/13 05:12:17 phil Exp $
 # 
 # @Copyright@
 # 
@@ -55,23 +55,23 @@
 # @Copyright@
 #
 # $Log: plugin_hostauth.py,v $
-# Revision 1.1  2012/08/10 23:49:09  phil
-# Support hostbased authentication for ssh.  Inspired by Roy Dragseth.
+# Revision 1.2  2012/08/13 05:12:17  phil
+# Hostbased Authentication now default method. Thanks, Roy Dragseth.
 #
 #
 
 import rocks.commands
 import os
-
+import subprocess
 
 class Plugin(rocks.commands.Plugin):
 	def provides(self):
 		return 'hostauth'
 		
-
 	def run(self, args):
 		""" if rocks_autogen_user_keys is true, then touch 
-		    file. Else remove it. Works with /etc/profile.d/ssh-key.sh
+		    file. Else remove it. Works with /etc/profile.d/ssh-key.sh.
+		    Always regenerates /etc/ssh/shosts.equiv
 		"""		
 		touchfile = '/etc/ssh/rocks_autogen_user_keys'
 		autogen = self.db.getHostAttr('localhost',
@@ -85,3 +85,9 @@ class Plugin(rocks.commands.Plugin):
 		except:
 			if os.path.exists(touchfile):
 				os.unlink(touchfile)
+
+		# regenerate shosts and publish via 411
+		p = subprocess.call("rocks report shosts | rocks report script | sh > /dev/null 2>&1", 
+			shell=True) 
+		p = subprocess.call("make -C /var/411 > /dev/null 2>&1", 
+			shell=True) 

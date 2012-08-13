@@ -8,6 +8,7 @@
 <!ENTITY customize-make-cd SYSTEM "make-cd.sgml">
 <!ENTITY customize-boot-floppy SYSTEM "boot-floppy.sgml">
 <!ENTITY customize-rsh SYSTEM "rsh.sgml">
+<!ENTITY customize-ssh SYSTEM "ssh.sgml">
 <!ENTITY customization-adding-appliance SYSTEM "adding-appliance.sgml">
 <!ENTITY customization-driver SYSTEM "device-driver.sgml">
 <!ENTITY customization-dns SYSTEM "dns.sgml">
