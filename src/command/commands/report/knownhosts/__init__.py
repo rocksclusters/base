@@ -1,4 +1,4 @@
-#$Id: __init__.py,v 1.1 2012/08/14 04:51:45 phil Exp $
+#$Id: __init__.py,v 1.2 2012/08/14 05:14:13 phil Exp $
 #
 # @Copyright@
 # 
@@ -116,7 +116,7 @@ class Command(command):
 		pubkey, = self.db.fetchone()
 
 		cmd = """SELECT dnszone FROM subnets where dnszone 
-				IS NOT NULL;"""
+				IS NOT NULL AND subnets.name != 'public';"""
 		self.db.execute(cmd)
 		for zone, in self.db.fetchall():
 			if pubkey is not None:
