@@ -134,8 +134,8 @@ for file in ${MOUNTPOINT}/${RSAKEY}* ${MOUNTPOINT}/${DSAKEY}*; do
 done
 
 # generate the keyfiles 
-/usr/bin/ssh-keygen -q -t rsa -N '' -f  ${MOUNTPOINT}/$RSAKEY
-/usr/bin/ssh-keygen -q -t dsa -N '' -f  ${MOUNTPOINT}/$DSAKEY
+/usr/bin/ssh-keygen -q -t rsa -C '&hostname;-cluster-key' -N '' -f  ${MOUNTPOINT}/$RSAKEY
+/usr/bin/ssh-keygen -q -t dsa -C '&hostname;-cluster-key' -N '' -f  ${MOUNTPOINT}/$DSAKEY
 for file in ${RSAKEY} ${DSAKEY}; do 
 	chmod 0400 ${MOUNTPOINT}/$file
 done
@@ -151,10 +151,13 @@ done
 
 # Now add the frontend's specific Host keys, if already there, that's OK
 MOUNTPOINT=/etc/ssh
-/opt/rocks/bin/rocks add host sec_attr &hostname; $RSAKEY value=${MOUNTPOINT}/${RSAKEY} crypted=true 
-/opt/rocks/bin/rocks add host sec_attr &hostname; ${RSAKEY}.pub value=${MOUNTPOINT}/${RSAKEY}.pub crypted=true 
-/opt/rocks/bin/rocks add host sec_attr &hostname; $DSAKEY value=${MOUNTPOINT}/${DSAKEY} crypted=true
-/opt/rocks/bin/rocks add host sec_attr &hostname; ${DSAKEY}.pub value=${MOUNTPOINT}/${DSAKEY}.pub crypted=true
+/opt/rocks/bin/rocks add host sec_attr &hostname; attr=$RSAKEY value=${MOUNTPOINT}/${RSAKEY} crypted=true 
+/opt/rocks/bin/rocks add host sec_attr &hostname; attr=${RSAKEY}.pub value=${MOUNTPOINT}/${RSAKEY}.pub crypted=true 
+/opt/rocks/bin/rocks add host sec_attr &hostname; attr=$DSAKEY value=${MOUNTPOINT}/${DSAKEY} crypted=true
+/opt/rocks/bin/rocks add host sec_attr &hostname; attr=${DSAKEY}.pub value=${MOUNTPOINT}/${DSAKEY}.pub crypted=true
+
+# now generate the /etc/ssh/ssh_known_hosts file
+/opt/rocks/bin/rocks sync config
 
 # Run this script  only once
 /bin/rm -f /etc/rc.d/rocksconfig.d/post-50-cluster-ssh-keys
