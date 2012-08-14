@@ -118,6 +118,7 @@ rm -f /etc/rc.d/rocksconfig.d/post-02-on-the-fly
 #
 # create cluster-wide rsa and dsa keys 
 # Put them in the rocks secure attribute database
+# Record the frontend's rsa/dsa keys, too
 #
 MOUNTPOINT=/mnt/priv
 if [ ! -d $MOUNTPOINT ]; then mkdir $MOUNTPOINT; fi
@@ -144,8 +145,16 @@ done
 /opt/rocks/bin/rocks add sec_attr $RSAKEY value=${MOUNTPOINT}/${RSAKEY} crypted=true 
 /opt/rocks/bin/rocks add sec_attr ${RSAKEY}.pub value=${MOUNTPOINT}/${RSAKEY}.pub crypted=true 
 /opt/rocks/bin/rocks add sec_attr $DSAKEY value=${MOUNTPOINT}/${DSAKEY} crypted=true
+/opt/rocks/bin/rocks add sec_attr ${DSAKEY}.pub value=${MOUNTPOINT}/${DSAKEY}.pub crypted=true
 
 /bin/umount $MOUNTPOINT
+
+# Now add the frontend's specific Host keys, if already there, that's OK
+MOUNTPOINT=/etc/ssh
+/opt/rocks/bin/rocks add host sec_attr &hostname; $RSAKEY value=${MOUNTPOINT}/${RSAKEY} crypted=true 
+/opt/rocks/bin/rocks add host sec_attr &hostname; ${RSAKEY}.pub value=${MOUNTPOINT}/${RSAKEY}.pub crypted=true 
+/opt/rocks/bin/rocks add host sec_attr &hostname; $DSAKEY value=${MOUNTPOINT}/${DSAKEY} crypted=true
+/opt/rocks/bin/rocks add host sec_attr &hostname; ${DSAKEY}.pub value=${MOUNTPOINT}/${DSAKEY}.pub crypted=true
 
 # Run this script  only once
 /bin/rm -f /etc/rc.d/rocksconfig.d/post-50-cluster-ssh-keys
