@@ -1,4 +1,4 @@
-# $Id: plugin_hostauth.py,v 1.2 2012/08/13 05:12:17 phil Exp $
+# $Id: plugin_hostauth.py,v 1.3 2012/08/14 04:51:45 phil Exp $
 # 
 # @Copyright@
 # 
@@ -55,6 +55,10 @@
 # @Copyright@
 #
 # $Log: plugin_hostauth.py,v $
+# Revision 1.3  2012/08/14 04:51:45  phil
+# Generate ssh_known_hosts file.
+# Works when hosts are multi-homed (like Triton)
+#
 # Revision 1.2  2012/08/13 05:12:17  phil
 # Hostbased Authentication now default method. Thanks, Roy Dragseth.
 #
@@ -89,5 +93,6 @@ class Plugin(rocks.commands.Plugin):
 		# regenerate shosts and publish via 411
 		p = subprocess.call("rocks report shosts | rocks report script | sh > /dev/null 2>&1", 
 			shell=True) 
+		p = subprocess.call("rocks report knownhosts | rocks report script | sh > /dev/null 2>&1", 
 		p = subprocess.call("make -C /var/411 > /dev/null 2>&1", 
 			shell=True) 

@@ -142,6 +142,7 @@ done
 # The following will fail if the key is already there, that's OK!
 
 /opt/rocks/bin/rocks add sec_attr $RSAKEY value=${MOUNTPOINT}/${RSAKEY} crypted=true 
+/opt/rocks/bin/rocks add sec_attr ${RSAKEY}.pub value=${MOUNTPOINT}/${RSAKEY}.pub crypted=true 
 /opt/rocks/bin/rocks add sec_attr $DSAKEY value=${MOUNTPOINT}/${DSAKEY} crypted=true
 
 /bin/umount $MOUNTPOINT

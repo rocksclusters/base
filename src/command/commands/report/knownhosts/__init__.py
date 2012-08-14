@@ -1,6 +1,5 @@
+#$Id: __init__.py,v 1.1 2012/08/14 04:51:45 phil Exp $
 #
-# Skeleton insert-ethers plugin module
-# 
 # @Copyright@
 # 
 # 				Rocks(r)
@@ -54,22 +53,75 @@
 # 
 # @Copyright@
 #
-# insert-ethers plugin to update /etc/ssh/shosts.equiv
-# based on sample.py
-# roy.dragseth@uit.no
-#
+#  Create shosts.equiv file for host-based ssh authentication
+#  starting from a copy of rocks report host
+#  <roy.dragseth@uit.no>
 
-import rocks.sql
-from syslog import syslog
-import os
+import rocks.commands
+import rocks.ip
+import os.path
+import subprocess
 
-class Plugin(rocks.sql.InsertEthersPlugin):
+class command(rocks.commands.HostArgumentProcessor,
+		rocks.commands.report.command):
+	pass
 
-	def done(self):
-		"""Used if we want to reload after all nodes have 
-		been added, but not every time."""
-		os.system("rocks report shosts | rocks report script | sh")
-		os.system("rocks report knownhosts | rocks report script | sh")
-		m =  "insert-ethers shosts done"
-		syslog(m)
+class Command(command):
+	"""
+	Report the host to known hosts (public keys) for  
+	/etc/ssh/ssh_known_hosts
 
+	<example cmd='report knownhosts'>
+	Outputs lists of public IPs to be used for /etc/ssh/ssh_known_hosts
+	</example>
+	"""
+      
+	def run(self, param, args):
+		self.beginOutput()
+		self.addOutput('localhost', '<file name="/etc/ssh/ssh_known_hosts">')
+		self.addOutput('localhost', '# Added by rocks report knownhosts #')
+		self.addOutput('localhost', '#        DO NOT MODIFY       #')
+
+
+		# grab per-node public keys
+		allhosts = {}
+		cmd = """SELECT n.name, s.value FROM nodes n INNER JOIN
+			 sec_node_attributes s ON s.node = n.id WHERE
+			 s.attr = 'ssh_host_rsa_key.pub';"""
+		self.db.execute(cmd)
+
+		for (host,pubkey) in self.db.fetchall():
+			allhosts[host] = pubkey.rstrip('\n')
+
+		# now find all interfaces for this node with labeled 
+		# dnszones. put an entry for each interface
+		cmd = """SELECT n.name,s.dnszone,net.name FROM nodes n INNER JOIN
+			 networks net ON net.node = n.id INNER JOIN 
+			 subnets s on net.subnet = s.id; """
+		self.db.execute(cmd)
+		for (host,zone,ifname) in self.db.fetchall():
+			if host in allhosts and zone is not None:
+				if ifname is not None:
+					hostname = ifname 
+				else:
+					hostname = host
+				self.addOutput('localhost', 
+					'%s.%s %s' % (hostname, zone, allhosts[host]))
+					
+
+		# now the cluster-wide public key
+		cmd = """SELECT s.value FROM sec_global_attributes s 
+			WHERE s.attr = 'ssh_host_rsa_key.pub';"""
+		self.db.execute(cmd)
+		pubkey, = self.db.fetchone()
+
+		cmd = """SELECT dnszone FROM subnets where dnszone 
+				IS NOT NULL;"""
+		self.db.execute(cmd)
+		for zone, in self.db.fetchall():
+			if pubkey is not None:
+				self.addOutput('localhost', 
+					'*.%s %s' % (zone,pubkey.rstrip('\n')))
+
+		self.addOutput('localhost', '</file>')
+		self.endOutput(padChar='')

@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.104 2012/07/31 23:20:10 phil Exp $
+
 # 
 # @Copyright@
 # 
@@ -55,6 +55,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.105  2012/08/14 04:51:45  phil
+# Generate ssh_known_hosts file.
+# Works when hosts are multi-homed (like Triton)
+#
 # Revision 1.104  2012/07/31 23:20:10  phil
 # Generate a cluster-wide ssh [rsa,dsa] keys and put them in
 # the secure attributes database. These are different from frontend's host keys.
@@ -1432,7 +1436,7 @@ class DatabaseConnection:
 		self.execute('select value, enc from sec_global_attributes ' +\
 			'where attr="%s"' % attr)
 		for (v, e) in self.fetchone():
-			attrs[a] = (v, e)
+			attrs[attr] = (v, e)
 		return attrs
 
 	def getSecAttrs(self):

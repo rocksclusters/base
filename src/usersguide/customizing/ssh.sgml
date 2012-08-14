@@ -51,6 +51,7 @@ repeat the following recipe for every node.
 /usr/bin/ssh-keygen -q -t rsa -N '' -f  /root/rsakey.tmp 
 /usr/bin/ssh-keygen -q -t dsa -N '' -f  /root/dsakey.tmp 
 /opt/rocks/bin/rocks add host sec_attr compute-0-0 ssh_host_rsa_key value=/root/rsakey.tmp crypted=true
+/opt/rocks/bin/rocks add host sec_attr compute-0-0 ssh_host_rsa_key.pub value=/root/rsakey.tmp.pub crypted=true
 /opt/rocks/bin/rocks add host sec_attr compute-0-0 ssh_host_dsa_key value=/root/dsakey.tmp crypted=true
 /bin/rm /root/dsakey.tmp /root/rsakey.tmp
 </screen>
