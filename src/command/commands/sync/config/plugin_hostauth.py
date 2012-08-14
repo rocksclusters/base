@@ -1,4 +1,4 @@
-# $Id: plugin_hostauth.py,v 1.3 2012/08/14 04:51:45 phil Exp $
+# $Id: plugin_hostauth.py,v 1.4 2012/08/14 17:29:30 phil Exp $
 # 
 # @Copyright@
 # 
@@ -55,6 +55,10 @@
 # @Copyright@
 #
 # $Log: plugin_hostauth.py,v $
+# Revision 1.4  2012/08/14 17:29:30  phil
+# with hostbased authentication, remove /etc/ssh/rocks_autogen_user_keys on frontend
+# and login appliances
+#
 # Revision 1.3  2012/08/14 04:51:45  phil
 # Generate ssh_known_hosts file.
 # Works when hosts are multi-homed (like Triton)
@@ -65,7 +69,6 @@
 #
 
 import rocks.commands
-import os
 import subprocess
 
 class Plugin(rocks.commands.Plugin):
@@ -82,17 +85,18 @@ class Plugin(rocks.commands.Plugin):
 				'rocks_autogen_user_keys')
 		try:
 			if (autogen.lower() == 'true' ):
-				os.system("/bin/touch %s" % touchfile)
+				subprocess.call("rocks run host frontend login '/bin/touch %s'" % touchfile, shell=True)
 			else:
-				if os.path.exists(touchfile):
-					os.unlink(touchfile)
+				subprocess.call("rocks run host frontend login '[ -f %s ] && /bin/rm %s'" 
+						% (touchfile,touchfile), shell=True)
 		except:
-			if os.path.exists(touchfile):
-				os.unlink(touchfile)
+			subprocess.call("rocks run host frontend login '[ -f %s ] && /bin/rm %s'" 
+						% (touchfile,touchfile), shell=True)
 
 		# regenerate shosts and publish via 411
 		p = subprocess.call("rocks report shosts | rocks report script | sh > /dev/null 2>&1", 
 			shell=True) 
 		p = subprocess.call("rocks report knownhosts | rocks report script | sh > /dev/null 2>&1", 
+			shell=True) 
 		p = subprocess.call("make -C /var/411 > /dev/null 2>&1", 
 			shell=True) 
