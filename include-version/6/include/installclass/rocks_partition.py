@@ -69,13 +69,13 @@ class RocksPartition:
 		cmd = '%s /dev/%s print -s 2> /dev/null' % \
 			(self.parted, devname)
 
-		label = 'Disk label type:'
+		label = 'Partition Table:'
 		for line in os.popen(cmd).readlines():
 			if len(line) > len(label) and \
 				line[0:len(label)] == label:
 
 				l = string.split(line)
-				if len(l) > 3 and l[3] == 'gpt':
+				if len(l) > 2 and l[2] == 'gpt':
 					retval = 1
 					break
 
@@ -244,7 +244,7 @@ class RocksPartition:
 				bootflags = ''
 			else:
 				bfs = None	
-				if len(l) > 5:
+				if len(l) > 5 and not self.gptDrive(devname):
 					#
 					# there is a case for RAID 0 that the 
 					# second partition of the drive does not
@@ -261,6 +261,14 @@ class RocksPartition:
 						fstype = l[5]
 				else:
 					fstype = ''
+			
+					if len(l) > 4 and self.gptDrive(devname):
+						# gpt partition there is not 
+						# Type column so fstype is in 4 
+						fstype = l[4]
+						if len(l) > 5:
+							bfs = [l[5]]
+					
 
 				if not bfs and len(l) > 6:
 					bfs = l[6:]
@@ -476,6 +484,10 @@ class RocksPartition:
 					fstype = l[5]
 				else:
 					fstype = ''
+					if len(l) > 4 and self.gptDrive( disk ):
+						# this is a gpt partition
+						fstype = l[4]
+						
 
 				list.append(('%s%d' % (disk, partnumber),
 					fstype))
