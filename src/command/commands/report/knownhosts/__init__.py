@@ -1,4 +1,4 @@
-#$Id: __init__.py,v 1.2 2012/08/14 05:14:13 phil Exp $
+#$Id: __init__.py,v 1.3 2012/08/20 05:31:55 phil Exp $
 #
 # @Copyright@
 # 
@@ -95,11 +95,11 @@ class Command(command):
 
 		# now find all interfaces for this node with labeled 
 		# dnszones. put an entry for each interface
-		cmd = """SELECT n.name,s.dnszone,net.name FROM nodes n INNER JOIN
+		cmd = """SELECT n.name,s.dnszone,net.name,s.name FROM nodes n INNER JOIN
 			 networks net ON net.node = n.id INNER JOIN 
 			 subnets s on net.subnet = s.id; """
 		self.db.execute(cmd)
-		for (host,zone,ifname) in self.db.fetchall():
+		for (host,zone,ifname,subnet) in self.db.fetchall():
 			if host in allhosts and zone is not None:
 				if ifname is not None:
 					hostname = ifname 
@@ -107,6 +107,9 @@ class Command(command):
 					hostname = host
 				self.addOutput('localhost', 
 					'%s.%s %s' % (hostname, zone, allhosts[host]))
+				if subnet == 'private':
+					self.addOutput('localhost', 
+					 '%s %s' % (hostname, allhosts[host]))
 					
 
 		# now the cluster-wide public key
@@ -114,14 +117,34 @@ class Command(command):
 			WHERE s.attr = 'ssh_host_rsa_key.pub';"""
 		self.db.execute(cmd)
 		pubkey, = self.db.fetchone()
+		if pubkey is not None:
+			pubkey = pubkey.rstrip('\n')
 
 		cmd = """SELECT dnszone FROM subnets where dnszone 
 				IS NOT NULL AND subnets.name != 'public';"""
 		self.db.execute(cmd)
+
 		for zone, in self.db.fetchall():
 			if pubkey is not None:
 				self.addOutput('localhost', 
-					'*.%s %s' % (zone,pubkey.rstrip('\n')))
+					'*.%s %s' % (zone,pubkey))
+
+		# finally add the short names of all hosts
+		cmd = """SELECT n.name,s.dnszone,net.name FROM nodes n INNER JOIN
+			 networks net ON net.node = n.id INNER JOIN 
+			 subnets s on net.subnet = s.id AND s.name = 'private'; """
+		self.db.execute(cmd)
+
+		if pubkey is not None:
+			for (host,zone,ifname) in self.db.fetchall():
+				if host not in allhosts:
+					if ifname is not None:
+						hostname = ifname 
+					else:
+						hostname = host
+					self.addOutput('localhost', 
+						'%s %s' % (hostname, pubkey))
 
 		self.addOutput('localhost', '</file>')
 		self.endOutput(padChar='')
+
