@@ -55,6 +55,11 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.106  2012/08/21 19:42:21  phil
+# re-implementation of previous fix to force
+# flag="values possibly with spaces" pattern match. No spaces to first equal.
+# flag (parameters) names can have letters and numbers only.
+#
 # Revision 1.105  2012/08/14 04:51:45  phil
 # Generate ssh_known_hosts file.
 # Works when hosts are multi-homed (like Triton)
@@ -2151,14 +2156,15 @@ class Command:
 		list = [] # arguments
 		
 		nparams = 0
+		flagpattern=re.compile("^[a-zA-z0-9]+=")
+
 		for arg in args:
 			tokens = arg.split()
 			if tokens[0] == 'select':
 				list.append(arg)
 			#there is an equal and 
 			#the left side of the equal does not contains spaces
-			elif len(arg.split('=',1)) == 2 and \
-				len(arg.split('=',1)[0].split()) == 1 :
+			elif flagpattern.match(arg):
 				(key, val) = arg.split('=', 1)
 				dict[key] = val
 				if nparams == 0:
