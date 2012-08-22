@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.11 2012/05/06 05:48:33 phil Exp $
+# $Id: __init__.py,v 1.12 2012/08/22 22:21:18 clem Exp $
 # 
 # @Copyright@
 # 
@@ -55,6 +55,12 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.12  2012/08/22 22:21:18  clem
+# fix problem with aliases
+#
+# Even when host has two interface on the same subnet, aka ipmi interface on the
+# private network we link the alias only to the hostname (and not to each interface)
+#
 # Revision 1.11  2012/05/06 05:48:33  phil
 # Copyright Storm for Mamba
 #
@@ -216,15 +222,20 @@ class Command(rocks.commands.report.command):
 
 			s += '%s\t A \t%s\n' % (record, ip)
 
-			# Now record the aliases. We always substitute 
-			# network names with aliases. Nothing else will
-			# be allowed
-			self.db.execute('select a.name from aliases a, '+\
-				'networks nt where nt.node=a.node and '	+\
-				'nt.ip="%s"' % (ip))
+		# TODO alias table should point to an interface not to a node 
+		if dnszone == self.db.getHostAttr('localhost', 'Kickstart_PrivateDNSDomain') :
+			
+			# we need to add the aliases
+			# In this query I am look for the interface which has the same 
+			# name as the node name pointed by the alias (useless...) 
+			self.db.execute("select a.name , networks.name " +
+				"from aliases a, networks, nodes n, subnets sub " +
+				"where networks.node=a.node and n.name=networks.name " +
+				"and n.id=a.node and sub.id = networks.subnet "
+				"and sub.dnszone = '%s';" % dnszone )
 
-			for alias, in self.db.fetchall():
-				s += '%s CNAME %s\n' % (alias, record)
+			for alias, name in self.db.fetchall():
+				s += '%s CNAME %s\n' % (alias, name)
 
 		return s
 
