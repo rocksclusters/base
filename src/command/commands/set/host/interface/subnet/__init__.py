@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.14 2012/05/06 05:48:35 phil Exp $
+# $Id: __init__.py,v 1.15 2012/08/23 16:42:06 clem Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.15  2012/08/23 16:42:06  clem
+# set host interface vlan and set host interface subnet did not accept properly
+# MAC addresses for their iface input argument
+#
 # Revision 1.14  2012/05/06 05:48:35  phil
 # Copyright Storm for Mamba
 #
@@ -177,7 +181,8 @@ class Command(rocks.commands.set.host.command):
 				networks net, nodes n where
 				n.name='%s' and 
 				net.node=n.id and 
-				net.device='%s'""" % (host, iface))
+				(net.device='%s' or net.mac='%s')""" % 
+				(host, iface, iface))
 
 			name, = self.db.fetchone()
 			if not name:

@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.8 2012/05/06 05:48:35 phil Exp $
+# $Id: __init__.py,v 1.9 2012/08/23 16:42:07 clem Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.9  2012/08/23 16:42:07  clem
+# set host interface vlan and set host interface subnet did not accept properly
+# MAC addresses for their iface input argument
+#
 # Revision 1.8  2012/05/06 05:48:35  phil
 # Copyright Storm for Mamba
 #
@@ -145,7 +149,7 @@ class Command(rocks.commands.set.host.command):
 		for host in self.getHostnames(args):
 			self.db.execute("""update networks net, nodes n
 				set net.vlanid = IF(%d = 0, NULL, %d)
-				where net.device = '%s' and
+				where (net.device = '%s' or net.mac='%s') and
 				n.name = '%s' and net.node = n.id""" %
-				(vlanid, vlanid, iface, host))
+				(vlanid, vlanid, iface, iface, host))
 
