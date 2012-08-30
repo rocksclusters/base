@@ -1,5 +1,5 @@
 #
-# $Id: __init__.py,v 1.28 2012/05/06 05:48:32 phil Exp $
+# $Id: __init__.py,v 1.29 2012/08/30 01:00:48 clem Exp $
 #
 # @Copyright@
 # 
@@ -56,6 +56,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.29  2012/08/30 01:00:48  clem
+# Fix for the dhcpd problem with duplicate host name with virtual host
+#
 # Revision 1.28  2012/05/06 05:48:32  phil
 # Copyright Storm for Mamba
 #
@@ -340,14 +343,13 @@ class Command(rocks.commands.HostArgumentProcessor,
 			# if both netname and IP are empty then this is 
                         # an unassigned MAC
 			if netname is None and  node.ip is None:
-				node.name = '%s-%i' %(node.name,unassignedidx)
-				unassignedidx = unassignedidx + 1
 				node.ip = privateIP
 
 			# Check that we have valid values
 			if node.name is None or node.mac is None or node.ip is None or len(node.mac) > 20:
 				continue
 
+			node.name = node.name + '-' + netdevice
 			self.printHost(node.name, hostname, node.mac, node.ip, filename, nextserver)
 
 		self.addOutput('', '\t}')
