@@ -3,7 +3,7 @@ if ($?tcsh) then
 else
 	set modules_shell="csh"
 endif
-set exec_prefix='/usr/bin'
+set exec_prefix='/usr/share/Modules/bin'
 
 set prefix=""
 set postfix=""
