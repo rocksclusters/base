@@ -1,6 +1,5 @@
-# --------------------------------------------------- -*- Makefile -*- --
-# $Id: Makefile,v 1.2 2012/09/08 06:24:49 phil Exp $
-#
+# $Id: plugin_googleotp.py,v 1.1 2012/09/08 06:24:49 phil Exp $
+# 
 # @Copyright@
 # 
 # 				Rocks(r)
@@ -55,47 +54,56 @@
 # 
 # @Copyright@
 #
-# $Log: Makefile,v $
-# Revision 1.2  2012/09/08 06:24:49  phil
-# sync users plugin to add root/users to google-otp group based on
-# Info_GoogleOTPUsers and Info_GoogleOTPRoot attributes
-#
-# Revision 1.1  2012/09/08 01:18:19  phil
-# First steps to add google-based OTP (two-factor) authentication.
-# Needs plugin for rocks sync users and update to 411 group file to optionally push out OTP secrets to login nodes.
-#
-#
 #
 
-REDHAT.ROOT	= $(CURDIR)/../../
--include $(ROCKSROOT)/etc/Rules.mk
-include Rules.mk
-ifeq ($(ARCH), x86_64)
-PAMLIBDIR=lib64/security
-else
-PAMLIBDIR=lib/security
-endif
-PLUGINDIR=$(PY.ROCKS)/rocks/commands/sync/user
+import os
+import string
+import subprocess
+import rocks.commands
+
+class Plugin(rocks.commands.Plugin):
+	"""Adds users to the google-otp group, if specified in attribute"""
+
+	def provides(self):
+		return 'googleotp'
+
+	def str2bool(self, s):
+		"""Converts an on/off, yes/no, true/false string to 1/0."""
+		if s and s.upper() in [ 'ON', 'YES', 'Y', 'TRUE', '1' ]:
+			return 1
+		else:
+			return 0
+
+	def run(self, args):
+		# scan the password for users >= 500  
+		# this is the default entry as setup by useradd
+		otp_users = []
+		userOTP = self.db.getHostAttr('localhost', 'Info_GoogleOTPUsers')
+		if self.str2bool(userOTP):
+			file = open('/etc/passwd', 'r')
+
+			for line in file.readlines():
+				l = string.split(line[:-1], ':')			
+				if len(l) < 6:
+					continue
+
+				username = l[0]
+				uid = int(l[2])
+
+				# only users in Range
+				if uid >= 500 and uid < 65534: 
+					otp_users.append(username)
+				file.close()
+
+		rootOTP = self.db.getHostAttr('localhost', 'Info_GoogleOTPRoot')
+		if self.str2bool(rootOTP):
+			otp_users.append('root')
+			
+		for user in otp_users:
+			# for each otp user,  add them to the google-otp group
+			cmd = '/usr/sbin/usermod -a -G google-otp %s' % user
+			subprocess.call(cmd, shell=True)
 
 
 
-install::
-	mkdir -p $(ROOT)/$(PAMLIBDIR)
-	mkdir -p $(ROOT)/usr/bin
-	mkdir -p $(ROOT)/etc/pam.d
-	mkdir -p $(ROOT)/export/google-authenticator
-	mkdir -p $(ROOT)/$(PLUGINDIR)
-	$(INSTALL) -m755 $(NAME)/libpam/pam_google_authenticator.so  $(ROOT)/$(PAMLIBDIR)
-	$(INSTALL) -m755 $(NAME)/libpam/google-authenticator $(ROOT)/usr/bin
-	$(INSTALL) -m644 google-otp $(ROOT)/etc/pam.d
-	$(INSTALL) -m644 plugin_googleotp.py $(ROOT)/$(PLUGINDIR)
 
-build:
-	gunzip -c $(NAME).$(VERSION).gz | $(TAR) -xf -
-	(cd $(NAME)/libpam; make)
-
-foo:
-	echo $(ARCH)
-	echo $(PAMLIBDIR)
-clean::
-	rm -rf $(NAME) 
