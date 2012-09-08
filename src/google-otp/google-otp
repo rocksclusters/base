@@ -1,0 +1,5 @@
+#%PAM-1.0
+# Test ask for OTP if the user is in the google-otp group, if not
+# skip the pam_google_authenticator step
+auth 	   [success=1 default=ignore]  pam_succeed_if.so quiet user notingroup google-otp	
+auth	   required     pam_google_authenticator.so nullok user=root secret=/export/google-authenticator/${USER}
