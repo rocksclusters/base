@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.10 2012/05/06 05:48:33 phil Exp $
+# $Id: __init__.py,v 1.11 2012/09/11 17:53:40 clem Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,13 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.11  2012/09/11 17:53:40  clem
+# Fix for extra newline at the beginning of the generated script
+#
+# - when using python or other interpreter the extra new line at the beginning
+#   of the script move the shebang to the second line and the interpreter
+#   was not picked up properly
+#
 # Revision 1.10  2012/05/06 05:48:33  phil
 # Copyright Storm for Mamba
 #
@@ -104,7 +111,7 @@ from xml.dom.ext.reader import Sax2
 
 rpm_force_template = """[ $? -ne 0 ] && \\
 echo "# YUM failed - trying with RPM" && \\
-rpm -Uvh --force --nodeps %s"""
+rpm -Uvh --force --nodeps %s\n\n"""
 	
 class Command(rocks.commands.run.command):
 	"""
@@ -130,7 +137,7 @@ class Command(rocks.commands.run.command):
 			dryrun = True
 		
 		script = []
-		script.append('#!/bin/sh')
+		script.append('#!/bin/sh\n')
 			
 		rolls = []
 		for roll in args:
@@ -160,7 +167,7 @@ class Command(rocks.commands.run.command):
 				rpms.append(line)
 		for rpm in rpms:
 			if rpm in rpm_list.keys():
-				script.append('yum install %s' %
+				script.append('yum install %s\n' %
 					rpm)
 				script.append(rpm_force_template % rpm_list[rpm])
 
@@ -171,8 +178,8 @@ class Command(rocks.commands.run.command):
 				script.append(line)
 			else:
 				if cur_proc == True:
-					script.append('__POSTEOF__')
-					script.append('%s %s' % (interpreter, t_name))
+					script.append('__POSTEOF__\n')
+					script.append('%s %s\n' % (interpreter, t_name))
 					cur_proc = False
 				try:
 					i = line.split().index('--interpreter')
@@ -181,10 +188,10 @@ class Command(rocks.commands.run.command):
 				interpreter = line.split()[i+1]
 				t_name = tempfile.mktemp()
 				cur_proc = True
-				script.append('cat > %s << "__POSTEOF__"' % t_name)
+				script.append('cat > %s << "__POSTEOF__"\n' % t_name)
 		
 		if dryrun:
-			self.addText(string.join(script, '\n'))
+			self.addText(string.join(script, ''))
 		else:
-			os.system(string.join(script, '\n'))
+			os.system(string.join(script, ''))
 
