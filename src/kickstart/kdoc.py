@@ -1,6 +1,6 @@
 #! @PYTHON@
 #
-# $Id: kdoc.py,v 1.15 2012/05/06 05:48:44 phil Exp $
+# $Id: kdoc.py,v 1.16 2012/09/18 23:33:17 clem Exp $
 #
 # @Copyright@
 # 
@@ -57,6 +57,10 @@
 # @Copyright@
 #
 # $Log: kdoc.py,v $
+# Revision 1.16  2012/09/18 23:33:17  clem
+# I need to make kickstart.cgi loadable as a module (I need that in the EC2 roll)
+# then i fixed all the other classes in the pylib
+#
 # Revision 1.15  2012/05/06 05:48:44  phil
 # Copyright Storm for Mamba
 #
@@ -492,8 +496,8 @@ class Edge(rocks.graph.Edge):
 		return self.release
 
 
-
-app = App(sys.argv)
-app.parseArgs()
-app.run()
+if __name__ == "__main__":
+	app = App(sys.argv)
+	app.parseArgs()
+	app.run()
 

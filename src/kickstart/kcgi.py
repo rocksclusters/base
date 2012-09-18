@@ -1,6 +1,6 @@
 #! /opt/rocks/bin/python
 #
-# $Id: kcgi.py,v 1.42 2012/05/06 05:48:44 phil Exp $
+# $Id: kcgi.py,v 1.43 2012/09/18 23:33:17 clem Exp $
 #
 # @Copyright@
 # 
@@ -57,6 +57,10 @@
 # @Copyright@
 #
 # $Log: kcgi.py,v $
+# Revision 1.43  2012/09/18 23:33:17  clem
+# I need to make kickstart.cgi loadable as a module (I need that in the EC2 roll)
+# then i fixed all the other classes in the pylib
+#
 # Revision 1.42  2012/05/06 05:48:44  phil
 # Copyright Storm for Mamba
 #
@@ -1252,13 +1256,13 @@ class NodesHandler(rocks.util.ParseXML):
 		self.attrs.client = None
 
 
-
-app = App(sys.argv)
-app.parseArgs('kcgi')
-try:
-	app.run()
-except KickstartError, msg:
-	sys.stderr.write("kcgi error - %s\n" % msg)
-	sys.exit(-1)
-
+if __name__ == "__main__":
+	app = App(sys.argv)
+	app.parseArgs('kcgi')
+	try:
+		app.run()
+	except KickstartError, msg:
+		sys.stderr.write("kcgi error - %s\n" % msg)
+		sys.exit(-1)
+	
 

@@ -1,6 +1,6 @@
 #!/opt/rocks/bin/python
 #
-# $Id: setPxeMode.cgi,v 1.10 2012/05/06 05:48:44 phil Exp $
+# $Id: setPxeMode.cgi,v 1.11 2012/09/18 23:33:18 clem Exp $
 #
 # @Copyright@
 # 
@@ -57,6 +57,10 @@
 # @Copyright@
 #
 # $Log: setPxeMode.cgi,v $
+# Revision 1.11  2012/09/18 23:33:18  clem
+# I need to make kickstart.cgi loadable as a module (I need that in the EC2 roll)
+# then i fixed all the other classes in the pylib
+#
 # Revision 1.10  2012/05/06 05:48:44  phil
 # Copyright Storm for Mamba
 #
@@ -160,6 +164,8 @@ class App(rocks.sql.Application):
 		self.close()
 		return
 
-app = App()
-app.run()
+
+if __name__ == "__main__":
+	app = App()
+	app.run()
 

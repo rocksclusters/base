@@ -1,6 +1,6 @@
 #! @PYTHON@
 #
-# $Id: kgen.py,v 1.23 2012/05/06 05:48:44 phil Exp $
+# $Id: kgen.py,v 1.24 2012/09/18 23:33:17 clem Exp $
 #
 # @Copyright@
 # 
@@ -57,6 +57,10 @@
 # @Copyright@
 #
 # $Log: kgen.py,v $
+# Revision 1.24  2012/09/18 23:33:17  clem
+# I need to make kickstart.cgi loadable as a module (I need that in the EC2 roll)
+# then i fixed all the other classes in the pylib
+#
 # Revision 1.23  2012/05/06 05:48:44  phil
 # Copyright Storm for Mamba
 #
@@ -488,16 +492,16 @@ class App(rocks.app.Application):
 			print line.rstrip()
 
 
-app = App(sys.argv)
-app.parseArgs()
-try:
-	app.run()
-except KickstartError, msg:
-	sys.stderr.write("kgen error - %s\n" % msg)
-	sys.exit(-1)
-
-except SAXParseException, msg:
-	sys.stderr.write("kgen XML parse exception: %s\n" % msg)
-	sys.exit(-1)
-
+if __name__ == "__main__":
+	app = App(sys.argv)
+	app.parseArgs()
+	try:
+		app.run()
+	except KickstartError, msg:
+		sys.stderr.write("kgen error - %s\n" % msg)
+		sys.exit(-1)
+	
+	except SAXParseException, msg:
+		sys.stderr.write("kgen XML parse exception: %s\n" % msg)
+		sys.exit(-1)
 

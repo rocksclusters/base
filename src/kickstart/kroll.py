@@ -1,6 +1,6 @@
 #! @PYTHON@
 #
-# $Id: kroll.py,v 1.21 2012/05/06 05:48:44 phil Exp $
+# $Id: kroll.py,v 1.22 2012/09/18 23:33:17 clem Exp $
 #
 # @Copyright@
 # 
@@ -57,6 +57,10 @@
 # @Copyright@
 #
 # $Log: kroll.py,v $
+# Revision 1.22  2012/09/18 23:33:17  clem
+# I need to make kickstart.cgi loadable as a module (I need that in the EC2 roll)
+# then i fixed all the other classes in the pylib
+#
 # Revision 1.21  2012/05/06 05:48:44  phil
 # Copyright Storm for Mamba
 #
@@ -402,8 +406,8 @@ class App(rocks.kickstart.Application):
 			self.generator.generate(s)
 
 
-
-app = App(sys.argv)
-app.parseArgs()
-app.run()
-
+if __name__ == "__main__":
+	app = App(sys.argv)
+	app.parseArgs()
+	app.run()
+	
