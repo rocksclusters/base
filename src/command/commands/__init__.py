@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.107  2012/09/18 23:35:58  phil
+# more inclusive pattern match
+#
 # Revision 1.106  2012/08/21 19:42:21  phil
 # re-implementation of previous fix to force
 # flag="values possibly with spaces" pattern match. No spaces to first equal.
@@ -2156,7 +2159,7 @@ class Command:
 		list = [] # arguments
 		
 		nparams = 0
-		flagpattern=re.compile("^[a-zA-z0-9]+=")
+		flagpattern=re.compile("^[a-zA-z0-9\-_+]+=")
 
 		for arg in args:
 			tokens = arg.split()
