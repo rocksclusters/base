@@ -1,5 +1,5 @@
 #
-# $Id: __init__.py,v 1.29 2012/08/30 01:00:48 clem Exp $
+# $Id: __init__.py,v 1.30 2012/10/01 04:42:34 phil Exp $
 #
 # @Copyright@
 # 
@@ -56,6 +56,10 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.30  2012/10/01 04:42:34  phil
+#
+# Handle case when node hasn't yet reported it's interfaces (e.g. at discovery)
+#
 # Revision 1.29  2012/08/30 01:00:48  clem
 # Fix for the dhcpd problem with duplicate host name with virtual host
 #
@@ -349,7 +353,12 @@ class Command(rocks.commands.HostArgumentProcessor,
 			if node.name is None or node.mac is None or node.ip is None or len(node.mac) > 20:
 				continue
 
-			node.name = node.name + '-' + netdevice
+			# Try to add the netdevice name -- it won't exist
+			# at first discovery
+			try:
+				node.name = node.name + '-' + netdevice
+			except:
+				pass
 			self.printHost(node.name, hostname, node.mac, node.ip, filename, nextserver)
 
 		self.addOutput('', '\t}')
