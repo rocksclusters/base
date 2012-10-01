@@ -21,6 +21,7 @@
 <package>rocks-config-server</package>
 <package>rocks-admin</package>
 <package>firefox</package>
+<package>google-authenticator</package>
 <package>pdsh</package>
 <!-- needed bacause eclipse rpm in the java roll provides libcairo -->
 <package arch="x86_64">cairo.x86_64</package>
