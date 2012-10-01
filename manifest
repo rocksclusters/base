@@ -21,6 +21,7 @@ foundation-tidy
 foundation-wget
 ganglia-pylib
 ganglia-receptor
+google-authenticator
 jdk-6u16
 libdnet
 librocks
