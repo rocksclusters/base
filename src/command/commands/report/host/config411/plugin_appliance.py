@@ -1,4 +1,4 @@
-# $Id: plugin_appliance.py,v 1.3 2012/05/06 05:48:32 phil Exp $
+# $Id: plugin_appliance.py,v 1.4 2012/10/02 21:10:12 clem Exp $
 
 # @Copyright@
 # 
@@ -55,6 +55,12 @@
 # @Copyright@
 
 # $Log: plugin_appliance.py,v $
+# Revision 1.4  2012/10/02 21:10:12  clem
+# Fix problem with spaces in group memebership of 411 service
+#
+# Problem reported by Scott Hamilton:
+# http://marc.info/?l=npaci-rocks-discussion&m=134685806116850&w=2
+#
 # Revision 1.3  2012/05/06 05:48:32  phil
 # Copyright Storm for Mamba
 #
@@ -78,6 +84,7 @@ class Plugin(rocks.commands.Plugin):
 
 	def run(self, args):
 		# Appliance Type
+		# this xml tag is not used by the 411get at the moment
 		host = self.owner.s.host
 		attrs = self.owner.s.attrs
 		self.owner.addOutput(host, '<appliance>%s</appliance>' %\

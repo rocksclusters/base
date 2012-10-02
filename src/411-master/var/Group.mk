@@ -56,6 +56,12 @@
 # @Copyright@
 # 
 # $Log: Group.mk,v $
+# Revision 1.8  2012/10/02 21:10:12  clem
+# Fix problem with spaces in group memebership of 411 service
+#
+# Problem reported by Scott Hamilton:
+# http://marc.info/?l=npaci-rocks-discussion&m=134685806116850&w=2
+#
 # Revision 1.7  2012/05/06 05:48:16  phil
 # Copyright Storm for Mamba
 #
@@ -118,6 +124,9 @@ groups:
 # Example group1. These files will be sent to nodes in a group
 # called "Storage-Node". If you make a /var/411/groups/Storage-Node/etc/passwd
 # file, it will appear on the node as /etc/passwd.
+# Node are assigned to a group based upon their membership, if the membership 
+# contains spaces, they will be converted into _. 
+# So NAS Appliance belongs to the 411 group NAS_Appliance
 #
 STORAGE_NODE_FILES = \
 	/var/411/groups/Storage-Node/etc/storage-passwd \

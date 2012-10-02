@@ -127,7 +127,7 @@ eavesdrop on messages for a foreign group that it is not a member of.
 </warning>
 
 <para>
-Group names are multi-level, and resemble file paths. By default, every node is a member of the '/' group (corresponding to the traditional top-level 411 group), and the '/Membership' group, where <emphasis>membership</emphasis> is the node membership in the frontend database, such as "Compute" or "NAS".
+Group names are multi-level, and resemble file paths. By default, every node is a member of the '/' group (corresponding to the traditional top-level 411 group), and the '/Membership' group, where <emphasis>membership</emphasis> is the node membership in the frontend database with the spaces replaced by underscores, so compute nodes are part of "Compute" and NAS Appliance are part of the "NAS_Appliance" group (this is due to a limitation of makefile in handling spaces).
 </para>
 
 <tip>
