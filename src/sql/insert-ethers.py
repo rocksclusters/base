@@ -59,6 +59,12 @@
 # @Copyright@
 #
 # $Log: insert-ethers.py,v $
+# Revision 1.54  2012/10/02 18:01:00  clem
+# insert-ether now checks that the user supplied a valid IP
+#
+# Reported by Suresh Singh
+# http://marc.info/?l=npaci-rocks-discussion&m=134593126713897&w=2
+#
 # Revision 1.53  2012/05/06 05:48:49  phil
 # Copyright Storm for Mamba
 #
@@ -793,6 +799,9 @@ class InsertEthers(GUI):
 		self.module = module 
 
 	def setIPaddr(self, ipaddr):
+		#if this works is a valid IP address
+		#if not it throws an exception
+		rocks.ip.IPAddr(ipaddr)
 		self.ipaddr = ipaddr 
 
 	def setNetmask(self, netmask):
