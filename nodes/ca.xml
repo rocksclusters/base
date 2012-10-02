@@ -17,6 +17,10 @@ Sets up keys for the frontend Certificate Authority
 
   <changelog>
   $Log: ca.xml,v $
+  Revision 1.11  2012/10/02 00:40:30  clem
+  fix for the bug reported by Brian D. Ventre
+  http://marc.info/?l=npaci-rocks-discussion&m=133969998011107
+
   Revision 1.10  2012/05/06 05:48:10  phil
   Copyright Storm for Mamba
 
@@ -92,7 +96,7 @@ Sets up keys for the frontend Certificate Authority
 mkdir -p /etc/security/ca
 mkdir -p /etc/security/ca/new-certs
 
-<file name="/etc/security/ca/ca.cfg" perms="0600">
+<file name="/etc/security/ca/ca.cfg" perms="0640" owner="root.apache">
 [ req ]
 default_bits		= 1024
 default_md		= md5
