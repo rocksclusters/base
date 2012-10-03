@@ -4,7 +4,7 @@
 # Bootstrap0: designed for "pristine" systems (aka no rocks)
 # NOTE: This should not be used on ANY Rocks appliance. 
 #
-# $Id: prepdevel.sh,v 1.3 2012/05/06 05:48:08 phil Exp $
+# $Id: prepdevel.sh,v 1.4 2012/10/03 22:49:00 clem Exp $
 #
 # @Copyright@
 # 
@@ -61,6 +61,10 @@
 # @Copyright@
 #
 # $Log: prepdevel.sh,v $
+# Revision 1.4  2012/10/03 22:49:00  clem
+# Make the code a little clearer
+# No need to set lo twice
+#
 # Revision 1.3  2012/05/06 05:48:08  phil
 # Copyright Storm for Mamba
 #
@@ -123,7 +127,6 @@ MYNAME=`hostname`
 /opt/rocks/bin/rocks add appliance bootstrap node=server
 /opt/rocks/bin/rocks add host $MYNAME rack=0 rank=0 membership=bootstrap
 /opt/rocks/bin/rocks add network private 127.0.0.1 netmask=255.255.255.255
-/opt/rocks/bin/rocks add host interface $MYNAME lo subnet=private ip=127.0.0.1
 /opt/rocks/bin/rocks add host interface $MYNAME lo subnet=private ip=127.0.0.1
 /opt/rocks/bin/rocks add attr os `./_os` 
 

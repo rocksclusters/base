@@ -4,7 +4,7 @@
 # Bootstrap0: designed for "pristine" systems (aka no rocks)
 # NOTE: This should not be used on ANY Rocks appliance. 
 #
-# $Id: bootstrap0.sh,v 1.14 2012/10/03 16:48:58 clem Exp $
+# $Id: bootstrap0.sh,v 1.15 2012/10/03 22:49:00 clem Exp $
 #
 # @Copyright@
 # 
@@ -61,6 +61,10 @@
 # @Copyright@
 #
 # $Log: bootstrap0.sh,v $
+# Revision 1.15  2012/10/03 22:49:00  clem
+# Make the code a little clearer
+# No need to set lo twice
+#
 # Revision 1.14  2012/10/03 16:48:58  clem
 # Need wget and genisoimage to properly boostrap on a minimal centos 6.3
 #
@@ -121,7 +125,11 @@ fi
 
 # 1. other system packages (need similar for solaris)
 if [ `./_os` == "linux" ]; then
-	yum -y install rpm-build rpm-devel gcc gcc-c++ ncurses-devel swig glib2 glib2-devel openssl-devel pygobject2 pygobject2-devel cairo cairo-devel createrepo apr apr-devel expat-devel redhat-lsb wget genisoimage
+	#needed to run rocks create mirror
+	EXTRA_PACKAGES="wget genisoimage"
+	#needed to detect OS version
+	EXTRA_PACKAGES="$EXTRA_PACKAGES redhat-lsb"
+	yum -y install rpm-build rpm-devel gcc gcc-c++ ncurses-devel swig glib2 glib2-devel openssl-devel pygobject2 pygobject2-devel cairo cairo-devel createrepo apr apr-devel expat-devel $EXTRA_PACKAGES
 	# packages required to build anaconda on 6
 	yum -y install e2fsprogs-devel isomd5sum-devel libarchive-devel libXxf86misc-devel libblkid-devel libnl-devel newt-devel pykickstart slang-devel NetworkManager-devel NetworkManager-glib-devel iscsi-initiator-utils-devel device-mapper-devel
 fi
