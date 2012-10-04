@@ -1,4 +1,4 @@
-#$Id: __init__.py,v 1.31 2012/07/13 00:52:21 clem Exp $
+#$Id: __init__.py,v 1.32 2012/10/04 19:21:44 clem Exp $
 # 
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.32  2012/10/04 19:21:44  clem
+# Now vm-container with multiple interfaces can be assigned IP addresses without reboot
+#
 # Revision 1.31  2012/07/13 00:52:21  clem
 # one more fix to the new module files: on kvm host the interface must be
 # named with the p in front of its name
@@ -332,11 +335,13 @@ class Command(rocks.commands.HostArgumentProcessor,
 			self.addOutput(host, 'MTU=%s' % mtu)
 		self.addOutput(host, '</file>')
 
+		# I want to create the empty file so that it overwirtes default 
+		# Anaconda files
+		s = '<file name="/etc/sysconfig/network-scripts/ifcfg-'
+		s += '%s">' % brName
+		self.addOutput(host, s)
 		if ip and netmask:
 			#    ------      bridge dev with IP
-			s = '<file name="/etc/sysconfig/network-scripts/ifcfg-'
-			s += '%s">' % brName
-			self.addOutput(host, s)
 			self.addOutput(host, 'DEVICE=%s' % brName)
 			self.addOutput(host, 'TYPE=Bridge')
 			if ip and netmask:
@@ -352,7 +357,7 @@ class Command(rocks.commands.HostArgumentProcessor,
 				self.addOutput(host, 'ONBOOT=no' )
 			if mtu:
 				self.addOutput(host, 'MTU=%s' % mtu)
-			self.addOutput(host, '</file>')
+		self.addOutput(host, '</file>')
 		
 
 
