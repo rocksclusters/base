@@ -1,4 +1,4 @@
-# $Id: plugin_hostauth.py,v 1.4 2012/08/14 17:29:30 phil Exp $
+# $Id: plugin_hostauth.py,v 1.5 2012/10/04 21:55:01 phil Exp $
 # 
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: plugin_hostauth.py,v $
+# Revision 1.5  2012/10/04 21:55:01  phil
+# sync only to self and to subordinate login appliances. Generic frontends was too expansive as it included virtual frontends too.
+#
 # Revision 1.4  2012/08/14 17:29:30  phil
 # with hostbased authentication, remove /etc/ssh/rocks_autogen_user_keys on frontend
 # and login appliances
@@ -85,12 +88,12 @@ class Plugin(rocks.commands.Plugin):
 				'rocks_autogen_user_keys')
 		try:
 			if (autogen.lower() == 'true' ):
-				subprocess.call("rocks run host frontend login '/bin/touch %s'" % touchfile, shell=True)
+				subprocess.call("rocks run host localhost login '/bin/touch %s'" % touchfile, shell=True)
 			else:
-				subprocess.call("rocks run host frontend login '[ -f %s ] && /bin/rm %s'" 
+				subprocess.call("rocks run host localhost login '[ -f %s ] && /bin/rm %s'" 
 						% (touchfile,touchfile), shell=True)
 		except:
-			subprocess.call("rocks run host frontend login '[ -f %s ] && /bin/rm %s'" 
+			subprocess.call("rocks run host localhost login '[ -f %s ] && /bin/rm %s'" 
 						% (touchfile,touchfile), shell=True)
 
 		# regenerate shosts and publish via 411
