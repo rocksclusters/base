@@ -16,10 +16,11 @@
 
 	<changelog>
 	$Log: bootstrap-packages.xml,v $
+	Revision 1.12  2012/10/04 21:48:11  clem
+	more bad char in the CVS logs
+	
 	Revision 1.11  2012/10/04 16:54:26  clem
 	pam devel is needed by google athenticator
-	
-	Signed-off-by: Luca Clementi <luca.clementi@gmail.com>
 	
 	Revision 1.10  2012/05/06 05:48:10  phil
 	Copyright Storm for Mamba
