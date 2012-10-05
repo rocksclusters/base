@@ -16,6 +16,9 @@
 
 	<changelog>
 	$Log: bootstrap-packages.xml,v $
+	Revision 1.14  2012/10/05 18:37:09  clem
+	yum-utils is needed by rocks-boot to compile
+	
 	Revision 1.13  2012/10/05 07:35:22  clem
 	src/evk needs eject
 	
@@ -135,6 +138,7 @@
 	<package os="linux">tetex-latex</package>
 	<package os="linux">xmlto</package>
 	<package os="linux">xorg-x11-util-macros</package>
+	<package os="linux">yum-utils</package>
 
 </kickstart>
 
