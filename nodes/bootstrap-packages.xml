@@ -16,6 +16,9 @@
 
 	<changelog>
 	$Log: bootstrap-packages.xml,v $
+	Revision 1.13  2012/10/05 07:35:22  clem
+	src/evk needs eject
+	
 	Revision 1.12  2012/10/04 21:48:11  clem
 	more bad char in the CVS logs
 	
@@ -71,6 +74,7 @@
 	<package os="linux">dialog</package>
 	<package os="linux">elfutils-devel</package>
 	<package os="linux">expat-devel</package>
+	<package os="linux">eject</package>
 	<package os="linux">glibc-static</package>
 	<package os="linux">gtk2-devel</package>
 	<package os="linux">gtk+-devel</package>
