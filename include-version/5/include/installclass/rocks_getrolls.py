@@ -1,5 +1,5 @@
 #
-# $Id: rocks_getrolls.py,v 1.2 2012/05/06 05:48:10 phil Exp $
+# $Id: rocks_getrolls.py,v 1.3 2012/10/11 23:06:08 clem Exp $
 #
 # @Copyright@
 # 
@@ -56,6 +56,9 @@
 # @Copyright@
 #
 # $Log: rocks_getrolls.py,v $
+# Revision 1.3  2012/10/11 23:06:08  clem
+# frontend with single partition fixup in anaconda for rocks 5
+#
 # Revision 1.2  2012/05/06 05:48:10  phil
 # Copyright Storm for Mamba
 #
@@ -133,6 +136,12 @@ def RocksGetRolls(anaconda):
 	#
 	cwd = os.getcwd()
 	os.chdir('/mnt/sysimage')
+
+	if not os.path.exists('state'):
+		os.mkdir('state')
+	if not os.path.exists('state/partition1'):
+		os.mkdir('state/partition1')
+
 	try:
 		os.symlink('state/partition1', 'export')
 	except:
