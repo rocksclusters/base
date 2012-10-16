@@ -1,0 +1,146 @@
+<section id="otp"
+	xreflabel="Enabling Two-Factor Authentication">
+<title> Enabling Two-Factor Authentication with Google Authenticator </title>
+
+<para>
+<emphasis>Two-factor</emphasis> authentication is a technique to improve password
+security on frontends and login nodes. The two factors are something you know
+(password) and something you possess physically (e.g., a phone, a hardware key token
+, ...). Rocks supports two-factor authentication on Frontend and Login appliances
+using Google's free and open <ulink url="http://code.google.com/p/google-authenticator"> google authenticator </ulink>.  Two-factor authentication is often called one-time passwords (OTP), because the rotating codes (every 30 seconds, by default) are 
+used just once and then discarded. This document uses two-factor and one-time 
+passwords (OTP) interchangeably.
+</para>
+<para> It is reasonable to ask, "How is this different from RSA or other hardware 
+tokens?".  In technique, this method is not different from hardware tokens. Both 
+use time-based keys.  However, standalone key tokens are arguably stronger because
+the device that you possess is not connected to any network (unlike your phone). 
+Nevertheless, Google Authenticator is significantly stronger than just using password-only authentication. 
+</para> 
+<section>
+<title>Download and Install App for your Smartphone</title>
+
+<para>
+Google authenticator requires the user to download a small application for their
+smartphone.  There are apps for 
+<ulink url="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2"> 
+Android phones </ulink> and 
+<ulink url="http://itunes.apple.com/us/app/google-authenticator/id388497605?mt=8"> 
+Apple iPhones</ulink>. Please see the appropriate link for your smartphone.  
+</para>
+
+<para>
+The Android Application is available at the Google Play Store
+<mediaobject>
+	<imageobject>
+		<imagedata fileref="images/GooglePlayAuthenticator.png" scale=75>
+	</imageobject>
+</mediaobject>
+</para>
+
+<para>
+The IOS Application is available at the Apple iTunes Store 
+<mediaobject>
+	<imageobject>
+		<imagedata fileref="images/AppleiTunesAuthenticator.png" scale=75>
+	</imageobject>
+</mediaobject>
+</para>
+</section>
+
+<section> 
+<title>Creating a User's Second Factor (One Time Password)</title>
+<para> 
+Users must be in the <computeroutput>google-otp</computeroutput> group to utilize
+one-time passwords (OTP).  The Rocks-defined PAM configuration first checks if 
+the user is in the group, and then checks if a user-specific OTP configuration 
+file is in the correct location (/export/google-authenticator/&lt;username&gt;).   
+This enables cluster owners to have mixtures of users, some of whom use two-factor
+authentication and some of whom do not. It is highly recommended that users who
+can gain root privilege (sudo or direct login) utilize two-factor authentication.
+</para>
+<para> The user creates a password file using <computeroutput>google-authenticator
+</computeroutput>. A number of options are asked of the user and it is recommended
+that the user selects "yes" to every question.  The program will create 
+a <ulink url="http://en.wikipedia.org/wiki/QR_code"> QR </ulink> code that can be 
+scanned by either the Android or IOS application to register the created password
+with the phone application. 
+</para>
+<screen>
+% google-authenticator 
+</screen>
+
+<para>
+The following example shows a screenshot of google-authenticator
+<mediaobject>
+	<imageobject>
+		<imagedata fileref="images/GoogleAuthenticator1.png" scale=75>
+	</imageobject>
+</mediaobject>
+</para>
+<para>
+<mediaobject>
+	<imageobject>
+		<imagedata fileref="images/GoogleAuthenticator2.png" scale=75>
+	</imageobject>
+</mediaobject>
+</para>
+
+<warning>
+<para>
+Your terminal font may need to be minimized to fit the QR code onto your
+display so that it can be scanned by the Phone App
+</para>
+</warning>
+
+<para>
+Scan the QR code with your Phone's Camera while in the Google Authenticator App. 
+For example, in the iPhone app, you should get to screen that looks like
+<mediaobject>
+	<imageobject>
+		<imagedata fileref="images/scanbarcode.png">
+	</imageobject>
+</mediaobject>
+</para>
+</section>
+<section>
+<title>Enabling Two-factor for a particular user</title>
+<para>
+Once a user has created a two-factor code (which is a private password file), it 
+needs to be moved from the user's home directory to a more secure location. 
+That password file, then needs to be owned by root for two-factor to become active. 
+Removing this file, will disable two-factor authentication for a particular user.
+</para>
+
+<screen>
+# mv /home/&lt;user&gt;/.google-authenticator /export/google-authenticator/&lt;user&gt;
+# chown root.root /export/google-authenticator/&lt;user&gt;
+# make -C /var/411
+# rocks sync users
+</screen>
+
+<note> 
+<para>
+If the user has generated their password on a login node, then securely copy 
+their .google-authenticator file to the /export/google-authenticator directory on
+the frontend.  Rocks 411 will properly sync these files to all login appliances
+</para>
+</note>
+</section>
+<section>
+<title> The User Experience</title>
+
+<para>
+If all has been configured correctly, then a user will see an  extra step at login,
+a request for a verification code
+</para>
+<screen>
+[phil@build-x86-64 ~]$ ssh 192.168.122.12 -l phil
+Verification code: 
+Password: 
+[phil@centos-6-3 ~]$ 
+</screen>
+
+</section>
+
+</section>

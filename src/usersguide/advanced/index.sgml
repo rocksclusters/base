@@ -2,6 +2,7 @@
 	<title> Advanced Tasks </title>
 
 &firewall;
+&otp;
 &pxeflash;
 &login;
 <!-- &ipmi; -->
