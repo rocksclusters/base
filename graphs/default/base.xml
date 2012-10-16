@@ -4,6 +4,9 @@
 
 	<changelog>
 	$Log: base.xml,v $
+	Revision 1.75  2012/10/16 21:20:11  phil
+	Link to new google-otp nodes
+	
 	Revision 1.74  2012/03/26 17:53:57  phil
 	Wire yum-extras into the graph
 	
@@ -438,6 +441,7 @@
 	</edge>
 
 	<edge from="login">
+		<to>google-otp</to>
 		<to>client</to>
 	</edge>
 
@@ -513,6 +517,8 @@
 		<to>routes-server</to>
 		<to>login-server</to>
 		<to>devel-server</to>
+		<to>google-otp-server</to>
+		<to>google-otp</to>
 	</edge>
 
 	<edge from="server">
