@@ -1,0 +1,32 @@
+<?xml version="1.0" standalone="no"?>
+
+<kickstart>
+
+  <description>
+
+  Google OTP Authentication Support Server Side
+
+  </description>
+
+        <copyright>
+        Copyright (c) 2000 - 2012 The Regents of the University of California.
+        All rights reserved. Rocks(r) v5.5/v6.0 www.rocksclusters.org
+        
+        </copyright>
+
+  <changelog>
+  $Log: google-otp-server.xml,v $
+  Revision 1.1  2012/10/16 21:19:43  phil
+  move most of the logic of google otp into it's own xml files.
+
+  </changelog>
+
+<post>
+
+/usr/sbin/groupadd -g 426 google-otp
+/opt/rocks/bin/rocks add attr Info_GoogleOTPUsers yes
+/opt/rocks/bin/rocks add attr Info_GoogleOTPRoot yes
+
+</post>
+
+</kickstart> 

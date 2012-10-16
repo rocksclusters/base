@@ -10,6 +10,9 @@
 
   <changelog>
   $Log: rocks-devel.xml,v $
+  Revision 1.8  2012/10/16 21:19:43  phil
+  move most of the logic of google otp into it's own xml files.
+
   Revision 1.7  2012/04/05 22:53:55  phil
   nspr-devel package
 
@@ -159,6 +162,7 @@
   <package>pango-devel</package>
   <package>pygobject2-devel</package>
   <package>pycairo-devel</package>
+  <package>qrencode</package>
   <package>rpm-devel</package>
   <package>rpm-python</package>
   <package>tcl-devel</package>
