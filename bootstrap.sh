@@ -2,7 +2,7 @@
 #
 # This file should remain OS independent
 #
-# $Id: bootstrap.sh,v 1.35 2012/05/06 05:48:07 phil Exp $
+# $Id: bootstrap.sh,v 1.36 2012/10/16 21:21:36 phil Exp $
 #
 # @Copyright@
 # 
@@ -59,6 +59,9 @@
 # @Copyright@
 #
 # $Log: bootstrap.sh,v $
+# Revision 1.36  2012/10/16 21:21:36  phil
+# add qrencode to build manifest and bootstrap.  Add google-authenticator key tokens toLogin appliance 411 files
+#
 # Revision 1.35  2012/05/06 05:48:07  phil
 # Copyright Storm for Mamba
 #
@@ -215,6 +218,7 @@ compile_and_install foundation-python-xml
 compile_and_install foundation-python-extras
 compile_and_install foundation-rcs
 compile_and_install foundation-ant
+compile_and_install qrencode
 
 if [ `./_os` == "linux" ]; then
 	compile_and_install librocks

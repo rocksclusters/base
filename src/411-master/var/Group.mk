@@ -56,6 +56,9 @@
 # @Copyright@
 # 
 # $Log: Group.mk,v $
+# Revision 1.9  2012/10/16 21:21:36  phil
+# add qrencode to build manifest and bootstrap.  Add google-authenticator key tokens toLogin appliance 411 files
+#
 # Revision 1.8  2012/10/02 21:10:12  clem
 # Fix problem with spaces in group memebership of 411 service
 #
@@ -120,6 +123,29 @@ groups:
 	echo >> 411-Group.mk
 	$(MAKE) $(GROUPS)
 
+
+### Files for Google-Authenticator two-factor authentication. Sync
+##    to Login nodes.
+ALLKEYS = $(wildcard /export/google-authenticator/*)
+TOKENS = $(subst root,,$(ALLKEYS))
+Login: 
+	@echo "Rebuilding 411 Group makefile for $@..."
+	@files="$(TOKENS)"; \
+	echo "## $@ Group" >> 411-Group.mk; \
+	echo >> 411-Group.mk; \
+	echo -n "all: " >> 411-Group.mk; \
+	for f in $$files; do \
+		echo -n "`$(PUT) --411name --chroot=/var/411/groups/$@ \
+			--group=$@ $$f` "; \
+	done >> 411-Group.mk; \
+	echo >> 411-Group.mk; \
+	echo >> 411-Group.mk; \
+	for f in $$files; do \
+		echo "`$(PUT) --411name --chroot=/var/411/groups/$@ \
+			--group=$@ $$f`:: $$f"; \
+		echo "	$(PUT) --group=$@ --chroot=/var/411/groups/$@ \$$?"; \
+		echo; \
+	done >> 411-Group.mk
 #
 # Example group1. These files will be sent to nodes in a group
 # called "Storage-Node". If you make a /var/411/groups/Storage-Node/etc/passwd
