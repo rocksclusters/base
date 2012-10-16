@@ -1,5 +1,5 @@
 # --------------------------------------------------- -*- Makefile -*- --
-# $Id: Makefile,v 1.2 2012/09/08 06:24:49 phil Exp $
+# $Id: Makefile,v 1.3 2012/10/16 21:18:51 phil Exp $
 #
 # @Copyright@
 # 
@@ -56,6 +56,11 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.3  2012/10/16 21:18:51  phil
+# Patch google-authenticator to not print out the google charts URL. This
+# keeps users from making a mistake and transmitting their seeding password in the
+# open.
+#
 # Revision 1.2  2012/09/08 06:24:49  phil
 # sync users plugin to add root/users to google-otp group based on
 # Info_GoogleOTPUsers and Info_GoogleOTPRoot attributes
@@ -92,6 +97,7 @@ install::
 
 build:
 	gunzip -c $(NAME).$(VERSION).gz | $(TAR) -xf -
+	(cd patch-files && find . -type f | grep -v CVS | cpio -pduv ../)
 	(cd $(NAME)/libpam; make)
 
 foo:
