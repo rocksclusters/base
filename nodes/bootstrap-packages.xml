@@ -16,6 +16,9 @@
 
 	<changelog>
 	$Log: bootstrap-packages.xml,v $
+	Revision 1.15  2012/10/17 05:24:39  phil
+	mysql-devel, httpd-devel
+	
 	Revision 1.14  2012/10/05 18:37:09  clem
 	yum-utils is needed by rocks-boot to compile
 	
@@ -78,6 +81,7 @@
 	<package os="linux">elfutils-devel</package>
 	<package os="linux">expat-devel</package>
 	<package os="linux">eject</package>
+	<package os="linux">httpd-devel</package>
 	<package os="linux">glibc-static</package>
 	<package os="linux">gtk2-devel</package>
 	<package os="linux">gtk+-devel</package>
@@ -111,6 +115,7 @@
 	<package os="linux">libXt-devel</package>
 	<package os="linux">libXxf86misc-devel</package>
 	<package os="linux">mkinitrd-devel</package>
+	<package os="linux">mysql-devel</package>
 	<package os="linux">NetworkManager-devel</package>
 	<package os="linux">NetworkManager-glib-devel</package>
 	<package os="linux">newt-devel</package>
