@@ -16,6 +16,10 @@
 
 	<changelog>
 	$Log: bootstrap-packages.xml,v $
+	Revision 1.16  2012/10/17 23:18:42  phil
+	Forgot to check in google-otp.xml
+	Additional packages for Bootstrap on CentOS 6.3
+	
 	Revision 1.15  2012/10/17 05:24:39  phil
 	mysql-devel, httpd-devel
 	
@@ -80,6 +84,7 @@
 	<package os="linux">dialog</package>
 	<package os="linux">elfutils-devel</package>
 	<package os="linux">expat-devel</package>
+	<package os="linux">environment-modules</package>
 	<package os="linux">eject</package>
 	<package os="linux">httpd-devel</package>
 	<package os="linux">glibc-static</package>
@@ -132,7 +137,9 @@
 	<package os="linux">python-devel</package>
 	<package os="linux">readline-devel</package>
 	<package os="linux">slang-devel</package>
+	<package os="linux">squashfs-tools</package>
 	<package os="linux">syslinux</package>
+	<package os="linux">syslinux-perl</package>
 	<package os="linux">tcl</package>
 	<package os="linux">tcl-devel</package>
 	<package os="linux">tclx</package>

@@ -1,0 +1,43 @@
+<?xml version="1.0" standalone="no"?>
+
+<kickstart>
+
+  <description>
+
+  Google OTP Authentication Support 
+
+  </description>
+
+        <copyright>
+        Copyright (c) 2000 - 2012 The Regents of the University of California.
+        All rights reserved. Rocks(r) v5.5/v6.0 www.rocksclusters.org
+        
+        </copyright>
+
+  <changelog>
+  $Log: google-otp.xml,v $
+  Revision 1.1  2012/10/17 23:18:42  phil
+  Forgot to check in google-otp.xml
+  Additional packages for Bootstrap on CentOS 6.3
+
+
+  </changelog>
+
+<package>google-authenticator</package>
+<post>
+
+<!-- Enable Challenge Response in sshd_config -->
+sed -e '/^ChallengeResponseAuthentication/s/no/yes/g' /etc/ssh/sshd_config &gt; /tmp/sshd_config
+<file name="/etc/ssh/sshd_config" expr='cat /tmp/sshd_config'/>
+
+<!-- Enable google-otp in /etc/pam.d/sshd -->
+/bin/grep -q 'google-otp' /etc/pam.d/sshd
+if [ $? -ne 0 ] &amp;&amp; [ -f /etc/pam.d/sshd ]; then
+sed -e '/#%PAM-1.0/s@#%PAM-1.0@#%PAM-1.0\nauth       include      google-otp@' /etc/pam.d/sshd &gt; /tmp/pamd_sshd
+<file name="/etc/pam.d/sshd" expr='cat /tmp/pamd_sshd'/>
+/bin/rm /tmp/pamd_sshd
+fi
+
+</post>
+
+</kickstart> 
