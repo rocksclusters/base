@@ -12,14 +12,8 @@
 
 <itemizedlist>
 	<listitem>
-	<para>Placeolder for new feetures   ----    KVM Roll (virtualization)for CentOS 6 64-bit Systems</para>
-
-	<para>
-	Xen is no longer supported by RedHat/CentOS 6 system and KVM (Kernel
-	Virtual Machine) is only supported for 64-bit machines.  KVM is 
-        hardware-only virtualization and requires both capability and
-	BIOS to be enabled.
-	</para>
+	<para>Placeolder for new feature   	
+    </para>
 	</listitem>
 
 
@@ -29,7 +23,7 @@
 <section>
 	<title>Enhancements and Bug Fixes</title>
 	<para>
-	Base: removed md5sum of all rpm packages during rocks create distro 
+	Base: removed creation of md5sum of all rpm packages during rocks create distro 
 	</para>
 	<para>
 	Base: now properly configure rsyslog on Rocks 6 (instead of syslog)
@@ -41,7 +35,13 @@
 	Base: better handlying of "rocks run host" when running command on the local host
 	</para>
 	<para>
+	Base: added suport for frontend with single partition
+	</para>
+	<para>
 	Base: new documentation section on ipmi and insert-ethers command line 
+	</para>
+	<para>
+	Base: support for GPT partition table on the compute nodes (disk bigger that 2TB)
 	</para>
 
 	<para>
@@ -53,49 +53,6 @@
 	</para>
 </section>
 </section>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
