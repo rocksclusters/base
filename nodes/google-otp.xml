@@ -16,6 +16,9 @@
 
   <changelog>
   $Log: google-otp.xml,v $
+  Revision 1.2  2012/10/18 05:24:48  phil
+  add qrencode package
+
   Revision 1.1  2012/10/17 23:18:42  phil
   Forgot to check in google-otp.xml
   Additional packages for Bootstrap on CentOS 6.3
@@ -24,10 +27,11 @@
   </changelog>
 
 <package>google-authenticator</package>
+<package>qrencode</package>
 <post>
 
 <!-- Enable Challenge Response in sshd_config -->
-sed -e '/^ChallengeResponseAuthentication/s/no/yes/g' /etc/ssh/sshd_config &gt; /tmp/sshd_config
+sed -e '/ChallengeResponseAuthentication/s/no/yes/g' /etc/ssh/sshd_config &gt; /tmp/sshd_config
 <file name="/etc/ssh/sshd_config" expr='cat /tmp/sshd_config'/>
 
 <!-- Enable google-otp in /etc/pam.d/sshd -->
