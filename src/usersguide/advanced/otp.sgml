@@ -115,7 +115,7 @@ Removing this file, will disable two-factor authentication for a particular user
 <screen>
 # mv /home/&lt;user&gt;/.google-authenticator /export/google-authenticator/&lt;user&gt;
 # chown root.root /export/google-authenticator/&lt;user&gt;
-# make -C /var/411
+# make -C /var/411 clean groups
 # rocks sync users
 </screen>
 
@@ -141,6 +141,48 @@ Password:
 [phil@centos-6-3 ~]$ 
 </screen>
 
+</section>
+<section>
+<title>Frequently Asked Questions</title>
+
+<orderedlist>
+
+<listitem>
+<para>
+Q: is root's OTP key file synched to Login node
+</para>
+<para>
+A: No. Like other security keys associated with root on the frontend,
+this data is never transferred 
+</para>
+</listitem>
+
+<listitem>
+<para>
+Q: If I delete an OTP key file from the frontend and then run 
+<computeroutput>rocks sync users</computeroutput>, will the file be deleted
+on the Login node?
+</para>
+<para>
+A: Yes. The 411 handler on the Login node first deletes all keys (except root)
+in the /export/google-authenticator directory and then unpacks the new ones.  
+</para>
+</listitem>
+
+<listitem>
+<para>
+Q: Is it possible to turn off the automatic addition of users to the google-otp group? 
+</para>
+<para>
+A: Yes. This automatic addition is handled by a <computeroutput>rocks sync users</computeroutput> plugin.  If you set the attribute 
+<computeroutput>Info_GoogleOTPUsers</computeroutput> to "no", then no automated additions will be made. This will not remove users from the google-otp group that have already been added.
+</para>
+<screen>
+# rocks set attr Info_GoogleOTPUsers no
+</screen>
+</listitem>
+
+</orderedlist>
 </section>
 
 </section>
