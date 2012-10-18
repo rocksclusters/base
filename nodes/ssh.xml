@@ -17,6 +17,9 @@
 
   <changelog>
   $Log: ssh.xml,v $
+  Revision 1.20  2012/10/18 19:24:28  phil
+  fix conflict between google-otp config and this one.
+
   Revision 1.19  2012/08/13 05:12:17  phil
   Hostbased Authentication now default method. Thanks, Roy Dragseth.
 
@@ -201,9 +204,7 @@ Match User root
       HostbasedAuthentication no
 </file>
 
-<!-- Turn off challenge-response so we get normal passwd auth. -->
-sed -i -e 's/#ChallengeResponseAuthentication yes/ChallengeResponseAuthentication no/' \
-	/etc/ssh/sshd_config 
+<!-- Permit user environment -->
 sed -i -e 's/#PermitUserEnvironment no/PermitUserEnvironment yes/' \
 	/etc/ssh/sshd_config
 </post>
@@ -232,9 +233,9 @@ Match User root
       HostbasedAuthentication no
 </file>
 
-<!-- Turn off challenge-response so we get normal passwd auth. -->
+<!-- Allow root login get normal passwd auth. -->
 sed -e '/PermitRootLogin/s/no/yes/g' /etc/ssh/sshd_config > /tmp/sshd_config
-mv /tmp/sshd_config /etc/ssh/sshd_config
+<file name="/etc/ssh/sshd_config" expr="cat /tmp/sshd_config" />
 
 </post>
 
