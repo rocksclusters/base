@@ -1,5 +1,5 @@
 # --------------------------------------------------- -*- Makefile -*- --
-# $Id: Makefile,v 1.3 2012/10/16 21:18:51 phil Exp $
+# $Id: Makefile,v 1.4 2012/10/18 05:23:13 phil Exp $
 #
 # @Copyright@
 # 
@@ -56,6 +56,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.4  2012/10/18 05:23:13  phil
+# missing 's' on plugin directory location
+#
 # Revision 1.3  2012/10/16 21:18:51  phil
 # Patch google-authenticator to not print out the google charts URL. This
 # keeps users from making a mistake and transmitting their seeding password in the
@@ -80,7 +83,7 @@ PAMLIBDIR=lib64/security
 else
 PAMLIBDIR=lib/security
 endif
-PLUGINDIR=$(PY.ROCKS)/rocks/commands/sync/user
+PLUGINDIR=$(PY.ROCKS)/rocks/commands/sync/users
 
 
 
