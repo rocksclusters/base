@@ -56,6 +56,10 @@
 # @Copyright@
 # 
 # $Log: Group.mk,v $
+# Revision 1.10  2012/10/18 17:55:21  phil
+# 411 plugin for google authenticator.  creates a tar file of all keys (except
+# root) and transfers to login appliances
+#
 # Revision 1.9  2012/10/16 21:21:36  phil
 # add qrencode to build manifest and bootstrap.  Add google-authenticator key tokens toLogin appliance 411 files
 #
@@ -116,6 +120,7 @@
 #
 
 GROUPS = Storage-Node Math-Node
+GROUPS = Login
 
 .PHONY: groups
 groups: 
@@ -126,7 +131,7 @@ groups:
 
 ### Files for Google-Authenticator two-factor authentication. Sync
 ##    to Login nodes.
-ALLKEYS = $(wildcard /export/google-authenticator/*)
+ALLKEYS = /export/google-authenticator/keys.tar
 TOKENS = $(subst root,,$(ALLKEYS))
 Login: 
 	@echo "Rebuilding 411 Group makefile for $@..."

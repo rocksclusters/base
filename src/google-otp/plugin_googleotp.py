@@ -1,4 +1,4 @@
-# $Id: plugin_googleotp.py,v 1.1 2012/09/08 06:24:49 phil Exp $
+# $Id: plugin_googleotp.py,v 1.2 2012/10/18 17:55:21 phil Exp $
 # 
 # @Copyright@
 # 
@@ -104,6 +104,10 @@ class Plugin(rocks.commands.Plugin):
 			cmd = '/usr/sbin/usermod -a -G google-otp %s' % user
 			subprocess.call(cmd, shell=True)
 
+		# touch /export/google-authenticator/keys.tar
+		# so that 411 will process any new key files
+		cmd = '/bin/touch /export/google-authenticator/keys.tar' 
+		subprocess.call(cmd, shell=True)
 
 
 

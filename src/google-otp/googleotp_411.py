@@ -1,6 +1,5 @@
-# --------------------------------------------------- -*- Makefile -*- --
-# $Id: Makefile,v 1.5 2012/10/18 17:55:21 phil Exp $
-#
+# $Id: googleotp_411.py,v 1.1 2012/10/18 17:55:21 phil Exp $
+
 # @Copyright@
 # 
 # 				Rocks(r)
@@ -54,67 +53,52 @@
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # 
 # @Copyright@
-#
-# $Log: Makefile,v $
-# Revision 1.5  2012/10/18 17:55:21  phil
+
+# $Log: googleotp_411.py,v $
+# Revision 1.1  2012/10/18 17:55:21  phil
 # 411 plugin for google authenticator.  creates a tar file of all keys (except
 # root) and transfers to login appliances
 #
-# Revision 1.4  2012/10/18 05:23:13  phil
-# missing 's' on plugin directory location
-#
-# Revision 1.3  2012/10/16 21:18:51  phil
-# Patch google-authenticator to not print out the google charts URL. This
-# keeps users from making a mistake and transmitting their seeding password in the
-# open.
-#
-# Revision 1.2  2012/09/08 06:24:49  phil
-# sync users plugin to add root/users to google-otp group based on
-# Info_GoogleOTPUsers and Info_GoogleOTPRoot attributes
-#
-# Revision 1.1  2012/09/08 01:18:19  phil
-# First steps to add google-based OTP (two-factor) authentication.
-# Needs plugin for rocks sync users and update to 411 group file to optionally push out OTP secrets to login nodes.
-#
-#
 #
 
-REDHAT.ROOT	= $(CURDIR)/../../
--include $(ROCKSROOT)/etc/Rules.mk
-include Rules.mk
-ifeq ($(ARCH), x86_64)
-PAMLIBDIR=lib64/security
-else
-PAMLIBDIR=lib/security
-endif
-PLUGINDIR=$(PY.ROCKS)/rocks/commands/sync/users
-PLUGINDIR_411 = /opt/rocks/var/plugins/411
+import os
+import sys
+import rocks
+import rocks.service411
+import string
+import subprocess
+
+class Plugin(rocks.service411.Plugin):
+
+	# THIS IS AN ABSOLUTE MUST FOR ALL PLUGINS. WITHOUT THIS,
+	# PLUGINS WONT WORK
+	def get_filename(self):
+		return "/export/google-authenticator/keys.tar"
+
+	def pre_send(self, content):
+		# keys.tar is an empty file/contents ignored
+		# this creates a tar file output stream of the directory 
+		# which is then transmitted.
+                # Never send root's key
+		cmd = "cd /export/google-authenticator;"
+		cmd += "/bin/tar cf - --exclude=root --exclude=keys.tar --no-recursion *"
+		newcontent = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE).stdout
+		return newcontent.read() 
 
 
+	# Function to extract the keys 
+	def post(self):
 
+		# first delete all existing keys, to clean out any 
+                # that were deleted on the fronted.  
+		# never delete root's key, it is considered local
 
-install::
-	mkdir -p $(ROOT)/$(PAMLIBDIR)
-	mkdir -p $(ROOT)/usr/bin
-	mkdir -p $(ROOT)/etc/pam.d
-	mkdir -p $(ROOT)/export/google-authenticator
-	mkdir -p $(ROOT)/$(PLUGINDIR)
-	mkdir -p $(ROOT)/$(PLUGINDIR_411)
-	$(INSTALL) -m755 $(NAME)/libpam/pam_google_authenticator.so  $(ROOT)/$(PAMLIBDIR)
-	$(INSTALL) -m755 $(NAME)/libpam/google-authenticator $(ROOT)/usr/bin
-	$(INSTALL) -m644 google-otp $(ROOT)/etc/pam.d
-	$(INSTALL) -m644 plugin_googleotp.py $(ROOT)/$(PLUGINDIR)
-	$(INSTALL) -m644 googleotp_411.py $(ROOT)/$(PLUGINDIR_411)
-	touch $(ROOT)/export/google-authenticator/keys.tar
-	chmod 600 $(ROOT)/export/google-authenticator/keys.tar
+		cmd1 = "find /export/google-authenticator -type f -not -name keys.tar -not -name root -exec /bin/rm {} \;"
+		subprocess.call(cmd1, shell=True)
 
-build:
-	gunzip -c $(NAME).$(VERSION).gz | $(TAR) -xf -
-	(cd patch-files && find . -type f | grep -v CVS | cpio -pduv ../)
-	(cd $(NAME)/libpam; make)
+		# now extract the new keys
+		cmd = "cd /export/google-authenticator;"
+		cmd += "/bin/tar xfp /export/google-authenticator/keys.tar"
 
-foo:
-	echo $(ARCH)
-	echo $(PAMLIBDIR)
-clean::
-	rm -rf $(NAME) 
+		subprocess.call(cmd, shell=True)
+		
