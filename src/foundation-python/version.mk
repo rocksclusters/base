@@ -2,7 +2,7 @@ NAME	= foundation-python
 CONFIGOPTS = --enable-ipv6 --enable-unicode=ucs4
 
 ifeq ($(strip $(VERSION.MAJOR)), 5)
-VERSION = 2.4.2
+VERSION = 2.4.3
 RELEASE = 0
 ADDFLAGS = 
 else

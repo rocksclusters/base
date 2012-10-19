@@ -4,7 +4,7 @@
 # Bootstrap0: designed for "pristine" systems (aka no rocks)
 # NOTE: This should not be used on ANY Rocks appliance. 
 #
-# $Id: bootstrap0.sh,v 1.15 2012/10/03 22:49:00 clem Exp $
+# $Id: bootstrap0.sh,v 1.16 2012/10/19 23:11:27 clem Exp $
 #
 # @Copyright@
 # 
@@ -61,6 +61,16 @@
 # @Copyright@
 #
 # $Log: bootstrap0.sh,v $
+# Revision 1.16  2012/10/19 23:11:27  clem
+# The "Why did you do that?" saga...
+#
+# Obviously patching anaconda did not work.
+# Python snippet in the kickstart file are still failing (obviously :-()
+#
+# This time I try upgrading python with the same source code used by the
+# original python from RH (heavily patched), let's hope The Force will be
+# with me this time...
+#
 # Revision 1.15  2012/10/03 22:49:00  clem
 # Make the code a little clearer
 # No need to set lo twice
@@ -132,7 +142,15 @@ if [ `./_os` == "linux" ]; then
 	yum -y install rpm-build rpm-devel gcc gcc-c++ ncurses-devel swig glib2 glib2-devel openssl-devel pygobject2 pygobject2-devel cairo cairo-devel createrepo apr apr-devel expat-devel $EXTRA_PACKAGES
 	# packages required to build anaconda on 6
 	yum -y install e2fsprogs-devel isomd5sum-devel libarchive-devel libXxf86misc-devel libblkid-devel libnl-devel newt-devel pykickstart slang-devel NetworkManager-devel NetworkManager-glib-devel iscsi-initiator-utils-devel device-mapper-devel
+	#needed only for rocks 5
+	if awk '{print $3}' /etc/issue | grep 5 ;then 
+		#to compile patched version of python
+		yum -y install gmp-devel gdbm-devel tix-devel tix
+	fi
 fi
+
+
+
 
 # 2. Foundation Packages
 compile_and_install foundation-mysql

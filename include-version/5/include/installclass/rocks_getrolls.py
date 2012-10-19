@@ -1,5 +1,5 @@
 #
-# $Id: rocks_getrolls.py,v 1.4 2012/10/19 18:25:50 clem Exp $
+# $Id: rocks_getrolls.py,v 1.5 2012/10/19 23:11:27 clem Exp $
 #
 # @Copyright@
 # 
@@ -56,6 +56,16 @@
 # @Copyright@
 #
 # $Log: rocks_getrolls.py,v $
+# Revision 1.5  2012/10/19 23:11:27  clem
+# The "Why did you do that?" saga...
+#
+# Obviously patching anaconda did not work.
+# Python snippet in the kickstart file are still failing (obviously :-()
+#
+# This time I try upgrading python with the same source code used by the
+# original python from RH (heavily patched), let's hope The Force will be
+# with me this time...
+#
 # Revision 1.4  2012/10/19 18:25:50  clem
 # Another installment of "Why did you do that?"
 #
@@ -216,7 +226,7 @@ def RocksGetRolls(anaconda):
 	w = anaconda.intf.waitWindow(_("Rocks-Dist"),
 			 _("Rebuilding the Distribution..."))
 
-	cmd = 'PYTHONPATH=""; /opt/rocks/bin/rocks report distro'
+	cmd = '/opt/rocks/bin/rocks report distro'
 	for line in os.popen(cmd).readlines():
 		distrodir = line[:-1]
 
@@ -303,7 +313,7 @@ def downloadRoll(anaconda, roll):
 
 	path = os.path.join(rollname, rollversion, rollarch)
 
-	cmd = 'PYTHONPATH=""; /opt/rocks/bin/rocks report distro'
+	cmd = '/opt/rocks/bin/rocks report distro'
 	for line in os.popen(cmd).readlines():
 		distrodir = line[:-1]
 
