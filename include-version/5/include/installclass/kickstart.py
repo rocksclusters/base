@@ -892,7 +892,7 @@ class Kickstart(cobject):
 
 	# ROCKS
 	# call the rocks code which creates the partition directives
-	os.system('/tmp/product/do_partition.py > /tmp/partition-info')
+	os.system('PYTHONPATH="/tmp/product";/tmp/product/do_partition.py > /tmp/partition-info')
 	# ROCKS
 
         if anaconda.intf is not None:

@@ -1,5 +1,5 @@
 #
-# $Id: rocks_getrolls.py,v 1.3 2012/10/11 23:06:08 clem Exp $
+# $Id: rocks_getrolls.py,v 1.4 2012/10/19 18:25:50 clem Exp $
 #
 # @Copyright@
 # 
@@ -56,6 +56,19 @@
 # @Copyright@
 #
 # $Log: rocks_getrolls.py,v $
+# Revision 1.4  2012/10/19 18:25:50  clem
+# Another installment of "Why did you do that?"
+#
+# Redhat decided to patch python 2.4.3 and to move some function which once where in
+# os.py as a built-in methods (this is a python 2.6 code) with no version change
+# though.
+#
+# This obviously messes up when you run foundation-python insde anaconda which has
+# the pythonpath pointing to the redhat libraries first.
+#
+# Here some more description of the bug:
+# https://bugzilla.redhat.com/show_bug.cgi?id=750555
+#
 # Revision 1.3  2012/10/11 23:06:08  clem
 # frontend with single partition fixup in anaconda for rocks 5
 #
@@ -203,7 +216,7 @@ def RocksGetRolls(anaconda):
 	w = anaconda.intf.waitWindow(_("Rocks-Dist"),
 			 _("Rebuilding the Distribution..."))
 
-	cmd = '/opt/rocks/bin/rocks report distro'
+	cmd = 'PYTHONPATH=""; /opt/rocks/bin/rocks report distro'
 	for line in os.popen(cmd).readlines():
 		distrodir = line[:-1]
 
@@ -290,7 +303,7 @@ def downloadRoll(anaconda, roll):
 
 	path = os.path.join(rollname, rollversion, rollarch)
 
-	cmd = '/opt/rocks/bin/rocks report distro'
+	cmd = 'PYTHONPATH=""; /opt/rocks/bin/rocks report distro'
 	for line in os.popen(cmd).readlines():
 		distrodir = line[:-1]
 
