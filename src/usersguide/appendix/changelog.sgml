@@ -12,11 +12,39 @@
 
 <itemizedlist>
 	<listitem>
-	<para>Placeolder for new feature   	
-    </para>
+	<para> Host-based SSH authentication is now the default. This
+        eliminates the requirement the users have password-less ssh keys
+        and/or mounted home area on remote nodes   	
+        </para>
 	</listitem>
 
 
+	<listitem>
+	<para> Two-factor SSH authentication using Google Authenticator 
+        Apps for Android and/or iPhone is supported for any/all users. Users
+        can easily create a time-based verification codes that are used
+        in addition to their usual password.
+        </para>
+	</listitem>
+
+	<listitem>
+	<para>  libqrencode.so and qrencode added to easily generate
+        QR 2-dimensional codes.
+        </para>
+	</listitem>
+
+	<listitem>
+	<para>  New ZFS-linux roll to support the ZFS file system via the 
+         <ulink url="http://zfsonlinux.org">ZFS on Linux</ulink>.  Does not
+         support zfs as root file system, yet. 
+        </para>
+	</listitem>
+
+	<listitem>
+	<para>  New kernel-org roll to more easily support vanilla linux
+         kernels from kernel.org.  
+        </para>
+	</listitem>
 </itemizedlist>
 </section>
 
