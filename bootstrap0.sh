@@ -4,7 +4,7 @@
 # Bootstrap0: designed for "pristine" systems (aka no rocks)
 # NOTE: This should not be used on ANY Rocks appliance. 
 #
-# $Id: bootstrap0.sh,v 1.16 2012/10/19 23:11:27 clem Exp $
+# $Id: bootstrap0.sh,v 1.17 2012/10/22 16:35:26 clem Exp $
 #
 # @Copyright@
 # 
@@ -61,6 +61,9 @@
 # @Copyright@
 #
 # $Log: bootstrap0.sh,v $
+# Revision 1.17  2012/10/22 16:35:26  clem
+# some more required packages to compile python 2.4.3 on rocks 5
+#
 # Revision 1.16  2012/10/19 23:11:27  clem
 # The "Why did you do that?" saga...
 #
@@ -145,7 +148,8 @@ if [ `./_os` == "linux" ]; then
 	#needed only for rocks 5
 	if awk '{print $3}' /etc/issue | grep 5 ;then 
 		#to compile patched version of python
-		yum -y install gmp-devel gdbm-devel tix-devel tix
+		yum -y install gmp-devel gdbm-devel tix-devel tix readline-devel tcl-devel tk-devel db4-devel bzip2-devel autoconf
+
 	fi
 fi
 
