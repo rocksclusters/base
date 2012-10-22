@@ -1,5 +1,5 @@
 <!-- 
-$Id: networking-ipmi.sgml,v 1.1 2012/07/31 21:32:45 clem Exp $
+$Id: networking-ipmi.sgml,v 1.2 2012/10/22 23:26:13 clem Exp $
 
 Administration guide
 
@@ -38,23 +38,36 @@ various IPMI devices. All interfaces defined in the rocks database named
 "ipmi" are treated as IPMI devices and not as standard ethernet devices.
 </para>
 <para>
-To configure a IPMI device on a node called compute-0-0 it is 
-good practice to define a network to allocate all the IPMI devices 
-(although not necessary).
-In the following example it is called admin. 
+It is good practice to define a network to allocate all the IPMI devices 
+(although not necessary). IPMI network are sometimes separated from other 
+network for security purposes, other times they can share the existing 
+network infrastructure to save money. The network configuration and design 
+is behind the scope of this tutorial. We simply assume All the nodes are 
+connected to the admin network (10.10.0.0/255.255.0.0) and the frontend 
+has some routing access to it.
+
+In the following example can be used to define the admin network in the 
+rocks DB.
 </para>
 <screen>
-
  # rocks add network admin subnet=10.10.0.0 netmask=255.255.0.0 mtu=1500
+</screen>
+
+<para>
+To configure a IPMI device on a node called compute-0-0, you should run:
+</para>
+
+<screen>
+
  # rocks add host interface compute-0-0 ipmi ip=10.10.255.254 name=ipmi-compute-0-0 subnet=admin
  # rocks set host interface channel compute-0-0 ipmi 1
 
 </screen>
 <para>
 The channel is used to specify which comunication interface should be configured.
-Each IPMI device supports multiple comunication interfaces (Ethernet/IP, serial ports, etc.) so 
-it is necessary to identify which one is associated with the Ethernet interface and 
-use it when setting the channel with the rocks command. Different hardware can have 
+Each IPMI device supports multiple comunication devices (Ethernet/IP, serial ports, etc.) so 
+it is necessary to identify which one is associated with the Ethernet interface to 
+specify it with the rocks set host interface channel command. Different hardware can have 
 different channels for the same type of device.
 To this purpose it is possible to use ipmitool command repeatedly 
 with different channel numbers, untill the Medium info display 
@@ -84,14 +97,43 @@ on the node to finalize the configuration.
 </para>
 <screen>
 
- # rocks sync network compute-0-0
+ # rocks sync host network compute-0-0
  # ssh compute-0-0
  # bash /etc/sysconfig/ipmi
 
 </screen>
 <para>
-After this you IPMI interface should be properly configured.
+After this your IPMI interface should be properly configured.
+To validate your configuration you can use the ipmitool command from your frontend 
+(or from the node which has access to the admin network) as shown in the following 
+example:
 </para>
+
+<screen>
+ipmitool -H 10.10.255.254 -U ADMIN -P admin power status
+</screen>
+
+<para>
+To power off compute-0-0, execute:
+</para>
+
+<screen>
+# ipmitool -H 10.10.255.254 -U ADMIN -P admin power off
+</screen>
+
+<para>
+To power compute-0-0 back on, execute:
+</para>
+
+<screen>
+# ipmitool -H 10.10.255.254 -U ADMIN -P admin power on
+</screen>
+
+<para>
+There are several more management tasks you can perform with ipmitool.
+See the man page for ipmitool for more details.
+</para>
+
 </section>
 
 </section>
