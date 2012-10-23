@@ -1,0 +1,33 @@
+diff -ru Python-2.4.3-orig/Lib/site.py Python-2.4.3/Lib/site.py
+--- Python-2.4.3-orig/Lib/site.py	2006-04-06 09:10:42.000000000 -0700
++++ Python-2.4.3/Lib/site.py	2012-10-22 16:43:22.000000000 -0700
+@@ -179,14 +179,9 @@
+                 sitedirs = [os.path.join(prefix, "Lib", "site-packages")]
+             elif os.sep == '/':
+                 sitedirs = [os.path.join(prefix,
+-                                         "lib64",
+-                                         "python" + sys.version[:3],
+-                                         "site-packages"),
+-                            os.path.join(prefix,
+                                          "lib",
+                                          "python" + sys.version[:3],
+-                                         "site-packages"),                            
+-                            os.path.join(prefix, "lib64", "site-python"),
++                                         "site-packages"),
+                             os.path.join(prefix, "lib", "site-python")]
+             else:
+                 sitedirs = [prefix, os.path.join(prefix, "lib", "site-packages")]
+@@ -399,6 +394,13 @@
+     if hasattr(sys, "setdefaultencoding"):
+         del sys.setdefaultencoding
+ 
++    #
++    # Add foundation-redhat directories
++    # 
++    addsitedir('/opt/rocks/redhat/usr/lib/python2.4/site-packages')
++    #addsitedir('/opt/rocks/redhat/usr/lib/python2.3/site-packages/rhpl')
++    #addsitedir('/opt/rocks/redhat/usr/lib/python2.3/site-packages/rpmdb')
++
+ main()
+ 
+ def _test():

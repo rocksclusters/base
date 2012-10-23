@@ -1,5 +1,5 @@
 # --------------------------------------------------- -*- Makefile -*- --
-# $Id: Makefile,v 1.24 2012/05/06 05:48:43 phil Exp $
+# $Id: Makefile,v 1.25 2012/10/23 00:23:09 clem Exp $
 #
 # @Copyright@
 # 
@@ -56,6 +56,13 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.25  2012/10/23 00:23:09  clem
+# apply patch to change the site.py file on 2.4.3
+#
+#
+# This should be changed to drop a sitecustomize.py inside the source and not
+# patching python source file... next release
+#
 # Revision 1.24  2012/05/06 05:48:43  phil
 # Copyright Storm for Mamba
 #
@@ -171,6 +178,9 @@ include Rules.mk
 build:
 	gunzip -c Python-$(VERSION).tar.gz | $(TAR) -xf -
 	-cd patch-files-$(ARCH) && find . -type f | grep -v CVS | cpio -pduv ../
+ifeq ($(strip $(VERSION.MAJOR)),5)
+	patch -p0 < patch-$(VERSION)-$(ARCH)
+endif	
 	( 								\
 		cd Python-$(VERSION);					\
 		./configure $(ADDFLAGS) --prefix=$(PKGROOT) 		\
