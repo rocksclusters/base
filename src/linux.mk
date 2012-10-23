@@ -1,4 +1,4 @@
-# $Id: linux.mk,v 1.34 2012/05/06 05:48:13 phil Exp $
+# $Id: linux.mk,v 1.35 2012/10/23 00:30:04 clem Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,11 @@
 # @Copyright@
 #
 # $Log: linux.mk,v $
+# Revision 1.35  2012/10/23 00:30:04  clem
+# foundation-python-xml-26 is not used anywhere...
+# We compile it but never install it, let's try to disable its compilation
+# and see if it breaks
+#
 # Revision 1.34  2012/05/06 05:48:13  phil
 # Copyright Storm for Mamba
 #
@@ -205,6 +210,7 @@ SRCDIRS = `find . -type d -maxdepth 1 \
 	-not -name postfix \
 	-not -name lsof \
 	-not -name anaconda-yum-plugins \
+	-not -name foundation-python-xml-26 \
 	-not -name channel`
 
 ## Build environment modules on 5, it is part of 6 in the OS
