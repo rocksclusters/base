@@ -1,4 +1,13 @@
 #!/opt/rocks/bin/python
+#
+#
+# LC
+#
+# Centos 5 (differently from Centos 6) does not support booting on a GPT 
+# partition table:
+# https://access.redhat.com/knowledge/solutions/15224
+# it can use GPT partition for other disk though
+# 
 
 import syslog
 import string
