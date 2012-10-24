@@ -17,6 +17,10 @@
 
   <changelog>
   $Log: ssh.xml,v $
+  Revision 1.21  2012/10/24 18:49:21  clem
+  centos 5.* ships with sshd version 4.* which does not support match rules
+  so disableying host based authentication for root works only on rocks 6
+
   Revision 1.20  2012/10/18 19:24:28  phil
   fix conflict between google-otp config and this one.
 
@@ -198,16 +202,22 @@ chmod a+rx /root
 mkdir /root/.ssh
 chmod a+rx /root/.ssh
 
+<!-- Permit user environment -->
+sed -i -e 's/#PermitUserEnvironment no/PermitUserEnvironment yes/' \
+	/etc/ssh/sshd_config
+</post>
+
+
+<!-- centos 5.* ships with sshd version 4.* which does not support match rules -->
+<post cond="rocks_version_major >= 6">
 <!-- Turn off HostbasedAuthentication for Root, Keys/Password Only -->
 <file name="/etc/ssh/sshd_config" mode="append">
 Match User root
       HostbasedAuthentication no
 </file>
-
-<!-- Permit user environment -->
-sed -i -e 's/#PermitUserEnvironment no/PermitUserEnvironment yes/' \
-	/etc/ssh/sshd_config
 </post>
+
+
 
 <post>
 # Enable HostbasedAuthentication
