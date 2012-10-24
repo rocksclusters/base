@@ -1,4 +1,4 @@
-# $Id: Rolls.mk,v 1.5 2012/05/06 05:48:39 phil Exp $
+# $Id: Rolls.mk,v 1.6 2012/10/24 18:25:53 clem Exp $
 #
 # Common Make rules for Rocks rolls.
 #
@@ -57,6 +57,9 @@
 # @Copyright@
 #
 # $Log: Rolls.mk,v $
+# Revision 1.6  2012/10/24 18:25:53  clem
+# make help now print some documentation regarding the most usefull built target
+#
 # Revision 1.5  2012/05/06 05:48:39  phil
 # Copyright Storm for Mamba
 #
@@ -244,6 +247,42 @@ INCLUDE_SRPMS		= 0
 ISOSIZE			= 600
 
 TAREXCLUDES	= --exclude src --exclude BUILD --exclude SOURCES --exclude SPECS --exclude RPMS --exclude SRPMS
+
+
+# --------------------------------------------------------------------- #
+# Some docs of the make target
+# --------------------------------------------------------------------- #
+
+help:
+	@echo  '  '
+	@echo  '  --  Rocks Makefile help  --  '
+	@echo  '  '
+	@echo  '  '
+	@echo  '   - Top directory targets'
+	@echo  '     (these target must be run from the top level roll source directory)'
+	@echo  '  '
+	@echo  '  roll             - This target creates a Rocks Roll from a roll source directory'
+	@echo  '                     tree. It will create all the RPM packages, bundle all the .xml '
+	@echo  '                     nodes and graphs files, and create the iso. It is the default target.'
+	@echo  '                     (to create a source directory tree run "rocks create roll foo")'
+	@echo  '  profile          - This target create the roll-<rollname>-kickstart RPM which contains'
+	@echo  '                     all the node xml and graph xml files and all the include/ and '
+	@echo  '                     include-version/ files. The final RPM is placed under RPMS/noarch'
+	@echo  '  reroll           - This target only recreate the ISO image using the already built RPMs'
+	@echo  '  '
+	@echo  '                     If you only modify the xml file of your roll after the last compilation'
+	@echo  '                     you can simply run make profile and then make reroll'
+	@echo  '  '
+	@echo  '  '
+	@echo  '   - Package level directory targets'
+	@echo  '     (these targets must be run from the src/<packagename> source directory)'
+	@echo  '  '
+	@echo  '  rpm              - It can be used to create a single RPM from a specific package '
+	@echo  '                     directory. It will create the final RPM inside the ../../RPMS/$(ARCH)'
+	@echo  '  '
+	@echo  '  '
+	@echo  '  '
+
 
 # --------------------------------------------------------------------- #
 # Include the standard build Rules.mk
