@@ -12,6 +12,11 @@
 
   <changelog>
   $Log: syslog-server.xml,v $
+  Revision 1.5  2012/10/25 16:49:38  clem
+  Fix of the Fix: rsyslogd server was using TCP and the client UDP
+
+  Now they all use UDP which is more standard
+
   Revision 1.4  2012/06/02 02:43:51  clem
   broken code it does not work yet but I need it in the CVS
 
@@ -67,8 +72,8 @@ chmod 755 /etc/rc.d/init.d/syslog
 #
 #  --  Rocks  -- 
 # 
-$ModLoad imtcp.so
-$InputTCPServerRun 514
+$ModLoad imudp
+$UDPServerRun 514
 </file>
 
 </post>
