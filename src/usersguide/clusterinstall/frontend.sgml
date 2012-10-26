@@ -19,9 +19,9 @@ rolls:
 </itemizedlist>
 
 <para>
-Additionally, the official Red Hat Enterprise Linux 5 (5.8) or Linux (6.2)
+Additionally, the official Red Hat Enterprise Linux 5 (5.8) or Linux (6.3)
 can be substituted substituted for the OS Rolls.
-Also, any <emphasis>true</emphasis> rebuild of RHEL 5 update 8 or RHEL 6 Update 2 can be used.
+Also, any <emphasis>true</emphasis> rebuild of RHEL 5 update 8 or RHEL 6 Update 3 can be used.
 If you substitute the OS Rolls with one of the above distributions, you
 must supply <emphasis>all</emphasis> the CDs from the distribution (which
 usually is 6 to 9 CDs).
