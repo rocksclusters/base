@@ -1,4 +1,4 @@
-# $Id: plugin_hostauth.py,v 1.5 2012/10/04 21:55:01 phil Exp $
+# $Id: plugin_hostauth.py,v 1.6 2012/10/26 22:48:33 clem Exp $
 # 
 # @Copyright@
 # 
@@ -55,6 +55,12 @@
 # @Copyright@
 #
 # $Log: plugin_hostauth.py,v $
+# Revision 1.6  2012/10/26 22:48:33  clem
+# need to use full path to /opt/rocks/bin/rocks
+#
+# If not during the installation when rocks sync config in an init script
+# it fails because it does not find rocks
+#
 # Revision 1.5  2012/10/04 21:55:01  phil
 # sync only to self and to subordinate login appliances. Generic frontends was too expansive as it included virtual frontends too.
 #
@@ -88,18 +94,18 @@ class Plugin(rocks.commands.Plugin):
 				'rocks_autogen_user_keys')
 		try:
 			if (autogen.lower() == 'true' ):
-				subprocess.call("rocks run host localhost login '/bin/touch %s'" % touchfile, shell=True)
+				subprocess.call("/opt/rocks/bin/rocks run host localhost login '/bin/touch %s'" % touchfile, shell=True)
 			else:
-				subprocess.call("rocks run host localhost login '[ -f %s ] && /bin/rm %s'" 
+				subprocess.call("/opt/rocks/bin/rocks run host localhost login '[ -f %s ] && /bin/rm %s'" 
 						% (touchfile,touchfile), shell=True)
 		except:
-			subprocess.call("rocks run host localhost login '[ -f %s ] && /bin/rm %s'" 
+			subprocess.call("/opt/rocks/bin/rocks run host localhost login '[ -f %s ] && /bin/rm %s'" 
 						% (touchfile,touchfile), shell=True)
 
 		# regenerate shosts and publish via 411
-		p = subprocess.call("rocks report shosts | rocks report script | sh > /dev/null 2>&1", 
+		p = subprocess.call("/opt/rocks/bin/rocks report shosts | /opt/rocks/bin/rocks report script | sh > /dev/null 2>&1", 
 			shell=True) 
-		p = subprocess.call("rocks report knownhosts | rocks report script | sh > /dev/null 2>&1", 
+		p = subprocess.call("/opt/rocks/bin/rocks report knownhosts | /opt/rocks/bin/rocks report script | sh > /dev/null 2>&1", 
 			shell=True) 
 		p = subprocess.call("make -C /var/411 > /dev/null 2>&1", 
 			shell=True) 
