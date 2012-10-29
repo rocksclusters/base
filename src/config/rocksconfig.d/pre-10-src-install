@@ -1,6 +1,6 @@
 #!/opt/rocks/bin/python
 #
-# $Id: pre-10-src-install,v 1.16 2012/05/06 05:48:38 phil Exp $
+# $Id: pre-10-src-install,v 1.17 2012/10/29 18:37:00 clem Exp $
 #
 # @Copyright@
 # 
@@ -57,6 +57,9 @@
 # @Copyright@
 #
 # $Log: pre-10-src-install,v $
+# Revision 1.17  2012/10/29 18:37:00  clem
+# removed popen2
+#
 # Revision 1.16  2012/05/06 05:48:38  phil
 # Copyright Storm for Mamba
 #
@@ -176,7 +179,7 @@
 # look in the configuration source directory for source RPMS to build
 #
 
-import popen2
+import subprocess
 import string
 import os
 import shutil
@@ -194,7 +197,9 @@ try:
 		print 'Building package: ', srpm
 
 		cmd = 'rpmbuild --rebuild %s 2>&1 | tee /tmp/build.debug' % (srpm)
-		stdout, stdin = popen2.popen2(cmd)
+		p = subprocess.Popen(cmd, shell=True,stdin=subprocess.PIPE, 
+				stdout=subprocess.PIPE, close_fds=True)
+		stdout, stdin = (p.stdout, p.stdin)
 
 		for line in stdout.readlines():
 			tokens = string.split(line)
