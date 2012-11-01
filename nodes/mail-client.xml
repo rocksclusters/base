@@ -13,6 +13,9 @@
 
   <changelog>
   $Log: mail-client.xml,v $
+  Revision 1.5  2012/11/01 17:29:07  clem
+  less complains in the log by postfix
+
   Revision 1.4  2011/10/11 23:29:45  anoop
   postfix bug fixes on Solaris
   Need to include a myorigin parameter in the main.cf file
@@ -60,6 +63,8 @@
 # Rocks Postfix configuration for cluster nodes.
 #
 mydestination = 
+# enable only ipv4 so postfix does not complain that ipv6 is not active
+inet_protocols = ipv4
 myorigin = &Kickstart_PrivateDNSDomain;
 relayhost = &Kickstart_PrivateGateway;
 masquerade_domains = &Kickstart_PrivateDNSDomain;
