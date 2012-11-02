@@ -160,6 +160,31 @@ Example:
 </listitem>
 </varlistentry>
 
+
+<varlistentry>
+<term>cond</term>
+<listitem>
+<para>
+Optional.
+If the value of the "cond" is true, then this package will be installed.
+Values can be Rocks attributes or generic python expressions.
+</para>
+
+<para>
+Example:
+<constant><![CDATA[<post cond="rocks_version_major >= 6">]]></constant>.
+</para>
+
+<para>
+If the installed Rocks version is greater or equal than 6 then
+the package will be installed otherwise not. See &lt;post&gt; section 
+below for more example.
+</para>
+
+</listitem>
+</varlistentry>
+
+
 </variablelist>
 </listitem>
 
@@ -365,6 +390,11 @@ All pre sections run before package installation, in contrast to
 commands from the post section.
 All pre sections are run in the context of the installation environment, that
 is, the root file system is a ramdisk.
+</para>
+
+<para>
+The &lt;pre&gt; section supports the same attributes as the &lt;post&gt; section, please refer to the 
+documentation above for a detailed description.
 </para>
 
 </listitem>

@@ -1,5 +1,5 @@
 #
-# $Id: Makefile,v 1.4 2012/05/06 05:48:40 phil Exp $
+# $Id: Makefile,v 1.5 2012/11/02 00:27:56 clem Exp $
 #
 # @Copyright@
 # 
@@ -56,6 +56,9 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.5  2012/11/02 00:27:56  clem
+# Fixed some attributes documentation of the node xml syntax
+#
 # Revision 1.4  2012/05/06 05:48:40  phil
 # Copyright Storm for Mamba
 #
@@ -89,7 +92,7 @@ html: predoc
 pdf: predoc
 	jw --backend pdf --dsl $(PWD)/rocks.dsl#print index.sgml
 
-install::
+install:: build
 	mkdir -p $(ROOT)/$(PKGROOT)/images/install
 	mkdir -p $(ROOT)/$(PKGROOT)/stylesheet-images
 	mkdir -p $(ROOT)/$(PKGROOT)/examples
