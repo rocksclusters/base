@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.9 2012/05/06 05:48:33 phil Exp $
+# $Id: __init__.py,v 1.10 2012/11/08 19:55:41 phil Exp $
 # 
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.10  2012/11/08 19:55:41  phil
+# Lock down DNS requesters to private network and loopback for recursive lookups. Even if firewall is off, named will refuse to resolve hostnames outside of the cluster.
+#
 # Revision 1.9  2012/05/06 05:48:33  phil
 # Copyright Storm for Mamba
 #
@@ -117,11 +120,19 @@ import os
 import string
 import rocks.commands
 
-config_preamble = """options {
+config_preamble = """
+acl rocks-trusted {
+	%s/%s;
+	127.0.0.1;
+}
+
+options {
 	directory "/var/named";
 	dump-file "/var/named/data/cache_dump.db";
 	statistics-file "/var/named/data/named_stats.txt";
 	forwarders { %s; };
+	allow-recursion { rocks-trusted; };
+	allow-query { rocks-trusted; };
 };
 
 controls {
@@ -217,6 +228,9 @@ class Command(rocks.commands.report.command):
 		s = '<file name="/etc/named.conf" perms="0644">\n'
 
 		s += warning
+		# Get the private network 
+		pnet = self.db.getHostAttr('localhost','Kickstart_PrivateNetwork')
+		pcidr = self.db.getHostAttr('localhost','Kickstart_PrivateNetmaskCIDR')
 		# Get a list of all the Public DNS servers
 		fwds = self.db.getHostAttr('localhost','Kickstart_PublicDNSServers')
 		forwarders = string.join(fwds.split(','), ';')
@@ -227,7 +241,7 @@ class Command(rocks.commands.report.command):
 			config_preamble = config_preamble.replace("named.localhost","named.local")
 			
 		# Create the preamble from the template
-		s += config_preamble % (forwarders)
+		s += config_preamble % (pnet, pcidr, forwarders)
 
 		subnet_list = {}
 		# Get a list of all networks that we should serve
