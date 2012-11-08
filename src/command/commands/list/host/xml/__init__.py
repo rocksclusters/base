@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.22 2012/05/06 05:48:27 phil Exp $
+# $Id: __init__.py,v 1.23 2012/11/08 22:40:09 phil Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.23  2012/11/08 22:40:09  phil
+# Put ksdevice=<mac> address into reinstall stanza.
+#
 # Revision 1.22  2012/05/06 05:48:27  phil
 # Copyright Storm for Mamba
 #
@@ -187,14 +190,17 @@ class Command(rocks.commands.list.host.command):
 			# Call "rocks list node xml" with attrs{} dictionary
 			# set from the database.
 
-			self.db.execute("""select nt.ip from networks nt,
-				nodes n, subnets s where s.name="private" and
-				nt.node=n.id and nt.subnet=s.id and 
+			self.db.execute("""SELECT nt.ip, nt.mac 
+				FROM networks nt, nodes n, subnets s 
+				WHERE s.name="private" AND
+				nt.node=n.id AND nt.subnet=s.id AND
+				nt.ip IS NOT NULL AND
 				n.name='%s'""" % host)
-                        address, = self.db.fetchone()
+                        address, ksmac= self.db.fetchone()
 
 			attrs = self.db.getHostAttrs(host)
 			attrs['hostaddr']	= address
+			attrs['ksmac']	= ksmac 
 			attrs['distribution']	= dist
 			attrs['graph']		= graph
 			attrs['membership']	= membership

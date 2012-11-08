@@ -16,6 +16,9 @@
 
   <changelog>
   $Log: grub-client.xml,v $
+  Revision 1.20  2012/11/08 22:40:08  phil
+  Put ksdevice=<mac> address into reinstall stanza.
+
   Revision 1.19  2012/05/06 05:48:10  phil
   Copyright Storm for Mamba
 
@@ -127,7 +130,7 @@ if isXen:
 	makegrub.setInstallRamdisk(
 		'kickstart/xen/initrd-xen.iso.gz-&version;-&arch;')
 
-	args = "ks initrd=initrd.img-&version;-&arch; pxe selinux=0 "
+	args = "ks ksdevice=&ksmac; initrd=initrd.img-&version;-&arch; pxe selinux=0 "
 	args += "noipv6 lang= devfs=nomount"
 
 	makegrub.run(args)
@@ -142,7 +145,7 @@ else:
 	makegrub.setInstallRamdisk(
 		'kickstart/default/initrd.img-&version;-&arch;')
 
-	args = "ks selinux=0"
+	args = "ks ksdevice=&ksmac; selinux=0"
 	makegrub.run(args)
 
 	newmakegrub = rocks.grub.App()
