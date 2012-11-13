@@ -58,6 +58,13 @@ class RocksPartition:
 				raids = l[1:]
 		file.close()
 
+		file = open('/dev/md/md-device-map', 'r')
+		for line in file.readlines():
+			l = string.split(line)
+			if len(l) > 0 and not (l[0] in raids):
+				raids.append(l[0])
+		file.close()
+
 		return raids
 
 	def gptDrive(self, devname):
