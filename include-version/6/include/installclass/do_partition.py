@@ -171,7 +171,18 @@ if douserpartitioning == 0:
 							% a[1]
 					
 						raidparts.append(part)
-				
+
+#
+# if there is any raid we need to deactivate it since 
+# "/sbin/mdadm --assemble --scan" has turn them on!!
+#
+# some times the raid is mounted with md<randomnamber>
+# that's why i need to check the md-device-map
+#
+for line in open('/dev/md/md-device-map'):
+	devname = line.split()[0]
+        os.system('/sbin/mdadm --stop /dev/' + devname)
+
 for line in raidparts:
 	print line 
 
