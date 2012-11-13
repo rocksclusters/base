@@ -720,15 +720,11 @@ class RocksPartition:
 				israid = 1
 
 				args += [ "--device=%s" % (nodedevice) ]
+				args += [ "--useexisting" ]
 
 				if nodepartflags != '':
 					args += [ nodepartflags ]
 
-				for part in string.split(nodebootflags):
-					if len(part) > 3 and \
-							part[0:4] == 'raid':
-
-						args.append(part) 
 			else:
 				args += [ "--onpart", nodedevice ]
 
