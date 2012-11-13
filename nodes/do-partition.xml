@@ -4,6 +4,18 @@
 
 <changelog>
 $Log: do-partition.xml,v $
+Revision 1.7  2012/11/13 23:27:50  clem
+When creating a RAID array use the proper hostname
+
+We need to set the hostname before creating a RAID array so that the RAID
+metadata contains the proper hostname (at this point the installed host
+hostname is localhost.localdomain).
+
+If the raid is dinamically created in a second moment and the hostname in the
+metadata does not correspond with the local hostname the RAID sub-system
+thinks that the RAID is an external RAID (imported from another machine)
+and creates it with another name (not the standard md0/md1 but md127/md126)
+
 Revision 1.6  2009/02/02 19:51:36  bruno
 fix for new entities
 
@@ -39,6 +51,12 @@ app.setHostname('&hostname;')
 app.run()
 </eval>
 </file>
+
+#
+# needed to create RAID with proper metadata information 
+# regarding the hostname
+#
+hostname &hostname;.local
 
 chmod a+x /tmp/product/do_partition.py
 </pre>
