@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.15 2012/05/06 05:48:21 phil Exp $
+# $Id: __init__.py,v 1.16 2012/11/16 03:52:56 clem Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.16  2012/11/16 03:52:56  clem
+# before running rocks create distro check if lock file is already in place
+#
 # Revision 1.15  2012/05/06 05:48:21  phil
 # Copyright Storm for Mamba
 #
@@ -192,6 +195,11 @@ class Command(rocks.commands.create.command):
 		# args = arch
 		#
 		lockfile = '/var/lock/rocks-dist'
+		if os.path.exists(lockfile):
+			
+			self.abort("Lockfile exists already. Is another rocks create " +\
+				"distro running?\nRemove %s if you are sure it doesn't." 
+				% lockfile)
 		os.system('touch %s' % lockfile)
 
 		(arch, version, withrolls, root, calcmd5, dist) = self.fillParams(
