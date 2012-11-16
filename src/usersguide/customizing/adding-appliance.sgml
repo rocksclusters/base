@@ -16,7 +16,7 @@ Before you begin, you'll want to be comfortable with the Rocks XML framework
 that is used to produce a configuration graph.
 Details on this framework are found in the
 <ulink
-url="http://www.rocksclusters.org/rocks-documentation/reference-guide/4.3/">Reference Guide</ulink>.
+url="http://www.rocksclusters.org/roll-documentation/developers-guide/">Developers Guide</ulink>.
 </para>
 
 <para>
