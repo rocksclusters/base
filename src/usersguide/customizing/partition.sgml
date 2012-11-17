@@ -90,16 +90,24 @@ will be preserved over reinstallations.
 	<title> Customizing Compute Node Disk Partitions </title>
 
 <para>
-In Rocks, to supply custom partitioning to a node, one must write code
-in a <computeroutput>&lt;pre&gt;</computeroutput> section and the code must
-create a file
-named <computeroutput>/tmp/user_partition_info</computeroutput>.
-Red Hat kickstart partitioning directives should be placed inside
-<computeroutput>/tmp/user_partition_info</computeroutput>.
+In Rocks, to specify custom partitioning for a node, one must write code
+in a <computeroutput>&lt;pre&gt;</computeroutput> section which creates a 
+file named <computeroutput>/tmp/user_partition_info</computeroutput>.
+with Red Hat kickstart partitioning directives in it.
+This file will be used to create the initial partitioning on a node 
+when no other info is contained in the Frontend data base and the 
+pre-existing partition are not marked by rocks (e.g. /.rocks-release).
+While when reinstalling a node which has partition information 
+already stored in the data base and the local disk are already marked 
+Rocks installer will simply reformat the "/" partition and the "/var" 
+and leave untouched all the other partitions.
 This allows users to fully program their cluster nodes' partitions.
 In the examples below, we'll explore what this means.
 </para>
 
+<para>
+
+</para>
 
 <section id="customization-modifying-partitioning-1"
 		xreflabel="Single Disk Example">
