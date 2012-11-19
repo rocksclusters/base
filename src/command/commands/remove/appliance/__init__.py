@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.15 2012/05/06 05:48:28 phil Exp $
+# $Id: __init__.py,v 1.16 2012/11/19 20:12:14 clem Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,14 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.16  2012/11/19 20:12:14  clem
+# Fix rocks remove appliance
+#
+# rocks remove appliance now checks if there are any more nodes
+# associated with that appliance before removing the appliance,
+# If it finds some nodes it fails, so the DB is not left in an
+# inconsistent state.
+#
 # Revision 1.15  2012/05/06 05:48:28  phil
 # Copyright Storm for Mamba
 #
@@ -123,6 +131,7 @@
 
 
 import rocks.commands
+import string
 
 class command(rocks.commands.ApplianceArgumentProcessor,
 	rocks.commands.remove.command):
@@ -147,8 +156,27 @@ class Command(command):
 	def run(self, params, args):
 		if len(args) < 1:
 			self.abort('must supply at least one appliance')
-			
-		for appliance in self.getApplianceNames(args):
+
+		appliances = self.getApplianceNames(args)
+
+		#we first need to check that no nodes are still associated with the 
+		#appliances that user want to delete
+		for appliance in appliances:
+			query = 'select n.name ' + \
+				'from nodes as n, appliances as a, memberships as m ' + \
+				'where a.name = "%s" and a.id = m.Appliance ' + \
+				'and m.id=n.Membership;'
+			self.db.execute(query % appliance)
+			rows = self.db.fetchall()
+                	if len(rows) > 0:
+				#we still have some nodes hanging around, aborting 
+				nodes = string.join([i[0] for i in rows ], ', ')
+				self.abort(("The nodes %s are still part of the appliance %s." + \
+					"\nPlease delete them (rocks remove host) before removing the appliance.") % \
+					(nodes, appliance))	
+
+
+		for appliance in appliances:
 			self.runPlugins(appliance)
 
 
