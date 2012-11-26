@@ -17,6 +17,9 @@
 
   <changelog>
   $Log: cdr.xml,v $
+  Revision 1.9  2012/11/26 23:26:04  clem
+  cdrecord does not exist anymore. now it is called wodim
+
   Revision 1.8  2012/05/06 05:48:10  phil
   Copyright Storm for Mamba
 
@@ -61,7 +64,7 @@
 
   </changelog>
 
-  <package>cdrecord</package>
+  <package>whodim</package>
   <package>mkisofs</package>
 
 
