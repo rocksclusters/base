@@ -17,6 +17,9 @@
 
   <changelog>
   $Log: cdr.xml,v $
+  Revision 1.10  2012/11/26 23:51:04  phil
+  Fixing a typo (Hi Luca!)
+
   Revision 1.9  2012/11/26 23:26:04  clem
   cdrecord does not exist anymore. now it is called wodim
 
@@ -64,7 +67,7 @@
 
   </changelog>
 
-  <package>whodim</package>
+  <package>wodim</package>
   <package>mkisofs</package>
 
 
