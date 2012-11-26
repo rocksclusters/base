@@ -17,6 +17,9 @@
 
   <changelog>
   $Log: c-development.xml,v $
+  Revision 1.16  2012/11/26 23:24:31  clem
+  curl-devel does not exist... it must be libcurl-devel
+
   Revision 1.15  2012/05/06 05:48:10  phil
   Copyright Storm for Mamba
 
@@ -185,7 +188,7 @@
   <package>rpm-devel</package>
   <package>elfutils-libelf-devel</package>
   <package>elfutils-devel</package>
-  <package>curl-devel</package>
+  <package>libcurl-devel</package>
 
   <!-- For makedepend -->
   <package>xorg-x11-devel</package>
