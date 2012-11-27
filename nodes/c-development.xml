@@ -17,6 +17,9 @@
 
   <changelog>
   $Log: c-development.xml,v $
+  Revision 1.17  2012/11/27 00:02:56  clem
+  libcurl-devel for centos 6 and curl-devel for centos 5
+
   Revision 1.16  2012/11/26 23:24:31  clem
   curl-devel does not exist... it must be libcurl-devel
 
@@ -188,7 +191,10 @@
   <package>rpm-devel</package>
   <package>elfutils-libelf-devel</package>
   <package>elfutils-devel</package>
+  <!-- Centos 6.x -->
   <package>libcurl-devel</package>
+  <!-- Centos 5.x -->
+  <package>curl-devel</package>
 
   <!-- For makedepend -->
   <package>xorg-x11-devel</package>
