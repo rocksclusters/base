@@ -45,6 +45,13 @@
          kernels from kernel.org.  
         </para>
 	</listitem>
+
+	<listitem>
+	<para> Added Infiniband Support (Mellanox Hardware). Subnet manager 
+        runs by default on frontend. Devices properly configured for users to
+        run OpenMPI applications. 
+        </para>
+	</listitem>
 </itemizedlist>
 </section>
 
@@ -73,12 +80,42 @@
 	</para>
 
 	<para>
+ 	Base: Bugfix. Secure Attributes resynchronized after reinstall/reboot. 
+	</para>
+
+	<para>
+ 	Base: Bugfix. Fixed "remove appliance" to raise an error if a host with
+        that appliance type stil exists. 
+	</para>
+
+	<para>
+ 	Base: Bugfix. Support software RAID-1 for compute node / partitions	
+	</para>
+
+	<para>
+ 	Base: Bugfix. For automatic reinstalls, grub configuration modified to
+        add ksdevice= directive
+	</para>
+
+	<para>
+ 	Base: Bugfix. Fixed permissions on file: /etc/security/ca/ca.cfg 
+	</para>
+
+	<para>
+	Base/Kernel: Bugfix. Kernel roll can now be rebuilt if just the 
+        Rocks-trimmed OS Roll is installed. Full CentOS distribution
+        not required.
+	</para>
+
+	<para>
 	Kernel: tracker client now checks received rpm with internal rpm md5sum 
 	</para>
 
 	<para>
 	Ganglia: updated Ganglia to 3.3.7
 	</para>
+
+
 </section>
 </section>
 
