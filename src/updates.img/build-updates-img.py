@@ -1,15 +1,15 @@
 #!/opt/rocks/usr/bin/python
 #
-# $Id: build-updates-img.py,v 1.20 2012/05/07 03:32:27 phil Exp $
+# $Id: build-updates-img.py,v 1.21 2012/11/27 00:48:51 phil Exp $
 #
 # @Copyright@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		         version 5.5 (Mamba)
-# 		         version 6.0 (Mamba)
+# 		         version 5.6 (Emerald Boa)
+# 		         version 6.1 (Emerald Boa)
 # 
-# Copyright (c) 2000 - 2012 The Regents of the University of California.
+# Copyright (c) 2000 - 2013 The Regents of the University of California.
 # All rights reserved.	
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -57,6 +57,9 @@
 # @Copyright@
 #
 # $Log: build-updates-img.py,v $
+# Revision 1.21  2012/11/27 00:48:51  phil
+# Copyright Storm for Emerald Boa
+#
 # Revision 1.20  2012/05/07 03:32:27  phil
 # libnih for reboot on 6.
 #

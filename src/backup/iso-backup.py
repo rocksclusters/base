@@ -1,15 +1,15 @@
 #! @PYTHON@
 #
-# $Id: iso-backup.py,v 1.15 2012/05/06 05:48:18 phil Exp $
+# $Id: iso-backup.py,v 1.16 2012/11/27 00:48:08 phil Exp $
 #
 # @Copyright@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		         version 5.5 (Mamba)
-# 		         version 6.0 (Mamba)
+# 		         version 5.6 (Emerald Boa)
+# 		         version 6.1 (Emerald Boa)
 # 
-# Copyright (c) 2000 - 2012 The Regents of the University of California.
+# Copyright (c) 2000 - 2013 The Regents of the University of California.
 # All rights reserved.	
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -57,6 +57,9 @@
 # @Copyright@
 #
 # $Log: iso-backup.py,v $
+# Revision 1.16  2012/11/27 00:48:08  phil
+# Copyright Storm for Emerald Boa
+#
 # Revision 1.15  2012/05/06 05:48:18  phil
 # Copyright Storm for Mamba
 #

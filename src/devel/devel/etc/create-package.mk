@@ -1,4 +1,4 @@
-# $Id: create-package.mk,v 1.4 2012/05/06 05:48:39 phil Exp $
+# $Id: create-package.mk,v 1.5 2012/11/27 00:48:32 phil Exp $
 #
 # This makefile is used by the "rocks create package" command to turn any
 # directory into an RPM copied into the contrib area.
@@ -7,10 +7,10 @@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		         version 5.5 (Mamba)
-# 		         version 6.0 (Mamba)
+# 		         version 5.6 (Emerald Boa)
+# 		         version 6.1 (Emerald Boa)
 # 
-# Copyright (c) 2000 - 2012 The Regents of the University of California.
+# Copyright (c) 2000 - 2013 The Regents of the University of California.
 # All rights reserved.	
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -58,6 +58,9 @@
 # @Copyright@
 #
 # $Log: create-package.mk,v $
+# Revision 1.5  2012/11/27 00:48:32  phil
+# Copyright Storm for Emerald Boa
+#
 # Revision 1.4  2012/05/06 05:48:39  phil
 # Copyright Storm for Mamba
 #

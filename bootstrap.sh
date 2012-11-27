@@ -2,16 +2,16 @@
 #
 # This file should remain OS independent
 #
-# $Id: bootstrap.sh,v 1.36 2012/10/16 21:21:36 phil Exp $
+# $Id: bootstrap.sh,v 1.37 2012/11/27 00:48:00 phil Exp $
 #
 # @Copyright@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		         version 5.5 (Mamba)
-# 		         version 6.0 (Mamba)
+# 		         version 5.6 (Emerald Boa)
+# 		         version 6.1 (Emerald Boa)
 # 
-# Copyright (c) 2000 - 2012 The Regents of the University of California.
+# Copyright (c) 2000 - 2013 The Regents of the University of California.
 # All rights reserved.	
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -59,6 +59,9 @@
 # @Copyright@
 #
 # $Log: bootstrap.sh,v $
+# Revision 1.37  2012/11/27 00:48:00  phil
+# Copyright Storm for Emerald Boa
+#
 # Revision 1.36  2012/10/16 21:21:36  phil
 # add qrencode to build manifest and bootstrap.  Add google-authenticator key tokens toLogin appliance 411 files
 #

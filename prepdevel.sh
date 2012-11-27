@@ -4,16 +4,16 @@
 # Bootstrap0: designed for "pristine" systems (aka no rocks)
 # NOTE: This should not be used on ANY Rocks appliance. 
 #
-# $Id: prepdevel.sh,v 1.4 2012/10/03 22:49:00 clem Exp $
+# $Id: prepdevel.sh,v 1.5 2012/11/27 00:48:00 phil Exp $
 #
 # @Copyright@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		         version 5.5 (Mamba)
-# 		         version 6.0 (Mamba)
+# 		         version 5.6 (Emerald Boa)
+# 		         version 6.1 (Emerald Boa)
 # 
-# Copyright (c) 2000 - 2012 The Regents of the University of California.
+# Copyright (c) 2000 - 2013 The Regents of the University of California.
 # All rights reserved.	
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -61,6 +61,9 @@
 # @Copyright@
 #
 # $Log: prepdevel.sh,v $
+# Revision 1.5  2012/11/27 00:48:00  phil
+# Copyright Storm for Emerald Boa
+#
 # Revision 1.4  2012/10/03 22:49:00  clem
 # Make the code a little clearer
 # No need to set lo twice

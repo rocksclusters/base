@@ -2,16 +2,16 @@
 # This script uses the Rocks graph to set up central roll serving.
 # good for a machine that was bootstrap0'ed
 
-# $Id: bootstrap-central.sh,v 1.2 2012/05/06 05:48:07 phil Exp $
+# $Id: bootstrap-central.sh,v 1.3 2012/11/27 00:48:00 phil Exp $
 #
 # @Copyright@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		         version 5.5 (Mamba)
-# 		         version 6.0 (Mamba)
+# 		         version 5.6 (Emerald Boa)
+# 		         version 6.1 (Emerald Boa)
 # 
-# Copyright (c) 2000 - 2012 The Regents of the University of California.
+# Copyright (c) 2000 - 2013 The Regents of the University of California.
 # All rights reserved.	
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -59,6 +59,9 @@
 # @Copyright@
 #
 # $Log: bootstrap-central.sh,v $
+# Revision 1.3  2012/11/27 00:48:00  phil
+# Copyright Storm for Emerald Boa
+#
 # Revision 1.2  2012/05/06 05:48:07  phil
 # Copyright Storm for Mamba
 #

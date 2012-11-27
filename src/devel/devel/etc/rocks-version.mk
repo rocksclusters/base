@@ -1,14 +1,14 @@
 #
-# $Id: rocks-version.mk,v 1.10 2012/05/06 05:48:39 phil Exp $
+# $Id: rocks-version.mk,v 1.11 2012/11/27 00:48:32 phil Exp $
 #
 # @Copyright@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		         version 5.5 (Mamba)
-# 		         version 6.0 (Mamba)
+# 		         version 5.6 (Emerald Boa)
+# 		         version 6.1 (Emerald Boa)
 # 
-# Copyright (c) 2000 - 2012 The Regents of the University of California.
+# Copyright (c) 2000 - 2013 The Regents of the University of California.
 # All rights reserved.	
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -56,6 +56,9 @@
 # @Copyright@
 #
 # $Log: rocks-version.mk,v $
+# Revision 1.11  2012/11/27 00:48:32  phil
+# Copyright Storm for Emerald Boa
+#
 # Revision 1.10  2012/05/06 05:48:39  phil
 # Copyright Storm for Mamba
 #
@@ -306,10 +309,10 @@ rocks-copyright.txt:
 	@echo '' >> $@
 	@echo '				Rocks(r)' >> $@
 	@echo '		         www.rocksclusters.org' >> $@
-	@echo '		         version 5.5 (Mamba)' >> $@
-	@echo '		         version 6.0 (Mamba)' >> $@
+	@echo '		         version 5.6 (Emerald Boa)' >> $@
+	@echo '		         version 6.1 (Emerald Boa)' >> $@
 	@echo '' >> $@
-	@echo 'Copyright (c) 2000 - 2012 The Regents of the University of California.' >> $@
+	@echo 'Copyright (c) 2000 - 2013 The Regents of the University of California.' >> $@
 	@echo 'All rights reserved.	' >> $@
 	@echo '' >> $@
 	@echo 'Redistribution and use in source and binary forms, with or without' >> $@

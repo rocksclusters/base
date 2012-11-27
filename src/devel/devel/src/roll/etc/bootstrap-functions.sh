@@ -5,16 +5,16 @@
 # parsing.  This script starts out as shell code but it generates some
 # simple python code to handle the installation of required packages.
 #
-# $Id: bootstrap-functions.sh,v 1.9 2012/05/06 05:48:39 phil Exp $
+# $Id: bootstrap-functions.sh,v 1.10 2012/11/27 00:48:34 phil Exp $
 #
 # @Copyright@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		         version 5.5 (Mamba)
-# 		         version 6.0 (Mamba)
+# 		         version 5.6 (Emerald Boa)
+# 		         version 6.1 (Emerald Boa)
 # 
-# Copyright (c) 2000 - 2012 The Regents of the University of California.
+# Copyright (c) 2000 - 2013 The Regents of the University of California.
 # All rights reserved.	
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -62,6 +62,9 @@
 # @Copyright@
 #
 # $Log: bootstrap-functions.sh,v $
+# Revision 1.10  2012/11/27 00:48:34  phil
+# Copyright Storm for Emerald Boa
+#
 # Revision 1.9  2012/05/06 05:48:39  phil
 # Copyright Storm for Mamba
 #

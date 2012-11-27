@@ -4,16 +4,16 @@
 # Bootstrap0: designed for "pristine" systems (aka no rocks)
 # NOTE: This should not be used on ANY Rocks appliance. 
 #
-# $Id: bootstrap0.sh,v 1.17 2012/10/22 16:35:26 clem Exp $
+# $Id: bootstrap0.sh,v 1.18 2012/11/27 00:48:00 phil Exp $
 #
 # @Copyright@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		         version 5.5 (Mamba)
-# 		         version 6.0 (Mamba)
+# 		         version 5.6 (Emerald Boa)
+# 		         version 6.1 (Emerald Boa)
 # 
-# Copyright (c) 2000 - 2012 The Regents of the University of California.
+# Copyright (c) 2000 - 2013 The Regents of the University of California.
 # All rights reserved.	
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -61,6 +61,9 @@
 # @Copyright@
 #
 # $Log: bootstrap0.sh,v $
+# Revision 1.18  2012/11/27 00:48:00  phil
+# Copyright Storm for Emerald Boa
+#
 # Revision 1.17  2012/10/22 16:35:26  clem
 # some more required packages to compile python 2.4.3 on rocks 5
 #

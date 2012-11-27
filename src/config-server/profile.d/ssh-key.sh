@@ -1,5 +1,5 @@
 #
-# $Id: ssh-key.sh,v 1.14 2012/08/10 23:49:10 phil Exp $
+# $Id: ssh-key.sh,v 1.15 2012/11/27 00:48:32 phil Exp $
 #
 # generate a ssh key if one doesn't exist
 #
@@ -8,10 +8,10 @@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		         version 5.5 (Mamba)
-# 		         version 6.0 (Mamba)
+# 		         version 5.6 (Emerald Boa)
+# 		         version 6.1 (Emerald Boa)
 # 
-# Copyright (c) 2000 - 2012 The Regents of the University of California.
+# Copyright (c) 2000 - 2013 The Regents of the University of California.
 # All rights reserved.	
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -60,6 +60,9 @@
 #
 #
 # $Log: ssh-key.sh,v $
+# Revision 1.15  2012/11/27 00:48:32  phil
+# Copyright Storm for Emerald Boa
+#
 # Revision 1.14  2012/08/10 23:49:10  phil
 # Support hostbased authentication for ssh.  Inspired by Roy Dragseth.
 #

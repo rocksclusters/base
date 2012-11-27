@@ -383,10 +383,10 @@ When you edit "valgrind-base.xml", you'll see:
         
         				Rocks(r)
         		         www.rocksclusters.org
-        		         version 5.5 (Mamba)
-        		         version 6.0 (Mamba)
+        		         version 5.6 (Emerald Boa)
+        		         version 6.1 (Emerald Boa)
         
-        Copyright (c) 2000 - 2012 The Regents of the University of California.
+        Copyright (c) 2000 - 2013 The Regents of the University of California.
         All rights reserved.	
         
         Redistribution and use in source and binary forms, with or without
@@ -435,6 +435,9 @@ When you edit "valgrind-base.xml", you'll see:
 
         <changelog>
         $Log: internals.sgml,v $
+        Revision 1.10  2012/11/27 00:48:34  phil
+        Copyright Storm for Emerald Boa
+
         Revision 1.9  2012/05/06 05:48:40  phil
         Copyright Storm for Mamba
 
@@ -486,10 +489,10 @@ Now let's add a <constant>&lt;post&gt;</constant> section to it:
         
         				Rocks(r)
         		         www.rocksclusters.org
-        		         version 5.5 (Mamba)
-        		         version 6.0 (Mamba)
+        		         version 5.6 (Emerald Boa)
+        		         version 6.1 (Emerald Boa)
         
-        Copyright (c) 2000 - 2012 The Regents of the University of California.
+        Copyright (c) 2000 - 2013 The Regents of the University of California.
         All rights reserved.	
         
         Redistribution and use in source and binary forms, with or without
@@ -538,6 +541,9 @@ Now let's add a <constant>&lt;post&gt;</constant> section to it:
 
         <changelog>
         $Log: internals.sgml,v $
+        Revision 1.10  2012/11/27 00:48:34  phil
+        Copyright Storm for Emerald Boa
+
         Revision 1.9  2012/05/06 05:48:40  phil
         Copyright Storm for Mamba
 
@@ -645,10 +651,10 @@ Now edit the file "valgrind.xml":
         
         				Rocks(r)
         		         www.rocksclusters.org
-        		         version 5.5 (Mamba)
-        		         version 6.0 (Mamba)
+        		         version 5.6 (Emerald Boa)
+        		         version 6.1 (Emerald Boa)
         
-        Copyright (c) 2000 - 2012 The Regents of the University of California.
+        Copyright (c) 2000 - 2013 The Regents of the University of California.
         All rights reserved.	
         
         Redistribution and use in source and binary forms, with or without
@@ -697,6 +703,9 @@ Now edit the file "valgrind.xml":
 
         <changelog>
         $Log: internals.sgml,v $
+        Revision 1.10  2012/11/27 00:48:34  phil
+        Copyright Storm for Emerald Boa
+
         Revision 1.9  2012/05/06 05:48:40  phil
         Copyright Storm for Mamba
 
@@ -745,10 +754,10 @@ nodes, we'll make an edge from the "base" node XML file to "valgrind-base":
         
         				Rocks(r)
         		         www.rocksclusters.org
-        		         version 5.5 (Mamba)
-        		         version 6.0 (Mamba)
+        		         version 5.6 (Emerald Boa)
+        		         version 6.1 (Emerald Boa)
         
-        Copyright (c) 2000 - 2012 The Regents of the University of California.
+        Copyright (c) 2000 - 2013 The Regents of the University of California.
         All rights reserved.	
         
         Redistribution and use in source and binary forms, with or without
@@ -797,6 +806,9 @@ nodes, we'll make an edge from the "base" node XML file to "valgrind-base":
 
         <changelog>
         $Log: internals.sgml,v $
+        Revision 1.10  2012/11/27 00:48:34  phil
+        Copyright Storm for Emerald Boa
+
         Revision 1.9  2012/05/06 05:48:40  phil
         Copyright Storm for Mamba
 
@@ -896,10 +908,10 @@ Here's the contents of "valgrind-client.xml":
 	
 					Rocks(r)
 			         www.rocksclusters.org
-			         version 5.5 (Mamba)
-			         version 6.0 (Mamba)
+			         version 5.6 (Emerald Boa)
+			         version 6.1 (Emerald Boa)
 	
-	Copyright (c) 2000 - 2012 The Regents of the University of California.
+	Copyright (c) 2000 - 2013 The Regents of the University of California.
 	All rights reserved.	
 	
 	Redistribution and use in source and binary forms, with or without
@@ -948,6 +960,9 @@ Here's the contents of "valgrind-client.xml":
 
 	<changelog>
 	$Log: internals.sgml,v $
+	Revision 1.10  2012/11/27 00:48:34  phil
+	Copyright Storm for Emerald Boa
+	
 	Revision 1.9  2012/05/06 05:48:40  phil
 	Copyright Storm for Mamba
 	
@@ -998,10 +1013,10 @@ And here is the contents of "valgrind-server.xml":
 	
 					Rocks(r)
 			         www.rocksclusters.org
-			         version 5.5 (Mamba)
-			         version 6.0 (Mamba)
+			         version 5.6 (Emerald Boa)
+			         version 6.1 (Emerald Boa)
 	
-	Copyright (c) 2000 - 2012 The Regents of the University of California.
+	Copyright (c) 2000 - 2013 The Regents of the University of California.
 	All rights reserved.	
 	
 	Redistribution and use in source and binary forms, with or without
@@ -1050,6 +1065,9 @@ And here is the contents of "valgrind-server.xml":
 
 	<changelog>
 	$Log: internals.sgml,v $
+	Revision 1.10  2012/11/27 00:48:34  phil
+	Copyright Storm for Emerald Boa
+	
 	Revision 1.9  2012/05/06 05:48:40  phil
 	Copyright Storm for Mamba
 	
@@ -1104,10 +1122,10 @@ graph XML file "valgrind.xml" to look like:
         
         				Rocks(r)
         		         www.rocksclusters.org
-        		         version 5.5 (Mamba)
-        		         version 6.0 (Mamba)
+        		         version 5.6 (Emerald Boa)
+        		         version 6.1 (Emerald Boa)
         
-        Copyright (c) 2000 - 2012 The Regents of the University of California.
+        Copyright (c) 2000 - 2013 The Regents of the University of California.
         All rights reserved.	
         
         Redistribution and use in source and binary forms, with or without
@@ -1156,6 +1174,9 @@ graph XML file "valgrind.xml" to look like:
 
         <changelog>
         $Log: internals.sgml,v $
+        Revision 1.10  2012/11/27 00:48:34  phil
+        Copyright Storm for Emerald Boa
+
         Revision 1.9  2012/05/06 05:48:40  phil
         Copyright Storm for Mamba
 
@@ -1249,10 +1270,10 @@ We can enforce this ordering by adding two
 	
 					Rocks(r)
 			         www.rocksclusters.org
-			         version 5.5 (Mamba)
-			         version 6.0 (Mamba)
+			         version 5.6 (Emerald Boa)
+			         version 6.1 (Emerald Boa)
 	
-	Copyright (c) 2000 - 2012 The Regents of the University of California.
+	Copyright (c) 2000 - 2013 The Regents of the University of California.
 	All rights reserved.	
 	
 	Redistribution and use in source and binary forms, with or without
@@ -1301,6 +1322,9 @@ We can enforce this ordering by adding two
 
 	<changelog>
 	$Log: internals.sgml,v $
+	Revision 1.10  2012/11/27 00:48:34  phil
+	Copyright Storm for Emerald Boa
+	
 	Revision 1.9  2012/05/06 05:48:40  phil
 	Copyright Storm for Mamba
 	

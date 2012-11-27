@@ -1,6 +1,6 @@
 #! @PYTHON@
 #
-# $Id: cluster-kill.py,v 1.15 2012/05/06 05:48:17 phil Exp $
+# $Id: cluster-kill.py,v 1.16 2012/11/27 00:48:08 phil Exp $
 #
 # kill a set of processes on cluster nodes which match the regular expression
 # in supplied on the command line
@@ -9,10 +9,10 @@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		         version 5.5 (Mamba)
-# 		         version 6.0 (Mamba)
+# 		         version 5.6 (Emerald Boa)
+# 		         version 6.1 (Emerald Boa)
 # 
-# Copyright (c) 2000 - 2012 The Regents of the University of California.
+# Copyright (c) 2000 - 2013 The Regents of the University of California.
 # All rights reserved.	
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -60,6 +60,9 @@
 # @Copyright@
 #
 # $Log: cluster-kill.py,v $
+# Revision 1.16  2012/11/27 00:48:08  phil
+# Copyright Storm for Emerald Boa
+#
 # Revision 1.15  2012/05/06 05:48:17  phil
 # Copyright Storm for Mamba
 #

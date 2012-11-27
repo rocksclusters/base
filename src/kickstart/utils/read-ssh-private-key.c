@@ -1,4 +1,4 @@
-static char rcsid[] = "$Id: read-ssh-private-key.c,v 1.13 2012/05/06 05:48:44 phil Exp $";
+static char rcsid[] = "$Id: read-ssh-private-key.c,v 1.14 2012/11/27 00:48:39 phil Exp $";
 /* -----------------------------------------------------------------------
  *
  * Allow a non-root user (depending on the permissions for this executable)
@@ -8,10 +8,10 @@ static char rcsid[] = "$Id: read-ssh-private-key.c,v 1.13 2012/05/06 05:48:44 ph
  * 
  * 				Rocks(r)
  * 		         www.rocksclusters.org
- * 		         version 5.5 (Mamba)
- * 		         version 6.0 (Mamba)
+ * 		         version 5.6 (Emerald Boa)
+ * 		         version 6.1 (Emerald Boa)
  * 
- * Copyright (c) 2000 - 2012 The Regents of the University of California.
+ * Copyright (c) 2000 - 2013 The Regents of the University of California.
  * All rights reserved.	
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -60,6 +60,9 @@ static char rcsid[] = "$Id: read-ssh-private-key.c,v 1.13 2012/05/06 05:48:44 ph
  *
  * test with: gcc -o read-private-key read-private-key.c
  * $Log: read-ssh-private-key.c,v $
+ * Revision 1.14  2012/11/27 00:48:39  phil
+ * Copyright Storm for Emerald Boa
+ *
  * Revision 1.13  2012/05/06 05:48:44  phil
  * Copyright Storm for Mamba
  *

@@ -3,16 +3,16 @@
 # Retrives a file using HTTPS for the 411 service. Assumes
 # the master servers are running Apache with mod_ssl.
 # 
-# $Id: 411get.py,v 1.11 2012/05/06 05:48:14 phil Exp $
+# $Id: 411get.py,v 1.12 2012/11/27 00:48:01 phil Exp $
 #
 # @Copyright@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		         version 5.5 (Mamba)
-# 		         version 6.0 (Mamba)
+# 		         version 5.6 (Emerald Boa)
+# 		         version 6.1 (Emerald Boa)
 # 
-# Copyright (c) 2000 - 2012 The Regents of the University of California.
+# Copyright (c) 2000 - 2013 The Regents of the University of California.
 # All rights reserved.	
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -60,6 +60,9 @@
 # @Copyright@
 #
 # $Log: 411get.py,v $
+# Revision 1.12  2012/11/27 00:48:01  phil
+# Copyright Storm for Emerald Boa
+#
 # Revision 1.11  2012/05/06 05:48:14  phil
 # Copyright Storm for Mamba
 #

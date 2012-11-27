@@ -8,10 +8,10 @@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		         version 5.5 (Mamba)
-# 		         version 6.0 (Mamba)
+# 		         version 5.6 (Emerald Boa)
+# 		         version 6.1 (Emerald Boa)
 # 
-# Copyright (c) 2000 - 2012 The Regents of the University of California.
+# Copyright (c) 2000 - 2013 The Regents of the University of California.
 # All rights reserved.	
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -59,6 +59,9 @@
 # @Copyright@
 #
 # $Log: insert-ethers.py,v $
+# Revision 1.55  2012/11/27 00:48:49  phil
+# Copyright Storm for Emerald Boa
+#
 # Revision 1.54  2012/10/02 18:01:00  clem
 # insert-ether now checks that the user supplied a valid IP
 #
