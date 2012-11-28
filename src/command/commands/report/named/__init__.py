@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.11 2012/11/27 00:48:25 phil Exp $
+# $Id: __init__.py,v 1.12 2012/11/28 22:35:54 phil Exp $
 # 
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.12  2012/11/28 22:35:54  phil
+# One semicolon can ruin your whole named day.
+#
 # Revision 1.11  2012/11/27 00:48:25  phil
 # Copyright Storm for Emerald Boa
 #
@@ -127,7 +130,7 @@ config_preamble = """
 acl rocks-trusted {
 	%s/%s;
 	127.0.0.1;
-}
+};
 
 options {
 	directory "/var/named";
