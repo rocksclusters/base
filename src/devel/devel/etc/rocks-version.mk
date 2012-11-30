@@ -1,5 +1,5 @@
 #
-# $Id: rocks-version.mk,v 1.11 2012/11/27 00:48:32 phil Exp $
+# $Id: rocks-version.mk,v 1.12 2012/11/30 23:47:22 clem Exp $
 #
 # @Copyright@
 # 
@@ -56,6 +56,12 @@
 # @Copyright@
 #
 # $Log: rocks-version.mk,v $
+# Revision 1.12  2012/11/30 23:47:22  clem
+# Fix: Rocks copyright page is not generated in the documentation
+#
+# the rocks-copyright.txt was generated empty and then not included in the
+# documentation this patch fixes it
+#
 # Revision 1.11  2012/11/27 00:48:32  phil
 # Copyright Storm for Emerald Boa
 #
@@ -358,7 +364,8 @@ rocks-copyright.txt:
 	@echo 'IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.' >> $@
 	@echo '' >> $@
 	@echo '@Copyright@' >> $@
-	-cat $@ | grep -v "^@Copyright" | expand -- > $@
+	-cat $@ | grep -v "^@Copyright" | expand -- > $@.tmp
+	-mv $@.tmp $@
 
 
 rocks-version.mk: $(wildcard $(ROCKSROOT)/etc/rocks-version.mk)
