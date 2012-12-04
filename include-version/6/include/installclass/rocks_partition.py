@@ -57,13 +57,16 @@ class RocksPartition:
 			if len(l) > 0 and l[0] == 'raids:':
 				raids = l[1:]
 		file.close()
-
-		file = open('/dev/md/md-device-map', 'r')
-		for line in file.readlines():
-			l = string.split(line)
-			if len(l) > 0 and not (l[0] in raids):
-				raids.append(l[0])
-		file.close()
+		try:
+			file = open('/dev/md/md-device-map', 'r')
+			for line in file.readlines():
+				l = string.split(line)
+				if len(l) > 0 and not (l[0] in raids):
+					raids.append(l[0])
+			file.close()
+		except:
+			#no raid
+			pass	
 
 		return raids
 
