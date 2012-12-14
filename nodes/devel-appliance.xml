@@ -10,6 +10,9 @@
 
   <changelog>
   $Log: devel-appliance.xml,v $
+  Revision 1.9  2012/12/14 22:06:53  clem
+  adding sqlite3-devel to the devel appliance
+
   Revision 1.8  2012/03/26 17:19:44  phil
   Rocks local repo definition moved
 
@@ -50,6 +53,9 @@
 <package>apr-devel</package>
 <package>httpd-devel</package>
 <package>readline-devel</package>
+
+<!-- required for the python 2.7 sqlite3 support -->
+<package>sqlite-devel</package>
 
 <post>
 <file name="/etc/motd" mode="append">
