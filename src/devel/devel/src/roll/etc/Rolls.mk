@@ -1,4 +1,4 @@
-# $Id: Rolls.mk,v 1.7 2012/11/27 00:48:34 phil Exp $
+# $Id: Rolls.mk,v 1.8 2012/12/17 21:50:48 clem Exp $
 #
 # Common Make rules for Rocks rolls.
 #
@@ -57,6 +57,14 @@
 # @Copyright@
 #
 # $Log: Rolls.mk,v $
+# Revision 1.8  2012/12/17 21:50:48  clem
+# The help target should be defined after the roll target so that make default to roll
+#
+# When I created the help target I put it above the roll target, since the roll
+# makefile does not have a all target it does not define a default, hence make
+# picks the first target defined in the makefiles, so I want that to be the "roll"
+# target
+#
 # Revision 1.7  2012/11/27 00:48:34  phil
 # Copyright Storm for Emerald Boa
 #
@@ -253,41 +261,6 @@ TAREXCLUDES	= --exclude src --exclude BUILD --exclude SOURCES --exclude SPECS --
 
 
 # --------------------------------------------------------------------- #
-# Some docs of the make target
-# --------------------------------------------------------------------- #
-
-help:
-	@echo  '  '
-	@echo  '  --  Rocks Makefile help  --  '
-	@echo  '  '
-	@echo  '  '
-	@echo  '   - Top directory targets'
-	@echo  '     (these target must be run from the top level roll source directory)'
-	@echo  '  '
-	@echo  '  roll             - This target creates a Rocks Roll from a roll source directory'
-	@echo  '                     tree. It will create all the RPM packages, bundle all the .xml '
-	@echo  '                     nodes and graphs files, and create the iso. It is the default target.'
-	@echo  '                     (to create a source directory tree run "rocks create roll foo")'
-	@echo  '  profile          - This target create the roll-<rollname>-kickstart RPM which contains'
-	@echo  '                     all the node xml and graph xml files and all the include/ and '
-	@echo  '                     include-version/ files. The final RPM is placed under RPMS/noarch'
-	@echo  '  reroll           - This target only recreate the ISO image using the already built RPMs'
-	@echo  '  '
-	@echo  '                     If you only modify the xml file of your roll after the last compilation'
-	@echo  '                     you can simply run make profile and then make reroll'
-	@echo  '  '
-	@echo  '  '
-	@echo  '   - Package level directory targets'
-	@echo  '     (these targets must be run from the src/<packagename> source directory)'
-	@echo  '  '
-	@echo  '  rpm              - It can be used to create a single RPM from a specific package '
-	@echo  '                     directory. It will create the final RPM inside the ../../RPMS/$(ARCH)'
-	@echo  '  '
-	@echo  '  '
-	@echo  '  '
-
-
-# --------------------------------------------------------------------- #
 # Include the standard build Rules.mk
 # --------------------------------------------------------------------- #
 
@@ -377,6 +350,43 @@ ifdef __RULES_SUNOS_MK
 	rm -rf cdrom
 	rm -rf PKGS/ROCKSroll-$(ROLLNAME)
 endif
+
+
+# --------------------------------------------------------------------- #
+# Some docs of the make target
+# --------------------------------------------------------------------- #
+
+help:
+	@echo  '  '
+	@echo  '  --  Rocks Makefile help  --  '
+	@echo  '  '
+	@echo  '  '
+	@echo  '   - Top directory targets'
+	@echo  '     (these target must be run from the top level roll source directory)'
+	@echo  '  '
+	@echo  '  roll             - This target creates a Rocks Roll from a roll source directory'
+	@echo  '                     tree. It will create all the RPM packages, bundle all the .xml '
+	@echo  '                     nodes and graphs files, and create the iso. It is the default target.'
+	@echo  '                     (to create a source directory tree run "rocks create roll foo")'
+	@echo  '  profile          - This target create the roll-<rollname>-kickstart RPM which contains'
+	@echo  '                     all the node xml and graph xml files and all the include/ and '
+	@echo  '                     include-version/ files. The final RPM is placed under RPMS/noarch'
+	@echo  '  reroll           - This target only recreate the ISO image using the already built RPMs'
+	@echo  '  '
+	@echo  '                     If you only modify the xml file of your roll after the last compilation'
+	@echo  '                     you can simply run make profile and then make reroll'
+	@echo  '  '
+	@echo  '  '
+	@echo  '   - Package level directory targets'
+	@echo  '     (these targets must be run from the src/<packagename> source directory)'
+	@echo  '  '
+	@echo  '  rpm              - It can be used to create a single RPM from a specific package '
+	@echo  '                     directory. It will create the final RPM inside the ../../RPMS/$(ARCH)'
+	@echo  '  '
+	@echo  '  '
+	@echo  '  '
+
+
 
 # --------------------------------------------------------------------- #
 # Build the Dot graph
