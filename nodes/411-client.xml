@@ -19,6 +19,12 @@
 
   <changelog>
   $Log: 411-client.xml,v $
+  Revision 1.19  2012/12/18 16:57:24  clem
+  a improvement to the 411-client to get the private key
+
+  Based on the sugestion of Bjorn-Helge Mevik now we enter an infinite loop
+  till we dont get the private key.
+
   Revision 1.18  2012/08/04 06:34:28  phil
   Have nodes ask to have their secure attributes set as well as the 411 shared
   key.
@@ -200,12 +206,15 @@ do not have to resend alerts for every new node in the cluster. -->
 <file name="/etc/rc.d/rocksconfig.d/post-02-411get" perms="0700">
 #!/bin/bash
 
-# Tell frontend to send you the 411 shared key
-/opt/rocks/bin/get-411-key &Kickstart_PrivateAddress;
+while [ ! -f /etc/411-security/shared.key ]; do
 
-# Wait 10 seconds for shared key to get populated
-for i in 1 2 3 4 5 6 7 8 9 10 11 12; do 
-	[ ! -f /etc/411-security/shared.key ] &amp;&amp; sleep 10 
+	# Tell frontend to send you the 411 shared key
+	/opt/rocks/bin/get-411-key &Kickstart_PrivateAddress;
+
+	# Wait 10 seconds for shared key to get populated
+	for i in 1 2 3 4 5 6 7 8 9 10 11 12; do 
+		[ ! -f /etc/411-security/shared.key ] &amp;&amp; sleep 10 
+	done
 done
 
 # If shared key got transferred, do a 411get and pull information
