@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.15 2012/11/27 00:48:27 phil Exp $
+# $Id: __init__.py,v 1.16 2012/12/21 17:52:10 clem Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,18 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.16  2012/12/21 17:52:10  clem
+# Before setting the IP address of an interface check that it is valid
+#
+#
+# This fix is long overdue, basically if the user creates an interface
+# with an invalid IP address then it is unable to remove the host (without,
+# removing the interface before).
+#
+# This solution is not optimal (although better than before) because if you
+# run rocks add interface with an invalid value it stil creates an empty
+# interface (but now it does not insert the invalid IP address).
+#
 # Revision 1.15  2012/11/27 00:48:27  phil
 # Copyright Storm for Emerald Boa
 #
@@ -111,6 +123,7 @@
 #
 
 import rocks.commands
+import socket
 
 class Command(rocks.commands.set.host.command):
 	"""
@@ -168,6 +181,13 @@ class Command(rocks.commands.set.host.command):
 			self.abort('must supply ip')
 
 		ip = ip.upper() # null -> NULL
+
+		#is a valid IPv4 address
+		#for IPv6 use socket.AF_INET6
+		try:
+			socket.inet_pton(socket.AF_INET, ip)
+		except:
+			self.abort("The ip address %s is invalid" % ip )
 		
 		for host in hosts:
 			self.db.execute("""update networks, nodes set 
