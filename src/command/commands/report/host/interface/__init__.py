@@ -1,4 +1,4 @@
-#$Id: __init__.py,v 1.33 2012/11/27 00:48:25 phil Exp $
+#$Id: __init__.py,v 1.34 2012/12/21 02:21:42 clem Exp $
 # 
 # @Copyright@
 # 
@@ -55,6 +55,11 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.34  2012/12/21 02:21:42  clem
+# The command rocks report host interface fails for hosts with bond interfaces
+#
+# Fixed and Reported by Tyler Trafford
+#
 # Revision 1.33  2012/11/27 00:48:25  phil
 # Copyright Storm for Emerald Boa
 #
@@ -442,6 +447,8 @@ class Command(rocks.commands.HostArgumentProcessor,
 			self.addOutput(host, 'alias p%s %s' % (device, module))
 		else:
 			self.addOutput(host, 'alias %s %s' % (device, module))
+
+		reg = re.compile('bond[0-9]+')
 
 		#
 		# don't write the options here if this is a bonded interface,
