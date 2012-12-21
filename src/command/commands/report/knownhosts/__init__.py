@@ -1,4 +1,4 @@
-#$Id: __init__.py,v 1.5 2012/12/21 02:33:43 clem Exp $
+#$Id: __init__.py,v 1.6 2012/12/21 02:36:36 clem Exp $
 #
 # @Copyright@
 # 
@@ -80,8 +80,10 @@ class Command(command):
 	def run(self, param, args):
 		self.beginOutput()
 		self.addOutput('localhost', '<file name="/etc/ssh/ssh_known_hosts">')
-		self.addOutput('localhost', '# Added by rocks report knownhosts #')
-		self.addOutput('localhost', '#        DO NOT MODIFY       #')
+		self.addOutput('localhost', '# Added by rocks report knownhosts  #')
+		self.addOutput('localhost', '#        DO NOT MODIFY              #')
+		self.addOutput('localhost', '# If you need to add entries use    #')
+		self.addOutput('localhost', '# /etc/ssh/ssh_known_hosts.local    #')
 
 
 		# grab per-node public keys
