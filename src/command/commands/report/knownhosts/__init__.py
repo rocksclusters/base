@@ -1,4 +1,4 @@
-#$Id: __init__.py,v 1.4 2012/11/27 00:48:25 phil Exp $
+#$Id: __init__.py,v 1.5 2012/12/21 02:33:43 clem Exp $
 #
 # @Copyright@
 # 
@@ -145,6 +145,19 @@ class Command(command):
 						hostname = host
 					self.addOutput('localhost', 
 						'%s %s' % (hostname, pubkey))
+
+
+		# Finally, add the ssh_known_hosts.local file to the list
+		hostlocal = '/etc/ssh/ssh_known_hosts.local'
+		try:
+			f = open(hostlocal,'r')
+			self.addOutput('localhost','#\n# Imported from %s\n#' % hostlocal)
+			h = f.read()
+			self.addOutput('localhost',h)
+			f.close()
+		except :
+			pass
+
 
 		self.addOutput('localhost', '</file>')
 		self.endOutput(padChar='')
