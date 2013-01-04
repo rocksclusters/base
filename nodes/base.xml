@@ -21,6 +21,15 @@
 
   <changelog>
   $Log: base.xml,v $
+  Revision 1.62  2013/01/04 21:44:43  clem
+  Fix for grub timeout problem on centos6
+
+  Anaconda on centOS 5 does not support the timeout flag it defaults to a
+  timeout of 5 sec. On Anaconda centOS 6 they added the support for the
+  timeout flag but if it is not specified it defaults to 0.
+
+  This commit fixes the issue so now rocks6 has a grub timeout=5
+
   Revision 1.61  2012/05/06 05:48:10  phil
   Copyright Storm for Mamba
 
@@ -445,7 +454,11 @@
 -->
 
 <timezone>--utc &Kickstart_Timezone;</timezone>
-<bootloader>--location=mbr</bootloader>
+<!-- Anaconda on centOS 5 does not support the timeout flag it defaults to 5  -->
+<bootloader cond="rocks_version_major == 5">--location=mbr</bootloader>
+<!-- Anaconda on centOS 6 added the support for the timeout flag and if not 
+          specified the default is 0. Brilliant....  -->
+<bootloader cond="rocks_version_major >= 6">--location=mbr --timeout=5</bootloader>
 
 <url> --url http://&Kickstart_PrivateKickstartHost;/&Kickstart_PrivateKickstartBasedir;/&distribution;/&arch; </url>
 <interactive/>
