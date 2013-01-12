@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.4 2012/11/27 00:48:36 phil Exp $
+# $Id: Makefile,v 1.5 2013/01/12 03:08:16 clem Exp $
 #
 # @Copyright@
 # 
@@ -60,6 +60,7 @@
 
 PKGROOT		= /opt/rocks
 REDHAT.ROOT	= $(PWD)/../../
+RPM.EXTRAS += "AutoReqProv: no"
 -include $(ROCKSROOT)/etc/Rules.mk
 include Rules.mk
 
