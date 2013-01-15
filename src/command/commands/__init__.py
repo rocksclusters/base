@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.109  2013/01/15 00:44:27  clem
+# fix for when /etc/resolve.conf has some empty lines
+#
 # Revision 1.108  2012/11/27 00:48:09  phil
 # Copyright Storm for Emerald Boa
 #
@@ -1644,7 +1647,7 @@ class DatabaseConnection:
 					domains = []
 					for line in fin.readlines():
 						tokens = line[:-1].split()
-						if tokens[0] == 'search':
+						if len(tokens) > 0 and tokens[0] == 'search':
 							domains = tokens[1:]
 					for domain in domains:
 						try:
