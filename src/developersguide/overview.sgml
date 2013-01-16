@@ -7,5 +7,22 @@ In this document, we'll describe the internals of rolls, how to create a roll
 and how to test a roll.
 </para>
 
+<para>
+Throughout the discussion, it's easy to lose sight of the basic simplicity of a roll.  A roll consists of 
+</para>
+<itemizedlist>
+	<listitem><para>
+	Software packages (RPMS)
+	</para></listitem>
+
+	<listitem><para>
+	How to configure packages after installation (XML Node Files)
+	</para></listitem>
+
+	<listitem><para>
+	On which types of appliances to install/configure packages (XML Graph)
+	</para></listitem>
+
+</itemizedlist>
 
 </chapter>

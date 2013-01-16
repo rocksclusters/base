@@ -39,18 +39,28 @@ creates the following file system:
 </para>
 
 <screen>
-valgrind -+
-          |
-          +- graphs -+
-          |
-          +- nodes -+
-          |
-          +- src -+
-          |
-          +- version.mk
-          |
-          +- Makefile
+
+&boxur;&boxh;&boxh; valgrind
+    &boxvr;&boxh;&boxh; graphs
+    &boxv;   &boxur;&boxh;&boxh; default
+    &boxvr;&boxh;&boxh; nodes
+    &boxur;&boxh;&boxh; src
+        &boxvr&boxh;&boxh; usersguide
+        &boxv;   &boxur;&boxh;&boxh; images
+        &boxur&boxh;&boxh; valgrind
+            &boxur;&boxh;&boxh; Makefile
+            &boxur;&boxh;&boxh; test-1.0.tgz
+            &boxvr;&boxh;&boxh; version.mk
+
 </screen>
+
+<note>
+<para>
+At this point, the roll is "buildable". It doesn't actually do much, but
+the structure is functional. Type <constant>make roll</constant> to build the roll.  When the build completes, a
+<constant>valgrind-1.0-0.&lt;arch&gt;.disk1.iso</constant> file should be in the build directory. This is the complete roll image.
+</para>
+</note>
 
 <para>
 Now we are ready to add packages to the Valgrind Roll.
@@ -69,6 +79,10 @@ native format of the OS.
 For Redhat-based Rocks clusters, this means all packages must be RPMS.
 </para>
 
+<para>
+This guide covers a few ways to deal with RPMs. Already built, hand-built in a directory, and compiled RPMs.   The last (compiled RPMs) is by far the most 
+common.  
+</para>
 
 <section id="internals-packages-rpm" xreflabel="internals-packages-rpm">
         <title>The Software is Already in an RPM </title>
@@ -153,11 +167,13 @@ Now place the RPM into the correct directory within the roll:
 
 <section id="internals-packages-src"
 	xreflabel="Create an RPM from a Source Code Tarball">
-        <title>Create an RPM from a Source Code Tarball</title>
+        <title>Create an RPM from a Source Code Tarball (Compiled RPM)</title>
 
 <para>
 The most common way we create RPMS is from source tarballs (the classic:
-untar, configure, make, make install).
+untar, ./configure, make, make install). Rocks has a set of Makefile includes
+that greatly simplifies the creation of RPMs. Most software can be packaged as
+an RPM without ever seeing the internals of the package format. 
 </para>
 
 <para>
@@ -171,6 +187,8 @@ First, we'll download the source tarball into the correct directory:
 
 <para>
 Edit <constant>version.mk</constant> and change
+<constant>NAME = test</constant> to
+<constant>NAME = valgrind</constant>, change
 <constant>TARBALL_POSTFIX = tgz</constant> to
 <constant>TARBALL_POSTFIX = tar.bz2</constant>, change
 <constant>PKGROOT = /opt/valgrind</constant> to
@@ -237,14 +255,176 @@ You can inspect the contents of the <constant>valgrind</constant> RPM:
    .
    .
 </screen>
-
 <para>
 Note that the valgrind-3.6.0-1.x86_64.rpm RPM was automatically placed into
 the correct directory (/export/src/roll/valgrind/RPMS/x86_64).
 </para>
 
-</section>
+<note>
+<para>
+If you want to pass different <constant>configure</constant> options to for
+your build, edit your <constant>Makefile</constant>.
+</para>
+</note>
 
+</section>
+<section id="internals-rpm-make-process" xreflabel="internals-rpm-make-process">
+        <title>The RPM Makefile Process</title>
+<para>
+The Rocks Makefile include structure is invoked from the sample Makefile in the lines.
+<screen>
+-include $(ROCKSROOT)/etc/Rules.mk
+include Rules.mk
+</screen>
+</para>
+<para>
+The main purpose of this structure is to create the correct files so that the 
+<constant>rpmbuild</constant> can work properly. The core of Rocks builds more
+than 300 different packages, and our goal was to eliminate the creation
+of custom RPM spec files. Spec files are the text files that drive the overall
+package creation. 
+</para>
+
+<para>
+Let's look at the other directories created on demand when you type 
+<constant>make rpm</constant>. The roll directory structure now looks like before: 
+</para>
+
+<screen>
+.
+&boxur;&boxh;&boxh; valgrind
+    &boxvr;&boxh;&boxh; graphs
+    &boxv;   &boxur;&boxh;&boxh; default
+    &boxvr;&boxh;&boxh; nodes
+    &boxur;&boxh;&boxh; src
+        &boxvr;&boxh;&boxh; usersguide
+        &boxv;   &boxur;&boxh;&boxh; images
+        &boxur;&boxh;&boxh; valgrind
+</screen>
+<para>
+and AFTER <constant>make rpm</constant> is executed.
+</para>
+<screen>
+&boxur;&boxh;&boxh; valgrind
+    &boxvr;&boxh;&boxh; BUILD
+    &boxv;   &boxur;&boxh;&boxh; valgrind-3.6.0
+    &boxvr;&boxh;&boxh; graphs
+    &boxv;   &boxur;&boxh;&boxh; default
+    &boxvr;&boxh;&boxh; nodes
+    &boxvr;&boxh;&boxh; RPMS
+    &boxv;   &boxvr;&boxh;&boxh; noarch
+    &boxv;   &boxur;&boxh;&boxh; x86_64
+    &boxvr;&boxh;&boxh; SOURCES
+    &boxvr;&boxh;&boxh; SPECS
+    &boxvr;&boxh;&boxh; src
+    &boxv;   &boxvr;&boxh;&boxh; usersguide
+    &boxv;   &boxur;&boxh;&boxh; valgrind
+    &boxur;&boxh;&boxh; SRPMS
+</screen>
+<para>
+The important directories are <constant>BUILD, SOURCES, SPECS, and RPMS</constant>.  This is the structure that <computeroutput>rpmbuild</computeroutput> is
+expecting.  It is worth looking at the contents of the directories in some detail.
+</para>
+
+<itemizedlist>
+
+	<listitem><para>
+	SPECS/valgrind.spec - created automatically. Can create in the 
+        src/valgrid with <constant> make valgrind.spec </constant>
+	</para></listitem>
+
+	<listitem><para>
+	SOURCES/valgrind-3.6.0.tar.gz - This is a tar of src/valgrind directory
+	after the <constant>make pretar</constant> target (if present) 
+	has been evaluated.  This becomes the "source" referenced in the spec 
+	file.
+	</para></listitem>
+
+	<listitem><para>
+	BUILD/valgrind-3.6.0 - this is where the actual build/compile takes
+        place. 
+	</para></listitem>
+
+</itemizedlist>
+
+<para> 
+Let's take a look at the contents of the BUILD directory
+</para>
+
+<screen>
+BUILD
+&boxur;&boxh;&boxh; valgrind-3.6.0
+    &boxvr;&boxh;&boxh; _arch
+    &boxvr;&boxh;&boxh; _distribution
+    &boxvr;&boxh;&boxh; Makefile
+    &boxvr;&boxh;&boxh; _os
+    &boxvr;&boxh;&boxh; python.mk
+    &boxvr;&boxh;&boxh; rocks-version-common.mk
+    &boxvr;&boxh;&boxh; rocks-version.mk
+    &boxvr;&boxh;&boxh; Rules-install.mk
+    &boxvr;&boxh;&boxh; Rules-linux-centos.mk
+    &boxvr;&boxh;&boxh; Rules-linux.mk
+    &boxvr;&boxh;&boxh; Rules.mk
+    &boxvr;&boxh;&boxh; Rules-rcfiles.mk
+    &boxvr;&boxh;&boxh; Rules-scripts.mk
+    &boxvr;&boxh;&boxh; test-1.0.tgz
+    &boxvr;&boxh;&boxh; valgrind-3.6.0
+    &boxvr;&boxh;&boxh; valgrind-3.6.0.tar.bz2
+    &boxur;&boxh;&boxh; version.mk
+</screen>
+
+<para>
+The <constant>Makefile</constant> is the <emphasis>same</emphasis> file as
+the <constant>src/valgrind</constant> directory. The file
+<constant>valgrind-3.6.0.tar.bz2</constant> is also the same.
+</para> 
+
+<section id="internals-rpm-make-spec" xreflabel="internals-rpm-make-spec">
+        <title>How the SPEC file does it's building/installing</title>
+
+<para> Ultimately, the program <constant>rpmbuild</constant> must be called
+to do its work.  The generated spec file (valgrind.spec) is used to drive the
+rpmbuild process.   RPM spec files can be very complicated, Rocks takes a very
+simple approach, essentially ignorning many of the advanced capabilities of 
+RPM specification.
+</para>
+<para>
+What follows here is an abbreviated spec file.  It's beyond this guide to
+describe in detail options in a spec file. A number of web resources are 
+available if more in-depth information is desired.
+<screen>
+Summary: valgrind
+Name: valgrind
+Version: 3.6.0
+Release: 1
+Source: valgrind-3.6.0.tar.gz
+Buildroot: /export/src/roll/valgrind/src/valgrind/valgrind.buildroot
+%description
+valgrind
+%prep
+%setup
+%build
+printf "\n\n\n### build ###\n\n\n"
+BUILDROOT=/export/src/roll/valgrind/src/valgrind/valgrind.buildroot make -f /export/src/roll/valgrind/src/valgrind/valgrind.spec.mk build
+%install
+printf "\n\n\n### install ###\n\n\n"
+BUILDROOT=/export/src/roll/valgrind/src/valgrind/valgrind.buildroot make -f /export/src/roll/valgrind/src/valgrind/valgrind.spec.mk install
+%files
+/
+</screen>
+</para>
+
+<para> The generated spec file must have <constant>%build</constant> and
+<constant>%install</constant> sections to, respectively, build and install software. The concept is very simple, the <constant>%build</constant> section of 
+the spec simply directs <constant>rpmbuild</constant> to call 
+<constant>make build</constant>.
+</para>
+<para>
+The last section is <constant>%files</constant> which takes "/" as the default.
+This will package ALL files that have installed into the BUILDROOT directory.
+</para>
+</section>
+</section>
 
 
 </section>
@@ -435,6 +615,9 @@ When you edit "valgrind-base.xml", you'll see:
 
         <changelog>
         $Log: internals.sgml,v $
+        Revision 1.11  2013/01/16 04:09:36  phil
+        Updates/more detail of internals
+
         Revision 1.10  2012/11/27 00:48:34  phil
         Copyright Storm for Emerald Boa
 
@@ -541,6 +724,9 @@ Now let's add a <constant>&lt;post&gt;</constant> section to it:
 
         <changelog>
         $Log: internals.sgml,v $
+        Revision 1.11  2013/01/16 04:09:36  phil
+        Updates/more detail of internals
+
         Revision 1.10  2012/11/27 00:48:34  phil
         Copyright Storm for Emerald Boa
 
@@ -703,6 +889,9 @@ Now edit the file "valgrind.xml":
 
         <changelog>
         $Log: internals.sgml,v $
+        Revision 1.11  2013/01/16 04:09:36  phil
+        Updates/more detail of internals
+
         Revision 1.10  2012/11/27 00:48:34  phil
         Copyright Storm for Emerald Boa
 
@@ -806,6 +995,9 @@ nodes, we'll make an edge from the "base" node XML file to "valgrind-base":
 
         <changelog>
         $Log: internals.sgml,v $
+        Revision 1.11  2013/01/16 04:09:36  phil
+        Updates/more detail of internals
+
         Revision 1.10  2012/11/27 00:48:34  phil
         Copyright Storm for Emerald Boa
 
@@ -960,6 +1152,9 @@ Here's the contents of "valgrind-client.xml":
 
 	<changelog>
 	$Log: internals.sgml,v $
+	Revision 1.11  2013/01/16 04:09:36  phil
+	Updates/more detail of internals
+	
 	Revision 1.10  2012/11/27 00:48:34  phil
 	Copyright Storm for Emerald Boa
 	
@@ -1065,6 +1260,9 @@ And here is the contents of "valgrind-server.xml":
 
 	<changelog>
 	$Log: internals.sgml,v $
+	Revision 1.11  2013/01/16 04:09:36  phil
+	Updates/more detail of internals
+	
 	Revision 1.10  2012/11/27 00:48:34  phil
 	Copyright Storm for Emerald Boa
 	
@@ -1174,6 +1372,9 @@ graph XML file "valgrind.xml" to look like:
 
         <changelog>
         $Log: internals.sgml,v $
+        Revision 1.11  2013/01/16 04:09:36  phil
+        Updates/more detail of internals
+
         Revision 1.10  2012/11/27 00:48:34  phil
         Copyright Storm for Emerald Boa
 
@@ -1322,6 +1523,9 @@ We can enforce this ordering by adding two
 
 	<changelog>
 	$Log: internals.sgml,v $
+	Revision 1.11  2013/01/16 04:09:36  phil
+	Updates/more detail of internals
+	
 	Revision 1.10  2012/11/27 00:48:34  phil
 	Copyright Storm for Emerald Boa
 	
