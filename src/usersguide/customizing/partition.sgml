@@ -793,7 +793,7 @@ The next time you install a compute node, you will see the screen:
 <para>
 <mediaobject>
 	<imageobject>
-	<imagedata fileref="images/manual-partitioning.png" scale=50>
+	<imagedata fileref="images/install/41.png" scale=50>
 	</imageobject>
 </mediaobject>
 </para>
