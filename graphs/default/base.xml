@@ -4,6 +4,24 @@
 
 	<changelog>
 	$Log: base.xml,v $
+	Revision 1.76  2013/01/17 02:19:51  clem
+	Explicitly request system perl dependencies
+	
+	RPM track perl dependencies using the form
+	perl(POD/Simple.pm)
+	
+	If you install the opt-perl with the perl roll it has a
+	opt-perl-POD-Simple-version.rpm which offer perl(POD/Simple.pm)
+	even though it sits in another directory from where the system perl
+	looks.
+	
+	So yum install perl opt-perl
+	will bring in only opt-perl-POD-Simple which can resolve perl(POD/Simple.pm)
+	this will make the system perl broken.
+	
+	E.G.
+	https://www.openfabrics.org/forum/7-installation/192-installation-error-occoured-on-rocks-60centos-62.html
+	
 	Revision 1.75  2012/10/16 21:20:11  phil
 	Link to new google-otp nodes
 	
@@ -587,6 +605,7 @@
 
 	<edge from="scripting">
 		<to>perl-development</to>
+		<to>perl-modules</to>
 		<to>python-development</to>
 		<to>tcl-development</to>
 	</edge>
