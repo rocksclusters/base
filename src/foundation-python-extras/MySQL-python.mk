@@ -1,5 +1,5 @@
 # --------------------------------------------------- -*- Makefile -*- --
-# $Id: MySQL-python.mk,v 1.15 2012/11/27 00:48:36 phil Exp $
+# $Id: MySQL-python.mk,v 1.16 2013/01/17 17:30:10 clem Exp $
 #
 # @Copyright@
 # 
@@ -56,6 +56,18 @@
 # @Copyright@
 #
 # $Log: MySQL-python.mk,v $
+# Revision 1.16  2013/01/17 17:30:10  clem
+# Set rpath into foundation-mysql libraries
+#
+# we set the path to load the shared library in /opt/rocks/lib/mysql
+# using RPATH instead of the system wide /etc/ld.conf.d/ for all the
+# foundation-mysql executables and shared library
+#
+# Adding this path to the /etc/ld.conf.d/ would change the default beaviour
+# of the system mysql which we don't want to happen
+#
+# http://marc.info/?l=npaci-rocks-discussion&m=135308812922216&w=2
+#
 # Revision 1.15  2012/11/27 00:48:36  phil
 # Copyright Storm for Emerald Boa
 #
@@ -127,10 +139,15 @@ endif
 
 build::
 	gunzip -c MySQL-python-$(MYSQLPYVERSION).tar.gz | $(TAR) -xf -
+	# we need to patch the site.cfg so it will pick up the proper mysql 
+	# configuration and we also want to add the rpath in the _mysql.so
+	# (so we can remove global /etc/ld.conf include)
 	( 								\
 		cd MySQL-python-$(MYSQLPYVERSION);			\
-		PATH=$(PKGROOT)/bin:$$PATH 				\
-			$(PY.PATH) setup.py build;			\
+		echo "mysql_config=/opt/rocks/bin/mysql_config" >> site.cfg; \
+		export PATH="$(PKGROOT)/bin:$$PATH" ;			\
+		export LDFLAGS="-Wl,-rpath,/opt/rocks/lib/mysql" ;	\
+		$(PY.PATH) setup.py build;			\
 	)
 	
 install::

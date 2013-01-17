@@ -1,5 +1,5 @@
 # --------------------------------------------------- -*- Makefile -*- --
-# $Id: Makefile,v 1.32 2012/11/27 00:48:36 phil Exp $
+# $Id: Makefile,v 1.33 2013/01/17 17:30:09 clem Exp $
 #
 # @Copyright@
 # 
@@ -56,6 +56,18 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.33  2013/01/17 17:30:09  clem
+# Set rpath into foundation-mysql libraries
+#
+# we set the path to load the shared library in /opt/rocks/lib/mysql
+# using RPATH instead of the system wide /etc/ld.conf.d/ for all the
+# foundation-mysql executables and shared library
+#
+# Adding this path to the /etc/ld.conf.d/ would change the default beaviour
+# of the system mysql which we don't want to happen
+#
+# http://marc.info/?l=npaci-rocks-discussion&m=135308812922216&w=2
+#
 # Revision 1.32  2012/11/27 00:48:36  phil
 # Copyright Storm for Emerald Boa
 #
@@ -207,6 +219,16 @@ PKGVAR		= /var/$(PKGROOT)/mysql
 INSTALLDB	= $(PKGROOT)/sbin/mysql-install-db
 REDHAT.ROOT     = $(CURDIR)/../../
 ROCKSROOT       = ../devel/devel
+# we set the path to load the shared library in the RPATH of 
+# each foundation-mysql executables instead of adding it to 
+# /etc/ld.conf.d/ which will change the behavior of the 
+# system mysql 
+# http://marc.info/?l=npaci-rocks-discussion&m=135308812922216&w=2
+#
+MYSQL_LDFLAGS   += -Wl,-rpath,/opt/rocks/lib/mysql
+
+
+
 
 -include $(ROCKSROOT)/etc/Rules.mk
 include Rules.mk
@@ -224,7 +246,7 @@ build:
 			--enable-thread-safe-client			\
 			--with-ssl					\
 			--without-debug					\
-			LDFLAGS=$(MYSQL_LDFLAGS) CFLAGS=$(MYSQL_CFLAGS)	\
+			LDFLAGS="$(MYSQL_LDFLAGS)" CFLAGS=$(MYSQL_CFLAGS)	\
 			;						\
 		$(MAKE);						\
 	)
