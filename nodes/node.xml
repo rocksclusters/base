@@ -18,6 +18,23 @@
 
   <changelog>
   $Log: node.xml,v $
+  Revision 1.24  2013/01/17 17:39:46  clem
+  cleanup in ld.so.conf
+
+  Remobing unused entry in ld.so.conf
+
+   /opt/nmi/lib nmi does not exist anymore on rocks 6/5
+
+   /usr/lib64/qt-3.1/lib lib qt are now version 3.3 and are imported
+                    by the file in /etc/ld.so.conf.d/qt-xxx.conf
+
+   /usr/lib64/mysql system mysql libraries are imported by the file
+                    /etc/ld.so.conf.d/mysql-x86_64.conf
+
+   /usr/X11R6/lib64 does not exist anymore
+
+  tested on rocks 6.1
+
   Revision 1.23  2012/05/06 05:48:10  phil
   Copyright Storm for Mamba
 
@@ -365,10 +382,6 @@ fi
 /lib64
 /usr/lib64
 /usr/kerberos/lib64
-/opt/nmi/lib
-/usr/lib64/qt-3.1/lib
-/usr/lib64/mysql
-/usr/X11R6/lib64
 </file>
 
 /sbin/ldconfig 
