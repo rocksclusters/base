@@ -17,6 +17,14 @@
 
   <changelog>
   $Log: database.xml,v $
+  Revision 1.36  2013/01/17 17:32:47  clem
+  removing /opt/rocks/lib/mysql from the global ld.so.conf
+
+  we used the local rpath in all the foundation mysql binaries so we dont need
+  any more the file in /etc/ld.so.conf.d/foundation-mysql.conf
+
+  Tested on rocks 6.1 (need to test on rocks 5)
+
   Revision 1.35  2012/05/06 05:48:10  phil
   Copyright Storm for Mamba
 
@@ -353,12 +361,6 @@ cp -f /opt/rocks/share/mysql/mysql-server.xml \
 <post os='linux'>
 /sbin/chkconfig foundation-mysql on
 /etc/rc.d/init.d/foundation-mysql start
-
-<file name="/etc/ld.so.conf.d/foundation-mysql.conf">
-/opt/rocks/lib/mysql
-</file>
-
-/sbin/ldconfig
 
 </post>
 
