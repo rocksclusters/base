@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.23 2012/11/27 00:48:01 phil Exp $
+# $Id: Makefile,v 1.24 2013/01/17 17:43:12 clem Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,14 @@
 # @Copyright@
 #
 # $Log: Makefile,v $
+# Revision 1.24  2013/01/17 17:43:12  clem
+# stops compilation if a package fails
+#
+# This modification stops the compilation of the base roll if a package
+# in src fails. It requires empty directories pruning (cvs update -dP).
+#
+# tested this patch for the past year (both on rocks 5.x and 6.x)
+#
 # Revision 1.23  2012/11/27 00:48:01  phil
 # Copyright Storm for Emerald Boa
 #
@@ -150,5 +158,7 @@ default:
 
 copyright rpm pkg clean::
 	for i in $(SRCDIRS) ; do \
-		(cd $$i; $(MAKE) $@) ; \
+		cd $$i; \
+			$(MAKE) $@ || exit 2 ; \
+		cd -; \
 	done
