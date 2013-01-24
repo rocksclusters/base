@@ -8,7 +8,7 @@ ARCH=$(TSTARCH)
 endif
 
 ifeq ($(VERSION.MAJOR), 5)
-VERSION=5.8
+VERSION=5.9
 PKGS=RPMS
 BASEPATH=centos/$(VERSION)/os/$(ARCH)/CentOS/
 else

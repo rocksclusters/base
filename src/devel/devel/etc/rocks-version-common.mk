@@ -1,5 +1,5 @@
 #
-# $Id: rocks-version-common.mk,v 1.6 2012/11/27 00:48:32 phil Exp $
+# $Id: rocks-version-common.mk,v 1.7 2013/01/24 22:13:11 phil Exp $
 #
 # @Copyright@
 # 
@@ -56,6 +56,9 @@
 # @Copyright@
 #
 # $Log: rocks-version-common.mk,v $
+# Revision 1.7  2013/01/24 22:13:11  phil
+# Start the process of building on CentOS 5.9
+#
 # Revision 1.6  2012/11/27 00:48:32  phil
 # Copyright Storm for Emerald Boa
 #
@@ -93,8 +96,8 @@ __ROCKS_VERSION_COMMON_MK = yes
 ROCKS.OS.VERSION.MAJOR=$(shell lsb_release -rs | cut -d . -f 1)
 ifeq ($(strip $(ROCKS.OS.VERSION.MAJOR)), 5)
 VERSION.MAJOR = 5
-VERSION.MINOR = 5
-RELEASE_NAME = Mamba
+VERSION.MINOR = 6
+RELEASE_NAME = Emerald Boa
 #VERSION.PATCH = 3
 else
 VERSION.MAJOR = 6
