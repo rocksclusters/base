@@ -100,7 +100,7 @@ class AnacondaKSScript(Script):
                           % {'lineno': self.lineno, 'msgs': messages}
 
                     if err:
-                        intf.detailedMessageWindow(_("Scriptlet Failure"), msg, err)
+                        intf.messageWindow(_("Scriptlet Failure"), msg + "\n" + "\n".join(err))
                     else:
                         intf.messageWindow(_("Scriptlet Failure"), msg)
 
@@ -470,7 +470,7 @@ class AnacondaKSHandlers(KickstartHandlers):
         if pd.onbiosdisk != "":
             pd.disk = isys.doGetBiosDisk(pd.onbiosdisk)
 
-            if pd.disk == "":
+            if not pd.disk:
                 raise KickstartValueError, formatErrorMsg(self.lineno, msg="Specified BIOS disk %s cannot be determined" % pd.onbiosdisk)
 
         if pd.mountpoint == "swap":

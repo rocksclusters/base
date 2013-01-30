@@ -134,6 +134,10 @@ class simpleCallback:
 
             nvra = "%s" %(po,)
             self.instLog.write(self.modeText % (nvra,))
+            if nvra in self.files:
+                fn = self.files[nvra].name
+            else:
+                fn = None
 
             self.instLog.flush()
             self.files[nvra] = None
@@ -145,12 +149,13 @@ class simpleCallback:
 		retries = 0
 		# ROCKS
                 try:
-                    fn = repo.getPackage(po)
-
+                    if not (fn and os.path.exists(fn)):
+                        fn = repo.getPackage(po)
                     f = open(fn, 'r')
                     self.files[nvra] = f
                 except NoMoreMirrorsRepoError:
                     # ROCKS
+                    # self.ayum._handleFailure(po)
                     log.info("ROCKS:callback:failed:retries (%d)" % retries)
 
                     if retries > 10:
@@ -294,7 +299,6 @@ class AnacondaYumRepo(YumRepository):
                     
         else:
             try:
-
 		# ROCKS
                 #result = self.grab.urlgrab(relative, local,
                                          #  keepalive = False,
@@ -492,10 +496,36 @@ class YumSorter(yum.YumBase):
                 dep = self.deps.get(req, None)
                 if dep is None:
                     dep = self._provideToPkg(req)
-                    if dep is None:
-                        log.warning("Unresolvable dependency %s in %s"
-                                    %(req[0], txmbr.name))
-                        continue
+
+                if dep is None:
+                    log.warning("Unresolvable dependency %s in %s"
+                                %(req[0], txmbr.name))
+                    continue
+
+                # XXX: ATTENTION the self.anaconda is in the AnacondaYum class,
+                # which subclasses this class and inherits this method;
+                # very ugly, but I don't want to move the whole method...
+                # do this part only if it's used from AnacondaYum class,
+                # pkgorder uses the YumSorter class, but does not need this functionality
+                if (hasattr(self, 'anaconda') and self.anaconda.isKickstart and
+                        'conflicts' in map(str.lower, self.anaconda.id.ksdata.excludedGroupList)):
+
+                    # get the list of packages in @conflicts group for the first time,
+                    # so we can check if the dependencies are there later
+                    if not hasattr(self, '__conflicting_packages'):
+                        self.__conflicting_packages = []
+                        conflicts = self.comps.return_groups('conflicts')
+                        for group in conflicts:
+                            for pkgname in group.packages:
+                                self.__conflicting_packages.append(pkgname)
+
+                    # if the dependency is in the @conflicts group, don't add it
+                    # to the transaction, and also remove the corresponding package
+                    if dep.name in self.__conflicting_packages:
+                        log.warning('Dependency %s for %s in conflicts group' % (dep.name, txmbr.name))
+                        self.__conflicting_packages.append(txmbr.name)
+                        self.tsInfo.remove(txmbr.po.pkgtup)
+                        break
 
                 # Skip filebased requires on self, etc
                 if txmbr.name == dep.name:
@@ -644,6 +674,7 @@ class AnacondaYum(YumSorter):
                 YumSorter.downloadHeader(self, po)
             except NoMoreMirrorsRepoError:
                 # ROCKS
+                # self._handleFailure(po)
                 log.info("ROCKS:downloadHeader:failed:retries (%d)" % retries)
 
                 if retries > 10:
@@ -750,6 +781,7 @@ class AnacondaYum(YumSorter):
         # ROCKS
 
         self.setColor()
+
         if not self.method.splitmethod:
             self.populateTs(keepold=0)
             self.ts.check()
@@ -1312,6 +1344,8 @@ class YumBackend(AnacondaBackend):
         self.selectBestKernel(anaconda)
         self.selectBootloader()
         self.selectFSPackages(anaconda.id.fsset, anaconda.id.diskset)
+        if anaconda.id.network.hasActiveIPoIBDevice():
+            self.selectPackage("openib")
 
         self.selectAnacondaNeeds()
 

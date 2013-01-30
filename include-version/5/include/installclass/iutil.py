@@ -36,29 +36,39 @@ def execWithRedirect(command, argv, stdin = 0, stdout = 1, stderr = 2,
         if not searchPath and not os.access (command, os.X_OK):
             raise RuntimeError, command + " can not be run"
 
+    def try_truncate(f):
+        try:
+            f.truncate(0)
+        except IOError, e:
+            # will fail for e.g. for /dev/tty5
+            pass
+
     if type(stdin) == type("string"):
         if os.access(stdin, os.R_OK):
             stdin = open(stdin)
         else:
             stdin = 0
     if type(stdout) == type("string"):
-        # ROCKS
-        #stdout = open(stdout, "w")
+
+	# ROCKS
+        # stdout = open(stdout, "a")
         dir = os.path.dirname(stdout)
         if not os.path.exists(dir):
             os.makedirs(dir)
 
         stdout = open(stdout, "a")
-        # ROCKS
+	# ROCKS
+        try_truncate(stdout)
     if type(stderr) == type("string"):
-        # ROCKS
-        #stderr = open(stderr, "w")
+	# ROCKS
+        # stderr = open(stderr, "a")
         dir = os.path.dirname(stderr)
         if not os.path.exists(dir):
             os.makedirs(dir)
 
         stderr = open(stderr, "a")
-        # ROCKS
+	# ROCKS
+        try_truncate(stderr)
 
     try:
         proc = subprocess.Popen([command] + argv, stdin=stdin, stdout=stdout,

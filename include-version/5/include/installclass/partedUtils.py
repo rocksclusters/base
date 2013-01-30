@@ -696,6 +696,8 @@ class DiskSet:
                         testList.append(disk)
 
         driveList = filter(lambda x: x not in testList, self.driveList())
+        if DiskSet.exclusiveDisks != []:
+            driveList = filter(lambda x: x in DiskSet.exclusiveDisks, driveList)
         DiskSet.mdList.extend(raid.startAllRaid(driveList))
 
     def stopMdRaid(self):
@@ -899,6 +901,8 @@ class DiskSet:
                     theDev = node
                     if part.fs_type:
                         fstype = part.fs_type.name
+                    else:
+                        fstype = None
 
                     # parted doesn't tell ext4 from ext3 for us
                     if fstype == "ext3": 
