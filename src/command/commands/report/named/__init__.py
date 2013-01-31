@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.12 2012/11/28 22:35:54 phil Exp $
+# $Id: __init__.py,v 1.13 2013/01/31 04:42:24 clem Exp $
 # 
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.13  2013/01/31 04:42:24  clem
+# fix for rever lookup on for rocks 6
+#
 # Revision 1.12  2012/11/28 22:35:54  phil
 # One semicolon can ruin your whole named day.
 #
@@ -289,6 +292,7 @@ class Command(rocks.commands.report.command):
 			s += '\n'
 			
 		s += '\ninclude "/etc/rndc.key";\n'
+		s += 'include "/etc/named.rfc1912.zones";\n'
 		s += '</file>\n'
 
 		self.beginOutput()
