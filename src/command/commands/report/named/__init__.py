@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.13 2013/01/31 04:42:24 clem Exp $
+# $Id: __init__.py,v 1.14 2013/01/31 18:35:13 clem Exp $
 # 
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.14  2013/01/31 18:35:13  clem
+# now works on rocks 5 too
+#
 # Revision 1.13  2013/01/31 04:42:24  clem
 # fix for rever lookup on for rocks 6
 #
@@ -292,7 +295,8 @@ class Command(rocks.commands.report.command):
 			s += '\n'
 			
 		s += '\ninclude "/etc/rndc.key";\n'
-		s += 'include "/etc/named.rfc1912.zones";\n'
+		if rocks.version[0] == '6':
+			s += 'include "/etc/named.rfc1912.zones";\n'
 		s += '</file>\n'
 
 		self.beginOutput()
