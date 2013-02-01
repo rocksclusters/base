@@ -1,2 +1,2 @@
 NAME = rocks-devel
-RELEASE = 2
+RELEASE = 3

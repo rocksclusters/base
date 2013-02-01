@@ -1,3 +1,3 @@
 NAME		= rocks-developersguide
-RELEASE		= 1
+RELEASE		= 2
 RPM.ARCH	= noarch

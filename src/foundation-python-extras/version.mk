@@ -1,2 +1,2 @@
 NAME	= foundation-python-extras
-RELEASE = 0
+RELEASE = 2
