@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.5 2013/01/12 03:08:16 clem Exp $
+# $Id: Makefile,v 1.6 2013/02/01 01:43:10 clem Exp $
 #
 # @Copyright@
 # 
@@ -75,6 +75,7 @@ build::
 
 install::
 	mkdir -p $(ROOT)/$(PKGROOT)
+	mkdir -p $(ROOT)/$(PKGROOT)/share/man
 	(							\
 		cd git-$(VERSION);				\
 		mount --bind $(ROOT)/$(PKGROOT) $(PKGROOT);\
