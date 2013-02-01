@@ -17,6 +17,12 @@
 
 	<changelog>
 	$Log: foundation-base.xml,v $
+	Revision 1.36  2013/02/01 17:58:10  clem
+	let's install the foundation-python-setuptools by defualt
+	
+	I don't see why we should not install them. It is just few files and it
+	makes easier to compile other foundation-python packages.
+	
 	Revision 1.35  2012/05/06 05:48:10  phil
 	Copyright Storm for Mamba
 	
@@ -140,6 +146,7 @@
 	<package os='linux'>foundation-redhat</package>
 	<package os='linux'>foundation-python</package>
 	<package os='linux'>foundation-python-extras</package>
+	<package os='linux'>foundation-python-setuptools</package>
 	<package os='linux'>foundation-python-xml</package>
 	<package os='linux'>foundation-graphviz</package>
 	<package os='linux'>foundation-coreutils</package>
