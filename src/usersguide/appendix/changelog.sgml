@@ -3,6 +3,54 @@
 
 
 
+<section>
+<title>Release 5.6/6.1_sp1 - changes from 5.6/6.1</title>
+
+<section>
+	<title>Enhancements and Bug Fixes</title>
+	<para>
+	Base: rocks yum repository is clean from errors (automatic dependecies/provides detection 
+	has been disable on several packages, in particular: all the opt-perl-* rpms, foudation-git, 
+	etc.)
+	</para>
+	<para>
+	Base: /opt/rocks/lib/mysql is not included in the loader path so system mysql 
+	uses system libmysqlclient.so and not rocks mysql libs (several other useless 
+	entries were removed from the ld.so.conf).
+	</para>
+	<para>
+	Base: JDK updated
+	</para>
+	<para>
+	Base: grub timeout is now again 10 seconds 
+	</para>
+	<para>
+	Base: improved script to fetch 441 private key after re-installation of a node
+	</para>
+	<para>
+	Base: it is now possible to use a /etc/ssh/ssh_known_hosts.local to insert static 
+	entries
+	</para>
+	<para>
+	Base: rocks set host interface ip does not allow anymore invalid IP number
+	</para>
+	<para>
+	Base, Ganglia, KVM: several fixes and improvement to the documentations
+	</para>
+
+
+	<para>
+ 	Base: Bugfix. record in rocks data base partitioning information
+	</para>
+
+	<para>
+ 	Base: rocks report host interface was failing with bonded interface
+	</para>
+
+</section>
+</section>
+
+
 
 <section>
 <title>Release 5.6/6.1 - changes from 5.5/6.0</title>
