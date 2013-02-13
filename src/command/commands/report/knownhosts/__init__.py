@@ -1,4 +1,4 @@
-#$Id: __init__.py,v 1.6 2012/12/21 02:36:36 clem Exp $
+#$Id: __init__.py,v 1.7 2013/02/13 23:16:51 clem Exp $
 #
 # @Copyright@
 # 
@@ -118,8 +118,11 @@ class Command(command):
 		# now the cluster-wide public key
 		cmd = """SELECT s.value FROM sec_global_attributes s 
 			WHERE s.attr = 'ssh_host_rsa_key.pub';"""
-		self.db.execute(cmd)
-		pubkey, = self.db.fetchone()
+		row = self.db.execute(cmd)
+		if row > 0: 
+			pubkey, = self.db.fetchone()
+		else:
+			pubkey = None
 		if pubkey is not None:
 			pubkey = pubkey.rstrip('\n')
 
