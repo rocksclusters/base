@@ -22,7 +22,7 @@
 	Base: JDK updated
 	</para>
 	<para>
-	Base: grub timeout is now again 10 seconds 
+	Base: grub boot timeout is now 10 seconds
 	</para>
 	<para>
 	Base: improved script to fetch 441 private key after re-installation of a node
@@ -45,6 +45,12 @@
 
 	<para>
  	Base: rocks report host interface was failing with bonded interface
+	</para>
+
+	<para>
+	Ganglia: rrd uses previous data retention policy (as in ganglia 3.2) to reduce 
+	disk usage (ganglia 3.3 policy was to 39MB per node 
+	http://marc.info/?l=npaci-rocks-discussion&m=135850438309730&w=1). 
 	</para>
 
 </section>
