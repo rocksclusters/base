@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.5 2012/11/27 00:48:28 phil Exp $
+# $Id: __init__.py,v 1.6 2013/02/19 18:48:43 clem Exp $
 #
 # @Copyright@
 # 
@@ -55,6 +55,9 @@
 # @Copyright@
 #
 # $Log: __init__.py,v $
+# Revision 1.6  2013/02/19 18:48:43  clem
+# when changing the name of a host check that the new name is not already used
+#
 # Revision 1.5  2012/11/27 00:48:28  phil
 # Copyright Storm for Emerald Boa
 #
@@ -106,7 +109,10 @@ class Command(rocks.commands.set.host.command):
 			self.abort('must supply a host')
 		if not name:
 			self.abort('must supply new name')
-			
+		
+		if name in self.getHostnames():
+			self.abort('the new host name "%s" already exists' % name)
+		
 		hosts = self.getHostnames(args)
 		if len(hosts) > 1:
 			self.abort('must supply only one host')
