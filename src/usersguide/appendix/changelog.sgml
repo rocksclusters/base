@@ -50,7 +50,7 @@
 	<para>
 	Ganglia: rrd uses previous data retention policy (as in ganglia 3.2) to reduce 
 	disk usage (ganglia 3.3 policy was to 39MB per node 
-	http://marc.info/?l=npaci-rocks-discussion&m=135850438309730&w=1). 
+	http://marc.info/?l=npaci-rocks-discussion&amp;m=135850438309730). 
 	</para>
 
 </section>
