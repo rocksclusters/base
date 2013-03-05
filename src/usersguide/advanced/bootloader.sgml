@@ -1,0 +1,69 @@
+<section id="bootloader" xreflabel="Controlling the Bootloader">
+<title> Controlling Bootloader Parameters</title>
+
+<para>
+The default parameters for the GRUB bootloader is the master boot record
+on the first BIOS-enabled drive. However, sometimes more control is needed
+to support alternative configurations or to work around either anaconda 
+(the installer) issues or platform BIOS problems. For Rocks version 6,
+the default parameters are
+</para>
+<screen>
+--location=mbr --timeout=5 
+</screen>
+<para>
+These are encoded into the base.xml configuration node and is part of the base roll.
+</para>
+
+
+<para>
+It is possible to completely override the default with the <emphasis>Bootloader</emphasis> attribute. This affects the generation of the node's kickstart file. The most common change is the <emphasis>--driveorder</emphasis> option to tell
+anaconda precisely which device is the first in the BIOS boot order. 
+In the following example, we set the driveorder to "sda" for node 
+<computeroutput>compute-0-0</computeroutput>.
+</para>
+
+<screen>
+# rocks set host attr compute-0-0 Bootloader value="--location=mbr --timeout=5 --driveorder=sda" 
+</screen>
+
+<para>
+One can check the value as follows
+</para>
+<screen>
+# rocks list host attr compute-0-0 | grep Bootloader
+compute-0-0: Bootloader     --location=mbr --timeout=5 --driveorder=sda H     
+</screen>
+
+<para>
+We see that <computeroutput>compute-0-0</computeroutput> has the Bootloader 
+attribute set.  The "H" indicates that this attribute is a Host-specific 
+attribute.
+</para>
+
+
+<warning>
+<para>
+If you define a Bootloader attribute, you must include 
+the <computeroutput>--location=</computeroutput> directive. This is an 
+Anaconda requirement
+</para>
+</warning>
+
+<note>
+<para>
+The full set of bootloader options is available at 
+<ulink url="https://access.redhat.com/knowledge/docs/en-US/Red_Hat_Enterprise_Linux/6/html/Installation_Guide/s1-kickstart2-options.html">Kickstart Options</ulink>
+</para>
+</note>
+
+
+<para>
+To revert to the Rocks default, one simply removes the attribute
+</para>
+
+<screen>
+# rocks remove host attr compute-0-0 attr=Bootloader 
+</screen>
+
+</section>

@@ -2,6 +2,7 @@
 <!ENTITY cross SYSTEM "cross.sgml">
 <!ENTITY pxeflash SYSTEM "pxeflash.sgml">
 <!ENTITY bootflags SYSTEM "bootflags.sgml">
+<!ENTITY bootloader SYSTEM "bootloader.sgml">
 <!ENTITY login SYSTEM "login.sgml">
 <!ENTITY bonding SYSTEM "bonding.sgml">
 <!ENTITY firewall SYSTEM "firewall.sgml">

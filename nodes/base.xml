@@ -454,11 +454,26 @@
 -->
 
 <timezone>--utc &Kickstart_Timezone;</timezone>
-<!-- Anaconda on centOS 5 does not support the timeout flag it defaults to 5  -->
-<bootloader cond="rocks_version_major == 5">--location=mbr</bootloader>
-<!-- Anaconda on centOS 6 added the support for the timeout flag and if not 
-          specified the default is 0. Brilliant....  -->
-<bootloader cond="rocks_version_major >= 6">--location=mbr --timeout=5</bootloader>
+
+<!-- Managing bootloader directive:
+ 
+     The first two bootloader configs are default (Bootloader attr is undefined)
+     The last one allows a complete overwrite 
+-->
+
+<!-- CENTOS5: Anaconda on centOS 5 does not support the 
+     timeout flag. Timeout  defaults to 5  
+-->
+<bootloader cond="rocks_version_major == 5 and Bootloader is None" >--location=mbr</bootloader>
+
+<!-- CENTOS6: Anaconda on centOS 6 added the support for the timeout flag.
+     When not specified the default is 0. Brilliant....  
+-->
+<bootloader cond="rocks_version_major >= 6 and Bootloader is None">--location=mbr --timeout=5</bootloader>
+
+<!-- USER OVERWRITE: If the Bootloader attribute is defined, then use it. 
+-->
+<bootloader cond="Bootloader is not None">&Bootloader;</bootloader>
 
 <url> --url http://&Kickstart_PrivateKickstartHost;/&Kickstart_PrivateKickstartBasedir;/&distribution;/&arch; </url>
 <interactive/>

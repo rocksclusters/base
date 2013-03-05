@@ -245,7 +245,16 @@ class Command(rocks.commands.HostArgumentProcessor,
 		self.addOutput('', '%soption broadcast-address %s;' %
 			(prefix, self.db.getHostAttr('localhost',
 				'Kickstart_PrivateBroadcast')))
+		try:
+			self.db.execute("""SELECT mtu FROM subnets WHERE 
+				subnets.name='private'""")
 
+			mtu, = self.db.fetchone()
+			self.addOutput('', '%soption %s %s;' %
+				(prefix, 'interface-mtu', mtu)) 
+			
+		except:
+			pass
 
 	def printHost(self, name, hostname, mac, ip, filename, nextserver):
 		self.addOutput('', '\t\thost %s {' % name)
