@@ -133,7 +133,7 @@ class Command(rocks.commands.save.host.command):
 	    
 	    
 	    import record_partitions
-	    print "partitions: ", record_partitions.nodepartinfo
+	    #print "partitions: ", record_partitions.nodepartinfo
 	    
 	    #p = rocks_partition.RocksPartition()
 	    #
