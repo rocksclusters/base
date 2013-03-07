@@ -76,6 +76,7 @@ build::
 install::
 	mkdir -p $(ROOT)/$(PKGROOT)
 	mkdir -p $(ROOT)/$(PKGROOT)/share/man
+	mkdir -p $(ROOT)/$(PKGROOT)/etc
 	(							\
 		cd git-$(VERSION);				\
 		mount --bind $(ROOT)/$(PKGROOT) $(PKGROOT);\
@@ -83,7 +84,8 @@ install::
 		cd ..;                   \
 		tar -xvzf git-manpages-$(VERSION).tar.gz -C /opt/rocks/share/man ;\
 		umount $(ROOT)/$(PKGROOT);\
-		rm $(ROOT)/$(PKGROOT)/libexec/git-core/git-svn  \
+		rm $(ROOT)/$(PKGROOT)/libexec/git-core/git-svn;  \
+		cp gitconfig $(ROOT)/$(PKGROOT)/etc; \
 	)
 
 clean::
