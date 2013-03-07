@@ -150,8 +150,10 @@ if [ `./_os` == "linux" ]; then
 	yum -y install e2fsprogs-devel isomd5sum-devel libarchive-devel libXxf86misc-devel libblkid-devel libnl-devel newt-devel pykickstart slang-devel NetworkManager-devel NetworkManager-glib-devel iscsi-initiator-utils-devel device-mapper-devel
 	#needed only for rocks 5
 	if awk '{print $3}' /etc/issue | grep 5 ;then 
+        #to run create mirror (centos 5 calls mkisofs while centos 6 genisoimage :-( )
+        EXTRA_PACKAGES="mkisofs"
 		#to compile patched version of python
-		yum -y install gmp-devel gdbm-devel tix-devel tix readline-devel tcl-devel tk-devel db4-devel bzip2-devel autoconf
+		yum -y install gmp-devel gdbm-devel tix-devel tix readline-devel tcl-devel tk-devel db4-devel bzip2-devel autoconf $EXTRA_PACKAGES
 
 	fi
 fi
