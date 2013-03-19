@@ -151,7 +151,7 @@ if [ `./_os` == "linux" ]; then
 	#needed only for rocks 5
 	if awk '{print $3}' /etc/issue | grep 5 ;then 
         #to run create mirror (centos 5 calls mkisofs while centos 6 genisoimage :-( )
-        EXTRA_PACKAGES="mkisofs"
+        EXTRA_PACKAGES="mkisofs pirut"
 		#to compile patched version of python
 		yum -y install gmp-devel gdbm-devel tix-devel tix readline-devel tcl-devel tk-devel db4-devel bzip2-devel autoconf $EXTRA_PACKAGES
 
