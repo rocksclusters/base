@@ -107,6 +107,7 @@ import os
 import socket
 import string
 import cgi
+import re
 
 #
 # get the name of the node that is issuing the request
@@ -120,9 +121,17 @@ if os.environ.has_key('REMOTE_ADDR'):
 #
 form = cgi.FieldStorage()
 if form.has_key('action'):
-	action = form['action'].value
+	testaction = form['action'].value
 else:
+	testaction = 'os'
+
+
+# Sanitize the action sent to us. Only allow alphanumeric
+unallowed = re.compile('[^a-zA-Z0-9 ]+')
+if unallowed.search(testaction):
 	action = 'os'
+else:
+	action = testaction
 
 #
 # convert the requesting IP address into a simple hostname (only the hostname
