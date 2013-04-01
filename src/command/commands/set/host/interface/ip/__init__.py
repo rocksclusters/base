@@ -182,12 +182,13 @@ class Command(rocks.commands.set.host.command):
 
 		ip = ip.upper() # null -> NULL
 
-		#is a valid IPv4 address
-		#for IPv6 use socket.AF_INET6
-		try:
-			socket.inet_pton(socket.AF_INET, ip)
-		except:
-			self.abort("The ip address %s is invalid" % ip )
+		if ip != 'NULL':
+			#let's check if this is a valid IPv4 address
+			#for IPv6 use socket.AF_INET6
+			try:
+				socket.inet_pton(socket.AF_INET, ip)
+			except:
+				self.abort("The ip address %s is invalid" % ip )
 		
 		for host in hosts:
 			self.db.execute("""update networks, nodes set 
