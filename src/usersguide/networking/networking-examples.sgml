@@ -76,7 +76,6 @@ while [ $NODE -lt $NNODES ]; do \
 	rocks set host interface ip compute-0-$NODE iface=eth1 ip=192.168.1.$IP; \
 	rocks set host interface subnet compute-0-$NODE iface=eth1 subnet=fast; \
 	rocks set host interface name compute-0-$NODE iface=eth1 name=compute-fast-0-$NODE; \
-	rocks set host interface subnet compute-0-$NODE eth1 public
 	let IP++; \
 	let NODE++; \
 done
