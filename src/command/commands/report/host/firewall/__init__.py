@@ -157,6 +157,7 @@ class Command(rocks.commands.HostArgumentProcessor,
 				networks net, nodes n where
 				net.node = n.id and n.name = '%s' and
 				net.device not like 'vlan%%' and
+				net.device not like 'ipmi%%' and
 				net.subnet = %s""" % (host, '%s' % inid))
 
 			if rows == 1:
@@ -180,6 +181,7 @@ class Command(rocks.commands.HostArgumentProcessor,
 				networks net, nodes n where
 				net.node = n.id and n.name = '%s' and
 				net.device not like 'vlan%%' and
+				net.device not like 'ipmi%%' and
 				net.subnet = %s""" % (host, '%s' % outid))
 
 			if rows == 1:
