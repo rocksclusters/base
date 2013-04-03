@@ -155,6 +155,8 @@ install::
 		LD_LIBRARY_PATH=$(ROOT)/$(PKGROOT)/lib/graphviz		\
 			$(MAKE) DESTDIR=$(ROOT) install;		\
 	)
+	# leftover of built scirpt DESTDIR= is not fully respected
+	rm -r $(ROOT)/usr
 
 clean::
 	rm -rf graphviz-$(VERSION)
