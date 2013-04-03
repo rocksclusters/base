@@ -3,6 +3,6 @@ build:
 	( 					\
 		cd graphviz-$(VERSION);		\
 		./configure --prefix=$(PKGROOT) \
-		--enable-perl=no;\
+		--enable-perl=no --enable-python=no;\
 		$(MAKE);			\
 	)
