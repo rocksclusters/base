@@ -555,16 +555,17 @@ class Command(rocks.commands.HostArgumentProcessor,
 			else:
 				if self.isKVMContainer(host):
 					#we have to set up bridged devices
-					if vlanid != None and ip == None:
-						#vlan interface are not configured by RH network script!
+					if device.startswith( 'vlan' ):
+						# vlan interfaces are not configured by RH network script
+						# any more but by the rocks sync host vlan command
 						pass
 					else:
 						if subnetid:
-							#active interface
+							# the interface is active bring it up at boot
 							self.writeBridgedConfig(host, mac, ip, device,
 								netmask, vlanid, mtu, options, channel, True)
 						else:
-							#inactive... don't bring it up when you boot
+							# inactive... don't bring it up when you boot
 							self.writeBridgedConfig(host, mac, ip, device,
 								netmask, vlanid, mtu, options, channel, False)
 				else:
