@@ -547,27 +547,6 @@ class Command(rocks.commands.HostArgumentProcessor,
 				self.writeModprobe(host, device, module,
 					options)
 
-			if vlanid:
-				#
-				# look up the name of the interface that
-				# maps to this VLAN spec
-				#
-				rows = self.db.execute("""select net.device from
-					networks net, nodes n where
-					n.id = net.node and n.name = '%s'
-					and net.subnet = %d and
-					net.device not like 'vlan%%' """ %
-					(host, subnetid))
-
-				if rows:
-					dev, = self.db.fetchone()
-					#
-					# check if already referencing 
-					# a physical device
-					#
-					if dev != device:
-						device = '%s.%d' % (dev, vlanid)
-
 			if self.iface:
 				if self.iface == device:
 					self.writeConfig(host, mac, ip, device,
