@@ -274,11 +274,16 @@ class Command(command):
 			memberships m where m.appliance = a.id and
 			m.name='%s'""" % (membership))
 
-		#bug fix in the MySQL libraries over sql sets
-		if rocks.version[0] == '6' :
-			supported_os = self.db.fetchone()[0]
-		else:
-			supported_os = list(self.db.fetchone()[0])
+		supported_os = self.db.fetchone()
+
+		# bug fix in MySQL-python of centos 5.6 sql sets returns a set of Sets
+		# (Set(['linux']),) so we need to pop out the first containing set
+		# on rocks 6 it is just ('linux',) so no need to do this
+		import warnings
+		warnings.filterwarnings(action="ignore", message='the sets module is deprecated')
+		import sets
+		if len(supported_os) > 0 and isinstance(supported_os[0], sets.Set):
+			supported_os = list(supported_os[0])
 
 		if osname is not None and osname not in supported_os:
 			self.abort("%s does not support %s" % (membership,
