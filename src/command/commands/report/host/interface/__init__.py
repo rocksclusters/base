@@ -372,7 +372,7 @@ class Command(rocks.commands.HostArgumentProcessor,
 
 
 	def writeConfig(self, host, mac, ip, device, netmask, vlanid, mtu,
-			options, channel):
+			options, channel, interfaces_name):
 
 		configured = 0
 
@@ -427,7 +427,12 @@ class Command(rocks.commands.HostArgumentProcessor,
 				self.addOutput(host, 'ONBOOT=yes')
 			else:
 				self.addOutput(host, 'BOOTPROTO=none')
-				self.addOutput(host, 'ONBOOT=no')
+				if interfaces_name and any([device + '.' in temp for temp in interfaces_name]):
+					# this is a ethN and we have a ethN.vlanid so this 
+					# dev must be active, red hat init madness
+					self.addOutput(host, 'ONBOOT=yes')
+				else:
+					self.addOutput(host, 'ONBOOT=no')
 
 		if mtu:
 			self.addOutput(host, 'MTU=%s' % mtu)
@@ -519,6 +524,14 @@ class Command(rocks.commands.HostArgumentProcessor,
 		self.addText(s)
 		
 	def run_linux(self, host):
+
+		self.db.execute("""select net.device from networks net, nodes n
+			where net.node = n.id and n.name = "%s"; """ % (host))
+
+		interfaces_name = []
+		for row in self.db.fetchall():
+			interfaces_name.append(row[0])
+
 		self.db.execute("""select distinctrow 
 			net.mac, net.ip, net.device,
 			if(net.subnet, s.netmask, NULL), net.vlanid,
@@ -551,7 +564,7 @@ class Command(rocks.commands.HostArgumentProcessor,
 				if self.iface == device:
 					self.writeConfig(host, mac, ip, device,
 						netmask, vlanid, mtu, options,
-						channel)
+						channel, interfaces_name)
 			else:
 				if self.isKVMContainer(host):
 					#we have to set up bridged devices
@@ -574,7 +587,7 @@ class Command(rocks.commands.HostArgumentProcessor,
 					s += '%s">' % (device)
 					self.addOutput(host, s)
 					self.writeConfig(host, mac, ip, device,
-						netmask, vlanid, mtu, options, channel)
+						netmask, vlanid, mtu, options, channel, interfaces_name)
 					self.addOutput(host, '</file>')
 
 
