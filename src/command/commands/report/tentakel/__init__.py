@@ -89,11 +89,11 @@ import rocks.commands.report
 
 class Command(rocks.commands.report.command):
 	"""
-        Create a report that can be used to configure tentakel.
+	Create a report that can be used to configure tentakel.
         
-        <example cmd='report tentakel'>                
-        Create a tentakel configuration file.
-        </example>
+	<example cmd='report tentakel'>                
+	Create a tentakel configuration file.
+	</example>
 	"""
 	
 	def run(self, params, args):
