@@ -129,7 +129,7 @@ class Command(rocks.commands.HostArgumentProcessor,
 
 	<example cmd='report host attr compute-0-0 attr=Kickstart_Lang'>
 	Output value of the attribute called Kickstart_Lang for node
-        compute-0-0.
+	compute-0-0.
 	</example>
 
 	<related>report script</related>
