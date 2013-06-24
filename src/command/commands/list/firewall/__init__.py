@@ -107,11 +107,11 @@ class Command(command):
 	<arg type='string' name='category=index' optional='1'>
 	[global,os,appliance,host]=index.
 
-        list rules index (member) of category. e.g.
+	list rules index (member) of category. e.g.
 	os=linux, appliance=login, or host=compute-0-0.
 
-        global, global=, and global=global all refer
-        to the global category.
+	global, global=, and global=global all refer
+	to the global category.
 
 	</arg>
 
