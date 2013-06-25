@@ -78,11 +78,11 @@ import rocks.commands.report
 
 class Command(rocks.commands.report.command):
 	"""
-        Report info about the system to help debug issues.
+	Report info about the system to help debug issues.
         
-        <example cmd='report bug'>                
-        Report system info.
-        </example>
+	<example cmd='report bug'>                
+	Report system info.
+	</example>
 	"""
 	
 	def run(self, params, args):

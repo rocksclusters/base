@@ -104,8 +104,8 @@ class Command(command):
 
 	Specify which version of rulename to remove
 	os=linux, appliance=login, or host=compute-0-0.
-        global, global=, and global=global all refer
-        to the global category.
+	global, global=, and global=global all refer
+	to the global category.
 
 	cannot be wildcarded. Specifying just a rulename defaults to the global
 	category

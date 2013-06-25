@@ -247,16 +247,16 @@ class Command(command):
 
 	Must precede all other a=b parameters
 
-        Apply rule to index (member) of category. e.g.
+	Apply rule to index (member) of category. e.g.
 	os=linux, appliance=login, or host=compute-0-0.
 
-        global, global=, and global=global all refer
-        to the global category
+	global, global=, and global=global all refer
+	to the global category
 	</arg>
 
 	<param type='string' name='rulename'>
 	User-defined name of rule. Required.
-        Firewall rules are ordered lexicographically. 
+	Firewall rules are ordered lexicographically. 
 	</param>
 
 	<param type='string' name='rulesrc' optional='1'>
@@ -277,26 +277,26 @@ class Command(command):
 	keyword 'all'.
 	</param>
 	
-        <param type='string' name='network'>
-        The network this rule should be applied to. This is a named network
-        (e.g., 'private') and must be one listed by the command
-        'rocks list network'.
+	<param type='string' name='network'>
+	The network this rule should be applied to. This is a named network
+	(e.g., 'private') and must be one listed by the command
+	'rocks list network'.
 	To have this firewall rule apply to all networks, specify the
 	keyword 'all'.
 	</param>
 
-        <param type='string' name='output-network' optional='1'>
-        The output network this rule should be applied to. This is a named
+	<param type='string' name='output-network' optional='1'>
+	The output network this rule should be applied to. This is a named
 	network (e.g., 'private') and must be one listed by the command
-        'rocks list network'.
+	'rocks list network'.
 	</param>
 
-        <param type='string' name='chain'>
+	<param type='string' name='chain'>
 	The iptables 'chain' this rule should be applied to (e.g.,
 	INPUT, OUTPUT, FORWARD).
 	</param>
 
-        <param type='string' name='action'>
+	<param type='string' name='action'>
 	The iptables 'action' this rule should be applied to (e.g.,
 	ACCEPT, REJECT, DROP).
 	</param>
@@ -306,7 +306,7 @@ class Command(command):
 	the INPUT chain and apply the "-m state --state NEW" flags to the
 	rule.
         
-        Apply the rule to login appliances (appliance=login)
+	Apply the rule to login appliances (appliance=login)
 
 	Name the rule ACCEPT-SSH
 
@@ -328,14 +328,14 @@ class Command(command):
 
 
 	<example cmd='add firewall host=compute-0-0 rulename=ZZDRACONIAN network="all" service="all" protocol="all" action="DROP" chain="INPUT"'>
-        DROP all non-matched packets
+	DROP all non-matched packets
 
 	Apply this rule to host compute-0-0 (host=compute-0-0)
 
-        rule will be named ZZDRACONIAN 
+	rule will be named ZZDRACONIAN 
 
 	This will drop all non-matched packets  that have not been previously accepted
-        Known as a draconian firewall rule. 
+	Known as a draconian firewall rule. 
 	</example>
 	"""
 	def run(self, params, args):

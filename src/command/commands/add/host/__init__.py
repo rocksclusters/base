@@ -176,16 +176,16 @@ class Command(command):
 	"""
 	Add an new host to the cluster.
 
-        <arg type='string' name='host'>
-        A single host name.  If the hostname is of the standard form of
+	<arg type='string' name='host'>
+	A single host name.  If the hostname is of the standard form of
 	basename-rack-rank the default values for the membership, rack,
 	and rank parameters are taken from the hostname.
-        </arg>
+	</arg>
 
-        <param type='int' name='cpus'>
-        Number of CPUs (cores) in the given host.  If not provided the
+	<param type='int' name='cpus'>
+	Number of CPUs (cores) in the given host.  If not provided the
 	default of 1 CPU is inserted into the database.
-        </param>
+	</param>
 
 	<param type='string' name='membership'>
 	Appliance membership name.  If not provided and the host name is of
@@ -193,12 +193,12 @@ class Command(command):
 	the host.
 	</param>
 
-        <param type='int' name='rack'>
-        The number of the rack where the machine is located. The convention
+	<param type='int' name='rack'>
+	The number of the rack where the machine is located. The convention
 	in Rocks is to start numbering at 0. If not provided and the host
 	name is of the standard form the rack number is taken from the host
 	name.
-        </param>
+	</param>
 
 	<param type='int' name='rank'>
 	The position of the machine in the rack. The convention in Rocks
