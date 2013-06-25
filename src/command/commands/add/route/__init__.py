@@ -111,7 +111,7 @@ class Command(rocks.commands.add.command):
 	
 	<arg type='string' name='gateway'>
 	Network (e.g., IP address), subnet name (e.g., 'private', 'public'), or
-	a device gateway (e.g., 'eth0).
+	a device gateway (e.g., 'eth0').
 	</arg>
 
 	<param type='string' name='netmask'>
