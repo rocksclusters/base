@@ -139,7 +139,8 @@ import rocks.commands
 
 
 class Command(rocks.commands.list.command):
-	"""The Help Command print the usage of all the registered
+	"""
+	The Help Command print the usage of all the registered
 	Commands.
 	
 	<param optional='1' type='string' name='subdir'>
