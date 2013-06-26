@@ -1122,6 +1122,60 @@ class DocStringHandler(handler.ContentHandler,
 		else:
 			return s
 	
+	def getSphinxText(self):
+		if 'root' in self.users:
+			prompt = '#'
+		else:
+			prompt = '$'
+
+		s  = ''
+		s += '.. _rocks-%s:\n\n' % self.name.replace(' ','-')
+		s += '%s\n' % self.name
+		s += '%s\n\n' % ("-" * len(self.name))
+		s += '.. role:: defn\n\n' 
+		utxt = self.getUsageText()
+		if len(utxt): 
+		    s += ':defn:`rocks %s` *%s*\n' % (self.name, utxt)
+		else:         
+		    s += ':defn:`rocks %s` %s\n' % (self.name, utxt)
+		s += '\n\n**Description:**\n'
+		s += self.section['description'].replace('\t','   ')
+		if self.section['arg']:
+			s += '\n**Arguments:**\n\n'
+			for ((name, type, opt, rep), txt) in \
+				self.section['arg']:
+				if opt:
+					s += '*[%s]*' % name
+				else:
+					s += '*{%s}*' % name
+				txt = txt.replace('*', '\*')
+				s += '\n%s\n' % txt.replace('\t', '   ')
+		if self.section['param']:
+			s += '\n**Parameters:**\n\n'
+			for ((name, type, opt, rep), txt) in \
+				self.section['param']:
+				if opt:
+					s += '*[%s=%s]*' % (name, type)
+				else:
+					s += '*{%s=%s}*' % (name, type)
+				txt = txt.replace('*', '\*')
+				s += '\n%s\n' % txt.replace('\t', '   ')
+		if self.section['example']:
+			s += '\n**Examples:**\n'
+			for (cmd, txt) in self.section['example']:
+				txt = txt.replace('*', '\*')
+				s += '%s::\n\n' % txt.replace('\t','   ')
+				s += '   %s rocks %s\n' % (prompt, cmd)
+		if self.section['related']:
+			s += '\n**Related Commands:**\n\n'
+			for related in self.section['related']:
+				s += '   * :ref:`rocks-%s`\n' % related.replace(' ','-')
+
+                word = self.name.split()[0]
+		s += '\n|back| :ref:`%s commands <%s-ref>`\n' % (word, word)
+
+		return s
+
 	def getPlainText(self):
 		if 'root' in self.users:
 			prompt = '#'
@@ -2139,6 +2193,8 @@ class Command:
 				self.addText(handler.getDocbookText())
 			elif format == 'parsed':
 				self.addText(handler.getParsedText())
+			elif format == 'sphinx':
+				self.addText(handler.getgetSphinxText())
 			else:
 				self.addText(handler.getPlainText())
 
