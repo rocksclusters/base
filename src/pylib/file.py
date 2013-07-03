@@ -532,10 +532,10 @@ class RPMFile(RPMBaseFile):
 		 	if abs(int(self.timestamp) - int(file.timestamp)) < 120 :
 				# print "CMP %s:%s" % (self.getFullName(), file.getFullName())
 				f1=os.popen("rpm -qp --qf '%%{BUILDTIME}' %s" % self.getFullName())
-				self.timestamp=f1.readline()
+				self.timestamp=float(f1.readline())
 				f1.close()
 				f2=os.popen("rpm -qp --qf '%%{BUILDTIME}' %s" % file.getFullName())
-				file.timestamp=f2.readline()
+				file.timestamp=float(f2.readline())
 				f2.close()
 
 			rc = File.__cmp__(self, file)
