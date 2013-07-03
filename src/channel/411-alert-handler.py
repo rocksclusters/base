@@ -343,7 +343,11 @@ syslog.syslog(syslog.LOG_DEBUG, 'handle (file="%s" time="%.6f")' % (filename, ti
 timestamps = {}
 if os.path.exists('/tmp/411-alert-handler.pkl'):
 	fin = open('/tmp/411-alert-handler.pkl', 'rb')
-	timestamps = pickle.load(fin)
+	try:
+		timestamps = pickle.load(fin)
+	except:
+		# something went awry file is probably corrupted
+		os.remove('/tmp/411-alert-handler.pkl')
 	fin.close()
 
 if timestamps.has_key(filename) and timestamps[filename] == time:
