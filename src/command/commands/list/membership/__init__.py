@@ -114,12 +114,13 @@ class Command(rocks.commands.MembershipArgumentProcessor,
 		self.beginOutput()
 
 		for name in self.getMembershipNames(args):
-			rows = self.db.execute("""select a.name from
-				memberships m, appliances a where
-				m.appliance=a.id and m.name='%s'""" % name)
+			rows = self.db.execute("""select a.name, d.name, m.public from
+				memberships m, appliances a, distributions d where
+				m.appliance=a.id and m.name='%s' and
+				m.distribution = d.id""" % name)
 
 			if rows > 0:
 				self.addOutput(name, self.db.fetchone())
 
-		self.endOutput(header=['membership', 'appliance'])
+		self.endOutput(header=['membership', 'appliance', 'distribution', 'public'])
 

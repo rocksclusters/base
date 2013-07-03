@@ -127,11 +127,11 @@ class Command(command):
 
 			(graph, node) = self.db.fetchone()
 
-			self.db.execute("""select m.name, m.public
-				from memberships m, appliances a where
-				m.appliance = a.id and a.name = '%s'""" % (app))
+			self.db.execute("""select m.name, m.public, d.name
+				from memberships m, appliances a, distributions d where
+				m.appliance = a.id and a.name = '%s' and d.id=m.distribution""" % (app))
 
-			(mem, pub) = self.db.fetchone()
+			(mem, pub, dist) = self.db.fetchone()
 
 			str = "add appliance %s " % app
 
@@ -142,7 +142,9 @@ class Command(command):
 			if mem:
 				str += "membership=%s " % self.quote(mem)
 			if pub:
-				str += "public=%s" % pub
+				str += "public=%s " % pub
+			if dist:
+				str += "distribution=%s " % dist
 				
 			self.dump(str)
 

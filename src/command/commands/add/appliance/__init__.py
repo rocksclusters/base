@@ -227,6 +227,12 @@ class Command(command):
 	Acceptable values are 'linux' or 'sunos'. Defaults to 'linux'
 	</param>
 
+	<param type='string' name='distribution'>
+	The rocks distribution that this appliance will use. The distribution must
+	be already present in the database (see rocks add distribution).
+	Defaults to 'rocks-dist'
+	</param>
+
 	<example cmd='add appliance nas membership="NAS Appliance" node=nas graph=default public=yes'>
 	</example>
 	
@@ -240,13 +246,14 @@ class Command(command):
 			self.abort('must supply one appliance')
 		app_name = args[0]
 					
-		(mem_name, node, graph,	public, osname) = \
+		(mem_name, node, graph,	public, osname, rocks_distribution) = \
 			self.fillParams(
 				[('membership', ), 
 				('node', ''),
 				('graph', ''), 
 				('public', 'y'),
-				('os','linux')])
+				('os','linux'),
+				('distribution', 'rocks-dist')])
 
 		public  = self.bool2str(self.str2bool(public))
 		
@@ -320,6 +327,6 @@ class Command(command):
 			values
 			('%s',
 			(select id from appliances where name='%s'), 
-			(select id from distributions where name='rocks-dist'),
+			(select id from distributions where name='%s'),
 			'%s')""" %
-			(mem_name, app_name, public))
+			(mem_name, app_name, rocks_distribution, public))
