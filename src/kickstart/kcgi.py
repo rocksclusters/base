@@ -868,6 +868,23 @@ class App(rocks.kickstart.Application):
 		else:
 			OS = 'linux' # should aways come from loader
 
+		# check for bogus input before putting it on a shell cmd line
+		import re
+		q = re.compile('[^-a-zA-Z0-9 _]+')
+		if q.search(self.arch):
+			print "Content-type: text/html"
+			print "Status: 400 Bad Status"
+			print
+			print "<h1>Bad arch value</h1>"
+			sys.exit(1)
+
+		if q.search(OS):
+			print "Content-type: text/html"
+			print "Status: 400 Bad Status"
+			print
+			print "<h1>Bad OS value</h1>"
+			sys.exit(1)
+
 		rcl = '/opt/rocks/bin/rocks set host attr %s' % self.clientName
 		os.system('%s arch %s'	% (rcl, self.arch))
 		os.system('%s os %s'	% (rcl, OS))
