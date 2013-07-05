@@ -163,7 +163,7 @@ else:
 	#
 	# set the bootflags for both the grub.conf and grub-orig.conf files
 	#
-	newmakegrub.setFilename('grub.conf')
+	newmakegrub.setFilename('rocks.conf')
 	newmakegrub.append(args)
 
 	newmakegrub.setFilename('grub-orig.conf')
