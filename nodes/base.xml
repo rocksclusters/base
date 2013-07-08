@@ -636,6 +636,18 @@ SYSFONT="lat0-sun16"
 </post>
 
 
+<post cond="rocks_version_major >= 6">
+
+gawk '/net\.ipv4\.conf\.default\.rp_filter/ { \
+	printf("# Rocks fixup see https://access.redhat.com/site/solutions/53031\nnet.ipv4.conf.default.rp_filter = 2\n"); \
+	next; \
+	} \
+	{ print $0 }' /etc/sysctl.conf &gt; /tmp/sysctl.conf
+
+mv /tmp/sysctl.conf /etc/sysctl.conf
+
+</post>
+
 <post>
 chmod a+rwx /state/partition*
 chmod o+t /state/partition*
