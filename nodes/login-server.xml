@@ -47,6 +47,9 @@ the start of the login appliance
 
 /opt/rocks/bin/rocks set appliance attr login submit_host true
 /opt/rocks/bin/rocks set appliance attr login exec_host false
+# login appliance should be managed
+/opt/rocks/bin/rocks set appliance attr login    managed true
+
 
 <!--
 	set the login node's primary network to be the public network. this
