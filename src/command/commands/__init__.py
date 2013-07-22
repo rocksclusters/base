@@ -509,6 +509,7 @@ import types
 import sys
 import rocks
 import rocks.graph
+import rocks.clusterdb
 import xml
 from xml.sax import saxutils
 from xml.sax import handler
@@ -819,6 +820,25 @@ class HostArgumentProcessor:
 		list = dict.keys()
 		list.sort()
 		return list
+
+
+	def checkHostname(self, hostname):
+		"""check that the given host name is valid
+
+		it checks that the hostname is not already used and
+		that it is not a appliance name and is not in the form of
+		rack<number>"""
+
+                if hostname in self.getHostnames():
+                        self.abort('host "%s" exists' % hostname)
+
+		nodes = rocks.clusterdb.Nodes(self.db)
+		msg = nodes.checkNameValidity(hostname)
+		if msg :
+			# if multiple lines we keep on the first
+			self.abort(msg.split('\n')[0])
+		return
+
 
 
 class CategoryArgumentProcessor(HostArgumentProcessor):

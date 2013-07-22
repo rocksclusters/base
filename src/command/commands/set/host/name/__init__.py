@@ -109,9 +109,8 @@ class Command(rocks.commands.set.host.command):
 			self.abort('must supply a host')
 		if not name:
 			self.abort('must supply new name')
-		
-		if name in self.getHostnames():
-			self.abort('the new host name "%s" already exists' % name)
+
+		self.checkHostname(name)
 		
 		hosts = self.getHostnames(args)
 		if len(hosts) > 1:

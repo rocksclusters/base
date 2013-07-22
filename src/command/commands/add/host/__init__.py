@@ -231,8 +231,7 @@ class Command(command):
 			self.abort('must supply one host')
 		host = args[0]
 		
-		if host in self.getHostnames():
-			self.abort('host "%s" exists' % host)
+		self.checkHostname(host)
 			
 		# If the name is of the form appliancename-rack-rank
 		# then do the right thing and figure out the default
