@@ -160,7 +160,7 @@ initial release
 			2&gt; /dev/null || true
 	endscript
 }
-/var/log/local[1-9] {
+/var/log/local[0-9] {
 	size=10M
 	postrotate
 		/bin/kill -HUP `cat /var/run/syslogd.pid 2&gt; /dev/null` \
