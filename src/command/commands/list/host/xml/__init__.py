@@ -164,6 +164,11 @@ class Command(rocks.commands.list.host.command):
 	all the known hosts is listed.
 	</arg>
 
+        <param type='string' name='roll'>
+        If set, only expand nodes from the named roll. If not
+        supplied, then the all rolls are used.
+        </param>
+
 	<example cmd='list host xml compute-0-0'>
 	List the XML configuration file for compute-0-0.
 	</example>
