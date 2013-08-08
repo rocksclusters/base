@@ -118,51 +118,74 @@ rpm -Uvh --force --nodeps %s\n\n"""
 	
 class Command(rocks.commands.run.command):
 	"""
-	Installs a Roll on the fly
-	
+	It generates the code necessary to install a Roll on the fly
+
 	<arg optional='1' type='string' name='roll' repeat='1'>
 	List of rolls. This should be the roll base name (e.g., base, hpc,
 	kernel).
 	</arg>
 
-	<example cmd='run roll viz'>		
-	Installs the Viz Roll onto the current system.
+	<param type='string' name='host'>
+	The name of the host that you want to generate the code to install the Roll.
+	It is always better to reinstall the node instead of using this method.
+	</param>
+
+	<param type='string' name='dryrun'>
+	It runs the command on the current node. It doesn't work with host flag
+	Default: true
+	</param>
+
+	<example cmd='run roll viz'>
+	It generates the bash code necessary to install the Viz Roll onto the current system.
+	</example>
+
+	<example cmd='run roll viz host=compute-0-0'>
+	It generates the bash code necessary to install the Viz Roll on compute-0-0.
 	</example>
 	"""
 
 	def run(self, params, args):
 
-		(dryrun, ) = self.fillParams([('dryrun', )])
+		(dryrun, host ) = self.fillParams([('dryrun', None),
+						   ('host', None)])
 		
 		if dryrun:
 			dryrun = self.str2bool(dryrun)
+			if not dryrun and host:
+				self.abort("If you select a host you can't disable dryrun.")
 		else:
 			dryrun = True
-		
+
+		if not host:
+			host = 'localhost'
+
 		script = []
 		script.append('#!/bin/sh\n')
 			
 		rolls = []
 		for roll in args:
 			rolls.append(roll)
-		xml = self.command('list.host.xml', [ 'localhost', 
+		xml = self.command('list.host.xml', [ host,
 			'roll=%s' % string.join(rolls, ',') ])
 
 
 		reader = Sax2.Reader()
 		gen = getattr(rocks.gen,'Generator_%s' % self.os)()
+		gen.setArch(self.arch)
+		gen.setOS(self.os)
 		gen.parse(xml)
 
-		distPath = os.path.join(self.command('report.distro')[:-1],
-			'rocks-dist')
+		distPath = os.path.join(self.command('report.distro')[:-1], 'rocks-dist')
                 tree = rocks.file.Tree(distPath)
 		rpm_list = {}
-		for file in tree.getFiles(os.path.join(self.arch, 
-			'RedHat', 'RPMS')):
+		len_base_path = len('/export/rocks')
+                base_url = "http://" + self.db.getHostAttr('localhost', 'Kickstart_PublicHostname')
+		for file in tree.getFiles(os.path.join(self.arch, 'RedHat', 'RPMS')):
 			if isinstance(file, rocks.file.RPMFile):
-				rpm_list[file.getBaseName()] = file.getFullName()
+				rpm_url = base_url + file.getFullName()[len_base_path:]
+				rpm_list[file.getBaseName()] = rpm_url
 				rpm_list["%s.%s" % (file.getBaseName(), \
-					file.getPackageArch())] = file.getFullName()
+					file.getPackageArch())] = rpm_url
 			
 		rpms = []
 		for line in gen.generate('packages'):
@@ -170,8 +193,7 @@ class Command(rocks.commands.run.command):
 				rpms.append(line)
 		for rpm in rpms:
 			if rpm in rpm_list.keys():
-				script.append('yum install %s\n' %
-					rpm)
+				script.append('yum install %s\n' % rpm)
 				script.append(rpm_force_template % rpm_list[rpm])
 
 
