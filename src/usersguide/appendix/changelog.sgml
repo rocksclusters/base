@@ -2,6 +2,76 @@
 	<title>Release Notes</title>
 
 
+<section>
+<title>Release 6.2 - changes from 6.1_sp1</title>
+
+<section>
+	<title>Enhancements and Bug Fixes</title>
+	<para>
+	Base: rocks run roll now supports host flag to specify the hostname
+	</para>
+
+	<para>
+	Base: rocks add host verifies hostname is not an appliance name
+	</para>
+
+	<para>
+	Base: fix reverse path filtering on centos 6.x
+	</para>
+
+	<para>
+	Base: rocks set host bootflag now is applied to the local grub kickstart configuration
+	</para>
+
+	<para>
+	Base: security fix in kickstart.cgi and setPexboot.cgi
+	</para>
+
+	<para>
+	Base: rocks add appliance now supports specification of a distribution
+	</para>
+
+	<para>
+	Base: 411-alter-handler properly handle corrupted timestamp file
+	</para>
+
+	<para>
+	Base: creates rst files for roll commands
+	</para>
+
+	<para>
+	Base: fix for MTU not applied when using VLAN
+	</para>
+
+	<para>
+	Base: commands: fix report interface with IPMI interface 
+	</para>
+
+	<para>
+	Base: do not propagate group with GID < 500 through 411
+	</para>
+
+	<para>
+	Base: set host ip now accepts NULL
+	</para>
+
+	<para>
+	KVM: now you can specify the vcpu type with attributes
+	</para>
+
+	<para>
+	HPC: use the proper BTL with openmpi
+	</para>
+
+	<para>
+	ZFS: updated to 0.6.1
+	</para>
+
+</section>
+</section>
+
+
+
 
 <section>
 <title>Release 5.6/6.1_sp1 - changes from 5.6/6.1</title>
