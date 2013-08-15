@@ -265,6 +265,21 @@
 /sbin/chkconfig httpd on
 
 
+<!-- This should be done automatically by httpd.conf, but isn't for 
+	some reason. -->
+<file name="/etc/httpd/conf/httpd.conf" mode="append">
+Include conf.d/rocks.conf
+</file>
+
+<file name="/etc/php.d/mysql.ini" mode="append">
+mysql.default_socket = /var/opt/rocks/mysql/mysql.sock
+</file>
+
+</post>
+
+<!-- reconfigure re run this section -->
+<post os="linux">
+
 <file name="/etc/httpd/conf.d/rocks.conf">
 #
 # Rocks Specific Apache configuration. 
@@ -306,17 +321,9 @@ DirectoryIndex index.cgi
 
 </file>
 
-<!-- This should be done automatically by httpd.conf, but isn't for 
-	some reason. -->
-<file name="/etc/httpd/conf/httpd.conf" mode="append">
-Include conf.d/rocks.conf
-</file>
-
-<file name="/etc/php.d/mysql.ini" mode="append">
-mysql.default_socket = /var/opt/rocks/mysql/mysql.sock
-</file>
-
 </post>
+
+
 
 <post os='sunos'>
 <service name="network/http" instance="apache2" enabled="yes"/>

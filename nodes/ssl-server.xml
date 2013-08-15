@@ -57,6 +57,7 @@
 
   </changelog>
 
+<!-- reconfigure -->
 <post>
 
 <!-- Make a Certificate for Mod_SSL -->

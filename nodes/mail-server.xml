@@ -77,6 +77,15 @@ sender_canonical_maps = hash:/etc/postfix/sender-canonical
 recipient_canonical_maps = hash:/etc/postfix/recipient-canonical
 </file>
 
+<file name="/etc/aliases" mode="append">
+
+# Add "admin" to the list of recipients
+admin:		root
+</file>
+</post>
+
+<!-- reconfigure re run this -->
+<post>
 <file name="/etc/postfix/sender-canonical">
 @&Kickstart_PrivateDNSDomain; @&Kickstart_PublicHostname;
 </file>
@@ -85,15 +94,21 @@ recipient_canonical_maps = hash:/etc/postfix/recipient-canonical
 root@&Kickstart_PublicDNSDomain; root
 </file>
 
-<file name="/etc/aliases" mode="append">
-
-# Add "admin" to the list of recipients
-admin:		root
-</file>
-
 /usr/sbin/postmap /etc/postfix/sender-canonical
 /usr/sbin/postmap /etc/postfix/recipient-canonical
 
 </post>
+
+<!-- reconfigure
+<post reconfigure=only>
+if [ "&Kickstart_PrivateDNSDomain_old;" ]; then
+	sed -i 's/&Kickstart_PrivateDNSDomain_old;/&Kickstart_PrivateDNSDomain;/g' /etc/postfix/main.cf
+fi
+if [ "&Kickstart_PrivateNetwork_old;" ]; then
+	sed -i 's/&Kickstart_PrivateNetwork_old;\/&Kickstart_PrivateNetmaskCIDR_old;/&Kickstart_PrivateNetwork;\/&Kickstart_PrivateNetmaskCIDR;/g' /etc/postfix/main.cf
+fi
+
+</post>
+-->
 
 </kickstart> 

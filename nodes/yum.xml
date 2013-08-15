@@ -106,7 +106,10 @@ for repo in *repo; do
   /opt/rocks/bin/ci -l -m"Disabled by Rocks Post Config"  $repo
 done 
 popd
+</post>
 
+<!-- reconfigure rerun this -->
+<post>
 <file name="/etc/yum.repos.d/rocks-local.repo">
 [Rocks-&version;]
 name=Rocks &version;

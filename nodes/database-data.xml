@@ -623,6 +623,19 @@ if os.path.exists('/tmp/site.attrs'):
 
 </post>
 
+<!-- reconfigure  
+<post>
+# TODO fix the private network too 
+/opt/rocks/bin/rocks set network subnet public &Kickstart_PublicNetwork;
+/opt/rocks/bin/rocks set network netmask public &Kickstart_PublicNetmask;
+/opt/rocks/bin/rocks set network dnszone public &Kickstart_PublicDNSDomain;
+
+/opt/rocks/bin/rocks set network subnet private &Kickstart_PrivateNetwork;
+/opt/rocks/bin/rocks set network netmask private &Kickstart_PrivateNetmask;
+/opt/rocks/bin/rocks set network dnszone private &Kickstart_PrivateDNSDomain;
+</post>
+-->
+
 <post os='linux'>	
 <!-- frontend host -->
 
@@ -668,8 +681,45 @@ if os.path.exists('/tmp/site.attrs'):
 
 /opt/rocks/bin/rocks set attr ssh_use_dns true
 
+</post>
+
+<!-- reconfigure   
+<post>
+# change the name of the FE
+if [ "&Kickstart_PrivateHostname_old;" ]; then
+	/opt/rocks/bin/rocks set host name &Kickstart_PrivateHostname_old; &Kickstart_PrivateHostname;
+fi
+
+# fix possible routing chagnes
+/opt/rocks/bin/rocks remove host route &Kickstart_PrivateHostname; 0.0.0.0
+/opt/rocks/bin/rocks add host route &Kickstart_PrivateHostname; 0.0.0.0 \
+        &Kickstart_PublicGateway; netmask=0.0.0.0
+
+/opt/rocks/bin/rocks remove route 0.0.0.0
+/opt/rocks/bin/rocks add route 0.0.0.0 \
+        &Kickstart_PrivateGateway; netmask=0.0.0.0
+
+if [ "&Kickstart_PublicAddress_old;" ]; then
+	/opt/rocks/bin/rocks remove route &Kickstart_PublicAddress_old;
+else
+        /opt/rocks/bin/rocks remove route &Kickstart_PublicAddress;
+fi
+/opt/rocks/bin/rocks add route &Kickstart_PublicAddress; \
+        &Kickstart_PrivateAddress; netmask=255.255.255.255
+
+# fix eth0
+if  [ "&Kickstart_PrivateInterface_old;" ]; then
+	mac=`rocks list host interface localhost | grep &Kickstart_PrivateInterface_old; | awk '{print $3}'`
+	rocks set host interface &Kickstart_PrivateHostname; $mac &Kickstart_PrivateInterface;
+
+fi
+/opt/rocks/bin/rocks set host interface ip &Kickstart_PrivateHostname; \
+        &Kickstart_PrivateInterface; &Kickstart_PrivateAddress;
+/opt/rocks/bin/rocks set host interface name &Kickstart_PrivateHostname; \
+        &Kickstart_PrivateInterface; &Kickstart_PrivateHostname;
 
 </post>
+-->
 
 <post os='linux' arg="--nochroot">
 cp /tmp/interfaces /mnt/sysimage/tmp
@@ -736,6 +786,25 @@ os.system('/opt/rocks/bin/rocks config host interface localhost iface="%s" \
 /opt/rocks/bin/rocks set host interface name  &Kickstart_PrivateHostname; \
 	&Kickstart_PublicInterface; &Kickstart_PrivateHostname;
 </post>
+
+
+<!-- reconfigure 
+<post>
+
+if  [ "&Kickstart_PublicInterface_old;" ]; then
+	mac=`rocks list host interface localhost | grep &Kickstart_PublicInterface_old; | awk '{print $3}'`
+        rocks set host interface &Kickstart_PrivateHostname; $mac &Kickstart_PublicInterface;
+
+fi
+/opt/rocks/bin/rocks set host interface ip &Kickstart_PrivateHostname; \
+	&Kickstart_PublicInterface; &Kickstart_PublicAddress;
+
+/opt/rocks/bin/rocks set host interface name  &Kickstart_PrivateHostname; \
+	&Kickstart_PublicInterface; &Kickstart_PrivateHostname;
+
+</post>
+-->
+
 
 <post>
 <!-- 

@@ -124,6 +124,7 @@
   <package>caching-nameserver</package>
 
 
+<!--  <reconfigure> re-run the post section below -->
 <post>
 
 <!-- resolv.conf -->
