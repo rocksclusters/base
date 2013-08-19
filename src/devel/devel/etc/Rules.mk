@@ -845,7 +845,9 @@ DOCROOT = $(ROCKSROOT)/src/roll/etc/doc
 entities.sgml::
 	touch $@
 	for sgml in $(basename $(shell ls *.sgml)); do	\
-		echo "<!ENTITY source-$$sgml SYSTEM \"$$sgml.sgml\">" >> $@; \
+		if [ "x$$sgml" != "xroll-overview-complete-os" ]; then \
+			echo "<!ENTITY source-$$sgml SYSTEM \"$$sgml.sgml\">" >> $@; \
+		fi \
 	done
 	for roll in $(ROLL_REQUIRES); do \
 		echo "<!ENTITY roll-$$roll-depend \"<row><entry namest="req">&roll-$$roll;</entry></row>\">" >> $@; \
