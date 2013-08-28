@@ -368,7 +368,7 @@ class Command(rocks.commands.HostArgumentProcessor,
 			# Try to add the netdevice name -- it won't exist
 			# at first discovery
 			try:
-				node.name = node.name + '-' + netdevice
+				node.name = node.name + '-' + netdevice.replace(':', '_')
 			except:
 				pass
 			self.printHost(node.name, hostname, node.mac, node.ip, filename, nextserver)
