@@ -387,7 +387,8 @@ class Command(rocks.commands.HostArgumentProcessor,
 
 		self.addOutput(host, 'DEVICE=%s' % device)
 
-		if mac:
+		# we use dhcp in cloud configurations so mac addresses are no good
+		if mac and not dhcp:
 			self.addOutput(host, 'HWADDR=%s' % mac)
 
 		if ip and netmask:
