@@ -235,7 +235,8 @@ class Command(rocks.commands.HostArgumentProcessor,
 		self.db.execute("""select net.name, s.dnszone from 
 			networks net, nodes n, subnets s where
 			n.id = net.node and net.subnet = s.id and
-			s.name = '%s' and n.name = '%s'""" % (interface, host))
+			s.name = '%s' and n.name = '%s' and
+			net.device != 'ipmi' """ % (interface, host))
 		try:
 			(hostname, domain) = self.db.fetchone()
 			self.addOutput(host, 'HOSTNAME=%s.%s' % (hostname, domain))
