@@ -426,6 +426,12 @@ class NodeFilter(xml.dom.NodeFilter.NodeFilter):
 
 	def __init__(self, attrs):
 		self.attrs = attrs
+                self.reconfigure = False
+
+	def set_reconfigure(self, value):
+		""" if reconfigure is set to true we are reconfiguring 
+		if it is set to false we are installing""" 
+		self.reconfigure = value
 
 	def isCorrectCond(self, node):
 
@@ -452,6 +458,21 @@ class NodeFilter(xml.dom.NodeFilter.NodeFilter):
 			cond = attr.value
 		else:
 			cond = None
+
+		attr = node.attributes.getNamedItem((None, 'exec'))
+		if attr :
+			execVal = attr.value.split(',')
+		else :
+			# by default post section are install only
+			execVal = ["install"]
+
+		if self.reconfigure and 'reconfigure' not in execVal :
+			# we are reconfiguring and the node is not reconfigure
+			return False
+
+		if not self.reconfigure and 'install' not in execVal :
+			# we are installing and this node is not install
+			return False
 
 		expr = rocks.cond.CreateCondExpr(arch, os, release, cond)
 		return rocks.cond.EvalCondExpr(expr, self.attrs)
@@ -818,8 +839,15 @@ class Generator_linux(Generator):
 		self.ks['boot-pre']	= []
 		self.ks['boot-post']	= []
 
+		self.reconfigure	= False
+
 		self.log = '/mnt/sysimage/var/log/rocks-install.log'
 
+
+	def set_reconfigure(self, value):
+		""" if value is True the generator will create a reconfiguration scirpt
+		if false (default) it will generate an install script"""
+		self.reconfigure = value
 	
 	##
 	## Parsing Section
@@ -846,6 +874,7 @@ class Generator_linux(Generator):
 			node = iter.nextNode()
 			
 		filter = OtherNodeFilter_linux(self.attrs)
+		filter.set_reconfigure(self.reconfigure)
 		iter = doc.createTreeWalker(doc, filter.SHOW_ELEMENT,
 			filter, 0)
 		node = iter.nextNode()
