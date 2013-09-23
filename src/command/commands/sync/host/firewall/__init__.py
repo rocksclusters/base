@@ -152,6 +152,7 @@ class Command(rocks.commands.sync.host.command):
 
 	def run(self, params, args):
 		hosts = self.getHostnames(args, managed_only=1)
+		localhost = self.getHostnames(["localhost"])[0]
 
 		threads = []
 		for host in hosts:
@@ -164,7 +165,11 @@ class Command(rocks.commands.sync.host.command):
 			cmd += '%s | ' % host
 			cmd += '/opt/rocks/bin/rocks report script '
 			cmd += 'attrs="%s" | ' % attrs
-			cmd += 'ssh -x %s bash > /dev/null 2>&1' % host
+			if host == localhost :
+				cmd += 'bash > /dev/null 2>&1 '
+			else:
+				cmd += 'ssh -T -x %s bash > /dev/null 2>&1 ' % host
+
 
 			p = Parallel(cmd, host)
 			threads.append(p)
@@ -177,8 +182,12 @@ class Command(rocks.commands.sync.host.command):
 
 		threads = []
 		for host in hosts:
-			cmd = 'ssh -T -x %s "/sbin/service iptables restart ' % host
-			cmd += '> /dev/null 2>&1" '
+
+			if host == localhost :
+				cmd = 'bash -c '
+			else:
+				cmd = 'ssh -T -x %s ' % host
+			cmd += '"/sbin/service iptables restart > /dev/null 2>&1" '
 
 			p = Parallel(cmd, host)
 			threads.append(p)
