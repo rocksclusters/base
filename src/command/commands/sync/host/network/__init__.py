@@ -172,6 +172,7 @@ class Command(rocks.commands.sync.host.command):
 
 	def run(self, params, args):
 		hosts = self.getHostnames(args, managed_only=1)
+		localhost = self.getHostnames(["localhost"])[0]
 
 		threads = []
 		for host in hosts:
@@ -181,23 +182,32 @@ class Command(rocks.commands.sync.host.command):
 			#
 			attrs = self.db.getHostAttrs(host)
 
+			#
+			# do not use ssh for localhost (so we can fix FE with the network 
+			# down
+			#
+			if host == localhost :
+				exec_statement = 'bash > /dev/null 2>&1 '
+			else:
+				exec_statement = 'ssh -T -x %s bash > /dev/null 2>&1 ' % host
+
 			cmd = '/opt/rocks/bin/rocks report host interface '
 			cmd += '%s | ' % host
 			cmd += '/opt/rocks/bin/rocks report script '
 			cmd += 'attrs="%s" | ' % attrs
-			cmd += 'ssh -T -x %s bash > /dev/null 2>&1 ' % host
+			cmd += exec_statement 
 
 			cmd += '; /opt/rocks/bin/rocks report host network '
 			cmd += '%s | ' % host
 			cmd += '/opt/rocks/bin/rocks report script '
 			cmd += 'attrs="%s" | ' % attrs
-			cmd += 'ssh -T -x %s bash > /dev/null 2>&1 ' % host
+			cmd += exec_statement
 
 			cmd += '; /opt/rocks/bin/rocks report host route '
 			cmd += '%s | ' % host
 			cmd += '/opt/rocks/bin/rocks report script '
 			cmd += 'attrs="%s" | ' % attrs
-			cmd += 'ssh -T -x %s bash > /dev/null 2>&1 ' % host
+			cmd += exec_statement
 
 			p = Parallel(cmd, host)
 			threads.append(p)
@@ -219,8 +229,11 @@ class Command(rocks.commands.sync.host.command):
 		threads = []
 		for host in hosts:
 
-			cmd = 'ssh %s "/sbin/service network restart ' % host
-			cmd += '> /dev/null 2>&1" '
+			if host == localhost :
+				cmd = 'bash -c '
+			else:
+				cmd = 'ssh -T -x %s ' % host
+			cmd += '"/sbin/service network restart > /dev/null 2>&1" '
 
 			p = Parallel(cmd, host)
 			threads.append(p)
@@ -247,5 +260,3 @@ class Command(rocks.commands.sync.host.command):
 			self.command('run.host', [ 'localhost',
 				'service gmond restart > /dev/null 2>&1' ] )
 
-
-RollName = "base"
