@@ -121,7 +121,7 @@ class Command(rocks.commands.run.command):
 		
 		gen = rocks.gen.Generator_linux()
 		# set reconfigure stage
-		gen.set_reconfigure(True)
+		gen.set_phases(["reconfigure"])
 		gen.parse(xml)
 
                 script += gen.generate_config_script()
