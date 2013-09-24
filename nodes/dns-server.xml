@@ -124,8 +124,7 @@
   <package>caching-nameserver</package>
 
 
-<!--  <reconfigure> re-run the post section below -->
-<post>
+<post exec="install,reconfigure">
 
 <!-- resolv.conf -->
 <file name="/etc/resolv.conf"
@@ -146,6 +145,8 @@ fi
 </post>
 
 <post>
+
+<!-- TODO remove this section is not used in rocks 5 nor in rocks 6 -->
 
 <!--	need to patch the named startup file to make it wait for	-->
 <!--	the name service to come up before continuing.			-->

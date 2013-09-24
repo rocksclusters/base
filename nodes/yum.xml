@@ -108,8 +108,7 @@ done
 popd
 </post>
 
-<!-- reconfigure rerun this -->
-<post>
+<post exec="install,reconfigure">
 <file name="/etc/yum.repos.d/rocks-local.repo">
 [Rocks-&version;]
 name=Rocks &version;

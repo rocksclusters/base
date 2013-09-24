@@ -277,8 +277,7 @@ mysql.default_socket = /var/opt/rocks/mysql/mysql.sock
 
 </post>
 
-<!-- reconfigure re run this section -->
-<post os="linux">
+<post os="linux" exec="reconfigure">
 
 <file name="/etc/httpd/conf.d/rocks.conf">
 #
@@ -323,6 +322,9 @@ DirectoryIndex index.cgi
 
 </post>
 
+<post exec="reconfigure">
+/sbin/service httpd restart
+</post>
 
 
 <post os='sunos'>
