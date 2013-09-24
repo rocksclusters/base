@@ -1109,27 +1109,55 @@ class Generator_linux(Generator):
 		return pre_list
 
 	def generate_post(self):
+		""" for backward compatibility"""
+		return self.generate_config_kickstart()
+
+
+	def generate_config_kickstart(self):
+		""" generate a kickstart configure script """
 		post_list = []
 		post_list.append('')
 
 		for list in self.ks['post']:
-			tmpfile=tempfile.mktemp()
 			post_list.append('%%post --log=%s %s\n' % \
 				(self.log, list[0]))
-			# Create a 'HERE' document that is executed
-			post_list.append("cat > %s << 'ROCKS-KS-POST'\n" % tmpfile)
-			# Shell interpreter (python, bash, etc)
-			post_list.append('%s\n' % list[1])
-			post_list.append(string.join(list[2:], '\n'))
-			post_list.append('ROCKS-KS-POST\n')
-			# Chmod and execute the shell script just created
-			post_list.append('/bin/chmod +x %s\n' % tmpfile)
-			post_list.append('%s \n' % tmpfile)
-			# clean up
-			post_list.append('/bin/rm %s \n' % tmpfile)
-			
+			post_list += self._generate_config_script(list)
+
 		return post_list
 
+
+	def generate_config_script(self):
+		""" generate a generic configure scritp """
+
+		post_list = []
+		post_list.append('')
+
+		for list in self.ks['post']:
+			if list[0] == "--nochroot":
+				# there is not such a thing
+				continue
+			post_list += self._generate_config_script(list)
+
+		return post_list
+
+
+	def _generate_config_script(self, list):
+		""" generate a generic script which can be enbeded in kickstart of
+		run roll """
+		temp_list = []
+		tmpfile=tempfile.mktemp()
+		# Create a 'HERE' document that is executed
+		temp_list.append("cat > %s << 'ROCKS-KS-POST'\n" % tmpfile)
+		# Shell interpreter (python, bash, etc)
+		temp_list.append('%s\n' % list[1])
+		temp_list.append(string.join(list[2:], '\n'))
+		temp_list.append('ROCKS-KS-POST\n')
+		# Chmod and execute the shell script just created
+		temp_list.append('/bin/chmod +x %s\n' % tmpfile)
+		temp_list.append('%s \n' % tmpfile)
+		# clean up
+		temp_list.append('/bin/rm %s \n' % tmpfile)
+		return temp_list
 
 	def generate_boot(self):
 		list = []
