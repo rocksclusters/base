@@ -123,23 +123,8 @@ class Command(rocks.commands.run.command):
 		# set reconfigure stage
 		gen.set_reconfigure(True)
 		gen.parse(xml)
-		cur_proc = False
-		for line in gen.generate('post'):
-			if not line.startswith('%post'):
-				script.append(line)
-			else:
-				if cur_proc == True:
-					script.append('__POSTEOF__\n')
-					script.append('%s %s\n' % (interpreter, t_name))
-					cur_proc = False
-				try:
-					i = line.split().index('--interpreter')
-				except ValueError:
-					continue
-				interpreter = line.split()[i+1]
-				t_name = tempfile.mktemp()
-				cur_proc = True
-				script.append('cat > %s << "__POSTEOF__"\n' % t_name)
+
+                script += gen.generate_config_script()
 		
 		self.addText(string.join(script, ''))
 
