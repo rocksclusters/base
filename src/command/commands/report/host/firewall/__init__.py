@@ -244,8 +244,8 @@ class Command(rocks.commands.HostArgumentProcessor,
 		self.db.execute("""CALL resolvefirewalls('%s','default')""" % host)
 		self.db.execute("""SELECT rulename, categoryName, insubnet, outsubnet, service,
 			protocol, action, chain, flags, comment
-			FROM TEMPTABLES.fwresolved WHERE NOT (chain = 'POSTROUTING' AND
-                        action = 'MASQUERADE' AND service = 'nat' ) ORDER BY rulename""" )
+			FROM TEMPTABLES.fwresolved WHERE NOT (chain = 'POSTROUTING' OR
+                        chain = 'PREROUTING' AND service = 'nat' ) ORDER BY rulename""" )
 
 		self.makeRules(host, rules, comments)
 
@@ -263,8 +263,8 @@ class Command(rocks.commands.HostArgumentProcessor,
 		self.db.execute("CALL resolvefirewalls('%s','default')" % host)
 		rows = self.db.execute("""SELECT rulename, categoryName, insubnet, outsubnet, service,
 			protocol, action, chain, flags, comment
-			FROM TEMPTABLES.fwresolved WHERE chain = 'POSTROUTING' AND
-			action = 'MASQUERADE' AND service = 'nat'""")
+			FROM TEMPTABLES.fwresolved WHERE chain = 'POSTROUTING' OR
+			chain = 'PREROUTING' AND service = 'nat'""")
 	
 		if rows > 0:
 			self.addOutput(host, '*nat')
