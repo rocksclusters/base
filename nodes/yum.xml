@@ -108,7 +108,7 @@ done
 popd
 </post>
 
-<post exec="install,reconfigure">
+<configure phase="post,reconfigure">
 <file name="/etc/yum.repos.d/rocks-local.repo">
 [Rocks-&version;]
 name=Rocks &version;
@@ -116,7 +116,7 @@ baseurl=http://&Kickstart_PublicAddress;/install/&distribution;/&arch;
 enabled = 1
 </file> 
 
-</post>
+</configure>
 
 
 </kickstart> 

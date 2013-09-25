@@ -86,7 +86,7 @@ admin:		root
 
 
 
-<post exec="reconfigure">
+<configure phase="reconfigure">
 if [ "&Kickstart_PrivateDNSDomain_old;" ]; then
 	sed -i 's/&Kickstart_PrivateDNSDomain_old;/&Kickstart_PrivateDNSDomain;/g' \
 		/etc/postfix/main.cf
@@ -101,10 +101,10 @@ if [ "&Kickstart_PrivateNetwork_old;" ]; then
 	sed -i "s/$old_networks/&Kickstart_PrivateNetwork;\/&Kickstart_PrivateNetmaskCIDR;/g" \
 		/etc/postfix/main.cf
 fi
-</post>
+</configure>
 
 
-<post exec="install,reconfigure">
+<configure phase="post,reconfigure">
 <file name="/etc/postfix/sender-canonical">
 @&Kickstart_PrivateDNSDomain; @&Kickstart_PublicHostname;
 </file>
@@ -116,11 +116,11 @@ root@&Kickstart_PublicDNSDomain; root
 /usr/sbin/postmap /etc/postfix/sender-canonical
 /usr/sbin/postmap /etc/postfix/recipient-canonical
 
-</post>
+</configure>
 
-<post exec="reconfigure">
+<configure phase="reconfigure">
 /sbin/service postfix restart
-</post>
+</configure>
 
 
 </kickstart> 

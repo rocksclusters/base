@@ -124,7 +124,7 @@
   <package>caching-nameserver</package>
 
 
-<post exec="install,reconfigure">
+<configure phase="post,reconfigure">
 
 <!-- resolv.conf -->
 <file name="/etc/resolv.conf"
@@ -142,7 +142,7 @@ fi
 <!-- now write the DNS files -->
 /opt/rocks/bin/rocks sync dns
 
-</post>
+</configure>
 
 <post>
 
