@@ -83,6 +83,8 @@
 
 
 import rocks.commands
+import rocks.commands.set.attr
+
 
 class Command(rocks.commands.remove.command):
 	"""
@@ -113,4 +115,7 @@ class Command(rocks.commands.remove.command):
 
 		self.db.execute("""delete from global_attributes
 			where attr = '%s'""" % attr)
+
+		self.db.execute("""delete from global_attributes
+			where attr = '%s'""" % (attr + rocks.commands.set.attr.postfix))
 

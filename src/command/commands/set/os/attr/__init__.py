@@ -97,6 +97,7 @@ import time
 import sys
 import string
 import rocks.commands
+import rocks.commands.set.attr
 
 class Command(rocks.commands.set.os.command):
 	"""
@@ -142,14 +143,20 @@ class Command(rocks.commands.set.os.command):
 			self.setOSAttr(os, attr, value)
 			
 	def setOSAttr(self, os, attr, value):
-		rows = self.db.execute("""select * from os_attributes where
+		rows = self.db.execute("""select attr, value from os_attributes where
 			os='%s' and attr='%s'""" % (os, attr))
 		if not rows:
 			self.db.execute("""insert into os_attributes values 
 				('%s', '%s', '%s')""" % (os, attr, value))
 		else:
+			(useless, old_value) = self.db.fetchone()
+
 			self.db.execute("""update os_attributes set
 				value = '%s' where os = '%s' and
 				attr = '%s' """ % (value, os, attr))
+
+			if not attr.endswith(rocks.commands.set.attr.postfix):
+				self.command('set.os.attr',
+					[os, attr + rocks.commands.set.attr.postfix, old_value])
 
 

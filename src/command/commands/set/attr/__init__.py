@@ -123,6 +123,8 @@ import sys
 import string
 import rocks.commands
 
+postfix = "_old"
+
 class Command(rocks.commands.set.command):
 	"""
 	Sets a global attribute for all nodes
@@ -166,7 +168,13 @@ class Command(rocks.commands.set.command):
 			self.db.execute("""insert into global_attributes
 				values ('%s', '%s')""" % (attr, value))
 		else:
+			(a , old_value) = self.db.fetchone()
+
 			self.db.execute("""update global_attributes
 				set value = '%s' where attr = '%s'""" %
 				(value, attr))
+
+			if not attr.endswith(postfix):
+				# set the attr_old value with the oldvalue
+				self.command('set.attr', [attr + postfix, old_value])
 

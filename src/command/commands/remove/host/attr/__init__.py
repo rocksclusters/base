@@ -88,6 +88,7 @@
 #
 
 import rocks.commands
+import rocks.commands.set.attr
 
 class Command(rocks.commands.remove.host.command):
 	"""
@@ -126,4 +127,10 @@ class Command(rocks.commands.remove.host.command):
 			node = (select id from nodes where name='%s')
 			and attr = '%s'
 			""" % (host, attr))
+
+			self.db.execute("""
+			delete from node_attributes where
+			node = (select id from nodes where name='%s')
+			and attr = '%s'
+			""" % (host, attr + rocks.commands.set.attr.postfix))
 

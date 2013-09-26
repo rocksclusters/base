@@ -107,6 +107,7 @@ import time
 import sys
 import string
 import rocks.commands
+import rocks.commands.set.attr
 
 
 class Command(rocks.commands.set.host.command):
@@ -161,7 +162,7 @@ class Command(rocks.commands.set.host.command):
 			
 	def setHostAttr(self, host, attr, value):
 		rows = self.db.execute("""
-			select * from node_attributes where
+			select attr, value from node_attributes where
 			node=(select id from nodes where name='%s') and
 			attr='%s'
 			""" % (host, attr))
@@ -172,8 +173,14 @@ class Command(rocks.commands.set.host.command):
 				'%s', '%s')
 				""" % (host, attr, value))
 		else:
+
+			(useless, old_value) = self.db.fetchone()
 			self.db.execute("""update node_attributes set
 				value = '%s' where attr = '%s' and
 				node = (select id from nodes where
 				name = '%s') """ % (value, attr, host)) 
+
+			if not attr.endswith(rocks.commands.set.attr.postfix):
+				self.command('set.host.attr',
+					[host, attr + rocks.commands.set.attr.postfix, old_value])
 

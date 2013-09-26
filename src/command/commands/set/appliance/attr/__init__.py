@@ -104,6 +104,7 @@ import time
 import sys
 import string
 import rocks.commands
+import rocks.commands.set.attr
 
 class Command(rocks.commands.set.appliance.command):
 	"""
@@ -159,7 +160,7 @@ class Command(rocks.commands.set.appliance.command):
 			
 	def setApplianceAttr(self, appliance, attr, value):
 		rows = self.db.execute("""
-			select * from appliance_attributes where
+			select attr, value from appliance_attributes where
 			appliance=
 			(select id from appliances where name='%s') and
 			attr='%s'
@@ -171,8 +172,15 @@ class Command(rocks.commands.set.appliance.command):
 				'%s', '%s')
 				""" % (appliance, attr, value))
 		else:
+			(useless, old_value) = self.db.fetchone()
+
 			self.db.execute("""update appliance_attributes
 				set value = '%s' where attr = '%s' and
 				appliance = (select id from appliances
 				where name = '%s') """ % (value, attr,
-				appliance)) 
+				appliance))
+
+			if not attr.endswith(rocks.commands.set.attr.postfix):
+				self.command('set.appliance.attr',
+					[appliance, attr + rocks.commands.set.attr.postfix, old_value])
+

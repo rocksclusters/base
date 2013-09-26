@@ -85,6 +85,8 @@
 #
 
 import rocks.commands
+import rocks.commands.set.attr
+
 
 class Command(rocks.commands.remove.appliance.command):
 	"""
@@ -123,4 +125,11 @@ class Command(rocks.commands.remove.appliance.command):
 			appliance = (select id from appliances where name='%s')
 			and attr = '%s'
 			""" % (appliance, attr))
+
+
+			self.db.execute("""
+			delete from appliance_attributes where
+			appliance = (select id from appliances where name='%s')
+			and attr = '%s'
+			""" % (appliance, attr + rocks.commands.set.attr.postfix))
 
