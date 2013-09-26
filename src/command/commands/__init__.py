@@ -547,7 +547,7 @@ class OSArgumentProcessor:
 				Abort('unknown os "%s"' % arg)
 		if not list:
 			list.append('linux')
-			list.append('solaris')
+			list.append('sunos')
 
 		return list
 	
