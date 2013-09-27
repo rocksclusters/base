@@ -60,21 +60,32 @@ import os
 import string
 import rocks.gen
 import rocks.commands
+import rocks.commands.set.attr
+import rocks.commands.run
 import tempfile
-	
+import IPy
+from socket import inet_ntoa
+from struct import pack
+
+
 class Command(rocks.commands.run.command):
 	"""
 	Generates a script which can be used to reconfigure a system after 
 	some attributes have been changed.
 	
 	<param type='boolean' name='clear'>
-	If clear is true the command will remove all the _old attributes.
+	If clear is true the command will remove all the _old attributes from the database.
 	This command should be run at the beginning of a reconfigure session.
 	Default is 'no'.
 	</param>
 
 	<param type='boolean' name='showattr'>
-	It only prints the attribute that will be changed when running reconfigure
+	When true it prints the attributes that will be changed when running reconfigure.
+	For example if the user changes the Kickstart_PublicAddress attribute reconfigure will 
+	update the Kickstart_PublicBroadcast and Kickstart_PublicNetwork attributes accordingly.
+	This flag can be used to verify what reconfigure will change.
+
+	Reconfigure will change only the attributes named Kickstart_Private*/Kickstart_Public*
 	Default is 'no'.
 	</param>
 
@@ -96,36 +107,192 @@ class Command(rocks.commands.run.command):
 			])
 
 		hostname = 'localhost'
+
+		#
+		# show which attr will be modified
+		#
 		if self.str2bool(showattr) :
-			# TODO implement this
-			print "show attr", showattr
+			current_attr = self.db.getHostAttrs(hostname)
+			attrs = self.get_modified_attr(hostname, current_attr)
+			additional_attr = get_additional_attr(attrs, current_attr)
+
+			self.addText("User modified attributes\n")
+			self.beginOutput()
+			for name in attrs:
+				self.addOutput("", (name, attrs[name]))
+			
+			self.endOutput(header=['host', 'attr', 'value'])
+			self.beginOutput()
+			if additional_attr :
+				self.addText("\nAdditional attributes that will be changed\n")
+				for name in additional_attr:
+					self.addOutput("", (name, additional_attr[name]))
+                        	self.endOutput(header=['host', 'attr', 'value'])
 			return
+
 
 		if self.str2bool(clear) :
 			# TODO implement this
 			return
 
-
-		script = []
-		script.append('#!/bin/sh\n')
-			
 		rolls = []
 		for roll in args:
 			rolls.append(roll)
-		xml = self.command('list.host.xml', [ 'localhost', 
+		xml = self.command('list.host.xml', [ hostname, 
 			'roll=%s' % string.join(rolls, ',') ])
 
 
 		if self.os != 'linux':
 			self.abort('it runs only on linux!!')
-		
 		gen = rocks.gen.Generator_linux()
 		# set reconfigure stage
 		gen.set_phases(["reconfigure"])
 		gen.parse(xml)
 
+		script = []
+		script.append('#!/bin/sh\n')
                 script += gen.generate_config_script()
 		
 		self.addText(string.join(script, ''))
 
 
+	def get_modified_attr(self, hostname, current_attrs):
+		"""it returns a dictionary of the attributes with _old values"""
+		ret_dict = {}
+		for name in current_attrs:
+			if name.endswith(rocks.commands.set.attr.postfix):
+				real_name = name[:-len(rocks.commands.set.attr.postfix)]
+				ret_dict[real_name] = current_attrs[real_name]
+		return ret_dict
+
+
+
+def get_additional_attr(changed_attrs, current_attrs):
+	""" given the attribute changed by the user it returns a dictionary with
+	the set of attributes that should be changed.
+
+	# run a doctest to verify it does what I want
+	>>> get_additional_attr({'Kickstart_PublicHostname': 'somenew.hostname.edu', \
+		'Kickstart_PublicAddress': '123.1.2.3', 'Kickstart_PrivateAddress' : '10.4.2.1'},\
+		 {"Kickstart_PublicNetmask": "255.255.255.0", "Kickstart_PrivateNetmask": "255.255.0.0"}) == \
+		{'Kickstart_PrivateHostname': 'somenew', 'Kickstart_PublicNetmask': '123.1.2.0', \
+		'Kickstart_PublicBroadcast': '123.1.2.255', 'Kickstart_PublicDNSDomain': 'hostname.edu', \
+		'Kickstart_PrivateNetmask': '10.4.0.0', 'Kickstart_PrivateBroadcast': '10.4.255.255'}
+	True
+	"""
+	fix_functions = [_fix_fqdn, _fix_networks]
+	return_dict = {}
+
+	# for each changed attribute we call the fix functions
+	for name, value in changed_attrs.iteritems():
+		for function in fix_functions:
+			new_values = function(name, value, current_attrs, changed_attrs)
+			for new_name, new_value in new_values.iteritems():
+				_check_new_value(return_dict, new_name, new_value)
+				_check_new_value(changed_attrs, new_name, new_value)
+				return_dict[new_name] = new_values[new_name]
+	return return_dict
+
+
+def _fix_fqdn(name, value, current_attrs, changed_attrs):
+	"""handle changes to the FQDN whcih means the attributes:
+	Kickstart_PublicHostname   -> fqdn
+	Kickstart_PublicDNSDomain  -> domainname
+	Kickstart_PrivateHostname  -> hostname
+	
+	Info_ClusterName is not linked with those attribute """
+	ret_dict = {}
+	if name == "Kickstart_PublicHostname":
+		ret_dict['Kickstart_PublicDNSDomain'] = value[value.find('.') + 1:]
+		ret_dict['Kickstart_PrivateHostname'] = value.split('.')[0]
+	elif name == "Kickstart_PublicDNSDomain":
+		hostname = current_attrs['Kickstart_PublicHostname'].split('.')[0]
+		ret_dict['Kickstart_PublicHostname'] = hostname + '.' + value
+	elif name == "Kickstart_PrivateHostname":
+		fqdn = current_attrs['Kickstart_PublicHostname']
+		domainname = fqdn[fqdn.find('.'):]
+		ret_dict['Kickstart_PublicHostname'] = value + domainname
+	return ret_dict
+
+
+def _fix_networks(name, value, current_attrs, changed_attrs):
+	"""handle the change to the IP address attributes (public and private)
+	It touches the following attrs:
+	Kickstart_PublicAddress Kickstart_PrivateAddress
+	Kickstart_PublicBroadcast Kickstart_PrivateBroadcast
+	Kickstart_PublicNetmaskCIDR Kickstart_PrivateNetmaskCIDR
+	Kickstart_PublicNetwork Kickstart_PrivateNetwork
+	Kickstart_PublicNetmask Kickstart_PrivateNetmask
+	"""
+	if name.startswith("Kickstart_Public"):
+		type = "Public"
+	elif name.startswith("Kickstart_Private"):
+		type = "Private"
+	else:
+		return {}
+
+	kickstart_address = "Kickstart_%sAddress" % type
+	kickstart_broadcast = "Kickstart_%sBroadcast" % type
+	kickstart_network = "Kickstart_%sNetwork" % type
+	kickstart_netmask_cidr = "Kickstart_%sNetmaskCIDR" % type
+	kickstart_netmask = "Kickstart_%sNetmask" % type
+	
+	ret_dict={}
+	change_broadcast = False
+	if name == kickstart_address:
+		change_broadcast = True
+	elif name == kickstart_broadcast:
+		# we do nothing in this case
+		pass
+	elif name == kickstart_netmask_cidr:
+		ret_dict[kickstart_netmask] = _get_netmask_from_CIDR(value)
+		change_broadcast = True
+	elif name == kickstart_network:
+		pass
+	elif name == kickstart_netmask:
+		ret_dict[kickstart_netmask_cidr]  = _get_CIDR_from_netmask(value)
+		change_broadcast = True
+	if change_broadcast :
+		# recalculate broadcast
+		if kickstart_address in changed_attrs:
+			ip_addr = changed_attrs[kickstart_address]
+		else:
+			ip_addr = current_attrs[kickstart_address]
+		if kickstart_netmask_cidr in changed_attrs:
+			netmask = _get_netmask_from_CIDR(
+				changed_attrs[kickstart_netmask_cidr])
+		elif kickstart_netmask in changed_attrs:
+			#use the new attrs
+			netmask = changed_attrs[kickstart_netmask]
+		else:
+			netmask = current_attrs[kickstart_netmask]
+		ip_temp =  IPy.IP(value + '/' + netmask, make_net=True)
+		ret_dict[kickstart_netmask] = str(ip_temp.net())
+		ret_dict[kickstart_broadcast] = str(ip_temp.broadcast())
+	return ret_dict
+
+
+def _check_new_value(dictionary, new_name, new_value):
+	"""verify that if new_name exists in dictionary its value is equal to new_value"""
+	if new_name not in dictionary :
+		return
+	elif dictionary[new_name] != new_value :
+		msg = 'There is a confict with the attribute ' + new_name
+		msg += ' the values ' + new_value + ' and ' + dictionary[new_name]
+		msg += ' conflict'
+		rocks.commands.Abort(msg)
+
+def _get_CIDR_from_netmask(netmask):
+	"""return the cidr string of the given netmask"""
+	return str(sum([bin(int(x)).count('1') for x in netmask.split('.')]))
+
+def _get_netmask_from_CIDR(cidr):
+	mask = int(cidr)
+	bits = 0xffffffff ^ (1 << 32 - mask) - 1
+	return inet_ntoa(pack('>I', bits))
+
+
+
+if __name__ == '__main__':
+    import doctest
+    doctest.testmod()
