@@ -523,7 +523,7 @@ def Abort(message, doExit=1):
 	syslog.syslog(syslog.LOG_ERR, message)
 	print 'error - %s' % message
 	if doExit:
-		sys.exit(-1)
+		sys.exit(1)
 
 
 class OSArgumentProcessor:
