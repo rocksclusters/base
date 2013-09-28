@@ -130,10 +130,36 @@ class Command(rocks.commands.run.command):
                         	self.endOutput(header=['host', 'attr', 'value'])
 			return
 
-
+		#
+		# clear attributes historical values
+		#
 		if self.str2bool(clear) :
-			# TODO implement this
+			current_attr = self.db.getHostAttrs(hostname, 1)
+			for name in current_attr:
+				if name.endswith("_old"):
+					# we need to delete this one
+					if current_attr[name][1] == 'H':
+						command = 'remove.host.attr'
+					elif current_attr[name][1] == 'G':
+						command = 'remove.attr'
+					elif current_attr[name][1] == 'A':
+						command = 'remove.appliance.attr'
+					elif current_attr[name][1] == 'O':
+						command = 'remove.os.attr'
+					self.command(command, [name])
 			return
+
+		#
+		# really run the script
+		#
+
+		# first fix the missing attribute
+		current_attr = self.db.getHostAttrs(hostname)
+		attrs = self.get_modified_attr(hostname, current_attr)
+		additional_attr = get_additional_attr(attrs, current_attr)
+		for name in additional_attr:
+			self.command('set.attr', [name, additional_attr[name]])
+
 
 		rolls = []
 		for roll in args:
@@ -172,12 +198,18 @@ def get_additional_attr(changed_attrs, current_attrs):
 	the set of attributes that should be changed.
 
 	# run a doctest to verify it does what I want
-	>>> get_additional_attr({'Kickstart_PublicHostname': 'somenew.hostname.edu', \
+	>>> result =  get_additional_attr({'Kickstart_PublicHostname': 'somenew.hostname.edu', \
 		'Kickstart_PublicAddress': '123.1.2.3', 'Kickstart_PrivateAddress' : '10.4.2.1'},\
-		 {"Kickstart_PublicNetmask": "255.255.255.0", "Kickstart_PrivateNetmask": "255.255.0.0"}) == \
+		 {"Kickstart_PublicNetmask": "255.255.255.0", "Kickstart_PrivateNetmask": "255.255.0.0"})
+	>>> result # doctest: +ELLIPSIS
+	{...}
+	>>> result == \
 		{'Kickstart_PrivateHostname': 'somenew', 'Kickstart_PublicNetmask': '123.1.2.0', \
 		'Kickstart_PublicBroadcast': '123.1.2.255', 'Kickstart_PublicDNSDomain': 'hostname.edu', \
-		'Kickstart_PrivateNetmask': '10.4.0.0', 'Kickstart_PrivateBroadcast': '10.4.255.255'}
+		'Kickstart_PrivateNetmask': '10.4.0.0', 'Kickstart_PrivateBroadcast': '10.4.255.255', \
+		'Kickstart_PrivateGateway': '10.4.2.1', 'Kickstart_PrivateKickstartHost': '10.4.2.1', \
+		'dhcp_nextserver': '10.4.2.1', 'Kickstart_PrivateDNSServers': '10.4.2.1', \
+		'Kickstart_PrivateNTPHost': '10.4.2.1', 'Kickstart_PrivateSyslogHost': '10.4.2.1'}
 	True
 	"""
 	fix_functions = [_fix_fqdn, _fix_networks]
@@ -189,8 +221,8 @@ def get_additional_attr(changed_attrs, current_attrs):
 			new_values = function(name, value, current_attrs, changed_attrs)
 			for new_name, new_value in new_values.iteritems():
 				_check_new_value(return_dict, new_name, new_value)
-				_check_new_value(changed_attrs, new_name, new_value)
-				return_dict[new_name] = new_values[new_name]
+				if _check_new_value(changed_attrs, new_name, new_value):
+					return_dict[new_name] = new_values[new_name]
 	return return_dict
 
 
@@ -241,6 +273,14 @@ def _fix_networks(name, value, current_attrs, changed_attrs):
 	change_broadcast = False
 	if name == kickstart_address:
 		change_broadcast = True
+		if type == "Private":
+			ret_dict['Kickstart_PrivateDNSServers'] = value
+			ret_dict['Kickstart_PrivateGateway'] = value
+			ret_dict['Kickstart_PrivateKickstartHost'] = value
+			ret_dict['Kickstart_PrivateNTPHost'] = value
+			ret_dict['Kickstart_PrivateSyslogHost'] = value
+			ret_dict['dhcp_nextserver'] = value
+			ret_dict['Kickstart_PrivateSyslogHost'] = value
 	elif name == kickstart_broadcast:
 		# we do nothing in this case
 		pass
@@ -262,12 +302,11 @@ def _fix_networks(name, value, current_attrs, changed_attrs):
 			netmask = _get_netmask_from_CIDR(
 				changed_attrs[kickstart_netmask_cidr])
 		elif kickstart_netmask in changed_attrs:
-			#use the new attrs
 			netmask = changed_attrs[kickstart_netmask]
 		else:
 			netmask = current_attrs[kickstart_netmask]
 		ip_temp =  IPy.IP(value + '/' + netmask, make_net=True)
-		ret_dict[kickstart_netmask] = str(ip_temp.net())
+		ret_dict[kickstart_network] = str(ip_temp.net())
 		ret_dict[kickstart_broadcast] = str(ip_temp.broadcast())
 	return ret_dict
 
@@ -275,12 +314,13 @@ def _fix_networks(name, value, current_attrs, changed_attrs):
 def _check_new_value(dictionary, new_name, new_value):
 	"""verify that if new_name exists in dictionary its value is equal to new_value"""
 	if new_name not in dictionary :
-		return
+		return True
 	elif dictionary[new_name] != new_value :
 		msg = 'There is a confict with the attribute ' + new_name
 		msg += ' the values ' + new_value + ' and ' + dictionary[new_name]
 		msg += ' conflict'
 		rocks.commands.Abort(msg)
+	return False
 
 def _get_CIDR_from_netmask(netmask):
 	"""return the cidr string of the given netmask"""
