@@ -119,15 +119,14 @@ class Command(rocks.commands.run.command):
 			self.addText("User modified attributes\n")
 			self.beginOutput()
 			for name in attrs:
-				self.addOutput("", (name, attrs[name]))
+				self.addOutput("", (name, current_attr[name + "_old"], attrs[name]))
 			
-			self.endOutput(header=['host', 'attr', 'value'])
-			self.beginOutput()
 			if additional_attr :
-				self.addText("\nAdditional attributes that will be changed\n")
+				self.addOutput("", (" ", " ", " "))
+				self.addOutput("", ("Additional attributes", " ", " "))
 				for name in additional_attr:
-					self.addOutput("", (name, additional_attr[name]))
-                        	self.endOutput(header=['host', 'attr', 'value'])
+					self.addOutput("", (name, current_attr[name], additional_attr[name]))
+			self.endOutput(header=['host', 'attr', 'old value ->', 'new value'])
 			return
 
 		#
