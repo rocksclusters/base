@@ -157,13 +157,23 @@ class Command(rocks.commands.run.command):
 		attrs = self.get_modified_attr(hostname, current_attr)
 		additional_attr = get_additional_attr(attrs, current_attr)
 		for name in additional_attr:
-			self.command('set.attr', [name, additional_attr[name]])
+			if name == 'dhcp_nextserver':
+				# this is an appliance attribute it needs special care
+				rows = self.db.execute('''select name
+					from appliance_attributes, appliances
+					where Appliance = id and
+					Attr = "dhcp_nextserver"''')
+				for app_name, in self.db.fetchall():
+					self.command('set.appliance.attr',
+						[app_name, name, additional_attr[name]])
+			else:
+				self.command('set.attr', [name, additional_attr[name]])
 
 
 		rolls = []
 		for roll in args:
 			rolls.append(roll)
-		xml = self.command('list.host.xml', [ hostname, 
+		xml = self.command('list.host.xml', [ hostname,
 			'roll=%s' % string.join(rolls, ',') ])
 
 
@@ -176,8 +186,7 @@ class Command(rocks.commands.run.command):
 
 		script = []
 		script.append('#!/bin/sh\n')
-                script += gen.generate_config_script()
-		
+		script += gen.generate_config_script()
 		self.addText(string.join(script, ''))
 
 
