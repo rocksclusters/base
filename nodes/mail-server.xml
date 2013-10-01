@@ -92,11 +92,11 @@ if [ "&Kickstart_PrivateDNSDomain_old;" ]; then
 		/etc/postfix/main.cf
 fi
 if [ "&Kickstart_PrivateNetwork_old;" ]; then
-	old_networks = '&Kickstart_PrivateNetwork_old;'
+	old_networks='&Kickstart_PrivateNetwork_old;'
 	if [ "&Kickstart_PrivateNetmaskCIDR_old;" ]; then
-		old_networks = "$old_networks\/&Kickstart_PrivateNetmaskCIDR_old;"
+		old_networks="$old_networks\/&Kickstart_PrivateNetmaskCIDR_old;"
 	else
-		old_networks = "$old_networks\/&Kickstart_PrivateNetmaskCIDR;"
+		old_networks="$old_networks\/&Kickstart_PrivateNetmaskCIDR;"
 	fi
 	sed -i "s/$old_networks/&Kickstart_PrivateNetwork;\/&Kickstart_PrivateNetmaskCIDR;/g" \
 		/etc/postfix/main.cf
