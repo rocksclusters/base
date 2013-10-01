@@ -299,7 +299,7 @@ endif
 # --------------------------------------------------------------------- #
 
 .PHONY: roll
-roll:: preroll $(TARGET_PKG)s profile
+roll:: $(TARGET_PKG)s profile
 	env GNUPGHOME=$(ROCKSROOT.ABSOLUTE)/../.gnupg \
 		Kickstart_Lang=$(KICKSTART_LANG) \
 		Kickstart_Langsupport=$(KICKSTART_LANGSUPPORT) \
@@ -324,7 +324,7 @@ $(TARGET_PKG)s:
 	if [ -d src ]; then (cd src; $(MAKE) BG="$(MAKEBG)" $(TARGET_PKG)); fi
 
 .PHONY: profile
-profile:: $(TARGET_PKG)-mkdirs
+profile:: $(TARGET_PKG)-mkdirs preroll
 profile::
 ifneq ($(INCLUDE_PROFILES),0)
 	$(MAKE) MAKE.rpmflag=-bb MAKE.nonuke=1 pkg
