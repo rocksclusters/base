@@ -936,7 +936,7 @@ class App(rocks.kickstart.Application):
 				'Kickstart_PrivateKickstartBasedir' ]:
 
 			cmd = '/opt/rocks/bin/rocks list attr | '
-			cmd += "grep %s: | awk '{print $2}'" % i
+			cmd += "grep '^%s:' | awk '{print $2}'" % i
 			for line in os.popen(cmd).readlines():
 				var = line[:-1]
 			attrs[i] = var.strip()
@@ -1187,7 +1187,7 @@ class App(rocks.kickstart.Application):
 
 			cmd = '/opt/rocks/bin/rocks list host attr %s | ' \
 				% (self.clientList[0])
-			cmd += "grep %s | awk '{print $3}'" % i
+			cmd += "grep ' %s ' | awk '{print $3}'" % i
 
 			var = ''
 			for line in os.popen(cmd).readlines():
