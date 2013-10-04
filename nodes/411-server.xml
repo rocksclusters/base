@@ -163,11 +163,8 @@ fi
 
 </post>
 
-<post>
 
-<!--	Choose port 372 as the port to serve 411 on -->
-/opt/rocks/bin/rocks set attr port411 372
-
+<configure phase="post,reconfigure">
 <!-- Create 411 configuration for apache -->
 <file name="/etc/httpd/conf.d/411.conf">
 #
@@ -196,6 +193,13 @@ Alias /411.d "/etc/411.d"
 &lt;/Directory&gt;
 &lt;/VirtualHost&gt;
 </file>
+
+</configure>
+
+<post>
+
+<!--	Choose port 372 as the port to serve 411 on -->
+/opt/rocks/bin/rocks set attr port411 372
 
 <!-- 	Generate the 411 shared key. This will be distributed to
 	compute nodes via their kickstart file. 
