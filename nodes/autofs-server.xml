@@ -144,5 +144,20 @@ rm /tmp/useradd
 
 </post>
 
-</kickstart> 
 
+<configure phase="reconfigure">
+if [ "&Kickstart_PrivateHostname_old;" ]; then
+        sed -i 's/&Kickstart_PrivateHostname_old;/&Kickstart_PrivateHostname;/g' /etc/auto.share /etc/auto.home
+fi
+
+if [ "&Kickstart_PrivateDNSDomain_old;" ]; then
+        sed -i 's/\.&Kickstart_PrivateDNSDomain_old;/\.&Kickstart_PrivateDNSDomain;/g' /etc/auto.share  /etc/auto.home
+fi
+
+exportfs -a
+
+</configure>
+
+
+
+</kickstart> 
