@@ -313,7 +313,7 @@ def _fix_networks(name, value, current_attrs, changed_attrs):
 			netmask = changed_attrs[kickstart_netmask]
 		else:
 			netmask = current_attrs[kickstart_netmask]
-		ip_temp =  IPy.IP(value + '/' + netmask, make_net=True)
+		ip_temp =  IPy.IP(ip_addr + '/' + netmask, make_net=True)
 		ret_dict[kickstart_network] = str(ip_temp.net())
 		ret_dict[kickstart_broadcast] = str(ip_temp.broadcast())
 	return ret_dict
