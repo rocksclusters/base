@@ -254,7 +254,6 @@
 
 import os
 import sys
-import time
 import random
 import syslog
 import urllib
@@ -317,6 +316,7 @@ class Listen411(rocks.service411.Service411):
 					pass
 				retry = 0
 			except:
+				import time
 				time.sleep(random.uniform(0, 30))
 				# we don't syslog this since the msg would also
 				# hit the network to the frontend, making things worse.
