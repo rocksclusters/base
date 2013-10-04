@@ -399,6 +399,48 @@ documentation above for a detailed description.
 
 </listitem>
 
+  <listitem>
+  <para>
+  <command>&lt;configure&gt;</command>
+  </para>
+
+  <para>
+  The configure tag (introduced in Rocks 6.2) contains a snipped of
+  code which should be executed to configure a particular software,
+  exactly like the &lt;pre&gt; and &lt;post&gt; tag.
+  Although configure must specify when the code snipped should be executed using
+  the attribute phase.
+  </para>
+
+  <para>
+  This tag support the same attributes as the &lt;post&gt; section, please refer to the
+  documentation above for a detailed description.
+  </para>
+
+  <variablelist>
+
+      <varlistentry>
+      <term>phase</term>
+      <listitem>
+
+      <para>
+      Required. It is a comma separated list of phases in which the code should be executed.
+      Supported phases are: pre (which behaves exactly as for the &lt;pre&gt; tag),
+      post (it behaves exactly as for the &lt;post&gt; tag) and reconfigure which is
+      executed only during a reconfiguration (see the userguide).
+      </para>
+
+      <para>
+      Example:
+      <constant><![CDATA[<configure phase="post">]]></constant> is the same as using the
+      tag <constant><![CDATA[<post>]]></constant>
+      </para>
+
+      </listitem>
+      </varlistentry>
+  </variablelist>
+  </listitem>
+
 
 <listitem>
 <para>
