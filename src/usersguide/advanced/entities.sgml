@@ -8,3 +8,4 @@
 <!ENTITY firewall SYSTEM "firewall.sgml">
 <!ENTITY updates SYSTEM "updates.sgml">
 <!ENTITY otp SYSTEM "otp.sgml">
+<!ENTITY reconfigure SYSTEM "reconfigure.sgml">

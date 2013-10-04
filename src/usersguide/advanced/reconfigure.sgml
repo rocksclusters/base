@@ -1,0 +1,180 @@
+<section id="reconfigure" xreflabel="Reconfigure a Cluster">
+<title>Reconfigure a Cluster</title>
+
+<para>
+This section explaing how to reconfigure a cluster after the initial 
+installation, when there is a need to change the public IP or the FQDN 
+of the cluster or other cluster wide configurations.
+The reconfiguration process generates a reconfiguration scirpt traversing 
+the graph and parsing the section marked as "reconfigure" section (see 
+the develpers guide).
+</para>
+
+<warning>
+<para>
+Reconfiguring a cluster is a potentially harmful operation and
+can damage you system. The safest option is always reinstalling
+the frontend with the correct values.
+</para>
+</warning>
+
+
+
+<section>
+<title>Supported reconfiguration</title>
+<para>
+Currently only the following roll support reconfiguration:
+</para>
+
+<orderedlist>
+    <listitem> <para>Base</para> </listitem>
+    <listitem> <para>Kernel</para> </listitem>
+    <listitem> <para>Ganglia</para> </listitem>
+    <listitem> <para>Java</para> </listitem>
+    <listitem> <para>Perl</para> </listitem>
+    <listitem> <para>Python</para> </listitem>
+    <listitem> <para>Hpc</para> </listitem>
+    <listitem> <para>SGE</para> </listitem>
+    <!-- not yet <listitem> <para>Area51 </para> </listitem> -->
+    <!-- not yet <listitem> <para>web-server </para> </listitem> -->
+    <!-- not yet <listitem> <para>Condor </para> </listitem> -->
+    <!-- not yet <listitem> <para>KVM </para> </listitem> -->
+</orderedlist>
+
+<para>
+The attribute which can be reconfigure are:
+</para>
+
+
+<orderedlist>
+    <listitem> <para>Kickstart_PublicHostname </para> </listitem>
+    <listitem> <para>Kickstart_PublicDNSDomain</para> </listitem>
+    <listitem> <para>Kickstart_PrivateHostname</para> </listitem>
+    <listitem> <para>Kickstart_PublicAddress </para> </listitem>
+    <listitem> <para>Kickstart_PublicBroadcast </para> </listitem>
+    <listitem> <para>Kickstart_PublicNetmaskCIDR </para> </listitem>
+    <listitem> <para>Kickstart_PublicNetwork </para> </listitem>
+    <listitem> <para>Kickstart_PublicNetmask </para> </listitem>
+    <listitem> <para>Kickstart_PublicGateway </para> </listitem>
+    <listitem> <para>Kickstart_PrivateAddress</para> </listitem>
+    <listitem> <para>Kickstart_PrivateBroadcast</para> </listitem>
+    <listitem> <para>Kickstart_PrivateNetmaskCIDR</para> </listitem>
+    <listitem> <para>Kickstart_PrivateNetwork</para> </listitem>
+    <listitem> <para>Kickstart_PrivateNetmask</para> </listitem>
+
+
+    <!-- not yet <listitem> <para>web-server </para> </listitem> -->
+    <!-- not yet <listitem> <para>Condor </para> </listitem> -->
+    <!-- not yet <listitem> <para>KVM </para> </listitem> -->
+</orderedlist>
+
+<para>
+The names of the attribute is self expanatory they can be used to change 
+public network configuration and private network configuration.
+</para>
+
+
+<para>
+The reconfiguration works only if you haven't configured your system heavily
+and if you haven't changed manually rocks default configurations.
+</para>
+
+</section>
+
+
+<section>
+<title>How to reconfigure a system</title>
+<para>
+To change one of the main parameters of your system first reset 
+the history of your attributes change:
+</para>
+
+<screen>
+ # rocks run reconfigure clear=1
+</screen>
+
+<para>
+To change the attributes, use the standard rocks 
+commands (in the following example we show how to change the public ip 
+address):
+</para>
+
+<screen>
+ # rocks set attr Kickstart_PublicAddress 123.123.123.123
+ # rocks set attr Kickstart_PublicNetmask 255.255.255.0
+ # rocks set attr Kickstart_PublicGateway 123.123.123.1
+ # rocks set attr Kickstart_PublicHostname newhostname.somedomain.com
+</screen>
+
+
+<para>
+When you change an attribute (e.g. Kickstart_PublicAddress) the old value 
+will be stored in an attribute named with a "_old" postfix (e.g. 
+Kickstart_PublicAddress_old).
+You can verify which attributes will be updated with reconfigure using showattr:
+</para>
+
+<screen>
+ # rocks run reconfigure showattr=1
+User modified attributes
+ATTR                        OLD VALUE ->               NEW VALUE                 
+Kickstart_PublicNetmask     255.255.255.0              255.255.255.0             
+Kickstart_PublicHostname    myoldhost.ucsd.edu         newhostname.somedomain.com
+Kickstart_PublicAddress     2.2.2.24                   123.123.123.123           
+Kickstart_PublicGateway     2.2.2.1                    123.123.123.1             
+                                                                                 
+Additional attributes                                                            
+Kickstart_PrivateHostname   myoldhost                  newhostname               
+Kickstart_PublicBroadcast   2.2.2.255                  123.123.123.255           
+Kickstart_PublicNetwork     2.2.2.0                    123.123.123.0             
+Kickstart_PublicDNSDomain   ucsd.edu                   somedomain.com            
+Kickstart_PublicNetmaskCIDR 24                         24                    
+
+</screen>
+
+<para>
+The command shows also the attributes that will be updated to maintain 
+consistency (section "Additional attributes") in the rocks database.
+
+If all the modified values make sense you can proceed and run the 
+reconfigure script:
+</para>
+
+
+<screen>
+ # rocks run reconfigure > /tmp/script.sh
+ # # inspect the script.sh
+ # bash /tmp/script.sh
+</screen>
+
+<para>
+Depending on what attributes you have changed you will need to reinstall 
+all your nodes.
+</para>
+
+<screen>
+ # rocks run host compute login "/boot/kickstart/cluster-kickstart-pxe"
+</screen>
+
+<warning>
+<para>
+If you have SGE installed the reconfigure operation will wipe all your 
+SGE configurations (queue configuration, host configuration, etc.)
+</para>
+</warning>
+
+<warning>
+<para>
+If you change some private networking paramaters you will have to 
+remove and re-install all your nodes with insert-ether.
+For example if you change the private network address (e.g. from 
+10.1.0.0 to 10.5.0.0) all the IP addresses of your node will be out 
+of the new network. 
+For this reason you will need to remove all the compute nodes and 
+re-add them with insert-ethernet.
+</para>
+</warning>
+
+</section>
+</section>
+

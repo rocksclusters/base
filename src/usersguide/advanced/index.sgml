@@ -12,6 +12,7 @@
 &bootflags;
 &bootloader;
 &updates;
+&reconfigure;
 
 </chapter>
 
