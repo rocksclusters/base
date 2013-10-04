@@ -80,6 +80,20 @@
 
 </post>
 
+<configure phase="reconfigure">
+if [ "&Kickstart_PrivateAddress_old;" ]; then
+	sed -i 's/&Kickstart_PrivateAddress_old;/&Kickstart_PrivateAddress;/g' /etc/exports
+fi
+
+if [ "&Kickstart_PrivateNetwork_old;" ]; then
+	sed -i 's/&Kickstart_PrivateNetwork_old;/&Kickstart_PrivateNetwork;/g' /etc/exports
+fi
+
+if [ "&Kickstart_PrivateNetmask_old;" ]; then
+	sed -i 's/&Kickstart_PrivateNetmask_old;/&Kickstart_PrivateNetmask;/g' /etc/exports
+fi
+
+</configure>
 
 </kickstart> 
 
