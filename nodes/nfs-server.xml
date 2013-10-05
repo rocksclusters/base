@@ -93,6 +93,8 @@ if [ "&Kickstart_PrivateNetmask_old;" ]; then
 	sed -i 's/&Kickstart_PrivateNetmask_old;/&Kickstart_PrivateNetmask;/g' /etc/exports
 fi
 
+/usr/sbin/exportfs -a
+
 </configure>
 
 </kickstart> 

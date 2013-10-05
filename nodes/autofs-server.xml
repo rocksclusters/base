@@ -154,7 +154,7 @@ if [ "&Kickstart_PrivateDNSDomain_old;" ]; then
         sed -i 's/\.&Kickstart_PrivateDNSDomain_old;/\.&Kickstart_PrivateDNSDomain;/g' /etc/auto.share  /etc/auto.home
 fi
 
-exportfs -a
+/etc/init.d/autofs restart
 
 </configure>
 
