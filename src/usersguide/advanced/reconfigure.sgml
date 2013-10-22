@@ -2,12 +2,13 @@
 <title>Reconfigure a Cluster</title>
 
 <para>
-This section explaing how to reconfigure a cluster after the initial 
-installation, when there is a need to change the public IP or the FQDN 
-of the cluster or other cluster wide configurations.
-The reconfiguration process generates a reconfiguration scirpt traversing 
-the graph and parsing the section marked as "reconfigure" section (see 
-the develpers guide).
+This section explains how to reconfigure a cluster after the initial
+installation, when some of the cluster wide configurations need to be
+changed (e.g. public IP, FQDN of the frontend, etc.).
+The reconfiguration process generates a script which performs all the necessary
+steps to modify the desired parameters. The script is generated traversing
+the graph and parsing the section marked as "reconfigure" section (see
+the developers guide).
 </para>
 
 <warning>
@@ -61,22 +62,18 @@ The attribute which can be reconfigure are:
     <listitem> <para>Kickstart_PrivateNetmaskCIDR</para> </listitem>
     <listitem> <para>Kickstart_PrivateNetwork</para> </listitem>
     <listitem> <para>Kickstart_PrivateNetmask</para> </listitem>
-
-
-    <!-- not yet <listitem> <para>web-server </para> </listitem> -->
-    <!-- not yet <listitem> <para>Condor </para> </listitem> -->
-    <!-- not yet <listitem> <para>KVM </para> </listitem> -->
 </orderedlist>
 
 <para>
-The names of the attribute is self expanatory they can be used to change 
+The attribute names are self explanatory and they can be used to change
 public network configuration and private network configuration.
 </para>
 
 
 <para>
-The reconfiguration works only if you haven't configured your system heavily
-and if you haven't changed manually rocks default configurations.
+The reconfiguration works only if you haven't changed manually rocks default
+configurations (Postfix, Named, Apache, configuration files should still be
+at their default configurations)
 </para>
 
 </section>
@@ -158,17 +155,17 @@ all your nodes.
 
 <warning>
 <para>
-If you have SGE installed the reconfigure operation will wipe all your 
+If you have SGE installed the reconfigure operation will wipe all your
 SGE configurations (queue configuration, host configuration, etc.)
 </para>
 </warning>
 
 <warning>
 <para>
-If you change some private networking paramaters you will have to 
+If you change some private networking parameters you will have to
 remove and re-install all your nodes with insert-ether.
-For example if you change the private network address (e.g. from 
-10.1.0.0 to 10.5.0.0) all the IP addresses of your node will be out 
+For example if you change the private network address (e.g. from
+10.1.0.0 to 10.5.0.0) all the IP addresses of your node will be out
 of the new network. 
 For this reason you will need to remove all the compute nodes and 
 re-add them with insert-ethernet.
