@@ -249,6 +249,18 @@ class Command(rocks.commands.HostArgumentProcessor,
 		except ImportError:
 			#xen or kvm roll not installed
 			return False
+
+		#
+		# I want to be able to undefine kvm bridging on a frontend
+		# now defining  kvm_networking == false will disable that
+		#
+		bridged = self.db.getHostAttr(host, 'kvm_networking')
+		if bridged == 'true':
+			return True
+		elif bridged == 'false':
+			return False
+
+		# if kvm_networking is not defined move to the old method
 		appliance = self.db.getHostAttr(host, 'appliance' )
 		if appliance and appliance == 'vm-container':
 			#we could use getHostAttr(host, 'kvm')
