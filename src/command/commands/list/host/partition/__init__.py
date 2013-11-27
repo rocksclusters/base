@@ -125,6 +125,7 @@
 import sys
 import socket
 import rocks.commands
+import rocks.vm
 import string
 
 class Command(rocks.commands.list.host.command):
@@ -137,6 +138,11 @@ class Command(rocks.commands.list.host.command):
 	all the known hosts is listed.
 	</arg>
 
+	<param type='bool' name='bigmnt'>
+	If true, then it will output only the biggest partition mount point
+	(e.g. /state/partition1)
+	</param>
+
 	<example cmd='list host partition compute-0-0'>
 	List partition info for compute-0-0.
 	</example>
@@ -147,6 +153,21 @@ class Command(rocks.commands.list.host.command):
 	"""
 
 	def run(self, params, args):
+
+		(bigmnt,) = self.fillParams( [
+			('bigmnt', 'n'),
+			])
+
+		bigmnt = self.str2bool(bigmnt)
+
+		if bigmnt:
+			# we just need to print the bigest partition mnt point
+			vm = rocks.vm.VM(self.db)
+			self.beginOutput()
+			for host in self.getHostnames(args):
+				self.addOutput(host, vm.getLargestPartition(host))
+			self.endOutput(padChar='')
+			return
 	
 		self.beginOutput()
 		
