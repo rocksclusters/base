@@ -120,7 +120,22 @@ lock = threading.Lock()
 
 class command(rocks.commands.HostArgumentProcessor,
         rocks.commands.sync.command):
-	pass
+
+	def getExecCommand(self, host, localhost=None):
+		"""return a string for executing commands on local or remote nodes"""
+
+		if not localhost:
+			localhost = self.getHostnames(["localhost"])[0]
+
+		#
+		# do not use ssh for localhost (so we can fix FE with the network
+		# down)
+		#
+		if host == localhost :
+			return 'bash > /dev/null 2>&1 '
+		else:
+			return 'ssh -T -x %s bash > /dev/null 2>&1 ' % host
+
 
 class Parallel(threading.Thread):
 	def __init__(self, cmd, host=None):

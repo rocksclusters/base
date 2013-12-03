@@ -165,10 +165,7 @@ class Command(rocks.commands.sync.host.command):
 			cmd += '%s | ' % host
 			cmd += '/opt/rocks/bin/rocks report script '
 			cmd += 'attrs="%s" | ' % attrs
-			if host == localhost :
-				cmd += 'bash > /dev/null 2>&1 '
-			else:
-				cmd += 'ssh -T -x %s bash > /dev/null 2>&1 ' % host
+			cmd += self.getExecCommand(host, localhost)
 
 
 			p = Parallel(cmd, host)
@@ -183,11 +180,8 @@ class Command(rocks.commands.sync.host.command):
 		threads = []
 		for host in hosts:
 
-			if host == localhost :
-				cmd = 'bash -c '
-			else:
-				cmd = 'ssh -T -x %s ' % host
-			cmd += '"/sbin/service iptables restart > /dev/null 2>&1" '
+			cmd = 'echo "/sbin/service iptables restart  > /dev/null 2>&1" |'
+			cmd += self.getExecCommand(host, localhost)
 
 			p = Parallel(cmd, host)
 			threads.append(p)

@@ -182,14 +182,7 @@ class Command(rocks.commands.sync.host.command):
 			#
 			attrs = self.db.getHostAttrs(host)
 
-			#
-			# do not use ssh for localhost (so we can fix FE with the network 
-			# down
-			#
-			if host == localhost :
-				exec_statement = 'bash > /dev/null 2>&1 '
-			else:
-				exec_statement = 'ssh -T -x %s bash > /dev/null 2>&1 ' % host
+			exec_statement = self.getExecCommand(host, localhost)
 
 			cmd = '/opt/rocks/bin/rocks report host interface '
 			cmd += '%s | ' % host
@@ -229,11 +222,9 @@ class Command(rocks.commands.sync.host.command):
 		threads = []
 		for host in hosts:
 
-			if host == localhost :
-				cmd = 'bash -c '
-			else:
-				cmd = 'ssh -T -x %s ' % host
-			cmd += '"/sbin/service network restart > /dev/null 2>&1" '
+			cmd = 'echo "/sbin/service network restart  > /dev/null 2>&1" |'
+			cmd += self.getExecCommand(host, localhost)
+
 
 			p = Parallel(cmd, host)
 			threads.append(p)
