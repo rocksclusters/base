@@ -145,7 +145,7 @@ class Command(rocks.commands.add.host.command):
 			self.about('missing value of attribute')
 
 		for host in hosts:
-			self.checkHostAttr(host, attr, value)
+			self.checkHostAttr(host, attr)
 
 		for host in hosts:
 			self.db.execute("""insert into node_attributes values 
@@ -153,7 +153,7 @@ class Command(rocks.commands.add.host.command):
 				'%s', '%s')""" % (host, attr, value))
 	
 
-	def checkHostAttr(self, host, attr, value):
+	def checkHostAttr(self, host, attr):
 		rows = self.db.execute("""
 			select * from node_attributes where
 			node=(select id from nodes where name='%s') and
