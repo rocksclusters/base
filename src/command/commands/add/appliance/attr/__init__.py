@@ -147,7 +147,7 @@ class Command(rocks.commands.add.appliance.command):
 			self.about('missing value of attribute')
 
 		for appliance in appliances:
-			self.checkApplianceAttr(appliance, attr, value)
+			self.checkApplianceAttr(appliance, attr)
 
 		for appliance in appliances:
 			self.db.execute("""
@@ -157,7 +157,7 @@ class Command(rocks.commands.add.appliance.command):
 				""" % (appliance, attr, value))
 			
 
-	def checkApplianceAttr(self, appliance, attr, value):
+	def checkApplianceAttr(self, appliance, attr):
 		rows = self.db.execute("""
 			select * from appliance_attributes where
 			appliance=
