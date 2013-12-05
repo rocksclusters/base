@@ -120,7 +120,6 @@ class Command(rocks.commands.dump.host.command):
 				a.node=n.id and n.name='%s'
 				""" % host)
 			for (key, value) in self.db.fetchall():
-				host = self.dumpHostname(host)
 				
 				# Do not record the os or arch attributes
 				# since kickstart sets them
