@@ -96,6 +96,8 @@ import time
 import sys
 import string
 import rocks.commands
+import xml.sax.saxutils
+
 
 class Command(rocks.commands.add.appliance.command):
 	"""
@@ -149,6 +151,7 @@ class Command(rocks.commands.add.appliance.command):
 		for appliance in appliances:
 			self.checkApplianceAttr(appliance, attr)
 
+		value = xml.sax.saxutils.escape(value)
 		for appliance in appliances:
 			self.db.execute("""
 				insert into appliance_attributes values 

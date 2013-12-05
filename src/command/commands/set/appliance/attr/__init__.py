@@ -105,6 +105,8 @@ import sys
 import string
 import rocks.commands
 import rocks.commands.set.attr
+import xml.sax.saxutils
+
 
 class Command(rocks.commands.set.appliance.command):
 	"""
@@ -159,6 +161,12 @@ class Command(rocks.commands.set.appliance.command):
 			self.setApplianceAttr(appliance, attr, value)
 			
 	def setApplianceAttr(self, appliance, attr, value):
+
+
+		if not attr.endswith(rocks.commands.set.attr.postfix):
+			# escape only if it is not a _old attribute
+			value = xml.sax.saxutils.escape(value)
+
 		rows = self.db.execute("""
 			select attr, value from appliance_attributes where
 			appliance=
