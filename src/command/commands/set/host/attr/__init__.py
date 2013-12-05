@@ -108,7 +108,6 @@ import sys
 import string
 import rocks.commands
 import rocks.commands.set.attr
-import xml.sax.saxutils
 
 class Command(rocks.commands.set.host.command):
 	"""
@@ -164,7 +163,7 @@ class Command(rocks.commands.set.host.command):
 
 		if not attr.endswith(rocks.commands.set.attr.postfix):
 			# escape only if it is not a _old attribute
-			value = xml.sax.saxutils.escape(value)
+			value = self.escapeAttr(value)
 
 		rows = self.db.execute("""
 			select attr, value from node_attributes where

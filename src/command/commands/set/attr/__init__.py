@@ -122,7 +122,6 @@ import time
 import sys
 import string
 import rocks.commands
-import xml.sax.saxutils
 
 postfix = "_old"
 
@@ -164,7 +163,7 @@ class Command(rocks.commands.set.command):
 
 		if not attr.endswith(postfix):
 			# escape only if this is not a _old attribute
-			value = xml.sax.saxutils.escape(value)
+			value = self.escapeAttr(value)
 
 		rows = self.db.execute("""select * from global_attributes
 			where attr='%s'""" % attr)

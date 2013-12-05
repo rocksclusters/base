@@ -1770,8 +1770,6 @@ class DatabaseConnection:
 		return hostname
 
 
-		
-
 class Command:
 	"""Base class for all Rocks commands the general command line form
 	is as follows:
@@ -2075,6 +2073,17 @@ class Command:
 	def beginOutput(self):
 		"""Reset the output list buffer."""
 		self.output = []
+
+
+	def escapeAttr(self, value):
+		"""escape attribute values with XML escaping"""
+		return saxutils.escape(value, {"\"": "&quot;"})
+
+
+	def unescapeAttr(self, value):
+		"""unescape attribute values with XML escaping """
+		return saxutils.unescape(value, {"&quot;": "\""})
+
 		
 	def addOutput(self, owner, vals):
 		"""Append a list to the output list buffer."""

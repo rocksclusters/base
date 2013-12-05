@@ -97,7 +97,6 @@ import time
 import sys
 import string
 import rocks.commands
-import xml.sax.saxutils
 
 class Command(rocks.commands.add.command):
 	"""
@@ -140,7 +139,7 @@ class Command(rocks.commands.add.command):
 		if rows:
 			self.abort('attribute "%s" exists' % attr)
 
-		value = xml.sax.saxutils.escape(value)
+		value = self.escapeAttr(value)
 		self.db.execute("""insert into global_attributes
 			values ('%s', '%s')""" % (attr, value))
 

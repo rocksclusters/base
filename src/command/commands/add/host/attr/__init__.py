@@ -96,7 +96,6 @@ import time
 import sys
 import string
 import rocks.commands
-import xml.sax.saxutils
 
 
 class Command(rocks.commands.add.host.command):
@@ -148,7 +147,7 @@ class Command(rocks.commands.add.host.command):
 		for host in hosts:
 			self.checkHostAttr(host, attr)
 
-		value = xml.sax.saxutils.escape(value)
+		value = self.escapeAttr(value)
 		for host in hosts:
 			self.db.execute("""insert into node_attributes values 
 				((select id from nodes where name='%s'), 
