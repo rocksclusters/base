@@ -12,7 +12,7 @@ VERSION=5.9
 PKGS=RPMS
 BASEPATH=centos/$(VERSION)/os/$(ARCH)/CentOS/
 else
-VERSION=6.3
+VERSION=6.5
 PKGS=Packages
 BASEPATH=centos/$(VERSION)/os/$(ARCH)/$(PKGS)/
 endif
