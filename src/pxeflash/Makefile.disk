@@ -97,7 +97,9 @@ build:
 	if [ ! -d floppy ]; then mkdir floppy; fi
 	$(CP) $(BOOTIMG) pxeflash-$(BOOTIMG)
 	mount -o loop -t vfat pxeflash-$(BOOTIMG) $(PWD)/floppy
-	(cd $(FLASHFILES); tar cf - *) | (cd floppy; tar xvf -)
+	# we need --no-same-owner since by default tar will try to preserve UID
+	# when unpacking and this does not work on vfat file system
+	(cd $(FLASHFILES); tar cf - *) | (cd floppy; tar xv --no-same-owner -f -)
 	umount $(PWD)/floppy
 	/bin/rmdir floppy
 	
