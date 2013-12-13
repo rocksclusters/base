@@ -75,12 +75,18 @@
 #
 
 import os
+import sys
+import base64
+import struct
+import M2Crypto
+
 import rocks.commands
 
 class Command(rocks.commands.add.host.command):
 	"""
-	Add a public key for a host. One use of this public key is to 
-	authenticate messages sent from remote services.
+	Add a public key for a host. One use of this public key is to
+	authenticate messages sent from remote services. Now it supports ssh-rsa
+	public keys.
 
 	<arg type='string' name='host'>
 	Host name of machine
@@ -118,6 +124,7 @@ class Command(rocks.commands.add.host.command):
 		else:
 			public_key = key
 
+		public_key = transform_key(public_key)
 		#
 		# check if the key already exists
 		#
@@ -135,4 +142,41 @@ class Command(rocks.commands.add.host.command):
 		self.db.execute("""insert into public_keys (node, public_key)
 			values ((select id from nodes where name = '%s'),
 			'%s') """ % (host, public_key))
+
+
+def transform_key(key):
+	"""this method accept a string which should be a pubblic key
+	and if the string is a ssh-rsa public string it will return 
+	it's pem format"""
+
+	if key.split()[0] == 'ssh-rsa':
+		# get the second field from the public key file.
+		keydata = base64.b64decode(key.split(None)[1])
+		parts = []
+		while keydata:
+			# read the length of the data
+			dlen = struct.unpack('>I', keydata[:4])[0]
+			# read in <length> bytes
+			data, keydata = keydata[4:dlen+4], keydata[4+dlen:]
+			parts.append(data)
+		e_val = eval('0x' + ''.join(['%02X' % struct.unpack('B', x)[0] for x in
+		    parts[1]]))
+		n_val = eval('0x' + ''.join(['%02X' % struct.unpack('B', x)[0] for x in
+		    parts[2]]))
+		key = M2Crypto.RSA.new_pub_key((
+				M2Crypto.m2.bn_to_mpi(M2Crypto.m2.hex_to_bn(hex(e_val)[2:])),
+				M2Crypto.m2.bn_to_mpi(M2Crypto.m2.hex_to_bn(hex(n_val)[2:])),
+			))
+		return key.as_pem()
+
+	elif key.startswith('-----BEGIN PUBLIC KEY-----'):
+
+		#it's a pem no need to transform
+		return key
+
+	else:
+		# we don't know what this is....
+		return key
+
+
 
