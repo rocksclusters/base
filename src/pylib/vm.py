@@ -244,16 +244,42 @@ import socket
 import ssl
 import select
 import re
+import M2Crypto
 
 class VMControl:
 
-	def __init__(self, db, controller, key, flags=''):
+	def __init__(self, db, controller, flags=''):
 		self.db = db
 		self.controller = controller
-		self.key = key
+		self.key = None
 		self.port = 8677
 		self.flags = flags
 		return
+
+
+
+	def setKey(self, key):
+		"""set the rsa private key value
+		return true if successful false if there is a problem"""
+
+		if not key:
+			#
+			# let's try to pick a default key
+			#
+			home_folder = os.getenv("HOME")
+			if not home_folder:
+				return False
+
+			ssh_folder = os.path.join(home_folder, '.ssh')
+			key = os.path.join(ssh_folder, 'id_rsa')
+
+		if not os.path.exists(key):
+			return False
+
+		self.key = M2Crypto.RSA.load_key(key)
+
+		return True
+
 
 
 	def closeconnection(self, sock, s):
@@ -553,4 +579,6 @@ class VMControl:
 						'Standby...'
 
 		return (status, msg)
+
+
 

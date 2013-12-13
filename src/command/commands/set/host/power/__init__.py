@@ -95,7 +95,6 @@
 
 import rocks.commands
 import os
-import M2Crypto
 
 class command(rocks.commands.set.host.command):
 	MustBeRoot = 0
@@ -118,6 +117,8 @@ class Command(command):
 	<param type='string' name='key' optional='1'>
 	A private key that will be used to authenticate the request. This
         should be a file name that contains the private key.
+	If not specified it will default to $HOME/.ssh/id_rsa.pub or 
+	$HOME/.ssh/id_dsa.pub
 	</param>
 		
 	<example cmd='set host power compute-0-0 action=on'>
@@ -138,17 +139,14 @@ class Command(command):
 			self.abort('invalid action. ' +
 				'action must be "on", "off" or "install"')
 
-		rsakey = None
 
-		if key:
-			if not os.path.exists(key):
-				self.abort("can't access the private key '%s'"
-					% key)
-			rsakey = M2Crypto.RSA.load_key(key)
 
 		for host in args:
 			#
 			# run the plugins
 			# 
-			self.runPlugins([host, action, rsakey])
+			self.runPlugins([host, action, key])
+
+
+
 

@@ -109,11 +109,7 @@ class Plugin(rocks.commands.Plugin):
 	def run(self, args):
 		host = args[0]
 		state = args[1]
-		rsakey = args[2]
-
-		if not rsakey:
-			print 'need to supply a private key'
-			sys.exit(-1)
+		key = args[2]
 
 		#
 		# if 'airboss' is set, then we assume this is a virtual
@@ -122,7 +118,11 @@ class Plugin(rocks.commands.Plugin):
 		#
 		vm_controller = self.db.getHostAttr('localhost', 'airboss')
 		if vm_controller:
-			vm = rocks.vm.VMControl(self.db, vm_controller, rsakey)
+			vm = rocks.vm.VMControl(self.db, vm_controller)
+
+			if not vm.setKey(key):
+				print "you need to provide a valid ssh key (%s)" % key
+				sys.exit(1)
 
 			if state == 'on':
 				op = 'power on'
@@ -135,5 +135,6 @@ class Plugin(rocks.commands.Plugin):
 
 			if status != 0:
 				print 'command failed\n%s' % reason
-				sys.exit(-1)
+				sys.exit(1)
+
 
