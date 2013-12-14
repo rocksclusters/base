@@ -98,7 +98,6 @@
 #
 
 import os
-import M2Crypto
 import rocks.commands
 import rocks.vm
 
@@ -133,11 +132,6 @@ class Command(command):
 	def run(self, params, args):
 		(key, s) = self.fillParams([ ('key', ), ('status', 'n') ])
 
-		if not key:
-			self.abort('must supply a path name to a private key')
-		if not os.path.exists(key):
-			self.abort('private key "%s" does not exist' % key)
-
 		state = self.str2bool(s)
 
 		vm_controller = self.db.getHostAttr('localhost', 'airboss')
@@ -153,9 +147,11 @@ class Command(command):
 		hosts = self.getHostnames(args)
 		host = hosts[0]
 
-		rsakey = M2Crypto.RSA.load_key(key)
+		vm = rocks.vm.VMControl(self.db, vm_controller)
 
-		vm = rocks.vm.VMControl(self.db, vm_controller, rsakey)
+		if not vm.setKey(key):
+			self.abort("Unable to find a valid the key (%s)" % key)
+
 		if state:
 			(status, macs) = vm.cmd('list macs + status', host)
 		else:

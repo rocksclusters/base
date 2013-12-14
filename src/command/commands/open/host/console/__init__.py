@@ -103,7 +103,6 @@
 
 import os
 import sys
-import M2Crypto
 import rocks.commands
 import rocks.vm
 import threading
@@ -121,7 +120,10 @@ class Parallel(threading.Thread):
 
 	def run(self):
 		vm = rocks.vm.VMControl(self.db, self.vm_controller,
-			self.rsakey, self.vncflags)
+			self.vncflags)
+
+		if not vm.setKey(self.rsakey):
+			print "Unable to find a valid key(%s)" % self.rsakey
 
 		(status, reason) = vm.cmd('console', self.host)
 
@@ -161,13 +163,6 @@ class Command(command):
 			('vncflags', '-log *:stderr:0 -FullColor -PreferredEncoding hextile')
 			])
 
-		if not key:
-			self.abort('must supply a path name to a private key')
-		if not os.path.exists(key):
-			self.abort('private key "%s" does not exist' % key)
-
-		rsakey = M2Crypto.RSA.load_key(key)
-
 		vm_controller = self.db.getHostAttr('localhost', 'airboss')
 
 		if not vm_controller:
@@ -175,7 +170,7 @@ class Command(command):
 
 		threads = []
 		for host in self.getHostnames(args):
-			p = Parallel(host, self.db, vm_controller, rsakey,
+			p = Parallel(host, self.db, vm_controller, key,
 				vncflags)
 			p.start()
 			threads.append(p)
