@@ -164,11 +164,11 @@ class Command(command):
 			if len(mac) > 0:
 				if state:
 					m = mac.split()
-					self.addOutput('', (m[0], m[1]))
+					self.addOutput('', (m[0], m[1], m[2]))
 				else:
-					self.addOutput('', (mac))
+					self.addOutput('', (m[0], m[1]))
 		if state:
-			self.endOutput(header=['', 'macs in cluster', 'state'])
+			self.endOutput(header=['', 'macs in cluster', 'state', 'host names'])
 		else:
-			self.endOutput(header=['', 'macs in cluster'])
+			self.endOutput(header=['', 'macs in cluster', 'host names'])
 
