@@ -126,7 +126,15 @@
 #
 #
 
+import cStringIO
 import os
+import re
+import struct
+import sys
+import socket
+import ssl
+import select
+import M2Crypto
 
 class VM:
 
@@ -240,18 +248,25 @@ class VM:
 
 		return rows
 
-import socket
-import ssl
-import select
-import re
-import M2Crypto
+
+#code specific to ssh-agent
+SSH2_AGENTC_REQUEST_IDENTITIES = 11
+SSH2_AGENT_IDENTITIES_ANSWER = 12
+SSH2_AGENTC_SIGN_REQUEST = 13
+SSH2_AGENT_SIGN_RESPONSE = 14
+SSH_AGENT_FAILURE = 5
+
 
 class VMControl:
+	"""this class is used to comunicate with airboss
+	It encapsulate most of the method needed"""
 
 	def __init__(self, db, controller, flags=''):
 		self.db = db
 		self.controller = controller
 		self.key = None
+		self.agent_key = None
+		self.agent_socket = None
 		self.port = 8677
 		self.flags = flags
 		return
@@ -261,6 +276,59 @@ class VMControl:
 	def setKey(self, key):
 		"""set the rsa private key value
 		return true if successful false if there is a problem"""
+
+
+		ssh_auth_sock = os.getenv('SSH_AUTH_SOCK')
+		if ssh_auth_sock:
+			# we have ssh agent let's try to use it
+			try:
+				self.agent_socket = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM, 0)
+				self.agent_socket.connect(ssh_auth_sock)
+
+				# Get list of public keys, and find our key.
+				self.agent_socket.sendall('\0\0\0\1\v') # SSH2_AGENTC_REQUEST_IDENTITIES
+				response = RecvStr(self.agent_socket)
+				resf = cStringIO.StringIO(response)
+				assert RecvAll(resf, 1) == chr(SSH2_AGENT_IDENTITIES_ANSWER)
+				num_keys = RecvU32(resf)
+				assert num_keys < 2000  # A quick sanity check.
+
+				if num_keys:
+					# if there are not keys no point in going on
+					# we are going to use either the first one
+					# or the matching with slef.key
+
+					list_keys = []
+					list_comment = []
+					for i in xrange(num_keys):
+						list_keys.append(RecvStr(resf))
+						list_comment.append(RecvStr(resf))
+					if key in list_comment:
+						self.agent_key = list_keys[list_comment.index(key)]
+						comment = list_comment[list_comment.index(key)]
+					else:
+						self.agent_key = list_keys[0]
+						comment = list_comment[0]
+					assert '' == resf.read(1), 'EOF expected in resf'
+					assert self.agent_key.startswith('\x00\x00\x00\x07ssh-rsa\x00\x00'),\
+						('non-RSA key in ssh-agent (%s) only '
+							'dsa is supported' % comment)
+
+					# these are useless but I need to read all the data from the agent
+					keyf = cStringIO.StringIO(self.agent_key[11:])
+					public_exponent = int(RecvStr(keyf).encode('hex'), 16)
+					modulus_str = RecvStr(keyf)
+					modulus = int(modulus_str.encode('hex'), 16)
+					assert '' == keyf.read(1), 'EOF expected in keyf'
+
+					# we have a matching key in our ssh-agent
+					print "Using key: ", comment #, "agent key is: ", self.agent_key
+					return True
+
+			except socket.error, e:
+				# probably a dead ssh-agent or similar problem
+				# do not crash, just report the problem
+				print "Error connecting to ssh-agent: ", e
 
 		if not key:
 			#
@@ -279,6 +347,10 @@ class VMControl:
 		self.key = M2Crypto.RSA.load_key(key)
 
 		return True
+
+
+
+
 
 
 
@@ -472,17 +544,55 @@ class VMControl:
 		while bytes != len(msg):
 			bytes = s.write(msg[bytes:])
 
-		#
-		# now add the signed digest
-		#
-		try: 
-			import hashlib
-			digest = hashlib.sha1(msg).digest()
-		except ImportError:
-			#support python2.4 and python2.6
-			import sha
-			digest = sha.sha(msg).digest()
-		signature = self.key.sign(digest, 'ripemd160')
+
+		if self.agent_key:
+
+			# we have a ssh-agent let's ask him to make the signature
+			# agent will make sha1 digest for us so we send only the message
+
+			# build request message
+			request_output = [chr(SSH2_AGENTC_SIGN_REQUEST)]
+			AppendStr(request_output, self.agent_key)
+			AppendStr(request_output, msg)
+			request_output.append(struct.pack('>L', 0))  # flags == 0
+			full_request_output = []
+			AppendStr(full_request_output, ''.join(request_output))
+			full_request_str = ''.join(full_request_output)
+
+			# send it
+			self.agent_socket.sendall(full_request_str)
+
+			#
+			# parse response
+			response = RecvStr(self.agent_socket)
+			resf = cStringIO.StringIO(response)
+			if RecvAll(resf, 1) != chr(SSH2_AGENT_SIGN_RESPONSE):
+				raise RuntimeError("Comunication problem with ssh-agent"
+						" (SSH2_AGENT_SIGN_RESPONSE)")
+			signature = RecvStr(resf)
+			if '' != resf.read(1):
+				raise RuntimeError("Comunication problem with "
+						"ssh-agent (EOF not present)")
+			if not signature.startswith('\0\0\0\7ssh-rsa\0\0'):
+				raise RuntimeError("Comunication problem with ssh-agent"
+						"(singing algorithm is no ssh-rsa)")
+			sigf = cStringIO.StringIO(signature[11:])
+			signature = RecvStr(sigf)
+
+
+		else:
+			#
+			# no ssh-agent. Let's use m2crytp routine
+			#
+			try:
+				import hashlib
+				digest = hashlib.sha1(msg).digest()
+			except ImportError:
+				#support python2.4 and python2.6
+				import sha
+				digest = sha.sha(msg).digest()
+
+			signature = self.key.sign(digest)
 
 		#
 		# send the length of the signature
@@ -580,5 +690,49 @@ class VMControl:
 
 		return (status, msg)
 
+
+
+#
+# ssh agent code ispired by
+# http://ptspts.blogspot.com/2010/06/how-to-use-ssh-agent-programmatically.html
+# http://blog.oddbit.com/2011/05/09/signing-data-with-ssh-agent/
+#
+def RecvAll(sock, size):
+	"""receive a binary stream and convert to string"""
+	if size == 0:
+		return ''
+	assert size >= 0
+	if hasattr(sock, 'recv'):
+		recv = sock.recv
+	else:
+		recv = sock.read
+	data = recv(size)
+	if len(data) >= size:
+		return data
+	assert data, 'unexpected EOF'
+	output = [data]
+	size -= len(data)
+	while size > 0:
+		output.append(recv(size))
+		assert output[-1], 'unexpected EOF'
+		size -= len(output[-1])
+	return ''.join(output)
+
+
+def RecvU32(sock):
+	"""receive a 4 bytes integer"""
+	return struct.unpack('>L', RecvAll(sock, 4))[0]
+
+
+def RecvStr(sock):
+	"""receive a string"""
+	return RecvAll(sock, RecvU32(sock))
+
+
+def AppendStr(ary, data):
+	"""append a string"""
+	assert isinstance(data, str)
+	ary.append(struct.pack('>L', len(data)))
+	ary.append(data)
 
 
