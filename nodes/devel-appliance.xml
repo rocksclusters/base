@@ -96,10 +96,5 @@ baseurl=file:/export/rocks/install/rocks-dist/&arch;
 </file>
 
 </post>
-
-<post>
-/bin/ln -s /state/partition1 /export
-</post>
-
 </kickstart> 
 
