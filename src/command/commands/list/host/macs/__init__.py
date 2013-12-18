@@ -162,8 +162,8 @@ class Command(command):
 		self.beginOutput()
 		for mac in macs.split('\n'):
 			if len(mac) > 0:
+				m = mac.split()
 				if state:
-					m = mac.split()
 					self.addOutput('', (m[0], m[1], m[2]))
 				else:
 					self.addOutput('', (m[0], m[1]))
