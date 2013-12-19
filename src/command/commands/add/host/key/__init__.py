@@ -96,10 +96,16 @@ class Command(rocks.commands.add.host.command):
 	A public key. This can be the actual key or it can be a path name to
 	a file that contains a public key (e.g., /tmp/public.key).
 	</param>
+
+	<param type='string' name='description'>
+	A textual description of this key (default to empty string).
+	</param>
 	"""
 
 	def run(self, params, args):
-		key, = self.fillParams([ ('key', ) ])
+		(key, description) = self.fillParams(
+			[('key', ),
+			('description', '')])
 
 		if not key:
 			self.abort('must supply a public key')
@@ -139,9 +145,9 @@ class Command(rocks.commands.add.host.command):
 		#
 		# add the key
 		#
-		self.db.execute("""insert into public_keys (node, public_key)
+		self.db.execute("""insert into public_keys (node, public_key, description)
 			values ((select id from nodes where name = '%s'),
-			'%s') """ % (host, public_key))
+			'%s', '%s') """ % (host, public_key, description))
 
 
 def transform_key(key):

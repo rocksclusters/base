@@ -90,19 +90,20 @@ class Command(rocks.commands.list.host.command):
 		self.beginOutput()
 
 		for host in self.getHostnames(args):
-			rows = self.db.execute("""select id, public_key from
-				public_keys where node = (select id from
-				nodes where name = '%s') """ % host)
-		
-			for id, key in self.db.fetchall():
+			rows = self.db.execute("""select id, public_key, description
+				from public_keys
+				where node = (select id from nodes where name = '%s')
+				""" % host)
+
+			for id, key, description in self.db.fetchall():
 				i = 0	
 				for line in key.split('\n'):
 					if i == 0:
-						self.addOutput(host, (id, line))
+						self.addOutput(host, (id, description, line))
 					else:
-						self.addOutput('', (' ', line))
+						self.addOutput('', (' ', ' ', line))
 					i += 1
 
-		self.endOutput(header=['host', 'id', 'public key'],
+		self.endOutput(header=['host', 'id', 'description', 'public key'],
 			trimOwner = 0)
 

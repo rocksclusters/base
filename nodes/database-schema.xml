@@ -725,6 +725,7 @@ CREATE TABLE public_keys (
  ID		int(11) NOT NULL auto_increment,
  Node		int(11) NOT NULL default '0',
  Public_Key	varchar(4096) default NULL,
+ Description	varchar(4096) default NULL,
  PRIMARY KEY (ID)
 ) TYPE=MyISAM;
 
