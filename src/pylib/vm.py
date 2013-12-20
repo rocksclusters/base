@@ -648,19 +648,17 @@ class VMControl:
 
 		retval = ''
 
-		if op in [ 'power off', 'power on', 'power on + install' ]:
-			(status, msg) = self.connect_send_command(op, dst_mac)
-		elif op == 'list macs' or op == 'list macs + status':
-			(status, msg) = self.connect_send_command(op, dst_mac)
-		elif op == 'console':
+		if op == 'console':
 			msg = 'retry'
 			while msg == 'retry':
-				(status, msg) = self.console(op, dst_mac)
+				(status, msg) = self.console(op, dst_mac, True)
 				if msg == 'retry':
 					print ''
 					print 'Attempting to reestablish ' + \
 						'the console connection. ' + \
 						'Standby...'
+		else:
+			(status, msg) = self.connect_send_command(op, dst_mac)
 
 		return (status, msg)
 
