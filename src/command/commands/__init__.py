@@ -1663,6 +1663,18 @@ class DatabaseConnection:
 					return hostname
 
 				#
+				# let's check if the name is an alias
+				#
+				row = self.link.execute("""select n.name
+						from nodes n, aliases ali
+						where n.id = ali.node
+						and ali.name='%s'""" % hostname)
+
+				if row == 1:
+					(hostname, ) = self.link.fetchone()
+					return hostname
+
+				#
 				# see if this is a MAC address
 				#
 				self.link.execute("""select nodes.name from
