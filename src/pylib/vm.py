@@ -473,7 +473,7 @@ class VMControl:
 		return reason
 
 
-	def console(self, op, dst_mac):
+	def connect_send_command(self, op, dst_mac, launch_console=False):
 		sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		s = ssl.wrap_socket(sock)
 		s.connect((self.controller, self.port))
@@ -489,38 +489,12 @@ class VMControl:
 		#
 		(status, reason) = self.recvresponse(s)
 
-		if status == 0:
+		if status == 0 and launch_console:
 			reason = self.launchconsole(sock, s)
 
 		self.closeconnection(sock, s)
 
 		return (status, reason)
-
-
-	def power(self, op, dst_mac):
-		sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		s = ssl.wrap_socket(sock)
-		s.connect((self.controller, self.port))
-
-		self.sendcommand(s, op, dst_mac)
-		(status, reason) = self.recvresponse(s)
-
-		self.closeconnection(sock, s)
-
-		return (status, reason)
-		
-
-	def listmacs(self, op, dst_mac):
-		sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		s = ssl.wrap_socket(sock)
-		s.connect((self.controller, self.port))
-
-		self.sendcommand(s, op, dst_mac)
-		(status, macs) = self.recvresponse(s)
-
-		self.closeconnection(sock, s)
-
-		return (status, macs)
 
 
 	def sendcommand(self, s, op, dst_mac):
@@ -675,9 +649,9 @@ class VMControl:
 		retval = ''
 
 		if op in [ 'power off', 'power on', 'power on + install' ]:
-			(status, msg) = self.power(op, dst_mac)
+			(status, msg) = self.connect_send_command(op, dst_mac)
 		elif op == 'list macs' or op == 'list macs + status':
-			(status, msg) = self.listmacs(op, dst_mac)
+			(status, msg) = self.connect_send_command(op, dst_mac)
 		elif op == 'console':
 			msg = 'retry'
 			while msg == 'retry':
