@@ -579,6 +579,16 @@ class Command(rocks.commands.HostArgumentProcessor,
 						# vlan interfaces are not configured by RH network script
 						# any more but by the rocks sync host vlan command
 						pass
+					elif device.startswith('ib'):
+						# this is an infiniband interface and it deserve special
+						# treatment
+						s = '<file name="'
+						s += '/etc/sysconfig/network-scripts/ifcfg-'
+						s += '%s">' % (device)
+						self.addOutput(host, s)
+						self.writeConfig(host, mac, ip, device,
+							netmask, vlanid, mtu, options, channel, interfaces_name)
+						self.addOutput(host, '</file>')
 					else:
 						if subnetid:
 							# the interface is active bring it up at boot
