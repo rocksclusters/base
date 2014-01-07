@@ -468,7 +468,6 @@ CREATE TABLE distributions (
 
 
 <!-- Memberships -->
-
 DROP TABLE IF EXISTS memberships;
 CREATE TABLE memberships (
   ID		int(11) NOT NULL auto_increment,
@@ -500,30 +499,7 @@ CREATE TABLE nodes (
   PRIMARY KEY  (ID)
 ) TYPE=MyISAM;
 
-
-<!-- Networks -->
-
-DROP TABLE IF EXISTS networks;
-CREATE TABLE networks (
-  ID		int(11) NOT NULL auto_increment,
-  Node		int(11) default NULL,
-  MAC		varchar(64) default NULL,
-  IP		varchar(32) default NULL,
-  Netmask	varchar(32) default NULL,
-  Gateway	varchar(32) default NULL,
-  Name		varchar(128) default NULL,
-  Device	varchar(32) default NULL,
-  Subnet	int(11)	default NULL references subnets,
-  Module	varchar(128) default NULL,
-  VlanID	int(11) default NULL,
-  Options	varchar(128) default NULL,
-  Channel	varchar(128) default NULL,
-  PRIMARY KEY(ID)
-) TYPE=MyISAM;
-
-
 <!-- Subnets Table -->
-
 DROP TABLE IF EXISTS subnets;
 CREATE TABLE subnets (
 	ID		int(11)	NOT NULL AUTO_INCREMENT,
@@ -535,6 +511,27 @@ CREATE TABLE subnets (
 	servedns	boolean		default false,
 	PRIMARY KEY(ID)
 ) TYPE=MyISAM;
+
+<!-- Networks -->
+DROP TABLE IF EXISTS networks;
+CREATE TABLE networks (
+  ID		int(11) NOT NULL auto_increment,
+  Node		int(11) default NULL,
+  MAC		varchar(64) default NULL,
+  IP		varchar(32) default NULL,
+  Netmask	varchar(32) default NULL,
+  Gateway	varchar(32) default NULL,
+  Name		varchar(128) default NULL,
+  Device	varchar(32) default NULL,
+  Subnet	int(11)	default NULL,
+  Module	varchar(128) default NULL,
+  VlanID	int(11) default NULL,
+  Options	varchar(128) default NULL,
+  Channel	varchar(128) default NULL,
+  PRIMARY KEY(ID),
+  FOREIGN KEY(subnets) REFERENCES subnets(id) ON DELETE CASCADE
+) TYPE=MyISAM;
+
 
 <!--	Meta table consisting of information from
 	nodes, networks, subnets table	-->
@@ -560,7 +557,8 @@ CREATE TABLE global_routes (
   Network	varchar(32) NOT NULL default '',
   Netmask	varchar(32) NOT NULL default '',
   Gateway	varchar(32) NOT NULL default '',
-  Subnet	int(11)	default NULL references subnets
+  Subnet	int(11)	default NULL,
+  FOREIGN KEY(subnets) REFERENCES subnets(id) ON DELETE CASCADE
 ) TYPE=MyISAM;
 
 
@@ -570,7 +568,8 @@ CREATE TABLE os_routes (
   Network	varchar(32) NOT NULL default '',
   Netmask	varchar(32) NOT NULL default '',
   Gateway	varchar(32) NOT NULL default '',
-  Subnet	int(11)	default NULL references subnets
+  Subnet	int(11)	default NULL,
+  FOREIGN KEY(subnets) REFERENCES subnets(id) ON DELETE CASCADE
 ) TYPE=MyISAM;
 
 
@@ -580,7 +579,8 @@ CREATE TABLE appliance_routes (
   Network	varchar(32) NOT NULL default '',
   Netmask	varchar(32) NOT NULL default '',
   Gateway	varchar(32) NOT NULL default '',
-  Subnet	int(11)	default NULL references subnets
+  Subnet	int(11)	default NULL,
+  FOREIGN KEY(subnets) REFERENCES subnets(id) ON DELETE CASCADE
 ) TYPE=MyISAM;
 
 
@@ -590,7 +590,8 @@ CREATE TABLE node_routes (
   Network	varchar(32) NOT NULL default '',
   Netmask	varchar(32) NOT NULL default '',
   Gateway	varchar(32) NOT NULL default '',
-  Subnet	int(11)	default NULL references subnets
+  Subnet	int(11)	default NULL,
+  FOREIGN KEY(subnets) REFERENCES subnets(id) ON DELETE CASCADE
 ) TYPE=MyISAM;
 
 
