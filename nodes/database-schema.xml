@@ -384,7 +384,8 @@ CREATE TABLE aliases (
 DROP TABLE IF EXISTS global_attributes;
 CREATE TABLE global_attributes (
   Attr          varchar(128) default NULL,
-  Value         text
+  Value         text,
+  PRIMARY KEY (Attr)
 ) TYPE=MyISAM;
 
 
@@ -392,7 +393,8 @@ DROP TABLE IF EXISTS os_attributes;
 CREATE TABLE os_attributes (
   OS		enum('sunos','linux') NOT NULL default 'linux',
   Attr          varchar(128) default NULL,
-  Value         text
+  Value         text,
+  PRIMARY KEY (OS, Attr)
 ) TYPE=MyISAM;
 
 
@@ -400,7 +402,8 @@ DROP TABLE IF EXISTS appliance_attributes;
 CREATE TABLE appliance_attributes (
   Appliance     int(11) NOT NULL default '0',
   Attr          varchar(128) default NULL,
-  Value         text
+  Value         text,
+  PRIMARY KEY (Appliance, Attr)
 ) TYPE=MyISAM;
 
 
@@ -408,7 +411,8 @@ DROP TABLE IF EXISTS node_attributes;
 CREATE TABLE node_attributes (
   Node		int(11) NOT NULL default '0',
   Attr		varchar(128) default NULL,
-  Value		text
+  Value		text,
+  PRIMARY KEY (Node, Attr)
 ) TYPE=MyISAM;
 
 <!-- Secure Attributes -->
@@ -417,7 +421,8 @@ DROP TABLE IF EXISTS sec_global_attributes;
 CREATE TABLE sec_global_attributes (
   Attr          varchar(128) default NULL,
   Value         text,
-  Enc		varchar(64) default NULL
+  Enc		varchar(64) default NULL,
+  PRIMARY KEY (Attr)
 ) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS sec_node_attributes;
@@ -425,7 +430,8 @@ CREATE TABLE sec_node_attributes (
   Node		int(11) NOT NULL default '0',
   Attr		varchar(128) default NULL,
   Value		text,
-  Enc		varchar(64) default NULL
+  Enc		varchar(64) default NULL,
+  PRIMARY KEY (Node, Attr)
 ) TYPE=MyISAM;
 
 <!-- App_Globals -->
@@ -558,6 +564,7 @@ CREATE TABLE global_routes (
   Netmask	varchar(32) NOT NULL default '',
   Gateway	varchar(32) NOT NULL default '',
   Subnet	int(11)	default NULL,
+  PRIMARY KEY(Network, Netmask)
   FOREIGN KEY(subnets) REFERENCES subnets(id) ON DELETE CASCADE
 ) TYPE=MyISAM;
 
@@ -569,6 +576,7 @@ CREATE TABLE os_routes (
   Netmask	varchar(32) NOT NULL default '',
   Gateway	varchar(32) NOT NULL default '',
   Subnet	int(11)	default NULL,
+  PRIMARY KEY(OS, Network, Netmask)
   FOREIGN KEY(subnets) REFERENCES subnets(id) ON DELETE CASCADE
 ) TYPE=MyISAM;
 
@@ -580,6 +588,7 @@ CREATE TABLE appliance_routes (
   Netmask	varchar(32) NOT NULL default '',
   Gateway	varchar(32) NOT NULL default '',
   Subnet	int(11)	default NULL,
+  PRIMARY KEY(Appliance, Network, Netmask)
   FOREIGN KEY(subnets) REFERENCES subnets(id) ON DELETE CASCADE
 ) TYPE=MyISAM;
 
@@ -591,6 +600,7 @@ CREATE TABLE node_routes (
   Netmask	varchar(32) NOT NULL default '',
   Gateway	varchar(32) NOT NULL default '',
   Subnet	int(11)	default NULL,
+  PRIMARY KEY(Node, Network, Netmask)
   FOREIGN KEY(subnets) REFERENCES subnets(id) ON DELETE CASCADE
 ) TYPE=MyISAM;
 
@@ -613,6 +623,7 @@ DROP TABLE IF EXISTS node_rolls;
 CREATE TABLE node_rolls (
   Node		int(11) NOT NULL default '0',
   RollID	int(11) NOT NULL
+  PRIMARY KEY (Node, RollID)
 ) TYPE=MyISAM;
 
 
