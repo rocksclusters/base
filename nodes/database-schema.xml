@@ -502,7 +502,8 @@ CREATE TABLE nodes (
   OS		enum('linux', 'sunos') NOT NULL default 'linux',
   RunAction	varchar(64) default 'os',
   InstallAction	varchar(64) default 'install',
-  PRIMARY KEY  (ID)
+  PRIMARY KEY  (ID),
+  INDEX (Name)
 ) TYPE=MyISAM;
 
 <!-- Subnets Table -->
