@@ -456,7 +456,7 @@ CREATE TABLE appliances (
   Name		varchar(32) NOT NULL default '',
   Graph		varchar(64) NOT NULL default 'default',
   Node		varchar(64) NOT NULL default '',
-  OS		set('linux','sunos') NOT NULL default 'linux',
+  OS		enum('linux','sunos') NOT NULL default 'linux',
   PRIMARY KEY (ID)
 ) TYPE=MyISAM;
 
