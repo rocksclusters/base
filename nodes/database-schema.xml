@@ -536,12 +536,13 @@ CREATE TABLE networks (
   Options	varchar(128) default NULL,
   Channel	varchar(128) default NULL,
   PRIMARY KEY(ID),
-  FOREIGN KEY(subnets) REFERENCES subnets(id) ON DELETE CASCADE
+  FOREIGN KEY(subnet) REFERENCES subnets(id) ON DELETE CASCADE
 ) TYPE=MyISAM;
 
 
 <!--	Meta table consisting of information from
 	nodes, networks, subnets table	-->
+DROP VIEW IF EXISTS vnet;
 create view vnet as (select
 	n.name as nodename,
 	m.name as membership,
@@ -565,8 +566,8 @@ CREATE TABLE global_routes (
   Netmask	varchar(32) NOT NULL default '',
   Gateway	varchar(32) NOT NULL default '',
   Subnet	int(11)	default NULL,
-  PRIMARY KEY(Network, Netmask)
-  FOREIGN KEY(subnets) REFERENCES subnets(id) ON DELETE CASCADE
+  PRIMARY KEY(Network, Netmask),
+  FOREIGN KEY(subnet) REFERENCES subnets(id) ON DELETE CASCADE
 ) TYPE=MyISAM;
 
 
@@ -577,8 +578,8 @@ CREATE TABLE os_routes (
   Netmask	varchar(32) NOT NULL default '',
   Gateway	varchar(32) NOT NULL default '',
   Subnet	int(11)	default NULL,
-  PRIMARY KEY(OS, Network, Netmask)
-  FOREIGN KEY(subnets) REFERENCES subnets(id) ON DELETE CASCADE
+  PRIMARY KEY(OS, Network, Netmask),
+  FOREIGN KEY(subnet) REFERENCES subnets(id) ON DELETE CASCADE
 ) TYPE=MyISAM;
 
 
@@ -589,8 +590,8 @@ CREATE TABLE appliance_routes (
   Netmask	varchar(32) NOT NULL default '',
   Gateway	varchar(32) NOT NULL default '',
   Subnet	int(11)	default NULL,
-  PRIMARY KEY(Appliance, Network, Netmask)
-  FOREIGN KEY(subnets) REFERENCES subnets(id) ON DELETE CASCADE
+  PRIMARY KEY(Appliance, Network, Netmask),
+  FOREIGN KEY(subnet) REFERENCES subnets(id) ON DELETE CASCADE
 ) TYPE=MyISAM;
 
 
@@ -601,8 +602,8 @@ CREATE TABLE node_routes (
   Netmask	varchar(32) NOT NULL default '',
   Gateway	varchar(32) NOT NULL default '',
   Subnet	int(11)	default NULL,
-  PRIMARY KEY(Node, Network, Netmask)
-  FOREIGN KEY(subnets) REFERENCES subnets(id) ON DELETE CASCADE
+  PRIMARY KEY(Node, Network, Netmask),
+  FOREIGN KEY(subnet) REFERENCES subnets(id) ON DELETE CASCADE
 ) TYPE=MyISAM;
 
 
@@ -623,7 +624,7 @@ CREATE TABLE rolls (
 DROP TABLE IF EXISTS node_rolls;
 CREATE TABLE node_rolls (
   Node		int(11) NOT NULL default '0',
-  RollID	int(11) NOT NULL
+  RollID	int(11) NOT NULL,
   PRIMARY KEY (Node, RollID)
 ) TYPE=MyISAM;
 
