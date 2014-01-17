@@ -177,13 +177,27 @@ class AnacondaCallback:
             while self.openfile is None:
                 trynumber += 1
                 try:
-                    fn = repo.getPackage(po)
+                    # checkfunc gets passed to yum's use of URLGrabber which
+                    # then calls it with the file being fetched. verifyPkg
+                    # makes sure the checksum matches the one in the metadata.
+                    #
+                    # From the URLGrab documents:
+                    # checkfunc=(function, ('arg1', 2), {'kwarg': 3})
+                    # results in a callback like:
+                    #   function(obj, 'arg1', 2, kwarg=3)
+                    #     obj.filename = '/tmp/stuff'
+                    #     obj.url = 'http://foo.com/stuff'
+                    checkfunc = (self.ayum.verifyPkg, (po, 1), {})
+                    fn = repo.getPackage(po, checkfunc=checkfunc)
 
                     f = open(fn, 'r')
                     self.openfile = f
                 except yum.Errors.NoMoreMirrorsRepoError:
                     self.ayum._handleFailure(po, trynumber)
                 except IOError:
+                    self.ayum._handleFailure(po, trynumber)
+                except URLGrabError as e:
+                    log.error("URLGrabError: %s" % (e,))
                     self.ayum._handleFailure(po, trynumber)
                 except yum.Errors.RepoError, e:
                     continue
@@ -220,7 +234,10 @@ class AnacondaCallback:
                                           self.numpkgs)
                                        % {'donepkgs': self.donepkgs,
                                           'numpkgs': self.numpkgs})
-            self.progress.set_fraction(float(self.doneSize / self.totalSize))
+            if self.totalSize > 0:
+                self.progress.set_fraction(float(self.doneSize / self.totalSize))
+            else:
+                self.progress.set_fraction(0.0)
             self.progress.processEvents()
 
             self.inProgressPo = None
@@ -287,13 +304,22 @@ class AnacondaYumRepo(YumRepository):
         else:
             return False
 
-    def dirCleanup(self):
+    def dirCleanup(self, upgrade=False):
         cachedir = self.getAttribute('cachedir')
 
         if os.path.isdir(cachedir):
-            if not self.needsNetwork() or self.name == "Installation Repo" or self.id.startswith("anaconda-"):
+            if upgrade:
+                log.debug("Removing contents of %s" % (cachedir))
+                for f in filter(os.path.isfile, glob.glob("%s/*" % (cachedir))):
+                    try:
+                        os.unlink(f)
+                    except Exception, e:
+                        log.debug("error %s removing: %s" %(e,f))
+            elif not self.needsNetwork() or self.name == "Installation Repo" or self.id.startswith("anaconda-"):
+                log.debug("Removing cachedir: %s" % (cachedir))
                 shutil.rmtree(cachedir)
             else:
+                log.debug("Removing headers and packages from %s" % (cachedir))
                 if os.path.exists("%s/headers" % cachedir):
                     shutil.rmtree("%s/headers" % cachedir)
                 if os.path.exists("%s/packages" % cachedir):
@@ -328,6 +354,7 @@ class AnacondaYum(YumSorter):
         # Only needed for media installs.
         self.currentMedia = None
         self.mediagrabber = None
+        self._loopdev_used = None
 
         # Where is the source media mounted?  This is the directory
         # where Packages/ is located.
@@ -431,7 +458,7 @@ class AnacondaYum(YumSorter):
                         _("Unable to access the disc."))
 
     def _switchImage(self, discnum):
-        umountImage(self.tree, self.currentMedia)
+        umountImage(self.tree, self.currentMedia, self._loopdev_used)
         self.currentMedia = None
 
         # mountDirectory checks before doing anything, so it's safe to
@@ -439,9 +466,9 @@ class AnacondaYum(YumSorter):
         mountDirectory(self.anaconda.methodstr,
                        self.anaconda.intf.messageWindow)
 
-        self._discImages = mountImage(self.isodir, self.tree, discnum,
-                                      self.anaconda.intf.messageWindow,
-                                      discImages=self._discImages)
+        (self._loopdev_used, self._discImages) = mountImage(self.isodir, self.tree, discnum,
+                                                            self.anaconda.intf.messageWindow,
+                                                            discImages=self._discImages)
         self.currentMedia = discnum
 
     def configBaseURL(self):
@@ -460,9 +487,18 @@ class AnacondaYum(YumSorter):
             if m.startswith("hd:"):
                 if m.count(":") == 2:
                     (device, path) = m[3:].split(":")
+                    fstype = "auto"
                 else:
                     (device, fstype, path) = m[3:].split(":")
 
+                # First check for an installable tree
+                isys.mount(device, self.tree, fstype=fstype)
+                if os.path.exists("%s/%s/repodata/repomd.xml" % (self.tree, path)):
+                    self._baseRepoURL = "file://%s/%s" % (self.tree, path)
+                    return
+                isys.umount(self.tree, removeDir=False)
+
+                # Look for .iso images
                 self.isodir = "/mnt/isodir/%s" % path
 
                 # This takes care of mounting /mnt/isodir first.
@@ -918,6 +954,14 @@ class AnacondaYum(YumSorter):
 
         self.repos.setCacheDir(self.conf.cachedir)
 
+        # When upgrading cleanup the yum cache and enable the addons
+        # This has to be called after setCacheDir
+        if self.anaconda.id.getUpgrade():
+            for repo in extraRepos:
+                repo.dirCleanup(upgrade=True)
+                repo.enable()
+                log.info("enabled %s for upgrade" % (repo.name))
+
         if os.path.exists("%s/boot/upgrade/install.img" % self.anaconda.rootPath):
             log.info("REMOVING stage2 image from %s /boot/upgrade" % self.anaconda.rootPath )
             try:
@@ -1338,7 +1382,6 @@ debuglevel=6
         iutil.writeRpmPlatform()
         self.ayum = AnacondaYum(anaconda)
         self.ayum.setup()
-
         self.ayum.doMacros()
 
         # If any enabled repositories require networking, go ahead and bring
@@ -1578,9 +1621,12 @@ debuglevel=6
             selectKernel("kernel")
 
     def selectFSPackages(self, storage):
+        fspkgs = set()
         for device in storage.fsset.devices:
             # this takes care of device and filesystem packages
-            map(self.selectPackage, device.packages)
+            for pkg in device.packages:
+                fspkgs.add(pkg)
+        map(self.selectPackage, fspkgs)
 
     # anaconda requires several programs on the installed system to complete
     # installation, but we have no guarantees that some of these will be
@@ -1630,11 +1676,11 @@ debuglevel=6
 
                     rc = anaconda.intf.detailedMessageWindow(_("Warning"),
                             _("Some of the packages you have selected for "
-                              "install are missing dependencies.  You can "
-                              "exit the installation, go back and change "
-                              "your package selections, or continue "
-                              "installing these packages without their "
-                              "dependencies."),
+                              "install are missing dependencies or conflict "
+                              "with another package. You can exit the "
+                              "installation, go back and change your package "
+                              "selections, or continue installing these "
+                              "packages without their dependencies."),
                             depprob + "\n", type="custom", custom_icon="error",
                             custom_buttons=custom_buttons)
                     dscb.pop()
