@@ -1459,10 +1459,17 @@ class DistributionBuilder(Builder):
 		print "\tIf you are bootstrapping, this is not a problem"
 		gf = " "
 
+	tmpdir = os.getenv("TMPDIR")
+	# worker.py (Called by genpkgmetadata) needs tmp space
+	os.putenv("TMPDIR",".")
 	subprocess.call('%s ' % (createrepo) + 
 		gf + 
 		'--quiet .', shell=True)
 
+	if tmpdir is not None:
+		os.putenv("TMPDIR",tmpdir)
+	else:
+		os.unsetenv("TMPDIR")
 	os.chdir(cwd)
 
 	return
