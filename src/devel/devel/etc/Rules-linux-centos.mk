@@ -206,6 +206,7 @@ __RULES_LINUX_CENTOS_MK = yes
 # --------------------------------------------------------------------- #
 USERID = $(shell id -u)
 INSTALL = install
+CAT	= /bin/cat
 CVS	= /usr/bin/cvs
 #MYSQL_LDFLAGS = -all-static
 TARGET_PKG = rpm
@@ -455,6 +456,10 @@ endif
 	echo -e "$(RPM.FILE.EXTRAS)" >> $@
 else	
 	@$(PF) "%%files $(RPM.PACKAGE) -f $(RPM.FILESLIST)\n" >> $@
+endif
+
+ifneq ($(RPM.SCRIPTLETS.FILE),)
+	$(CAT) "$(RPM.SCRIPTLETS.FILE)" >> $@
 endif
 
 $(NAME).spec.mk:
