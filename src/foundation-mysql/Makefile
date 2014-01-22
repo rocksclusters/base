@@ -228,8 +228,6 @@ ROCKSROOT       = ../devel/devel
 MYSQL_LDFLAGS   += -Wl,-rpath,/opt/rocks/lib/mysql
 
 
-
-
 -include $(ROCKSROOT)/etc/Rules.mk
 include Rules.mk
 
@@ -238,35 +236,29 @@ build:
 	(cd patch-files && find mysql-$(VERSION) -type f | grep -v CVS | cpio -pduv ../)
 	( 								\
 		cd mysql-$(VERSION);					\
-		./configure --prefix=$(PKGROOT)				\
-			--localstatedir=$(PKGVAR)			\
-			--with-unix-socket-path=$(PKGVAR)/mysql.sock	\
-			--with-tcp-port=40000				\
-			--with-mysqld-user=rocksdb			\
-			--enable-thread-safe-client			\
-			--with-ssl					\
-			--without-debug					\
-			LDFLAGS="$(MYSQL_LDFLAGS)" CFLAGS=$(MYSQL_CFLAGS)	\
-			;						\
+		LDFLAGS="$(MYSQL_LDFLAGS)" 				\
+			cmake -DCMAKE_INSTALL_PREFIX=$(PKGROOT)/mysql	\
+			-DMYSQL_DATADIR=$(PKGVAR)			\
+			-DMYSQL_UNIX_ADDR=$(PKGVAR)/mysql.sock 		\
+			-DMYSQL_TCP_PORT=40000				\
+			-DWITH_SSL=yes					\
+			-DWITH_DEBUG=no;				\
 		$(MAKE);						\
 	)
 
 install::
-	mkdir -p $(ROOT)/$(PKGROOT)/etc/
+	mkdir -p $(ROOT)/$(PKGROOT)/mysql/etc/
 	mkdir -p $(ROOT)/$(PKGROOT)/sbin/
 	mkdir -p $(ROOT)/$(PKGVAR)
 	chmod a+rx $(ROOT)/$(PKGVAR)
 	(								\
 		cd mysql-$(VERSION);					\
-		$(MAKE) prefix=$(ROOT)/$(PKGROOT) install;		\
+		$(MAKE) DESTDIR=$(ROOT) install;		\
 	)
-	$(INSTALL) -m 0644 my.cnf $(ROOT)/$(PKGROOT)/etc/my.cnf;
-	rm -rf $(ROOT)/$(PKGROOT)/mysql-test
-	rm -rf $(ROOT)/$(PKGROOT)/sql-bench
-	rm -rf $(ROOT)/var/opt/rocks/mysql
+	$(INSTALL) -m 0644 my.cnf $(ROOT)/$(PKGROOT)/mysql/etc/my.cnf;
 	echo "#!/bin/bash"				>  $(ROOT)/$(INSTALLDB)
 	echo "$(PKGROOT)/bin/mysql_install_db \\" 	>> $(ROOT)/$(INSTALLDB)
-	echo "  --defaults-file=$(PKGROOT)/etc/my.cnf\\">> $(ROOT)/$(INSTALLDB)
+	echo "  --defaults-file=$(PKGROOT)/mysql/etc/my.cnf\\">> $(ROOT)/$(INSTALLDB)
 	echo "	--basedir=$(PKGROOT) \\" 		>> $(ROOT)/$(INSTALLDB)
 	echo "	--datadir=$(PKGVAR)  \\"		>> $(ROOT)/$(INSTALLDB)
 	echo "	--user=rocksdb"				>> $(ROOT)/$(INSTALLDB)

@@ -1,0 +1,7 @@
+%post 
+# when updating this package, make sure that the databases (if they exist) are 
+# owned by rocksdb
+/bin/grep -q rocksdb /etc/passwd
+if [ $? -eq 0 ]; then
+	chown -R rocksdb /var/opt/rocks/mysql
+fi
