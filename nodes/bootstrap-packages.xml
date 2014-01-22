@@ -79,6 +79,7 @@
 	<package os="linux">binutils-devel</package>
 	<package os="linux">booty</package>
 	<package os="linux">bzip2-devel</package>
+	<package os="linux">cmake</package>
 	<package os="linux">dbus-devel</package>
 	<package os="linux">device-mapper-devel</package>
 	<package os="linux">dialog</package>
