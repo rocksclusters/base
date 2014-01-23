@@ -343,7 +343,7 @@ class Application(rocks.app.Application):
 	if username == 'root':
 		filename = '/root/.rocks.my.cnf'
 	if username == 'apache':
-		filename = '/opt/rocks/etc/my.cnf'
+		filename = '/opt/rocks/mysql/etc/my.cnf'
 	try:
 		if filename is not None:
 			file = open(filename, 'r')
