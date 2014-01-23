@@ -339,7 +339,7 @@
 groupadd -g 403 rocksdb
 useradd -u 403 -g rocksdb -d /var/opt/rocks/mysql -m -s /bin/false rocksdb
 
-/opt/rocks/sbin/mysql-install-db
+/opt/rocks/mysql/sbin/mysql-install-db
 
 chgrp -R rocksdb /var/opt/rocks/mysql
 chmod -R g+rwx   /var/opt/rocks/mysql
@@ -369,10 +369,10 @@ cp -f /opt/rocks/share/mysql/mysql-server.xml \
 	up and running
 -->
 <post>
-/opt/rocks/bin/mysqladmin -s ping > /dev/null
+/opt/rocks/mysql/bin/mysqladmin -s ping > /dev/null
 while [ $? -eq 1 ]; do
         sleep 1
-        /opt/rocks/bin/mysqladmin -s ping > /dev/null
+        /opt/rocks/mysql/bin/mysqladmin -s ping > /dev/null
 done
 
 </post>

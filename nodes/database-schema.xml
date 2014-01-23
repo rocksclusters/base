@@ -905,9 +905,9 @@ INSERT INTO resolvechain(name, category, precedence) VALUES('default',mapCategor
 
 </file>
 
-/opt/rocks/bin/mysqladmin --user=root --password='' create cluster
-/opt/rocks/bin/mysql --user=root --password='' cluster &lt; /tmp/tables.sql
-/opt/rocks/bin/mysql --user=root --password='' cluster &lt; /tmp/categories.sql
+/opt/rocks/mysql/bin/mysqladmin --user=root --password='' create cluster
+/opt/rocks/mysql/bin/mysql --user=root --password='' cluster &lt; /tmp/tables.sql
+/opt/rocks/mysql/bin/mysql --user=root --password='' cluster &lt; /tmp/categories.sql
 
 </post>
 

@@ -128,7 +128,7 @@ for name, version, arch, url, diskid in generator.rolls:
 </file>
 
 
-/opt/rocks/bin/mysql --defaults-extra-file=/root/.rocks.my.cnf \
+/opt/rocks/mysql/bin/mysql --defaults-extra-file=/root/.rocks.my.cnf \
 	-u root cluster \
 	&lt; /tmp/insert-rolls.sql
 

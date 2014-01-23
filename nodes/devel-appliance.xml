@@ -80,7 +80,7 @@ MYSQL_HOME=/opt/rocks/etc /usr/bin/mysqldump -u apache cluster rolls
 </file>
 
 <!-- Do some fixups to the  Devel-Servers local database -->
-/opt/rocks/bin/mysql -u apache cluster -e 'update nodes set name="&hostname;" where ID=1'
+/opt/rocks/mysql/bin/mysql -u apache cluster -e 'update nodes set name="&hostname;" where ID=1'
 /opt/rocks/bin/rocks set host interface ip &hostname; eth0 &hostaddr;
 /opt/rocks/bin/rocks set host interface name &hostname; eth0 &hostname;
 /opt/rocks/bin/rocks set host membership &hostname; "Development Appliance"

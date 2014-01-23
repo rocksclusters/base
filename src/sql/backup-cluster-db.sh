@@ -119,7 +119,7 @@
 export HOME=/root
 cd /var/db
 
-/opt/rocks/bin/mysqldump --defaults-extra-file=/root/.rocks.my.cnf -u root --opt cluster > mysql-backup-cluster
+/opt/rocks/mysql/bin/mysqldump --defaults-extra-file=/root/.rocks.my.cnf -u root --opt cluster > mysql-backup-cluster
 
 # To check in multiple versions, you need to have a lock on the
 # file. RCS will automatically ignore checkins for unchanged files.

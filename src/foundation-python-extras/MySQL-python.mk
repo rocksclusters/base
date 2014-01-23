@@ -144,7 +144,7 @@ build::
 	# (so we can remove global /etc/ld.conf include)
 	( 								\
 		cd MySQL-python-$(MYSQLPYVERSION);			\
-		echo "mysql_config=/opt/rocks/bin/mysql_config" >> site.cfg; \
+		echo "mysql_config=/opt/rocks/mysql/bin/mysql_config" >> site.cfg; \
 		export PATH="$(PKGROOT)/bin:$$PATH" ;			\
 		export LDFLAGS="-Wl,-rpath,/opt/rocks/lib/mysql" ;	\
 		$(PY.PATH) setup.py build;			\
