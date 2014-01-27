@@ -214,8 +214,8 @@
 # *** empty log message ***
 #
 
-PKGROOT		= /opt/rocks
-PKGVAR		= /var/$(PKGROOT)/mysql
+PKGROOT		= /opt/rocks/mysql
+PKGVAR		= /var/$(PKGROOT)
 INSTALLDB	= $(PKGROOT)/sbin/mysql-install-db
 REDHAT.ROOT     = $(CURDIR)/../../
 ROCKSROOT       = ../devel/devel
@@ -237,7 +237,7 @@ build:
 	( 								\
 		cd mysql-$(VERSION);					\
 		LDFLAGS="$(MYSQL_LDFLAGS)" 				\
-			cmake -DCMAKE_INSTALL_PREFIX=$(PKGROOT)/mysql	\
+			cmake -DCMAKE_INSTALL_PREFIX=$(PKGROOT)		\
 			-DMYSQL_DATADIR=$(PKGVAR)			\
 			-DMYSQL_UNIX_ADDR=$(PKGVAR)/mysql.sock 		\
 			-DMYSQL_TCP_PORT=40000				\
@@ -247,7 +247,7 @@ build:
 	)
 
 install::
-	mkdir -p $(ROOT)/$(PKGROOT)/mysql/etc/
+	mkdir -p $(ROOT)/$(PKGROOT)/etc/
 	mkdir -p $(ROOT)/$(PKGROOT)/sbin/
 	mkdir -p $(ROOT)/$(PKGVAR)
 	chmod a+rx $(ROOT)/$(PKGVAR)
@@ -255,10 +255,10 @@ install::
 		cd mysql-$(VERSION);					\
 		$(MAKE) DESTDIR=$(ROOT) install;		\
 	)
-	$(INSTALL) -m 0644 my.cnf $(ROOT)/$(PKGROOT)/mysql/etc/my.cnf;
+	$(INSTALL) -m 0644 my.cnf $(ROOT)/$(PKGROOT)/etc/my.cnf;
 	echo "#!/bin/bash"				>  $(ROOT)/$(INSTALLDB)
-	echo "$(PKGROOT)/bin/mysql_install_db \\" 	>> $(ROOT)/$(INSTALLDB)
-	echo "  --defaults-file=$(PKGROOT)/mysql/etc/my.cnf\\">> $(ROOT)/$(INSTALLDB)
+	echo "$(PKGROOT)/scripts/mysql_install_db \\" 	>> $(ROOT)/$(INSTALLDB)
+	echo "  --defaults-file=$(PKGROOT)/etc/my.cnf\\">> $(ROOT)/$(INSTALLDB)
 	echo "	--basedir=$(PKGROOT) \\" 		>> $(ROOT)/$(INSTALLDB)
 	echo "	--datadir=$(PKGVAR)  \\"		>> $(ROOT)/$(INSTALLDB)
 	echo "	--user=rocksdb"				>> $(ROOT)/$(INSTALLDB)
