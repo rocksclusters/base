@@ -211,7 +211,7 @@ then
   print_defaults="$bindir/mysql_print_defaults"
 else
   # Try to find basedir in /etc/my.cnf
-  conf=/opt/rocks/etc/my.cnf
+  conf=/opt/rocks/mysql/my.cnf
   print_defaults=
   if test -r $conf
   then
@@ -253,7 +253,7 @@ else
   fi
 fi
 
-extra_args="-c $basedir/etc/my.cnf" ## Use Rocks Config ONLY
+extra_args="-c $basedir/my.cnf" ## Use Rocks Config ONLY
 
 parse_server_arguments `$print_defaults $extra_args mysqld server mysql_server mysql.server`
 
@@ -282,7 +282,7 @@ case "$mode" in
     then
       # Give extra arguments to mysqld with the my.cnf file. This script
       # may be overwritten at next upgrade.
-      $bindir/mysqld_safe --defaults-file=$basedir/etc/my.cnf --datadir=$datadir --pid-file=$server_pid_file $other_args >/dev/null 2>&1 &
+      $bindir/mysqld_safe --defaults-file=$basedir/my.cnf --datadir=$datadir --pid-file=$server_pid_file $other_args >/dev/null 2>&1 &
       wait_for_pid created "$!" "$mysqld_pid_file_path"; return_value=$?
 
       # Make lock for RedHat / SuSE

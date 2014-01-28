@@ -146,7 +146,7 @@ build::
 		cd MySQL-python-$(MYSQLPYVERSION);			\
 		echo "mysql_config=/opt/rocks/mysql/bin/mysql_config" >> site.cfg; \
 		export PATH="$(PKGROOT)/bin:$$PATH" ;			\
-		export LDFLAGS="-Wl,-rpath,/opt/rocks/lib/mysql" ;	\
+		export LDFLAGS="-Wl,-rpath,/opt/rocks/mysql/lib" ;	\
 		$(PY.PATH) setup.py build;			\
 	)
 	

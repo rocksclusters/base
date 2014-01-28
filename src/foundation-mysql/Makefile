@@ -225,7 +225,7 @@ ROCKSROOT       = ../devel/devel
 # system mysql 
 # http://marc.info/?l=npaci-rocks-discussion&m=135308812922216&w=2
 #
-MYSQL_LDFLAGS   += -Wl,-rpath,/opt/rocks/lib/mysql
+MYSQL_LDFLAGS   += -Wl,-rpath,/opt/rocks/mysql/lib
 
 
 -include $(ROCKSROOT)/etc/Rules.mk
@@ -255,10 +255,10 @@ install::
 		cd mysql-$(VERSION);					\
 		$(MAKE) DESTDIR=$(ROOT) install;		\
 	)
-	$(INSTALL) -m 0644 my.cnf $(ROOT)/$(PKGROOT)/etc/my.cnf;
+	$(INSTALL) -m 0644 my.cnf $(ROOT)/$(PKGROOT)/my.cnf;
 	echo "#!/bin/bash"				>  $(ROOT)/$(INSTALLDB)
 	echo "$(PKGROOT)/scripts/mysql_install_db \\" 	>> $(ROOT)/$(INSTALLDB)
-	echo "  --defaults-file=$(PKGROOT)/etc/my.cnf\\">> $(ROOT)/$(INSTALLDB)
+	echo "  --defaults-file=$(PKGROOT)/my.cnf\\">> $(ROOT)/$(INSTALLDB)
 	echo "	--basedir=$(PKGROOT) \\" 		>> $(ROOT)/$(INSTALLDB)
 	echo "	--datadir=$(PKGVAR)  \\"		>> $(ROOT)/$(INSTALLDB)
 	echo "	--user=rocksdb"				>> $(ROOT)/$(INSTALLDB)

@@ -95,7 +95,7 @@ cmd_set.append('create user "apache"@"localhost" identified by "%s"' % apache_pa
 cmd_set.append('create user "apache"@"&hostname;" identified by "%s"' % apache_pass)
 
 # Add password to the common MySQL config file
-f = open('/opt/rocks/mysql/etc/my.cnf', 'a')
+f = open('/opt/rocks/mysql/my.cnf', 'a')
 f.write("password\t= %s\n" % apache_pass)
 f.close()
 
@@ -107,8 +107,8 @@ for cmd in cmd_set:
 </post>
 
 <post>
-chown root:apache /opt/rocks/mysql/etc/my.cnf
-chmod 0640 /opt/rocks/mysql/etc/my.cnf
+chown root:apache /opt/rocks/mysql/my.cnf
+chmod 0640 /opt/rocks/mysql/my.cnf
 chmod 0400 /root/.rocks.my.cnf
 </post>
 

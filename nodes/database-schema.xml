@@ -376,7 +376,7 @@ CREATE TABLE aliases (
   Node		int(11) NOT NULL default '0',
   Name		varchar(32) default NULL,
   PRIMARY KEY (ID)
-) TYPE=MyISAM;
+);
 
 
 <!-- Attributes -->
@@ -386,7 +386,7 @@ CREATE TABLE global_attributes (
   Attr          varchar(128) default NULL,
   Value         text,
   PRIMARY KEY (Attr)
-) TYPE=MyISAM;
+);
 
 
 DROP TABLE IF EXISTS os_attributes;
@@ -395,7 +395,7 @@ CREATE TABLE os_attributes (
   Attr          varchar(128) default NULL,
   Value         text,
   PRIMARY KEY (OS, Attr)
-) TYPE=MyISAM;
+);
 
 
 DROP TABLE IF EXISTS appliance_attributes;
@@ -404,7 +404,7 @@ CREATE TABLE appliance_attributes (
   Attr          varchar(128) default NULL,
   Value         text,
   PRIMARY KEY (Appliance, Attr)
-) TYPE=MyISAM;
+);
 
 
 DROP TABLE IF EXISTS node_attributes;
@@ -413,7 +413,7 @@ CREATE TABLE node_attributes (
   Attr		varchar(128) default NULL,
   Value		text,
   PRIMARY KEY (Node, Attr)
-) TYPE=MyISAM;
+);
 
 <!-- Secure Attributes -->
 
@@ -423,7 +423,7 @@ CREATE TABLE sec_global_attributes (
   Value         text,
   Enc		varchar(64) default NULL,
   PRIMARY KEY (Attr)
-) TYPE=MyISAM;
+);
 
 DROP TABLE IF EXISTS sec_node_attributes;
 CREATE TABLE sec_node_attributes (
@@ -432,7 +432,7 @@ CREATE TABLE sec_node_attributes (
   Value		text,
   Enc		varchar(64) default NULL,
   PRIMARY KEY (Node, Attr)
-) TYPE=MyISAM;
+);
 
 <!-- App_Globals -->
 
@@ -445,7 +445,7 @@ CREATE TABLE app_globals (
   Component	varchar(64) default NULL,
   Value		text,
   PRIMARY KEY (ID)
-) TYPE=MyISAM;
+);
 
 
 <!-- Appliances -->
@@ -458,7 +458,7 @@ CREATE TABLE appliances (
   Node		varchar(64) NOT NULL default '',
   OS		enum('linux','sunos') NOT NULL default 'linux',
   PRIMARY KEY (ID)
-) TYPE=MyISAM;
+);
 
 
 <!-- Distributions -->
@@ -470,7 +470,7 @@ CREATE TABLE distributions (
   OS_Release	varchar(32) NOT NULL default '',
   Lang		varchar(32) NOT NULL default '',
   PRIMARY KEY (ID)
-) TYPE=MyISAM;
+);
 
 
 <!-- Memberships -->
@@ -482,7 +482,7 @@ CREATE TABLE memberships (
   Distribution	int(11) default '1',
   Public	enum('yes','no') NOT NULL default 'no',
   PRIMARY KEY (ID)
-) TYPE=MyISAM;
+);
 
 
 <!-- Nodes
@@ -504,7 +504,7 @@ CREATE TABLE nodes (
   InstallAction	varchar(64) default 'install',
   PRIMARY KEY  (ID),
   INDEX (Name)
-) TYPE=MyISAM;
+);
 
 <!-- Subnets Table -->
 DROP TABLE IF EXISTS subnets;
@@ -517,7 +517,7 @@ CREATE TABLE subnets (
 	mtu		int(11)		default '1500',
 	servedns	boolean		default false,
 	PRIMARY KEY(ID)
-) TYPE=MyISAM;
+);
 
 <!-- Networks -->
 DROP TABLE IF EXISTS networks;
@@ -537,7 +537,7 @@ CREATE TABLE networks (
   Channel	varchar(128) default NULL,
   PRIMARY KEY(ID),
   FOREIGN KEY(subnet) REFERENCES subnets(id) ON DELETE CASCADE
-) TYPE=MyISAM;
+);
 
 
 <!--	Meta table consisting of information from
@@ -568,7 +568,7 @@ CREATE TABLE global_routes (
   Subnet	int(11)	default NULL,
   PRIMARY KEY(Network, Netmask),
   FOREIGN KEY(subnet) REFERENCES subnets(id) ON DELETE CASCADE
-) TYPE=MyISAM;
+);
 
 
 DROP TABLE IF EXISTS os_routes;
@@ -580,7 +580,7 @@ CREATE TABLE os_routes (
   Subnet	int(11)	default NULL,
   PRIMARY KEY(OS, Network, Netmask),
   FOREIGN KEY(subnet) REFERENCES subnets(id) ON DELETE CASCADE
-) TYPE=MyISAM;
+);
 
 
 DROP TABLE IF EXISTS appliance_routes;
@@ -592,7 +592,7 @@ CREATE TABLE appliance_routes (
   Subnet	int(11)	default NULL,
   PRIMARY KEY(Appliance, Network, Netmask),
   FOREIGN KEY(subnet) REFERENCES subnets(id) ON DELETE CASCADE
-) TYPE=MyISAM;
+);
 
 
 DROP TABLE IF EXISTS node_routes;
@@ -604,7 +604,7 @@ CREATE TABLE node_routes (
   Subnet	int(11)	default NULL,
   PRIMARY KEY(Node, Network, Netmask),
   FOREIGN KEY(subnet) REFERENCES subnets(id) ON DELETE CASCADE
-) TYPE=MyISAM;
+);
 
 
 <!-- Roll.  What Rolls are installed and used by default. -->
@@ -618,7 +618,7 @@ CREATE TABLE rolls (
   OS		enum('linux', 'sunos') NOT NULL default 'linux',
   Enabled	enum('yes','no') NOT NULL default 'yes',
   PRIMARY KEY (ID)
-) TYPE=MyISAM;
+);
 
 
 DROP TABLE IF EXISTS node_rolls;
@@ -626,7 +626,7 @@ CREATE TABLE node_rolls (
   Node		int(11) NOT NULL default '0',
   RollID	int(11) NOT NULL,
   PRIMARY KEY (Node, RollID)
-) TYPE=MyISAM;
+);
 
 
 <!-- Partitions. stores all the partitions for all the appliances -->
@@ -644,7 +644,7 @@ CREATE TABLE partitions (
 	PartitionFlags	varchar(128) NOT NULL default '',
 	FormatFlags	varchar(128) NOT NULL default '',
 	PRIMARY KEY (ID)
-) TYPE=MyISAM;
+);
 
 
 <!-- Boot/Action Tables -->
@@ -654,7 +654,7 @@ CREATE TABLE boot (
   Node          int(11) NOT NULL default '0',
   Action        enum ('install', 'os', 'run'),
   PRIMARY KEY (ID)
-) TYPE=MyISAM;
+);
 
 
 DROP TABLE IF EXISTS bootaction;
@@ -665,7 +665,7 @@ CREATE TABLE bootaction (
   Ramdisk       varchar(256) default NULL,
   Args          varchar(1024) default NULL,
   PRIMARY KEY (ID)
-) TYPE=MyISAM;
+);
 
 
 DROP TABLE IF EXISTS bootflags;
@@ -674,7 +674,7 @@ CREATE TABLE bootflags (
   Node          int(11) NOT NULL default '0',
   Flags         varchar(256) default NULL,
   PRIMARY KEY (ID)
-) TYPE=MyISAM;
+);
 
 
 DROP TABLE IF EXISTS public_keys;
@@ -684,7 +684,7 @@ CREATE TABLE public_keys (
  Public_Key	varchar(4096) default NULL,
  Description	varchar(4096) default NULL,
  PRIMARY KEY (ID)
-) TYPE=MyISAM;
+);
 
 
 <!-- ====  Start of new Generic Categories Schema ====
@@ -711,7 +711,7 @@ CREATE TABLE `catindex` (
   `Category` int(11) NOT NULL,
   PRIMARY KEY (`ID`),
   UNIQUE KEY `UniqueCatindex` (`Name`,`Category`),
-  FOREIGN KEY (Category) REFERENCES Categories(ID) ON DELETE CASCADE
+  FOREIGN KEY (Category) REFERENCES categories(ID) ON DELETE CASCADE
 );
 
 <!-- Resolutions chains, This is a precedence of categories -->
@@ -723,7 +723,7 @@ CREATE TABLE `resolvechain` (
   `Precedence` int(11) NOT NULL DEFAULT 10,
   PRIMARY KEY (`ID`),
   UNIQUE KEY `UniqueChain` (`Name`,`Category`),
-  FOREIGN KEY (Category) REFERENCES Categories(ID) ON DELETE CASCADE
+  FOREIGN KEY (Category) REFERENCES categories(ID) ON DELETE CASCADE
 );
 
 <!-- Which category indices has a host selected, 
@@ -738,9 +738,9 @@ CREATE TABLE `hostselections` (
   `Selection` int(11) NOT NULL,
    PRIMARY KEY(ID),
    UNIQUE KEY `UniqueAttr` (`Host`,`Category`),
-   FOREIGN KEY (Host) REFERENCES Catindex(ID) ON DELETE CASCADE,
-   FOREIGN KEY (Selection) REFERENCES Catindex(ID) ON DELETE CASCADE,
-   FOREIGN KEY (Category) REFERENCES Categories(ID) ON DELETE CASCADE
+   FOREIGN KEY (Host) REFERENCES catindex(ID) ON DELETE CASCADE,
+   FOREIGN KEY (Selection) REFERENCES catindex(ID) ON DELETE CASCADE,
+   FOREIGN KEY (Category) REFERENCES categories(ID) ON DELETE CASCADE
 );
 
 <!-- New Firewalls Table. Schema includes a Rulename (used for
@@ -764,7 +764,7 @@ CREATE TABLE `firewalls` (
 	`Catindex` int(11) NOT NULL,
    	PRIMARY KEY(ID),
    	UNIQUE KEY `UniqueFirewallRule` (`Rulename`,`Category`,`Catindex`),
-   	FOREIGN KEY (Catindex) REFERENCES Catindex(ID) ON DELETE CASCADE
+   	FOREIGN KEY (Catindex) REFERENCES catindex(ID) ON DELETE CASCADE
 );
 
 <!-- New Attributes Table, but not used (yet) -->
@@ -778,7 +778,7 @@ CREATE TABLE `attributes` (
   `Catindex` int(11) NOT NULL,
    PRIMARY KEY(ID),
    UNIQUE KEY `UniqueAttr` (`Attr`,`Category`,`Catindex`),
-   FOREIGN KEY (Catindex) REFERENCES Catindex(ID) ON DELETE CASCADE
+   FOREIGN KEY (Catindex) REFERENCES catindex(ID) ON DELETE CASCADE
 );
 
 
