@@ -813,6 +813,9 @@ class App(rocks.kickstart.Application):
 				 % (self.cpus, id)
 			self.execute(update)
 
+		# before we start to run query against this new node save it!
+		self.link.commit()
+
 		# If we have a client IP address lookup the
 		# information needed to build its kickstart file.
 		# Otherwise we look up the information to build a

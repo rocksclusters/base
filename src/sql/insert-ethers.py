@@ -982,6 +982,8 @@ class InsertEthers(GUI):
 		# command-line parameters
 		self.controller.added(nodename, self.clusterdb.getNodeId())
 
+		self.sql.link.commit()
+
 		print "Inserted node %s" % nodename
 		return
 
@@ -1253,6 +1255,8 @@ class InsertEthers(GUI):
 
 		self.controller.added(nodename, self.clusterdb.getNodeId())
 		self.restart_services = 1
+
+		self.sql.link.commit()
 			
 		list = [(mac, nodename)]
 		list.extend(self.inserted)
