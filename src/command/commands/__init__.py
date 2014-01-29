@@ -2289,8 +2289,8 @@ class Command:
 				self._args   = list
 				self._params = dict
 				self.run(self._params, self._args)
-
-
+				if self.db.database is not None:
+					self.db.database.commit()
 	def run(self, flags, args):
 		"""All derived classes should override this method.
 		This method is called by the rocks command line as the
