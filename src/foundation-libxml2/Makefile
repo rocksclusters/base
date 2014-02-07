@@ -169,7 +169,7 @@ install::
 	mkdir -p $(ROOT)/$(PKGROOT)
 	(								\
 		cd libxml2-$(VERSION);					\
-		$(MAKE) prefix=$(ROOT)/$(PKGROOT) install;			\
+		$(MAKE) DESTDIR=$(ROOT) install;			\
 	)
 
 clean::
