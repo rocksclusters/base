@@ -302,7 +302,8 @@ build: $(RCFILES) __init__.py
 	sed -i $(SEDSCRIPT) media.py
 
 install:: build
-	$(INSTALL) -m 0444 $(PYLIB) $(ROOT)/$(PY.ROCKS)/rocks
+	find . -name "*.py" |                                   \
+                        cpio -pduv $(ROOT)/$(PY.ROCKS)/rocks;  \
 	(\
 		if [ $(OS) == 'sunos' ]; then \
 		sed -e 's/var.lib.mysql/var\/opt\/rocks\/mysql/g' sql.py > \
