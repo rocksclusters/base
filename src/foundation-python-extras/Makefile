@@ -167,5 +167,6 @@ install::
 
 include MySQL-python.mk Numeric.mk POW.mk \
 	egenix-mx-base.mk libxml2dom.mk \
-	numarray.mk pexpect.mk IPy.mk docutils.mk 
+	numarray.mk pexpect.mk IPy.mk docutils.mk \
+	SQLAlchemy.mk
 

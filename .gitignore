@@ -1,0 +1,17 @@
+
+
+*.pyc
+`
+_os
+_arch
+_distribution
+
+# ignore Rules files
+Rules-install.mk
+Rules-linux-centos.mk
+Rules-linux.mk
+Rules-rcfiles.mk
+Rules-scripts.mk
+Rules.mk
+Rolls.mk
+
