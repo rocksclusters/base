@@ -192,7 +192,7 @@ passwd = ''
 if username == 'root':
 	conf_file = '/root/.rocks.my.cnf'
 if username == 'apache':
-	conf_file = '/opt/rocks/mysql/etc/my.cnf'
+	conf_file = '/opt/rocks/mysql/my.cnf'
 
 try:
 	file=open(conf_file,'r')
