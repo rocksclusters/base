@@ -196,34 +196,26 @@ class Command(rocks.commands.list.host.command):
 	"""
 
 	def run(self, params, args):
-                reg = re.compile('vlan.*')
+		reg = re.compile('vlan.*')
 		self.beginOutput()
-
-                for host in self.getHostnames(args):
-                        self.db.execute("""select distinctrow
-				IF(net.subnet, sub.name, NULL),
-				net.device, net.mac, net.ip,
-				IF(net.subnet and net.ip,sub.netmask,NULL),
-				net.module, net.name, net.vlanid, net.options,
-				net.channel
-				from nodes n, networks net, subnets sub
-				where n.name='%s' and net.node=n.id
-				and (net.subnet=sub.id or net.subnet is NULL)
-				order by net.device""" % host )
-
+		for host in self.getHostnames(args):
+			self.db.execute(""" SELECT s.name, n.Device, n.Mac, 
+			n.ip, s.netmask, n.Module, n.Name, n.Vlanid, n.options, 
+			n.channel 
+			FROM networks n LEFT JOIN subnets s ON n.subnet=s.id 
+			INNER JOIN nodes h ON n.node = h.id AND h.name='%s'""" %host)
 			for row in self.db.fetchall():
 				#
 				# if device name matches vlan* then clear
 				# fields for printing
 				#
-                		if row[1] and reg.match(row[1]):  
+				if row[1] and reg.match(row[1]):  
 					self.addOutput(host, (row[0], row[1],
 						None, None, None, None,
 						None, row[7], row[8], row[9]) )
 				else:
 					self.addOutput(host, row)
-
+	
 		self.endOutput(header=['host', 'subnet', 'iface', 'mac', 
 			'ip', 'netmask', 'module', 'name', 'vlan',
 			'options', 'channel'])
-
