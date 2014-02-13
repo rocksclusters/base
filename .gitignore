@@ -6,6 +6,13 @@ _os
 _arch
 _distribution
 
+# ignore version.mk
+rocks-version.mk
+rocks-version-common.mk
+
+# ignore python.mk
+python.mk
+
 # ignore Rules files
 Rules-install.mk
 Rules-linux-centos.mk
