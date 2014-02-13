@@ -977,6 +977,7 @@ class InsertEthers(GUI):
 		self.clusterdb.insert(nodename, self.membership, 
 			self.cabinet, self.rank, self.mac, self.ipaddr, 
 			self.netmask, self.subnet, self.osname)
+		self.sql.link.commit()
 
 		# Execute any plugins when adding hosts via
 		# command-line parameters
@@ -1252,6 +1253,7 @@ class InsertEthers(GUI):
 
 		self.clusterdb.insert(nodename, self.membership, 
 			self.cabinet, self.rank, mac, ip, netmask, self.subnet, self.osname)
+		self.sql.link.commit()
 
 		self.controller.added(nodename, self.clusterdb.getNodeId())
 		self.restart_services = 1
