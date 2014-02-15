@@ -74,9 +74,19 @@ from rocks.db.mappings.base import *
 
 
 class Database():
+	""" This class should proxy all the connection to the database
+	
+	Usage Example:
+	db = Database()
+	db.setVerbose()
+	db.connect()
+	"""
 
-	def __init__(self, argv=None):
-		pass
+	def __init__(self):
+		self.verbose = False
+		#temporary holds results from self.conn.execute(sql)
+		self.results = False
+
 
 	def getPasswd(self):
 		filename = None
@@ -109,15 +119,42 @@ class Database():
 		        host = 'localhost'
 		return host
 
+	def setVerbose(self, verbose):
+		"""If the verbose is true all the sql will be printed to 
+		stdout 
+
+		This function must be called before the connect"""
+		self.verbose = verbose
+
 
 	def connect(self):
-		engine = create_engine('mysql://' + self.getUsername() + 
-			':' + self.getPasswd() + '@' + self.getHostname() + 
-			'/cluster', echo=True)
-		self.conn = engine.connect()
-		self.Session = sqlalchemy.orm.sessionmaker(bind=engine)
-		session = self.Session()
 
+		mysql_socket = '/var/opt/rocks/mysql/mysql.sock'
+
+		url = 'mysql+mysqldb://' + self.getUsername() + ':' + self.getPasswd() \
+			 + '@' + self.getHostname() + '/cluster'
+		if os.path.exists(mysql_socket):
+			# we can use a unix socket
+			url += "?unix_socket=" + mysql_socket
+
+
+		if self.verbose:
+			# TODO move this to the logger
+			print "Database connection URL:", url
+
+		self.engine = create_engine(url, echo=self.verbose)
+
+		self.conn = self.engine.connect()
+		#results = self.conn.execute("select * from networks")
+
+		#for (ID, Node, MAC, IP, Netmask, Gateway, Name, Device, Subnet, Module, VlanID, Options, Channel) in results:
+		#	print ID, Node, MAC, IP, Netmask, Gateway, Name, Device, Subnet
+		#self.conn.close()	
+
+		
+		# ORM
+		#self.Session = sqlalchemy.orm.sessionmaker(bind=engine)
+		#session = self.Session()
 		#for node in session.query(Node).filter(Node.Name=='compute-0-0-0'):
 		#	print "Node ", node
 		#	for interface in node.Networks:
@@ -140,95 +177,35 @@ class Database():
 		#session.commit()
 
 		#to run pure query
-		results = session.query().from_statement('select * from Networks')
+		#results = session.query().from_statement('select * from Networks')
 
 
-
+	
 		
 		
 
 	def execute(self, command):
-	    if hasSQL:
-	        return self.cursor.execute(command)
-	    return None
+		self.results = self.conn.execute(command)
+		# rowcont should not be used it is not portable
+		# http://docs.sqlalchemy.org/en/rel_0_9/core/connections.html#sqlalchemy.engine.ResultProxy.rowcount
+		return self.results.rowcount
 	
 	def fetchone(self):
-	    if hasSQL:
-	        return self.cursor.fetchone()
-	    return None
+		if self.results:
+			return self.results.fetchone()
+		return None
 	
 	def fetchall(self):
-	    if hasSQL:
-	        return self.cursor.fetchall()
-	    return None
-	
-	def insertId(self):
-	    "Returns the last inserted id. Useful for auto_incremented columns"
-	    id = None
-	    if hasSQL:
-	        id = self.cursor.lastrowid
-	    return id
+		return self.results.fetchall()
 	
 	def close(self):
-	    if hasSQL:
-	        if self.link:
-	           return self.link.close()
-	    return None
-	
-	def __repr__(self):
-	    return string.join(self.report, '\n')
-	
-	def getGlobalVar(self, service, component, node=0):
-		cmd = '/opt/rocks/bin/rocks report host attr localhost '
-		cmd += 'attr=%s_%s' % (service, component)
-		
-		p = subprocess.Popen(cmd, shell=True, 
-		        stdin=subprocess.PIPE, stdout=subprocess.PIPE, close_fds=True)
-		w, r =  (p.stdin, p.stdout)
-		value = r.readline()
-		
-		return value.strip()
-	
-	    
-	def getNodeId(self, host):
-		"""Lookup hostname in nodes table. Host may be a name
-		or an IP address. Returns None if not found."""
-		
-		# Is host already an ID?
-		
-		try:
-			return int(host)
-		except Exception:
-			pass
-		
-		# Try by name
-		
-		self.execute("""select networks.node from nodes,networks where
-			networks.node = nodes.id and networks.name = "%s" and
-			(networks.device is NULL or
-			networks.device not like 'vlan%%') """ % (host))
-		try:
-			nodeid, = self.fetchone()
-			return nodeid
-		except TypeError:
-			nodeid = None
-		
-		# Try by IP
-		
-		self.execute("""select networks.node from nodes,networks where
-			networks.node = nodes.id and networks.ip ="%s" and
-			(networks.device is NULL or
-			networks.device not like 'vlan%%') """ % (host))
-		try:
-			nodeid, = self.fetchone()
-			return nodeid
-		except TypeError:
-			nodeid = None
-		
-		return nodeid
+		if self.conn:
+			self.conn.close()
 
-
-
+	def commit(self):
+		# no need to manually commit with sqlalchemy
+		# http://docs.sqlalchemy.org/en/rel_0_9/core/connections.html#understanding-autocommit
+		pass
 
 
 if __name__ == "__main__":
