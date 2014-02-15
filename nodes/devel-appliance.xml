@@ -75,7 +75,7 @@ fi
 <!-- use foundation mysql -->
 <file name="/root/populate.rolls.sql">
 <eval> 
-MYSQL_HOME=/opt/rocks/etc /usr/bin/mysqldump -u apache cluster rolls
+MYSQL_HOME=/opt/rocks/etc /opt/rocks/mysql/bin/mysqldump --defaults-extra-file=/opt/rocks/mysql/my.cnf -u apache cluster rolls
 </eval>
 </file>
 
