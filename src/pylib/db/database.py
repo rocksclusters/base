@@ -185,6 +185,8 @@ class Database():
 		
 
 	def execute(self, command):
+		if '%' in command:
+			command = string.replace(command, '%', '%%')
 		self.results = self.conn.execute(command)
 		# rowcont should not be used it is not portable
 		# http://docs.sqlalchemy.org/en/rel_0_9/core/connections.html#sqlalchemy.engine.ResultProxy.rowcount
