@@ -2103,11 +2103,12 @@ class Command:
 		"""Append a list to the output list buffer."""
 
 		# VALS can be a list, tuple, or primitive type.
-				
 		list = [ '%s:' % owner ]
-		if type(vals) == types.ListType:
+
+		if isinstance(vals, types.ListType):
 			list.extend(vals)
-		if type(vals) == types.TupleType:
+		elif isinstance(vals, types.TupleType) or \
+			isinstance(vals, sqlalchemy.engine.result.RowProxy):
 			for e in vals:
 				list.append(e)
 		else:
