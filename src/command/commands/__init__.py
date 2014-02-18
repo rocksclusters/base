@@ -507,6 +507,7 @@ import syslog
 import pwd
 import types
 import sys
+import sqlalchemy.engine.result
 import rocks
 import rocks.graph
 import rocks.clusterdb
@@ -1297,28 +1298,25 @@ class DatabaseConnection:
 	"""
 	
 	def __init__(self, db):
-		# self.database : object returned from orginal connect call
-		# self.link	: database cursor used by everyone else
+		# self.database : is a rocks.db.database.Database object
 		if db:
 			self.database = db
-			self.link     = db.cursor()
 		else:
 			self.database = None
-			self.link     = None
 		
 	def execute(self, command):
-		if self.link:
-			return self.link.execute(command)
+		if self.database:
+			return self.database.execute(command)
 		return None
 
 	def fetchone(self):
-		if self.link:
-			return self.link.fetchone()
+		if self.database:
+			return self.database.fetchone()
 		return None
 
 	def fetchall(self):
-		if self.link:
-			return self.link.fetchall()
+		if self.database:
+			return self.database.fetchall()
 		return None
 		
 
@@ -1571,10 +1569,10 @@ class DatabaseConnection:
 		# Don't worry about duplicates on the select, the
 		# loop ignores dups.
 		
-		self.link.execute('select component from app_globals '
+		self.execute('select component from app_globals '
 			'where service="%s"' % service)
 		dict = {}
-		for component, in self.link.fetchall():
+		for component, in self.fetchall():
 			key = '%s_%s' % (service, component)
 			if not dict.has_key(key):
 				dict[key] = self.getGlobalVar(service,
@@ -1593,8 +1591,8 @@ class DatabaseConnection:
 		if not hostname:
 			hostname = socket.gethostname()	
 
-		if self.link:
-			handler = AppGlobalsHandler(self.link, hostname)
+		if self.database:
+			handler = AppGlobalsHandler(self.database, hostname)
 			return handler.lookup(service, component)
 		else:
 			return None
@@ -1612,8 +1610,8 @@ class DatabaseConnection:
 
 		arghostname = hostname 
 
-		if hostname and self.link:
-			rows = self.link.execute("""select * from nodes where
+		if hostname and self.database:
+			rows = self.execute("""select * from nodes where
 				name='%s'""" % hostname)
 			if rows:
 				return hostname
@@ -1656,33 +1654,33 @@ class DatabaseConnection:
 				addr = None
 
 		if not addr:
-			if self.link:
-				self.link.execute("""select name from nodes
+			if self.database:
+				self.execute("""select name from nodes
 					where name="%s" """ % hostname)
-				if self.link.fetchone():
+				if self.fetchone():
 					return hostname
 
 				#
 				# let's check if the name is an alias
 				#
-				row = self.link.execute("""select n.name
+				row = self.execute("""select n.name
 						from nodes n, aliases ali
 						where n.id = ali.node
 						and ali.name='%s'""" % hostname)
 
 				if row == 1:
-					(hostname, ) = self.link.fetchone()
+					(hostname, ) = self.fetchone()
 					return hostname
 
 				#
 				# see if this is a MAC address
 				#
-				self.link.execute("""select nodes.name from
+				self.execute("""select nodes.name from
 					networks,nodes where
 					nodes.id = networks.node and
 					networks.mac = '%s' """ % (hostname))
 				try:
-					hostname, = self.link.fetchone()
+					hostname, = self.fetchone()
 					return hostname
 				except:
 					pass
@@ -1703,9 +1701,9 @@ class DatabaseConnection:
 						'(nt.name="%s" or n.name="%s")'  \
 						% (name, name)
 
-					self.link.execute(cmd)
+					self.execute(cmd)
 				try:
-					hostname, = self.link.fetchone()
+					hostname, = self.fetchone()
 					return hostname
 				except:
 					pass
@@ -1758,7 +1756,7 @@ class DatabaseConnection:
 			else:
 				return self.getHostname()
 			
-		if self.link:
+		if self.database:
 			# Look up the IP address in the networks table
 			# to find the hostname (nodes table) of the node.
 			#
@@ -1766,18 +1764,18 @@ class DatabaseConnection:
 			# hostname is in the networks table.  This last
 			# check handles the case where DNS is correct but
 			# the IP address used is different.
-			rows = self.link.execute('select nodes.name from '
+			rows = self.execute('select nodes.name from '
 				'networks,nodes where '
 				'nodes.id=networks.node and ip="%s"' % (addr))
 			if not rows:
-				rows = self.link.execute('select nodes.name ' 
+				rows = self.execute('select nodes.name ' 
 					'from networks,nodes where '
 					'nodes.id=networks.node and '
 					'networks.name="%s"' % (hostname))
 				if not rows:
 					Abort('host "%s" is not in cluster'
 						% hostname)
-			hostname, = self.link.fetchone()
+			hostname, = self.fetchone()
 
 		return hostname
 
