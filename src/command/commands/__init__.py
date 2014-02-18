@@ -1420,6 +1420,10 @@ class DatabaseConnection:
 		host = self.getHostname(host)
 
 		attrs = {}
+		rack = None
+		rank = None
+		appliance = None
+		membership = None
 		
 		self.execute('select rack,rank from nodes where name="%s"' %
 			host)
