@@ -112,6 +112,7 @@
 #
 
 import rocks.commands
+from rocks.db.mappings.base import *
 
 class Command(rocks.commands.set.host.command):
 	"""
@@ -151,6 +152,5 @@ class Command(rocks.commands.set.host.command):
 			self.abort('must supply cpus')
 			
 		for host in self.getHostnames(args):
-			self.db.execute("""update nodes set cpus=%d where
-				name='%s'""" % (int(cpus), host))
-		
+			node = Node.load(self.db.getSession(), Name=host)
+			node.CPUs = int(cpus)
