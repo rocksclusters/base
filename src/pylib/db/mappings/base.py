@@ -12,7 +12,42 @@ from sqlalchemy import *
 
 Base = sqlalchemy.ext.declarative.declarative_base()
 
-class Alias(Base):
+
+ 
+class RocksBase(object):
+	"""Additional base class of Rocks ORM hierarchy which includes some
+	helper methods for all classes"""
+
+	@property
+	def session(self):
+		"""Singelton which return the session of the object"""
+		return object_session(self)
+
+
+	def delete(self):
+		"""instance method to autodelete the instance which calls it
+
+		so you can use
+		node.delete()"""
+		self.session.delete(self)
+
+	@classmethod
+	def load(cls, session, **kwargs):
+		"""this method allow us to run query on all the mapping objects
+
+		e.g.:
+		node = Nodes.load(session, Name='compute-0-0', Cpus=2)
+
+		taken from:
+		http://petrushev.wordpress.com/2010/06/22/sqlalchemy-base-model/"""
+		q = session.query(cls)
+		filters = [getattr(cls, field_name)==kwargs[field_name] \
+				for field_name in kwargs]
+		return q.filter(and_(*filters)).one()
+
+
+
+class Alias(RocksBase, Base):
     __tablename__ = 'aliases'
 
     __table_args__ = {}
@@ -25,7 +60,7 @@ class Alias(Base):
     #relation definitions
 
 
-class AppGlobal(Base):
+class AppGlobal(RocksBase, Base):
     __tablename__ = 'app_globals'
 
     __table_args__ = {}
@@ -40,7 +75,7 @@ class AppGlobal(Base):
     #relation definitions
 
 
-class Appliance(Base):
+class Appliance(RocksBase, Base):
     __tablename__ = 'appliances'
 
     __table_args__ = {}
@@ -55,7 +90,7 @@ class Appliance(Base):
     #relation definitions
 
 
-class ApplianceAttribute(Base):
+class ApplianceAttribute(RocksBase, Base):
     __tablename__ = 'appliance_attributes'
 
     __table_args__ = {}
@@ -68,7 +103,7 @@ class ApplianceAttribute(Base):
     #relation definitions
 
 
-class ApplianceRoute(Base):
+class ApplianceRoute(RocksBase, Base):
     __tablename__ = 'appliance_routes'
 
     __table_args__ = {}
@@ -83,7 +118,7 @@ class ApplianceRoute(Base):
     #relation definitions
 
 
-class Attribute(Base):
+class Attribute(RocksBase, Base):
     __tablename__ = 'attributes'
 
     __table_args__ = {}
@@ -99,7 +134,7 @@ class Attribute(Base):
     #relation definitions
 
 
-class Boot(Base):
+class Boot(RocksBase, Base):
     __tablename__ = 'boot'
 
     __table_args__ = {}
@@ -112,7 +147,7 @@ class Boot(Base):
     #relation definitions
 
 
-class Bootaction(Base):
+class Bootaction(RocksBase, Base):
     __tablename__ = 'bootaction'
 
     __table_args__ = {}
@@ -127,7 +162,7 @@ class Bootaction(Base):
     #relation definitions
 
 
-class Bootflag(Base):
+class Bootflag(RocksBase, Base):
     __tablename__ = 'bootflags'
 
     __table_args__ = {}
@@ -140,7 +175,7 @@ class Bootflag(Base):
     #relation definitions
 
 
-class Category(Base):
+class Category(RocksBase, Base):
     __tablename__ = 'categories'
 
     __table_args__ = {}
@@ -153,7 +188,7 @@ class Category(Base):
     #relation definitions
 
 
-class Catindex(Base):
+class Catindex(RocksBase, Base):
     __tablename__ = 'catindex'
 
     __table_args__ = {}
@@ -166,7 +201,7 @@ class Catindex(Base):
     #relation definitions
 
 
-class Distribution(Base):
+class Distribution(RocksBase, Base):
     __tablename__ = 'distributions'
 
     __table_args__ = {}
@@ -180,7 +215,7 @@ class Distribution(Base):
     #relation definitions
 
 
-class Firewall(Base):
+class Firewall(RocksBase, Base):
     __tablename__ = 'firewalls'
 
     __table_args__ = {}
@@ -203,7 +238,7 @@ class Firewall(Base):
     #relation definitions
 
 
-class GlobalAttribute(Base):
+class GlobalAttribute(RocksBase, Base):
     __tablename__ = 'global_attributes'
 
     __table_args__ = {}
@@ -215,7 +250,7 @@ class GlobalAttribute(Base):
     #relation definitions
 
 
-class GlobalRoute(Base):
+class GlobalRoute(RocksBase, Base):
     __tablename__ = 'global_routes'
 
     __table_args__ = {}
@@ -229,7 +264,7 @@ class GlobalRoute(Base):
     #relation definitions
 
 
-class Hostselection(Base):
+class Hostselection(RocksBase, Base):
     __tablename__ = 'hostselections'
 
     __table_args__ = {}
@@ -243,7 +278,7 @@ class Hostselection(Base):
     #relation definitions
 
 
-class Membership(Base):
+class Membership(RocksBase, Base):
     __tablename__ = 'memberships'
 
     __table_args__ = {}
@@ -258,7 +293,7 @@ class Membership(Base):
     #relation definitions
 
 
-class Network(Base):
+class Network(RocksBase, Base):
     __tablename__ = 'networks'
 
     __table_args__ = {}
@@ -273,7 +308,7 @@ class Network(Base):
     Module = Column('Module', String(128))
     Name = Column('Name', String(128))
     Netmask = Column('Netmask', String(32))
-    Node = Column('Node', Integer)
+    Node = Column('Node', Integer, ForeignKey('nodes.ID'))
     Options = Column('Options', String(128))
     Subnet = Column('Subnet', Integer, ForeignKey('subnets.ID'))
     VlanID = Column('VlanID', Integer)
@@ -281,7 +316,7 @@ class Network(Base):
     #relation definitions
 
 
-class Node(Base):
+class Node(RocksBase, Base):
     __tablename__ = 'nodes'
 
     __table_args__ = {}
@@ -307,7 +342,7 @@ class Node(Base):
 
 
 
-class NodeAttribute(Base):
+class NodeAttribute(RocksBase, Base):
     __tablename__ = 'node_attributes'
 
     __table_args__ = {}
@@ -320,7 +355,7 @@ class NodeAttribute(Base):
     #relation definitions
 
 
-class NodeRoll(Base):
+class NodeRoll(RocksBase, Base):
     __tablename__ = 'node_rolls'
 
     __table_args__ = {}
@@ -332,7 +367,7 @@ class NodeRoll(Base):
     #relation definitions
 
 
-class NodeRoute(Base):
+class NodeRoute(RocksBase, Base):
     __tablename__ = 'node_routes'
 
     __table_args__ = {}
@@ -347,7 +382,7 @@ class NodeRoute(Base):
     #relation definitions
 
 
-class OsAttribute(Base):
+class OsAttribute(RocksBase, Base):
     __tablename__ = 'os_attributes'
 
     __table_args__ = {}
@@ -360,7 +395,7 @@ class OsAttribute(Base):
     #relation definitions
 
 
-class OsRoute(Base):
+class OsRoute(RocksBase, Base):
     __tablename__ = 'os_routes'
 
     __table_args__ = {}
@@ -375,7 +410,7 @@ class OsRoute(Base):
     #relation definitions
 
 
-class Partition(Base):
+class Partition(RocksBase, Base):
     __tablename__ = 'partitions'
 
     __table_args__ = {}
@@ -395,7 +430,7 @@ class Partition(Base):
     #relation definitions
 
 
-class PublicKey(Base):
+class PublicKey(RocksBase, Base):
     __tablename__ = 'public_keys'
 
     __table_args__ = {}
@@ -409,7 +444,7 @@ class PublicKey(Base):
     #relation definitions
 
 
-class Resolvechain(Base):
+class Resolvechain(RocksBase, Base):
     __tablename__ = 'resolvechain'
 
     __table_args__ = {}
@@ -423,7 +458,7 @@ class Resolvechain(Base):
     #relation definitions
 
 
-class Roll(Base):
+class Roll(RocksBase, Base):
     __tablename__ = 'rolls'
 
     __table_args__ = {}
@@ -439,7 +474,7 @@ class Roll(Base):
     #relation definitions
 
 
-class SecGlobalAttribute(Base):
+class SecGlobalAttribute(RocksBase, Base):
     __tablename__ = 'sec_global_attributes'
 
     __table_args__ = {}
@@ -452,7 +487,7 @@ class SecGlobalAttribute(Base):
     #relation definitions
 
 
-class SecNodeAttribute(Base):
+class SecNodeAttribute(RocksBase, Base):
     __tablename__ = 'sec_node_attributes'
 
     __table_args__ = {}
@@ -466,7 +501,7 @@ class SecNodeAttribute(Base):
     #relation definitions
 
 
-class Subnet(Base):
+class Subnet(RocksBase, Base):
     __tablename__ = 'subnets'
 
     __table_args__ = {}
@@ -483,7 +518,7 @@ class Subnet(Base):
     #relation definitions
 
 
-class VmDisk(Base):
+class VmDisk(RocksBase, Base):
     __tablename__ = 'vm_disks'
 
     __table_args__ = {}
@@ -501,7 +536,7 @@ class VmDisk(Base):
     #relation definitions
 
 
-class VmNode(Base):
+class VmNode(RocksBase, Base):
     __tablename__ = 'vm_nodes'
 
     __table_args__ = {}
