@@ -1318,8 +1318,12 @@ class DatabaseConnection:
 		if self.database:
 			return self.database.fetchall()
 		return None
-		
 
+	def getSession(self):
+		"""helper function to get the session"""
+		if self.database:
+			return self.database.getSession()
+		return None
 
 	def getHostRoutes(self, host, showsource=0):
 
