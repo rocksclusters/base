@@ -186,55 +186,18 @@ syslog.openlog('rockscommand', syslog.LOG_PID, syslog.LOG_LOCAL0)
 
 # First try to read the cluster password (for apache)
 
-username = pwd.getpwuid(os.geteuid())[0]
-passwd = ''
-
-if username == 'root':
-	conf_file = '/root/.rocks.my.cnf'
-if username == 'apache':
-	conf_file = '/opt/rocks/mysql/my.cnf'
 
 try:
-	file=open(conf_file,'r')
-	for line in file.readlines():
-		l=string.split(line[:-1],'=')
-		if len(l) > 1 and l[0].strip() == "password":
-			passwd = l[1].strip()
-			break
-	file.close()
-except:
-	pass
-
-try:
-	host = rocks.DatabaseHost
-except:
-	host = 'localhost'
-
-# Now make the connection to the DB
-
-try:
-	from MySQLdb import *
+	import rocks.db.database
 
 	# Connect over UNIX socket if it exists, otherwise go over the
 	# network.
 
-	if os.path.exists('/var/opt/rocks/mysql/mysql.sock'):
-		Database = connect(db='cluster',
-			host='localhost',
-			user=username,
-			passwd='%s' % passwd,
-			unix_socket='/var/opt/rocks/mysql/mysql.sock')
-	else:
-		Database = connect(db='cluster',
-			host='%s' % host,
-			user=username,
-			passwd='%s' % passwd,
-			port=40000)
+	database = rocks.db.database.Database()
+	database.connect()
 
 except ImportError:
-	Database = None
-except OperationalError:
-	Database = None
+	database = None
 
 
 
@@ -285,10 +248,10 @@ name = string.join(string.split(s, '.')[2:], ' ')
 # we call the help command based on the partial command given.
 
 try:	
-	command   = getattr(module, 'Command')(Database)
+	command   = getattr(module, 'Command')(database)
 except AttributeError:
 	import rocks.commands.list.help
-	help = rocks.commands.list.help.Command(Database)
+	help = rocks.commands.list.help.Command(database)
 	fullmodpath = s.split('.')
 	submodpath  = string.join(fullmodpath[2:], '/')
 	help.run({'subdir': submodpath}, [])
