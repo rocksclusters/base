@@ -90,6 +90,7 @@ class Database():
 
 
 	def getPasswd(self):
+		passwd = ''
 		filename = None
 		username = self.getUsername()
 		if username == 'root':
@@ -102,12 +103,12 @@ class Database():
 				for line in file.readlines():
 					l=line.split('=')
 					if len(l) > 1 and l[0].strip() == "password" :
-						rval=l[1].strip()
+						passwd=l[1].strip()
 						break
 				file.close()
 		except:
 			pass
-		return rval 
+		return passwd
 
 
 	def getUsername(self):
