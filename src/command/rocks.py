@@ -188,6 +188,7 @@ syslog.openlog('rockscommand', syslog.LOG_PID, syslog.LOG_LOCAL0)
 
 
 try:
+	import sqlalchemy
 	import rocks.db.database
 
 	# Connect over UNIX socket if it exists, otherwise go over the
@@ -197,6 +198,8 @@ try:
 	database.connect()
 
 except ImportError:
+	database = None
+except sqlalchemy.exc.OperationalError:
 	database = None
 
 
