@@ -86,6 +86,7 @@ class Database():
 		self.verbose = False
 		#temporary holds results from self.conn.execute(sql)
 		self.results = False
+		self.session = None
 
 
 	def getPasswd(self):
@@ -179,10 +180,29 @@ class Database():
 		#to run pure query
 		#results = session.query().from_statement('select * from Networks')
 
+		
+	def getSession(self):
+		"""return the current session. If it does not exist it creates one.
 
-	
-		
-		
+		the session is a singleton, you can call this method many time it 
+		returns always the same object"""
+		if self.session:
+			return self.session
+		elif self.engine:
+			Session = sqlalchemy.orm.sessionmaker(bind=self.engine)
+			self.session = Session()
+			return self.session
+		else:
+			return None
+
+	def commit(self):
+		"""Commit the current session if it exists"""
+		if self.session:
+			self.session.commit()
+		else:
+			# no need to manually commit with sqlalchemy if using execute
+			# http://docs.sqlalchemy.org/en/rel_0_9/core/connections.html#understanding-autocommit
+			pass
 
 	def execute(self, command):
 		if '%' in command:
@@ -203,11 +223,6 @@ class Database():
 	def close(self):
 		if self.conn:
 			self.conn.close()
-
-	def commit(self):
-		# no need to manually commit with sqlalchemy
-		# http://docs.sqlalchemy.org/en/rel_0_9/core/connections.html#understanding-autocommit
-		pass
 
 
 if __name__ == "__main__":
