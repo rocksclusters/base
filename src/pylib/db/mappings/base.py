@@ -32,7 +32,7 @@ class RocksBase(object):
 		self.session.delete(self)
 
 	@classmethod
-	def load(cls, session, **kwargs):
+	def loadOne(cls, session, **kwargs):
 		"""this method allow us to run query on all the mapping objects
 
 		e.g.:
@@ -284,10 +284,10 @@ class Membership(RocksBase, Base):
     __table_args__ = {}
 
     #column definitions
-    Appliance = Column('Appliance', Integer)
-    Distribution = Column('Distribution', Integer)
     ID = Column('ID', Integer, primary_key=True, nullable=False)
     Name = Column('Name', String(64), nullable=False)
+    Appliance = Column('Appliance', Integer, ForeignKey('appliances.ID'), default=0)
+    Distribution = Column('Distribution', Integer, ForeignKey('distributions.ID'), default=1)
     Public = Column('Public', Enum(u'yes', u'no'), nullable=False, default=u'no')
 
     #relation definitions
@@ -324,7 +324,7 @@ class Node(RocksBase, Base):
     #column definitions
     ID = Column('ID', Integer, primary_key=True, nullable=False)
     Name = Column('Name', String(128))
-    Membership = Column('Membership', Integer, default=2)
+    Membership = Column('Membership', Integer, ForeignKey('memberships.ID'), default=2)
     CPUs = Column('CPUs', Integer, nullable=False, default=1)
     Rack = Column('Rack', Integer)
     Rank = Column('Rank', Integer)

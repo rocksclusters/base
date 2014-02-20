@@ -152,5 +152,5 @@ class Command(rocks.commands.set.host.command):
 			self.abort('must supply cpus')
 			
 		for host in self.getHostnames(args):
-			node = Node.load(self.db.getSession(), Name=host)
+			node = Node.loadOne(self.db.getSession(), Name=host)
 			node.CPUs = int(cpus)
