@@ -73,7 +73,7 @@ from rocks.db.mappings.base import *
 
 
 
-class Database():
+class Database(object):
 	""" This class should proxy all the connection to the database
 	
 	Usage Example:
@@ -89,10 +89,10 @@ class Database():
 		self.session = None
 
 
-	def getPasswd(self):
+	def getDBPasswd(self):
 		passwd = ''
 		filename = None
-		username = self.getUsername()
+		username = self.getDBUsername()
 		if username == 'root':
 			filename = '/root/.rocks.my.cnf'
 		if username == 'apache':
@@ -111,10 +111,10 @@ class Database():
 		return passwd
 
 
-	def getUsername(self):
+	def getDBUsername(self):
 		return pwd.getpwuid(os.geteuid())[0].strip()
 
-	def getHostname(self):
+	def getDBHostname(self):
 		try:
 		        host = rocks.DatabaseHost
 		except:
@@ -133,8 +133,8 @@ class Database():
 
 		mysql_socket = '/var/opt/rocks/mysql/mysql.sock'
 
-		url = 'mysql+mysqldb://' + self.getUsername() + ':' + self.getPasswd() \
-			 + '@' + self.getHostname() + '/cluster'
+		url = 'mysql+mysqldb://' + self.getDBUsername() + ':' + self.getDBPasswd() \
+			 + '@' + self.getDBHostname() + '/cluster'
 		if os.path.exists(mysql_socket):
 			# we can use a unix socket
 			url += "?unix_socket=" + mysql_socket
