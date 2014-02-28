@@ -110,13 +110,13 @@ class Command(rocks.commands.report.command):
 	Attributes to be used while building the output shell script.
 	</param>
 
-	<example cmd="cat database.xml | rocks report post attrs={'os':'linux'}">
+	<example cmd="cat database.xml | rocks report post attrs=&quot;{'os':'linux'}&quot;">
 	Take database.xml file in the base roll and create a script from the
 	post section. Adding attrs="{'os':'linux'}'" to the command will
 	also expand os=linux tags.
 	</example>
 
-	<example cmd="cat database.xml | rocks report post attrs=`rocks report host attr localhost`">
+	<example cmd="cat database.xml | rocks report post attrs=&quot;`rocks report host attr localhost pydict=true`&quot;">
 	Take database.xml file in the base roll and create a script from the
 	post section. Take all attributes from the database 
 	</example>
