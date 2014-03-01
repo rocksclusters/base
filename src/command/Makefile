@@ -178,7 +178,7 @@ include Rules.mk
 
 build: $(SCRIPTS) rocks-copyright.txt
 
-install::
+install:: build
 	mkdir -p $(ROOT)/$(PKGROOT)/bin
 	mkdir -p $(ROOT)/$(PY.ROCKS)/rocks/commands
 	mkdir -p $(ROOT)/etc/profile.d/
@@ -196,8 +196,10 @@ install::
 		chmod 0555 $(ROOT)/$(PKGROOT)/bin/rocks;		\
 		fi ;\
 	);
-	find $(ROOT)/$(PY.ROCKS)/rocks/commands -name "*.py" | gawk	\
-		'{ print "\nRollName = \"$(ROLL)\"" >> $$1; }'  
+	for i in `find $(ROOT)/$(PY.ROCKS)/rocks/commands -name "*.py"`; do\
+		grep "^RollName = " $$i ||  				\
+		echo -e "\nRollName = \"$(ROLL)\"" >> $$i;		\
+	done
 	$(INSTALL) -m0444 rocks-copyright.txt \
 		$(ROOT)/$(PY.ROCKS)/rocks/commands/list/license/license.txt
 	find $(ROOT) -type d -exec chmod a+rx {} \;
