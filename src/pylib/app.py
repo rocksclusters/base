@@ -262,6 +262,7 @@ import sys
 import string
 import getopt
 import types
+import rocks
 import rocks.util
 import xml
 from xml.sax import saxutils
@@ -290,9 +291,9 @@ class Application:
 
         self.projectName	 = 'rocks'
         self.projectVersionName  = 'base'
-        self.projectVersionMajor = '@VERSION_MAJOR@'
-        self.projectVersionMinor = '@VERSION_MINOR@'
-        self.projectVersionMicro = '@VERSION_MICRO@'
+        self.projectVersionMajor = rocks.version_major
+        self.projectVersionMinor = rocks.version_minor
+        self.projectVersionMicro = rocks.version_micro
         
 
         self.getopt		= rocks.util.Struct()

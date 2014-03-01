@@ -122,6 +122,7 @@
 import os
 import os.path
 import string
+import rocks
 
 class Media:
 
@@ -190,7 +191,7 @@ class Media:
 		#
 		# loader creates the cdrom device '/tmp/rocks-cdrom'
 		#
-		if @VERSION_MAJOR@ == 6:
+		if rocks.version_major == '6':
 			ejectcmd = '/tmp/updates/usr/sbin/eject'
 		else:
 			ejectcmd = '/usr/bin/eject'

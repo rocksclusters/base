@@ -284,22 +284,15 @@ ROCKSROOT       = $(CURDIR)/../../src/devel/devel
 include Rules.mk
 
 RCFILES		= rocksrc
-SEDSCRIPT +=	-e s%@VERSION_MAJOR@%$(VERSION.MAJOR)%g \
-		-e s%@VERSION_MINOR@%$(VERSION.MINOR)%g \
-		-e s%@VERSION_NAME@%$(VERSION_NAME)%g
 
 # If MICRO_VERSION isn't defined, then force it to zero
 ifndef VERSION.MICRO
-	SEDSCRIPT +=	-e s%@VERSION_MICRO@%0%g 
-else
-	SEDSCRIPT +=	-e s%@VERSION_MICRO@%$(VERSION.MICRO)%g 
+	VERSION.MICRO = 0
 endif 
 
 build: $(RCFILES) __init__.py
 	mkdir -p $(ROOT)/$(PY.ROCKS)/rocks
 	mkdir -p $(ROOT)/$(PKGROOT)/etc
-	sed -i $(SEDSCRIPT) app.py
-	sed -i $(SEDSCRIPT) media.py
 
 install:: build
 	find . -name "*.py" |                                   \
@@ -314,6 +307,12 @@ install:: build
 	@echo "version = \"$(ROCKS_VERSION)\"" >> \
 		$(ROOT)/$(PY.ROCKS)/rocks/__init__.py
 	@echo "release = \"$(VERSION_NAME)\"" >> \
+		$(ROOT)/$(PY.ROCKS)/rocks/__init__.py
+	@echo "version_major = \"$(VERSION.MAJOR)\"" >> \
+		$(ROOT)/$(PY.ROCKS)/rocks/__init__.py
+	@echo "version_minor = \"$(VERSION.MINOR)\"" >> \
+		$(ROOT)/$(PY.ROCKS)/rocks/__init__.py
+	@echo "version_micro = \"$(VERSION.MICRO)\"" >> \
 		$(ROOT)/$(PY.ROCKS)/rocks/__init__.py
 
 
