@@ -131,6 +131,9 @@ class Database(object):
 
 	def connect(self):
 
+		if os.environ.has_key('ROCKSDEBUG'):
+			self.setVerbose(True)
+
 		mysql_socket = '/var/opt/rocks/mysql/mysql.sock'
 
 		url = 'mysql+mysqldb://' + self.getDBUsername() + ':' + self.getDBPasswd() \
@@ -142,7 +145,7 @@ class Database(object):
 
 		if self.verbose:
 			# TODO move this to the logger
-			print "Database connection URL:", url
+			print "Database connection URL: ", url
 
 		self.engine = create_engine(url, echo=self.verbose)
 
