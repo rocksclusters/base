@@ -784,7 +784,7 @@ CREATE TABLE `attributes` (
 
 <!-- View for human readable queries --> 
 DROP VIEW IF EXISTS `vcatindex`;
-CREATE VIEW `vcatindex` AS SELECT ci.id, cat.name AS category, ci.name AS catindex FROM categories cat, catindex ci WHERE ci.category=cat.id order by category,catindex;
+CREATE VIEW `vcatindex` AS SELECT ci.ID AS ID, cat.Name AS category, ci.Name AS catindex FROM categories cat, catindex ci WHERE ci.Category=cat.ID;
 
 DROP VIEW IF EXISTS `vresolvechain`;
 CREATE VIEW `vresolvechain` AS SELECT r.name AS chain, cat.name AS category, precedence FROM resolvechain r, categories cat WHERE r.category=cat.id order by chain,precedence;
