@@ -96,7 +96,7 @@ class ApplianceAttribute(RocksBase, Base):
     __table_args__ = {}
 
     #column definitions
-    Appliance = Column('Appliance', Integer, primary_key=True, nullable=False, default=0)
+    Appliance = Column('Appliance', Integer, ForeignKey('appliances.ID'), primary_key=True, nullable=False, default=0)
     Attr = Column('Attr', String(128), primary_key=True, nullable=False)
     Value = Column('Value', TEXT())
 
@@ -124,12 +124,12 @@ class Attribute(RocksBase, Base):
     __table_args__ = {}
 
     #column definitions
-    Attr = Column('Attr', String(128), nullable=False)
-    Category = Column('Category', Integer, nullable=False)
-    Catindex = Column('Catindex', Integer, ForeignKey('catindex.ID'), nullable=False)
     ID = Column('ID', Integer, primary_key=True, nullable=False)
-    Shadow = Column('Shadow', TEXT())
+    Attr = Column('Attr', String(128), nullable=False)
     Value = Column('Value', TEXT())
+    Shadow = Column('Shadow', TEXT())
+    Category = Column('Category', Integer, ForeignKey('categories.ID'), nullable=False)
+    Catindex = Column('Catindex', Integer, ForeignKey('catindex.ID'), nullable=False)
 
     #relation definitions
 
