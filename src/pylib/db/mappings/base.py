@@ -33,7 +33,14 @@ class RocksBase(object):
 
 	@classmethod
 	def loadOne(cls, session, **kwargs):
+		""" """
+		return cls.load(session, **kwargs).one()
+
+
+	@classmethod
+	def load(cls, session, **kwargs):
 		"""this method allow us to run query on all the mapping objects
+		simply using 
 
 		e.g.:
 		node = Nodes.load(session, Name='compute-0-0', Cpus=2)
@@ -43,7 +50,7 @@ class RocksBase(object):
 		q = session.query(cls)
 		filters = [getattr(cls, field_name)==kwargs[field_name] \
 				for field_name in kwargs]
-		return q.filter(and_(*filters)).one()
+		return q.filter(and_(*filters))
 
 
 
@@ -128,8 +135,8 @@ class Attribute(RocksBase, Base):
     Attr = Column('Attr', String(128), nullable=False)
     Value = Column('Value', TEXT())
     Shadow = Column('Shadow', TEXT())
-    Category = Column('Category', Integer, ForeignKey('categories.ID'), nullable=False)
-    Catindex = Column('Catindex', Integer, ForeignKey('catindex.ID'), nullable=False)
+    CategoryID = Column('Category', Integer, ForeignKey('categories.ID'), nullable=False)
+    CatindexID = Column('Catindex', Integer, ForeignKey('catindex.ID'), nullable=False)
 
     #relation definitions
 
@@ -186,6 +193,8 @@ class Category(RocksBase, Base):
     Description = Column('Description', String(512))
 
     #relation definitions
+    attributes = sqlalchemy.orm.relationship("Attribute", backref="category")
+    catindexes = sqlalchemy.orm.relationship("Catindex", backref="category")
 
 
 class Catindex(RocksBase, Base):
@@ -196,9 +205,10 @@ class Catindex(RocksBase, Base):
     #column definitions
     ID = Column('ID', Integer, primary_key=True, nullable=False)
     Name = Column('Name', String(64), nullable=False)
-    Category = Column('Category', Integer, ForeignKey('categories.ID'), nullable=False)
+    CategoryID = Column('Category', Integer, ForeignKey('categories.ID'), nullable=False)
 
     #relation definitions
+    attributes = sqlalchemy.orm.relationship("Attribute", backref="catindex")
 
 
 class Distribution(RocksBase, Base):
