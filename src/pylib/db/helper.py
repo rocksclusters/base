@@ -364,10 +364,119 @@ class DatabaseHelper(rocks.db.database.Database):
 		"""return """
 		if self._attribute and node in self._attribute:
 			return self._attribute[node]
-		
-		# first time we need to populate
 
+		# first time we need to populate
 		pass
                 #query = self.getSession().query(Node, Appliance, Memebership, ).
 
 
+
+	def getCategoryIndex(self, category_name, category_index):
+		"""given a category name and a category index it returns the correspondying
+		object if the category_index does not exist it will be created
+
+		All category are created at boot time"""
+
+		session = self.getSession()
+		try:
+			return session.query(Category, Catindex)\
+				.join(Category.catindexes)\
+				.filter(Category.Name==category_name, Catindex.Name==category_index)\
+				.one()
+		except sqlalchemy.orm.exc.NoResultFound:
+			# we need to create the catindex element
+			cat = Category.loadOne(session, Name=category_name)
+			catindex = Catindex(Name=category_index, category=category_name)
+			session.add(catindex)
+			return (cat, catindex)
+
+
+	def getHostAttrs(self, hostname, showsource=False):
+		"""it returns a dictionary of {attr_name1 : (value1), attr_name2: (value2)} """
+
+		session = self.getSession()
+
+		if isinstance(hostname, str):
+			(appliance, membership, node) = \
+				session.query(Appliance.Name, Membership.Name, Node)\
+					.join(Node.membership)\
+					.join(Membership.appliance)\
+					.filter(Node.Name == hostname).one()
+
+		elif isinstance(hostname, Node):
+			node = hostname
+			hostname = node.Name
+
+			(appliance, membership) = \
+				session.query(Appliance.Name, Membership.Name)\
+					.join(Membership.appliance)\
+					.filter(Membership.ID == node.Membership).one()
+
+		else:
+			assert False, "hostname must be either a string with a hostname or a Node"
+
+		attrs = {}
+		if showsource:
+			attrs['hostname']	= (hostname, 'I')
+			attrs['rack']		= (str(node.Rack), 'I')
+			attrs['rank']		= (str(node.Rank), 'I')
+			attrs['appliance']	= (appliance, 'I')
+			attrs['membership']	= (membership, 'I')
+
+		else:
+			attrs['hostname']	= hostname
+			attrs['rack']		= str(node.Rack)
+			attrs['rank']		= str(node.Rank)
+			attrs['appliance']	= appliance
+			attrs['membership']	= membership
+
+		for (attr, value, type) in self.conn.execute(text(sql_attribute_query),\
+				os=node.OS, appliance=appliance, host=hostname):
+			if showsource:
+				attrs[attr]     = (value, type)
+			else:
+				attrs[attr]     = value
+
+		return attrs
+
+
+
+
+
+# this query will get all the attribute for a particular host
+# the inner select (which goes in the table sub) finds all
+# the attr name and maximum precedence (called maxprec)
+# corresponding to a host. The outer select will then fetch
+# the value for each given attr name and maxprec
+#
+# this query should be substituted with the tuple
+# (os, appliance, host, os, appliance, host)
+sql_attribute_query = """
+select a.attr, a.value, UPPER(SUBSTRING(c.Name, 1, 1)) as category
+from attributes a, resolvechain r, categories c, catindex ci,
+  (select attr, max(precedence) as maxprec
+   from attributes a, resolvechain r, categories c, catindex ci
+   where a.category = r.category and a.category = c.id and
+   a.catindex = ci.id
+   # category section: here we select only the appliance and host
+   # attr we need for this specific host
+   and (c.name = 'global' or
+        (c.name = 'os' and ci.name = :os)
+        or
+	(c.name = 'appliance' and ci.name = :appliance)
+	or
+        (c.name = 'host'and ci.name = :host)
+      )
+   group by attr) as sub
+where a.attr = sub.attr and a.category = r.category
+ and sub.maxprec = r.precedence and a.category = c.id
+ and a.catindex = ci.id
+ # category section
+ and (c.name = 'global' or
+        (c.name = 'os' and ci.name = :os)
+        or
+        (c.name = 'appliance' and ci.name = :appliance)
+        or
+        (c.name = 'host'and ci.name = :host)
+      );
+"""
