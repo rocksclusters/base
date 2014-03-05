@@ -95,6 +95,7 @@ class Appliance(RocksBase, Base):
     OS = Column('OS', Enum(u'linux', u'sunos'), nullable=False, default=u'linux')
 
     #relation definitions
+    memberships = sqlalchemy.orm.relationship("Membership", backref="appliance")
 
 
 class ApplianceAttribute(RocksBase, Base):
@@ -301,6 +302,7 @@ class Membership(RocksBase, Base):
     Public = Column('Public', Enum(u'yes', u'no'), nullable=False, default=u'no')
 
     #relation definitions
+    nodes = sqlalchemy.orm.relationship("Node", backref="membership")
 
 
 class Network(RocksBase, Base):
@@ -345,7 +347,7 @@ class Node(RocksBase, Base):
 
     #relation definitions
     # map the networks belonging to this node
-    Networks = sqlalchemy.orm.relationship("Network")
+    Networks = sqlalchemy.orm.relationship("Network", backref="node")
 
     def __repr__(self):
         return "<Node(name='%s')>" % (self.Name)
