@@ -58,6 +58,7 @@
 
 import socket
 import rocks.db.database
+import rocks
 from rocks.db.mappings.base import *
 from sqlalchemy import or_
 
@@ -389,6 +390,43 @@ class DatabaseHelper(rocks.db.database.Database):
 			catindex = Catindex(Name=category_index, category=category_name)
 			session.add(catindex)
 			return (cat, catindex)
+
+
+	def setGeneralAttr(self, category_name, catindex_name, attr, value):
+		"""general function which set an attribute value for a given 
+		category and catindex
+
+		return true if this was a new attribute false if the attr was already there"""
+
+		session = self.getSession()
+
+		if not attr.endswith(rocks.commands.set.attr.postfix):
+			# escape only if it is not a _old attribute
+			value = rocks.util.escapeAttr(value)
+
+		(cat, catindex) = self.getCategoryIndex(category_name, \
+					catindex_name)
+
+		try:
+			old_attr = Attribute.loadOne(session, Attr=attr, \
+					category=cat, catindex=catindex)
+
+		except sqlalchemy.orm.exc.NoResultFound:
+			# new attr, it should have been add but let's do it anyway
+			#TODO
+			new_attr = Attribute(Attr=attr, Value=value, category=cat, \
+					catindex=catindex)
+			session.add(new_attr)
+			return
+
+		old_value = old_attr.Value
+		old_attr.Value = value
+		# somebody will need to run commit
+
+		if not attr.endswith(rocks.commands.set.attr.postfix):
+			self.setGeneralAttr(category_name, catindex_name, \
+				attr + rocks.commands.set.attr.postfix, old_value)
+
 
 
 	def getHostAttrs(self, hostname, showsource=False):
