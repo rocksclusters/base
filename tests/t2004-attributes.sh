@@ -7,7 +7,10 @@ test_description='Test attributes manipulation
 
 Test various attributes manipulations'
 
-. ./test-lib.sh
+pushd `dirname $0` > /dev/null
+export TEST_DIRECTORY=`pwd`
+popd > /dev/null
+. $TEST_DIRECTORY/test-lib.sh
 
 
 node_name="attribute-node"
@@ -54,9 +57,13 @@ test_expect_success 'test attributes - host attributes add duplicate' '
 	rocks add host attr $node_name $attr_name host2 || true
 '
 
+test_expect_success 'test attributes - host attributes dump' '
+        rocks dump host attr | grep " $attr_name "
+'
+
 test_expect_success 'test attributes - tear down' '
-	rocks remove attr $attr_name
-	rocks remove host attr $attr_name
+	rocks remove attr $attr_name &&
+	rocks remove host attr $attr_name &&
 	rocks remove host $node_name
 '
 
