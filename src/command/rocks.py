@@ -182,19 +182,11 @@ syslog.openlog('rockscommand', syslog.LOG_PID, syslog.LOG_LOCAL0)
 # Several Commands are run in the installation environment before the
 # cluster database is created.  To enable this we only attempt to establish
 # a database connection, if it fails it is not considered an error.
-
-
-# First try to read the cluster password (for apache)
-
-
 try:
-	import sqlalchemy
-	import rocks.db.database
+	import sqlalchemy # needed for the exception
+	import rocks.db.helper
 
-	# Connect over UNIX socket if it exists, otherwise go over the
-	# network.
-
-	database = rocks.db.database.Database()
+	database = rocks.db.helper.DatabaseHelper()
 	database.connect()
 
 except ImportError:
