@@ -130,7 +130,7 @@ class DatabaseHelper(rocks.db.database.Database):
 				self.execute(name)
 				return self.fetchall()
 			elif name.find('%') >= 0:	# SQL % pattern
-				clause = or_(clause, Node.Name.like(name))
+				clause = or_(clause, Node.name.like(name))
 			elif name.startswith('rack'):
 				# this is racks
 				racknumber = int(name[4:])
@@ -139,10 +139,10 @@ class DatabaseHelper(rocks.db.database.Database):
 			elif name in self.getAppliancesListText():
 				# it is an appliance
 				query = query.join(Membership).join(Appliance)
-				clause = or_(clause, Appliance.Name == name)
+				clause = or_(clause, Appliance.name == name)
 			else:			   
 				# it is a host name
-				clause = or_(clause, Node.Name == self.getHostname(name))
+				clause = or_(clause, Node.name == self.getHostname(name))
 				#import pdb; pdb.set_trace()
 		
 		# now we register the query on the table Node and append all our clauses on OR
@@ -160,7 +160,7 @@ class DatabaseHelper(rocks.db.database.Database):
 		else:
 			# first time we invoke it, run the query and cache the results
 			self._appliances_list = \
-				[a.Name for a in self.getSession().query(Appliance.Name)]
+				[a.name for a in self.getSession().query(Appliance.name)]
 			return self._appliances_list
 
 
@@ -382,21 +382,19 @@ class DatabaseHelper(rocks.db.database.Database):
 		try:
 			return session.query(Category, Catindex)\
 				.join(Category.catindexes)\
-				.filter(Category.Name==category_name, Catindex.Name==category_index)\
+				.filter(Category.name==category_name, Catindex.name==category_index)\
 				.one()
 		except sqlalchemy.orm.exc.NoResultFound:
 			# we need to create the catindex element
-			cat = Category.loadOne(session, Name=category_name)
-			catindex = Catindex(Name=category_index, category=category_name)
+			cat = Category.loadOne(session, name=category_name)
+			catindex = Catindex(name=category_index, category=category_name)
 			session.add(catindex)
 			return (cat, catindex)
 
 
 	def setGeneralAttr(self, category_name, catindex_name, attr, value):
 		"""general function which set an attribute value for a given 
-		category and catindex
-
-		return true if this was a new attribute false if the attr was already there"""
+		category and catindex"""
 
 		session = self.getSession()
 
@@ -404,23 +402,24 @@ class DatabaseHelper(rocks.db.database.Database):
 			# escape only if it is not a _old attribute
 			value = rocks.util.escapeAttr(value)
 
+		print category_name, catindex_name
 		(cat, catindex) = self.getCategoryIndex(category_name, \
 					catindex_name)
 
 		try:
-			old_attr = Attribute.loadOne(session, Attr=attr, \
+			old_attr = Attribute.loadOne(session, attr=attr, \
 					category=cat, catindex=catindex)
 
 		except sqlalchemy.orm.exc.NoResultFound:
 			# new attr, it should have been add but let's do it anyway
 			#TODO
-			new_attr = Attribute(Attr=attr, Value=value, category=cat, \
+			new_attr = Attribute(attr=attr, value=value, category=cat, \
 					catindex=catindex)
 			session.add(new_attr)
 			return
 
-		old_value = old_attr.Value
-		old_attr.Value = value
+		old_value = old_attr.value
+		old_attr.value = value
 		# somebody will need to run commit
 
 		if not attr.endswith(rocks.commands.set.attr.postfix):
@@ -428,27 +427,43 @@ class DatabaseHelper(rocks.db.database.Database):
 				attr + rocks.commands.set.attr.postfix, old_value)
 
 
+	def getCategoryAttrs(self, category_name, catindex_name):
+		"""Given a category name and a category index it returns all the
+		attribute in that group"""
+
+		session = self.getSession()
+
+		(cat, catindex) = self.getCategoryIndex(category_name, \
+				catindex_name)
+
+		return Attribute.load(session, category=cat, catindex=catindex)
+
+
 
 	def getHostAttrs(self, hostname, showsource=False):
-		"""it returns a dictionary of {attr_name1 : (value1), attr_name2: (value2)} """
+		"""it returns a dictionary of {attr_name1 : (value1), attr_name2: (value2)}
+		for a given hostname. In the dictionary it resolve the attributes values
+		following their precendencei. If showsource is True the returned attr will
+		contains an extra field with the attribute type"""
 
 		session = self.getSession()
 
 		if isinstance(hostname, str):
 			(appliance, membership, node) = \
-				session.query(Appliance.Name, Membership.Name, Node)\
+				session.query(Appliance.name, Membership.name, Node)\
 					.join(Node.membership)\
 					.join(Membership.appliance)\
-					.filter(Node.Name == hostname).one()
+					.filter(Node.name == hostname).one()
 
 		elif isinstance(hostname, Node):
 			node = hostname
-			hostname = node.Name
+			hostname = node.name
 
+			# TODO
 			(appliance, membership) = \
-				session.query(Appliance.Name, Membership.Name)\
+				session.query(Appliance.name, Membership.name)\
 					.join(Membership.appliance)\
-					.filter(Membership.ID == node.Membership).one()
+					.filter(Membership.ID == node.membership_ID).one()
 
 		else:
 			assert False, "hostname must be either a string with a hostname or a Node"
@@ -456,20 +471,20 @@ class DatabaseHelper(rocks.db.database.Database):
 		attrs = {}
 		if showsource:
 			attrs['hostname']	= (hostname, 'I')
-			attrs['rack']		= (str(node.Rack), 'I')
-			attrs['rank']		= (str(node.Rank), 'I')
+			attrs['rack']		= (str(node.rack), 'I')
+			attrs['rank']		= (str(node.rank), 'I')
 			attrs['appliance']	= (appliance, 'I')
 			attrs['membership']	= (membership, 'I')
 
 		else:
 			attrs['hostname']	= hostname
-			attrs['rack']		= str(node.Rack)
-			attrs['rank']		= str(node.Rank)
+			attrs['rack']		= str(node.rack)
+			attrs['rank']		= str(node.rank)
 			attrs['appliance']	= appliance
 			attrs['membership']	= membership
 
 		for (attr, value, type) in self.conn.execute(text(sql_attribute_query),\
-				os=node.OS, appliance=appliance, host=hostname):
+				os=node.os, appliance=appliance, host=hostname):
 			if showsource:
 				attrs[attr]     = (value, type)
 			else:

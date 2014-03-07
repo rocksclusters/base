@@ -61,8 +61,8 @@ class Alias(RocksBase, Base):
 
     #column definitions
     ID = Column('ID', Integer, primary_key=True, nullable=False)
-    Name = Column('Name', String(32))
-    Node = Column('Node', Integer, nullable=False, default=0)
+    name = Column('Name', String(32))
+    node = Column('Node', Integer, nullable=False, default=0)
 
     #relation definitions
 
@@ -73,11 +73,11 @@ class AppGlobal(RocksBase, Base):
     __table_args__ = {}
 
     #column definitions
-    Component = Column('Component', String(64))
+    component = Column('Component', String(64))
     ID = Column('ID', Integer, primary_key=True, nullable=False)
-    Membership = Column('Membership', Integer, nullable=False)
-    Service = Column('Service', String(64))
-    Value = Column('Value', TEXT())
+    membership = Column('Membership', Integer, nullable=False)
+    service = Column('Service', String(64))
+    value = Column('Value', TEXT())
 
     #relation definitions
 
@@ -89,10 +89,10 @@ class Appliance(RocksBase, Base):
 
     #column definitions
     ID = Column('ID', Integer, primary_key=True, nullable=False)
-    Name = Column('Name', String(32), nullable=False, default='')
-    Graph = Column('Graph', String(64), nullable=False, default='default')
-    Node = Column('Node', String(64), nullable=False, default='')
-    OS = Column('OS', Enum(u'linux', u'sunos'), nullable=False, default=u'linux')
+    name = Column('Name', String(32), nullable=False, default='')
+    graph = Column('Graph', String(64), nullable=False, default='default')
+    node = Column('Node', String(64), nullable=False, default='')
+    os = Column('OS', Enum(u'linux', u'sunos'), nullable=False, default=u'linux')
 
     #relation definitions
     memberships = sqlalchemy.orm.relationship("Membership", backref="appliance")
@@ -104,9 +104,9 @@ class ApplianceAttribute(RocksBase, Base):
     __table_args__ = {}
 
     #column definitions
-    Appliance = Column('Appliance', Integer, ForeignKey('appliances.ID'), primary_key=True, nullable=False, default=0)
-    Attr = Column('Attr', String(128), primary_key=True, nullable=False)
-    Value = Column('Value', TEXT())
+    appliance = Column('Appliance', Integer, ForeignKey('appliances.ID'), primary_key=True, nullable=False, default=0)
+    attr = Column('Attr', String(128), primary_key=True, nullable=False)
+    value = Column('Value', TEXT())
 
     #relation definitions
 
@@ -117,11 +117,11 @@ class ApplianceRoute(RocksBase, Base):
     __table_args__ = {}
 
     #column definitions
-    Appliance = Column('Appliance', Integer, primary_key=True, nullable=False)
-    Gateway = Column('Gateway', String(32), nullable=False)
-    Netmask = Column('Netmask', String(32), primary_key=True, nullable=False)
-    Network = Column('Network', String(32), primary_key=True, nullable=False)
-    Subnet = Column('Subnet', Integer, ForeignKey('subnets.ID'))
+    appliance = Column('Appliance', Integer, primary_key=True, nullable=False)
+    gateway = Column('Gateway', String(32), nullable=False)
+    netmask = Column('Netmask', String(32), primary_key=True, nullable=False)
+    network = Column('Network', String(32), primary_key=True, nullable=False)
+    subnet = Column('Subnet', Integer, ForeignKey('subnets.ID'))
 
     #relation definitions
 
@@ -133,11 +133,11 @@ class Attribute(RocksBase, Base):
 
     #column definitions
     ID = Column('ID', Integer, primary_key=True, nullable=False)
-    Attr = Column('Attr', String(128), nullable=False)
-    Value = Column('Value', TEXT())
-    Shadow = Column('Shadow', TEXT())
-    CategoryID = Column('Category', Integer, ForeignKey('categories.ID'), nullable=False)
-    CatindexID = Column('Catindex', Integer, ForeignKey('catindex.ID'), nullable=False)
+    attr = Column('Attr', String(128), nullable=False)
+    value = Column('Value', TEXT())
+    shadow = Column('Shadow', TEXT())
+    categoryID = Column('Category', Integer, ForeignKey('categories.ID'), nullable=False)
+    catindexID = Column('Catindex', Integer, ForeignKey('catindex.ID'), nullable=False)
 
     #relation definitions
 
@@ -149,8 +149,8 @@ class Boot(RocksBase, Base):
 
     #column definitions
     ID = Column('ID', Integer, primary_key=True, nullable=False)
-    Node = Column('Node', Integer, nullable=False, default=0)
-    Action = Column('Action', Enum(u'install', u'os', u'run'))
+    node = Column('Node', Integer, nullable=False, default=0)
+    action = Column('Action', Enum(u'install', u'os', u'run'))
 
     #relation definitions
 
@@ -161,11 +161,11 @@ class Bootaction(RocksBase, Base):
     __table_args__ = {}
 
     #column definitions
-    Action = Column('Action', String(256))
-    Args = Column('Args', String(1024))
+    action = Column('Action', String(256))
+    args = Column('Args', String(1024))
     ID = Column('ID', Integer, primary_key=True, nullable=False)
-    Kernel = Column('Kernel', String(256))
-    Ramdisk = Column('Ramdisk', String(256))
+    kernel = Column('Kernel', String(256))
+    ramdisk = Column('Ramdisk', String(256))
 
     #relation definitions
 
@@ -176,9 +176,9 @@ class Bootflag(RocksBase, Base):
     __table_args__ = {}
 
     #column definitions
-    Flags = Column('Flags', String(256))
     ID = Column('ID', Integer, primary_key=True, nullable=False)
-    Node = Column('Node', Integer, nullable=False)
+    flags = Column('Flags', String(256))
+    node = Column('Node', Integer, nullable=False)
 
     #relation definitions
 
@@ -190,8 +190,8 @@ class Category(RocksBase, Base):
 
     #column definitions
     ID = Column('ID', Integer, primary_key=True, nullable=False)
-    Name = Column('Name', String(64), nullable=False)
-    Description = Column('Description', String(512))
+    name = Column('Name', String(64), nullable=False)
+    description = Column('Description', String(512))
 
     #relation definitions
     attributes = sqlalchemy.orm.relationship("Attribute", backref="category")
@@ -205,8 +205,8 @@ class Catindex(RocksBase, Base):
 
     #column definitions
     ID = Column('ID', Integer, primary_key=True, nullable=False)
-    Name = Column('Name', String(64), nullable=False)
-    CategoryID = Column('Category', Integer, ForeignKey('categories.ID'), nullable=False)
+    name = Column('Name', String(64), nullable=False)
+    categoryID = Column('Category', Integer, ForeignKey('categories.ID'), nullable=False)
 
     #relation definitions
     attributes = sqlalchemy.orm.relationship("Attribute", backref="catindex")
@@ -219,9 +219,9 @@ class Distribution(RocksBase, Base):
 
     #column definitions
     ID = Column('ID', Integer, primary_key=True, nullable=False)
-    Lang = Column('Lang', String(32), nullable=False, default='')
-    Name = Column('Name', String(32), nullable=False, default='')
-    OS_Release = Column('OS_Release', String(32), nullable=False, default='')
+    lang = Column('Lang', String(32), nullable=False, default='')
+    name = Column('Name', String(32), nullable=False, default='')
+    os_Release = Column('OS_Release', String(32), nullable=False, default='')
 
     #relation definitions
 
@@ -233,18 +233,18 @@ class Firewall(RocksBase, Base):
 
     #column definitions
     ID = Column('ID', Integer, primary_key=True, nullable=False)
-    Rulename = Column('Rulename', String(128), nullable=False)
-    Rulesrc = Column('Rulesrc', Enum(u'system', u'custom'), nullable=False, default=u'custom')
-    InSubnet = Column('InSubnet', Integer)
-    OutSubnet = Column('OutSubnet', Integer)
-    Service = Column('Service', String(256))
-    Protocol = Column('Protocol', String(256))
-    Action = Column('Action', String(256))
-    Chain = Column('Chain', String(256))
-    Flags = Column('Flags', String(256))
-    Comment = Column('Comment', String(256))
-    Category = Column('Category', Integer, nullable=False)
-    Catindex = Column('Catindex', Integer, ForeignKey('catindex.ID'), nullable=False)
+    rulename = Column('Rulename', String(128), nullable=False)
+    rulesrc = Column('Rulesrc', Enum(u'system', u'custom'), nullable=False, default=u'custom')
+    inSubnet = Column('InSubnet', Integer)
+    outSubnet = Column('OutSubnet', Integer)
+    service = Column('Service', String(256))
+    protocol = Column('Protocol', String(256))
+    action = Column('Action', String(256))
+    chain = Column('Chain', String(256))
+    flags = Column('Flags', String(256))
+    comment = Column('Comment', String(256))
+    category = Column('Category', Integer, nullable=False)
+    catindex = Column('Catindex', Integer, ForeignKey('catindex.ID'), nullable=False)
 
     #relation definitions
 
@@ -255,8 +255,8 @@ class GlobalAttribute(RocksBase, Base):
     __table_args__ = {}
 
     #column definitions
-    Attr = Column('Attr', String(128), primary_key=True, nullable=False)
-    Value = Column('Value', TEXT())
+    attr = Column('Attr', String(128), primary_key=True, nullable=False)
+    value = Column('Value', TEXT())
 
     #relation definitions
 
@@ -267,10 +267,10 @@ class GlobalRoute(RocksBase, Base):
     __table_args__ = {}
 
     #column definitions
-    Gateway = Column('Gateway', String(32), nullable=False)
-    Netmask = Column('Netmask', String(32), primary_key=True, nullable=False)
-    Network = Column('Network', String(32), primary_key=True, nullable=False)
-    Subnet = Column('Subnet', Integer, ForeignKey('subnets.ID'))
+    gateway = Column('Gateway', String(32), nullable=False)
+    netmask = Column('Netmask', String(32), primary_key=True, nullable=False)
+    network = Column('Network', String(32), primary_key=True, nullable=False)
+    subnet = Column('Subnet', Integer, ForeignKey('subnets.ID'))
 
     #relation definitions
 
@@ -281,10 +281,10 @@ class Hostselection(RocksBase, Base):
     __table_args__ = {}
 
     #column definitions
-    Category = Column('Category', Integer, ForeignKey('categories.ID'), nullable=False)
-    Host = Column('Host', Integer, ForeignKey('catindex.ID'), nullable=False)
+    category = Column('Category', Integer, ForeignKey('categories.ID'), nullable=False)
+    host = Column('Host', Integer, ForeignKey('catindex.ID'), nullable=False)
     ID = Column('ID', Integer, primary_key=True, nullable=False)
-    Selection = Column('Selection', Integer, ForeignKey('catindex.ID'), nullable=False)
+    selection = Column('Selection', Integer, ForeignKey('catindex.ID'), nullable=False)
 
     #relation definitions
 
@@ -296,10 +296,10 @@ class Membership(RocksBase, Base):
 
     #column definitions
     ID = Column('ID', Integer, primary_key=True, nullable=False)
-    Name = Column('Name', String(64), nullable=False)
-    Appliance = Column('Appliance', Integer, ForeignKey('appliances.ID'), default=0)
-    Distribution = Column('Distribution', Integer, ForeignKey('distributions.ID'), default=1)
-    Public = Column('Public', Enum(u'yes', u'no'), nullable=False, default=u'no')
+    name = Column('Name', String(64), nullable=False)
+    appliance_ID = Column('Appliance', Integer, ForeignKey('appliances.ID'), default=0)
+    distribution_ID = Column('Distribution', Integer, ForeignKey('distributions.ID'), default=1)
+    public = Column('Public', Enum(u'yes', u'no'), nullable=False, default=u'no')
 
     #relation definitions
     nodes = sqlalchemy.orm.relationship("Node", backref="membership")
@@ -311,19 +311,19 @@ class Network(RocksBase, Base):
     __table_args__ = {}
 
     #column definitions
-    Channel = Column('Channel', String(128))
-    Device = Column('Device', String(32))
-    Gateway = Column('Gateway', String(32))
+    channel = Column('Channel', String(128))
+    device = Column('Device', String(32))
+    gateway = Column('Gateway', String(32))
     ID = Column('ID', Integer, primary_key=True, nullable=False)
-    IP = Column('IP', String(32))
-    MAC = Column('MAC', String(64))
-    Module = Column('Module', String(128))
-    Name = Column('Name', String(128))
-    Netmask = Column('Netmask', String(32))
-    Node = Column('Node', Integer, ForeignKey('nodes.ID'))
-    Options = Column('Options', String(128))
-    Subnet = Column('Subnet', Integer, ForeignKey('subnets.ID'))
-    VlanID = Column('VlanID', Integer)
+    ip = Column('IP', String(32))
+    mac = Column('MAC', String(64))
+    module = Column('Module', String(128))
+    name = Column('Name', String(128))
+    netmask = Column('Netmask', String(32))
+    node_ID = Column('Node', Integer, ForeignKey('nodes.ID'))
+    options = Column('Options', String(128))
+    subnet = Column('Subnet', Integer, ForeignKey('subnets.ID'))
+    vlanID = Column('VlanID', Integer)
 
     #relation definitions
 
@@ -335,22 +335,22 @@ class Node(RocksBase, Base):
 
     #column definitions
     ID = Column('ID', Integer, primary_key=True, nullable=False)
-    Name = Column('Name', String(128))
-    Membership = Column('Membership', Integer, ForeignKey('memberships.ID'), default=2)
-    CPUs = Column('CPUs', Integer, nullable=False, default=1)
-    Rack = Column('Rack', Integer)
-    Rank = Column('Rank', Integer)
-    Arch = Column('Arch', String(32))
-    OS = Column('OS', Enum(u'linux', u'sunos'), nullable=False, default=u'linux')
-    RunAction = Column('RunAction', String(64), default='os')
-    InstallAction = Column('InstallAction', String(64), default='install')
+    name = Column('Name', String(128))
+    membership_ID = Column('Membership', Integer, ForeignKey('memberships.ID'), default=2)
+    cPUs = Column('CPUs', Integer, nullable=False, default=1)
+    rack = Column('Rack', Integer)
+    rank = Column('Rank', Integer)
+    arch = Column('Arch', String(32))
+    os = Column('OS', Enum(u'linux', u'sunos'), nullable=False, default=u'linux')
+    runAction = Column('RunAction', String(64), default='os')
+    installAction = Column('InstallAction', String(64), default='install')
 
     #relation definitions
     # map the networks belonging to this node
-    Networks = sqlalchemy.orm.relationship("Network", backref="node")
+    networks = sqlalchemy.orm.relationship("Network", backref="node")
 
     def __repr__(self):
-        return "<Node(name='%s')>" % (self.Name)
+        return "<Node(name='%s')>" % (self.name)
 
 
 
@@ -360,9 +360,9 @@ class NodeAttribute(RocksBase, Base):
     __table_args__ = {}
 
     #column definitions
-    Attr = Column('Attr', String(128), primary_key=True, nullable=False)
-    Node = Column('Node', Integer, primary_key=True, nullable=False)
-    Value = Column('Value', TEXT())
+    attr = Column('Attr', String(128), primary_key=True, nullable=False)
+    node = Column('Node', Integer, primary_key=True, nullable=False)
+    value = Column('Value', TEXT())
 
     #relation definitions
 
@@ -373,8 +373,8 @@ class NodeRoll(RocksBase, Base):
     __table_args__ = {}
 
     #column definitions
-    Node = Column('Node', Integer, primary_key=True, nullable=False)
-    RollID = Column('RollID', Integer, primary_key=True, nullable=False)
+    node = Column('Node', Integer, primary_key=True, nullable=False)
+    rollID = Column('RollID', Integer, primary_key=True, nullable=False)
 
     #relation definitions
 
@@ -385,11 +385,11 @@ class NodeRoute(RocksBase, Base):
     __table_args__ = {}
 
     #column definitions
-    Gateway = Column('Gateway', String(32), nullable=False)
-    Netmask = Column('Netmask', String(32), primary_key=True, nullable=False)
-    Network = Column('Network', String(32), primary_key=True, nullable=False)
-    Node = Column('Node', Integer, primary_key=True, nullable=False)
-    Subnet = Column('Subnet', Integer, ForeignKey('subnets.ID'))
+    gateway = Column('Gateway', String(32), nullable=False)
+    netmask = Column('Netmask', String(32), primary_key=True, nullable=False)
+    network = Column('Network', String(32), primary_key=True, nullable=False)
+    node = Column('Node', Integer, primary_key=True, nullable=False)
+    subnet = Column('Subnet', Integer, ForeignKey('subnets.ID'))
 
     #relation definitions
 
@@ -400,9 +400,9 @@ class OsAttribute(RocksBase, Base):
     __table_args__ = {}
 
     #column definitions
-    Attr = Column('Attr', String(128), primary_key=True, nullable=False)
-    OS = Column('OS', Enum(u'sunos', u'linux'), primary_key=True, nullable=False, default=u'linux')
-    Value = Column('Value', TEXT())
+    attr = Column('Attr', String(128), primary_key=True, nullable=False)
+    os = Column('OS', Enum(u'sunos', u'linux'), primary_key=True, nullable=False, default=u'linux')
+    value = Column('Value', TEXT())
 
     #relation definitions
 
@@ -413,11 +413,11 @@ class OsRoute(RocksBase, Base):
     __table_args__ = {}
 
     #column definitions
-    Gateway = Column('Gateway', String(32), nullable=False)
-    Netmask = Column('Netmask', String(32), primary_key=True, nullable=False)
-    Network = Column('Network', String(32), primary_key=True, nullable=False)
-    OS = Column('OS', Enum(u'sunos', u'linux'), primary_key=True, nullable=False, default=u'linux')
-    Subnet = Column('Subnet', Integer, ForeignKey('subnets.ID'))
+    gateway = Column('Gateway', String(32), nullable=False)
+    netmask = Column('Netmask', String(32), primary_key=True, nullable=False)
+    network = Column('Network', String(32), primary_key=True, nullable=False)
+    os = Column('OS', Enum(u'sunos', u'linux'), primary_key=True, nullable=False, default=u'linux')
+    subnet = Column('Subnet', Integer, ForeignKey('subnets.ID'))
 
     #relation definitions
 
@@ -428,16 +428,16 @@ class Partition(RocksBase, Base):
     __table_args__ = {}
 
     #column definitions
-    Device = Column('Device', String(128), nullable=False)
-    FormatFlags = Column('FormatFlags', String(128), nullable=False)
-    FsType = Column('FsType', String(128), nullable=False)
+    device = Column('Device', String(128), nullable=False)
+    formatFlags = Column('FormatFlags', String(128), nullable=False)
+    fsType = Column('FsType', String(128), nullable=False)
     ID = Column('ID', Integer, primary_key=True, nullable=False)
-    Mountpoint = Column('Mountpoint', String(128), nullable=False)
-    Node = Column('Node', Integer, nullable=False)
-    PartitionFlags = Column('PartitionFlags', String(128), nullable=False)
-    PartitionID = Column('PartitionID', String(128), nullable=False)
-    PartitionSize = Column('PartitionSize', String(128), nullable=False)
-    SectorStart = Column('SectorStart', String(128), nullable=False)
+    mountpoint = Column('Mountpoint', String(128), nullable=False)
+    node = Column('Node', Integer, nullable=False)
+    partitionFlags = Column('PartitionFlags', String(128), nullable=False)
+    partitionID = Column('PartitionID', String(128), nullable=False)
+    partitionSize = Column('PartitionSize', String(128), nullable=False)
+    sectorStart = Column('SectorStart', String(128), nullable=False)
 
     #relation definitions
 
@@ -448,10 +448,10 @@ class PublicKey(RocksBase, Base):
     __table_args__ = {}
 
     #column definitions
-    Description = Column('Description', String(4096))
+    description = Column('Description', String(4096))
     ID = Column('ID', Integer, primary_key=True, nullable=False)
-    Node = Column('Node', Integer, nullable=False)
-    Public_Key = Column('Public_Key', String(4096))
+    node = Column('Node', Integer, nullable=False)
+    public_key = Column('Public_Key', String(4096))
 
     #relation definitions
 
@@ -463,9 +463,9 @@ class Resolvechain(RocksBase, Base):
 
     #column definitions
     ID = Column('ID', Integer, primary_key=True, nullable=False)
-    Name = Column('Name', String(64), nullable=False, default=0)
-    Category = Column('Category', Integer, ForeignKey('categories.ID'), nullable=False)
-    Precedence = Column('Precedence', Integer, nullable=False, default=10)
+    name = Column('Name', String(64), nullable=False, default=0)
+    category = Column('Category', Integer, ForeignKey('categories.ID'), nullable=False)
+    precedence = Column('Precedence', Integer, nullable=False, default=10)
 
     #relation definitions
 
@@ -477,11 +477,11 @@ class Roll(RocksBase, Base):
 
     #column definitions
     ID = Column('ID', Integer, primary_key=True, nullable=False)
-    Name = Column('Name', String(128), nullable=False)
-    Version = Column('Version', String(32), nullable=False)
-    Arch = Column('Arch', String(32), nullable=False)
-    OS = Column('OS', Enum(u'linux', u'sunos'), nullable=False, default=u'linux')
-    Enabled = Column('Enabled', Enum(u'yes', u'no'), nullable=False, default=u'yes')
+    name = Column('Name', String(128), nullable=False)
+    version = Column('Version', String(32), nullable=False)
+    arch = Column('Arch', String(32), nullable=False)
+    os = Column('OS', Enum(u'linux', u'sunos'), nullable=False, default=u'linux')
+    enabled = Column('Enabled', Enum(u'yes', u'no'), nullable=False, default=u'yes')
 
     #relation definitions
 
@@ -492,9 +492,9 @@ class SecGlobalAttribute(RocksBase, Base):
     __table_args__ = {}
 
     #column definitions
-    Attr = Column('Attr', String(128), primary_key=True, nullable=False)
-    Enc = Column('Enc', String(64))
-    Value = Column('Value', TEXT())
+    attr = Column('Attr', String(128), primary_key=True, nullable=False)
+    enc = Column('Enc', String(64))
+    value = Column('Value', TEXT())
 
     #relation definitions
 
@@ -505,10 +505,10 @@ class SecNodeAttribute(RocksBase, Base):
     __table_args__ = {}
 
     #column definitions
-    Attr = Column('Attr', String(128), primary_key=True, nullable=False)
-    Enc = Column('Enc', String(64))
-    Node = Column('Node', Integer, primary_key=True, nullable=False)
-    Value = Column('Value', TEXT())
+    attr = Column('Attr', String(128), primary_key=True, nullable=False)
+    enc = Column('Enc', String(64))
+    node = Column('Node', Integer, primary_key=True, nullable=False)
+    value = Column('Value', TEXT())
 
     #relation definitions
 
@@ -536,14 +536,14 @@ class VmDisk(RocksBase, Base):
     __table_args__ = {}
 
     #column definitions
-    Device = Column('Device', String(512))
     ID = Column('ID', Integer, primary_key=True, nullable=False)
-    Mode = Column('Mode', String(64))
-    Name = Column('Name', String(512))
-    Prefix = Column('Prefix', String(512))
-    Size = Column('Size', Integer, nullable=False)
-    VBD_Type = Column('VBD_Type', String(64))
-    Vm_Node = Column('Vm_Node', Integer, nullable=False)
+    device = Column('Device', String(512))
+    mode = Column('Mode', String(64))
+    name = Column('Name', String(512))
+    prefix = Column('Prefix', String(512))
+    size = Column('Size', Integer, nullable=False)
+    vbd_Type = Column('VBD_Type', String(64))
+    vm_Node = Column('Vm_Node', Integer, nullable=False)
 
     #relation definitions
 
@@ -555,11 +555,11 @@ class VmNode(RocksBase, Base):
 
     #column definitions
     ID = Column('ID', Integer, primary_key=True, nullable=False)
-    Mem = Column('Mem', Integer, nullable=False)
-    Node = Column('Node', Integer, nullable=False)
-    PhysNode = Column('PhysNode', Integer, nullable=False)
-    Slice = Column('Slice', Integer, nullable=False)
-    Virt_Type = Column('Virt_Type', String(64))
+    mem = Column('Mem', Integer, nullable=False)
+    node = Column('Node', Integer, nullable=False)
+    physNode = Column('PhysNode', Integer, nullable=False)
+    slice = Column('Slice', Integer, nullable=False)
+    virt_type = Column('Virt_Type', String(64))
     cdrom_path = Column('cdrom_path', String(512))
 
     #relation definitions
