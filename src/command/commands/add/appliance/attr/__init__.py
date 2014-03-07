@@ -95,7 +95,9 @@ import stat
 import time
 import sys
 import string
-import rocks.commands
+
+from rocks.db.mappings.base import *
+import rocks
 
 
 class Command(rocks.commands.add.appliance.command):
@@ -140,23 +142,26 @@ class Command(rocks.commands.add.appliance.command):
 	def run(self, params, args):
 
 		(args, attr, value) = self.fillPositionalArgs(('attr', 'value'))
-		appliances = self.getApplianceNames(args)
 		
 		if not attr:
 			self.abort('missing attribute name')
 		if not value:
-			self.about('missing value of attribute')
+			self.abort('missing value of attribute')
+		if not args:
+			self.abort('you need to specify an appliance type')
 
-		for appliance in appliances:
-			self.checkApplianceAttr(appliance, attr)
+		for appliance in self.getApplianceNames(args):
+			newAttr = self.db.database.addCategoryAttr('appliance', \
+					appliance, attr, value)
+			try:
+				# we need to commit each attribute to see if it 
+				# really was not a duplicate 
+				self.db.database.getSession().commit()
+			except sqlalchemy.exc.IntegrityError:
+				self.abort('attribute "%s" exists' % attr)
 
-		value = self.escapeAttr(value)
-		for appliance in appliances:
-			self.db.execute("""
-				insert into appliance_attributes values 
-				((select id from appliances where name='%s'), 
-				'%s', '%s')
-				""" % (appliance, attr, value))
+
+
 			
 
 	def checkApplianceAttr(self, appliance, attr):

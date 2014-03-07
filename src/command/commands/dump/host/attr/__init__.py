@@ -113,23 +113,18 @@ class Command(rocks.commands.dump.host.command):
 
 	def run(self, params, args):
 
-		for host in self.getHostnames(args):
-			self.db.execute("""
-				select a.attr, a.value from 
-				node_attributes a, nodes n where
-				a.node=n.id and n.name='%s'
-				""" % host)
-			for (key, value) in self.db.fetchall():
+		for node in self.db.database.getNodesfromNames(args):
+			for attr in self.db.database.getCategoryAttrs('host', node.name):
 				
 				# Do not record the os or arch attributes
 				# since kickstart sets them
 
-				if key in [ 'os', 'arch' ]:
+				if attr.attr in [ 'os', 'arch' ]:
 					continue
 
-				v = self.quote(value)
+				v = self.quote(attr.value)
 				if v:
 					self.dump('add host attr %s %s %s' %
-						(self.dumpHostname(host),
-						key, v))
+						(self.dumpHostname(node.name),
+						attr.attr, v))
 

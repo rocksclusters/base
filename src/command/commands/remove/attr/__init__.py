@@ -84,6 +84,7 @@
 
 import rocks.commands
 import rocks.commands.set.attr
+from rocks.db.mappings.base import *
 
 
 class Command(rocks.commands.remove.command):
@@ -113,9 +114,5 @@ class Command(rocks.commands.remove.command):
 		if not attr:
 			self.abort('missing attribute name')
 
-		self.db.execute("""delete from global_attributes
-			where attr = '%s'""" % attr)
-
-		self.db.execute("""delete from global_attributes
-			where attr = '%s'""" % (attr + rocks.commands.set.attr.postfix))
+		self.db.database.removeCategoryAttr('global', 'global', attr)
 

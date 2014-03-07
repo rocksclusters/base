@@ -140,23 +140,5 @@ class Command(rocks.commands.set.os.command):
 			self.about('missing value of attribute')
 
 		for os in oses:
-			self.setOSAttr(os, attr, value)
+			self.db.database.setCategoryAttr('os', os, attr, value)
 			
-	def setOSAttr(self, os, attr, value):
-		rows = self.db.execute("""select attr, value from os_attributes where
-			os='%s' and attr='%s'""" % (os, attr))
-		if not rows:
-			self.db.execute("""insert into os_attributes values 
-				('%s', '%s', '%s')""" % (os, attr, value))
-		else:
-			(useless, old_value) = self.db.fetchone()
-
-			self.db.execute("""update os_attributes set
-				value = '%s' where os = '%s' and
-				attr = '%s' """ % (value, os, attr))
-
-			if not attr.endswith(rocks.commands.set.attr.postfix):
-				self.command('set.os.attr',
-					[os, attr + rocks.commands.set.attr.postfix, old_value])
-
-

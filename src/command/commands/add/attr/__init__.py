@@ -96,7 +96,11 @@ import stat
 import time
 import sys
 import string
+import sqlalchemy
+
+from rocks.db.mappings.base import *
 import rocks.commands
+import rocks.util
 
 class Command(rocks.commands.add.command):
 	"""
@@ -134,12 +138,11 @@ class Command(rocks.commands.add.command):
 		if not value:
 			self.abort('missing value of attribute')
 
-		rows = self.db.execute("""select * from global_attributes
-			where attr='%s'""" % attr)
-		if rows:
+		self.db.database.addCategoryAttr('global', 'global', attr, value)
+		try:
+			session = self.db.database.getSession()
+			# I need to catch the exception here
+			session.commit()
+		except sqlalchemy.exc.IntegrityError:
 			self.abort('attribute "%s" exists' % attr)
-
-		value = self.escapeAttr(value)
-		self.db.execute("""insert into global_attributes
-			values ('%s', '%s')""" % (attr, value))
 

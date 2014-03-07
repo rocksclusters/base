@@ -112,10 +112,5 @@ class Command(rocks.commands.remove.os.command):
 			self.abort('missing os name')
 
 		for os in self.getOSNames(args):
-			self.db.execute("""delete from os_attributes where 
-			os = '%s' and attr = '%s'""" % (os, attr))
-
-			self.db.execute("""delete from os_attributes where
-			os = '%s' and attr = '%s'""" %
-			(os, attr + rocks.commands.set.attr.postfix))
+			self.db.database.removeCategoryAttr('os', os, attr)
 

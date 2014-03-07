@@ -126,13 +126,11 @@ class Command(rocks.commands.list.host.command):
 
 		self.beginOutput()
 		
-		for host in self.getHostnames(args):
-			attrs = self.db.getHostAttrs(host, 1)
+		for host in self.db.database.getNodesfromNames(args):
+			attrs = self.db.database.getHostAttrs(host, 1)
 			
-			keys = attrs.keys()
-			keys.sort()
-			for key in keys:		
-				self.addOutput(host, 
+			for key in sorted(attrs.keys()):
+				self.addOutput(host.name, 
 					(key, attrs[key][0], attrs[key][1]))
 
 		self.endOutput(header=['host', 'attr', 'value', 'source' ],

@@ -157,37 +157,6 @@ class Command(rocks.commands.set.appliance.command):
 			self.about('missing value of attribute')
 
 		for appliance in appliances:
-			self.setApplianceAttr(appliance, attr, value)
-			
-	def setApplianceAttr(self, appliance, attr, value):
-
-
-		if not attr.endswith(rocks.commands.set.attr.postfix):
-			# escape only if it is not a _old attribute
-			value = self.escapeAttr(value)
-
-		rows = self.db.execute("""
-			select attr, value from appliance_attributes where
-			appliance=
-			(select id from appliances where name='%s') and
-			attr='%s'
-			""" % (appliance, attr))
-		if not rows:
-			self.db.execute("""
-				insert into appliance_attributes values 
-				((select id from appliances where name='%s'), 
-				'%s', '%s')
-				""" % (appliance, attr, value))
-		else:
-			(useless, old_value) = self.db.fetchone()
-
-			self.db.execute("""update appliance_attributes
-				set value = '%s' where attr = '%s' and
-				appliance = (select id from appliances
-				where name = '%s') """ % (value, attr,
-				appliance))
-
-			if not attr.endswith(rocks.commands.set.attr.postfix):
-				self.command('set.appliance.attr',
-					[appliance, attr + rocks.commands.set.attr.postfix, old_value])
+			self.db.database.setCategoryAttr('appliance', appliance, \
+					attr, value)
 

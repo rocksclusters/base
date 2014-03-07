@@ -121,6 +121,9 @@ import stat
 import time
 import sys
 import string
+import sqlalchemy
+
+from rocks.db.mappings.base import *
 import rocks.commands
 
 postfix = "_old"
@@ -161,23 +164,5 @@ class Command(rocks.commands.set.command):
 		if not value:
 			self.abort('missing value of attribute')
 
-		if not attr.endswith(postfix):
-			# escape only if this is not a _old attribute
-			value = self.escapeAttr(value)
-
-		rows = self.db.execute("""select * from global_attributes
-			where attr='%s'""" % attr)
-		if not rows:
-			self.db.execute("""insert into global_attributes
-				values ('%s', '%s')""" % (attr, value))
-		else:
-			(a , old_value) = self.db.fetchone()
-
-			self.db.execute("""update global_attributes
-				set value = '%s' where attr = '%s'""" %
-				(value, attr))
-
-			if not attr.endswith(postfix):
-				# set the attr_old value with the oldvalue
-				self.command('set.attr', [attr + postfix, old_value])
+		self.db.database.setCategoryAttr('global', 'global', attr, value)
 

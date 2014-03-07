@@ -100,10 +100,9 @@ class Command(rocks.commands.list.os.command):
 		self.beginOutput()
 
 		for os in self.getOSNames(args):
-			self.db.execute("""select attr, value from 
-				os_attributes where os='%s'""" % os)
-			for row in self.db.fetchall():
-				self.addOutput(os, row)
+			
+			for attr in self.db.database.getCategoryAttrs('os', os):
+				self.addOutput(os, (attr.attr, attr.value))
 
 		self.endOutput(header=['os', 'attr', 'value' ])
 

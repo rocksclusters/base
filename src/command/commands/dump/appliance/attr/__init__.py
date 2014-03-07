@@ -114,14 +114,9 @@ class Command(rocks.commands.dump.appliance.command):
 	def run(self, params, args):
 
 		for appliance in self.getApplianceNames(args):
-			self.db.execute("""
-				select attr.attr, attr.value from 
-				appliance_attributes attr, appliances a where
-				attr.appliance=a.id and a.name='%s'
-				""" % appliance)
-			for row in self.db.fetchall():
-				v = self.quote(row[1])
+			for attr in self.db.database.getCategoryAttrs('appliance', appliance):
+				v = self.quote(attr.value)
 				if v:
 					self.dump('add appliance attr %s %s %s'
-						% (appliance, row[0], v))
+						% (appliance, attr.attr, v))
 

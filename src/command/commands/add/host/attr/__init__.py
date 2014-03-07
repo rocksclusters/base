@@ -95,8 +95,10 @@ import stat
 import time
 import sys
 import string
-import rocks.commands
 
+import rocks.commands
+import rocks.util
+from rocks.db.mappings.base import *
 
 class Command(rocks.commands.add.host.command):
 	"""
@@ -137,30 +139,18 @@ class Command(rocks.commands.add.host.command):
 	def run(self, params, args):
 
 		(args, attr, value) = self.fillPositionalArgs(('attr', 'value'))
-		hosts = self.getHostnames(args)
 		
 		if not attr:
 			self.abort('missing attribute name')
 		if not value:
 			self.about('missing value of attribute')
 
-		for host in hosts:
-			self.checkHostAttr(host, attr)
+		for node in self.db.database.getNodesfromNames(args):
+			self.db.database.addCategoryAttr('host', node.name, \
+					attr, value)
 
-		value = self.escapeAttr(value)
-		for host in hosts:
-			self.db.execute("""insert into node_attributes values 
-				((select id from nodes where name='%s'), 
-				'%s', '%s')""" % (host, attr, value))
-	
-
-	def checkHostAttr(self, host, attr):
-		rows = self.db.execute("""
-			select * from node_attributes where
-			node=(select id from nodes where name='%s') and
-			attr='%s'
-			""" % (host, attr))
-		if rows:
-			self.abort('attr "%s" exists for host "%s"' % 
-				(attr, host))
+			try:
+				self.db.database.getSession().commit()
+			except sqlalchemy.exc.IntegrityError:
+				self.abort('attribute "%s" exists' % attr)
 

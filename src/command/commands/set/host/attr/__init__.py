@@ -106,6 +106,7 @@ import stat
 import time
 import sys
 import string
+
 import rocks.commands
 import rocks.commands.set.attr
 
@@ -148,43 +149,14 @@ class Command(rocks.commands.set.host.command):
 	def run(self, params, args):
 
 		(args, attr, value) = self.fillPositionalArgs(('attr', 'value'))
-		hosts = self.getHostnames(args)
-		
+
 		if not attr:
 			self.abort('missing attribute name')
 		if not value:
 			self.about('missing value of attribute')
 
-		for host in hosts:
-			self.setHostAttr(host, attr, value)
+		for node in self.db.database.getNodesfromNames(args):
+			self.db.database.setCategoryAttr('host', node.name, \
+					attr, value)
 
-			
-	def setHostAttr(self, host, attr, value):
-
-		if not attr.endswith(rocks.commands.set.attr.postfix):
-			# escape only if it is not a _old attribute
-			value = self.escapeAttr(value)
-
-		rows = self.db.execute("""
-			select attr, value from node_attributes where
-			node=(select id from nodes where name='%s') and
-			attr='%s'
-			""" % (host, attr))
-		if not rows:
-			self.db.execute("""
-				insert into node_attributes values 
-				((select id from nodes where name='%s'), 
-				'%s', '%s')
-				""" % (host, attr, value))
-		else:
-
-			(useless, old_value) = self.db.fetchone()
-			self.db.execute("""update node_attributes set
-				value = '%s' where attr = '%s' and
-				node = (select id from nodes where
-				name = '%s') """ % (value, attr, host)) 
-
-			if not attr.endswith(rocks.commands.set.attr.postfix):
-				self.command('set.host.attr',
-					[host, attr + rocks.commands.set.attr.postfix, old_value])
 

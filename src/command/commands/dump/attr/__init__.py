@@ -92,8 +92,10 @@
 
 import sys
 import socket
-import rocks.commands
 import string
+
+import rocks.commands
+from rocks.db.mappings.base import Attribute
 
 class Command(rocks.commands.dump.command):
 	"""
@@ -102,9 +104,8 @@ class Command(rocks.commands.dump.command):
 
 	def run(self, params, args):
 
-		self.db.execute('select attr, value from global_attributes')
-		for row in self.db.fetchall():
-			v = self.quote(row[1])
+		for attr in self.db.database.getCategoryAttrs('global', 'global'):
+			v = self.quote(attr.value)
 			if v:
-				self.dump("add attr %s %s" % (row[0], v))
+				self.dump("add attr %s %s" % (attr.attr, v))
 

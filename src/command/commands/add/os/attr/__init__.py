@@ -138,16 +138,10 @@ class Command(rocks.commands.add.os.command):
 			self.about('missing value of attribute')
 
 		for os in oses:
-			self.checkOSAttr(os, attr, value)
+			self.db.database.addCategoryAttr('os', os, attr, value)
 
-		for os in oses:
-			self.db.execute("""insert into os_attributes values 
-				('%s', '%s', '%s')""" % (os, attr, value))
-
+			try:
+				self.db.database.getSession().commit()
+			except:
+				self.abort('attribute "%s" exists' % attr)
 			
-	def checkOSAttr(self, os, attr, value):
-		rows = self.db.execute("""select * from os_attributes where
-			os='%s' and attr='%s'""" % (os, attr))
-		if rows:
-			self.abort('attr "%s" exists for os "%s"' % (attr, os))
-

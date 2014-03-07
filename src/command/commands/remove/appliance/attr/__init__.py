@@ -120,16 +120,5 @@ class Command(rocks.commands.remove.appliance.command):
 			self.abort('missing attribute name')
 
 		for appliance in self.getApplianceNames(args):
-			self.db.execute("""
-			delete from appliance_attributes where 
-			appliance = (select id from appliances where name='%s')
-			and attr = '%s'
-			""" % (appliance, attr))
-
-
-			self.db.execute("""
-			delete from appliance_attributes where
-			appliance = (select id from appliances where name='%s')
-			and attr = '%s'
-			""" % (appliance, attr + rocks.commands.set.attr.postfix))
+			self.db.database.removeCategoryAttr('appliance', appliance, attr)
 

@@ -106,11 +106,9 @@ class Command(rocks.commands.dump.os.command):
 	def run(self, params, args):
 
 		for os in self.getOSNames(args):
-			self.db.execute("""select attr, value from 
-				os_attributes where os='%s'""" % (os))
-			for row in self.db.fetchall():
-				v = self.quote(row[1])
+			for attr in self.db.database.getCategoryAttrs('os', os):
+				v = self.quote(attr.value)
 				if v:
 					self.dump('add os attr %s %s %s' % 
-						(os, row[0], v))
+						(os, attr.attr, v))
 

@@ -87,6 +87,7 @@
 # attribute commands
 #
 
+from rocks.db.mappings.base import *
 import rocks.commands
 import rocks.commands.set.attr
 
@@ -121,16 +122,9 @@ class Command(rocks.commands.remove.host.command):
 		if not attr:
 			self.abort('missing attribute name')
 
-		for host in self.getHostnames(args):
-			self.db.execute("""
-			delete from node_attributes where 
-			node = (select id from nodes where name='%s')
-			and attr = '%s'
-			""" % (host, attr))
+		for node in self.db.database.getNodesfromNames(args):
 
-			self.db.execute("""
-			delete from node_attributes where
-			node = (select id from nodes where name='%s')
-			and attr = '%s'
-			""" % (host, attr + rocks.commands.set.attr.postfix))
+			self.db.database.removeCategoryAttr('host', node.name, attr)
+
+
 
