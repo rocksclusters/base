@@ -192,6 +192,7 @@
 import os
 import sys
 import subprocess 
+import xml.sax
 from xml.sax import handler
 
 # An exception for Kickstart builder trinity: kcgi, kgen, kpp
@@ -215,6 +216,15 @@ class KickstartNodeError(KickstartError):
 
 class Struct:
     pass
+
+
+def escapeAttr(value):
+	"""escape attribute values with XML escaping"""
+	return xml.sax.saxutils.escape(value, {"\"": "&quot;"})
+
+def unescapeAttr(value):
+	"""unescape attribute values with XML escaping """
+	return xml.sax.saxutils.unescape(value, {"&quot;": "\""})
 
 
 def list2str(list):

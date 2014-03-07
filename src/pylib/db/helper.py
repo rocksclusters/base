@@ -391,8 +391,18 @@ class DatabaseHelper(rocks.db.database.Database):
 			session.add(catindex)
 			return (cat, catindex)
 
+	def addCategoryAttr(self, category_name, catindex_name, attr, value):
+		"""general function to add an attribute to the DB given a category
+		and a catindex"""
 
-	def setGeneralAttr(self, category_name, catindex_name, attr, value):
+		value = rocks.util.escapeAttr(value)
+		(cat, catindex) = self.getCategoryIndex(category_name, catindex_name)
+
+		newAttr = Attribute(attr=attr, value=value, category=cat, catindex=catindex)
+		return newAttr
+
+
+	def setCategoryAttr(self, category_name, catindex_name, attr, value):
 		"""general function which set an attribute value for a given 
 		category and catindex"""
 
@@ -402,7 +412,6 @@ class DatabaseHelper(rocks.db.database.Database):
 			# escape only if it is not a _old attribute
 			value = rocks.util.escapeAttr(value)
 
-		print category_name, catindex_name
 		(cat, catindex) = self.getCategoryIndex(category_name, \
 					catindex_name)
 
@@ -423,7 +432,7 @@ class DatabaseHelper(rocks.db.database.Database):
 		# somebody will need to run commit
 
 		if not attr.endswith(rocks.commands.set.attr.postfix):
-			self.setGeneralAttr(category_name, catindex_name, \
+			self.setCategoryAttr(category_name, catindex_name, \
 				attr + rocks.commands.set.attr.postfix, old_value)
 
 
@@ -438,6 +447,20 @@ class DatabaseHelper(rocks.db.database.Database):
 
 		return Attribute.load(session, category=cat, catindex=catindex)
 
+	def removeCategoryAttr(self, category_name, catindex_name, attribute_name):
+
+		session = self.getSession()
+
+		(cat, cat_index) = self.getCategoryIndex(category_name, catindex_name)
+
+		session.query(Attribute).filter(Attribute.attr == attribute_name, \
+				Attribute.category==cat, \
+				Attribute.catindex==cat_index).delete()
+
+		session.query(Attribute).filter(Attribute.attr == \
+				(attribute_name + rocks.commands.set.attr.postfix), \
+				Attribute.category==cat, \
+				Attribute.catindex==cat_index).delete()
 
 
 	def getHostAttrs(self, hostname, showsource=False):
