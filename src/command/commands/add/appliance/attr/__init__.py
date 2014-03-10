@@ -161,17 +161,3 @@ class Command(rocks.commands.add.appliance.command):
 				self.abort('attribute "%s" exists' % attr)
 
 
-
-			
-
-	def checkApplianceAttr(self, appliance, attr):
-		rows = self.db.execute("""
-			select * from appliance_attributes where
-			appliance=
-			(select id from appliances where name='%s') and
-			attr='%s'
-			""" % (appliance, attr))
-		if rows:
-			self.abort('attr "%s" exists for appliance "%s" ' % 
-				(attr, appliance))
-
