@@ -84,7 +84,9 @@
 # attribute commands
 #
 
+from rocks.db.mappings.base import *
 import rocks.commands
+
 
 class Plugin(rocks.commands.Plugin):
 
@@ -92,9 +94,10 @@ class Plugin(rocks.commands.Plugin):
 		return 'attr'
 
 	def run(self, host):
-		(cat, catindex) = self.owner.db.database.getCategoryAttrs('host', \
+		(cat, cat_index) = self.owner.db.database.getCategoryIndex('host', \
 				host)
 		session = self.owner.db.database.getSession()
 		session.query(Attribute).filter(Attribute.category==cat, \
 				Attribute.catindex==cat_index).delete()
+		session.commit()
 
