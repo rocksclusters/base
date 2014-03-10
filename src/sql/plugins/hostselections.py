@@ -87,9 +87,11 @@ class Plugin(rocks.sql.InsertEthersPlugin):
 		self.app.execute(query)
 		membership = self.app.fetchone()[0]
 
-		self.app.execute("""SELECT value FROM
-		 	nodes n JOIN node_attributes attr on attr.node=n.id 
-			WHERE n.name='%s' and Attr='os' """ % nodename) 
+		self.app.execute("""select value 
+			from attributes a, categories cat, catindex ind 
+			where a.attr="os" and a.catindex = ind.id and 
+			ind.name = "%s" and ind.category = cat.id and 
+			cat.name = "host" """ % nodename) 
 
 		osname, = self.app.fetchone()
 		
