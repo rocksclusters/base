@@ -929,10 +929,11 @@ class InsertEthers(GUI):
 		# Check if the appliance is kickstartable. We only need
 		# to check the appliance_attributes table in this instance
 		# since this value cannot be in any other table yet.
-		query = 'select if(aa.value="yes", True, False) from '	+\
-			'appliance_attributes aa, appliances a where '	+\
-			'a.name="%s" and aa.appliance=a.id ' % basename+\
-			'and aa.attr="kickstartable"'
+		query = 'select if(a.value="yes", True, False) from '	+\
+			'attributes a, categories cat, catindex ind where ' +\
+			'cat.name = "appliance" and ind.category = cat.id and ' +\
+			'ind.name="%s" and ind.id = a.catindex ' % basename+\
+			'and a.attr="kickstartable"'
 		rows = self.sql.execute(query)
 		if rows > 0:
 			self.kickstartable = bool(self.sql.fetchone()[0])
