@@ -62,6 +62,8 @@ import rocks.gen
 import rocks.commands
 import rocks.commands.set.attr
 import rocks.commands.run
+from rocks.db.mappings.base import *
+import sqlalchemy
 import tempfile
 import IPy
 from socket import inet_ntoa
@@ -159,13 +161,16 @@ class Command(rocks.commands.run.command):
 		for name in additional_attr:
 			if name == 'dhcp_nextserver':
 				# this is an appliance attribute it needs special care
-				rows = self.db.execute('''select name
-					from appliance_attributes, appliances
-					where Appliance = id and
-					Attr = "dhcp_nextserver"''')
-				for app_name, in self.db.fetchall():
+				s = self.db.database.getSession()
+				apps = s.query(sqlalchemy.distinct(Catindex.name))\
+					.join(Catindex.attributes)\
+					.join(Attribute.category)\
+					.filter(Attribute.attr == "dhcp_nextserver", \
+						Category.name == 'appliance')\
+					.all()
+				for app_name in apps:
 					self.command('set.appliance.attr',
-						[app_name, name, additional_attr[name]])
+						[app_name[0], name, additional_attr[name]])
 			else:
 				self.command('set.attr', [name, additional_attr[name]])
 
