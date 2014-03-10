@@ -322,8 +322,4 @@ class Command(command):
 		#
 		#
 		# Set the value of the OS in the host attributes table
-		db_cmd = ('insert into node_attributes '
-			'(node, attr, value) '
-			'values ((select id from nodes where name="%s"), '
-			'"%s","%s")' % (host, 'os', osname))
-		self.db.execute(db_cmd)
+		self.db.database.setCategoryAttr('host', host, 'os', osname)
