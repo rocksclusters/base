@@ -113,11 +113,10 @@ class Command(rocks.commands.report.command):
 		# been provisioned. This information is used to
 		# classify the nodes.
 
-		self.db.execute("""select n.name, n_attr.value, n.rack, a.name
+		self.db.execute("""select n.name, n.rack, a.name
 				from nodes as n inner join (memberships m,
-				node_attributes n_attr, appliances a) on 
+				appliances a) on 
 				(n.membership=m.id and m.appliance=a.id 
-				and n.id=n_attr.node and n_attr.attr='os'
 				and a.name!='frontend')""")
 
 		# The classification of nodes is done as follows.
@@ -135,7 +134,8 @@ class Command(rocks.commands.report.command):
 		# Logically, the OS metagroup and the appliance metagroup
 		# are the same
 
-		for (node, osname, rack, appliance) in self.db.fetchall():
+		osname = 'linux'
+		for (node, rack, appliance) in self.db.fetchall():
 			if not groups.has_key(osname):
 				groups[osname] = []
 			if '@' + osname not in groups['default']:
