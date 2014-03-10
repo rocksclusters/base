@@ -194,30 +194,18 @@ class Command(rocks.commands.HostArgumentProcessor,
 	def makeAttrDictionary(self):
 		# Read all the attributes global, os, app, host
 		self.db.execute("""
-			SELECT n.id, n.name, g.attr, g.value, 100 
-			FROM nodes n JOIN global_attributes g  WHERE 
-			g.attr="kickstartable" OR g.attr="dhcp_nextserver" 
-			OR g.attr="dhcp_filename"
-			UNION
-			SELECT n.id, n.name, a.attr, a.value, 300 from nodes n,
-			memberships m JOIN appliances app 
-			ON m.appliance=app.id, appliance_attributes a 
-			WHERE n.membership=m.id  AND a.appliance=app.id
-			AND a.attr="kickstartable" OR a.attr="dhcp_nextserver"
-		 	OR a.attr="dhcp_filename"
-			UNION
-			SELECT n.id, n.name, o.attr, o.value, 200 from nodes n,
-			memberships m JOIN appliances app 
-			ON m.appliance=app.id, os_attributes o 
-			WHERE n.membership=m.id  AND (app.OS=o.OS)
-			AND o.attr="kickstartable" OR o.attr="dhcp_nextserver" 
-			OR o.attr="dhcp_filename"
-			UNION
-			SELECT n.id, n.name, na.attr, na.value, 400 
-			from nodes n JOIN node_attributes na ON na.node=n.id
-			AND na.attr="kickstartable" OR na.attr="dhcp_nextserver"
-			OR na.attr="dhcp_filename"
-			ORDER by 1,3,5; """)
+			select n.id, n.name, att.attr, att.value, rc.precedence
+			from nodes n, memberships m, appliances a, attributes att, 
+				categories cat, catindex ind, resolvechain rc
+			where n.membership = m.id and m.appliance = a.id and 
+			  att.category = cat.id and att.catindex = ind.id and 
+			  att.category = rc.category and
+			  (cat.name = 'global' or 
+			    (cat.name = 'os' and ind.name = n.os) or 
+			    (cat.name = 'appliance' and ind.name = a.name) or 
+			    (cat.name = 'host' and ind.name = n.name)
+			  )
+			order by n.id, rc.precedence;""")
 
 		self.attrdict = {}
 		for row in self.db.fetchall():
