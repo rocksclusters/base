@@ -206,6 +206,19 @@ class Nodes:
 		self.sql.execute(insert)
 		self.nodeid = nodeid
 
+
+		row = self.sql.execute('''select * from catindex i, categories c 
+			where c.name = "host" and c.id = i.category 
+			and i.name = "%s"''' % name)
+
+		if row == 0:
+			# add the category
+			self.sql.execute('''insert into catindex (name, category) 
+				value ("%s" , (select c.id 
+					from categories c 
+					where c.name='host')
+				); ''' % name)
+
 		# Set the value of the OS in the host attributes table
 		db_cmd = ('insert into attributes '
 			'(attr, value, category, catindex) '

@@ -98,9 +98,11 @@ class Plugin(rocks.sql.InsertEthersPlugin):
 		## Now execute the hostselection inserts
 		## XXFIXME:  This mirrors what rocks add host does. 
 
-		self.app.execute("""INSERT INTO catindex(Name,Category)
-
-			VALUES('%s',mapCategory('host'))""" % nodename)
+		# not needed
+		# now it is done in clusterdb insert()
+		#self.app.execute("""INSERT INTO catindex(Name,Category)
+		#
+		#	VALUES('%s',mapCategory('host'))""" % nodename)
 
 		# And then make the Default category selections for this host
 		self.app.execute("""INSERT INTO hostselections(Host,
