@@ -304,13 +304,7 @@ class Command(command):
 				next_server = self.db.getHostAttr('localhost',
 					'Kickstart_PrivateKickstartHost')
 			except:
-				rows = self.db.execute("""select value from
-					global_attributes where
-					attr='Kickstart_PrivateKickstartHost'
-					""")
-
-				if rows == 1:
-					next_server, = self.db.fetchone()
+				self.abort("Unable to find Kickstart_PrivateKickstartHost attributes")
 
 			if next_server:
 				self.command('add.appliance.attr', [app_name,
