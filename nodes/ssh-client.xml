@@ -103,9 +103,7 @@ done
 <!-- This is useful for clusters not on the Internet. -->
 
 <post cond="not ssh_use_dns" os="linux">
-<file name="/etc/ssh/sshd_config" mode="append">
-UseDNS no
-</file>
+/bin/sed 's/#UseDNS.*/UseDNS no/g' /etc/ssh/sshd_config
 </post>
 
 
