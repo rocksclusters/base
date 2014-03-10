@@ -341,7 +341,7 @@ class DatabaseHelper(rocks.db.database.Database):
 				'nodes.id=networks.node and '
 				'networks.name="%s"' % (hostname))
 			if not rows:
-				Abort('host "%s" is not in cluster'
+				raise Exception('host "%s" is not in cluster'
 					% hostname)
 		hostname, = self.fetchone()
 
