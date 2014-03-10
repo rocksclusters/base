@@ -207,9 +207,11 @@ class Nodes:
 		self.nodeid = nodeid
 
 		# Set the value of the OS in the host attributes table
-		db_cmd = ('insert into node_attributes '
-			'(node, attr, value) '
-			'values (%d, "%s","%s")' % (nodeid, 'os', osname))
+		db_cmd = ('insert into attributes '
+			'(attr, value, category, catindex) '
+			'values ("%s","%s", '
+			'(select id from categories where name = "host" ), '
+			'(select id from catindex where name = "%s"))' % ('os', osname, name))
 
 		self.sql.execute(db_cmd)
 
