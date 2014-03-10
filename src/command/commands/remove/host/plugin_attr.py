@@ -92,7 +92,9 @@ class Plugin(rocks.commands.Plugin):
 		return 'attr'
 
 	def run(self, host):
-		self.owner.db.execute("""delete from node_attributes where 
-			node = (select id from nodes where name = '%s')""" %
-			host)
+		(cat, catindex) = self.owner.db.database.getCategoryAttrs('host', \
+				host)
+		session = self.owner.db.database.getSession()
+		session.query(Attribute).filter(Attribute.category==cat, \
+				Attribute.catindex==cat_index).delete()
 
