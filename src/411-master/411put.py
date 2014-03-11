@@ -318,10 +318,10 @@ absolute path (after any chroots) will be maintained on clients."""
 		# Always use the private cluster address for 411 HTTP alerts.
 		try:
 			self.connect()
-			self.db.execute('select nodename, ip from '	+\
+			self.execute('select nodename, ip from '	+\
 				'vnet where appliance="frontend" and '	+\
 				'subnet="private"')
-			(nodename, self.ip,) = self.db.fetchone()
+			(nodename, self.ip,) = self.fetchone()
 			self.port411 = int(self.db.getHostAttr(nodename, 'port411'))
 		except Exception, msg:
 			self.doAlert = 0
