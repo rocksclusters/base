@@ -83,13 +83,24 @@ class Database(object):
 	"""
 
 	def __init__(self):
+		# this field are used to change the default behaviour for 
+		# connecting to the database
+		self._dbUser = None
+		self._dbPasswd = None
+		self._dbHost = None
+		self._dbName = None
 		self.verbose = False
 		#temporary holds results from self.conn.execute(sql)
 		self.results = False
 		self.session = None
 
 
+	def setDBPasswd(self, passwd):
+		self._dbPasswd = passwd
+
 	def getDBPasswd(self):
+		if self._dbPasswd:
+			return self._dbPasswd
 		passwd = ''
 		filename = None
 		username = self.getDBUsername()
@@ -111,15 +122,35 @@ class Database(object):
 		return passwd
 
 
+	def setDBUsername(self, name):
+		self._dbUser = name
+
 	def getDBUsername(self):
+		if self._dbUser:
+			return self._dbUser
 		return pwd.getpwuid(os.geteuid())[0].strip()
 
+
+	def setDBHostname(self, host):
+		self._dbHost = host
+
 	def getDBHostname(self):
+		if self._dbHost:
+			return self._dbHost
 		try:
 		        host = rocks.DatabaseHost
 		except:
 		        host = 'localhost'
 		return host
+
+	def setDBName(self, name):
+		self._dbName = name
+
+	def getDBName(self):
+		if self._dbName:
+			return self._dbName
+		return 'cluster'
+
 
 	def setVerbose(self, verbose):
 		"""If the verbose is true all the sql will be printed to 
@@ -137,7 +168,7 @@ class Database(object):
 		mysql_socket = '/var/opt/rocks/mysql/mysql.sock'
 
 		url = 'mysql+mysqldb://' + self.getDBUsername() + ':' + self.getDBPasswd() \
-			 + '@' + self.getDBHostname() + '/cluster'
+			 + '@' + self.getDBHostname() + '/' + self.getDBName()
 		if os.path.exists(mysql_socket):
 			# we can use a unix socket
 			url += "?unix_socket=" + mysql_socket
