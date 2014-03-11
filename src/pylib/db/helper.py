@@ -59,6 +59,8 @@
 import socket
 import rocks.db.database
 import rocks
+import string
+
 from rocks.db.mappings.base import *
 from sqlalchemy import or_
 
