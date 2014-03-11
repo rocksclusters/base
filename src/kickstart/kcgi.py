@@ -814,7 +814,7 @@ class App(rocks.kickstart.Application):
 			self.execute(update)
 
 		# before we start to run query against this new node save it!
-		self.link.commit()
+		# sqlalchemy does the autocommit self.link.commit()
 
 		# If we have a client IP address lookup the
 		# information needed to build its kickstart file.
