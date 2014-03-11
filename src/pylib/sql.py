@@ -231,6 +231,7 @@ import subprocess
 import rocks.util
 import rocks.app
 import rocks.commands
+import rocks.db.helper
 
 # Allow this code to work on machine that don't have mysql installed.
 # We do this to allow debuging on developer machines.
@@ -357,16 +358,6 @@ class Application(rocks.app.Application):
 		pass
 	return rval 
 
-    def getUsername(self):
-        username = self.params['user'][0]
-	if len(username) > 0:
-		return username
-
-	username = pwd.getpwuid(os.geteuid())[0]
-	return username
-
-    def getDatabase(self):
-        return self.params['db'][0]
 
     def parseArg(self, c):
         if rocks.app.Application.parseArg(self, c):
@@ -390,55 +381,67 @@ class Application(rocks.app.Application):
 
     def connect(self):
         if hasSQL:
-            self.link = connect(host='%s' % self.getHost(),\
-				user='%s' % self.getUsername(),\
-                                db='%s' % self.getDatabase(),\
-				passwd='%s' % self.getPassword(),\
-				unix_socket='/var/opt/rocks/mysql/mysql.sock')
+            newdb = rocks.db.helper.DatabaseHelper()
+            newdb.setDBName(self.params['db'][0])
+            username = self.params['user'][0]
+            if len(username) > 0:
+                newdb.setDBUsername(username)
+            newdb.setDBHostname(self.params['host'][0])
 
+            if self.flags['verbose'][0]:
+                newdb.setVerbose()
+    
+            pwd = self.params['password'][0]
+            if len(pwd) > 0:
+            	newdb.setDBPasswd(pwd)
+
+            # really establish connection
+            newdb.connect()
+            # TODO this has to go no more commands here
             # This is the database cursor for the rocks command line interface
-            self.db = rocks.commands.DatabaseConnection(self.link)
+            self.db = rocks.commands.DatabaseConnection(newdb)
 	    # This is the database cursor for the rocks.sql.app interface
             # Get a database cursor which is used to manage the context of
             # a fetch operation
-	    if self.flags['verbose'][0]:
-	     	print "connect:connected",self.link
-            self.cursor = self.link.cursor()
             return 1
         return 0
 
     def execute(self, command):
         if hasSQL:
-            return self.cursor.execute(command)
+            return self.db.execute(command)
         return None
 
     def fetchone(self):
         if hasSQL:
-            return self.cursor.fetchone()
+            return self.db.fetchone()
         return None
 
     def fetchall(self):
         if hasSQL:
-            return self.cursor.fetchall()
+            return self.db.fetchall()
         return None
+
+    def close(self):
+        if hasSQL:
+            self.db.database.close()
+
+    def commit(self):
+        if hasSQL:
+            self.db.database.commit()
 
     def insertId(self):
 	"Returns the last inserted id. Useful for auto_incremented columns"
         id = None
         if hasSQL:
-            id = self.cursor.lastrowid
+            id = self.db.database.results.lastrowid
         return id
 
-    def close(self):
-        if hasSQL:
-            if self.link:
-               return self.link.close()
-        return None
 
     def __repr__(self):
         return string.join(self.report, '\n')
 
     def getGlobalVar(self, service, component, node=0):
+	# TODO fix this terrible!!!
         cmd = '/opt/rocks/bin/rocks report host attr localhost '
         cmd += 'attr=%s_%s' % (service, component)
 
