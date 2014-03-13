@@ -126,7 +126,6 @@ import sqlalchemy
 from rocks.db.mappings.base import *
 import rocks.commands
 
-postfix = "_old"
 
 class Command(rocks.commands.set.command):
 	"""

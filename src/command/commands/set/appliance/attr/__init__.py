@@ -104,7 +104,6 @@ import time
 import sys
 import string
 import rocks.commands
-import rocks.commands.set.attr
 
 
 class Command(rocks.commands.set.appliance.command):

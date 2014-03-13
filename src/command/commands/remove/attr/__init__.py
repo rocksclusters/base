@@ -83,7 +83,6 @@
 
 
 import rocks.commands
-import rocks.commands.set.attr
 from rocks.db.mappings.base import *
 
 

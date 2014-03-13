@@ -64,6 +64,10 @@ import string
 from rocks.db.mappings.base import *
 from sqlalchemy import or_
 
+
+attr_postfix = "_old"
+
+
 class DatabaseHelper(rocks.db.database.Database):
 	"""This class extend the Database class with a set of helper method 
 	which returns object from the rocks.db.mappings classes
@@ -410,7 +414,7 @@ class DatabaseHelper(rocks.db.database.Database):
 
 		session = self.getSession()
 
-		if not attr.endswith(rocks.commands.set.attr.postfix):
+		if not attr.endswith(attr_postfix):
 			# escape only if it is not a _old attribute
 			value = rocks.util.escapeAttr(value)
 
@@ -433,9 +437,9 @@ class DatabaseHelper(rocks.db.database.Database):
 		old_attr.value = value
 		# somebody will need to run commit
 
-		if not attr.endswith(rocks.commands.set.attr.postfix):
+		if not attr.endswith(attr_postfix):
 			self.setCategoryAttr(category_name, catindex_name, \
-				attr + rocks.commands.set.attr.postfix, old_value)
+				attr + attr_postfix, old_value)
 
 
 	def getCategoryAttrs(self, category_name, catindex_name):
@@ -460,7 +464,7 @@ class DatabaseHelper(rocks.db.database.Database):
 				Attribute.catindex==cat_index).delete()
 
 		session.query(Attribute).filter(Attribute.attr == \
-				(attribute_name + rocks.commands.set.attr.postfix), \
+				(attribute_name + attr_postfix), \
 				Attribute.category==cat, \
 				Attribute.catindex==cat_index).delete()
 

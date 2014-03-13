@@ -85,7 +85,6 @@
 #
 
 import rocks.commands
-import rocks.commands.set.attr
 
 
 class Command(rocks.commands.remove.appliance.command):

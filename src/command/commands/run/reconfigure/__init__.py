@@ -60,7 +60,6 @@ import os
 import string
 import rocks.gen
 import rocks.commands
-import rocks.commands.set.attr
 import rocks.commands.run
 from rocks.db.mappings.base import *
 import sqlalchemy
@@ -199,8 +198,8 @@ class Command(rocks.commands.run.command):
 		"""it returns a dictionary of the attributes with _old values"""
 		ret_dict = {}
 		for name in current_attrs:
-			if name.endswith(rocks.commands.set.attr.postfix):
-				real_name = name[:-len(rocks.commands.set.attr.postfix)]
+			if name.endswith(self.db.database.attr_postfix):
+				real_name = name[:-len(self.db.database.attr_postfix)]
 				ret_dict[real_name] = current_attrs[real_name]
 		return ret_dict
 
