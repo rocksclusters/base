@@ -118,7 +118,7 @@ test_expect_success 'test attributes - tear down removing attribute' '
 	rocks remove host attr $attr_name 
 '
 
-test_expect_success 'test attributes - tear down removing facke host' ' 
+test_expect_success 'test attributes - tear down removing fake host' ' 
 	rocks remove host $node_name
 '
 

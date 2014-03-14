@@ -32,11 +32,11 @@ test: pre-clean $(TEST_LINT)
 	$(MAKE) aggregate-results-and-cleanup
 
 prove: pre-clean $(TEST_LINT)
-	@echo "*** prove ***"; ROCKS_CONFIG=.git/config $(PROVE) --exec '$(SHELL_PATH_SQ)' $(ROCKS_PROVE_OPTS) $(T) :: $(ROCKS_TEST_OPTS)
+	@echo "*** prove ***"; $(PROVE) --exec '$(SHELL_PATH_SQ)' $(ROCKS_PROVE_OPTS) $(T) :: $(ROCKS_TEST_OPTS)
 	$(MAKE) clean-except-prove-cache
 
 $(T):
-	@echo "*** $@ ***"; ROCKS_CONFIG=.git/config '$(SHELL_PATH_SQ)' $@ $(ROCKS_TEST_OPTS)
+	@echo "*** $@ ***"; '$(SHELL_PATH_SQ)' $@ $(ROCKS_TEST_OPTS)
 
 pre-clean:
 	$(RM) -r '$(TEST_RESULTS_DIRECTORY_SQ)'
