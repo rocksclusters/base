@@ -301,8 +301,11 @@ class Command(command):
 			next_server = None
 
 			try:
-				next_server = self.db.getHostAttr('localhost',
-					'Kickstart_PrivateKickstartHost')
+				# this command is called at an early stage while populating the
+				# database and there are not host defined so getHostAttr would fail
+				for a in self.db.database.getCategoryAttrs('global', 'global'):
+					if a.attr == 'Kickstart_PrivateKickstartHost':
+						next_server = a.value
 			except:
 				self.abort("Unable to find Kickstart_PrivateKickstartHost attributes")
 
