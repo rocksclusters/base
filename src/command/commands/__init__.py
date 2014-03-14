@@ -1299,31 +1299,20 @@ class DatabaseConnection:
 	
 	def __init__(self, db):
 		# self.database : is a rocks.db.database.Database object
-		if db:
-			self.database = db
-		else:
-			self.database = None
+		self.database = db
 		
 	def execute(self, command):
-		if self.database:
-			return self.database.execute(command)
-		return None
+		return self.database.execute(command)
 
 	def fetchone(self):
-		if self.database:
-			return self.database.fetchone()
-		return None
+		return self.database.fetchone()
 
 	def fetchall(self):
-		if self.database:
-			return self.database.fetchall()
-		return None
+		return self.database.fetchall()
 
 	def getSession(self):
 		"""helper function to get the session"""
-		if self.database:
-			return self.database.getSession()
-		return None
+		return self.database.getSession()
 
 	def getHostRoutes(self, host, showsource=0):
 

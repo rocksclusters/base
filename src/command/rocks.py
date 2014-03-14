@@ -190,9 +190,9 @@ try:
 	database.connect()
 
 except ImportError:
-	database = None
+	pass
 except sqlalchemy.exc.OperationalError:
-	database = None
+	pass
 
 
 
