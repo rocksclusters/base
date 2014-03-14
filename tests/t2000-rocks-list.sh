@@ -27,8 +27,8 @@ test_expect_success 'rocks list appliance route ' '
 	rocks list appliance route 
 '
 
-test_expect_success 'rocks list appliance xml' '
-	rocks list appliance xml
+test_expect_success 'rocks list appliance xml compute' '
+	rocks list appliance xml compute
 '
 
 test_expect_success 'rocks list attr ' '
@@ -117,7 +117,7 @@ test_expect_success 'rocks list host sec_attr' '
 '
 
 test_expect_success 'rocks list host xml' '
-	rocks list host xml
+	rocks list host xml localhost
 '
 
 test_expect_success 'rocks list license ' '

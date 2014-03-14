@@ -42,7 +42,7 @@ pre-clean:
 	$(RM) -r '$(TEST_RESULTS_DIRECTORY_SQ)'
 
 clean-except-prove-cache:
-	$(RM) -r 'trash directory'.* '$(TEST_RESULTS_DIRECTORY_SQ)'
+	$(RM) -r 'trash_directory'.* '$(TEST_RESULTS_DIRECTORY_SQ)'
 
 clean: clean-except-prove-cache
 	$(RM) .prove
