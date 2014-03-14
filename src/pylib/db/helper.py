@@ -228,7 +228,7 @@ class DatabaseHelper(rocks.db.database.Database):
 			else:
 				addr = None
 
-		if not addr:
+		if not addr and self.conn:
 			self.execute("""select name from nodes
 				where name="%s" """ % hostname)
 			if self.fetchone():
@@ -338,18 +338,19 @@ class DatabaseHelper(rocks.db.database.Database):
 		# hostname is in the networks table.  This last
 		# check handles the case where DNS is correct but
 		# the IP address used is different.
-		rows = self.execute('select nodes.name from '
-			'networks,nodes where '
-			'nodes.id=networks.node and ip="%s"' % (addr))
-		if not rows:
-			rows = self.execute('select nodes.name ' 
-				'from networks,nodes where '
-				'nodes.id=networks.node and '
-				'networks.name="%s"' % (hostname))
+		if self.conn:
+			rows = self.execute('select nodes.name from '
+				'networks,nodes where '
+				'nodes.id=networks.node and ip="%s"' % (addr))
 			if not rows:
-				raise Exception('host "%s" is not in cluster'
-					% hostname)
-		hostname, = self.fetchone()
+				rows = self.execute('select nodes.name ' 
+					'from networks,nodes where '
+					'nodes.id=networks.node and '
+					'networks.name="%s"' % (hostname))
+				if not rows:
+					raise Exception('host "%s" is not in cluster'
+						% hostname)
+			hostname, = self.fetchone()
 
 		return hostname
 

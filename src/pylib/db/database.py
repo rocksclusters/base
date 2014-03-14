@@ -93,6 +93,7 @@ class Database(object):
 		#temporary holds results from self.conn.execute(sql)
 		self.results = False
 		self.session = None
+		self.conn = None
 
 
 	def setDBPasswd(self, passwd):
@@ -240,20 +241,25 @@ class Database(object):
 			pass
 
 	def execute(self, command):
-		if '%' in command:
-			command = string.replace(command, '%', '%%')
-		self.results = self.conn.execute(command)
-		# rowcont should not be used it is not portable
-		# http://docs.sqlalchemy.org/en/rel_0_9/core/connections.html#sqlalchemy.engine.ResultProxy.rowcount
-		return self.results.rowcount
+		if self.conn:
+			if '%' in command:
+				command = string.replace(command, '%', '%%')
+			self.results = self.conn.execute(command)
+			# rowcont should not be used it is not portable
+			# http://docs.sqlalchemy.org/en/rel_0_9/core/connections.html#sqlalchemy.engine.ResultProxy.rowcount
+			return self.results.rowcount
+		else:
+			return None
 	
 	def fetchone(self):
 		if self.results:
 			return self.results.fetchone()
-		return None
+		return ()
 	
 	def fetchall(self):
-		return self.results.fetchall()
+		if self.results:
+			return self.results.fetchall()
+		return ()
 	
 	def close(self):
 		if self.conn:
