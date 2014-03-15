@@ -2014,9 +2014,18 @@ class Command:
 			else:
 				self._args   = list
 				self._params = dict
-				self.run(self._params, self._args)
-				if self.db.database is not None:
-					self.db.database.commit()
+				try:
+					self.run(self._params, self._args)
+					if self.db.database is not None:
+						self.db.database.commit()
+				except rocks.exceptions.HostnotfoundException as e:
+					Abort(str(e))
+				except sqlalchemy.exc.OperationalError as e:
+					Abort("Major dabase failure (mysql daemon down,"
+						" disk full, etc.):\n" + str(e))
+
+
+
 	def run(self, flags, args):
 		"""All derived classes should override this method.
 		This method is called by the rocks command line as the

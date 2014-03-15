@@ -59,6 +59,7 @@
 import socket
 import rocks.db.database
 import rocks
+import rocks.exceptions
 import string
 
 from rocks.db.mappings.base import *
@@ -321,7 +322,8 @@ class DatabaseHelper(rocks.db.database.Database):
 				fin.close()
 
 			# TODO add phils execption to this
-			raise Exception('cannot resolve host "%s"' % hostname)
+			raise rocks.exceptions.HostnotfoundException(\
+				'cannot resolve host "%s"' % hostname)
 				
 		
 		if addr == '127.0.0.1': # allow localhost to be valid
@@ -348,8 +350,8 @@ class DatabaseHelper(rocks.db.database.Database):
 					'nodes.id=networks.node and '
 					'networks.name="%s"' % (hostname))
 				if not rows:
-					raise Exception('host "%s" is not in cluster'
-						% hostname)
+					raise rocks.exceptions.HostnotfoundException(\
+						'host "%s" is not in cluster' % hostname)
 			hostname, = self.fetchone()
 
 		return hostname
@@ -454,6 +456,7 @@ class DatabaseHelper(rocks.db.database.Database):
 
 		return Attribute.load(session, category=cat, catindex=catindex)
 
+
 	def removeCategoryAttr(self, category_name, catindex_name, attribute_name):
 
 		session = self.getSession()
@@ -479,6 +482,7 @@ class DatabaseHelper(rocks.db.database.Database):
 		session = self.getSession()
 
 		if isinstance(hostname, str):
+			# to support legacy getHostAttr which works with string
 			(appliance, membership, node) = \
 				session.query(Appliance.name, Membership.name, Node)\
 					.join(Node.membership)\
