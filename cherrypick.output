@@ -1,0 +1,125 @@
+00047b4
+[ROCKS_6_1_1 410ad98] cut&paste typo in the userdoc
+ Author: Luca Clementi <luca.clementi@gmail.com>
+ 1 files changed, 0 insertions(+), 1 deletions(-)
+4b1ae6c
+[ROCKS_6_1_1 036a097] userdoc: updated the changelog with latest modification (cherry picked from commit 4b1ae6c0cc66b071fb23d733e5666dbf7837eb9a)
+ Author: Luca Clementi <luca.clementi@gmail.com>
+ 1 files changed, 70 insertions(+), 0 deletions(-)
+ebee3f1
+[ROCKS_6_1_1 8b85dfb] userguide: fix wrong path in customising kernel driver (cherry picked from commit ebee3f13ce85544160cb5b8f1249eb59d5454d39)
+ Author: Luca Clementi <luca.clementi@gmail.com>
+ 1 files changed, 3 insertions(+), 3 deletions(-)
+2c81090
+[ROCKS_6_1_1 1e86c30] userguide: fix URL to create updates
+ Author: Luca Clementi <luca.clementi@gmail.com>
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+93fa3be
+[ROCKS_6_1_1 0ce4ce4] userguide: web server roll is not required for barebone installation (cherry picked from commit 93fa3bedc7727e7997059222ed102c12235f0cff)
+ Author: Luca Clementi <luca.clementi@gmail.com>
+ 2 files changed, 226 insertions(+), 249 deletions(-)
+ rewrite src/usersguide/images/install/7.png (99%)
+c8f8703
+[ROCKS_6_1_1 7dca24d] userguide: fix resolution of installation image (cherry picked from commit c8f8703aba38f1e3ee381757e2631cfc175d8003)
+ Author: Luca Clementi <luca.clementi@gmail.com>
+ 1 files changed, 169 insertions(+), 225 deletions(-)
+ rewrite src/usersguide/images/install/7.png (99%)
+de736c1
+[ROCKS_6_1_1 bc09a58] Fix set host interface ip with ip=NULL
+ Author: John Zaitseff <J.Zaitseff@unsw.edu.au>
+ 1 files changed, 7 insertions(+), 6 deletions(-)
+60d7495
+[ROCKS_6_1_1 924d6e1] rocks report firewall with IPMI intreface on private subnet
+ Author: Luca Clementi <luca.clementi@gmail.com>
+ 1 files changed, 2 insertions(+), 0 deletions(-)
+be747d5
+[ROCKS_6_1_1 b211af9] propagate a groups through 411 only if GID > 500
+ Author: Patrick Begou <Patrick.Begou@hmg.inpg.fr>
+ 1 files changed, 0 insertions(+), 5 deletions(-)
+f2b8b45
+[ROCKS_6_1_1 ccbad9b] fix conflicts in foundation-graphviz with graphviz
+ Author: Luca Clementi <luca.clementi@gmail.com>
+ 2 files changed, 3 insertions(+), 1 deletions(-)
+02d4d15
+[ROCKS_6_1_1 c903408] removed useless pice of code from report host interface
+ Author: Luca Clementi <luca.clementi@gmail.com>
+ 1 files changed, 0 insertions(+), 21 deletions(-)
+4943c5e
+[ROCKS_6_1_1 cf34236] Cosmetic change to make code more readable
+ Author: Luca Clementi <luca.clementi@gmail.com>
+ 1 files changed, 5 insertions(+), 4 deletions(-)
+4264c6f
+[ROCKS_6_1_1 efdaf63] report interface: fix for MTU not applied when using VLAN
+ Author: Luca Clementi <luca.clementi@gmail.com>
+ 1 files changed, 17 insertions(+), 4 deletions(-)
+082100f
+[ROCKS_6_1_1 58eea19] 411-alter-handler: properly handle corrupted timestamp file
+ Author: Luca Clementi <luca.clementi@gmail.com>
+ 1 files changed, 5 insertions(+), 1 deletions(-)
+56c6aa8
+[ROCKS_6_1_1 5693937] create distro: fix bug when two rpm have similar timestamp
+ Author: Luca Clementi <luca.clementi@gmail.com>
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+9876fc1
+[ROCKS_6_1_1 67a416c] kickstart.cgi: verify URL input arguments before placing them in a shell
+ Author: Luca Clementi <luca.clementi@gmail.com>
+ 1 files changed, 17 insertions(+), 0 deletions(-)
+543a5e1
+[ROCKS_6_1_1 c0da9e0] bootflags: fix for bootflags not applied to local kickstart kernel
+ Author: Luca Clementi <luca.clementi@gmail.com>
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+c66a80e
+[ROCKS_6_1_1 3e47cb0] base: fix network setting for proper reverse path filtering
+ Author: Luca Clementi <luca.clementi@gmail.com>
+ 1 files changed, 12 insertions(+), 0 deletions(-)
+2f8902d
+[ROCKS_6_1_1 70b75ff] validate hostname before adding new hosts
+ Author: Luca Clementi <luca.clementi@gmail.com>
+ 4 files changed, 60 insertions(+), 7 deletions(-)
+179e84e
+[ROCKS_6_1_1 3938c57] login appliance should be managed (cherry picked from commit 179e84ef655c21deaed6cdb66eedf6d446ae6115)
+ Author: Luca Clementi <luca.clementi@gmail.com>
+ 1 files changed, 3 insertions(+), 0 deletions(-)
+0ca9804
+[ROCKS_6_1_1 2b9e8d8] devel: user docs now handles properly the ROLL_REQUIRES_FULL_OS variable
+ Author: Luca Clementi <luca.clementi@gmail.com>
+ 1 files changed, 3 insertions(+), 1 deletions(-)
+4f944d1
+[ROCKS_6_1_1 ef56f6f] commands: report interface: when using dhcp do not put the mac address
+ Author: Luca Clementi <luca.clementi@gmail.com>
+ 1 files changed, 2 insertions(+), 1 deletions(-)
+8d0b5e8
+[ROCKS_6_1_1 5d883a7] commands: do not include ipmi interface name in rocks report network (cherry picked from commit 8d0b5e8788f157680a287c9be4ea67e2e668bd11)
+ Author: Luca Clementi <luca.clementi@gmail.com>
+ 1 files changed, 2 insertions(+), 1 deletions(-)
+de4b51a
+[ROCKS_6_1_1 d85217e] sync host firewall: now works without ssh on frontend
+ Author: Luca Clementi <luca.clementi@gmail.com>
+ 1 files changed, 12 insertions(+), 3 deletions(-)
+f111550
+[ROCKS_6_1_1 a59b2a8] Update select statement to use left join instead of IF and distinct row (cherry picked from commit f111550694c3517376b53c7b8540391fb8de1de6)
+ 1 files changed, 9 insertions(+), 17 deletions(-)
+bc4dd78
+[ROCKS_6_1_1 b59b925] sync host network now works without ssh on frontend
+ Author: Luca Clementi <luca.clementi@gmail.com>
+ 1 files changed, 18 insertions(+), 7 deletions(-)
+11468d4
+[ROCKS_6_1_1 7e1061f] build: fix missing python libraries from rpm
+ Author: Luca Clementi <luca.clementi@gmail.com>
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+f46ff2b
+[ROCKS_6_1_1 b245dad] Set up TMPDIR environment var so that worker.py (used by genpkgmetadata) writes  temp data locally (needed especially during installation) (cherry picked from commit f46ff2b2d130ad7aae356f592b5b13efc8d48c1a)
+ 1 files changed, 7 insertions(+), 0 deletions(-)
+8591661
+[ROCKS_6_1_1 27f3bd3] Github doesn't support files larger than 100M. So split the jdk rpms into smaller pieces and then reassemble (cherry picked from commit 8591661b4b8e6f30986903167026ada7a13134dd)
+ 6 files changed, 2 insertions(+), 0 deletions(-)
+ rename src/java/{jdk-1.7.0_13-fcs.i586.rpm => jdk-1.7.0_51-fcs.i586.rpm.aa} (77%)
+ create mode 100644 src/java/jdk-1.7.0_51-fcs.i586.rpm.ab
+ rename src/java/{jdk-1.7.0_13-fcs.x86_64.rpm => jdk-1.7.0_51-fcs.x86_64.rpm.aa} (78%)
+ create mode 100644 src/java/jdk-1.7.0_51-fcs.x86_64.rpm.ab
+3bbb1e5
+[ROCKS_6_1_1 c2a5eab] Add the capability to drop a scriptlets file into a Rocks-generated spec files by defining RPM.SCRIPTLETS.FILE (cherry picked from commit 3bbb1e501c9b0a65e2b31e20c555eabf02154dd6)
+ 1 files changed, 5 insertions(+), 0 deletions(-)
+2a463ad
+[ROCKS_6_1_1 4d8bc52] patch gui.py, yuminstall.py for latest version of anaconda used in Rocks 6.2 (cherry picked from commit 2a463ad7c840f7834280ab5a7404291f40fbed03)
+ 2 files changed, 90 insertions(+), 62 deletions(-)

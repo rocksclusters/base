@@ -1,0 +1,34 @@
+# userdoc stuff
+00047b4 cut&paste typo in the userdoc
+4b1ae6c userdoc: updated the changelog with latest modification
+ebee3f1 userguide: fix wrong path in customising kernel driver
+2c81090 userguide: fix URL to create updates
+93fa3be userguide: web server roll is not required for barebone installation
+c8f8703 userguide: fix resolution of installation image
+# real commits
+de736c1 Fix set host interface ip with ip=NULL
+60d7495 rocks report firewall with IPMI intreface on private subnet
+be747d5 propagate a groups through 411 only if GID > 500 
+f2b8b45 fix conflicts in foundation-graphviz with graphviz 
+02d4d15 removed useless pice of code from report host interface
+4943c5e Cosmetic change to make code more readable 
+4264c6f report interface: fix for MTU not applied when using VLAN
+082100f 411-alter-handler: properly handle corrupted timestamp file
+56c6aa8 create distro: fix bug when two rpm have similar timestamp
+9876fc1 kickstart.cgi: verify URL input arguments before placing them in a shell
+543a5e1 bootflags: fix for bootflags not applied to local kickstart kernel
+c66a80e base: fix network setting for proper reverse path filtering
+2f8902d validate hostname before adding new hosts
+179e84e login appliance should be managed
+0ca9804 devel: user docs now handles properly the ROLL_REQUIRES_FULL_OS variable
+4f944d1 commands: report interface: when using dhcp do not put the mac address
+8d0b5e8 commands: do not include ipmi interface name in rocks report network
+de4b51a sync host firewall: now works without ssh on frontend
+f111550 Update select statement to use left join instead of IF and distinct row
+bc4dd78 sync host network now works without ssh on frontend
+11468d4 build: fix missing python libraries from rpm
+f46ff2b Set up TMPDIR environment var so that worker.py (used by genpkgmetadata)
+8591661 Github doesn't support files larger than 100M. So split the jdk rpms into smaller pieces and then reassemble
+3bbb1e5 Add the capability to drop a scriptlets file into a Rocks-generated spec files
+2a463ad patch gui.py, yuminstall.py for latest version of anaconda used in Rocks 6.2
+
