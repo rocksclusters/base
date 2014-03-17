@@ -31,4 +31,5 @@ f46ff2b Set up TMPDIR environment var so that worker.py (used by genpkgmetadata)
 8591661 Github doesn't support files larger than 100M. So split the jdk rpms into smaller pieces and then reassemble
 3bbb1e5 Add the capability to drop a scriptlets file into a Rocks-generated spec files
 2a463ad patch gui.py, yuminstall.py for latest version of anaconda used in Rocks 6.2
-
+025fd86 Add new anaconda source rpm 
+b505dfe set the version of anaconda properly for CentOS 6.5 base 
