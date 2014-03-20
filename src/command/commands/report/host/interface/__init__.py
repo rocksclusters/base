@@ -343,12 +343,12 @@ class Command(rocks.commands.HostArgumentProcessor,
 			self.addOutput(host, 'MTU=%s' % mtu)
 		self.addOutput(host, '</file>')
 
-		# I want to create the empty file so that it overwirtes default 
-		# Anaconda files
-		s = '<file name="/etc/sysconfig/network-scripts/ifcfg-'
-		s += '%s">' % brName
-		self.addOutput(host, s)
+		# bridge with the name of IP address of the original interface
+		# attached to the physical interface
 		if ip and netmask:
+			s = '<file name="/etc/sysconfig/network-scripts/ifcfg-'
+			s += '%s">' % brName
+			self.addOutput(host, s)
 			#    ------      bridge dev with IP
 			self.addOutput(host, 'DEVICE=%s' % brName)
 			self.addOutput(host, 'TYPE=Bridge')
@@ -365,8 +365,14 @@ class Command(rocks.commands.HostArgumentProcessor,
 				self.addOutput(host, 'ONBOOT=no' )
 			if mtu:
 				self.addOutput(host, 'MTU=%s' % mtu)
-		self.addOutput(host, '</file>')
-		
+			self.addOutput(host, '</file>')
+		else:
+			# if the original brName file is not written we need
+			# to make sure default Anaconda file gets deleted
+			self.addOutput(host,
+				'rm -f /etc/sysconfig/network-scripts/ifcfg-%s'
+				% brName)
+
 
 
 
