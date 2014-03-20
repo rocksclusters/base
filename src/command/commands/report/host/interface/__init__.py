@@ -540,13 +540,13 @@ class Command(rocks.commands.HostArgumentProcessor,
 			interfaces_name.append(row[0])
 
 		self.db.execute("""select distinctrow 
-			net.mac, net.ip, net.device,
-			if(net.subnet, s.netmask, NULL), net.vlanid,
-			net.subnet, net.module, s.mtu, net.options, net.channel
-			from
-			networks net, nodes n, subnets s where net.node = n.id
-			and if(net.subnet, net.subnet = s.id, true) and
-			n.name = "%s" order by net.id""" % (host))
+			net.mac, net.ip, net.device, s.netmask, net.vlanid, net.subnet, 
+			net.module, s.mtu, net.options, net.channel 
+			from nodes n, networks net 
+			left outer join subnets s 
+			on net.subnet = s.id  
+			where net.node = n.id and n.name = "%s" 
+			order by net.id;""" % (host))
 
 
 		for row in self.db.fetchall():
