@@ -27,6 +27,17 @@ file:
 # cp skeleton.xml extend-compute.xml
 </screen>
 
+<para> <caution>
+<para>
+If you use <computeroutput>extend-compute.xml</computeroutput> your packages 
+will be installed only on your computed nodes. If you want your packages to 
+be installed on all other appliances (e.g. login nodes, nas nodes, etc.) you 
+should use <computeroutput>extend-base.xml</computeroutput> instead of 
+<computeroutput>extend-compute.xml</computeroutput>.
+</para></caution>
+</para>
+
+
 <para>
 Inside <computeroutput>extend-compute.xml</computeroutput>, add
 the package name by changing the section from:
