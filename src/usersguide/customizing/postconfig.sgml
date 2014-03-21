@@ -14,6 +14,15 @@ file:
 # cp skeleton.xml extend-compute.xml
 </screen>
 
+<para> <caution>
+<para>
+If you want to include your customizations in all cluster nodes 
+(and not just the compute nodes) you should use 
+<computeroutput>extend-base.xml</computeroutput> as a file name 
+instead of <computeroutput>extend-compute.xml</computeroutput>.
+</para></caution>
+</para>
+
 <para>
 Inside <computeroutput>extend-compute.xml</computeroutput>,
 add your configuration
