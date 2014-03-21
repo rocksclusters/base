@@ -26,8 +26,8 @@ ROLLSROOT = $(CURDIR)/../src/devel/devel/src/roll
 
 
 
-include version.mk
 WORKDIR = /tmp/OSROLL
+include version.mk
 default: updates 
 
 # Create the Base OS Roll
