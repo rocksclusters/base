@@ -26,8 +26,29 @@ configuration.
 <listitem>
     <para>Use rocks create mirror to create an update roll</para>
     <screen>
-    # rocks create mirror http://mirror.centos.org/centos/6/os/&lt;arch&gt;/Packages/ rollname=update-currentDate </screen>
-    <para>    Where <emphasis>arch</emphasis> is your current architecture (x86_64, i386).
+    # rocks create mirror http://mirror.centos.org/centos/6/updates/&lt;arch&gt;/Packages/  rollname=Centos_6_X_update_2014_03_21
+    </screen>
+
+    <para>Where <emphasis>arch</emphasis> is your current architecture (x86_64, i386) and the X 
+    should be the current minor release number (if latest stable version of Centos is 6.5 X should 
+    be 5).
+    </para>
+</listitem>
+
+
+<listitem>
+
+    <para>If the current minor release number changed since you installed your Rocks Cluster 
+    or if it changed since last upgrade using this procedure you must also create a new OS 
+    roll relative to the current release minor.
+    For example if the current release number of Centos is 6.5 run the following command:
+    </para>
+    <screen>
+    # rocks create mirror http://mirror.centos.org/centos/6/os/&lt;arch&gt;/Packages/  rollname=Centos_6_X
+    </screen>
+    <para>
+    If you are in doubt, you should run also the previous command, since the only drow back is that 
+    you will waste some disk space. X should be substituted with the current minor release.
     </para>
 </listitem>
 
@@ -37,8 +58,10 @@ configuration.
     distribution
     </para>
     <screen>
-    # rocks add roll update-currentDate.iso
-    # rocks enable roll update-currentDate
+    # rocks add roll Centos_6_X_update_2014_03_21-6.1-0.x86_64.disk1.iso
+    # rocks add roll Centos_6_X-6.1-0.x86_64.disk1.iso
+    # rocks enable roll Centos_6_X
+    # rocks enable roll Centos_6_X_update_2014_03_21
     # cd /export/rocks/install
     # rocks create distro </screen>
 </listitem>
@@ -59,7 +82,8 @@ configuration.
     removing the update roll.
     </para>
     <screen>
-    # rocks remove roll update-currentDate
+    # rocks remove roll Centos_6_X_update_2014_03_21
+    # rocks remove roll Centos_6_X
     # cd /export/rocks/install
     # rocks create distro </screen>
 </listitem>
