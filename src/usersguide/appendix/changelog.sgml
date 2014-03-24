@@ -3,14 +3,10 @@
 
 
 <section>
-<title>Release 6.2 - changes from 6.1_sp1</title>
+<title>Release 6.1.1 - changes from 6.1_sp1</title>
 
 <section>
 	<title>Enhancements and Bug Fixes</title>
-	<para>
-	Base: rocks run roll now supports host flag to specify the hostname
-	</para>
-
 	<para>
 	Base: rocks add host verifies hostname is not an appliance name
 	</para>
@@ -25,10 +21,6 @@
 
 	<para>
 	Base: security fix in kickstart.cgi and setPexboot.cgi
-	</para>
-
-	<para>
-	Base: rocks add appliance now supports specification of a distribution
 	</para>
 
 	<para>
@@ -52,11 +44,16 @@
 	</para>
 
 	<para>
-	Base: set host ip now accepts NULL
+	Base: set host interface ip now accepts NULL
+	</para>
+
+	<!-- backport this to the master branch -->
+	<para>
+	Base: sync host network now works with ssh on the frontend
 	</para>
 
 	<para>
-	KVM: now you can specify the vcpu type with attributes
+	Base: Login appliances are now managed
 	</para>
 
 	<para>
@@ -64,7 +61,15 @@
 	</para>
 
 	<para>
-	ZFS: updated to 0.6.1
+	ZFS: updated to 0.6.2
+	</para>
+
+	<para>
+	Python: upgraded to 2.7.6 and 3.3.4
+	</para>
+
+	<para>
+	Ganglia: updated to ganglia 3.6.0
 	</para>
 
 </section>
