@@ -90,7 +90,7 @@ class Command(command):
 		self.db.execute(cmd)
 
 		if gen is None or gen.lower() != 'true':
-			for ip in self.db.fetchall():
+			for ip,  in self.db.fetchall():
 				# Construct the shosts entry we only use the ip
 				h = '%s' % (ip)
 				self.addOutput('localhost', h)
