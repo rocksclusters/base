@@ -802,6 +802,9 @@ fi
 
 
 # restart the network
+# in case the hostname changed we need to re-set 
+# if not 'localhost' does not work
+/bin/hostname &Kickstart_PrivateHostname;
 /opt/rocks/bin/rocks sync host network localhost
 /opt/rocks/bin/rocks sync config
 
