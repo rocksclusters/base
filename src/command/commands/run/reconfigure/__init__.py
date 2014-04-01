@@ -198,8 +198,8 @@ class Command(rocks.commands.run.command):
 		"""it returns a dictionary of the attributes with _old values"""
 		ret_dict = {}
 		for name in current_attrs:
-			if name.endswith(self.db.database.attr_postfix):
-				real_name = name[:-len(self.db.database.attr_postfix)]
+			if name.endswith(rocks.db.helper.attr_postfix):
+				real_name = name[:-len(rocks.db.helper.attr_postfix)]
 				ret_dict[real_name] = current_attrs[real_name]
 		return ret_dict
 
