@@ -121,6 +121,11 @@ class Plugin(rocks.service411.Plugin):
 			'nogroup',
 			]
 
+		# If the client is a linux box
+		# just return the original content
+		if self.attrs['os'] == 'linux':
+			return content
+
 		# If not, then start filtering
 		content = content.rstrip('\n')
 		content_lines = content.split('\n')
