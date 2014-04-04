@@ -173,6 +173,14 @@ class Command(rocks.commands.run.command):
 			else:
 				self.command('set.attr', [name, additional_attr[name]])
 
+		# apparently session and connection view two different state of the database
+		# hence to see the changes above a commit on the sessions will not be enough
+		# (i tried commit, flush, and close_all) the connection will see the old 
+		# values in the DB
+		#
+		# So only closing the connection will fix this
+		self.db.database.close()
+		self.db.database.connect()
 
 		rolls = []
 		for roll in args:
