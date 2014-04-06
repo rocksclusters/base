@@ -49,9 +49,6 @@ new files
 
 <post os='linux'>
 <!-- disable SELinux -->
-<file name="/etc/sysconfig/selinux">
-SELINUX=disabled
-</file>
 <file name="/etc/selinux/config">
 SELINUX=disabled
 </file>
