@@ -397,7 +397,7 @@ log_errors = Off
 <!--
 These variables need to be attributes that are accessible
 during frontend installation, and present in the database
-in the os_attributes table once the frontend has been installed.
+as os attributes once the frontend has been installed.
 HttpRoot - Linux:/var/www/html Sunos:/var/apache2/htdocs
 HttpConfigDirExt - Linux:/etc/httpd/conf.d Sunos:/etc/apache2
 HttpConf - Linux:/etc/httpd/conf Sunos:/etc/apache2

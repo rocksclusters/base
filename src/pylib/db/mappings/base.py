@@ -98,18 +98,6 @@ class Appliance(RocksBase, Base):
     memberships = sqlalchemy.orm.relationship("Membership", backref="appliance")
 
 
-class ApplianceAttribute(RocksBase, Base):
-    __tablename__ = 'appliance_attributes'
-
-    __table_args__ = {}
-
-    #column definitions
-    appliance = Column('Appliance', Integer, ForeignKey('appliances.ID'), primary_key=True, nullable=False, default=0)
-    attr = Column('Attr', String(128), primary_key=True, nullable=False)
-    value = Column('Value', TEXT())
-
-    #relation definitions
-
 
 class ApplianceRoute(RocksBase, Base):
     __tablename__ = 'appliance_routes'
@@ -249,18 +237,6 @@ class Firewall(RocksBase, Base):
     #relation definitions
 
 
-class GlobalAttribute(RocksBase, Base):
-    __tablename__ = 'global_attributes'
-
-    __table_args__ = {}
-
-    #column definitions
-    attr = Column('Attr', String(128), primary_key=True, nullable=False)
-    value = Column('Value', TEXT())
-
-    #relation definitions
-
-
 class GlobalRoute(RocksBase, Base):
     __tablename__ = 'global_routes'
 
@@ -353,20 +329,6 @@ class Node(RocksBase, Base):
         return "<Node(name='%s')>" % (self.name)
 
 
-
-class NodeAttribute(RocksBase, Base):
-    __tablename__ = 'node_attributes'
-
-    __table_args__ = {}
-
-    #column definitions
-    attr = Column('Attr', String(128), primary_key=True, nullable=False)
-    node = Column('Node', Integer, primary_key=True, nullable=False)
-    value = Column('Value', TEXT())
-
-    #relation definitions
-
-
 class NodeRoll(RocksBase, Base):
     __tablename__ = 'node_rolls'
 
@@ -390,19 +352,6 @@ class NodeRoute(RocksBase, Base):
     network = Column('Network', String(32), primary_key=True, nullable=False)
     node = Column('Node', Integer, primary_key=True, nullable=False)
     subnet = Column('Subnet', Integer, ForeignKey('subnets.ID'))
-
-    #relation definitions
-
-
-class OsAttribute(RocksBase, Base):
-    __tablename__ = 'os_attributes'
-
-    __table_args__ = {}
-
-    #column definitions
-    attr = Column('Attr', String(128), primary_key=True, nullable=False)
-    os = Column('OS', Enum(u'sunos', u'linux'), primary_key=True, nullable=False, default=u'linux')
-    value = Column('Value', TEXT())
 
     #relation definitions
 

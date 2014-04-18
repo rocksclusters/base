@@ -379,42 +379,6 @@ CREATE TABLE aliases (
 );
 
 
-<!-- Attributes -->
-
-DROP TABLE IF EXISTS global_attributes;
-CREATE TABLE global_attributes (
-  Attr          varchar(128) default NULL,
-  Value         text,
-  PRIMARY KEY (Attr)
-);
-
-
-DROP TABLE IF EXISTS os_attributes;
-CREATE TABLE os_attributes (
-  OS		enum('sunos','linux') NOT NULL default 'linux',
-  Attr          varchar(128) default NULL,
-  Value         text,
-  PRIMARY KEY (OS, Attr)
-);
-
-
-DROP TABLE IF EXISTS appliance_attributes;
-CREATE TABLE appliance_attributes (
-  Appliance     int(11) NOT NULL default '0',
-  Attr          varchar(128) default NULL,
-  Value         text,
-  PRIMARY KEY (Appliance, Attr)
-);
-
-
-DROP TABLE IF EXISTS node_attributes;
-CREATE TABLE node_attributes (
-  Node		int(11) NOT NULL default '0',
-  Attr		varchar(128) default NULL,
-  Value		text,
-  PRIMARY KEY (Node, Attr)
-);
-
 <!-- Secure Attributes -->
 
 DROP TABLE IF EXISTS sec_global_attributes;
