@@ -240,257 +240,254 @@ hasSQL = 1
 
 class Application(rocks.app.Application):
 
-    def __init__(self, argv=None):
-        rocks.app.Application.__init__(self, argv)
-        self.rcfileHandler = RCFileHandler
-        if os.environ.has_key('MYSQL_HOST'):
-            self.host	= os.environ['MYSQL_HOST']
-        else:
-            self.host	= 'localhost'
-
-        self.report     = []
-
-	self.params={}
-	self.params['db'] = ['cluster','database']
-	self.params['password'] = ['','password']
-	self.params['host'] = [self.host,'host']
-	self.params['user'] = ['','host']
-
-	self.shortParamsAlias ={}
-	self.shortParamsAlias['d'] = 'db'
-	self.shortParamsAlias['u'] = 'user'
-	self.shortParamsAlias['p'] = 'password'
-
-	self.flags={}
-	self.flags['help'] = [0,'print help']
-        self.flags['verbose'] = [0,'print debug info']
-
-
-	self.shortFlagsAlias={}
-	self.shortFlagsAlias['v'] = 'verbose'
-	self.shortFlagsAlias['h'] = 'help'
-
-	self.db = None
-
-	self.formatOptions()
-
-   
-    def extendOrReplace(self,currentList,newList):
-
-	# this takes elements of a newList and either overwrites elements of
-	# of the currentList with new values or extends the list
-	# if a list element is a tuple, just compare the first element of
-	# each tuple.
-
-	currentKeys=[]
-	for key in currentList:
-		if type(key) == types.TupleType:
-			currentKeys.append(key[0])
+	def __init__(self, argv=None):
+		rocks.app.Application.__init__(self, argv)
+		self.rcfileHandler = RCFileHandler
+		if os.environ.has_key('MYSQL_HOST'):
+			self.host	= os.environ['MYSQL_HOST']
 		else:
-			currentKeys.append(key)
+			self.host	= 'localhost'
 
-	for value in newList:
-		if type(value) == types.TupleType:
-			compareKey = value[0]
-		else:
-			compareKey = value
-		if compareKey in currentKeys:
-			i = currentKeys.index(compareKey)
-			currentList[i] = value
-		else:
-			currentList.append(value)			
-	return currentList
+		self.report = []
+
+		self.params = {}
+		self.params['db'] = ['cluster','database']
+		self.params['password'] = ['','password']
+		self.params['host'] = [self.host,'host']
+		self.params['user'] = ['','host']
+		
+		self.shortParamsAlias = {}
+		self.shortParamsAlias['d'] = 'db'
+		self.shortParamsAlias['u'] = 'user'
+		self.shortParamsAlias['p'] = 'password'
+		
+		self.flags={}
+		self.flags['help'] = [0,'print help']
+		self.flags['verbose'] = [0,'print debug info']
+		
+		
+		self.shortFlagsAlias={}
+		self.shortFlagsAlias['v'] = 'verbose'
+		self.shortFlagsAlias['h'] = 'help'
+		
+		self.db = None
+		
+		self.formatOptions()
+
+
+	def extendOrReplace(self,currentList,newList):
+		# this takes elements of a newList and either overwrites elements of
+		# of the currentList with new values or extends the list
+		# if a list element is a tuple, just compare the first element of
+		# each tuple.
+		
+		currentKeys=[]
+		for key in currentList:
+			if type(key) == types.TupleType:
+				currentKeys.append(key[0])
+			else:
+				currentKeys.append(key)
+		
+		for value in newList:
+			if type(value) == types.TupleType:
+				compareKey = value[0]
+			else:
+				compareKey = value
+			if compareKey in currentKeys:
+				i = currentKeys.index(compareKey)
+				currentList[i] = value
+			else:
+				currentList.append(value)			
+		return currentList
 
 	
-    def formatOptions(self):
+	def formatOptions(self):
+		# Create the short options
+		options=[]
+		for key in self.shortFlagsAlias.keys():
+			options.append(key)
+		for key in self.shortParamsAlias.keys():
+			options.append((key+":",self.params[self.shortParamsAlias[key]][1]))
+		
+		self.getopt.s = self.extendOrReplace(self.getopt.s,options)
+		
+		# Create the long options
+		options=[]
+		for key in self.params.keys():
+			option=( key+'=',"%s"%self.params[key][1])
+			options.append(option)
+		for key in self.flags.keys():
+			option=( key,"%s"%self.flags[key][1])
+			options.append(option)
+		
+		self.getopt.l = self.extendOrReplace(self.getopt.l,options)
+		return 0
 
-	# Create the short options
-	options=[]
-	for key in self.shortFlagsAlias.keys():
-		options.append(key)
-	for key in self.shortParamsAlias.keys():
-		options.append((key+":",self.params[self.shortParamsAlias[key]][1]))
+	def getHost(self):
+		return self.params['host'][0]
 
-	self.getopt.s = self.extendOrReplace(self.getopt.s,options)
-
-	# Create the long options
-	options=[]
-	for key in self.params.keys():
-		option=( key+'=',"%s"%self.params[key][1])
-		options.append(option)
-	for key in self.flags.keys():
-		option=( key,"%s"%self.flags[key][1])
-		options.append(option)
-
-	self.getopt.l = self.extendOrReplace(self.getopt.l,options)
-
-	return 0
-
-    def getHost(self):
-        return self.params['host'][0]
-    
-    def getPassword(self):
-	rval = self.params['password'][0]
-	if len(rval) > 0:
-		return rval
-
-	filename = None
-	username = pwd.getpwuid(os.geteuid())[0].strip()
-	if username == 'root':
-		filename = '/root/.rocks.my.cnf'
-	if username == 'apache':
-		filename = '/opt/rocks/mysql/my.cnf'
-	try:
-		if filename is not None:
-			file = open(filename, 'r')
-			for line in file.readlines():
-				l=line.split('=')
-				if len(l) > 1 and l[0].strip() == "password" :
-					rval=l[1].strip()
-					break
-			file.close()
-	except:
-		pass
-	return rval 
+	def getPassword(self):
+		rval = self.params['password'][0]
+		if len(rval) > 0:
+			return rval
+		
+		filename = None
+		username = pwd.getpwuid(os.geteuid())[0].strip()
+		if username == 'root':
+			filename = '/root/.rocks.my.cnf'
+		if username == 'apache':
+			filename = '/opt/rocks/mysql/my.cnf'
+		try:
+			if filename is not None:
+				file = open(filename, 'r')
+				for line in file.readlines():
+					l=line.split('=')
+					if len(l) > 1 and l[0].strip() == "password" :
+						rval=l[1].strip()
+						break
+				file.close()
+		except:
+			pass
+		return rval 
 
 
-    def parseArg(self, c):
-        if rocks.app.Application.parseArg(self, c):
-            return 1
-	opt,val = c
-	shortopt=opt[1:len(opt)]
-	if shortopt in self.shortFlagsAlias.keys():
-		self.flags[self.shortFlagsAlias[shortopt]][0]= 1
-	if shortopt in self.shortParamsAlias.keys():
-		self.params[self.shortParamsAlias[shortopt]][0]= val
+	def parseArg(self, c):
+		if rocks.app.Application.parseArg(self, c):
+			return 1
+		opt,val = c
+		shortopt=opt[1:len(opt)]
+		if shortopt in self.shortFlagsAlias.keys():
+			self.flags[self.shortFlagsAlias[shortopt]][0]= 1
+		if shortopt in self.shortParamsAlias.keys():
+			self.params[self.shortParamsAlias[shortopt]][0]= val
 
-	longopt=opt[2:len(opt)]
-	if longopt in self.flags.keys():
-		self.flags[longopt][0]= 1
-	if longopt in self.params.keys():
-		self.params[longopt][0]= val
+		longopt=opt[2:len(opt)]
+		if longopt in self.flags.keys():
+			self.flags[longopt][0]= 1
+		if longopt in self.params.keys():
+			self.params[longopt][0]= val
 
-        os.environ['MYSQL_HOST'] = self.params['host'][0]
+		os.environ['MYSQL_HOST'] = self.params['host'][0]
 
-        return 0
+		return 0
 
-    def connect(self):
-        if hasSQL:
-            newdb = rocks.db.helper.DatabaseHelper()
-            newdb.setDBName(self.params['db'][0])
-            username = self.params['user'][0]
-            if len(username) > 0:
-                newdb.setDBUsername(username)
-            newdb.setDBHostname(self.params['host'][0])
+	def connect(self):
+		if hasSQL:
+			newdb = rocks.db.helper.DatabaseHelper()
+			newdb.setDBName(self.params['db'][0])
+			username = self.params['user'][0]
+			if len(username) > 0:
+				newdb.setDBUsername(username)
+			newdb.setDBHostname(self.params['host'][0])
 
-            if self.flags['verbose'][0]:
-                newdb.setVerbose()
-    
-            pwd = self.params['password'][0]
-            if len(pwd) > 0:
-            	newdb.setDBPasswd(pwd)
+			if self.flags['verbose'][0]:
+				newdb.setVerbose()
+	
+			pwd = self.params['password'][0]
+			if len(pwd) > 0:
+				newdb.setDBPasswd(pwd)
 
-            # really establish connection
-            newdb.connect()
-            # TODO this has to go no more commands here
-            # This is the database cursor for the rocks command line interface
-            self.db = rocks.commands.DatabaseConnection(newdb)
-	    # This is the database cursor for the rocks.sql.app interface
-            # Get a database cursor which is used to manage the context of
-            # a fetch operation
-            return 1
-        return 0
+			# really establish connection
+			newdb.connect()
+			# TODO this has to go no more commands here
+			# This is the database cursor for the rocks command line interface
+			self.db = rocks.commands.DatabaseConnection(newdb)
+			# This is the database cursor for the rocks.sql.app interface
+			# Get a database cursor which is used to manage the context of
+			# a fetch operation
+			return 1
+		return 0
 
-    def execute(self, command):
-        if hasSQL:
-            return self.db.execute(command)
-        return None
+	def execute(self, command):
+		if hasSQL:
+			return self.db.execute(command)
+		return None
 
-    def fetchone(self):
-        if hasSQL:
-            return self.db.fetchone()
-        return None
+	def fetchone(self):
+		if hasSQL:
+			return self.db.fetchone()
+		return None
 
-    def fetchall(self):
-        if hasSQL:
-            return self.db.fetchall()
-        return None
+	def fetchall(self):
+		if hasSQL:
+			return self.db.fetchall()
+		return None
 
-    def close(self):
-        if hasSQL:
-            self.db.database.close()
+	def close(self):
+		if hasSQL:
+			self.db.database.close()
 
-    def commit(self):
-        if hasSQL:
-            self.db.database.commit()
+	def commit(self):
+		if hasSQL:
+			self.db.database.commit()
 
-    def insertId(self):
-	"Returns the last inserted id. Useful for auto_incremented columns"
-        id = None
-        if hasSQL:
-            id = self.db.database.results.lastrowid
-        return id
+	def insertId(self):
+		"Returns the last inserted id. Useful for auto_incremented columns"
+		id = None
+		if hasSQL:
+			id = self.db.database.results.lastrowid
+		return id
 
 
-    def __repr__(self):
-        return string.join(self.report, '\n')
+	def __repr__(self):
+		return string.join(self.report, '\n')
 
-    def getGlobalVar(self, service, component, node=0):
-	# TODO fix this terrible!!!
-        cmd = '/opt/rocks/bin/rocks report host attr localhost '
-        cmd += 'attr=%s_%s' % (service, component)
+	def getGlobalVar(self, service, component, node=0):
+		# TODO fix this terrible!!!
+		cmd = '/opt/rocks/bin/rocks report host attr localhost '
+		cmd += 'attr=%s_%s' % (service, component)
 
-	p = subprocess.Popen(cmd, shell=True, 
-                stdin=subprocess.PIPE, stdout=subprocess.PIPE, close_fds=True)
-	w, r =  (p.stdin, p.stdout)
-        value = r.readline()
+		p = subprocess.Popen(cmd, shell=True, 
+				stdin=subprocess.PIPE, stdout=subprocess.PIPE, close_fds=True)
+		w, r =  (p.stdin, p.stdout)
+		value = r.readline()
 
-        return value.strip()
+		return value.strip()
 
 	
-    def getNodeId(self, host):
-	"""Lookup hostname in nodes table. Host may be a name
-	or an IP address. Returns None if not found."""
-
-	# Is host already an ID?
-
-	try:
-		return int(host)
-	except Exception:
-		pass
-
-	# Try by name
-
-	self.execute("""select networks.node from nodes,networks where
-		networks.node = nodes.id and networks.name = "%s" and
-		(networks.device is NULL or
-		networks.device not like 'vlan%%') """ % (host))
-	try:
-		nodeid, = self.fetchone()
+	def getNodeId(self, host):
+		"""Lookup hostname in nodes table. Host may be a name
+		or an IP address. Returns None if not found."""
+		
+		# Is host already an ID?
+		
+		try:
+			return int(host)
+		except Exception:
+			pass
+		
+		# Try by name
+		
+		self.execute("""select networks.node from nodes,networks where
+			networks.node = nodes.id and networks.name = "%s" and
+			(networks.device is NULL or
+			networks.device not like 'vlan%%') """ % (host))
+		try:
+			nodeid, = self.fetchone()
+			return nodeid
+		except TypeError:
+			nodeid = None
+		
+		# Try by IP
+		
+		self.execute("""select networks.node from nodes,networks where
+			networks.node = nodes.id and networks.ip ="%s" and
+			(networks.device is NULL or
+			networks.device not like 'vlan%%') """ % (host))
+		try:
+			nodeid, = self.fetchone()
+			return nodeid
+		except TypeError:
+			nodeid = None
+		
 		return nodeid
-	except TypeError:
-		nodeid = None
-
-	# Try by IP
-	
-	self.execute("""select networks.node from nodes,networks where
-		networks.node = nodes.id and networks.ip ="%s" and
-		(networks.device is NULL or
-		networks.device not like 'vlan%%') """ % (host))
-	try:
-		nodeid, = self.fetchone()
-		return nodeid
-	except TypeError:
-		nodeid = None
-	
-	return nodeid
 
 
 
 class RCFileHandler(rocks.app.RCFileHandler):
-    
-    def __init__(self, application):
-        rocks.app.RCFileHandler.__init__(self, application)
+	
+	def __init__(self, application):
+		rocks.app.RCFileHandler.__init__(self, application)
 
 
 
