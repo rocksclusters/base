@@ -1,7 +1,10 @@
 #!@PYTHON@
-
-# $Id: rocks-db-perms.py,v 1.8 2012/11/27 00:48:08 phil Exp $
-
+# 
+# This script adds permission to the apache user so that it can
+# add information to node during kickstart
+#
+# if it is run with -v flags it also prints the sql before executing
+#
 # @Copyright@
 # 
 # 				Rocks(r)
@@ -55,7 +58,7 @@
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # 
 # @Copyright@
-
+#
 # $Log: rocks-db-perms.py,v $
 # Revision 1.8  2012/11/27 00:48:08  phil
 # Copyright Storm for Emerald Boa
@@ -94,45 +97,27 @@ import re
 import string
 import base64
 
-import MySQLdb
+import rocks.db.database
+
 
 # Set access permissions to the database tables
 
-# Get password
-f = open('/root/.rocks.my.cnf' ,'r')
-password = ''
-for line in f.readlines():
-	if line.split('=')[0].strip() == 'password':
-		password = line.split('=')[1].strip()
-		break
-f.close()
 
-# Get all the local hostname that apache is
-# allowed to connect from.
-d = MySQLdb.connect(user='root',
-	db='mysql',
-	passwd=password,
-	unix_socket='/var/opt/rocks/mysql/mysql.sock')
-
-try:
-	db = d.cursor()
-except:
-	sys.exit(-1)
+# first connect to the mysql DB
+db = rocks.db.database.Database()
+db.setDBName('mysql')
+db.connect()
 
 db.execute('select host from user where user="apache" ' +\
 	'and host!="localhost"')
 (priv_host,) = db.fetchone()
+db.close()
 
-# Connect to the database
-d = MySQLdb.connect(user='root',
-	db='cluster',
-	passwd=password,
-	unix_socket='/var/opt/rocks/mysql/mysql.sock')
 
-try:
-	db = d.cursor()
-except:
-	sys.exit(-1)
+# now reconnect to the 'cluster' DB
+db.setDBName('cluster')
+db.connect()
+
 
 # Get a list of all tables in the database
 db.execute('show tables')
@@ -182,7 +167,11 @@ cmd_set.append('GRANT SELECT, INSERT, UPDATE, DELETE, DROP, ALTER ' +\
 # Run through the command set
 for cmd in cmd_set:
 	try:
+		if "-v" in sys.argv:
+			print "executing: ", cmd
 		db.execute(cmd)
 	except:
 		sys.stderr.write('Could not execute "%s"\n' % cmd)
+		sys.exit(1)
+
 		
