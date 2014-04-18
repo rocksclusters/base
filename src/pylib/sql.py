@@ -233,11 +233,6 @@ import rocks.app
 import rocks.commands
 import rocks.db.helper
 
-# Allow this code to work on machine that don't have mysql installed.
-# We do this to allow debuging on developer machines.
-
-hasSQL = 1
-
 class Application(rocks.app.Application):
 
 	def __init__(self, argv=None):
@@ -372,61 +367,48 @@ class Application(rocks.app.Application):
 		return 0
 
 	def connect(self):
-		if hasSQL:
-			newdb = rocks.db.helper.DatabaseHelper()
-			newdb.setDBName(self.params['db'][0])
-			username = self.params['user'][0]
-			if len(username) > 0:
-				newdb.setDBUsername(username)
-			newdb.setDBHostname(self.params['host'][0])
+		newdb = rocks.db.helper.DatabaseHelper()
+		newdb.setDBName(self.params['db'][0])
+		username = self.params['user'][0]
+		if len(username) > 0:
+			newdb.setDBUsername(username)
+		newdb.setDBHostname(self.params['host'][0])
 
-			if self.flags['verbose'][0]:
-				newdb.setVerbose()
-	
-			pwd = self.params['password'][0]
-			if len(pwd) > 0:
-				newdb.setDBPasswd(pwd)
+		if self.flags['verbose'][0]:
+			newdb.setVerbose()
 
-			# really establish connection
-			newdb.connect()
-			# TODO this has to go no more commands here
-			# This is the database cursor for the rocks command line interface
-			self.db = rocks.commands.DatabaseConnection(newdb)
-			# This is the database cursor for the rocks.sql.app interface
-			# Get a database cursor which is used to manage the context of
-			# a fetch operation
-			return 1
-		return 0
+		pwd = self.params['password'][0]
+		if len(pwd) > 0:
+			newdb.setDBPasswd(pwd)
+
+		# really establish connection
+		newdb.connect()
+		# TODO this has to go no more commands here
+		# This is the database cursor for the rocks command line interface
+		self.db = rocks.commands.DatabaseConnection(newdb)
+		# This is the database cursor for the rocks.sql.app interface
+		# Get a database cursor which is used to manage the context of
+		# a fetch operation
+		return 1
 
 	def execute(self, command):
-		if hasSQL:
-			return self.db.execute(command)
-		return None
+		return self.db.execute(command)
 
 	def fetchone(self):
-		if hasSQL:
-			return self.db.fetchone()
-		return None
+		return self.db.fetchone()
 
 	def fetchall(self):
-		if hasSQL:
-			return self.db.fetchall()
-		return None
+		return self.db.fetchall()
 
 	def close(self):
-		if hasSQL:
-			self.db.database.close()
+		self.db.database.close()
 
 	def commit(self):
-		if hasSQL:
-			self.db.database.commit()
+		self.db.database.commit()
 
 	def insertId(self):
 		"Returns the last inserted id. Useful for auto_incremented columns"
-		id = None
-		if hasSQL:
-			id = self.db.database.results.lastrowid
-		return id
+		return self.db.database.results.lastrowid
 
 
 	def __repr__(self):
