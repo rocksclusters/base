@@ -195,9 +195,18 @@ import subprocess
 import xml.sax
 from xml.sax import handler
 
-# An exception for Kickstart builder trinity: kcgi, kgen, kpp
 
-class KickstartError(Exception):
+# Rocks exception hierarchy
+class RocksException(Exception):
+	"""Base class for Rocks exceptions."""
+	pass
+
+class HostnotfoundException(RocksException):
+	"""This exception is used when the given host does not exist"""
+	pass
+
+# An exception for Kickstart builder trinity: kcgi, kgen, kpp
+class KickstartError(RocksException):
 	pass
 
 class KickstartGraphError(KickstartError):
@@ -205,6 +214,7 @@ class KickstartGraphError(KickstartError):
 
 class KickstartNodeError(KickstartError):
 	pass
+
 
 # Simulate 'C' struct, but in Pythons funky dynamic way e.g.:
 #

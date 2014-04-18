@@ -2018,7 +2018,7 @@ class Command:
 					self.run(self._params, self._args)
 					if self.db.database is not None:
 						self.db.database.commit()
-				except rocks.exceptions.HostnotfoundException as e:
+				except rocks.util.HostnotfoundException as e:
 					Abort(str(e))
 				except sqlalchemy.exc.OperationalError as e:
 					Abort("Major dabase failure (mysql daemon down,"

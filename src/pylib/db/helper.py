@@ -59,7 +59,7 @@
 import socket
 import rocks.db.database
 import rocks
-import rocks.exceptions
+import rocks.util
 import string
 
 from rocks.db.mappings.base import *
@@ -322,7 +322,7 @@ class DatabaseHelper(rocks.db.database.Database):
 				fin.close()
 
 			# TODO add phils execption to this
-			raise rocks.exceptions.HostnotfoundException(\
+			raise rocks.util.HostnotfoundException(\
 				'cannot resolve host "%s"' % hostname)
 				
 		
@@ -350,7 +350,7 @@ class DatabaseHelper(rocks.db.database.Database):
 					'nodes.id=networks.node and '
 					'networks.name="%s"' % (hostname))
 				if not rows:
-					raise rocks.exceptions.HostnotfoundException(\
+					raise rocks.util.HostnotfoundException(\
 						'host "%s" is not in cluster' % hostname)
 			hostname, = self.fetchone()
 
