@@ -237,11 +237,6 @@ import rocks.db.helper
 # We do this to allow debuging on developer machines.
 
 hasSQL = 1
-try:
-    from MySQLdb import *
-except ImportError:
-    hasSQL = 0
-
 
 class Application(rocks.app.Application):
 
