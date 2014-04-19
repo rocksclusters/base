@@ -230,7 +230,6 @@ import xml
 import subprocess
 import socket
 import base64
-import rocks.sql
 import rocks.util
 import rocks.graph
 import rocks.cond

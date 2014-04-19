@@ -370,16 +370,6 @@ class DatabaseHelper(rocks.db.database.Database):
 		pass
 
 
-	def getHostAttribute(self, node):
-		"""return """
-		if self._attribute and node in self._attribute:
-			return self._attribute[node]
-
-		# first time we need to populate
-		pass
-                #query = self.getSession().query(Node, Appliance, Memebership, ).
-
-
 
 	def getCategoryIndex(self, category_name, category_index):
 		"""given a category name and a category index it returns the correspondying
@@ -526,6 +516,9 @@ class DatabaseHelper(rocks.db.database.Database):
 
 		return attrs
 
+	def getHostAttr(self, hostname, attr):
+		"""like getHostAttrs but it returns the value of the given attr """
+		return self.getHostAttrs(hostname).get(attr)
 
 
 

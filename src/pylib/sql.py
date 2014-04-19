@@ -266,6 +266,7 @@ class Application(rocks.app.Application):
 		self.shortFlagsAlias['h'] = 'help'
 		
 		self.db = None
+		self.newdb = None
 		
 		self.formatOptions()
 
@@ -367,25 +368,25 @@ class Application(rocks.app.Application):
 		return 0
 
 	def connect(self):
-		newdb = rocks.db.helper.DatabaseHelper()
-		newdb.setDBName(self.params['db'][0])
+		self.newdb = rocks.db.helper.DatabaseHelper()
+		self.newdb.setDBName(self.params['db'][0])
 		username = self.params['user'][0]
 		if len(username) > 0:
-			newdb.setDBUsername(username)
-		newdb.setDBHostname(self.params['host'][0])
+			self.newdb.setDBUsername(username)
+		self.newdb.setDBHostname(self.params['host'][0])
 
 		if self.flags['verbose'][0]:
-			newdb.setVerbose()
+			self.newdb.setVerbose()
 
 		pwd = self.params['password'][0]
 		if len(pwd) > 0:
-			newdb.setDBPasswd(pwd)
+			self.newdb.setDBPasswd(pwd)
 
 		# really establish connection
-		newdb.connect()
+		self.newdb.connect()
 		# TODO this has to go no more commands here
 		# This is the database cursor for the rocks command line interface
-		self.db = rocks.commands.DatabaseConnection(newdb)
+		self.db = rocks.commands.DatabaseConnection(self.newdb)
 		# This is the database cursor for the rocks.sql.app interface
 		# Get a database cursor which is used to manage the context of
 		# a fetch operation

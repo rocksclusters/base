@@ -1128,9 +1128,13 @@ class App(rocks.kickstart.Application):
 		"""Returns true if the client request is inside our private
 		network."""
 
-		network = self.getGlobalVar('Kickstart','PrivateNetwork')
-		netmask = self.getGlobalVar('Kickstart','PrivateNetmask')
+		# TODO optimization do we really need to look at the host attributes?
+		# maybe we can just use the global attribute (faster)
+		localhost = self.newdb.getHostname('localhost')
+		network = self.newdb.getHostAttr(localhost, 'Kickstart_PrivateNetwork')
+		netmask = self.newdb.getHostAttr(localhost, 'Kickstart_PrivateNetmask')
 		self.privateNetmask = netmask
+
 
 		# Test based on our client's IP address.
 		work = string.split(network, '.')
