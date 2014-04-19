@@ -415,19 +415,6 @@ class Application(rocks.app.Application):
 	def __repr__(self):
 		return string.join(self.report, '\n')
 
-	def getGlobalVar(self, service, component, node=0):
-		# TODO fix this terrible!!!
-		cmd = '/opt/rocks/bin/rocks report host attr localhost '
-		cmd += 'attr=%s_%s' % (service, component)
-
-		p = subprocess.Popen(cmd, shell=True, 
-				stdin=subprocess.PIPE, stdout=subprocess.PIPE, close_fds=True)
-		w, r =  (p.stdin, p.stdout)
-		value = r.readline()
-
-		return value.strip()
-
-	
 	def getNodeId(self, host):
 		"""Lookup hostname in nodes table. Host may be a name
 		or an IP address. Returns None if not found."""

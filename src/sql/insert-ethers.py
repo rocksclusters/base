@@ -1295,7 +1295,9 @@ class InsertEthers(GUI):
 				self.cabinet, self.rank)
 
 	def getFrontendName(self):
-		name = self.sql.getGlobalVar('Kickstart','PrivateHostname')
+		name = self.sql.newdb.getHostAttr(
+			self.sql.newdb.getHostname('localhost'),
+			'Kickstart_PrivateHostname')
 		return name
 
 	
@@ -1710,13 +1712,10 @@ class App(rocks.sql.Application):
 
 
 	def getPrivateNet(self):
-		try:
-			net = self.getGlobalVar('Kickstart','PrivateNetwork')
-			mask = self.getGlobalVar('Kickstart','PrivateNetmask')
-		except:
-			net = '10.0.0.0'
-			mask = '255.0.0.0'
-		
+		localhost = self.newdb.getHostname('localhost')
+		net = self.newdb.getHostAttr(localhost, 'Kickstart_PrivateNetwork')
+		mask = self.newdb.getHostAttr(localhost, 'Kickstart_PrivateNetmask')
+
 		return "%s/%s" % (net, mask)
 
 
