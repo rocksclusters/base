@@ -147,6 +147,7 @@
 #
 
 import rocks.commands
+from rocks.db.mappings.base import *
 
 class command(rocks.commands.HostArgumentProcessor,
 	rocks.commands.list.command):
@@ -174,13 +175,13 @@ class Command(command):
 	def run(self, params, args):
 		self.beginOutput()
 
-		for host in self.getHostnames(args):
-			self.db.execute("""select m.name, n.cpus,
-				n.rack, n.rank, n.runaction, n.installaction
-				from nodes n, memberships m where 
-				n.membership=m.id and n.name='%s'""" % host)
-			self.addOutput(host, self.db.fetchone())
+		# we use preload=[membership] to tell the database to preload the
+		# membership relationship in the same query
+		for host in self.newdb.getNodesfromNames(args, preload=['membership']):
+			self.addOutput(host.name, [host.membership.name, host.cpus, 
+				host.rack, host.rank, host.runaction, 
+				host.installaction])
 			
 		self.endOutput(header=['host', 'membership', 'cpus', 'rack',
 			'rank', 'runaction', 'installaction'])
-		
+

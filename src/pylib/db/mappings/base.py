@@ -313,13 +313,13 @@ class Node(RocksBase, Base):
     ID = Column('ID', Integer, primary_key=True, nullable=False)
     name = Column('Name', String(128))
     membership_ID = Column('Membership', Integer, ForeignKey('memberships.ID'), default=2)
-    cPUs = Column('CPUs', Integer, nullable=False, default=1)
+    cpus = Column('CPUs', Integer, nullable=False, default=1)
     rack = Column('Rack', Integer)
     rank = Column('Rank', Integer)
     arch = Column('Arch', String(32))
     os = Column('OS', Enum(u'linux', u'sunos'), nullable=False, default=u'linux')
-    runAction = Column('RunAction', String(64), default='os')
-    installAction = Column('InstallAction', String(64), default='install')
+    runaction = Column('RunAction', String(64), default='os')
+    installaction = Column('InstallAction', String(64), default='install')
 
     #relation definitions
     # map the networks belonging to this node

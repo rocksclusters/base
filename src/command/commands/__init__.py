@@ -1539,6 +1539,9 @@ class Command:
 		require a database connection."""
 
 		self.db = DatabaseConnection(database)
+		# new database connection in rocks.db
+		# soon (or later) self.db will be removed and only newdb will be left
+		self.newdb = self.db.database
 
 		self.text = ''
 		
@@ -1576,7 +1579,8 @@ class Command:
 		#
 		#   Arguments:
 		#           paramlist = list of parameter names in the order
-		#                       that their unnamed argument counterparts		#			 appear eg. paramlist=('iface','mac')
+		#                       that their unnamed argument counterparts
+		#			 appear eg. paramlist=('iface','mac')
 		#	    params    = list of parameters (e.g param=value) 
 		#           args      = args
 		#
