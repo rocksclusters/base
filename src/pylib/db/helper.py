@@ -84,7 +84,7 @@ class DatabaseHelper(rocks.db.database.Database):
 		self._attribute = None
 
 
-	def getNodesfromNames(self, names=None, managed_only=0):
+	def getNodesfromNames(self, names=None, managed_only=0, preload=[]):
 		"""Expands the given list of names to valid set of Node entries.
 		A name can be a hostname, IP address, our group (membership name), 
 		or a MAC address. Any combination of these is valid.
@@ -102,27 +102,36 @@ class DatabaseHelper(rocks.db.database.Database):
 		shells (for example, the following appliances usually don't
 		have ssh login access: 'Ethernet Switches', 'Power Units',
 		'Remote Management')
+
+		The 'preload' list contains the relationships which should be 
+		preloaded to avoid sub-query when accessing related tables.
+		If you need to access node.membership.name (the node membership 
+		name) you should pass preload=['membership'] to preload the 
+		membership table 
+		(http://docs.sqlalchemy.org/en/latest/orm/loading.html)
 		"""
 
 		# Handle the simple case first and just return a complete
 		# list of hosts in the cluster if no list of names was
 		# provided
 
+
 		list = []
 		if not names:
 			
 			list = self.getSession().query(Node)
+			for i in preload:
+				list = list.options(sqlalchemy.orm.joinedload(i))
 
 			# If we're looking for managed nodes only, filter out
 			# the unmanaged ones using host attributes
 			if managed_only:
-				raise Exception('Managed node are no implemented yet')
-				#managed_list = []
-				#for hostname in list:
-				#	if self.db.getHostAttr(hostname, 
-				#		'managed') == 'true':
-				#		managed_list.append(hostname)
-				#return managed_list
+				managed_list = []
+				for hostname in list:
+					if self.getHostAttr(hostname,
+						'managed') == 'true':
+						managed_list.append(hostname)
+				return managed_list
 			return list
 
 		
@@ -141,7 +150,7 @@ class DatabaseHelper(rocks.db.database.Database):
 			elif name.startswith('rack'):
 				# this is racks
 				racknumber = int(name[4:])
-				clause = or_(clause, Node.Rack == racknumber) #TODO exclude frontend
+				clause = or_(clause, Node.rack == racknumber) #TODO exclude frontend
 
 			elif name in self.getAppliancesListText():
 				# it is an appliance
@@ -154,6 +163,8 @@ class DatabaseHelper(rocks.db.database.Database):
 		
 		# now we register the query on the table Node and append all our clauses on OR
 		query = query.filter(clause)
+		for i in preload:
+			query = query.options(sqlalchemy.orm.joinedload(i))
 		return query
 
 
