@@ -82,6 +82,8 @@ class DatabaseHelper(rocks.db.database.Database):
 		self._appliances_list = None
 		# cache for the attributes
 		self._attribute = None
+		# cache for frontend name
+		self._frontend = None
 
 
 	def getNodesfromNames(self, names=None, managed_only=0, preload=[]):
@@ -181,6 +183,19 @@ class DatabaseHelper(rocks.db.database.Database):
 			self._appliances_list = \
 				[a.name for a in self.getSession().query(Appliance.name)]
 			return self._appliances_list
+
+
+	def getFrontendName(self):
+		"""return the frontend name and caches it"""
+		if self._frontend :
+			return self._frontend
+
+		(cat, catindex) = self.getCategoryIndex('global', 'global')
+		a = Attribute.loadOne(self.getSession(), category=cat,
+				catindex=catindex, attr='Kickstart_PrivateHostname')
+		self._frontend = a.value
+		return self._frontend
+
 
 
 	def getHostname(self, hostname=None):

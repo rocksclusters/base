@@ -149,8 +149,7 @@ class Plugin(rocks.commands.Plugin):
 		# use it. otherwise, use the default.
 		hostname = self.db.getHostAttr('localhost', 'Info_HomeDirSrv')
 		if not hostname:
-			hostname = '%s.%s' % (self.db.getHostAttr(
-				'localhost', 'Kickstart_PrivateHostname'),
+			hostname = '%s.%s' % (self.db.database.getFrontendName(),
 				self.db.getHostAttr('localhost',
 					'Kickstart_PrivateDNSDomain'))
 

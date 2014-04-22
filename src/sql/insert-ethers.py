@@ -1294,13 +1294,6 @@ class InsertEthers(GUI):
 			return '%s-%d-%d' % (self.basename, 
 				self.cabinet, self.rank)
 
-	def getFrontendName(self):
-		name = self.sql.newdb.getHostAttr(
-			self.sql.newdb.getHostname('localhost'),
-			'Kickstart_PrivateHostname')
-		return name
-
-	
 	def discover(self, mac, dev):
 		"Returns 'true' if we inserted a new node, 'false' otherwise."
 		
@@ -1418,7 +1411,7 @@ class InsertEthers(GUI):
 				subnets.name='%s' and nodes.name='%s' 
 				and networks.subnet=subnets.id and
 				networks.node=nodes.id""" % (self.subnet,
-				self.getFrontendName()))
+				self.sql.newdb.getFrontendName()))
 			
 			subnet_dev = self.sql.fetchone()[0]
 			if interface != subnet_dev:
