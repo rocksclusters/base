@@ -15,24 +15,12 @@ test_expect_success 'rocks list appliance' '
 	rocks list appliance
 '
 
-test_expect_success 'rocks list appliance' '
-	rocks list appliance
-'
-
-test_expect_success 'rocks list appliance attr' '
-	rocks list appliance attr
-'
-
 test_expect_success 'rocks list appliance route ' '
 	rocks list appliance route 
 '
 
 test_expect_success 'rocks list appliance xml compute' '
 	rocks list appliance xml compute
-'
-
-test_expect_success 'rocks list attr ' '
-	rocks list attr 
 '
 
 test_expect_success 'rocks list bootaction ' '
@@ -52,7 +40,10 @@ test_expect_success 'rocks list help' '
 '
 
 test_expect_success 'rocks list host' '
-	rocks list host
+	rocks list host &&
+	rocks list host frontend &&
+	rocks list host rack0 &&
+	rocks list host "select name from nodes"
 '
 
 test_expect_success 'rocks list host alias ' '

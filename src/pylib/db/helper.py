@@ -63,7 +63,7 @@ import rocks.util
 import string
 
 from rocks.db.mappings.base import *
-from sqlalchemy import or_
+from sqlalchemy import or_, and_
 
 
 attr_postfix = "_old"
@@ -141,17 +141,18 @@ class DatabaseHelper(rocks.db.database.Database):
 		query = self.getSession().query(Node)
 
 		for name in names:
-			if name.find('select') == 0:    # SQL select
-				#TODO fix this
+			if name.find('select ') == 0:    # SQL select
 				self.execute(name)
-				return self.fetchall()
+				nodes = [i for i, in self.fetchall()]
+				clause = or_(clause, Node.name.in_(nodes))
 			elif name.find('%') >= 0:	# SQL % pattern
 				clause = or_(clause, Node.name.like(name))
 			elif name.startswith('rack'):
 				# this is racks
 				racknumber = int(name[4:])
-				clause = or_(clause, Node.rack == racknumber) #TODO exclude frontend
-
+				query = query.join(Membership).join(Appliance)
+				clause = or_(clause, Node.rack == racknumber)
+				clause = and_(clause, Appliance.name != 'frontend')
 			elif name in self.getAppliancesListText():
 				# it is an appliance
 				query = query.join(Membership).join(Appliance)
