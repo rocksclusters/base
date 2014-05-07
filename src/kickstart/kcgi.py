@@ -535,6 +535,8 @@ import xml
 import string
 import socket
 import syslog
+import traceback
+
 import rocks.util
 import rocks.kickstart
 import rocks.clusterdb
@@ -851,8 +853,6 @@ class App(rocks.kickstart.Application):
 			self.report.append('<h1>Bad Data from Database</h1>')
 			print self
 			return
-		self.close()
-		
 
 		# The values we just pulled from the database are the
 		# default values.  The FORM data can override any of
@@ -1130,9 +1130,9 @@ class App(rocks.kickstart.Application):
 
 		# TODO optimization do we really need to look at the host attributes?
 		# maybe we can just use the global attribute (faster)
-		localhost = self.newdb.getHostname('localhost')
-		network = self.newdb.getHostAttr(localhost, 'Kickstart_PrivateNetwork')
-		netmask = self.newdb.getHostAttr(localhost, 'Kickstart_PrivateNetmask')
+		fe = self.newdb.getFrontendName()
+		network = self.newdb.getHostAttr(fe, 'Kickstart_PrivateNetwork')
+		netmask = self.newdb.getHostAttr(fe, 'Kickstart_PrivateNetmask')
 		self.privateNetmask = netmask
 
 
@@ -1173,8 +1173,18 @@ class App(rocks.kickstart.Application):
 				self.localKickstart()
 			else:
 				self.wanKickstart()
-		except:
-			pass
+		except Exception, e:
+			title = "Error %s: %s" % (type(e).__name__, str(e))
+			sys.stderr.write(title)
+			print "Content-type: text/html"
+			print
+			print "<h1>", title, "</h1>"
+			print "<pre>"
+			traceback.print_stack(file=sys.stdout)
+			print "</pre>"
+			print
+			self.completedLoad()
+			return
 			
 		#
 		# build the output string
@@ -1185,32 +1195,22 @@ class App(rocks.kickstart.Application):
 		#
 		# get the avalanche attributes
 		#
-		attrs = {}
-		attrs['trackers'] = ''
-		attrs['pkgservers'] = ''
+		try:
+			hostname = self.newdb.getHostname(self.clientList[0])
+			if hostname:
+				newNodeAttrs = self.newdb.getHostAttrs(hostname)
+			defaultHost = newNodeAttrs['Kickstart_PrivateKickstartHost']
+		except rocks.util.RocksException, e:
+			sys.stderr.write("error in getHostname for host" + str(e))
+			defaultHost = self.newdb.getFrontendName()
 
+		attrs = {}
 		for i in [ 'Kickstart_PrivateKickstartHost', 'trackers',
 				'pkgservers' ]:
-
-			cmd = '/opt/rocks/bin/rocks list host attr %s | ' \
-				% (self.clientList[0])
-			cmd += "grep ' %s ' | awk '{print $3}'" % i
-
-			var = ''
-			for line in os.popen(cmd).readlines():
-				var = line[:-1]
-			try:
-				attrs[i] = var.strip()
-			except:
-				pass
-
-		if not attrs['trackers']:
-			attrs['trackers'] = \
-				attrs['Kickstart_PrivateKickstartHost']
-
-		if not attrs['pkgservers']:
-			attrs['pkgservers'] = \
-				attrs['Kickstart_PrivateKickstartHost']
+			if i in newNodeAttrs:
+				attrs[i] = newNodeAttrs[i]
+			else:
+				attrs[i] = defaultHost
 
 		print 'Content-type: application/octet-stream'
 		print 'Content-length: %d' % (len(out))
