@@ -156,6 +156,6 @@ class Command(rocks.commands.set.appliance.command):
 			self.about('missing value of attribute')
 
 		for appliance in appliances:
-			self.db.database.setCategoryAttr('appliance', appliance, \
+			self.newdb.setCategoryAttr('appliance', appliance, \
 					attr, value)
 

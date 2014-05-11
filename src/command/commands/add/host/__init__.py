@@ -322,4 +322,4 @@ class Command(command):
 		#
 		#
 		# Set the value of the OS in the host attributes table
-		self.db.database.setCategoryAttr('host', host, 'os', osname)
+		self.newdb.setCategoryAttr('host', host, 'os', osname)

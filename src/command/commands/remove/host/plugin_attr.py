@@ -94,9 +94,9 @@ class Plugin(rocks.commands.Plugin):
 		return 'attr'
 
 	def run(self, host):
-		(cat, cat_index) = self.owner.db.database.getCategoryIndex('host', \
+		(cat, cat_index) = self.owner.newdb.getCategoryIndex('host', \
 				host)
-		session = self.owner.db.database.getSession()
+		session = self.owner.newdb.getSession()
 		session.query(Attribute).filter(Attribute.category==cat, \
 				Attribute.catindex==cat_index).delete()
 		session.commit()

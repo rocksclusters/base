@@ -138,10 +138,10 @@ class Command(rocks.commands.add.os.command):
 			self.about('missing value of attribute')
 
 		for os in oses:
-			self.db.database.addCategoryAttr('os', os, attr, value)
+			self.newdb.addCategoryAttr('os', os, attr, value)
 
 			try:
-				self.db.database.getSession().commit()
+				self.newdb.getSession().commit()
 			except:
 				self.abort('attribute "%s" exists' % attr)
 			

@@ -1688,7 +1688,7 @@ class Command:
 		mod = eval(modpath)
 
 		try:
-			o = getattr(mod, 'Command')(self.db.database)
+			o = getattr(mod, 'Command')(self.newdb)
 			name = string.join(string.split(command, '.'), ' ')
 		except AttributeError:
 			return ''
@@ -2020,8 +2020,8 @@ class Command:
 				self._params = dict
 				try:
 					self.run(self._params, self._args)
-					if self.db.database is not None:
-						self.db.database.commit()
+					if self.newdb is not None:
+						self.newdb.commit()
 				except rocks.util.HostnotfoundException as e:
 					Abort(str(e))
 				except sqlalchemy.exc.OperationalError as e:

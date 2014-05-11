@@ -101,7 +101,7 @@ class Command(rocks.commands.list.os.command):
 
 		for os in self.getOSNames(args):
 			
-			for attr in self.db.database.getCategoryAttrs('os', os):
+			for attr in self.newdb.getCategoryAttrs('os', os):
 				self.addOutput(os, (attr.attr, attr.value))
 
 		self.endOutput(header=['os', 'attr', 'value' ])

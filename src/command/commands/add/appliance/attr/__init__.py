@@ -151,12 +151,12 @@ class Command(rocks.commands.add.appliance.command):
 			self.abort('you need to specify an appliance type')
 
 		for appliance in self.getApplianceNames(args):
-			newAttr = self.db.database.addCategoryAttr('appliance', \
+			newAttr = self.newdb.addCategoryAttr('appliance', \
 					appliance, attr, value)
 			try:
 				# we need to commit each attribute to see if it 
 				# really was not a duplicate 
-				self.db.database.getSession().commit()
+				self.newdb.getSession().commit()
 			except sqlalchemy.exc.IntegrityError:
 				self.abort('attribute "%s" exists' % attr)
 

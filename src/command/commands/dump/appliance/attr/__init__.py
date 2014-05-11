@@ -114,7 +114,7 @@ class Command(rocks.commands.dump.appliance.command):
 	def run(self, params, args):
 
 		for appliance in self.getApplianceNames(args):
-			for attr in self.db.database.getCategoryAttrs('appliance', appliance):
+			for attr in self.newdb.getCategoryAttrs('appliance', appliance):
 				v = self.quote(attr.value)
 				if v:
 					self.dump('add appliance attr %s %s %s'

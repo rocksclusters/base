@@ -104,7 +104,7 @@ class Command(rocks.commands.dump.command):
 
 	def run(self, params, args):
 
-		for attr in self.db.database.getCategoryAttrs('global', 'global'):
+		for attr in self.newdb.getCategoryAttrs('global', 'global'):
 			v = self.quote(attr.value)
 			if v:
 				self.dump("add attr %s %s" % (attr.attr, v))

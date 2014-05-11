@@ -154,8 +154,8 @@ class Command(rocks.commands.set.host.command):
 		if not value:
 			self.about('missing value of attribute')
 
-		for node in self.db.database.getNodesfromNames(args):
-			self.db.database.setCategoryAttr('host', node.name, \
+		for node in self.newdb.getNodesfromNames(args):
+			self.newdb.setCategoryAttr('host', node.name, \
 					attr, value)
 
 

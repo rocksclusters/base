@@ -160,7 +160,7 @@ class Command(rocks.commands.run.command):
 		for name in additional_attr:
 			if name == 'dhcp_nextserver':
 				# this is an appliance attribute it needs special care
-				s = self.db.database.getSession()
+				s = self.newdb.getSession()
 				apps = s.query(sqlalchemy.distinct(Catindex.name))\
 					.join(Catindex.attributes)\
 					.join(Attribute.category)\
@@ -179,8 +179,8 @@ class Command(rocks.commands.run.command):
 		# values in the DB
 		#
 		# So only closing the connection will fix this
-		self.db.database.close()
-		self.db.database.connect()
+		self.newdb.close()
+		self.newdb.connect()
 
 		rolls = []
 		for roll in args:

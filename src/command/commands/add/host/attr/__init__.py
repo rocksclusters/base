@@ -145,12 +145,12 @@ class Command(rocks.commands.add.host.command):
 		if not value:
 			self.about('missing value of attribute')
 
-		for node in self.db.database.getNodesfromNames(args):
-			self.db.database.addCategoryAttr('host', node.name, \
+		for node in self.newdb.getNodesfromNames(args):
+			self.newdb.addCategoryAttr('host', node.name, \
 					attr, value)
 
 			try:
-				self.db.database.getSession().commit()
+				self.newdb.getSession().commit()
 			except sqlalchemy.exc.IntegrityError:
 				self.abort('attribute "%s" exists' % attr)
 

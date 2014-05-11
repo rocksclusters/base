@@ -121,9 +121,9 @@ class Command(rocks.commands.remove.host.command):
 		if not attr:
 			self.abort('missing attribute name')
 
-		for node in self.db.database.getNodesfromNames(args):
+		for node in self.newdb.getNodesfromNames(args):
 
-			self.db.database.removeCategoryAttr('host', node.name, attr)
+			self.newdb.removeCategoryAttr('host', node.name, attr)
 
 
 

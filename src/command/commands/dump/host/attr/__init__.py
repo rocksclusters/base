@@ -113,8 +113,8 @@ class Command(rocks.commands.dump.host.command):
 
 	def run(self, params, args):
 
-		for node in self.db.database.getNodesfromNames(args):
-			for attr in self.db.database.getCategoryAttrs('host', node.name):
+		for node in self.newdb.getNodesfromNames(args):
+			for attr in self.newdb.getCategoryAttrs('host', node.name):
 				
 				# Do not record the os or arch attributes
 				# since kickstart sets them

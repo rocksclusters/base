@@ -151,6 +151,6 @@ class Command(rocks.commands.set.host.command):
 		if not cpus:
 			self.abort('must supply cpus')
 			
-		for node in self.db.database.getNodesfromNames(args):
+		for node in self.newdb.getNodesfromNames(args):
 			node.CPUs = int(cpus)
 

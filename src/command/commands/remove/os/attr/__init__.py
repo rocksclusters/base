@@ -111,5 +111,5 @@ class Command(rocks.commands.remove.os.command):
 			self.abort('missing os name')
 
 		for os in self.getOSNames(args):
-			self.db.database.removeCategoryAttr('os', os, attr)
+			self.newdb.removeCategoryAttr('os', os, attr)
 

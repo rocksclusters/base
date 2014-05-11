@@ -163,5 +163,5 @@ class Command(rocks.commands.set.command):
 		if not value:
 			self.abort('missing value of attribute')
 
-		self.db.database.setCategoryAttr('global', 'global', attr, value)
+		self.newdb.setCategoryAttr('global', 'global', attr, value)
 

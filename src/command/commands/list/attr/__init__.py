@@ -112,7 +112,7 @@ class Command(rocks.commands.list.command):
 
 		self.beginOutput()
 
-		for attr in self.db.database.getCategoryAttrs('global', 'global'):
+		for attr in self.newdb.getCategoryAttrs('global', 'global'):
 			self.addOutput(attr.attr, attr.value)
 
 		self.endOutput(header=['attr', 'value' ],

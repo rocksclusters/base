@@ -303,7 +303,7 @@ class Command(command):
 			try:
 				# this command is called at an early stage while populating the
 				# database and there are not host defined so getHostAttr would fail
-				for a in self.db.database.getCategoryAttrs('global', 'global'):
+				for a in self.newdb.getCategoryAttrs('global', 'global'):
 					if a.attr == 'Kickstart_PrivateKickstartHost':
 						next_server = a.value
 			except:

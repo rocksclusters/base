@@ -119,5 +119,5 @@ class Command(rocks.commands.remove.appliance.command):
 			self.abort('missing attribute name')
 
 		for appliance in self.getApplianceNames(args):
-			self.db.database.removeCategoryAttr('appliance', appliance, attr)
+			self.newdb.removeCategoryAttr('appliance', appliance, attr)
 

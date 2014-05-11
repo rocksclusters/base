@@ -113,5 +113,5 @@ class Command(rocks.commands.remove.command):
 		if not attr:
 			self.abort('missing attribute name')
 
-		self.db.database.removeCategoryAttr('global', 'global', attr)
+		self.newdb.removeCategoryAttr('global', 'global', attr)
 

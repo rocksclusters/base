@@ -138,9 +138,9 @@ class Command(rocks.commands.add.command):
 		if not value:
 			self.abort('missing value of attribute')
 
-		self.db.database.addCategoryAttr('global', 'global', attr, value)
+		self.newdb.addCategoryAttr('global', 'global', attr, value)
 		try:
-			session = self.db.database.getSession()
+			session = self.newdb.getSession()
 			# I need to catch the exception here
 			session.commit()
 		except sqlalchemy.exc.IntegrityError:

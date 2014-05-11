@@ -126,8 +126,8 @@ class Command(rocks.commands.list.host.command):
 
 		self.beginOutput()
 		
-		for host in self.db.database.getNodesfromNames(args):
-			attrs = self.db.database.getHostAttrs(host, 1)
+		for host in self.newdb.getNodesfromNames(args):
+			attrs = self.newdb.getHostAttrs(host, 1)
 			
 			for key in sorted(attrs.keys()):
 				self.addOutput(host.name, 

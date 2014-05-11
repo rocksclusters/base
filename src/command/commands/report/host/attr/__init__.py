@@ -150,7 +150,7 @@ class Command(rocks.commands.HostArgumentProcessor,
 						fmt="'%s':'%s',"
 					else:
 						fmt="%s:%s"
-					attrs = self.db.database.getHostAttrs(host)
+					attrs = self.newdb.getHostAttrs(host)
 					if pyformat:
 						self.addOutput(host, '{')
 					for key in sorted(attrs.keys()):

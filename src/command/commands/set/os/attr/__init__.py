@@ -139,5 +139,5 @@ class Command(rocks.commands.set.os.command):
 			self.about('missing value of attribute')
 
 		for os in oses:
-			self.db.database.setCategoryAttr('os', os, attr, value)
+			self.newdb.setCategoryAttr('os', os, attr, value)
 			
