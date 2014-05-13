@@ -1692,6 +1692,12 @@ class Command:
 			name = string.join(string.split(command, '.'), ' ')
 		except AttributeError:
 			return ''
+
+		# flash to the DB and expire any ORM object to avoid reading 
+		# cached values in future DB query
+		s = self.newdb.getSession()
+		s.commit()
+
 		o.runWrapper(name, args)
 		return o.getText()
 

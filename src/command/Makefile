@@ -197,7 +197,7 @@ install:: build
 		fi ;\
 	);
 	for i in `find $(ROOT)/$(PY.ROCKS)/rocks/commands -name "*.py"`; do\
-		grep "^RollName = " $$i ||  				\
+		grep "^RollName = " $$i > /dev/null ||  		\
 		echo -e "\nRollName = \"$(ROLL)\"" >> $$i;		\
 	done
 	$(INSTALL) -m0444 rocks-copyright.txt \
