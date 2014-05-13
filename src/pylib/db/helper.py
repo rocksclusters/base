@@ -413,7 +413,7 @@ class DatabaseHelper(rocks.db.database.Database):
 		except sqlalchemy.orm.exc.NoResultFound:
 			# we need to create the catindex element
 			cat = Category.loadOne(session, name=category_name)
-			catindex = Catindex(name=category_index, category=category_name)
+			catindex = Catindex(name=category_index, category=cat)
 			session.add(catindex)
 			return (cat, catindex)
 
