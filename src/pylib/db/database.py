@@ -174,12 +174,16 @@ class Database(object):
 			# we can use a unix socket
 			url += "?unix_socket=" + mysql_socket
 
+		if self.verbose:
+			import logging
+			logging.basicConfig()
+			logging.getLogger('sqlalchemy.engine').setLevel(logging.DEBUG)
 
 		if self.verbose:
 			# TODO move this to the logger
 			print "Database connection URL: ", url
 
-		self.engine = create_engine(url, echo=self.verbose)
+		self.engine = create_engine(url)
 
 		self.conn = self.engine.connect()
 		#results = self.conn.execute("select * from networks")
