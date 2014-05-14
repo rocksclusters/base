@@ -500,7 +500,8 @@ CREATE TABLE networks (
   Options	varchar(128) default NULL,
   Channel	varchar(128) default NULL,
   PRIMARY KEY(ID),
-  FOREIGN KEY(subnet) REFERENCES subnets(id) ON DELETE CASCADE
+  FOREIGN KEY(subnet) REFERENCES subnets(id) ON DELETE CASCADE,
+  FOREIGN KEY(node) REFERENCES nodes(id) ON DELETE CASCADE
 );
 
 
