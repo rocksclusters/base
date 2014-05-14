@@ -287,19 +287,19 @@ class Network(RocksBase, Base):
     __table_args__ = {}
 
     #column definitions
-    channel = Column('Channel', String(128))
-    device = Column('Device', String(32))
-    gateway = Column('Gateway', String(32))
     ID = Column('ID', Integer, primary_key=True, nullable=False)
-    ip = Column('IP', String(32))
-    mac = Column('MAC', String(64))
-    module = Column('Module', String(128))
-    name = Column('Name', String(128))
-    netmask = Column('Netmask', String(32))
     node_ID = Column('Node', Integer, ForeignKey('nodes.ID'))
-    options = Column('Options', String(128))
+    mac = Column('MAC', String(64))
+    ip = Column('IP', String(32))
+    netmask = Column('Netmask', String(32))
+    gateway = Column('Gateway', String(32))
+    name = Column('Name', String(128))
+    device = Column('Device', String(32))
     subnet = Column('Subnet', Integer, ForeignKey('subnets.ID'))
+    module = Column('Module', String(128))
     vlanID = Column('VlanID', Integer)
+    options = Column('Options', String(128))
+    channel = Column('Channel', String(128))
 
     #relation definitions
 
@@ -486,15 +486,16 @@ class VmDisk(RocksBase, Base):
 
     #column definitions
     ID = Column('ID', Integer, primary_key=True, nullable=False)
+    vm_Node_ID = Column('Vm_Node', Integer, ForeignKey('vm_nodes.ID'), nullable=False)
+    vbd_Type = Column('VBD_Type', String(64))
+    prefix = Column('Prefix', String(512))
+    name = Column('Name', String(512))
     device = Column('Device', String(512))
     mode = Column('Mode', String(64))
-    name = Column('Name', String(512))
-    prefix = Column('Prefix', String(512))
     size = Column('Size', Integer, nullable=False)
-    vbd_Type = Column('VBD_Type', String(64))
-    vm_Node = Column('Vm_Node', Integer, nullable=False)
 
     #relation definitions
+    node = sqlalchemy.orm.relationship("VmNode", backref="disks")
 
 
 class VmNode(RocksBase, Base):
@@ -504,13 +505,20 @@ class VmNode(RocksBase, Base):
 
     #column definitions
     ID = Column('ID', Integer, primary_key=True, nullable=False)
+    physNode_ID = Column('PhysNode', Integer, ForeignKey('nodes.ID', 
+			ondelete="SET NULL"), nullable=False)
+    node_ID = Column('Node', Integer, ForeignKey('nodes.ID'), nullable=False)
     mem = Column('Mem', Integer, nullable=False)
-    node = Column('Node', Integer, nullable=False)
-    physNode = Column('PhysNode', Integer, nullable=False)
     slice = Column('Slice', Integer, nullable=False)
     virt_type = Column('Virt_Type', String(64))
     cdrom_path = Column('cdrom_path', String(512))
 
     #relation definitions
+    # node is a 1-to-1 relationship aka uselist=Flase
+    node = sqlalchemy.orm.relationship("Node", uselist=False,
+		backref=sqlalchemy.orm.backref("vm_defs", uselist=False),
+		foreign_keys=[node_ID])
+    physNode = sqlalchemy.orm.relationship("Node", uselist=False, backref="vm_nodes",
+		foreign_keys=[physNode_ID])
 
 
