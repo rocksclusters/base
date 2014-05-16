@@ -137,10 +137,12 @@ class Boot(RocksBase, Base):
 
     #column definitions
     ID = Column('ID', Integer, primary_key=True, nullable=False)
-    node = Column('Node', Integer, nullable=False, default=0)
+    node_ID = Column('Node', Integer, ForeignKey('nodes.ID'), nullable=False, default=0)
     action = Column('Action', Enum(u'install', u'os', u'run'))
 
     #relation definitions
+    node = sqlalchemy.orm.relationship("Node", 
+		backref=sqlalchemy.orm.backref("boot", uselist=False))
 
 
 class Bootaction(RocksBase, Base):
@@ -295,13 +297,16 @@ class Network(RocksBase, Base):
     gateway = Column('Gateway', String(32))
     name = Column('Name', String(128))
     device = Column('Device', String(32))
-    subnet = Column('Subnet', Integer, ForeignKey('subnets.ID'))
+    subnet_ID = Column('Subnet', Integer, ForeignKey('subnets.ID'))
     module = Column('Module', String(128))
     vlanID = Column('VlanID', Integer)
     options = Column('Options', String(128))
     channel = Column('Channel', String(128))
 
-    #relation definitions
+    # relation definitions
+    # node    from nodes
+    # subnet  from subnets
+
 
 
 class Node(RocksBase, Base):
@@ -324,6 +329,11 @@ class Node(RocksBase, Base):
     #relation definitions
     # map the networks belonging to this node
     networks = sqlalchemy.orm.relationship("Network", backref="node")
+    # backrefs defined in other tables
+    # membership from memeberships
+    # vm_defs    from vm_nodes
+    # boot       from boot
+
 
     def __repr__(self):
         return "<Node(name='%s')>" % (self.name)
@@ -477,6 +487,7 @@ class Subnet(RocksBase, Base):
     servedns = Column('servedns', Boolean, default=False)
 
     #relation definitions
+    networks = sqlalchemy.orm.relationship("Network", backref="subnet")
 
 
 class VmDisk(RocksBase, Base):

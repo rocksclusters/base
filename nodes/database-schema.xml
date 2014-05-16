@@ -618,7 +618,8 @@ CREATE TABLE boot (
   ID            int(11) NOT NULL auto_increment,
   Node          int(11) NOT NULL default '0',
   Action        enum ('install', 'os', 'run'),
-  PRIMARY KEY (ID)
+  PRIMARY KEY (ID),
+  FOREIGN KEY(Node) REFERENCES nodes(id) ON DELETE CASCADE
 );
 
 
