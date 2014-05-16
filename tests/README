@@ -187,7 +187,7 @@ First digit tells the family:
 	3 - unused
 	4 - unused
 	5 - unused
-	6 - unused
+	6 - KVM roll stuff
 	7 - unused
 	8 - unused
 	9 - unused
@@ -260,8 +260,8 @@ Do:
 
    Instead of:
 
-	rocks list host &&
-	rocks dump &&
+	rocks list host
+	rocks dump
 	test ...
 
    That way all of the commands in your tests will succeed or fail. If
