@@ -63,11 +63,25 @@ test_expect_success 'test KVM - list host vm' '
 '
 
 test_expect_success 'test KVM - report host vm config compute' '
+	rocks set host interface subnet test-host-1 eth1 private &&
 	rocks report host vm config test-host-1 > output &&
 	xmllint output &&
+	echo We have 2 interfaces for test-host-1 &&
+	test `grep -c "\<interface\ " output ` -eq 2 &&
+	virt-xml-validate output &&
+	echo transform a compute into a frontend &&
 	rocks set host installaction test-host-1 action="install vm frontend" &&
 	rocks report host vm config test-host-1 > output &&
-	xmllint output
+	xmllint output && 
+	virt-xml-validate output
+'
+
+test_expect_success 'test KVM - report host vm config compute disablekvm' '
+	rocks set host interface disablekvm test-host-1 eth1 True &&
+	rocks list host interface disablekvm test-host-1 | grep True &&
+	rocks report host vm config test-host-1 > output &&
+	test `grep -c "<interface " output ` -eq 1 &&
+        virt-xml-validate output
 '
 
 test_expect_success 'test KVM - report host vm config FE' '
@@ -78,10 +92,10 @@ test_expect_success 'test KVM - report host vm config FE' '
 	grep "gateway=$gw" output
 '
 
+# my plugin are too stupid to generate valid libvirt xml so 
+# skip the virt-xml-validate
 python_path="/opt/rocks/lib/python2.6/site-packages/rocks/commands/report/host/vm/config/"
-
 plugin_list="bootloader cpumem interface disk device global"
-
 test_expect_success 'test KVM - report host vm config plugins' '
 	for i in $plugin_list; do
 		sed "s/%PLUGINNAME%/$i/" "$TEST_DIRECTORY"/t6000/plugin_device.py > $python_path/plugin_$i.py
