@@ -490,8 +490,6 @@ CREATE TABLE networks (
   Node		int(11) default NULL,
   MAC		varchar(64) default NULL,
   IP		varchar(32) default NULL,
-  Netmask	varchar(32) default NULL,
-  Gateway	varchar(32) default NULL,
   Name		varchar(128) default NULL,
   Device	varchar(32) default NULL,
   Subnet	int(11)	default NULL,
@@ -499,6 +497,7 @@ CREATE TABLE networks (
   VlanID	int(11) default NULL,
   Options	varchar(128) default NULL,
   Channel	varchar(128) default NULL,
+  Disable_KVM   BOOL NOT NULL DEFAULT 0,
   PRIMARY KEY(ID),
   FOREIGN KEY(subnet) REFERENCES subnets(id) ON DELETE CASCADE,
   FOREIGN KEY(node) REFERENCES nodes(id) ON DELETE CASCADE

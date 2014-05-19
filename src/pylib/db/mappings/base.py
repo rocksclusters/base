@@ -293,8 +293,6 @@ class Network(RocksBase, Base):
     node_ID = Column('Node', Integer, ForeignKey('nodes.ID'))
     mac = Column('MAC', String(64))
     ip = Column('IP', String(32))
-    netmask = Column('Netmask', String(32))
-    gateway = Column('Gateway', String(32))
     name = Column('Name', String(128))
     device = Column('Device', String(32))
     subnet_ID = Column('Subnet', Integer, ForeignKey('subnets.ID'))
@@ -302,6 +300,7 @@ class Network(RocksBase, Base):
     vlanID = Column('VlanID', Integer)
     options = Column('Options', String(128))
     channel = Column('Channel', String(128))
+    disable_kvm = Column('Disable_KVM', Boolean, default=False)
 
     # relation definitions
     # node    from nodes
