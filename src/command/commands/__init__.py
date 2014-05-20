@@ -1695,8 +1695,7 @@ class Command:
 
 		# flash to the DB and expire any ORM object to avoid reading 
 		# cached values in future DB query
-		s = self.newdb.getSession()
-		s.commit()
+		self.newdb.commit()
 
 		o.runWrapper(name, args)
 		return o.getText()

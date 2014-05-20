@@ -30,6 +30,17 @@ test_expect_success 'test no db - report' '
 	rocks report distro
 '
 
+# TODO: we should remove shared mysql libraries during this tests
+#       but since we are a little lazy and this is a corner case we don't do it
+# /opt/rocks/mysql/lib/libmysqlclient.a
+# /opt/rocks/mysql/lib/libmysqlclient.so
+# /opt/rocks/mysql/lib/libmysqlclient.so.18
+# /opt/rocks/mysql/lib/libmysqlclient.so.18.1.0
+# /opt/rocks/mysql/lib/libmysqlclient_r.a
+# /opt/rocks/mysql/lib/libmysqlclient_r.so
+# /opt/rocks/mysql/lib/libmysqlclient_r.so.18
+# /opt/rocks/mysql/lib/libmysqlclient_r.so.18.1.0
+
 rocks_version=`rocks report version`
 
 test_expect_success 'test no db - rocks create distro' '

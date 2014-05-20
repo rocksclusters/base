@@ -94,6 +94,7 @@ class Database(object):
 		self.results = False
 		self.session = None
 		self.conn = None
+		self.engine = None
 
 
 	def setDBPasswd(self, passwd):
