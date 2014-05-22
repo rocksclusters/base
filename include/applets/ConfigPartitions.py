@@ -175,16 +175,16 @@ class App(rocks.sql.Application):
 
 
         def run(self):
-		#
-		# if we are installing a standalone node (e.g., a frontend
-		# or a web server) the database will not be accessible, so
-		# don't do anything and just return
-		#
-		if self.connect():
+		try:
+			self.connect()
 			partinfo = self.getPartitionInfo()
 			print 'dbpartinfo = ', repr(partinfo)
 			self.close()
-		else:
+		except:
+			# if we are installing a standalone node (e.g., a
+			# frontend) the database will not be accessible, so
+			# print an empty dbpartinfo or do_partition.py will
+			# miserably fail
 			print 'dbpartinfo = {}'
 
 		return

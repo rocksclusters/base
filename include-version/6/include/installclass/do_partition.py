@@ -10,9 +10,12 @@ partscheme = None
 
 if os.path.exists('/tmp/db_partition_info.py'):
 	sys.path.append('/tmp')
-	import db_partition_info
 
-	dbpartinfo = db_partition_info.dbpartinfo
+	try:
+		import db_partition_info
+		dbpartinfo = db_partition_info.dbpartinfo
+	except:
+		dbpartinfo = {}
 else:
 	dbpartinfo = {}
 
