@@ -1,0 +1,9 @@
+<rolls>
+<roll
+	name="base"
+	version="6.2"
+	arch="x86_64"
+	url="http://calit2-110-119-23.ucsd.edu/install/rolls/"
+	diskid=""
+/>
+</rolls>
