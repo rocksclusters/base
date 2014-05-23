@@ -193,15 +193,15 @@ class Nodes:
 		if mac is None:
 			# Happens for a frontend
 			insert = ('insert into networks '
-				'(node,ip,netmask,name,subnet) '
-				'values (%d, "%s", "%s", "%s", %d) '
-				% (nodeid, ip, netmask, name, subnet_id))
+				'(node,ip,name,subnet) '
+				'values (%d, "%s", "%s", %d) '
+				% (nodeid, ip, name, subnet_id))
 		else:
 			insert = ('insert into networks '
-				'(node,mac,ip,netmask,name,subnet) '
-				'values (%d, "%s", "%s", "%s", "%s", %d) '
+				'(node,mac,ip,name,subnet) '
+				'values (%d, "%s", "%s", "%s", %d) '
 				% (nodeid, mac, \
-						ip, netmask, name, subnet_id))
+						ip, name, subnet_id))
 
 		self.sql.execute(insert)
 		self.nodeid = nodeid
