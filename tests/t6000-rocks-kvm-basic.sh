@@ -62,6 +62,12 @@ test_expect_success 'test KVM - list host vm' '
 	rocks list host vm status=1
 '
 
+test_expect_success 'test KVM - report host vm config test memory' '
+	rocks report host vm config test-host-1 > output &&
+	memory=`echo -e "cat /domain/memory/text()" | xmllint  --shell output | tail -n-2| head -n-1` &&
+	test $memory -gt 1045000
+'
+
 test_expect_success 'test KVM - report host vm config compute' '
 	rocks set host interface subnet test-host-1 eth1 private &&
 	rocks report host vm config test-host-1 > output &&
@@ -76,7 +82,7 @@ test_expect_success 'test KVM - report host vm config compute' '
 	virt-xml-validate output
 '
 
-test_expect_success 'test KVM - report host vm config compute disablekvm' '
+test_expect_success 'test KVM - report host vm config disablekvm interface' '
 	rocks set host interface disablekvm test-host-1 eth1 True &&
 	rocks list host interface disablekvm test-host-1 | grep True &&
 	rocks report host vm config test-host-1 > output &&
