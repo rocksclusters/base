@@ -25,7 +25,7 @@ Usage: insert-ethers [-hv] [-p password] [-u host] [-d database] [--help]
  [--user host] [--baseip ip address] [--basename basename] [--hostname hostname]
  [--ipaddr ip address] [--cabinet number] [--rack number] [--inc number]
  [--rank number] [--replace hostname] [--remove hostname]
- [--os the OS to install on the machines]
+ [--membership membership] [--os the OS to install on the machines]
 
 </screen>
 </listitem>
@@ -130,6 +130,13 @@ return.
 <emphasis> [--remove hostname] </emphasis> it removes hostname from the rocks database
 this command is equivalent to 'rocks remove host hostname'. This command will not 
 start the GUI, it will simply delete the hostname and return.
+</para>
+</listitem>
+
+<listitem>
+<para>
+<emphasis> [--membership membership] </emphasis> You can specify the membership name 
+and skip the first promt screen.
 </para>
 </listitem>
 

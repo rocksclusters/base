@@ -1665,6 +1665,7 @@ class App(rocks.sql.Application):
 			('rank=', 'number'),
 			('replace=', 'hostname'),
 			('remove=', 'hostname'),
+			('membership=', 'membership'),
 			('os=', 'the OS to install on the machines'),
 			('update'),
 			('staticip')
@@ -1692,6 +1693,10 @@ class App(rocks.sql.Application):
 			self.ipIncrement = int(c[1])
 		elif c[0] == '--rank':
 			self.insertor.setRank(int(c[1]))
+		elif c[0] == '--membership':
+			# I don't know why it is called appliance 
+			# since in reality it is a membership
+			self.insertor.setApplianceName(c[1])
 		elif c[0] == '--replace':
 			self.insertor.setReplace(c[1])
 		elif c[0] == '--remove':
