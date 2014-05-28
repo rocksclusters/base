@@ -1099,6 +1099,7 @@ class Generator_linux(Generator):
 		self.ks['rpms-off'].sort()
 		for e in self.ks['rpms-off']:
 			list.append('-' + e)
+		list.append('%end')
 		return list
 
 	def generate_pre(self):
@@ -1109,6 +1110,7 @@ class Generator_linux(Generator):
 			pre_list.append('%%pre --log=/tmp/ks-pre.log %s' %
 				list[0])
 			pre_list.append(string.join(list[1:], '\n'))
+			pre_list.append('%end\n')
 			
 		return pre_list
 
@@ -1126,6 +1128,7 @@ class Generator_linux(Generator):
 			post_list.append('%%post --log=%s %s\n' % \
 				(self.log, list[0]))
 			post_list += self._generate_config_script(list)
+			post_list.append('%end\n')
 
 		return post_list
 
@@ -1195,6 +1198,7 @@ class Generator_linux(Generator):
 
 		list.append('EOF')
 		list.append('')
+		list.append('%end\n')
 		
 		return list
 

@@ -165,7 +165,7 @@ class Command(rocks.commands.report.command):
 		list += self.generator.generate(section_name)
 			
 		for line in list:
-			if line[0:5] == '%post':
+			if line.startswith("%post") or line.startswith("%end"):
 				continue
 
 			self.addOutput('', line.rstrip())

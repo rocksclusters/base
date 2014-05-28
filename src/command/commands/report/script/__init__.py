@@ -1,5 +1,4 @@
 #
-# $Id: __init__.py,v 1.12 2012/11/27 00:48:25 phil Exp $
 #
 # @Copyright@
 # 
@@ -153,7 +152,7 @@ class Command(rocks.commands.report.command):
 		list += self.generator.generate(section_name)
 			
 		for line in list:
-			if line[0:5] == '%post':
+			if line.startswith('%post') or line.startswith('%end'):
 				continue
 
 			self.addOutput('', line.rstrip())

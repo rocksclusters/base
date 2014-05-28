@@ -73,7 +73,9 @@ test_expect_success 'test no db - rocks report post' '
 		/opt/rocks/bin/rocks report post \
 		attrs="{\"hostname\":\"\", \"HttpRoot\":\"/var/www/html\",\"os\":\"linux\"}"\
 		> script.sh &&
-	test_line_count -ge 800 script.sh
+	test_line_count -ge 800 script.sh &&
+	! grep "%end" script.sh &&
+	! grep "%post" script.sh
 '
 
 
