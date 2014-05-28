@@ -1733,8 +1733,7 @@ class App(rocks.sql.Application):
 			return
 
 		if os.path.isfile(self.lockFile):
-			raise _("error - lock file %s exists") % self.lockFile
-			sys.exit(-1)
+			raise Exception("error - lock file %s exists" % self.lockFile)
 		else:
 			os.system('touch %s' % self.lockFile)
 			
@@ -1768,6 +1767,8 @@ app.parseArgs()
 try:
 	app.run()
 except Exception, msg:
-	sys.stderr.write('error - ' + str(msg) + '\n')
 	app.cleanup()
+	if app.insertor and app.insertor.screen:
+		app.insertor.endGUI()
+	sys.stderr.write('error - ' + str(msg) + '\n')
 	sys.exit(1)
