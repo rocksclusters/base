@@ -537,7 +537,7 @@ class Generator:
 		# If this is a subsequent file tag and the optional PERMS
 		# or OWNER attributes are missing, use the previous value(s).
 		
-		if self.rcsFiles.has_key(file):
+		if file in self.rcsFiles:
 			(orig_owner, orig_perms) = self.rcsFiles[file]
 			if not perms:
 				perms = orig_perms
@@ -649,11 +649,19 @@ class Generator:
 		else:
 			fileCommand = None
 
+		if attr.getNamedItem((None, 'rcs')):
+			rcs = attr.getNamedItem((None, 'rcs')).value
+			rcs = rocks.util.str2bool(rcs)
+		else:
+			rcs = True
+
 		fileText = self.getChildText(node)
 
 		if fileName:
-		
-			s = self.rcsBegin(fileName, fileOwner, filePerms)
+
+			s = ''
+			if rcs:
+				s = self.rcsBegin(fileName, fileOwner, filePerms)
 
 			if fileMode == 'append':
 				gt = '>>'

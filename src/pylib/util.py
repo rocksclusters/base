@@ -237,6 +237,20 @@ def unescapeAttr(value):
 	return xml.sax.saxutils.unescape(value, {"&quot;": "\""})
 
 
+def str2bool(s):
+	"""Converts an on/off, yes/no, true/false string to 1/0."""
+	if s and s.upper() in [ 'ON', 'YES', 'Y', 'TRUE', '1', 'ENABLED', 'ENABLE']:
+		return True
+	else:
+		return False
+
+def bool2str(b):
+	"""Converts an 1/0 to a yes/no"""
+	if b:
+		return 'yes'
+	else:
+		return 'no'
+
 def list2str(list):
     s = ''
     for e in list:

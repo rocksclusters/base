@@ -491,6 +491,25 @@ Example:
 </varlistentry>
 
 <varlistentry>
+<term>rcs</term>
+<listitem>
+
+<para>
+Optional.
+This flag can disable tracing the file with Revision Control System.
+By the default all files are under RCS but if rcs=false it will disable 
+revisioning.
+</para>
+
+<para>
+Example:
+<constant><![CDATA[<file name="/etc/modprobe.d/netloop.conf" rcs="false">]]></constant>.
+</para>
+
+</listitem>
+</varlistentry>
+
+<varlistentry>
 <term>owner</term>
 <listitem>
 <para>
