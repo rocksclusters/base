@@ -929,14 +929,10 @@ class InsertEthers(GUI):
 		# Check if the appliance is kickstartable. We only need
 		# to check the appliance_attributes table in this instance
 		# since this value cannot be in any other table yet.
-		query = 'select if(a.value="yes", True, False) from '	+\
-			'attributes a, categories cat, catindex ind where ' +\
-			'cat.name = "appliance" and ind.category = cat.id and ' +\
-			'ind.name="%s" and ind.id = a.catindex ' % basename+\
-			'and a.attr="kickstartable"'
-		rows = self.sql.execute(query)
-		if rows > 0:
-			self.kickstartable = bool(self.sql.fetchone()[0])
+		attr = self.sql.newdb.getCategoryAttr('appliance', basename, 
+				"kickstartable")
+		if attr:
+			self.kickstartable = rocks.util.str2bool(attr)
 
 		#
 		# if the basename was not overridden on the command line

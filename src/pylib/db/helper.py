@@ -190,12 +190,9 @@ class DatabaseHelper(rocks.db.database.Database):
 		if self._frontend :
 			return self._frontend
 
-		(cat, catindex) = self.getCategoryIndex('global', 'global')
-		a = Attribute.loadOne(self.getSession(), category=cat,
-				catindex=catindex, attr='Kickstart_PrivateHostname')
-		self._frontend = a.value
+		self._frontend = self.getCategoryAttr('global', 'global', \
+				'Kickstart_PrivateHostname')
 		return self._frontend
-
 
 
 	def getHostname(self, hostname=None):
@@ -472,6 +469,24 @@ class DatabaseHelper(rocks.db.database.Database):
 				catindex_name)
 
 		return Attribute.load(session, category=cat, catindex=catindex)
+
+
+	def getCategoryAttr(self, category_name, catindex_name, attr_name):
+		"""Given a category name and a category index name and an attribute
+		name it return its value or null if it does not exist"""
+
+		session = self.getSession()
+
+		(cat, catindex) = self.getCategoryIndex(category_name, \
+				catindex_name)
+
+		try:
+			attr = Attribute.loadOne(session, attr=attr_name, \
+					category=cat, catindex=catindex)
+			return attr.value
+
+		except sqlalchemy.orm.exc.NoResultFound:
+			return None
 
 
 	def removeCategoryAttr(self, category_name, catindex_name, attribute_name):
