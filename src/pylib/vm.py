@@ -651,7 +651,7 @@ class VMControl:
 		if op == 'console':
 			msg = 'retry'
 			while msg == 'retry':
-				(status, msg) = self.console(op, dst_mac, True)
+				(status, msg) = self.connect_send_command(op, dst_mac, True)
 				if msg == 'retry':
 					print ''
 					print 'Attempting to reestablish ' + \
