@@ -49,7 +49,7 @@ test_expect_success 'test KVM - steup test hosts (add host vm)' '
 	rocks add host vm localhost compute name=test-host-1 num-macs=2
 '
 test_expect_success 'test KVM - steup test hosts (add cluster)' '
-	ip=`get_free_ip` && test $? && test "$ip" &&
+	ip=`get_free_ip` && test $? && test "$ip" && echo IP $ip &&
 	rocks add cluster $ip 0 fe-name=test-host-0 cluster-naming=true
 '
 

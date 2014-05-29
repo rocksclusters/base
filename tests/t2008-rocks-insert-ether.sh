@@ -40,14 +40,14 @@ test_expect_success 'test insert-ether - inset-host' '
 test_expect_success 'test insert-ether - kickstart host' '
 	testhostname=`rocks list host | grep utest-host` 
 	test "$testhostname" &&
-	testhostname=${testhostname%:*}
+	testhostname=${testhostname%:*} &&
 	test $testhostname &&
 	echo the new hostname is "$testhostname" &&
-	ip=`rocks list host interface $testhostname | grep private | awk "{print \\$4}"`
+	ip=`rocks list host interface $testhostname | grep private | awk "{print \\$4}"` &&
 	test $ip &&
-	interface=`rocks report host attr localhost attr=Kickstart_PrivateInterface`
+	interface=`rocks report host attr localhost attr=Kickstart_PrivateInterface` &&
 	test $interface && 
-	interface=$interface:5
+	interface=$interface:5 &&
 	echo Kickstarting on interface $interface ip $ip &&
 	export interface hostname &&
 	ifconfig $interface $ip up &&
@@ -66,9 +66,9 @@ test_expect_success 'test insert-ether - check interface name of new hosts' '
 
 test_expect_success 'test insert-ether - tear down I' '
 	rocks list host &&
-	testhostname=`rocks list host | grep utest-host` 
+	testhostname=`rocks list host | grep utest-host` &&
 	test "$testhostname" &&
-	testhostname=${testhostname%:*}
+	testhostname=${testhostname%:*} &&
 	test $testhostname &&
 	rocks remove host $testhostname 
 '
