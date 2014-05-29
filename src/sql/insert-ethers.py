@@ -766,7 +766,6 @@ class InsertEthers(GUI):
 		## Things for Dumping/Restoring 
 		self.doRestart		= 1
 		self.mac		= None
-		self.dump		= 'false'
 		self.ipaddr		= None
 		self.netmask		= None
 		self.subnet		= 'private' # Internal Network
@@ -986,33 +985,6 @@ class InsertEthers(GUI):
 		return
 
 
-	def dumpCommands(self):
-
-		query = 'select nodes.name, nodes.rack, nodes.rank, '\
-			'nodes.cpus, memberships.name, '\
-			'networks.mac, networks.device, networks.module, '\
-			'networks.IP, networks.netmask ' \
-			'from nodes,memberships,networks,subnets where '\
-			'nodes.membership = memberships.ID and '\
-			'nodes.id = networks.node and and ' \
-			'subnets.name="%s" and networks.subnet=subnets.id ' \
-			'order by memberships.name,nodes.rack,nodes.rank' \
-				% (self.subnet)
-
-		if self.sql.execute(query) == 0:
-			msg = _("Could not find any nodes in database")
-			raise dumpError, msg
-		for row in self.sql.fetchall():
-			(name,rack,rank,cpus,membership,mac,device,\
-				module,ipaddr,netmask) = row
-			print '%s --hostname="%s" --rack=%d '\
-			'--rank=%d --cpus=%d --appliance="%s" --mac="%s" '\
-			'--device="%s" --module="%s" --ipaddr="%s" '\
-			'--netmask="%s" --norestart --batch' % \
-			(sys.argv[0],name,rack,rank,cpus,membership,mac,device,\
-				module,ipaddr,netmask)
-
-
 	def statusGUI(self):
 		"Updates the list of nodes in 'Inserted Appliances' window"
 
@@ -1157,57 +1129,24 @@ class InsertEthers(GUI):
 
 		return ipaddr
 
-
-	def getnetwork(self,subnet):
-		
-		self.sql.execute("select subnet,netmask from subnets where name='%s'" % (subnet))
-		network,netmask = self.sql.fetchone()
-		return network,netmask
 			
 	def getnextIP(self, subnet):
-	
-		network,mask = self.getnetwork(subnet)
-		mask_ip = rocks.ip.IPAddr(mask)
-		network_ip = rocks.ip.IPAddr(network)
-		bcast_ip = rocks.ip.IPAddr(network_ip | rocks.ip.IPAddr(~mask_ip))
-		bcast = "%s" % (bcast_ip)
-		
-		if self.ipaddr is not None :
-			return self.ipaddr
 
-		if bcast != '' and mask != '':
-		
-			# Create the IPGenerator and if the user choose a 
-			# base ip address to the IPGenerator to start there.
-			# Should really be a method in the class to set this,
-			# but I need this today on 3.2.0.  Revisit soon (mjk)
-			
-			ip = rocks.ip.IPGenerator(bcast, mask)
-			if self.sql.ipBaseAddress:
-				ip.addr = rocks.ip.IPAddr(
-							self.sql.ipBaseAddress)
+		args = [subnet]
+		if self.sql.ipBaseAddress:
+			args.append('baseip=%s' % self.sql.ipBaseAddress)
 
-			#
-			# look in the database for a free address
-			#
-			while 1:
-			
-				# Go to the next ip address.  Default is still
-				# to count backwards, but allow the user to
-				# set us to count forwards.
-				
-				ip.next(self.sql.ipIncrement)
-				
-				nodeid = self.sql.getNodeId(ip.curr())
-				if nodeid is None:
-					return ip.curr()
+		if self.sql.ipIncrement != -1:
+			args.append('increment=%d' % self.sql.ipIncrement)
 
-		#
-		# if we make it to here, an error occurred
-		#
-		print 'error: getnextIP: could not get IP address ',
-		print 'for device (%s)' % (dev)
-		return '0.0.0.0'
+		import rocks.commands.report.nextip
+		cmd = rocks.commands.report.nextip.Command(self.sql.newdb)
+		cmd.runWrapper('report nextip', args)
+		text = cmd.getText()
+
+		if len(text) == 0:
+			raise Exception("Unable to get next IP address")
+		return text.strip()
 
 
 	def addit(self, mac, nodename, ip):
@@ -1431,9 +1370,6 @@ class InsertEthers(GUI):
 
 			
 	def run(self):
-		if self.dump == 'true' :
-			self.dumpCommands()
-			return
 
 		#
 		# Batch does not make sense with --staticip, use --ipaddr.
@@ -1730,4 +1666,6 @@ except Exception, msg:
 	if app.insertor and app.insertor.screen:
 		app.insertor.endGUI()
 	sys.stderr.write('error - ' + str(msg) + '\n')
+	import traceback
+	traceback.print_exc()
 	sys.exit(1)
