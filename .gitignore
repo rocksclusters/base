@@ -1,7 +1,13 @@
 
+# build directory
+BUILD/
+RPMS/
+SOURCES/
+SPECS/
+
 
 *.pyc
-`
+
 _os
 _arch
 _distribution

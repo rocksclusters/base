@@ -136,6 +136,7 @@
 #
 
 import os
+import sqlalchemy
 
 
 class Nodes:
@@ -152,7 +153,7 @@ class Nodes:
 		return self.nodeid
 		
 	def insert(self, name, mid, rack, rank, mac=None, ip=None,
-			netmask=None, subnet='private', osname='linux'):
+			subnet='private', osname='linux'):
 
 		"""Inserts a new node into the database. Optionally inserts
 		networking information as well."""
@@ -206,27 +207,17 @@ class Nodes:
 		self.sql.execute(insert)
 		self.nodeid = nodeid
 
+		# add host attribute os=osname
+		self.sql.newdb.addCategoryAttr('host', name, 'os', osname)
+		# need to commit this now if not it will not appear
+		try:
+			self.sql.newdb.commit()
+		except sqlalchemy.exc.IntegrityError:
+			# really really bad duplicate attribute error
+			# this should neve happen
+			msg = "Duplicate os attribute for host %s" % name
+			raise ValueError, msg
 
-		row = self.sql.execute('''select * from catindex i, categories c 
-			where c.name = "host" and c.id = i.category 
-			and i.name = "%s"''' % name)
-
-		if row == 0:
-			# add the category
-			self.sql.execute('''insert into catindex (name, category) 
-				value ("%s" , (select c.id 
-					from categories c 
-					where c.name='host')
-				); ''' % name)
-
-		# Set the value of the OS in the host attributes table
-		db_cmd = ('insert into attributes '
-			'(attr, value, category, catindex) '
-			'values ("%s","%s", '
-			'(select id from categories where name = "host" ), '
-			'(select id from catindex where name = "%s"))' % ('os', osname, name))
-
-		self.sql.execute(db_cmd)
 
 	def checkName(self, checkname):
 		"""Check to make sure we don't insert a duplicate node name or

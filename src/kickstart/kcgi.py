@@ -783,8 +783,7 @@ class App(rocks.kickstart.Application):
 		# Act like insert-ethers. Will raise ValueError if any
 		# of these fields already exist in the db.
 
-		self.clusterdb.insert(name, mid, rack, rank, ip=ip, 
-			netmask=self.privateNetmask)
+		self.clusterdb.insert(name, mid, rack, rank, ip=ip)
 		syslog.syslog("kickstart.cgi: inserted node %s %s %s" 
 			% (membership, name, ip))
 		return self.clusterdb.getNodeId()

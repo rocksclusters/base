@@ -977,7 +977,7 @@ class InsertEthers(GUI):
 
 		self.clusterdb.insert(nodename, self.membership, 
 			self.cabinet, self.rank, self.mac, self.ipaddr, 
-			self.netmask, self.subnet, self.osname)
+			self.subnet, self.osname)
 		self.sql.commit()
 
 		# Execute any plugins when adding hosts via
@@ -1162,42 +1162,6 @@ class InsertEthers(GUI):
 		return ipaddr
 
 
-	def getnetmask(self, dev):
-		import subprocess
-		import shlex
-
-		#
-		# check if bcast,netmask already specified
-		#
-		if self.netmask is not None and self.broadcast is not None:
-			# The user specified broadcast, netmask
-			return(self.broadcast,self.netmask)
-		#
-		# get an IP address
-		#
-		bcast = ''
-		mask  = ''
-
-		cmd = '/sbin/ifconfig %s' % dev
-		p = subprocess.Popen(shlex.split(cmd), stdout = subprocess.PIPE)
-
-		for line in p.stdout.readlines():
-			tokens = string.split(line)
-
-			for i in tokens:
-				values = string.split(i, ':')
-
-				if values[0] == 'Bcast':
-					bcast = values[1]
-				elif values[0] == 'Mask':
-					mask = values[1]
-
-		# Set the values into this node's in-memory object
-		self.setNetmask(mask)
-		self.setBroadcast(bcast)
-
-		return (bcast, mask)
-
 	def getnetwork(self,subnet):
 		
 		self.sql.execute("select subnet,netmask from subnets where name='%s'" % (subnet))
@@ -1250,10 +1214,10 @@ class InsertEthers(GUI):
 		return '0.0.0.0'
 
 
-	def addit(self, mac, nodename, ip, netmask):
+	def addit(self, mac, nodename, ip):
 
 		self.clusterdb.insert(nodename, self.membership, 
-			self.cabinet, self.rank, mac, ip, netmask, self.subnet, self.osname)
+			self.cabinet, self.rank, mac, ip, self.subnet, self.osname)
 		self.sql.commit()
 
 		self.controller.added(nodename, self.clusterdb.getNodeId())
@@ -1304,7 +1268,6 @@ class InsertEthers(GUI):
 		if self.sql.execute(query) == 0:
 			nodename = self.getNodename()
 
-			(bcast, netmask) = self.getnetmask(dev)
 			if self.staticip == 'true':
 				#
 				# if the user requested to enter static
@@ -1313,10 +1276,10 @@ class InsertEthers(GUI):
 				self.printDiscovered(mac)
 
 				ipaddr = self.askuserIP(nodename)
-				self.addit(mac, nodename, ipaddr, netmask)
+				self.addit(mac, nodename, ipaddr)
 			else:
 				ipaddr = self.getnextIP(self.subnet)
-				self.addit(mac, nodename, ipaddr, netmask)
+				self.addit(mac, nodename, ipaddr)
 				self.printDiscovered(mac)
 				
 			retval = 'true'
