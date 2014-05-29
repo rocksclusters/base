@@ -30,8 +30,7 @@ test_expect_success 'test kickstart.cgi - wan kickstart' '
 # we create a fake host and we assign its ip as an alias to our
 # private interface so we can fake some kickstart request from this host
 #
-#TODO verify this IP does not already exists
-fakeIP=10.1.1.200
+fakeIP=`rocks report nextip private`
 interface=`rocks report host attr localhost attr=Kickstart_PrivateInterface`
 
 test_expect_success 'test kickstart.cgi - local kickstart setup interface' '

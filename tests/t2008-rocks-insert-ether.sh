@@ -53,6 +53,7 @@ test_expect_success 'test insert-ether - kickstart host' '
 	ifconfig $interface $ip up &&
 	rocks list host interface $testhostname &&
 	curl --interface $interface --header "$magic_message2" -o ks.cfg -k "https://`hostname`/install/sbin/kickstart.cgi?arch=x86_64&np=1" &&
+	ifconfig $interface down &&
 	test_line_count -ge 1000 ks.cfg
 '
 
