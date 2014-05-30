@@ -382,16 +382,55 @@ class DatabaseHelper(rocks.db.database.Database):
 
 
 
-	def checkHostname(self, hostname):
+	def checkHostnameValidity(self, hostname):
 		"""check that the given host name is valid
 
-		it checks that the hostname is not already used and
-		that it is not a appliance name and is not in the form of
-		rack<number>"""
+		it checks that the hostname:
+		- it does not contain any .
+		- it is not already used
+		- it is not a appliance name
+		- it is not in the form of rack<number>
+		- it is not an alias
+		- it is not a mac address
+		"""
 
-		# TODO 
-		# this should be moved here
-		pass
+		# they can not be in the form of rack<number>
+		if '.' in hostname:
+			raise ValueError('Hostname %s can not contains any dot.'
+					% hostname)
+		msg = ''
+		if hostname.startswith('rack'):
+			number = hostname.split('rack')[1]
+			try:
+				int(number)
+				msg = ('Hostname %s can not be in the form ' \
+					+ 'of rack<number>.\n') % hostname
+				msg += 'Select a different hostname.'
+			except ValueError:
+				pass
+		if msg:
+			raise ValueError(msg)
+
+		# they can not be equal to any appliance name
+		if hostname in self.getAppliancesListText():
+			msg = 'Hostname %s can not be equal to an appliance'\
+				' name.\n' % (hostname)
+			msg += 'Select a different hostname.'
+			raise ValueError(msg)
+
+		# check the name is not already in use in the DB
+		try:
+			# TODO maybe this is not the proper function to check this
+			# it does too many tests we just need hostname IP and MAC
+			host = self.getHostname(hostname)
+			if host:
+				msg = 'Node %s already exists.\n' % hostname
+				msg += 'Select a different hostname, cabinet '
+				msg += 'and/or rank value.'
+		except (rocks.util.HostnotfoundException, NameError):
+			# good! Host does not exist
+			return
+		raise ValueError(msg)
 
 
 

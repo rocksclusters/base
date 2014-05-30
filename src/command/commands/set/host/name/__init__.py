@@ -110,7 +110,7 @@ class Command(rocks.commands.set.host.command):
 		if not name:
 			self.abort('must supply new name')
 
-		self.checkHostname(name)
+		self.newdb.checkHostnameValidity(name)
 		
 		hosts = self.getHostnames(args)
 		if len(hosts) > 1:

@@ -823,25 +823,6 @@ class HostArgumentProcessor:
 		return list
 
 
-	def checkHostname(self, hostname):
-		"""check that the given host name is valid
-
-		it checks that the hostname is not already used and
-		that it is not a appliance name and is not in the form of
-		rack<number>"""
-
-                if hostname in self.getHostnames():
-                        self.abort('host "%s" exists' % hostname)
-
-		nodes = rocks.clusterdb.Nodes(self.db)
-		msg = nodes.checkNameValidity(hostname)
-		if msg :
-			# if multiple lines we keep on the first
-			self.abort(msg.split('\n')[0])
-		return
-
-
-
 class CategoryArgumentProcessor(HostArgumentProcessor):
 	"""An Interface class to add the ability to process Category=Member arguments."""
 
@@ -1783,7 +1764,8 @@ class Command:
 		
 	
 	def str2bool(self, s):
-		"""Converts an on/off, yes/no, true/false string to 1/0."""
+		"""Converts an on/off, yes/no, true/false string to 1/0.
+		TODO remove me. This functions are now in rocks.util"""
 		if s and s.upper() in [ 'ON', 'YES', 'Y', 'TRUE', '1' ]:
 			return 1
 		else:
@@ -2030,8 +2012,9 @@ class Command:
 				except rocks.util.HostnotfoundException as e:
 					Abort(str(e))
 				except sqlalchemy.exc.OperationalError as e:
-					Abort("Major dabase failure (mysql daemon down,"
-						" disk full, etc.):\n" + str(e))
+					Abort("Dabase error: " + str(e))
+				except ValueError as e:
+					Abort("Naming error: " + str(e))
 
 
 

@@ -158,7 +158,9 @@ class Nodes:
 		"""Inserts a new node into the database. Optionally inserts
 		networking information as well."""
 
-		self.checkName(name)
+
+		self.sql.newdb.checkHostnameValidity(name)
+
 		self.checkMembership(mid)
 		self.checkMAC(mac)
 		self.checkIP(ip)
@@ -218,50 +220,6 @@ class Nodes:
 			msg = "Duplicate os attribute for host %s" % name
 			raise ValueError, msg
 
-
-	def checkName(self, checkname):
-		"""Check to make sure we don't insert a duplicate node name or
-		other bad things into the DB"""
-
-		host = self.sql.getNodeId(checkname)
-		if host:
-			msg = 'Node %s already exists.\n' % checkname
-			msg += 'Select a different hostname, cabinet '
-			msg += 'and/or rank value.'
-			raise ValueError, msg
-		msg = self.checkNameValidity(checkname)
-		if msg :
-			raise ValueError, msg
-
-
-	def checkNameValidity(self, checkname):
-		"""check that the checkname is not an appliance name or it is not
-		in the form of rack<number> (used by rocks.command.* too).
-
-		If it is incorrect it return an error string otherwise None
-		"""
-
-		# check for invalid names for hosts
-		# they can not be in the form of rack<number>
-		if checkname.startswith('rack'):
-			number = checkname.split('rack')[1]
-			try:
-				int(number)
-				msg = ('Hostname %s can not be in the form ' \
-					+ 'of rack<number>.\n') % checkname
-				msg += 'Select a different hostname.\n'
-				return msg
-			except ValueError:
-				return None
-		# they can not be equal to any appliance name
-		self.sql.execute('select name from appliances')
-		for name, in self.sql.fetchall():
-			if checkname == name:
-				msg = 'Hostname %s can not be equal to an appliance'\
-					' name.\n' % (checkname)
-				msg += 'Select a different hostname.\n'
-				return msg
-		return None
 
 
 	def checkSubnet(self,subnet):

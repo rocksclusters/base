@@ -231,7 +231,9 @@ class Command(command):
 			self.abort('must supply one host')
 		host = args[0]
 		
-		self.checkHostname(host)
+		self.newdb.checkHostnameValidity(host)
+		# TODO remove this commit when we complete the switch to sqlalchemy
+		self.newdb.commit()
 			
 		# If the name is of the form appliancename-rack-rank
 		# then do the right thing and figure out the default

@@ -1411,7 +1411,7 @@ class InsertEthers(GUI):
 			self.initializeRank()
 
 			if self.hostname:
-				self.clusterdb.checkName(self.hostname)
+				self.sql.newdb.checkHostnameValidity(self.hostname)
 
 		except (ValueError, InsertError), msg:
 			self.errorGUI(msg)
