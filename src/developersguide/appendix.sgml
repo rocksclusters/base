@@ -510,6 +510,27 @@ Example:
 </varlistentry>
 
 <varlistentry>
+<term>include</term>
+<listitem>
+<para>
+Optional.
+This attribute can specify a file name which will be sourced as the content of the file.
+The included file will be read on the frontend (and not on the installing host).
+All the text present between the &lt;file&gt; tags will be discharged when the include 
+attribute is present.
+If the mode is append the included content will be appended to the destination file.
+</para>
+
+<para>
+Example:
+<constant><![CDATA[<file name="/etc/resolve.conf" include="/etc/resolve.conf"/>]]></constant>.
+</para>
+
+</listitem>
+</varlistentry>
+
+
+<varlistentry>
 <term>owner</term>
 <listitem>
 <para>

@@ -856,6 +856,26 @@ class Pass1NodeHandler(handler.ContentHandler,
 	def endElement_copy(self, name):
 		pass
 
+	# <file>
+
+	def startElement_file(self, name, attrs):
+		self.startElementDefault(name, attrs, exclude=['include'])
+		if not self.doEval:
+			return
+		if attrs.get('include'):
+			include = attrs.get('include')
+		else:
+			return
+
+		try:
+			file = open(include, 'r')
+			data = file.read()
+			file.close()
+		except IOError:
+			data = ''
+		self.xml.append(data)
+
+
 	# <eval>
 	
 	def startElement_eval(self, name, attrs):
@@ -932,10 +952,14 @@ class Pass1NodeHandler(handler.ContentHandler,
 
 	# <*>
 
-	def startElementDefault(self, name, attrs):
+	def startElementDefault(self, name, attrs, exclude=None):
+
+		excluded = [ 'roll', 'file' ]
+		if exclude:
+			excluded = excluded + exclude
 		s = ''
 		for attrName in attrs.getNames():
-			if attrName not in [ 'roll', 'file' ]:
+			if attrName not in excluded:
 				attrValue = attrs.get(attrName)
 				s += ' %s="%s"' % (attrName, attrValue)
 		if not s:
