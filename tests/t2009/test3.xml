@@ -1,0 +1,36 @@
+<?xml version="1.0" standalone="no"?>
+<kickstart roll="test">
+
+  <description>
+
+test3
+
+  </description>
+
+<changelog><![CDATA[
+bla bla bla
+
+bla bla bla
+
+bla bla bla
+]]></changelog>
+
+<package os="linux">test31</package>
+<package os="linux">test32</package>
+
+<post os="linux">
+
+<file name="/tmp/test3simplefile" rcs="false">
+this is a simple file
+</file>
+</post>
+
+<post os="linux">
+cat &gt; /tmp/test3-release &lt;&lt; 'SPECIAL'
+<eval>
+cat /etc/rocks-release
+</eval>
+SPECIAL
+</post>
+
+</kickstart>

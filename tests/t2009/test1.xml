@@ -1,0 +1,28 @@
+<?xml version="1.0" standalone="no"?>
+<kickstart roll="test">
+
+  <description>
+test2
+  </description>
+
+<changelog><![CDATA[
+bla bla bla
+
+bla bla bla
+]]></changelog>
+
+<package os="linux">test11</package>
+<package os="linux">test12</package>
+
+<post os="linux" roll="test" file="./nodes/test1.xml">
+
+echo ciao &gt; /tmp/test1file
+<file name="/tmp/test1file" mode="append" include="/etc/hosts"/>
+
+echo ciao &gt; /tmp/test2file
+<file name="/tmp/test2file" include="/etc/hosts"/>
+
+echo "this is test1 postsection"
+</post>
+
+</kickstart>

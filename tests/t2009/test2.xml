@@ -1,0 +1,30 @@
+<?xml version="1.0" standalone="no"?>
+<kickstart roll="test">
+
+  <description>
+test2
+  </description>
+
+<changelog><![CDATA[
+bla bla bla
+
+bla bla bla
+
+bla bla bla
+]]></changelog>
+
+<package os="linux">test21</package>
+<package os="linux">test22</package>
+
+<post>
+<file src="/etc/hosts" name="/tmp/test2pipe" mode="pipe">
+grep local
+</file>
+
+cp /etc/hosts /tmp/test2pipesamefile
+<file name="/tmp/test2pipesamefile" mode="pipe">
+grep local
+</file>
+</post>
+
+</kickstart>

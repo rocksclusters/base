@@ -1,0 +1,36 @@
+<?xml version="1.0" standalone="no"?>
+<graph roll="kvm">
+
+	<description>
+test graph
+	</description>
+
+	<copyright>
+	Copyright (c) 2000 - 2012 The Regents of the University of California.
+	All rights reserved. Rocks(r) v5.5/v6.0 www.rocksclusters.org
+	</copyright>
+
+<changelog><![CDATA[
+bla bla bla
+]]></changelog>
+
+
+	<order head="test1">
+		<tail>test2</tail>
+	</order> 
+
+	<order head="test2">
+		<tail>test3</tail>
+	</order> 
+
+
+	<edge from="test1">
+		<to>test2</to>
+	</edge>
+
+	<edge from="test2">
+		<to>test3</to>
+	</edge>
+
+</graph>
+
