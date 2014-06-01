@@ -624,6 +624,11 @@ class Generator:
 		else:
 			fileName = ''
 
+		if attr.getNamedItem((None, 'src')):
+			source = attr.getNamedItem((None, 'src')).value
+		else:
+			source = ''
+
 		if attr.getNamedItem((None, 'mode')):
 			fileMode = attr.getNamedItem((None, 'mode')).value
 		else:
@@ -657,9 +662,9 @@ class Generator:
 
 		fileText = self.getChildText(node)
 
+		s = ''
 		if fileName:
 
-			s = ''
 			if rcs:
 				s = self.rcsBegin(fileName, fileOwner, filePerms)
 
@@ -672,6 +677,16 @@ class Generator:
 				s += '%s %s %s\n' % (fileCommand, gt, fileName)
 			if not fileText:
 				s += 'touch %s\n' % fileName
+			elif fileMode == 'pipe':
+				# pipe mode it's all different from the other case
+				# we have fileText and we have fileName
+				fileText = fileText.strip()
+				if source:
+					s += "cat %s | (%s) > %s\n" % (source, fileText, fileName)
+				else:
+					tmpfile = tempfile.mktemp()
+					s += "cat %s | (%s) > %s\n" % (fileName, fileText, tmpfile)
+					s += "mv %s %s\n" % (tmpfile, fileName)
 			else:
 				if fileQuoting == 'expanded':
 					eof = "EOF"
