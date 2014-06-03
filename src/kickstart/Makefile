@@ -106,7 +106,7 @@ ROCKSROOT       = ../devel/devel
 include Rules.mk
 
 RCFILES	= kcgirc
-SCRIPTS	= kgen kdoc kcgi cfgen screengen
+SCRIPTS	= kgen kdoc kcgi screengen
 
 
 build:	$(SCRIPTS) $(RCFILES)
@@ -116,7 +116,7 @@ install:: build
 	mkdir -p $(ROOT)/$(PKGROOT)/sbin
 	$(INSTALL) -m 4555 utils/read-ssh-private-key $(ROOT)/$(PKGROOT)/sbin/
 	$(INSTALL) -m 4555 utils/read-411-shared-key $(ROOT)/$(PKGROOT)/sbin/
-	$(INSTALL) -m 0755 kgen kdoc cfgen screengen \
+	$(INSTALL) -m 0755 kgen kdoc screengen \
 		$(ROOT)/$(PKGROOT)/sbin/
 
 	mkdir -p $(ROOT)/etc/rc.d/init.d
