@@ -159,6 +159,12 @@ default: $(NAME).spec ../$(NAME)-$(VERSION).tar.gz
 
 build: html pdf
 
+predoc::
+	(cd ../..; \
+	 kdoc > src/usersguide/appendix/base-nodes.sgml; \
+	cd -)
+	touch appendix/base-nodes.sgml
+
 html: predoc
 	jw --backend html --dsl $(PWD)/rocks.dsl#html index.sgml
 
@@ -182,4 +188,4 @@ clean::
 	rm -f *.html
 	rm -f index.pdf
 	rm -f images/resized-*.png
-
+	rm -f appendix/base-nodes.sgml

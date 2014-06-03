@@ -17,7 +17,7 @@
   <changelog>
   $Log: grub-client.xml,v $
   Revision 1.20  2012/11/08 22:40:08  phil
-  Put ksdevice=<mac> address into reinstall stanza.
+  Put ksdevice=mac address into reinstall stanza.
 
   Revision 1.19  2012/05/06 05:48:10  phil
   Copyright Storm for Mamba
