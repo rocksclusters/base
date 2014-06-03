@@ -891,87 +891,6 @@ class CategoryArgumentProcessor(HostArgumentProcessor):
 
 		return indexList
 
-class AppGlobalsHandler(handler.ContentHandler,
-	handler.DTDHandler,
-	handler.EntityResolver,
-	handler.ErrorHandler):
-	
-	def __init__(self, db, host):
-		handler.ContentHandler.__init__(self)
-		self.db		= db
-		self.host	= host
-		self.parser = make_parser()
-		self.parser.setContentHandler(self)
-
-	def lookup(self, service, component):
-		nodespec = 'select app_globals.value from ' \
-			'nodes,app_globals where ' \
-			'app_globals.service="%s" and ' \
-			'app_globals.component="%s" and ' \
-			'nodes.name="%s" and ' \
-			'nodes.membership=app_globals.membership' \
-			% (service, component, self.host)
-			
-		default = 'select value from app_globals where ' \
-			'service="%s" and component="%s" and ' \
-			'membership=0' \
-			% (service, component)
-				
-		rows = self.db.execute(nodespec)
-		if not rows:
-			rows = self.db.execute(default)
-		if rows:
-			val = self.db.fetchone()[0]
-			if self.hasXML(val):
-				return self.parse(self.val2XML(val))
-			else:
-				return val
-		return None
-		
-
-	def hasXML(self, s):
-		"""Returns TRUE if the provided string has any XML tags."""
-		
-		if re.search('<[a-zA-Z_=" ]*/>', s):
-			return 1
-		else:
-			return 0
-		
-	def val2XML(self, text):
-		"""Converts an app_globals value field to well formed XML."""
-		
-		xml 	 = ''
-		curr	 = 0	
-		for i,m in enumerate(re.finditer('<[a-zA-Z_=" ]*/>', text)):
-			xml += saxutils.escape(text[curr:m.start()])
-			xml += text[m.start():m.end()]
-			curr = m.end()
-		xml += saxutils.escape(text[curr:len(text)])
-		return '<xml>%s</xml>' % xml
-			
-	def parse(self, xml):
-		self.text      = ''
-		self.foundTags = 0
-		self.parser.reset()
-		self.parser.feed(xml)
-		return self.text
-	
-	def startElement(self, name, attrs):
-		self.foundTags += 1
-		if name == 'indirect':
-			self.nextService   = attrs.get('service')
-			self.nextComponent = attrs.get('component')
-			self.text += self.lookup(self.nextService,
-				self.nextComponent)
-			
-	def endElement(self, name):
-		if name == 'indirect':
-			pass
-			
-		
-	def characters(self, s):
-		self.text += s
-		
 		
 class DocStringHandler(handler.ContentHandler,
 	handler.DTDHandler,
@@ -1449,45 +1368,6 @@ class DatabaseConnection:
 			attrs[a] = (v, e)
 	
 		return attrs	
-
-	def getGlobalVars(self, service, hostname=''):
-		"""Returns a dictionary of COMPONENT x VALUES for all
-		component of the provided service.  This is useful to
-		resolve entire service without having to know all the
-		component keys."""
-		
-		# For every component of the service lookup the values.
-		# Don't worry about duplicates on the select, the
-		# loop ignores dups.
-		
-		self.execute('select component from app_globals '
-			'where service="%s"' % service)
-		dict = {}
-		for component, in self.fetchall():
-			key = '%s_%s' % (service, component)
-			if not dict.has_key(key):
-				dict[key] = self.getGlobalVar(service,
-					component, hostname)
-		return dict
-	
-	def getGlobalVar(self, service, component, hostname=''):
-		"""Returns the value of the SERVICE x COMPONENT in from the
-		app_globals tables.  If a hostname is provided the membership
-		specific value will be found (if it exists), otherwise the
-		default value will be returned.  If no value exists None is
-		returned."""
-
-		if not hostname:
-			hostname = os.getenv('ROCKS_VARS_HOSTNAME')
-		if not hostname:
-			hostname = socket.gethostname()	
-
-		if self.database:
-			handler = AppGlobalsHandler(self.database, hostname)
-			return handler.lookup(service, component)
-		else:
-			return None
-	
 
 	def getHostname(self, hostname=None):
 		"""Returns the name of the given host as referred to in

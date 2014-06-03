@@ -67,21 +67,6 @@ class Alias(RocksBase, Base):
     #relation definitions
 
 
-class AppGlobal(RocksBase, Base):
-    __tablename__ = 'app_globals'
-
-    __table_args__ = {}
-
-    #column definitions
-    component = Column('Component', String(64))
-    ID = Column('ID', Integer, primary_key=True, nullable=False)
-    membership = Column('Membership', Integer, nullable=False)
-    service = Column('Service', String(64))
-    value = Column('Value', TEXT())
-
-    #relation definitions
-
-
 class Appliance(RocksBase, Base):
     __tablename__ = 'appliances'
 

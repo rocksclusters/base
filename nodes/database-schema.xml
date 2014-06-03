@@ -398,20 +398,6 @@ CREATE TABLE sec_node_attributes (
   PRIMARY KEY (Node, Attr)
 );
 
-<!-- App_Globals -->
-
-
-DROP TABLE IF EXISTS app_globals;
-CREATE TABLE app_globals (
-  ID		int(11) NOT NULL auto_increment,
-  Membership	int(11) NOT NULL default '0',
-  Service	varchar(64) default NULL,
-  Component	varchar(64) default NULL,
-  Value		text,
-  PRIMARY KEY (ID)
-);
-
-
 <!-- Appliances -->
 
 DROP TABLE IF EXISTS appliances;

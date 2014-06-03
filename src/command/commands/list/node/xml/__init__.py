@@ -417,17 +417,9 @@ class Command(rocks.commands.list.command):
 
 		os.chdir(basedir)
 
-		# Load the entities from the database
-		# get all the unique service types
-		rows = self.db.execute("""select distinctrow service from
-			app_globals""");
-
+		# TODO remove entities argument from the GraphHandler
+		# constructor since now it is not needed anymore
 		entities = {}
-		if rows > 0:
-			for service, in self.db.fetchall():
-				entities.update(self.db.getGlobalVars(service,
-					attrs['hostname']))
-
 		# Parse the XML graph files in the chosen directory
 
 		parser  = make_parser()

@@ -656,27 +656,9 @@ class App(rocks.sql.Application):
 		return 1
 
 
-	def getGroupName(self, membershipID):
-		self.execute('select name from memberships where id=%s' \
-			% membershipID)
-		try:
-			name, = self.fetchone()
-		except:
-			name = "Unknown"
-		return name
-
-
-	def getGroup(self, host):
-		self.execute('select membership from nodes '
-			'where site=0 and name="%s"' % host)
-		try:
-			group, = self.fetchone()
-		except TypeError:
-			group = 0
-		return group
-
 	def createEntitiesFromXML(self):
 		sitefile = "site.xml"
+		
 		try:
 			fin = open(os.path.join(os.sep, 'tmp', sitefile), 'r')
 		except IOError:
@@ -703,53 +685,6 @@ class App(rocks.sql.Application):
 		self.entities['Info_RocksRelease'] = self.rocksrelease
 
 	
-	def createEntitiesFromDB(self):
-
-		var = {}
-		
-		# Add some entities that come from command line
-		# arguments.
-
-		if self.client:
-			var['Node_Hostname'] = self.client
-		if self.clientIP:
-			var['Node_Address'] = self.clientIP
-
-		var['Node_Distribution']  = self.dist
-		var['Node_DistName'] = self.dist.split('/')[0]
-		var['Node_Architecture']  = self.arch
-		var['Node_RedHatRelease'] = self.release
-		var['Info_RocksVersion']  = self.rocksversion
-		var['Info_RocksRelease'] = self.rocksrelease
-
-		# Do not try to do this without a DB.
-		m = self.getGroup(self.client)
-		var['Node_Membership'] = self.getGroupName(m)
-
-		# Create the var{} table of entities from the
-		# app_globals table in the database.
-
-		self.execute('select service,component,value '
-			     'from app_globals where '
-			     '(membership=0 or membership=%d) and site=0 '
-			     'order by service,component,membership' %
-			     self.getGroup(self.client))
-
-		for service,component,value in self.fetchall():
-			var[service + '_' + component] = value
-
-		# Overwrite the default entities with the values from
-		# the KCG_* variable.  This allow the php web form to
-		# provide site specific state.
-
-		for env in os.environ.keys():
-			list = string.split(env, '_', 1)
-			if len(list) == 2 and list[0] == 'Kickstart':
-				var[env] = os.environ[env]
-
-		self.entities = var
-
-
 	def readDotGraphStyles(self):
 		p   = make_parser()
 		h   = RollHandler()
@@ -856,17 +791,9 @@ class App(rocks.sql.Application):
 
 	def run(self):
 
-		try:
-			if self.connect():
-				self.createEntitiesFromDB()
-			else:
-				raise Exception
-			self.close()
-		except:
-			self.createEntitiesFromXML()
-		
-		# Parse the XML graph files in the chosen directory
+		self.createEntitiesFromXML()
 
+		# Parse the XML graph files in the chosen directory
 		parser  = make_parser()
 		handler = GraphHandler(self.entities)
 

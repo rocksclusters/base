@@ -151,10 +151,6 @@ test_expect_success 'rocks list sec_attr ' '
 	rocks list sec_attr 
 '
 
-test_expect_success 'rocks list var' '
-	rocks list var
-'
-
 test_expect_success 'rocks dump' '
 	rocks dump
 '

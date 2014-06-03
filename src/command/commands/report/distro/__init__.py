@@ -95,20 +95,7 @@ class Command(rocks.commands.report.command):
 	"""
 
 	def run(self, params, args):
-		try:
-			self.db.execute("""select value from app_globals where
-				service='Kickstart' and
-				component='DistroDir'""")
-			d, = self.db.fetchone()
-
-			self.db.execute("""select value from app_globals where
-				service='Kickstart' and
-				component='PrivateKickstartBasedir'""")
-			k, = self.db.fetchone()
-
-			distrodir = os.path.join(d, k)
-		except:
-			distrodir = '/export/rocks/install'
+		distrodir = '/export/rocks/install'
 
 		self.beginOutput()
 		self.addOutput('', distrodir)
