@@ -266,7 +266,6 @@
   <package>python-pyblock</package>
   <package>pykickstart</package>
   <package>rocks-kickstart</package>
-  <package>rocks-kpp</package>
   <package>telnet</package>
   <package>vnc</package>
 

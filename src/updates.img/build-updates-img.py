@@ -285,7 +285,6 @@ class App(rocks.app.Application):
 			'rocks-command',
 			'rocks-ekv',
 			'rocks-kickstart', 
-			'rocks-kpp',            
 			'rocks-piece-pipe',
 			'rocks-pylib',
 			'rocks-screens',

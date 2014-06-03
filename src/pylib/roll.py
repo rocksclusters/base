@@ -140,53 +140,18 @@
 #
 #
 
+
 import os
 import sys
 import re
 import string
 import tempfile
+from xml.dom                 import ext
+from xml.dom.ext.reader.Sax2 import FromXmlStream
+from xml.sax._exceptions     import SAXParseException
 import rocks.file
 import rocks.util
-
-
-class KickstartFile:
-
-	def __init__(self, distribution):
-		self.dist = distribution
-		self.root = ''
-		self.kgenFlags = ''
-		self.kppFlags = ''
-		
-	def setRoot(self, root):
-		self.root = ''
-		
-	def setKgenFlags(self, flags):
-		self.kgenFlags = flags
-
-	def setKppFlags(self, flags):
-		self.kppFlags = flags
-		
-	def generate(self, start):
-		"""Generate a kickstart file starting at the given graph node"""	
-		# Kickstart_LocalRolldir is appended to the URL for the
-		# bootstrap kickstart file that is found on the CD
-
-		if self.root:
-			os.environ['Kickstart_LocalRolldir'] = os.path.join('/',
-				self.root)
-		os.environ['Node_Hostname'] = 'BOOTSTRAP' # silences errors
-
-		cwd = os.getcwd()
-		os.chdir(os.path.join(self.dist.name, self.dist.arch, 'build'))
-		list = []
-		cmd = 'kpp %s %s | kgen %s' % (self.kppFlags, start,
-			self.kgenFlags)
-		for line in os.popen(cmd).readlines():
-			list.append(line[:-1])
-		os.chdir(cwd)
-		return list
-		
-
+import rocks.gen
 
 class Distribution:
 
@@ -270,11 +235,6 @@ class Distribution:
 #
 # used to parse rolls.xml file
 #
-import rocks.gen
-from xml.dom                 import ext
-from xml.dom.ext.reader.Sax2 import FromXmlStream
-from xml.sax._exceptions     import SAXParseException
-
 class ScreenNodeFilter(rocks.gen.NodeFilter):
 	def acceptNode(self, node):
 		if node.nodeName in [ 

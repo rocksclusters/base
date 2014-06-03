@@ -389,27 +389,6 @@ help:
 
 
 # --------------------------------------------------------------------- #
-# Build the Dot graph
-# --------------------------------------------------------------------- #
-
-.PHONY: graph
-
-graph: graph-edges.pdf graph-order.pdf graph-all.pdf
-
-graph-edges.pdf:
-	kpp --draw-edges | dot -Tps2 | ps2pdf - $@
-
-graph-order.pdf:
-	kpp --draw-order | dot -Tps2 | ps2pdf - $@
-
-graph-all.pdf:
-	kpp --draw-all | dot -Tps2 | ps2pdf - $@
-
-clean::
-	rm -f graph-*.pdf
-
-
-# --------------------------------------------------------------------- #
 # Build to roll.xml file
 # --------------------------------------------------------------------- #
 
