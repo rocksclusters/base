@@ -158,25 +158,9 @@
 #
 #
 
-import sys
-import string
-import rocks.pssh
 
-class App(rocks.pssh.ClusterFork):
 
-	def __init__(self, argv):
-		rocks.pssh.ClusterFork.__init__(self, argv)
-		self.usage_name		= 'Cluster Kill'
-		self.usage_version	= '@VERSION@'
+print 'cluster-kill has been replaced with:'
+print 'rocks run host "pkill process_name"'
 
-	def run(self):
-		cmd = 'ps auwx | grep '
-		cmd = cmd + string.join(self.getArgs())
-		cmd = cmd + " | grep -v grep | awk '{print \$2}'"
-		cmd = cmd + " | xargs kill -9"
-		rocks.pssh.ClusterFork.run(self, cmd)
-
-app = App(sys.argv)
-app.parseArgs()
-app.run()
 

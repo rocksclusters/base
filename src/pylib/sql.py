@@ -319,33 +319,6 @@ class Application(rocks.app.Application):
 		self.getopt.l = self.extendOrReplace(self.getopt.l,options)
 		return 0
 
-	def getHost(self):
-		return self.params['host'][0]
-
-	def getPassword(self):
-		rval = self.params['password'][0]
-		if len(rval) > 0:
-			return rval
-		
-		filename = None
-		username = pwd.getpwuid(os.geteuid())[0].strip()
-		if username == 'root':
-			filename = '/root/.rocks.my.cnf'
-		if username == 'apache':
-			filename = '/opt/rocks/mysql/my.cnf'
-		try:
-			if filename is not None:
-				file = open(filename, 'r')
-				for line in file.readlines():
-					l=line.split('=')
-					if len(l) > 1 and l[0].strip() == "password" :
-						rval=l[1].strip()
-						break
-				file.close()
-		except:
-			pass
-		return rval 
-
 
 	def parseArg(self, c):
 		if rocks.app.Application.parseArg(self, c):
