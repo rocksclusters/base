@@ -151,7 +151,6 @@
 	<package os='linux'>foundation-graphviz</package>
 	<package os='linux'>foundation-coreutils</package>
 	<package os='linux'>foundation-rcs</package>
-	<package os='linux'>foundation-cvs</package>
 	<package os='linux'>foundation-gawk</package>
 	<package os='linux'>foundation-readline</package>
 	<package os='linux'>foundation-mysql</package>
