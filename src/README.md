@@ -16,8 +16,7 @@ The command line python scripts are inside:
 
 * rocks is under src/commands
 * insert-ethers is under src/sql
-* kickstart.cgi setDbPartitions.cgi setPxeMode.cgi is under src/kickstart
-* setPxeboot.cfi is under src/pxeboot
+* kickstart.cgi setDbPartitions.cgi setPxeboot.cgi is under src/kickstart
 * rocks-console, big-red-button, gen_root_pw, rocks-db-perms, cluster-kill
   are under src/admin
 

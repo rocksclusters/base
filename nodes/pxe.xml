@@ -191,7 +191,6 @@ initial release
 <package arch="x86_64, i386">syslinux</package>
 <package>xinetd</package>
 <package>memtest86+</package>
-<package>rocks-pxeboot</package>
 <package>pxeflash</package>
 
 

@@ -19,8 +19,6 @@ foundation-readline
 foundation-redhat
 foundation-tidy
 foundation-wget
-ganglia-pylib
-ganglia-receptor
 google-authenticator
 jdk-6u16
 libdnet
@@ -44,7 +42,6 @@ rocks-developersguide
 rocks-ekv
 rocks-kickstart
 rocks-piece-pipe
-rocks-pxeboot
 rocks-pylib
 rocks-secattr-plugins
 rocks-sec-channel-client
