@@ -5,7 +5,6 @@ firerox
 foundation-ant
 foundation-coreutils
 foundation-gawk
-foundation-gd
 foundation-graphviz
 foundation-libxml2
 foundation-mercurial
