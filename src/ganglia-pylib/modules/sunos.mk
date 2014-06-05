@@ -1,1 +1,0 @@
-CCOPTS = -KPIC -DSUNOS

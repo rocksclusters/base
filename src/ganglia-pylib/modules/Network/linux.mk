@@ -1,2 +1,0 @@
-CC = gcc
-CCOPTS = -fPIC 
