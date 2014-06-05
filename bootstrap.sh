@@ -233,9 +233,6 @@ install rocks-pylib
 compile command
 install rocks-command
 
-compile dnet
-install libdnet
-
 compile java
 install jdk 
 

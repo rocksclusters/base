@@ -160,7 +160,6 @@
 	<package os='linux'>foundation-ant</package>
 	<package os='linux'>foundation-mercurial</package>
 	<package os='linux'>foundation-git</package>
-	<package os='linux'>libdnet</package>
 
 	<!-- needed by foundation-git -->
 	<package os='linux'>perl-Error</package>
@@ -175,7 +174,6 @@
 	<package os='sunos'>ROCKSfoundation-readline</package>
 	<package os='sunos'>ROCKSfoundation-libxml2</package>
 	<package os='sunos'>ROCKSfoundation-wget</package>
-	<package os='sunos'>ROCKSlibdnet</package>
 
 <post>
 
