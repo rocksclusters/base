@@ -495,7 +495,6 @@
 		<to>postshell</to>
 		<to>i18n</to>
 		<to>411-base</to>
-		<to>greceptor</to>
 		<to>mail</to>
 		<to os="linux">partition</to>
 		<to os="linux">yum</to>
