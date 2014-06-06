@@ -267,7 +267,7 @@ class Command(command):
 	</example>
 	"""
 
-	def nodeup(self, host, hostif):
+	def nodeup(self, hostif):
 		sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		sock.settimeout(2.0)
 		try:
@@ -288,6 +288,21 @@ class Command(command):
 			#	SSH-2.0-OpenSSH_4.3
 			#
 			buf = sock.recv(64)
+			#
+			# this sends an SSH identification string to
+			# the node; if not sent, the node will log
+			# that an identification string was never
+			# received (which may trigger an IDS)
+			#
+			sock.send('SSH-2.0-nodeup\r\n')
+			#
+			# this receives a string of key exchange (kex)
+			# algorithms from the node; if not received
+			# and the connection is severed, the node will
+			# log a fatal error.
+			#
+			buf = sock.recv(1024)
+			sock.close()
 		except:
 			return 0
 
@@ -372,7 +387,7 @@ class Command(command):
 				# first test if the node is up and responding
 				# to ssh
 				#
-				if not runlocal and not self.nodeup(host,hostif):
+				if not runlocal and not self.nodeup(hostif):
 					if collate:
 						self.addOutput(host, 'down')
 					else:
