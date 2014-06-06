@@ -406,3 +406,5 @@ class Command(rocks.commands.HostArgumentProcessor,
 		self.writeDhcpDotConf(hosts)
 		self.writeDhcpSysconfig()
 		self.endOutput(padChar='')
+
+RollName = "base"

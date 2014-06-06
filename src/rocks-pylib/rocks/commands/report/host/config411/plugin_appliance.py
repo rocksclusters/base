@@ -92,3 +92,5 @@ class Plugin(rocks.commands.Plugin):
 		attrs = self.owner.s.attrs
 		self.owner.addOutput(host, '<appliance>%s</appliance>' %\
 			(attrs['appliance']))
+
+RollName = "base"

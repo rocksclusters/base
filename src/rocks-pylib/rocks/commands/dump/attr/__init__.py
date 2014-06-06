@@ -109,3 +109,5 @@ class Command(rocks.commands.dump.command):
 			if v:
 				self.dump("add attr %s %s" % (attr.attr, v))
 
+
+RollName = "base"

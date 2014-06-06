@@ -215,3 +215,5 @@ class Command(rocks.commands.add.host.command):
 			self.command('set.host.interface.channel',
 				(host, i, 'channel=%s' % channel))
 
+
+RollName = "base"

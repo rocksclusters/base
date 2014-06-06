@@ -108,3 +108,5 @@ class Plugin(rocks.commands.Plugin):
 			[]))
 		
 
+
+RollName = "base"

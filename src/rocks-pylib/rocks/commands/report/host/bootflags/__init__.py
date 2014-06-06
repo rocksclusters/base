@@ -134,3 +134,5 @@ class Command(rocks.commands.HostArgumentProcessor,
 			self.reportBootflags(host)
 		self.endOutput(padChar='')
 
+
+RollName = "base"

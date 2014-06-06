@@ -138,3 +138,5 @@ class Command(rocks.commands.set.host.command):
 			self.db.execute("""update nodes set rack=%d where
 				name='%s'""" % (int(rack), host))
 
+
+RollName = "base"

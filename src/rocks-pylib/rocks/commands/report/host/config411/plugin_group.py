@@ -91,3 +91,5 @@ class Plugin(rocks.commands.Plugin):
 		# since makefile will no be able to handle the spaces
 		self.owner.addOutput(host, '<group>%s</group>' %\
 			( attrs['membership'].replace(" ","_") ) )
+
+RollName = "base"

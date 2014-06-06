@@ -109,3 +109,5 @@ class Command(rocks.commands.list.os.command):
 		self.endOutput(header=['os', 'network', 
 			'netmask', 'gateway' ], trimOwner=0)
 
+
+RollName = "base"

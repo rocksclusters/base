@@ -110,3 +110,5 @@ class Command(rocks.commands.list.appliance.command):
 		self.endOutput(header=['appliance', 'attr', 'value' ],
 			trimOwner=0)
 
+
+RollName = "base"

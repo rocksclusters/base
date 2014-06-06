@@ -219,3 +219,5 @@ class Command(rocks.commands.list.host.command):
 		self.endOutput(header=['host', 'subnet', 'iface', 'mac', 
 			'ip', 'netmask', 'module', 'name', 'vlan',
 			'options', 'channel'])
+
+RollName = "base"

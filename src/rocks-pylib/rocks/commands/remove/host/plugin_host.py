@@ -110,3 +110,5 @@ class Plugin(rocks.commands.Plugin):
 		self.owner.db.execute("""DELETE FROM catindex WHERE 
 				category=mapCategory('host') AND  name='%s'""" % host) 
 
+
+RollName = "base"

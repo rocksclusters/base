@@ -112,3 +112,5 @@ class Command(rocks.commands.dump.os.command):
 					self.dump('add os attr %s %s %s' % 
 						(os, attr.attr, v))
 
+
+RollName = "base"

@@ -94,3 +94,5 @@ class Plugin(rocks.commands.Plugin):
 		self.owner.db.execute("""delete from aliases where
 			node = (select id from nodes where name = '%s') """ %
 			(host))
+
+RollName = "base"

@@ -185,3 +185,5 @@ class Command(command):
 		self.endOutput(header=['host', 'membership', 'cpus', 'rack',
 			'rank', 'runaction', 'installaction'])
 
+
+RollName = "base"

@@ -94,3 +94,5 @@ class Command(rocks.commands.dump.host.command):
 				self.dump('add host key %s key="%s"'
 					% (self.dumpHostname(host), k))
 
+
+RollName = "base"

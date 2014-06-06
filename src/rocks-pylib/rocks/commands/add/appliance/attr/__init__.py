@@ -161,3 +161,5 @@ class Command(rocks.commands.add.appliance.command):
 				self.abort('attribute "%s" exists' % attr)
 
 
+
+RollName = "base"

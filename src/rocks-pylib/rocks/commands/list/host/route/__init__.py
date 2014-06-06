@@ -120,3 +120,5 @@ class Command(rocks.commands.list.host.command):
 			'network', 'netmask', 'gateway', 'source' ],
 			trimOwner=0)
 
+
+RollName = "base"

@@ -193,3 +193,5 @@ class Command(rocks.commands.sync.host.command):
 			thread.join(timeout)
 
 		self.runPlugins(hosts)
+
+RollName = "base"

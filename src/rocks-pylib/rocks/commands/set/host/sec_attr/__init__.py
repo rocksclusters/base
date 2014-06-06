@@ -206,3 +206,5 @@ class Command(rocks.commands.set.host.command):
 				self.db.execute('insert into sec_node_attributes ' +\
 				'values ((select id from nodes where name="%s"), "%s", "%s", "%s")' \
 				% (host, attr, enc_value, enc))
+
+RollName = "base"

@@ -164,3 +164,5 @@ class Command(rocks.commands.set.host.command):
 
 				self.addBootflags(hostid, flags)
 
+
+RollName = "base"

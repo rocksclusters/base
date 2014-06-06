@@ -149,3 +149,5 @@ class Command(command):
 			'action', 'network', 'output-network', 'flags',
 			'comment', 'category'])
 
+
+RollName = "base"

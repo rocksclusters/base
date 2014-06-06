@@ -189,3 +189,5 @@ class Command(rocks.commands.RollArgumentProcessor,
 					self.addOutput(roll, '')
 		self.endOutput(header=['roll', 'command'])
 		
+
+RollName = "base"

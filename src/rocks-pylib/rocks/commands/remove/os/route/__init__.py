@@ -120,3 +120,5 @@ class Command(rocks.commands.remove.os.command):
 			self.db.execute("""delete from os_routes where 
 			os = '%s' and network = '%s'""" % (os, address))
 
+
+RollName = "base"

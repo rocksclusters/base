@@ -164,3 +164,5 @@ class command(rocks.commands.Command):
 				net_list.append("%d-%d" % (s_list[i], s))
 
 		return net_list
+
+RollName = "base"

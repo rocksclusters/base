@@ -184,3 +184,5 @@ class Command(rocks.commands.set.host.command):
 				((select id from nodes where name='%s'), %s)"""
 				% (host, rollid))
 
+
+RollName = "base"

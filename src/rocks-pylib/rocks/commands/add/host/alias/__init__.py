@@ -146,3 +146,5 @@ class Command(rocks.commands.add.host.command):
 		# update the host file and name service
 		#
 		self.command('sync.config')
+
+RollName = "base"

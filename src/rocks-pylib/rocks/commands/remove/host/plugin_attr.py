@@ -101,3 +101,5 @@ class Plugin(rocks.commands.Plugin):
 				Attribute.catindex==cat_index).delete()
 		session.commit()
 
+
+RollName = "base"

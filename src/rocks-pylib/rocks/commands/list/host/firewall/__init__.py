@@ -150,3 +150,5 @@ class Command(rocks.commands.NetworkArgumentProcessor,
 			'chain', 'network', 'output-network', 'flags',
 			'comment', 'category'])
 
+
+RollName = "base"

@@ -249,3 +249,5 @@ class Command(rocks.commands.create.command):
 		
 		self.clean()
 
+
+RollName = "base"

@@ -356,3 +356,5 @@ def _get_netmask_from_CIDR(cidr):
 if __name__ == '__main__':
     import doctest
     doctest.testmod()
+
+RollName = "base"

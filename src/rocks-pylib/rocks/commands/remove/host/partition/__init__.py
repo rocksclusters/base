@@ -151,3 +151,5 @@ class Command(rocks.commands.remove.host.command):
 				node=(select id from nodes where name='%s') and
 				mountpoint like '%s'""" % (host, partition))
 
+
+RollName = "base"

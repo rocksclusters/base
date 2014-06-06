@@ -189,3 +189,5 @@ class Command(rocks.commands.set.command):
 			self.db.execute('insert into sec_global_attributes ' +\
 				'values ("%s", "%s", "%s")' \
 				% (attr, enc_value, enc))
+
+RollName = "base"

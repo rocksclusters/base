@@ -312,3 +312,5 @@ class Command(rocks.commands.list.host.command):
 				self.runXML(xml, host)
 			
 		self.endOutput(padChar='')	
+
+RollName = "base"

@@ -140,3 +140,5 @@ class Command(command):
 			WHERE Rulesrc = 'custom'""")
 
 		self.dump_firewall()
+
+RollName = "base"

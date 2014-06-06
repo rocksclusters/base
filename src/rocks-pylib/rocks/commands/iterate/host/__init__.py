@@ -182,3 +182,5 @@ class Command(command):
 #				self.addOutput(host, line[:-1])
 
 		self.endOutput(padChar='')
+
+RollName = "base"

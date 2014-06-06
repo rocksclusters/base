@@ -88,3 +88,5 @@ class Plugin(rocks.commands.Plugin):
 		self.owner.addText(self.owner.command('dump.os.attr', []))
 		
 
+
+RollName = "base"

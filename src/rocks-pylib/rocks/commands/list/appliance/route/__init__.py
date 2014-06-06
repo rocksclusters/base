@@ -115,3 +115,5 @@ class Command(rocks.commands.list.appliance.command):
 		self.endOutput(header=['appliance', 'network', 
 			'netmask', 'gateway' ], trimOwner=0)
 
+
+RollName = "base"

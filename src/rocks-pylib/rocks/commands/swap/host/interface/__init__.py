@@ -175,3 +175,5 @@ class Command(rocks.commands.swap.host.command):
 		if syncit:
 			self.command('sync.config')	
 
+
+RollName = "base"

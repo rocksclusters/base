@@ -126,3 +126,5 @@ class Command(command):
 		#else success
 
 
+
+RollName = "base"

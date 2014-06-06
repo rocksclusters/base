@@ -167,3 +167,5 @@ class Command(rocks.commands.add.host.command):
 				'%s', '%s', %s, %s)""" %
                 	        (host, address, netmask, gateway, subnet))
 
+
+RollName = "base"

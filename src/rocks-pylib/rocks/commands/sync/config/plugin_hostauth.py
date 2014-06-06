@@ -112,3 +112,5 @@ class Plugin(rocks.commands.Plugin):
 			shell=True) 
 		p = subprocess.call("make -C /var/411 > /dev/null 2>&1", 
 			shell=True) 
+
+RollName = "base"

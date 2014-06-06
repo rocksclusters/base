@@ -99,3 +99,5 @@ class Plugin(rocks.commands.Plugin):
 		self.owner.db.execute("""DELETE FROM catindex WHERE
 			ID=mapCategoryIndex('appliance','%s')""" % appliance)
 
+
+RollName = "base"

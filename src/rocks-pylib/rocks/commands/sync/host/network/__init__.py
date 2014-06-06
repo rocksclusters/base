@@ -251,3 +251,5 @@ class Command(rocks.commands.sync.host.command):
 			self.command('run.host', [ 'localhost',
 				'service gmond restart > /dev/null 2>&1' ] )
 
+
+RollName = "base"

@@ -103,3 +103,5 @@ class Plugin(rocks.commands.Plugin):
 	def run(self, host):
 		self.owner.command('remove.host.boot', [ host ])
 
+
+RollName = "base"

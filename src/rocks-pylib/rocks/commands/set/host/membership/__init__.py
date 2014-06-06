@@ -145,3 +145,5 @@ class Command(rocks.commands.MembershipArgumentProcessor,
 				name='%s') where name='%s'""" % 
 				(membership, host))
 
+
+RollName = "base"

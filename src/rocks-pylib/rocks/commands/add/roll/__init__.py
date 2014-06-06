@@ -743,3 +743,5 @@ class Command(rocks.commands.add.command):
 				roll_handler.mount_iso(i)
 				roll_handler.copy_cd(self.clean)
 				roll_handler.umount_iso()
+
+RollName = "base"

@@ -327,3 +327,5 @@ class Command(command):
 			(select id from distributions where name='%s'),
 			'%s')""" %
 			(mem_name, app_name, rocks_distribution, public))
+
+RollName = "base"

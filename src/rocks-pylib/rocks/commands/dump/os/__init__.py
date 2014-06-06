@@ -80,3 +80,5 @@ class command(rocks.commands.OSArgumentProcessor,
         rocks.commands.dump.command):
         pass
 	
+
+RollName = "base"

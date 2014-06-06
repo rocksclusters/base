@@ -291,3 +291,5 @@ class Parallel(threading.Thread):
 			sys.stderr.flush()
 			# unlock stderr
 			fcntl.lockf(sys.stderr, fcntl.LOCK_UN)
+
+RollName = "base"

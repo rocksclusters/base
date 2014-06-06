@@ -103,3 +103,5 @@ class Plugin(rocks.commands.Plugin):
 			node = (select id from nodes where name = '%s')""" %
 			host)
 
+
+RollName = "base"

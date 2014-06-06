@@ -151,3 +151,5 @@ class Command(rocks.commands.NetworkArgumentProcessor,
 				self.addOutput(net, row)
 			
 		self.endOutput(header=['network', 'subnet', 'netmask', 'mtu', 'dnszone', 'servedns'])
+
+RollName = "base"

@@ -204,3 +204,5 @@ class Command(rocks.commands.set.host.command):
 				(subnet, name, host, iface, iface))
 
 
+
+RollName = "base"

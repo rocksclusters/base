@@ -181,3 +181,5 @@ class Command(rocks.commands.RollArgumentProcessor,
 				name='%s' and version='%s' and
 				arch like '%s'""" % (roll, version, arch))
 
+
+RollName = "base"

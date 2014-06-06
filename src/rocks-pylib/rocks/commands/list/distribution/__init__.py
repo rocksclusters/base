@@ -137,3 +137,5 @@ class Command(rocks.commands.DistributionArgumentProcessor,
 
 		self.endOutput(header=['', 'name'])
 
+
+RollName = "base"

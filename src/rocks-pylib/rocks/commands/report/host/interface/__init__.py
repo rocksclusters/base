@@ -617,3 +617,5 @@ class Command(rocks.commands.HostArgumentProcessor,
 					self.addOutput(host, '</file>')
 
 
+
+RollName = "base"

@@ -78,3 +78,5 @@ class command(rocks.commands.HostArgumentProcessor,
 	rocks.commands.swap.command):
 	pass
 
+
+RollName = "base"

@@ -182,3 +182,5 @@ class Command(command):
 			self.addOutput(app, row)
 			
 		self.endOutput(header=['appliance', 'graph', 'node'])
+
+RollName = "base"

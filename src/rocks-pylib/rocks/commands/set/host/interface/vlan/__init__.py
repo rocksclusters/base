@@ -156,3 +156,5 @@ class Command(rocks.commands.set.host.command):
 				n.name = '%s' and net.node = n.id""" %
 				(vlanid, vlanid, iface, iface, host))
 
+
+RollName = "base"

@@ -109,3 +109,5 @@ class Command(rocks.commands.remove.command):
 		self.db.execute("""delete from global_routes where 
 			network = '%s'""" % address)
 
+
+RollName = "base"

@@ -138,3 +138,5 @@ class Plugin(rocks.commands.Plugin):
 				sys.exit(1)
 
 
+
+RollName = "base"

@@ -130,3 +130,5 @@ class Command(command):
 		else:
 			os.remove(key)
 
+
+RollName = "base"

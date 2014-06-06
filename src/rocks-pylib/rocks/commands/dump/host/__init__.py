@@ -194,3 +194,5 @@ class Command(command):
 					% (host, self.quote(installaction)))
 
 
+
+RollName = "base"

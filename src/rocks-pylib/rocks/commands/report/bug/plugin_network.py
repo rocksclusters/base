@@ -92,3 +92,5 @@ class Plugin(rocks.commands.Plugin):
 		self.owner.addText(self.owner.command('list.host.interface',[]))
 		self.owner.addText('</host-interface>\n')
 
+
+RollName = "base"

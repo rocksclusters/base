@@ -123,3 +123,5 @@ class Command(rocks.commands.remove.appliance.command):
 			and network = '%s'
 			""" % (appliance, address))
 
+
+RollName = "base"

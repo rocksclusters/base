@@ -186,3 +186,5 @@ class Command(rocks.commands.remove.host.command):
 			' /etc/sysconfig/network-scripts/ifcfg-p%s') % (iface, iface)
 		self.command('run.host', hosts + [ cmd ] )
 
+
+RollName = "base"

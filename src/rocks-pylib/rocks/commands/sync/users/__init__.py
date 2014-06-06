@@ -149,3 +149,5 @@ class Command(rocks.commands.sync.command):
 	def run(self, params, args):
 		self.runPlugins()
 
+
+RollName = "base"

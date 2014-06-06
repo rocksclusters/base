@@ -114,3 +114,5 @@ class Command(rocks.commands.dump.host.command):
 				self.dump('add host route %s %s %s netmask=%s'
 					% (self.dumpHostname(host), n, g, m))
 
+
+RollName = "base"

@@ -87,3 +87,5 @@ class Plugin(rocks.commands.Plugin):
 		self.owner.addText(self.owner.command('list.roll', []))
 		self.owner.addText('</roll>\n')
 
+
+RollName = "base"

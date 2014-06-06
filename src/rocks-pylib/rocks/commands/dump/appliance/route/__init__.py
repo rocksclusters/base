@@ -104,3 +104,5 @@ class Command(rocks.commands.dump.appliance.command):
 				self.dump('add appliance route '
 					'%s %s %s netmask=%s' % (app, n, g, m))
 
+
+RollName = "base"

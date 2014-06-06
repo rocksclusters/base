@@ -141,3 +141,5 @@ class Command(command):
 		self.addOutput('localhost', nextip)
 		self.endOutput(padChar='')
 
+
+RollName = "base"

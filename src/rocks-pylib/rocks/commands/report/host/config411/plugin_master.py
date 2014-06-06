@@ -98,3 +98,5 @@ class Plugin(rocks.commands.Plugin):
 		self.owner.addOutput(host, master)
 
 		
+
+RollName = "base"

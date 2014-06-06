@@ -94,3 +94,5 @@ class Command(rocks.commands.NetworkArgumentProcessor,
 		self.db.execute('update subnets '	+\
 			'set dnszone="%s" ' % zone	+\
 			'where name="%s"' % network)
+
+RollName = "base"

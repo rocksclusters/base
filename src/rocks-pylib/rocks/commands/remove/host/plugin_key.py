@@ -85,3 +85,5 @@ class Plugin(rocks.commands.Plugin):
 		self.owner.db.execute("""delete from public_keys where
 			node = (select id from nodes where name = '%s') """ %
 			(host))
+
+RollName = "base"

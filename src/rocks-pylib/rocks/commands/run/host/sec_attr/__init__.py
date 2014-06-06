@@ -66,3 +66,5 @@ class Command(rocks.commands.Command):
 
 		# Remove the pickled file
 		os.unlink(fname)
+
+RollName = "base"

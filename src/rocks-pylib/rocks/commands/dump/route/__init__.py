@@ -100,3 +100,5 @@ class Command(rocks.commands.dump.command):
 
 			self.dump('add route %s %s netmask=%s' % (n, g, m))
 
+
+RollName = "base"

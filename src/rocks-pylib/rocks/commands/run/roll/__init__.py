@@ -203,3 +203,5 @@ class Command(rocks.commands.run.command):
 		else:
 			os.system(string.join(script, ''))
 
+
+RollName = "base"

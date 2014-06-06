@@ -217,3 +217,5 @@ class Command(rocks.commands.list.command):
 			self.addText('%s %s\n' % (cmd, s))
 
 
+
+RollName = "base"

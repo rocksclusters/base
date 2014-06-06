@@ -127,3 +127,5 @@ class Command(rocks.commands.sync.command):
 			cmd = '/opt/rocks/sbin/insert-ethers --update'
 			for line in os.popen(cmd).readlines():
 				self.addText(line)
+
+RollName = "base"

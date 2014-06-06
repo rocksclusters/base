@@ -196,3 +196,5 @@ class Command(command):
 			self.abort('command does not take arguments')
 		self.runPlugins()
 
+
+RollName = "base"

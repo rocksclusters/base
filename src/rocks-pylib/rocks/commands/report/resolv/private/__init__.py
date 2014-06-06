@@ -93,3 +93,5 @@ class Command(rocks.commands.report.resolv.command):
 		self.nameservers(self.db.getHostAttr('localhost',
 			'Kickstart_PrivateDNSServers'))
 
+
+RollName = "base"

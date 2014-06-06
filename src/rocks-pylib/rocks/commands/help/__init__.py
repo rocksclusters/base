@@ -122,3 +122,5 @@ class Command(command):
 					if string.find(line, sub) >= 0:
 						self.addText('%s\n' % line)
 		
+
+RollName = "base"

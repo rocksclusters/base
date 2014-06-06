@@ -93,3 +93,5 @@ class Plugin(rocks.commands.Plugin):
 		file.write('</four11put>\n')
 
 		file.close()
+
+RollName = "base"

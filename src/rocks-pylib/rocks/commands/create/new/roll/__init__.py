@@ -291,3 +291,5 @@ class Command(rocks.commands.create.new.command):
 		self.setDict()
 		self.createDirsFiles()
 
+
+RollName = "base"

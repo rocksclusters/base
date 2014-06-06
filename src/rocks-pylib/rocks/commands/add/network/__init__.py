@@ -221,3 +221,5 @@ class Command(rocks.commands.add.command):
 			mtu, dnszone, servedns) values ('%s', '%s', '%s', %s, '%s', %s)"""\
 			% (name, subnet, netmask, mtu, dnszone, servedns))
 
+
+RollName = "base"

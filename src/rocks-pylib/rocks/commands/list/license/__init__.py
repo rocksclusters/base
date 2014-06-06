@@ -140,3 +140,5 @@ class Command(rocks.commands.list.command):
 			self.addText(line)
 		file.close()
 
+
+RollName = "base"

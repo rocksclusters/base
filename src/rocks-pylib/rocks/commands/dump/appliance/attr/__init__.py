@@ -120,3 +120,5 @@ class Command(rocks.commands.dump.appliance.command):
 					self.dump('add appliance attr %s %s %s'
 						% (appliance, attr.attr, v))
 
+
+RollName = "base"

@@ -274,3 +274,5 @@ class Command(rocks.commands.add.host.command):
 				self.command('set.host.interface.%s' % key,
 					(host, iface, params[key]))
 
+
+RollName = "base"

@@ -127,3 +127,5 @@ class Command(rocks.commands.remove.host.command):
 
 
 
+
+RollName = "base"

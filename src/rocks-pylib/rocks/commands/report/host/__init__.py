@@ -293,3 +293,5 @@ class Command(command):
 			f.close()
 		
 		self.endOutput(padChar='')
+
+RollName = "base"

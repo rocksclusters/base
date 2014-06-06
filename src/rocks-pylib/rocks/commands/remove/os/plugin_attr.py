@@ -82,3 +82,5 @@ class Plugin(rocks.commands.Plugin):
 	def run(self, os):
 		self.owner.command('remove.os.attr', [ os ])
 
+
+RollName = "base"

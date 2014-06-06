@@ -118,3 +118,5 @@ class Command(command):
 					'subnet=%s netmask=%s mtu=%s' % \
 					(subnet,netmask,mtu))
 
+
+RollName = "base"

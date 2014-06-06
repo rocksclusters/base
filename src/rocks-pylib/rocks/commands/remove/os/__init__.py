@@ -103,3 +103,5 @@ class Command(command):
 		for os in self.getOSNames(args):
 			self.runPlugins(os)
 
+
+RollName = "base"

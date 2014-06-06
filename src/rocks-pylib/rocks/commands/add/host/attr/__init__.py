@@ -154,3 +154,5 @@ class Command(rocks.commands.add.host.command):
 			except sqlalchemy.exc.IntegrityError:
 				self.abort('attribute "%s" exists' % attr)
 
+
+RollName = "base"

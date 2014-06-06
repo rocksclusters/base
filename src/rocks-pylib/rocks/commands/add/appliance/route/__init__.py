@@ -162,3 +162,5 @@ class Command(rocks.commands.add.appliance.command):
 				((select id from appliances where name='%s'),
 				'%s', '%s', %s, %s)""" %
                 	        (app, address, netmask, gateway, subnet))
+
+RollName = "base"

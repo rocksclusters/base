@@ -149,3 +149,5 @@ class Plugin(rocks.commands.Plugin, rocks.commands.HostArgumentProcessor):
 			self.owner.command('run.host', sunos_hosts +
 				[' "/usr/sbin/svcadm restart autofs" '])
 
+
+RollName = "base"

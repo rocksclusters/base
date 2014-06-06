@@ -134,3 +134,5 @@ class Command(rocks.commands.DistributionArgumentProcessor,
 			% dists[0])
 
 
+
+RollName = "base"

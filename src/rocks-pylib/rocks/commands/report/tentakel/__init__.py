@@ -197,3 +197,5 @@ class Command(rocks.commands.report.command):
 					self.addText('\t+%s\n' % i)
 			self.addText('\n')
 
+
+RollName = "base"

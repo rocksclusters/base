@@ -95,3 +95,4 @@ import rocks.commands
 
 class command(rocks.commands.HostArgumentProcessor, rocks.commands.set.command):
 	pass
+RollName = "base"

@@ -181,3 +181,5 @@ class Command(rocks.commands.remove.host.command):
 			rows = self.db.execute("""delete from node_rolls where
 				node = %s and rollid = %s""" % (node, rollid))
 
+
+RollName = "base"

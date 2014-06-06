@@ -135,3 +135,5 @@ class Command(command):
 		self.nameservers(self.db.getHostAttr('localhost',
 			'Kickstart_PublicDNSServers'))
 
+
+RollName = "base"

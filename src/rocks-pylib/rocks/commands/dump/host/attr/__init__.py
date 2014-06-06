@@ -128,3 +128,5 @@ class Command(rocks.commands.dump.host.command):
 						(self.dumpHostname(node.name),
 						attr.attr, v))
 
+
+RollName = "base"

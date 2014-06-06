@@ -132,3 +132,5 @@ class Command(rocks.commands.remove.host.command):
 				if os.path.exists(filename):
 					os.unlink(filename)
 
+
+RollName = "base"

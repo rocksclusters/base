@@ -101,3 +101,5 @@ class Command(rocks.commands.report.command):
 		self.addOutput('', distrodir)
 		self.endOutput(padChar='')
 
+
+RollName = "base"

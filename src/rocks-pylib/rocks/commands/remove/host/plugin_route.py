@@ -84,3 +84,5 @@ class Plugin(rocks.commands.Plugin):
 
 	def run(self, host):
 		self.owner.command('remove.host.route', [ host ])
+
+RollName = "base"

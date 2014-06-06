@@ -183,3 +183,5 @@ class Command(command):
 			self.runPlugins(appliance)
 
 
+
+RollName = "base"

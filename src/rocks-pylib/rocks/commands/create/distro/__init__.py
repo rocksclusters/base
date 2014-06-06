@@ -293,3 +293,5 @@ class Command(rocks.commands.create.command):
 
 		os.unlink(lockfile)
 
+
+RollName = "base"

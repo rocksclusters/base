@@ -106,3 +106,5 @@ class Command(rocks.commands.dump.host.command):
 				self.dump('set host roll %s %s %s %s os=%s'
 					% (self.dumpHostname(host), name, ver, arch, os))
 
+
+RollName = "base"

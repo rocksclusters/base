@@ -77,3 +77,5 @@ import rocks.commands
 
 class command(rocks.commands.Command):
 	MustBeRoot = 0
+
+RollName = "base"

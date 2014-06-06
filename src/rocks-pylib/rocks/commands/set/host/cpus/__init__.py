@@ -154,3 +154,5 @@ class Command(rocks.commands.set.host.command):
 		for node in self.newdb.getNodesfromNames(args):
 			node.CPUs = int(cpus)
 
+
+RollName = "base"

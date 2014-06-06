@@ -145,3 +145,5 @@ class Command(rocks.commands.set.host.command):
 				(networks.device='%s' or networks.mac='%s')""" %
 				(options, host, iface, iface))
 
+
+RollName = "base"

@@ -164,3 +164,5 @@ class Command(rocks.commands.NetworkArgumentProcessor,
 			self.db.execute("""update subnets set mtu=%s where
 				subnets.name='%s'""" % (mtu, network))
 
+
+RollName = "base"

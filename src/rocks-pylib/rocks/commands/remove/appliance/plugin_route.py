@@ -94,3 +94,5 @@ class Plugin(rocks.commands.Plugin):
 		self.owner.db.execute('delete from appliance_routes where ' +\
 			'appliance_routes.appliance=(select id from appliances ' +\
 			'where name="%s")' % appliance)
+
+RollName = "base"

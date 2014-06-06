@@ -1982,3 +1982,5 @@ class sec_attr_plugin:
 
 	def filter(self, value = None):
 		return None
+
+RollName = "base"

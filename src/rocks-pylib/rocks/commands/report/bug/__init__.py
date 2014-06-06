@@ -92,3 +92,5 @@ class Command(rocks.commands.report.command):
 		self.runPlugins()
 		self.addText('</rocks-bug>\n')
 
+
+RollName = "base"

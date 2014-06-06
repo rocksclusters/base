@@ -84,3 +84,5 @@ class Plugin(rocks.commands.Plugin):
 		f = open('/var/lock/rocks-sync-host.lock','w+')
 		f.write('%04d\n' % int(m))
 		f.close()
+
+RollName = "base"

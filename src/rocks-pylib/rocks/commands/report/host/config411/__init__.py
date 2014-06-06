@@ -99,3 +99,5 @@ class Command(rocks.commands.report.host.command):
 			self.addOutput(host, '</file>')
 
 		self.endOutput()
+
+RollName = "base"

@@ -88,3 +88,5 @@ import rocks.commands
 class command(rocks.commands.Command):
 	pass
 
+
+RollName = "base"

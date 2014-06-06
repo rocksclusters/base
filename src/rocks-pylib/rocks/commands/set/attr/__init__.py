@@ -165,3 +165,5 @@ class Command(rocks.commands.set.command):
 
 		self.newdb.setCategoryAttr('global', 'global', attr, value)
 
+
+RollName = "base"

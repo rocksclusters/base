@@ -175,3 +175,5 @@ class Command(rocks.commands.create.command):
 		shutil.rmtree(tmp)
 		
 
+
+RollName = "base"

@@ -187,3 +187,5 @@ class Command(rocks.commands.list.host.command):
 			'start','size', 'id', 'type', 'flags', 'formatflags'])
 
 
+
+RollName = "base"

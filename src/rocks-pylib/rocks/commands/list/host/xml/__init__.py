@@ -222,3 +222,5 @@ class Command(rocks.commands.list.host.command):
 				self.addOutput(host, line)
 
 		self.endOutput(padChar='')
+
+RollName = "base"

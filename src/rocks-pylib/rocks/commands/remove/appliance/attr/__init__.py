@@ -121,3 +121,5 @@ class Command(rocks.commands.remove.appliance.command):
 		for appliance in self.getApplianceNames(args):
 			self.newdb.removeCategoryAttr('appliance', appliance, attr)
 
+
+RollName = "base"

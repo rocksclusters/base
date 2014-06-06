@@ -369,3 +369,5 @@ class Command(rocks.commands.report.command):
 		self.writeForward(serial, networks)
 		self.writeReverse(serial, networks)
 		self.endOutput(padChar = '')
+
+RollName = "base"

@@ -87,3 +87,5 @@ class Plugin(rocks.commands.Plugin):
 		self.owner.db.execute("""delete from memberships where 
 			appliance=(select id from appliances where name='%s')"""
 			% appliance)
+
+RollName = "base"

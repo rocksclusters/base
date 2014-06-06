@@ -75,3 +75,5 @@ class Command(rocks.commands.remove.command):
 
 		self.db.execute('delete from sec_global_attributes ' +\
 			'where attr="%s"' % attr)
+
+RollName = "base"

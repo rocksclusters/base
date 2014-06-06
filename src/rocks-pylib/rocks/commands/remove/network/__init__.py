@@ -166,3 +166,5 @@ class Command(rocks.commands.NetworkArgumentProcessor,
 			self.db.execute("""delete from subnets where 
 				name='%s'""" % network)
 
+
+RollName = "base"

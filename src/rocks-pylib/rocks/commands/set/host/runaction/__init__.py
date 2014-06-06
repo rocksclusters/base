@@ -154,3 +154,5 @@ class Command(rocks.commands.set.host.command):
 		#
 		self.command('set.host.boot', hosts)
 		
+
+RollName = "base"

@@ -170,3 +170,5 @@ class command(rocks.commands.Command):
 			header = []
 		rocks.commands.Command.endOutput(self, 
 			header, padChar, trimOwner)
+
+RollName = "base"
