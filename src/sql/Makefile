@@ -405,7 +405,7 @@ ROCKSROOT       = ../devel/devel
 -include $(ROCKSROOT)/etc/Rules.mk
 include Rules.mk
 
-RCFILES = staterc insert-ethersrc
+RCFILES = insert-ethersrc
 
 po ::
 	$(MAKE) -C po
