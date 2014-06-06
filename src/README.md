@@ -5,18 +5,15 @@ library used which powers most of the logic behind Rocks.
 
 ## Package distribution
 
-The Rocks python library is distributed inside several RPM package.
-(_Should we try to reduce the number of packages/subdirectory?_)
+The Rocks python library is  distributed inside several RPM package.
 
-* rocks.command is under src/commands
-* rocks is under src/pylib
-
+* most of the rocks python library is now in src/rocks-pylib
 
 The command line python scripts are inside:
 
-* rocks is under src/commands
+* rocks is under src/rocks-pylib
 * insert-ethers is under src/sql
-* kickstart.cgi setDbPartitions.cgi setPxeboot.cgi is under src/kickstart
+* kickstart.cgi setDbPartitions.cgi setPxeboot.cgi are under src/kickstart
 * rocks-console, big-red-button, gen_root_pw, rocks-db-perms, cluster-kill
   are under src/admin
 

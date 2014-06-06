@@ -205,6 +205,11 @@ class HostnotfoundException(RocksException):
 	"""This exception is used when the given host does not exist"""
 	pass
 
+class ParameterNotValid(RocksException):
+	"""This exception is used when the user input parameters are 
+	not valid"""
+	pass
+
 # An exception for Kickstart builder trinity: kcgi, kgen, kpp
 class KickstartError(RocksException):
 	pass

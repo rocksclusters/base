@@ -282,7 +282,6 @@ class App(rocks.app.Application):
 			'foundation-redhat',
 			'keyutils-libs',
 			'keyutils-libs-devel',
-			'rocks-command',
 			'rocks-ekv',
 			'rocks-kickstart', 
 			'rocks-piece-pipe',

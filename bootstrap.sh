@@ -227,11 +227,7 @@ if [ `./_os` == "linux" ]; then
 	compile_and_install librocks
 fi
 
-compile pylib
-install rocks-pylib
-
-compile command
-install rocks-command
+compile_and_install rocks-pylib
 
 compile java
 install jdk 

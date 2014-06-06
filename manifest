@@ -30,7 +30,6 @@ rocks-admin
 rocks-anaconda-updates
 rocks-backup
 rocks-channel
-rocks-command
 rocks-config
 rocks-config-server
 rocks-devel

@@ -84,6 +84,8 @@ class DatabaseHelper(rocks.db.database.Database):
 		self._attribute = None
 		# cache for frontend name
 		self._frontend = None
+		# dictionary to cache attributes
+		self._cacheAttrs = {}
 
 
 	def getNodesfromNames(self, names=None, managed_only=0, preload=[]):
@@ -193,6 +195,7 @@ class DatabaseHelper(rocks.db.database.Database):
 		self._frontend = self.getCategoryAttr('global', 'global', \
 				'Kickstart_PrivateHostname')
 		return self._frontend
+
 
 
 	def getHostname(self, hostname=None):
@@ -595,7 +598,9 @@ class DatabaseHelper(rocks.db.database.Database):
 			else:
 				attrs[attr]     = value
 
+		self._cacheAttrs[node.name] = attrs
 		return attrs
+
 
 	def getHostAttr(self, hostname, attr):
 		"""like getHostAttrs but it returns the value of the given attr """

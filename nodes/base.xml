@@ -500,7 +500,6 @@
   <package>libobjc</package>
 
   <package>tentakel</package>
-  <package>rocks-command</package>
   <package>librocks</package>
   <package>rocks-channel</package>
 

@@ -1,4 +1,3 @@
-# $Id: linux.mk,v 1.12 2012/11/27 00:48:40 phil Exp $
 #
 # @Copyright@
 # 
@@ -54,43 +53,76 @@
 # 
 # @Copyright@
 #
-# $Log: linux.mk,v $
-# Revision 1.12  2012/11/27 00:48:40  phil
-# Copyright Storm for Emerald Boa
-#
-# Revision 1.11  2012/05/06 05:48:47  phil
-# Copyright Storm for Mamba
-#
-# Revision 1.10  2011/07/23 02:30:49  phil
-# Viper Copyright
-#
-# Revision 1.9  2010/09/07 23:53:08  bruno
-# star power for gb
-#
-# Revision 1.8  2009/05/01 19:07:08  mjk
-# chimi con queso
-#
-# Revision 1.7  2008/10/18 00:56:02  mjk
-# copyright 5.1
-#
-# Revision 1.6  2008/03/06 23:41:44  mjk
-# copyright storm on
-#
-# Revision 1.5  2007/06/23 04:03:24  mjk
-# mars hill copyright
-#
-# Revision 1.4  2006/09/11 22:47:23  mjk
-# monkey face copyright
-#
-# Revision 1.3  2006/08/10 00:09:41  mjk
-# 4.2 copyright
-#
-# Revision 1.2  2005/12/31 07:42:34  mjk
-# fix cvs logs
-#
-# Revision 1.1  2005/12/30 21:42:17  mjk
-# more spec file cleanup
-#
 
-RPM.ARCH	= noarch
+PKGROOT		= /opt/rocks
+REDHAT.ROOT     = $(CURDIR)/../../
+ROCKSROOT       = $(CURDIR)/../../src/devel/devel
+-include $(ROCKSROOT)/etc/Rules.mk
+include Rules.mk
+
+# we need this to disable the stupid 
+# /usr/lib/rpm/brp-python-bytecompile
+# which just does a big mess in compiling all the python files
+MAKE.rpmflag	= -bb --define "__spec_install_post :"
+
+# If MICRO_VERSION isn't defined, then force it to zero
+ifndef VERSION.MICRO
+	VERSION.MICRO = 0
+endif 
+
+# we need this variable inside setup.py to set the 
+# version of the python egg
+myenv = ROCKS_VERSION=$(ROCKS_VERSION) 
+
+#DISTRIBUTE_DISABLE_VERSIONED_EASY_INSTALL_SCRIPT=1;
+
+# if ROOT is not defined assign / so that 
+# python setup.py install --root=$(ROOT)
+# has always something after the = if not distutils 
+# will bail on you
+ROOT ?= /
+
+build:: rocks-copyright.txt
+	echo aaaaa $(myenv)
+	#$(myenv) $(PY.PATH) setup.py build
+	
+install:: build
+	#test "$(ROOT)" && \
+	#  $(myenv) $(PY.PATH) setup.py install --root=$(ROOT) || \
+	#  $(myenv) $(PY.PATH) setup.py install --root=/
+	$(myenv) $(PY.PATH) setup.py install --root=$(ROOT)
+	# TODO this is really hugly but for now it does the job
+	@echo "version = \"$(ROCKS_VERSION)\"" > \
+		$(ROOT)/$(PY.ROCKS)/rocks/__init__.py
+	@echo "release = \"$(VERSION_NAME)\"" >> \
+		$(ROOT)/$(PY.ROCKS)/rocks/__init__.py
+	@echo "version_major = \"$(VERSION.MAJOR)\"" >> \
+		$(ROOT)/$(PY.ROCKS)/rocks/__init__.py
+	@echo "version_minor = \"$(VERSION.MINOR)\"" >> \
+		$(ROOT)/$(PY.ROCKS)/rocks/__init__.py
+	@echo "version_micro = \"$(VERSION.MICRO)\"" >> \
+		$(ROOT)/$(PY.ROCKS)/rocks/__init__.py
+	$(INSTALL) -m0444 rocks-copyright.txt \
+		$(ROOT)/$(PY.ROCKS)/rocks/commands/list/license/license.txt
+	#find $(ROOT)/$(PY.ROCKS)/rocks -name "*.pyc" -delete
+
+
+clean::
+	rm -rf build
+	rm -rf dist
+	rm -rf rocks_pylib.egg-info
+
+
+# add the RollName = "base" variable to all the command files we can 
+# commit this into the repo since this property never changes
+#
+# this script is a helper for adding the variable to all the file in 
+# this package
+addrollvariable:
+	for i in `find rocks/commands -name "*.py"`; do\
+		grep "^RollName = " $$i > /dev/null ||                  \
+		echo -e "\nRollName = \"$(ROLL)\"" >> $$i;              \
+	done
+ 
+
 
