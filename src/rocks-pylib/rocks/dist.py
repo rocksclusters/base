@@ -811,13 +811,6 @@ class Distribution(Base):
 	def getBuildPath(self):
 		return os.path.join(self.getReleasePath(), 'build')
     
-	def getKickstartFile(self, file, distdir=None):
-		cwd = os.getcwd()
-		os.chdir(self.getRootPath())
-		retval = rocks.ks.KickstartFile(file, self.arch, distdir)
-		os.chdir(cwd)
-		return retval
-
 	def getSiteRPMSPath(self):
 		l = []
 		if self.local:
