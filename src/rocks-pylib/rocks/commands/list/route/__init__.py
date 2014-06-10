@@ -91,6 +91,11 @@ import string
 
 class Command(rocks.commands.list.command):
 	"""
+	Lists global routes defined for this cluster
+
+	<example cmd='list routes'>
+	List all the global routes
+	</example>
 	"""
 
 	def run(self, params, args):

@@ -88,6 +88,15 @@ import string
 
 class Command(rocks.commands.list.appliance.command):
 	"""
+	Lists routes associated with a set of appliances
+
+	<arg optional='1' type='string' name='appliance'>
+	Name of appliance (can be also a sql regexp)
+	</arg>
+
+	<example cmd='list appliance route compute'>
+	List the routes for compute appliance
+	</example>
 	"""
 
 	def run(self, params, args):

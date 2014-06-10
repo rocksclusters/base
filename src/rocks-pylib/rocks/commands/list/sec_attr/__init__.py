@@ -72,7 +72,11 @@ import string
 
 class Command(rocks.commands.list.command):
 	"""
-	Lists the secure attributes for a given cluster 
+	Lists the global routes defined for this cluster
+
+	<example cmd='list sec_attr'>
+	List all the global secutiry attributes
+	</example>
 	"""
 	def run(self, params, args):
 		self.beginOutput()

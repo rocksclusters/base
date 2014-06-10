@@ -85,6 +85,15 @@ import rocks.commands
 
 class Command(rocks.commands.list.os.command):
 	"""
+	Lists routes associated with a set of OSes
+
+	<arg optional='1' type='string' name='os'>
+	Name of the os (can be also a sql regexp)
+	</arg>
+
+	<example cmd='list routes os linux'>
+	List the routes for linux os
+	</example>
 	"""
 
 	def run(self, params, args):

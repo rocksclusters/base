@@ -94,8 +94,8 @@ class Command(rocks.commands.add.appliance.command):
 	"""
 	Add a route for an appliance type in the cluster
 
-	<arg type='string' name='os'>
-	The OS type (e.g., 'linux', 'sunos', etc.). This argument is required.
+	<arg type='string' name='appliance'>
+	The appliance name (e.g., 'compute', 'nas', etc.). This argument is required.
 	</arg>
 	
 	<arg type='string' name='address'>
