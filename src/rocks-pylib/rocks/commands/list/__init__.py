@@ -129,46 +129,5 @@ import rocks.commands
 class command(rocks.commands.Command):
 	MustBeRoot = 0
 
-	def __init__(self, database):
-		rocks.commands.Command.__init__(self, database)
-		self.outputCols	= []
-
-	def outputRow(self, list):
-		if len(self.outputCols) > 0:
-			l = []
-			for i in range(0, len(list)):
-				if self.outputCols[i + self.startOfLine]:
-					l.append(list[i])
-		else:
-			l = list
-		return string.join(l, ' ')
-
-	def endOutput(self, header=[], padChar='-', trimOwner=1):
-                """Pretty prints the output list buffer."""
-
-		showHeader	= 1
-
-		showCols = []
-		for c in header:
-			showCols.append(c.lower())
-			
-		for key in self._params.keys():
-			if key == 'output-header':
-				showHeader = self.str2bool(self._params[key])
-			elif key == 'output-col':
-				showCols = []
-				for col in self._params[key].split(','):
-					showCols.append(col.lower())
-
-		self.outputCols = []
-		for c in header:
-			if c.lower() in showCols:
-				self.outputCols.append(True)
-			else:
-				self.outputCols.append(False)
-		if not showHeader:
-			header = []
-		rocks.commands.Command.endOutput(self, 
-			header, padChar, trimOwner)
 
 RollName = "base"

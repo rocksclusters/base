@@ -1720,6 +1720,23 @@ class Command:
 		
 		if not self.output:
 			return
+
+		# check if the user has selected output-header=flase to
+		# disable output of the header
+		# or output-col to disable output of some column
+
+		showHeader      = True
+		if 'output-header' in self._params:
+			showHeader = self.str2bool(self._params['output-header'])
+
+		self.outputCols = []
+		if 'output-col' in self._params:
+			showCols = self._params['output-col'].split(',')
+			for i in header:
+				if i.lower() in showCols:
+					self.outputCols.append(True)
+				else:
+					self.outputCols.append(False)
 			
 		# Loop over the output and check if there is more than
 		# one owner (usually a hostname).  We have only one owner
@@ -1741,7 +1758,7 @@ class Command:
 		# keep the header optional and separate from the output
 		# so the above decision (startOfLine) can be made.
 		
-		if header:
+		if header and showHeader:
 			list = []
 			for field in header:
 				list.append(field.upper())
@@ -1785,9 +1802,19 @@ class Command:
 				list.append(o)
 			self.addText('%s%s' % (self.outputRow(list),linesep))
 
+
 	def outputRow(self, list):
-		return string.join(list, ' ')
-		
+		if self.outputCols:
+			l = []
+			for i in range(0, len(list)):
+				if self.outputCols[i + self.startOfLine]:
+					l.append(list[i])
+			return string.join(l, ' ')
+		else:
+			return string.join(list, ' ')
+
+
+
 	def usage(self):
 		if self.__doc__:
 			handler = DocStringHandler()

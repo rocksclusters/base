@@ -598,7 +598,8 @@ class DatabaseHelper(rocks.db.database.Database):
 			else:
 				attrs[attr]     = value
 
-		self._cacheAttrs[node.name] = attrs
+		# TODO cache attributes tables for speed
+		# self._cacheAttrs[node.name] = attrs
 		return attrs
 
 
