@@ -17,5 +17,29 @@ The
 hold messages from the Rocks discussion list dating back to June 2002.
 </para>
 
+<para>If you need to search old messages you can use the following links:</para>
+
+
+<itemizedlist>
+
+<listitem>
+<para>
+<ulink url="http://marc.info/?l=npaci-rocks-discussion&amp;r=1&amp;w=2">Mailing list ARChives
+</ulink>
+</para>
+</listitem>
+
+<listitem>
+<para><ulink
+url="https://www.google.com/search?q=site%3Ahttps%3A%2F%2Flists.sdsc.edu%2Fpipermail%2Fnpaci-rocks-discussion">
+Google</ulink> with the extra directive <computeroutput>
+site://lists.sdsc.edu/pipermail/npaci-rocks-discussion</computeroutput> in the
+search bar (to limit search results to Rocks mailing list only).
+</para>
+</listitem>
+
+</itemizedlist>
+
+
 </section>
 

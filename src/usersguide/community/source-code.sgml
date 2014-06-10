@@ -15,14 +15,23 @@ In the context of Rocks this means individual Roll developers can independently 
 </para>
 
 <para>
-You can use the Git Web interface to view the source code using your browser at <ulink url="http://git.rocksclusters.org">http://git.rocksclusters.org</ulink>.
-To check out the current source code you will first need to clone one of the read-only repository listed on the main web page of the Git Web interface. This operation will take several minutes (if not hours) and unlike a CVS checkout it may appear to hang, be patient.
+You can use the Github Web interface to view the source code using your browser
+at <ulink
+url="https://github.com/rocksclusters/">https://github.com/rocksclusters/</ulink>.
+
+Each Roll has its own repository named after the Roll. So if you need to checkout
+the Base roll you should checkout the repository called base under the Rocks Github
+web page (in this example <ulink url="https://github.com/rocksclusters/base">
+https://github.com/rocksclusters/base</ulink>)
+
+To check out the current source code you will first need to clone one of the
+read-only repository listed on the main web page of the Github web site. This
+operation can take several minutes to complete.
 </para>
 
 <screen>
- $ git clone http://git.rocksclusters.org/git/core/base/.git;
-git clone http://git.rocksclusters.org/git/core/base/.git
-Cloning into base...
+ $ git clone http://github.com/rocksclusters/base;
+Cloning into 'base'...
  $ cd base
  $ git status
 # On branch master
