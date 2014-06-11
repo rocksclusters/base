@@ -118,8 +118,8 @@ class Command(rocks.commands.remove.appliance.command):
 		if not attr:
 			self.abort('missing attribute name')
 
-		for appliance in self.getApplianceNames(args):
-			self.newdb.removeCategoryAttr('appliance', appliance, attr)
+		for appliance in self.newdb.getApplianceNames(args):
+			self.newdb.removeCategoryAttr('appliance', appliance.name, attr)
 
 
 RollName = "base"

@@ -103,11 +103,11 @@ class Command(rocks.commands.list.appliance.command):
 
 		self.beginOutput()
 
-		for app in self.getApplianceNames(args):
+		for app in self.newdb.getApplianceNames(args):
 			self.db.execute("""
 				select r.network, r.netmask, r.gateway,
 				r.subnet from appliance_routes r, appliances a
-				where r.appliance=a.id and a.name='%s'""" % app)
+				where r.appliance=a.id and a.name='%s'""" % app.name)
 
 			for network,netmask,gateway,subnet in \
 				self.db.fetchall():
@@ -119,7 +119,7 @@ class Command(rocks.commands.list.appliance.command):
 					if rows == 1:
 						gateway, = self.db.fetchone()
 
-				self.addOutput(app, (network, netmask, gateway))
+				self.addOutput(app.name, (network, netmask, gateway))
 
 		self.endOutput(header=['appliance', 'network', 
 			'netmask', 'gateway' ], trimOwner=0)

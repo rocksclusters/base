@@ -103,9 +103,9 @@ class Command(rocks.commands.list.appliance.command):
 
 		self.beginOutput()
 		
-		for appliance in self.getApplianceNames(args):
-			for row in self.newdb.getCategoryAttrs('appliance', appliance):
-				self.addOutput(appliance, (row.attr, row.value))
+		for appliance in self.newdb.getApplianceNames(args):
+			for row in self.newdb.getCategoryAttrs('appliance', appliance.name):
+				self.addOutput(appliance.name, (row.attr, row.value))
 
 		self.endOutput(header=['appliance', 'attr', 'value' ],
 			trimOwner=0)

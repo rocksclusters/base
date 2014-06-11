@@ -116,12 +116,12 @@ class Command(rocks.commands.remove.appliance.command):
 		if len(args) == 0:
 			self.abort('must supply at least one appliance type')
 
-		for appliance in self.getApplianceNames(args):
+		for appliance in self.newdb.getApplianceNames(args):
 			self.db.execute("""
 			delete from appliance_routes where 
 			appliance = (select id from appliances where name='%s')
 			and network = '%s'
-			""" % (appliance, address))
+			""" % (appliance.name, address))
 
 
 RollName = "base"

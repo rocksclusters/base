@@ -189,8 +189,7 @@ import sys
 import string
 import rocks.commands
 
-class command(rocks.commands.ApplianceArgumentProcessor,
-	rocks.commands.add.command):
+class command(rocks.commands.add.command):
 	pass
 
 class Command(command):

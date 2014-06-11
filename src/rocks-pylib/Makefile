@@ -113,6 +113,9 @@ clean::
 	rm -rf rocks_pylib.egg-info
 
 
+ctags:
+	ctags  --python-kinds=-i --exclude=*/build/* -R .
+
 # add the RollName = "base" variable to all the command files we can 
 # commit this into the repo since this property never changes
 #

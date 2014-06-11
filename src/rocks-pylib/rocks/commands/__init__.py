@@ -578,33 +578,6 @@ class MembershipArgumentProcessor:
 				list.append(name)
 		return list
 
-		
-	
-class ApplianceArgumentProcessor:
-	"""An Interface class to add the ability to process appliance
-	arguments."""
-		
-	def getApplianceNames(self, args=None):
-		"""Returns a list of appliance names from the database.
-		For each arg in the ARGS list find all the appliance
-		names that match the arg (assume SQL regexp).  If an
-		arg does not match anything in the database we Abort.  If the
-		ARGS list is empty return all appliance names.
-		"""	
-		list = []
-		if not args:
-			args = [ '%' ] # find all appliances
-		for arg in args:
-			rows = self.db.execute("""select name from appliances 
-				where name like '%s'""" % arg)
-			if rows == 0 and arg == '%': # empty table is OK
-				continue
-			if rows < 1:
-				Abort('unknown appliance "%s"' % arg)
-			for name, in self.db.fetchall():
-				list.append(name)
-		return list
-
 
 class DistributionArgumentProcessor:
 	"""An Interface class to add the ability to process distribution

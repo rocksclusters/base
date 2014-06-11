@@ -187,6 +187,29 @@ class DatabaseHelper(rocks.db.database.Database):
 			return self._appliances_list
 
 
+	def getApplianceNames(self, args=None, preload=[]):
+		"""Returns a list of rocks.db.mappings.base.Appliance instance
+		 from the database.
+		For each arg in the ARGS list find all the appliance
+		names that match the arg (assume SQL regexp).  If an
+		arg does not match anything in the database we Abort.  If the
+		ARGS list is empty return all appliance names.
+		"""
+                clause = sqlalchemy.sql.expression.false()
+                query = self.getSession().query(Appliance)
+
+		if not args:
+			args = [ '%' ] # find all appliances
+		for arg in args:
+			clause = or_(clause, Appliance.name.like(arg))
+		query = query.filter(clause)
+
+		for i in preload:
+			query = query.options(sqlalchemy.orm.joinedload(i))
+
+		return query
+
+
 	def getFrontendName(self):
 		"""return the frontend name and caches it"""
 		if self._frontend :

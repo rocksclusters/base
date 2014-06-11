@@ -162,18 +162,14 @@ class Command(rocks.commands.list.appliance.command):
 	def run(self, params, args):
 
 		self.beginOutput()
-		for app in self.getApplianceNames(args):
-			self.db.execute("""select node from appliances
-				where name='%s'""" % app)
-			try:
-				(node, ) = self.db.fetchone()
-			except TypeError:
-				self.abort('no such appliance "%s"' %
-					app)
-			if node:
-				xml = self.command('list.node.xml', [node])
+		for app in self.newdb.getApplianceNames(args):
+			if app.node:
+				xml = self.command('list.node.xml', [app.node])
 				for line in xml.split('\n'):
-					self.addOutput(app, line)
+					self.addOutput(app.name, line)
+			else:
+				self.abort('node is not defined for appliance "%s"' %
+					app.name)
 		self.endOutput(padChar='')
 
 

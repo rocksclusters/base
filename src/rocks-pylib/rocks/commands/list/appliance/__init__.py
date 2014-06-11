@@ -155,8 +155,7 @@
 import rocks.commands
 
 
-class command(rocks.commands.ApplianceArgumentProcessor,
-        rocks.commands.list.command):
+class command(rocks.commands.list.command):
 	pass
 
 class Command(command):
@@ -175,11 +174,8 @@ class Command(command):
 	def run(self, params, args):
 		
 		self.beginOutput()
-		for app in self.getApplianceNames(args):
-			self.db.execute("""select graph, node from appliances
-				where name='%s'""" % app)
-			row = self.db.fetchone()
-			self.addOutput(app, row)
+		for app in self.newdb.getApplianceNames(args):
+			self.addOutput(app.name, [app.graph, app.node])
 			
 		self.endOutput(header=['appliance', 'graph', 'node'])
 

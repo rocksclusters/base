@@ -148,7 +148,7 @@ class Command(rocks.commands.set.appliance.command):
 	def run(self, params, args):
 
 		(args, attr, value) = self.fillPositionalArgs(('attr', 'value'))
-		appliances = self.getApplianceNames(args)
+		appliances = self.newdb.getApplianceNames(args)
 		
 		if not attr:
 			self.abort('missing attribute name')
@@ -156,7 +156,7 @@ class Command(rocks.commands.set.appliance.command):
 			self.about('missing value of attribute')
 
 		for appliance in appliances:
-			self.newdb.setCategoryAttr('appliance', appliance, \
+			self.newdb.setCategoryAttr('appliance', appliance.name, \
 					attr, value)
 
 

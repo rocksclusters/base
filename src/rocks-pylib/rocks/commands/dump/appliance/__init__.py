@@ -101,8 +101,7 @@ import sys
 import string
 import rocks.commands
 
-class command(rocks.commands.ApplianceArgumentProcessor,
-	rocks.commands.dump.command):
+class command(rocks.commands.dump.command):
 	pass
 
 class Command(command):
@@ -121,19 +120,19 @@ class Command(command):
 	"""
 
 	def run(self, params, args):
-		for app in self.getApplianceNames(args):
+		for app in self.newdb.getApplianceNames(args):
 			self.db.execute("""select graph, node from appliances
-				where name='%s'""" % app)
+				where name='%s'""" % app.name)
 
 			(graph, node) = self.db.fetchone()
 
 			self.db.execute("""select m.name, m.public, d.name
 				from memberships m, appliances a, distributions d where
-				m.appliance = a.id and a.name = '%s' and d.id=m.distribution""" % (app))
+				m.appliance = a.id and a.name = '%s' and d.id=m.distribution""" % (app.name))
 
 			(mem, pub, dist) = self.db.fetchone()
 
-			str = "add appliance %s " % app
+			str = "add appliance %s " % app.name
 
 			if graph and graph != 'NULL':
 				str += "graph=%s " % graph

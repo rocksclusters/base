@@ -150,9 +150,9 @@ class Command(rocks.commands.add.appliance.command):
 		if not args:
 			self.abort('you need to specify an appliance type')
 
-		for appliance in self.getApplianceNames(args):
+		for appliance in self.newdb.getApplianceNames(args):
 			newAttr = self.newdb.addCategoryAttr('appliance', \
-					appliance, attr, value)
+					appliance.name, attr, value)
 			try:
 				# we need to commit each attribute to see if it 
 				# really was not a duplicate 

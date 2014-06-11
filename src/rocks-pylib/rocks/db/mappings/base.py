@@ -91,10 +91,10 @@ class ApplianceRoute(RocksBase, Base):
 
     #column definitions
     appliance = Column('Appliance', Integer, primary_key=True, nullable=False)
-    gateway = Column('Gateway', String(32), nullable=False)
-    netmask = Column('Netmask', String(32), primary_key=True, nullable=False)
     network = Column('Network', String(32), primary_key=True, nullable=False)
-    subnet = Column('Subnet', Integer, ForeignKey('subnets.ID'))
+    netmask = Column('Netmask', String(32), primary_key=True, nullable=False)
+    gateway = Column('Gateway', String(32), nullable=False)
+    subnet = Column('Subnet', Integer, ForeignKey('subnets.ID'), nullable=True)
 
     #relation definitions
 

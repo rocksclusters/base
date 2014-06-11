@@ -136,8 +136,7 @@
 import rocks.commands
 import string
 
-class command(rocks.commands.ApplianceArgumentProcessor,
-	rocks.commands.remove.command):
+class command(rocks.commands.remove.command):
 	pass
 
 class Command(command):
@@ -160,27 +159,24 @@ class Command(command):
 		if len(args) < 1:
 			self.abort('must supply at least one appliance')
 
-		appliances = self.getApplianceNames(args)
+		appliances = self.newdb.getApplianceNames(args)
 
 		#we first need to check that no nodes are still associated with the 
 		#appliances that user want to delete
 		for appliance in appliances:
-			query = 'select n.name ' + \
-				'from nodes as n, appliances as a, memberships as m ' + \
-				'where a.name = "%s" and a.id = m.Appliance ' + \
-				'and m.id=n.Membership;'
-			self.db.execute(query % appliance)
-			rows = self.db.fetchall()
-                	if len(rows) > 0:
+
+			nodes =  appliance.memberships[0].nodes
+
+			if nodes:
 				#we still have some nodes hanging around, aborting 
-				nodes = string.join([i[0] for i in rows ], ', ')
+				nodes = string.join([i.name for i in nodes ], ', ')
 				self.abort(("The nodes %s are still part of the appliance %s." + \
 					"\nPlease delete them (rocks remove host) before removing the appliance.") % \
-					(nodes, appliance))	
+						(nodes, appliance.name))
 
 
 		for appliance in appliances:
-			self.runPlugins(appliance)
+			self.runPlugins(appliance.name)
 
 
 

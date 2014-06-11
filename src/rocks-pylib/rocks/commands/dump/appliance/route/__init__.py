@@ -87,11 +87,11 @@ class Command(rocks.commands.dump.appliance.command):
 	"""
 
 	def run(self, params, args):
-		for app in self.getApplianceNames(args):
+		for app in self.newdb.getApplianceNames(args):
 			self.db.execute("""
 				select r.network, r.netmask, r.gateway,
 				r.subnet from appliance_routes r, appliances a
-				where r.appliance=a.id and a.name='%s'""" % app)
+				where r.appliance=a.id and a.name='%s'""" % app.name)
 
 			for n, m, g, s in self.db.fetchall():
 				if s:
@@ -102,7 +102,7 @@ class Command(rocks.commands.dump.appliance.command):
 						g, = self.db.fetchone()
 
 				self.dump('add appliance route '
-					'%s %s %s netmask=%s' % (app, n, g, m))
+					'%s %s %s netmask=%s' % (app.name, n, g, m))
 
 
 RollName = "base"

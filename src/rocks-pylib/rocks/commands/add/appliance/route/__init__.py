@@ -89,6 +89,8 @@
 
 
 import rocks.commands
+import rocks.db.mappings.base
+import sqlalchemy
 
 class Command(rocks.commands.add.appliance.command):
 	"""
@@ -126,7 +128,7 @@ class Command(rocks.commands.add.appliance.command):
 		if len(args) == 0:
 			self.abort('must supply at least one appliance type')
 
-		apps = self.getApplianceNames(args)
+		apps = self.newdb.getApplianceNames(args)
 
 		#
 		# determine if this is a subnet identifier
@@ -139,28 +141,24 @@ class Command(rocks.commands.add.appliance.command):
 			subnet, = self.db.fetchone()
 			gateway = "''"
 		else:
-			subnet = 'NULL'
+			subnet = None
 			gateway = "'%s'" % gateway
-		
-		# Verify the route doesn't already exist.  If it does
-		# for any of the appliances abort.
-		
-		for app in apps:
-			rows = self.db.execute("""select * from 
-				appliance_routes r, appliances a where
-				r.appliance=a.id and r.network='%s' 
-				and a.name='%s'""" %	
-				(address, app)) 
-			if rows:
-				self.abort('route exists')
-		
+
 		# Now that we know things will work insert the route for
 		# all the appliances
-		
-		for app in apps:	
-			self.db.execute("""insert into appliance_routes values 
-				((select id from appliances where name='%s'),
-				'%s', '%s', %s, %s)""" %
-                	        (app, address, netmask, gateway, subnet))
+
+		session = self.newdb.getSession()
+
+		for app in apps:
+			app_r = rocks.db.mappings.base.ApplianceRoute(
+				appliance = app.ID, network = address,
+				netmask = netmask, gateway = gateway,
+				subnet = subnet)
+			session.add(app_r)
+		try:
+			self.newdb.commit()
+		except (sqlalchemy.exc.IntegrityError ) as e:
+			self.abort('route already present %s/%s' %
+				(address, netmask))
 
 RollName = "base"
