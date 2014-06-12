@@ -18,7 +18,7 @@
 <package>isomd5sum-devel</package>
 <package>iscsi-initiator-utils-devel</package>
 
-<package>rocks-devel-env</package>
+<package>rocks-restore-roll</package>
 
 <package>NetworkManager-devel</package>
 <package>NetworkManager-glib-devel</package>

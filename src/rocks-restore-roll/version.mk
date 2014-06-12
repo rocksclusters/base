@@ -1,3 +1,3 @@
-NAME		= rocks-devel-env
+NAME		= rocks-restore-roll
 RELEASE		= 1
 USER		= rocksbuild

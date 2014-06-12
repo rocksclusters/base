@@ -138,14 +138,6 @@ include Rules.mk
 -include $(ROCKSROOT)/etc/python.mk
 include python.mk
 
-CVSROOT = -d $(USER)@fyp.rocksclusters.org:/home/cvs/CVSROOT
-TAG =
-# uncomment/change for Release
-# TAG = -r ROCKS_4_2
-# uncomment if you want to checkout the latest restore roll instead of
-# copying from the local
-# RETRIEVECVS = True
-
 
 pretar::
 	( if [ ! -d rocks/src/roll/restore ]; then \
@@ -154,11 +146,6 @@ pretar::
 	(cd ../../../restore; $(TAR) cf - * ) | \
 		(cd rocks/src/roll/restore; $(TAR) xvfBp - ) 
 build:
-	( if [ "x$(RETRIEVECVS)" == "xTrue" ]; then \
-		if [ -d rocks ]; then /bin/rm -r rocks; fi; \
-		$(CVS) $(CVSROOT) checkout -P $(TAG) rocks/src/roll/restore; \
-	  fi \
-	)
 	for i in `find . -type d -name CVS` ; do \
 		rm -rf $$i ; \
 	done

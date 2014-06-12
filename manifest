@@ -33,7 +33,7 @@ rocks-channel
 rocks-config
 rocks-config-server
 rocks-devel
-rocks-devel-env
+rocks-restore-roll
 rocks-developersguide
 rocks-ekv
 rocks-kickstart
