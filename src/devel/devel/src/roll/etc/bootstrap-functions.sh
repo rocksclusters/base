@@ -284,6 +284,17 @@ function bootstrap_init() {
 	gmake clean
 	gmake Rolls.mk
 	bootstrap_py_init
+	# download binaries if necessary
+	metadata=`ls .*.metadata`
+	if [ -f "$metadata" ]; then
+		if [ "$ROLLSROOT" ]; then
+			$ROLLSROOT/../../bin/get_sources.sh
+		else
+			src/devel/devel/bin/get_sources.sh
+		fi
+	else
+		return 0
+	fi
 }
 
 bootstrap_init

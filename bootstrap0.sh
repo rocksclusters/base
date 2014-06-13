@@ -132,6 +132,13 @@
 #
 
 . src/devel/devel/src/roll/etc/bootstrap-functions.sh
+# if downloading binaries files failed we shout stop now
+# no point in going on with compilation
+if [ "$?" != "0"]; then
+	echo Failed to import bootstrap functions
+	echo Likely we had some problem downloading Rocks binary files
+	exit 1
+fi
 
 # 0. directory structure
 # 
@@ -145,13 +152,15 @@ if [ `./_os` == "linux" ]; then
 	EXTRA_PACKAGES="wget genisoimage"
 	#needed to detect OS version
 	EXTRA_PACKAGES="$EXTRA_PACKAGES redhat-lsb"
+	# needed to download the binary files
+	EXTRA_PACKAGES="$EXTRA_PACKAGES coreutils curl"
 	yum -y install rpm-build rpm-devel gcc gcc-c++ ncurses-devel swig glib2 glib2-devel openssl-devel pygobject2 pygobject2-devel cairo cairo-devel createrepo apr apr-devel expat-devel $EXTRA_PACKAGES
 	# packages required to build anaconda on 6
 	yum -y install cmake e2fsprogs-devel isomd5sum-devel libarchive-devel libXxf86misc-devel libblkid-devel libnl-devel newt-devel pykickstart slang-devel NetworkManager-devel NetworkManager-glib-devel iscsi-initiator-utils-devel device-mapper-devel
 	#needed only for rocks 5
 	if awk '{print $3}' /etc/issue | grep 5 ;then 
-        #to run create mirror (centos 5 calls mkisofs while centos 6 genisoimage :-( )
-        EXTRA_PACKAGES="mkisofs pirut"
+		#to run create mirror (centos 5 calls mkisofs while centos 6 genisoimage :-( )
+		EXTRA_PACKAGES="mkisofs pirut"
 		#to compile patched version of python
 		yum -y install gmp-devel gdbm-devel tix-devel tix readline-devel tcl-devel tk-devel db4-devel bzip2-devel autoconf $EXTRA_PACKAGES
 

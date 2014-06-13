@@ -376,6 +376,12 @@ help:
 	@echo  '                     If you only modify the xml file of your roll after the last compilation'
 	@echo  '                     you can simply run make profile and then make reroll'
 	@echo  '  '
+	@echo  '   - Download external binary files'
+	@echo  '     (these target must be run from the top level roll source directory)'
+	@echo  '  '
+	@echo  '  download         - This target downloads all the binary files into the current roll'
+	@echo  '  verifydownload   - This target verifies all the checksum of the binaries downloaded'
+	@echo  '  removedownload   - This target removes all the binaries downloaded from the network'
 	@echo  '  '
 	@echo  '   - Package level directory targets'
 	@echo  '     (these targets must be run from the src/<packagename> source directory)'
@@ -385,6 +391,30 @@ help:
 	@echo  '  '
 	@echo  '  '
 	@echo  '  '
+
+
+
+
+METADATAFILE    := .$(shell basename `pwd`).metadata
+.PHONY: removedownload
+
+download:
+	$(ROLLSROOT)/../../bin/get_sources.sh
+
+
+verifydownload:
+	if [ -f "$(METADATAFILE)" ] ;then  \
+		sha1sum -c "$(METADATAFILE)"; \
+	else                               \
+		true;                      \
+	fi
+
+
+removedownload:
+	files=`test -f "$(METADATAFILE)" && awk '{print $$2}' $(METADATAFILE)`; \
+	for i in $$files; do							\
+		test -f $$i && rm $$i;						\
+	done; true								\
 
 
 
