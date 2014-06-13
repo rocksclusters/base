@@ -134,7 +134,7 @@
 . src/devel/devel/src/roll/etc/bootstrap-functions.sh
 # if downloading binaries files failed we shout stop now
 # no point in going on with compilation
-if [ "$?" != "0"]; then
+if [ "$?" != "0" ]; then
 	echo Failed to import bootstrap functions
 	echo Likely we had some problem downloading Rocks binary files
 	exit 1
