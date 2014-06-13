@@ -17,8 +17,9 @@ pn=$(basename `pwd`)
 f=.${pn}.metadata
 
 
-if [ ! -e ${f} ] ||  [ ! -d .git ]; then
-  echo 'You need to run this from inside a sources git repo'
+if [ ! -e ${f} ]; then
+  echo 'Unable to find ${f}.'
+  echo 'You need to run this command from a directory containing a metadata file.'
   exit 1
 fi
 
