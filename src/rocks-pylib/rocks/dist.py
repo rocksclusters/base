@@ -464,7 +464,6 @@ import os
 import types
 import string
 import rocks.file
-import rocks.ks
 import xml.sax
 
 class DistError(Exception):

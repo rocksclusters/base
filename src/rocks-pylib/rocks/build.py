@@ -890,7 +890,6 @@ import xml
 import socket
 import rocks.dist
 import rocks.file
-import rocks.ks
 import rocks.util
 
 
