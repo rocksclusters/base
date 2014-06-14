@@ -105,8 +105,6 @@ class Plugin(rocks.commands.Plugin):
 	def run(self, host):
 		self.owner.db.execute("""delete from nodes where
 			name = '%s' """ % host)
-		self.owner.db.execute("""DELETE FROM hostselections WHERE 
-				Host=mapCategoryIndex('host','%s')""" % host) 
 		self.owner.db.execute("""DELETE FROM catindex WHERE 
 				category=mapCategory('host') AND  name='%s'""" % host) 
 

@@ -168,6 +168,7 @@ import os
 import sys
 import string
 import rocks.commands
+from rocks.db.mappings.base import *
 
 class command(rocks.commands.HostArgumentProcessor, rocks.commands.add.command):
 	pass
@@ -234,7 +235,9 @@ class Command(command):
 		self.newdb.checkHostnameValidity(host)
 		# TODO remove this commit when we complete the switch to sqlalchemy
 		self.newdb.commit()
-			
+
+		mem_db, app_db = (None, None)
+		s = self.newdb.getSession()
 		# If the name is of the form appliancename-rack-rank
 		# then do the right thing and figure out the default
 		# values for membership, rack, and rank.  If the appliance 
@@ -244,10 +247,11 @@ class Command(command):
 		
 		try:
 			basename, rack, rank = host.split('-')
-			self.db.execute("""select m.name from 
-				appliances a, memberships m where
-				a.name="%s" and m.appliance=a.id""" % basename)
-			membership, = self.db.fetchone()
+			(mem_db, app_db) = s.query(Membership, Appliance)\
+				.join(Membership.appliance)\
+				.filter(Appliance.name == basename)\
+				.one()
+			membership = mem_db.name
 			rack = int(rack)
 			rank = int(rank)
 		except:
@@ -271,55 +275,29 @@ class Command(command):
 		if rank == None:
 			self.abort('rank not specified')
 
-		self.db.execute("""select a.os from appliances a,
-			memberships m where m.appliance = a.id and
-			m.name='%s'""" % (membership))
-
-		supported_os, = self.db.fetchone()
-
-		if osname is not None and osname not in supported_os:
-			self.abort("%s does not support %s" % (membership,
-				osname))
+		if not app_db:
+			try:
+				(mem_db, app_db) = s.query(Membership, Appliance)\
+					.join(Membership.appliance)\
+					.filter(Membership.name==membership)\
+					.one()
+			except sqlalchemy.orm.exc.NoResultFound:
+				self.abort("Membership " + membership + " is not valid.\n"
+					"Please select a valid membership")
 
 		if osname is None:
-			if supported_os:
-				osname = supported_os
+			if app_db.os:
+				osname = app_db.os
 			else:
 				osname = 'linux'
 
-		self.db.execute("""insert into nodes
-			(name, membership, cpus, rack, rank, os)
-			values ('%s',
-			(select id from memberships where name='%s'),
-			'%d', '%d', '%d', '%s')""" % (host, membership,
-			int(numCPUs), int(rack), int(rank), osname))
+		if osname not in app_db.os:
+			self.abort("%s does not support %s" % (membership,
+				osname))
 
-		#
-		# add this host into the host categories
-		# Mirrors the host table entries, for 5.4.3.
-		#
-		self.db.execute("""INSERT INTO catindex(Name,Category)
-			VALUES('%s',mapCategory('host'))""" % host)
-
-		# And then make the Default category selections for this host
-		self.db.execute("""INSERT INTO hostselections(Host,
-			Category, Selection) VALUES (
-			mapCategoryIndex('host','%s'), mapCategory('global'),
-			mapCategoryIndex('global','global')) """ % host)
-		self.db.execute("""INSERT INTO hostselections(Host,
-			Category, Selection) VALUES (
-			mapCategoryIndex('host','%s'), mapCategory('os'),
-			mapCategoryIndex('os','%s')) """ % (host,osname))
-		self.db.execute("""INSERT INTO hostselections(Host,
-			Category, Selection) VALUES (
-			mapCategoryIndex('host','%s'), mapCategory('appliance'),
-			mapCategoryIndex('appliance',
-			(SELECT a.name FROM memberships m JOIN appliances a ON m.appliance=a.id AND m.name='%s')))""" 
-				% (host,membership))
-		self.db.execute("""INSERT INTO hostselections(Host,
-			Category, Selection) VALUES (
-			mapCategoryIndex('host','%s'), mapCategory('host'),
-			mapCategoryIndex('host','%s'))""" % (host,host))
+		n = Node(name=host, membership = mem_db, cpus=int(numCPUs),
+			rack=int(rack), rank=int(rank), os=osname)
+		s.add(n)
 
 		#
 		#

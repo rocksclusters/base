@@ -615,7 +615,7 @@ class DatabaseHelper(rocks.db.database.Database):
 			attrs['membership']	= membership
 
 		for (attr, value, type) in self.conn.execute(text(sql_attribute_query),\
-				os=node.os, appliance=appliance, host=hostname):
+				host=hostname):
 			if showsource:
 				attrs[attr]     = (value, type)
 			else:
@@ -640,33 +640,17 @@ class DatabaseHelper(rocks.db.database.Database):
 # the value for each given attr name and maxprec
 #
 # this query should be substituted with the tuple
-# (os, appliance, host, os, appliance, host)
+# (host, host)
 sql_attribute_query = """
 select a.attr, a.value, UPPER(SUBSTRING(c.Name, 1, 1)) as category
-from attributes a, resolvechain r, categories c, catindex ci,
+from attributes a, resolvechain r, categories c, hostselections hs,
   (select attr, max(precedence) as maxprec
-   from attributes a, resolvechain r, categories c, catindex ci
-   where a.category = r.category and a.category = c.id and
-   a.catindex = ci.id
-   # category section: here we select only the appliance and host
-   # attr we need for this specific host
-   and (c.name = 'global' or
-        (c.name = 'os' and ci.name = :os)
-        or
-	(c.name = 'appliance' and ci.name = :appliance)
-	or
-        (c.name = 'host'and ci.name = :host)
-      )
-   group by attr) as sub
+   from attributes a, resolvechain r, hostselections hs
+   where a.category = r.category and a.category = hs.category
+     and a.catindex = hs.selection and hs.host = :host
+     group by attr) as sub
 where a.attr = sub.attr and a.category = r.category
- and sub.maxprec = r.precedence and a.category = c.id
- and a.catindex = ci.id
- # category section
- and (c.name = 'global' or
-        (c.name = 'os' and ci.name = :os)
-        or
-        (c.name = 'appliance' and ci.name = :appliance)
-        or
-        (c.name = 'host'and ci.name = :host)
-      );
+ and sub.maxprec = r.precedence and a.category = hs.category 
+ and a.catindex = hs.selection and c.id = hs.category
+ and hs.host = :host;
 """

@@ -680,7 +680,6 @@ CREATE TABLE `resolvechain` (
 <!-- Which category indices has a host selected, 
      e.g. 'global','os','appliance','host' in Rocks 5.4
           but trivially allows an arbitrary set of of selections
--->
 DROP TABLE IF EXISTS `hostselections`;
 CREATE TABLE `hostselections` (
   `ID`  int(11) NOT NULL AUTO_INCREMENT,
@@ -693,6 +692,26 @@ CREATE TABLE `hostselections` (
    FOREIGN KEY (Selection) REFERENCES catindex(ID) ON DELETE CASCADE,
    FOREIGN KEY (Category) REFERENCES categories(ID) ON DELETE CASCADE
 );
+-->
+<!-- Since for the moment the only used categories are host, os, appliace,
+     and global, the hostselection can be created with just a view.
+
+     We maintain the logic inside the query for the firewall and for the
+     attributes so if in the future we want to add generic categories 
+     we can resurrect the table as above and insert element manually. 
+     But for the moment it makes the whole thing simpler and faster.
+-->
+DROP TABLE IF EXISTS `hostselections`;
+CREATE VIEW hostselections AS
+  SELECT n.name as host, c.id as category, ci.id as selection
+  FROM catindex as ci, categories as c, nodes as n, memberships as m, appliances as a
+  WHERE n.membership = m.id and m.appliance = a.id and
+    ( (c.name = 'global' and ci.name = 'global') or
+      (c.name = 'os' and ci.name = n.os) or
+      (c.name = 'appliance' and ci.name = a.name) or
+      (c.name = 'host' and ci.name = n.name)
+    );
+
 
 <!-- New Firewalls Table. Schema includes a Rulename (used for
 Final ordering of resolved rules, and (category,category index) 
@@ -749,8 +768,11 @@ CREATE VIEW `vfirewalls` AS SELECT f.ID, f.Rulename, f.Rulesrc, f.InSubnet, f.Ou
 	f.catindex=ci.id AND f.category=cat.id ORDER BY f.Rulename,category,catindex;
 
 DROP VIEW IF EXISTS `vhostselections`;
-
-CREATE VIEW `vhostselections` AS SELECT hs.id, si.name AS host, cat.name AS category, ci.name AS selection FROM catindex si, categories cat, hostselections hs JOIN catindex ci ON hs.selection=ci.id WHERE hs.category=cat.id AND hs.host=si.id order by host,category,selection;
+CREATE VIEW `vhostselections` AS 
+  SELECT hs.host AS host, cat.name AS category, ci.name AS selection 
+  FROM catindex ci, categories cat, hostselections hs 
+  WHERE hs.category=cat.id AND hs.selection=ci.id 
+  ORDER BY host,category,selection;
 
 <!-- Stored Procedures -->
 <!-- Part I: Simple Mapping Functions to make External Queries Readable -->
@@ -793,25 +815,6 @@ DELIMITER ;
 DROP DATABASE IF EXISTS TEMPTABLES;
 CREATE DATABASE TEMPTABLES;
 
-DROP PROCEDURE IF EXISTS resolveattributes;
-DELIMITER //
-CREATE PROCEDURE resolveattributes(
-    hostname VARCHAR(128), 
-    chainname VARCHAR(128)
-)
-SQL SECURITY DEFINER 
-COMMENT 'Fully Resolve Attributes for a input host and resolution chain'
-BEGIN
-    SET @@session.max_error_count=0;
-    DROP TABLE IF EXISTS resolved1;
-    CREATE TEMPORARY TABLE resolved1 select hostname, chainname as Resolver, attributes.*, r.precedence FROM resolvechain r, catindex ci, attributes JOIN hostselections hs ON hs.category=attributes.category AND hs.selection=attributes.catindex WHERE hs.host=ci.id AND ci.name=hostname AND r.category=hs.category AND r.name=chainname;
-    DROP TABLE IF EXISTS resolved2;
-    CREATE TEMPORARY TABLE resolved2 select * FROM resolved1;
-    DROP TABLE IF EXISTS resolved;
-    CREATE TEMPORARY TABLE TEMPTABLES.resolved select r1.*,cat.name AS CategoryName FROM categories cat, resolved1 r1 JOIN ( select Attr, MAX(precedence) AS precedence FROM resolved2 GROUP BY Attr) AS r2 ON r1.Attr=r2.Attr AND r1.precedence=r2.precedence WHERE r1.category=cat.id;
-    SET @@session.max_error_count=64;
-END //
-DELIMITER ; 
 
 DROP PROCEDURE IF EXISTS resolvefirewalls;
 DELIMITER //
@@ -824,9 +827,9 @@ COMMENT 'Fully Resolve Firewalls for a input host and resolution chain'
 BEGIN
     SET @@session.max_error_count=0;
     DROP TABLE IF EXISTS fresolved1;
-    CREATE TEMPORARY TABLE fresolved1 select hostname, chainname as Resolver, f.*, r.precedence FROM resolvechain r, catindex ci, 
+    CREATE TEMPORARY TABLE fresolved1 select hostname, chainname as Resolver, f.*, r.precedence FROM resolvechain r, 
 	firewalls f JOIN hostselections hs ON hs.category=f.category AND hs.selection=f.catindex 
-	WHERE hs.host=ci.id AND ci.name=hostname AND r.category=hs.category AND r.name=chainname;
+	WHERE hs.host=hostname AND r.category=hs.category AND r.name=chainname;
     DROP TABLE IF EXISTS fresolved2;
     CREATE TEMPORARY TABLE fresolved2 select * FROM fresolved1;
     DROP TABLE IF EXISTS TEMPTABLES.fwresolved;

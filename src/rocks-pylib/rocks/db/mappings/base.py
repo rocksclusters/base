@@ -238,19 +238,6 @@ class GlobalRoute(RocksBase, Base):
     #relation definitions
 
 
-class Hostselection(RocksBase, Base):
-    __tablename__ = 'hostselections'
-
-    __table_args__ = {}
-
-    #column definitions
-    category = Column('Category', Integer, ForeignKey('categories.ID'), nullable=False)
-    host = Column('Host', Integer, ForeignKey('catindex.ID'), nullable=False)
-    ID = Column('ID', Integer, primary_key=True, nullable=False)
-    selection = Column('Selection', Integer, ForeignKey('catindex.ID'), nullable=False)
-
-    #relation definitions
-
 
 class Membership(RocksBase, Base):
     __tablename__ = 'memberships'
