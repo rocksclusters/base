@@ -32,7 +32,7 @@ while read a; do
   else
     if [ ! -e ${fname} ]; then
       url=${SURL}/${pn}/`basename ${fname}`
-      curl "$url" -o ${fname}
+      curl -L "$url" -o ${fname}
       if [ "$?" != "0" ]; then
           echo "Error download from URL $url"
           exit 1
