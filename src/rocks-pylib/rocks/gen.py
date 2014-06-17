@@ -1181,7 +1181,7 @@ class Generator_linux(Generator):
 		# Shell interpreter (python, bash, etc)
 		temp_list.append('%s\n' % list[1])
 		temp_list.append(string.join(list[2:], '\n'))
-		temp_list.append('ROCKS-KS-POST\n')
+		temp_list.append('\nROCKS-KS-POST\n')
 		# Chmod and execute the shell script just created
 		temp_list.append('/bin/chmod +x %s\n' % tmpfile)
 		temp_list.append('%s \n' % tmpfile)
