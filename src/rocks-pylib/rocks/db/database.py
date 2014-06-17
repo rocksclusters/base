@@ -185,41 +185,7 @@ class Database(object):
 			print "Database connection URL: ", url
 
 		self.engine = create_engine(url)
-
 		self.conn = self.engine.connect()
-		#results = self.conn.execute("select * from networks")
-
-		#for (ID, Node, MAC, IP, Netmask, Gateway, Name, Device, Subnet, Module, VlanID, Options, Channel) in results:
-		#	print ID, Node, MAC, IP, Netmask, Gateway, Name, Device, Subnet
-		#self.conn.close()	
-
-		
-		# ORM
-		#self.Session = sqlalchemy.orm.sessionmaker(bind=engine)
-		#session = self.Session()
-		#for node in session.query(Node).filter(Node.Name=='compute-0-0-0'):
-		#	print "Node ", node
-		#	for interface in node.Networks:
-		#		print " > ", interface
-		#for node in session.query(Node).join(Network).filter(Node.Name=='compute-0-0-0').filter(Network.Device=='eth0'):
-		#	print "node ", node
-		#for network in session.query(Network).join(Node).filter(Node.Name=='compute-0-0-0').filter(Network.Device=='eth0'):
-		#	print "netowrk ", network
-		#	#print network
-
-		#node = session.query(Node).filter(Node.Name=='compute-0-0-0').first()
-		#new_interface = Network(Device="eth15", MAC="00:13:ff:3e:2a:1d", Name="test-interface")
-		#print "adding an interface ", new_interface, " to ", node
-		#node.Networks.append(new_interface)
-		#session.add(new_interface)
-		#interface = session.query(Network).join(Node).filter(Node.Name=='compute-0-0-0').filter(Network.Device=='eth15').first()
-		#print "interface ", interface
-		#interface.Name = "eth7"
-		# not necessary but if you want to force it
-		#session.commit()
-
-		#to run pure query
-		#results = session.query().from_statement('select * from Networks')
 
 		
 	def getSession(self):
