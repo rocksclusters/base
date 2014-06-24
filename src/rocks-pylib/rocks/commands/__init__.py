@@ -508,6 +508,8 @@ import pwd
 import types
 import sys
 import sqlalchemy.engine.result
+import traceback
+
 import rocks
 import rocks.graph
 import rocks.clusterdb
@@ -1385,9 +1387,18 @@ class Command:
 		if self.arch in [ 'i386', 'i486', 'i586', 'i686' ]:
 			self.arch = 'i386'
 		self.os = os.uname()[0].lower()
-		
+
 		self._args = None
 		self._params = None
+		if os.environ.has_key('ROCKSDEBUG'):
+			self._debug = True
+		else:
+			self._debug = False
+
+
+	def debug(self):
+		"""return true if we are in debug mode"""
+		return self._debug
 		
 	def abort(self, msg):
 		rocks.commands.Abort(msg, 0)
@@ -1890,10 +1901,16 @@ class Command:
 					if self.newdb is not None:
 						self.newdb.commit()
 				except rocks.util.HostnotfoundException as e:
+					if self.debug():
+						traceback.print_exc()
 					Abort(str(e))
 				except sqlalchemy.exc.OperationalError as e:
+					if self.debug():
+						traceback.print_exc()
 					Abort("Dabase error: " + str(e))
 				except ValueError as e:
+					if self.debug():
+						traceback.print_exc()
 					Abort("Naming error: " + str(e))
 
 

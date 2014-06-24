@@ -170,7 +170,7 @@ class DatabaseHelper(rocks.db.database.Database):
 		query = query.filter(clause)
 		for i in preload:
 			query = query.options(sqlalchemy.orm.joinedload(i))
-		return query
+		return query.all()
 
 
 	def getAppliancesListText(self):
