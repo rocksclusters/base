@@ -141,82 +141,6 @@ test_pause () {
 	fi
 }
 
-# Call test_commit with the arguments "<message> [<file> [<contents> [<tag>]]]"
-#
-# This will commit a file with the given contents and the given commit
-# message, and tag the resulting commit with the given tag name.
-#
-# <file>, <contents>, and <tag> all default to <message>.
-
-test_commit () {
-	notick= &&
-	signoff= &&
-	while test $# != 0
-	do
-		case "$1" in
-		--notick)
-			notick=yes
-			;;
-		--signoff)
-			signoff="$1"
-			;;
-		*)
-			break
-			;;
-		esac
-		shift
-	done &&
-	file=${2:-"$1.t"} &&
-	echo "${3-$1}" > "$file" &&
-	git add "$file" &&
-	if test -z "$notick"
-	then
-		test_tick
-	fi &&
-	git commit $signoff -m "$1" &&
-	git tag "${4:-$1}"
-}
-
-# Call test_merge with the arguments "<message> <commit>", where <commit>
-# can be a tag pointing to the commit-to-merge.
-
-test_merge () {
-	test_tick &&
-	git merge -m "$1" "$2" &&
-	git tag "$1"
-}
-
-# This function helps systems where core.filemode=false is set.
-# Use it instead of plain 'chmod +x' to set or unset the executable bit
-# of a file in the working directory and add it to the index.
-
-test_chmod () {
-	chmod "$@" &&
-	git update-index --add "--chmod=$@"
-}
-
-# Unset a configuration variable, but don't fail if it doesn't exist.
-test_unconfig () {
-	git config --unset-all "$@"
-	config_status=$?
-	case "$config_status" in
-	5) # ok, nothing to unset
-		config_status=0
-		;;
-	esac
-	return $config_status
-}
-
-# Set git config, automatically unsetting it after the test is over.
-test_config () {
-	test_when_finished "test_unconfig '$1'" &&
-	git config "$@"
-}
-
-test_config_global () {
-	test_when_finished "test_unconfig --global '$1'" &&
-	git config --global "$@"
-}
 
 write_script () {
 	{
@@ -587,23 +511,6 @@ test_expect_code () {
 	return 1
 }
 
-# test_cmp is a helper function to compare actual and expected output.
-# You can use it like:
-#
-#	test_expect_success 'foo works' '
-#		echo expected >expected &&
-#		foo >actual &&
-#		test_cmp expected actual
-#	'
-#
-# This could be written as either "cmp" or "diff -u", but:
-# - cmp's output is not nearly as easy to read as diff -u
-# - not all diff versions understand "-u"
-
-test_cmp() {
-	$ROCKS_TEST_CMP "$@"
-}
-
 # Check if the file expected to be empty is indeed empty, and barfs
 # otherwise.
 
@@ -614,13 +521,6 @@ test_must_be_empty () {
 		cat "$1"
 		return 1
 	fi
-}
-
-# Tests that its two parameters refer to the same revision
-test_cmp_rev () {
-	git rev-parse --verify "$1" >expect.rev &&
-	git rev-parse --verify "$2" >actual.rev &&
-	test_cmp expect.rev actual.rev
 }
 
 # Print a sequence of numbers or letters in increasing order.  This is
@@ -684,81 +584,8 @@ test_create_repo () {
 	) || exit
 }
 
-# This function helps on symlink challenged file systems when it is not
-# important that the file system entry is a symbolic link.
-# Use test_ln_s_add instead of "ln -s x y && git add y" to add a
-# symbolic link entry y to the index.
-
-test_ln_s_add () {
-	echo
-}
 
 perl () {
 	command "$PERL_PATH" "$@"
 }
 
-# The following mingw_* functions obey POSIX shell syntax, but are actually
-# bash scripts, and are meant to be used only with bash on Windows.
-
-# A test_cmp function that treats LF and CRLF equal and avoids to fork
-# diff when possible.
-mingw_test_cmp () {
-	# Read text into shell variables and compare them. If the results
-	# are different, use regular diff to report the difference.
-	local test_cmp_a= test_cmp_b=
-
-	# When text came from stdin (one argument is '-') we must feed it
-	# to diff.
-	local stdin_for_diff=
-
-	# Since it is difficult to detect the difference between an
-	# empty input file and a failure to read the files, we go straight
-	# to diff if one of the inputs is empty.
-	if test -s "$1" && test -s "$2"
-	then
-		# regular case: both files non-empty
-		mingw_read_file_strip_cr_ test_cmp_a <"$1"
-		mingw_read_file_strip_cr_ test_cmp_b <"$2"
-	elif test -s "$1" && test "$2" = -
-	then
-		# read 2nd file from stdin
-		mingw_read_file_strip_cr_ test_cmp_a <"$1"
-		mingw_read_file_strip_cr_ test_cmp_b
-		stdin_for_diff='<<<"$test_cmp_b"'
-	elif test "$1" = - && test -s "$2"
-	then
-		# read 1st file from stdin
-		mingw_read_file_strip_cr_ test_cmp_a
-		mingw_read_file_strip_cr_ test_cmp_b <"$2"
-		stdin_for_diff='<<<"$test_cmp_a"'
-	fi
-	test -n "$test_cmp_a" &&
-	test -n "$test_cmp_b" &&
-	test "$test_cmp_a" = "$test_cmp_b" ||
-	eval "diff -u \"\$@\" $stdin_for_diff"
-}
-
-# $1 is the name of the shell variable to fill in
-mingw_read_file_strip_cr_ () {
-	# Read line-wise using LF as the line separator
-	# and use IFS to strip CR.
-	local line
-	while :
-	do
-		if IFS=$'\r' read -r -d $'\n' line
-		then
-			# good
-			line=$line$'\n'
-		else
-			# we get here at EOF, but also if the last line
-			# was not terminated by LF; in the latter case,
-			# some text was read
-			if test -z "$line"
-			then
-				# EOF, really
-				break
-			fi
-		fi
-		eval "$1=\$$1\$line"
-	done
-}

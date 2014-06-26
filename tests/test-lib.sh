@@ -110,21 +110,6 @@ case $(echo $ROCKS_TRACE |tr "[A-Z]" "[a-z]") in
 	;;
 esac
 
-# Convenience
-#
-# A regexp to match 5 and 40 hexdigits
-_x05='[0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f]'
-_x40="$_x05$_x05$_x05$_x05$_x05$_x05$_x05$_x05"
-
-# Zero SHA-1
-_z40=0000000000000000000000000000000000000000
-
-# Line feed
-LF='
-'
-
-export _x05 _x40 _z40 LF
-
 # Each test should start with something like this, after copyright notices:
 #
 # test_description='Description of this test...
@@ -516,17 +501,6 @@ test_done () {
 
 	esac
 }
-
-
-if test -z "$ROCKS_TEST_CMP"
-then
-	if test -n "$ROCKS_TEST_CMP_USE_COPIED_CONTEXT"
-	then
-		ROCKS_TEST_CMP="$DIFF -c"
-	else
-		ROCKS_TEST_CMP="$DIFF -u"
-	fi
-fi
 
 
 
