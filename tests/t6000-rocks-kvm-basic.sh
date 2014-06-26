@@ -40,7 +40,8 @@ test_expect_success 'test KVM - list host vm' '
 '
 
 test_expect_success 'test KVM - list cluster' '
-	test `rocks list cluster test-host-0 | wc -l` == 4
+	rocks list cluster test-host-0 > output &&
+	test_line_count = 4 output
 '
 
 test_expect_success 'test KVM - report host vm config test memory' '
@@ -99,6 +100,14 @@ test_expect_success 'test KVM - report host vm config plugins' '
 	done
 
 '
+
+test_expect_success 'test KVM - dump host vm' '
+	rocks dump host vm > output &&
+	grep " test-host-0 " output &&
+	grep " vm-test-host-0-0 " output &&
+	grep " vm-test-host-0-1 " output
+'
+
 
 test_expect_success 'test KVM - teardown test hosts (remove host)' '
 	rocks remove cluster test-host-0 &&
