@@ -126,6 +126,7 @@ class DatabaseHelper(rocks.db.database.Database):
 			list = self.getSession().query(Node)
 			for i in preload:
 				list = list.options(sqlalchemy.orm.joinedload(i))
+			list = list.all()
 
 			# If we're looking for managed nodes only, filter out
 			# the unmanaged ones using host attributes
