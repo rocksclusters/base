@@ -21,36 +21,13 @@ then
 	test_done
 fi
 
-function get_free_ip(){
-	# dummy function to get a free public IP
-	# full of limitation but most of the time works
-	rocks list host interface | awk '{if ( $2 == "public" ) {print $5}}' > usedIP
-	lastip=`sort usedIP | tail -1`
-	IFS='.' read -a array <<< "$lastip"
-	number=${array[3]}
-	while true; do
-		number=$(( $number + 1 ))
-		if [ ! "$number" ]; then 
-			return 1
-		fi
-		if [ $number -ge 255 ]; then
-			return 1
-		fi
-		newip=`echo ${array[0]}.${array[1]}.${array[2]}.$number`
-		if ! grep $newip usedIP > /dev/null; then
-			echo $newip
-			return 0
-		fi
-	done
-
-}
 
 test_expect_success 'test KVM - steup test hosts (add host vm)' '
 	rocks add host vm localhost compute name=test-host-1 num-macs=2
 '
 test_expect_success 'test KVM - steup test hosts (add cluster)' '
-	ip=`get_free_ip` && test $? && test "$ip" && echo IP $ip &&
-	rocks add cluster $ip 0 fe-name=test-host-0 cluster-naming=true
+	ip=`rocks report nextip public` && test $? && test "$ip" && echo IP $ip &&
+	rocks add cluster $ip 2 fe-name=test-host-0 cluster-naming=true
 '
 
 
@@ -60,6 +37,10 @@ test_expect_success 'test KVM - list host vm' '
 	grep test-host-1 temp_out &&
 	rocks list host vm showdisks=1 &&
 	rocks list host vm status=1
+'
+
+test_expect_success 'test KVM - list cluster' '
+	test `rocks list cluster test-host-0 | wc -l` == 4
 '
 
 test_expect_success 'test KVM - report host vm config test memory' '
