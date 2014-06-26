@@ -469,7 +469,7 @@ class VmDisk(RocksBase, Base):
 	#column definitions
 	ID = Column('ID', Integer, primary_key=True, nullable=False)
 	vm_Node_ID = Column('Vm_Node', Integer, ForeignKey('vm_nodes.ID'), nullable=False)
-	vbd_Type = Column('VBD_Type', String(64))
+	vbd_type = Column('VBD_Type', String(64))
 	prefix = Column('Prefix', String(512))
 	name = Column('Name', String(512))
 	device = Column('Device', String(512))
