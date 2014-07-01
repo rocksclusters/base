@@ -1,4 +1,5 @@
-#
+#!/opt/rocks/bin/python
+# 
 # @Copyright@
 # 
 # 				Rocks(r)
@@ -53,71 +54,73 @@
 # 
 # @Copyright@
 #
-
-PKGROOT		= /opt/rocks
-REDHAT.ROOT     = $(CURDIR)/../../
-ROCKSROOT       = $(CURDIR)/../../src/devel/devel
--include $(ROCKSROOT)/etc/Rules.mk
-include Rules.mk
-
-# we need this to disable the stupid 
-# /usr/lib/rpm/brp-python-bytecompile
-# which just does a big mess in compiling all the python files
-MAKE.rpmflag	= -bb --define "__spec_install_post :"
-
-# If MICRO_VERSION isn't defined, then force it to zero
-ifndef VERSION.MICRO
-	VERSION.MICRO = 0
-endif 
-
-# we need this variable inside setup.py to set the 
-# version of the python egg
-myenv = ROCKS_VERSION=$(ROCKS_VERSION) 
-
-# if ROOT is not defined assign / so that 
-# python setup.py install --root=$(ROOT)
-# has always something after the = if not distutils 
-# will bail on you
-ROOT ?= /
-
-build:: rocks-copyright.txt
-	
-install:: build
-	$(myenv) $(PY.PATH) setup.py install --root=$(ROOT)
-	# TODO this is really hugly but for now it does the job
-	@echo "version = \"$(ROCKS_VERSION)\"" > \
-		$(ROOT)/$(PY.ROCKS)/rocks/__init__.py
-	@echo "release = \"$(VERSION_NAME)\"" >> \
-		$(ROOT)/$(PY.ROCKS)/rocks/__init__.py
-	@echo "version_major = \"$(VERSION.MAJOR)\"" >> \
-		$(ROOT)/$(PY.ROCKS)/rocks/__init__.py
-	@echo "version_minor = \"$(VERSION.MINOR)\"" >> \
-		$(ROOT)/$(PY.ROCKS)/rocks/__init__.py
-	@echo "version_micro = \"$(VERSION.MICRO)\"" >> \
-		$(ROOT)/$(PY.ROCKS)/rocks/__init__.py
-	$(INSTALL) -m0444 rocks-copyright.txt \
-		$(ROOT)/$(PY.ROCKS)/rocks/commands/list/license/license.txt
-
-
-clean::
-	rm -rf build
-	rm -rf dist
-	rm -rf rocks_pylib.egg-info
-
-
-ctags:
-	ctags  --python-kinds=-i --exclude=*/build/* -R .
-
-# add the RollName = "base" variable to all the command files we can 
-# commit this into the repo since this property never changes
 #
-# this script is a helper for adding the variable to all the file in 
-# this package
-addrollvariable:
-	for i in `find rocks/commands -name "*.py"`; do\
-		grep "^RollName = " $$i > /dev/null ||                  \
-		echo -e "\nRollName = \"$(ROLL)\"" >> $$i;              \
-	done
- 
+#
+
+import socket
+import shlex
+
+import rocks.commands
+import subprocess
+
+class Command(rocks.commands.Command):
+	"""
+	Checks that all Rocks required services are up and running, If a
+	required services is not running it will reported.
+	
+	<example cmd='check host services'>
+	Check that all required services are up and running.
+	</example>
+	"""
+
+	def checkService(self, cmdname, error_msg):
+		"""check if the given cmdname returns 0 once executed.
+		If cmdname fails it returns  runninvg"""
+		devnull = open('/dev/null', 'w')
+		process = subprocess.Popen(shlex.split(cmdname), stdout=devnull, stderr=devnull)
+		retcode = process.wait()
+		devnull.close()
+		if retcode != 0:
+			self.abort(error_msg)
+
+	def run(self, params, args):
+
+		if len(args) != 0:
+			self.abort("check services does not accept any argument")
+
+		if socket.gethostname().split('.')[0] != self.newdb.getFrontendName():
+			self.abort('this command should run only on the frontend')
 
 
+		# dhcpd
+		cmd = "service dhcpd status"
+		error_msg = "dhcpd is not running.\n" + \
+			"Restart it with 'service dhcpd start'"
+		self.checkService(cmd, error_msg)
+
+		# xinetd
+		cmd = "curl 'tftp://localhost/pxelinux.0' -o /dev/null"
+		error_msg = "unable to download pxelinux with tftp.\n" + \
+			"Verify that xinetd is running with 'service xinetd start'"
+		self.checkService(cmd, error_msg)
+
+		# httpd wget kickstart
+		cmd = "bash -c \"curl -k 'https://localhost/install/sbin/kickstart.cgi?arch=x86_64&np=1' | xmllint -\""
+		error_msg = "unable to download kickstart.\n" + \
+			"Verify httpd is running with 'service httpd start'"
+		self.checkService(cmd, error_msg)
+		
+		# sec channel
+		cmd = "rpcinfo -T tcp localhost  536870913"
+		error_msg = "sec_channel RPC is not available.\n" + \
+			"Restart rpcbind with 'service rpcbind restart' and then " + \
+			"restart 'service sec-channel restart' and n" + \
+			"fs 'service nfs restart'"
+		self.checkService(cmd, error_msg)
+		cmd = "rpcinfo -T udp localhost  536870913"
+		self.checkService(cmd, error_msg)
+
+		return True
+
+
+RollName = "kvm"

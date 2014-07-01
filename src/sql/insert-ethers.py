@@ -1375,6 +1375,8 @@ class InsertEthers(GUI):
 		# becuase at __init__ time the database is not connected yet
 		self.commands = rocks.commands.Command(self.sql.newdb)
 
+		self.commands.command('check.services',[])
+
 		#
 		# Batch does not make sense with --staticip, use --ipaddr.
 		#
