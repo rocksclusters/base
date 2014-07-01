@@ -566,6 +566,7 @@ import time
 import signal
 import snack
 import rocks.sql
+import rocks.commands
 import rocks.ip
 import rocks.util
 import rocks.app
@@ -744,6 +745,9 @@ class InsertEthers(GUI):
 		self.sql		= app
 		self.controller		= ServiceController()
 		self.clusterdb		= rocks.clusterdb.Nodes(app)
+		# a pointer to commands to access all the commands 
+		# initialized in run()
+		self.commands		= None
 		self.cabinet		= 0
 		self.rank		= -1
 		self.replace		= ''
@@ -1139,10 +1143,7 @@ class InsertEthers(GUI):
 		if self.sql.ipIncrement != -1:
 			args.append('increment=%d' % self.sql.ipIncrement)
 
-		import rocks.commands.report.nextip
-		cmd = rocks.commands.report.nextip.Command(self.sql.newdb)
-		cmd.runWrapper('report nextip', args)
-		text = cmd.getText()
+		text = self.commands.command('report.nextip', args)
 
 		if len(text) == 0:
 			raise Exception("Unable to get next IP address")
@@ -1370,6 +1371,9 @@ class InsertEthers(GUI):
 
 			
 	def run(self):
+		# self.command can only be added here and not in the __init__ 
+		# becuase at __init__ time the database is not connected yet
+		self.commands = rocks.commands.Command(self.sql.newdb)
 
 		#
 		# Batch does not make sense with --staticip, use --ipaddr.
