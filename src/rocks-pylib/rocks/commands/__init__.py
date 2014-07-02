@@ -521,12 +521,11 @@ from xml.sax._exceptions import SAXParseException
 
 
 def Abort(message, doExit=1):
-	"""Print a standard error message and abort the program"""
+	"""Print a standard error message and throw a
+	rocks.util.CommandError"""
 	
 	syslog.syslog(syslog.LOG_ERR, message)
-	print 'error - %s' % message
-	if doExit:
-		sys.exit(1)
+	raise rocks.util.CommandError(message)
 
 
 class OSArgumentProcessor:
@@ -547,7 +546,7 @@ class OSArgumentProcessor:
 			elif s == 'sunos':
 				list.append(s)
 			else:
-				Abort('unknown os "%s"' % arg)
+				self.abort('unknown os "%s"' % arg)
 		if not list:
 			list.append('linux')
 			list.append('sunos')
@@ -575,7 +574,7 @@ class MembershipArgumentProcessor:
 			if rows == 0 and arg == '%': # empty table is OK
 				continue
 			if rows < 1:
-				Abort('unknown membership "%s"' % arg)
+				self.abort('unknown membership "%s"' % arg)
 			for name, in self.db.fetchall():
 				list.append(name)
 		return list
@@ -607,7 +606,7 @@ class DistributionArgumentProcessor:
 					# is empty
 					continue
 				else:
-					Abort('unknown distribution "%s"' % arg)
+					self.abort('unknown distribution "%s"' % arg)
 
 			for name, in self.db.fetchall():
 				list.append(name)
@@ -635,7 +634,7 @@ class NetworkArgumentProcessor:
 			if rows == 0 and arg == '%': # empty table is OK
 				continue
 			if rows < 1:
-				Abort('unknown network "%s"' % arg)
+				self.abort('unknown network "%s"' % arg)
 			for name, in self.db.fetchall():
 				list.append(name)
 		return list
@@ -686,7 +685,7 @@ class RollArgumentProcessor:
 			if rows == 0 and arg == '%': # empty table is OK
 				continue
 			if rows < 1:
-				Abort('unknown roll name "%s"' % arg)
+				self.abort('unknown roll name "%s"' % arg)
 			for (name, ver) in self.db.fetchall():
 				list.append((name, ver))
 				
@@ -834,12 +833,12 @@ class CategoryArgumentProcessor(HostArgumentProcessor):
 
 
 		if index is None:
-			Abort('Cannot have a Null index for category:%s' % category)
+			self.abort('Cannot have a Null index for category:%s' % category)
 		# Check of category is valid
 		rows = self.db.execute("""SELECT ID FROM categories 
 				WHERE name='%s'""" % category)
 		if rows < 1:
-			Abort('unknown category "%s"' % category)
+			self.abort('unknown category "%s"' % category)
 
 
 		# Check if member of category is valid
@@ -854,14 +853,14 @@ class CategoryArgumentProcessor(HostArgumentProcessor):
 				rows = self.db.execute("""SELECT ID FROM vcatindex 
 				WHERE catindex='%s' and category='%s'""" % (index,category))
 				if rows < 1:
-					Abort('Unknown index "%s" of category "%s"' % (index,category))
+					self.abort('Unknown index "%s" of category "%s"' % (index,category))
 				indexList.append((category,index))
 
 		else:
 			rows = self.db.execute("""SELECT ID FROM vcatindex 
 				WHERE catindex='%s' and category='%s'""" % (index,category))
 			if rows < 1:
-				Abort('Unknown index "%s" of category "%s"' % (index,category))
+				self.abort('Unknown index "%s" of category "%s"' % (index,category))
 			indexList.append((category,index))
 
 		return indexList
@@ -1401,9 +1400,8 @@ class Command:
 		return self._debug
 		
 	def abort(self, msg):
-		rocks.commands.Abort(msg, 0)
-		print self.usage()
-		sys.exit(-1)
+		syslog.syslog(syslog.LOG_ERR, msg.split('\n')[0])
+		raise rocks.util.CommandError(msg)
 	
 	def fillPositionalArgs(self, names, params=None, args=None):
 		# The helper function will allow named parameters
@@ -1892,7 +1890,7 @@ class Command:
 		else:
 			if self.MustBeRoot and not \
 				(self.isRootUser() or self.isApacheUser()):
-				Abort('command "%s" requires root' % name)
+				self.abort('command "%s" requires root' % name)
 			else:
 				self._args   = list
 				self._params = dict
@@ -1903,11 +1901,11 @@ class Command:
 				except rocks.util.HostnotfoundException as e:
 					if self.debug():
 						traceback.print_exc()
-					Abort(str(e))
+					self.abort(str(e))
 				except sqlalchemy.exc.OperationalError as e:
 					if self.debug():
 						traceback.print_exc()
-					Abort("Dabase error: " + str(e))
+					self.abort("Dabase error: " + str(e))
 				except ValueError as e:
 					if self.debug():
 						traceback.print_exc()

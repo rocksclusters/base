@@ -256,12 +256,17 @@ except AttributeError:
 if command.MustBeRoot and not (command.isRootUser() or command.isApacheUser()):
 	os.system('sudo %s' % string.join(sys.argv,' '))
 else:
-	command.runWrapper(name, args[i:])
-	text = command.getText()
-	if len(text) > 0:
-		print text,
-		if text[len(text)-1] != '\n':
-			print
+	try:
+		command.runWrapper(name, args[i:])
+		text = command.getText()
+		if len(text) > 0:
+			print text,
+			if text[len(text)-1] != '\n':
+				print
+	except rocks.util.CommandError, e:
+		print "Error:", e
+		print command.usage()
+		exit(1)
 
 
 syslog.closelog()

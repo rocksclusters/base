@@ -210,6 +210,11 @@ class ParameterNotValid(RocksException):
 	not valid"""
 	pass
 
+class CommandError(RocksException):
+	"""This exception is thrown by the rocks command line when 
+	something goes awry"""
+	pass
+
 # An exception for Kickstart builder trinity: kcgi, kgen, kpp
 class KickstartError(RocksException):
 	pass

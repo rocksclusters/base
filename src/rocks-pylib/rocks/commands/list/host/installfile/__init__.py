@@ -136,7 +136,7 @@ class Command(rocks.commands.Command):
 		section, = self.fillParams( [('section', None)] )
 
 		if not section:
-			rocks.commands.Abort("Must supply section")
+			self.abort("must supply a section")
 
 		self.xml_doc = xml.dom.ext.reader.Sax2.FromXmlStream(sys.stdin)
 		self.xml_filter = ProfileNodeFilter({})
