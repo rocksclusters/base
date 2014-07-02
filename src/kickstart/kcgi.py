@@ -539,7 +539,6 @@ import traceback
 
 import rocks.util
 import rocks.kickstart
-import rocks.clusterdb
 import re
 from xml.sax import saxutils
 from xml.sax import handler
@@ -559,7 +558,6 @@ class App(rocks.kickstart.Application):
 		self.privateNetmask	= ''
 		self.allAccess		= 0
 		self.doRestore		= 0
-		self.clusterdb		= rocks.clusterdb.Nodes(self)
 		self.lockFile		= '/var/tmp/kickstart.cgi.lck'
 
 		# Lookup the hostname of the client machine.
@@ -726,69 +724,6 @@ class App(rocks.kickstart.Application):
 		return string.split(copyright, "\n")
 
 
-	def name2coord(self, name):
-		"""Extracts the physical coordinates from a node name"""
-
-		pat="-(?P<Rack>\d+)-(?P<Rank>\d+)$"
-		coord = re.compile(pat)
-		m = coord.search(name)
-		if not m:
-			raise KickstartError, \
-				"Could not find coords of node %s" % name
-		else:
-			return (m.group('Rack'), m.group('Rank'))
-		
-
-	def getMembershipId(self, name):
-		try:
-			self.execute("select id from memberships "
-				"where name='%s'" % name)
-			return self.fetchone()[0]
-		except:
-			raise KickstartError, \
-				"Could not find membership %s" % name
-
-
-	def insertNode(self):
-		"""Checks if request has been authenticated with a 
-		valid certificate. If so, inserts node into database."""
-
-		errorMsg = "Client %s is internal, not in database, " \
-			"and not authenticated." % self.clientList
-
-		if not os.environ.has_key('SSL_CLIENT_VERIFY'):
-			raise KickstartError, errorMsg
-
-		if os.environ['SSL_CLIENT_VERIFY'] != 'SUCCESS':
-			raise KickstartError, errorMsg
-			
-		dn = os.environ['SSL_CLIENT_S_DN']
-		ip = name = membership = None
-		nameKey = 'CN='
-		membershipKey = 'CN=RocksMembership:'
-		ipKey = 'CN=RocksPrivateAddress:'
-		for element in dn.split('/'):
-			if element.count(membershipKey):
-				membership = element[len(membershipKey):]
-			elif element.count(ipKey):
-				ip = element[len(ipKey):]
-			elif element.count(nameKey):
-				name = element[len(nameKey):]
-
-		if not ip or not name or not membership:
-			raise KickstartError, "Client has a malformed cert"
-		rack, rank = self.name2coord(name)
-		mid = self.getMembershipId(membership)
-
-		# Act like insert-ethers. Will raise ValueError if any
-		# of these fields already exist in the db.
-
-		self.clusterdb.insert(name, mid, rack, rank, ip=ip)
-		syslog.syslog("kickstart.cgi: inserted node %s %s %s" 
-			% (membership, name, ip))
-		return self.clusterdb.getNodeId()
-
-
 	def localKickstart(self):
 
 		membership=None
@@ -803,7 +738,9 @@ class App(rocks.kickstart.Application):
 				if id:
 					break
 			if not id:
-				id = self.insertNode()
+				raise KickstartError("node " +
+					self.clientList[0] +
+					"not found in database")
 			self.clientName = self.getNodeName(id)
 
 		# Update the number of CPUs for this node.  Do nothing
