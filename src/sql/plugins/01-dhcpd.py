@@ -131,10 +131,10 @@ import rocks.sql
 class Plugin(rocks.sql.InsertEthersPlugin):
 	"Controls the DHCP server when nodes are added and removed."
 
-	def added(self, nodename, id):
+	def added(self, nodename):
 		self.restart()
 
-	def removed(self, nodename, id):
+	def removed(self, nodename):
 		self.restart()
 
 	def update(self):

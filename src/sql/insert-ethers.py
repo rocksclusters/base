@@ -571,7 +571,6 @@ import rocks.ip
 import rocks.util
 import rocks.app
 import rocks.kickstart
-import rocks.clusterdb
 from syslog import syslog
 
 try:
@@ -659,22 +658,22 @@ class ServiceController:
 		syslog(oops)
 		
 				
-	def added(self, nodename, nodeid):
+	def added(self, nodename):
 		"Tell all plugins this node has been added."
 
 		for p in self.plugins:
 			try:
-				p.added(nodename, nodeid)
+				p.added(nodename)
 			except:
 				self.logError(p)	
 	
 	
-	def removed(self, nodename, nodeid):
+	def removed(self, nodename):
 		"Tell all plugins this node has been removed."
 
 		for p in self.plugins:
 			try:
-				p.removed(nodename, nodeid)
+				p.removed(nodename)
 			except:
 				self.logError(p)
 					
@@ -744,7 +743,6 @@ class InsertEthers(GUI):
 		GUI.__init__(self)
 		self.sql		= app
 		self.controller		= ServiceController()
-		self.clusterdb		= rocks.clusterdb.Nodes(app)
 		# a pointer to commands to access all the commands 
 		# initialized in run()
 		self.commands		= None
@@ -774,7 +772,7 @@ class InsertEthers(GUI):
 		self.netmask		= None
 		self.subnet		= 'private' # Internal Network
 		self.broadcast		= None
-		self.appliance_name	= None
+		self.membership_name	= None
 		self.device		= None
 		self.module		= None
 		self.hostname		= None
@@ -819,8 +817,8 @@ class InsertEthers(GUI):
 	def setCpus(self, ncpus):
 		self.ncpus = ncpus 
 
-	def setApplianceName(self,appliance_name):
-		self.appliance_name = appliance_name 
+	def setMembershipName(self,membership_name):
+		self.membership_name = membership_name 
 
 	def setDump(self):
 		self.Dump = 'true' 
@@ -871,17 +869,17 @@ class InsertEthers(GUI):
 		query='select name from memberships where name="%s" ' % (app)
 		if self.sql.execute(query) == 0:
 			msg = _("Invalid Appliance \"%s\"") % \
-				(self.appliance_name)
+				(self.membership_name)
 			raise InsertError, msg
 
 
 	def membershipGUI(self):
 		#
-		# if self.appliance_name is not empty don't ask
+		# if self.membership_name is not empty don't ask
 		# 
-		if self.appliance_name is not None: 
+		if self.membership_name is not None: 
 			app_string = []
-			app_string.append(self.appliance_name)
+			app_string.append(self.membership_name)
 			index = 0
 
 		else:
@@ -944,7 +942,7 @@ class InsertEthers(GUI):
 		if self.basename is None:
 			self.basename = basename
 			
-		self.setApplianceName(app_string[index])
+		self.setMembershipName(app_string[index])
 			
 
 	def batchCommand(self):
@@ -952,7 +950,7 @@ class InsertEthers(GUI):
 		minimal user interaction. Get the missing pieces you need from 
 		the gui if necessary."""
 
-		if not self.appliance_name:
+		if not self.membership_name:
 			self.startGUI()
 			self.membershipGUI()
 			self.endGUI()
@@ -974,14 +972,17 @@ class InsertEthers(GUI):
 		# catch later.
 		nodename = self.getNodename()
 
-		self.clusterdb.insert(nodename, self.membership, 
-			self.cabinet, self.rank, self.mac, self.ipaddr, 
-			self.subnet, self.osname)
+                self.commands.command('add.host', [nodename,
+                        'membership=' + self.membership_name, 'os=' + self.osname,
+                        'rack=' + str(self.cabinet), 'rank=' + int(self.rank)])
+                self.commands.command('add.host.interface', [nodename,
+                        'eth0', 'ip=' + self.ipaddr, 'mac=' + self.mac,
+                        'subnet=' + self.subnet])
 		self.sql.commit()
 
 		# Execute any plugins when adding hosts via
 		# command-line parameters
-		self.controller.added(nodename, self.clusterdb.getNodeId())
+		self.controller.added(nodename)
 
 		self.sql.commit()
 
@@ -1121,7 +1122,11 @@ class InsertEthers(GUI):
 
 			ipaddr = entry.value()
 			try:
-				self.clusterdb.checkIP(ipaddr)
+
+				nodeid = self.sql.getNodeId(ipaddr)
+				if nodeid:
+					msg = "Duplicate IP '%s' Specified" % ipaddr
+					raise rocks.util.CommandError, msg
 				self.setIPaddr(ipaddr)
 				done = 1
 			except rocks.util.CommandError:
@@ -1152,11 +1157,17 @@ class InsertEthers(GUI):
 
 	def addit(self, mac, nodename, ip):
 
-		self.clusterdb.insert(nodename, self.membership, 
-			self.cabinet, self.rank, mac, ip, self.subnet, self.osname)
+		self.commands.command('add.host', [nodename, 
+			'membership=' + self.membership_name, 'os=' + self.osname,
+			'rack=' + str(self.cabinet), 'rank=' + str(self.rank)])
+		self.commands.command('add.host.interface', [nodename, 
+			'eth0', 'ip=' + ip, 'mac=' + mac, 
+			'subnet=' + self.subnet])
+
+
 		self.sql.commit()
 
-		self.controller.added(nodename, self.clusterdb.getNodeId())
+		self.controller.added(nodename)
 		self.restart_services = 1
 
 		self.sql.commit()
@@ -1602,7 +1613,7 @@ class App(rocks.sql.Application):
 		elif c[0] == '--membership':
 			# I don't know why it is called appliance 
 			# since in reality it is a membership
-			self.insertor.setApplianceName(c[1])
+			self.insertor.setMembershipName(c[1])
 		elif c[0] == '--replace':
 			self.insertor.setReplace(c[1])
 		elif c[0] == '--remove':

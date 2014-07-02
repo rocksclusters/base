@@ -111,7 +111,7 @@ from syslog import syslog
 class Plugin(rocks.sql.InsertEthersPlugin):
 	"A sample insert-ethers plugin"
 
-	def added(self, nodename, id):
+	def added(self, nodename):
 		"""Only essential services should restart every time a 
 		node is added or removed"""
 
@@ -119,7 +119,7 @@ class Plugin(rocks.sql.InsertEthersPlugin):
 		syslog(m)
 
 
-	def removed(self, nodename, id):
+	def removed(self, nodename):
 		m =  "insert-ethers removing node " + nodename
 		syslog(m)
 

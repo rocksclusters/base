@@ -104,10 +104,10 @@ import rocks.sql
 class Plugin(rocks.sql.InsertEthersPlugin):
 	"tentakel plugin for Insert Ethers"
 
-	def added(self, nodename, id):
+	def added(self, nodename):
 		self.update()
 
-	def removed(self, nodename, id):
+	def removed(self, nodename):
 		self.update()
 
 	def update(self):

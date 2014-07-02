@@ -101,7 +101,8 @@ import rocks.sql
 class Plugin(rocks.sql.InsertEthersPlugin):
 	"remove the partitions for a node"
 
-	def removed(self, nodename, nodeid):
-		query = 'delete from partitions where node = %s' % (nodeid)
+	def removed(self, nodename):
+		query = """delete from partitions where node = """ + \
+			"""(select id from nodes where name = %s)""" % (nodename)
 		self.app.execute(query)
 

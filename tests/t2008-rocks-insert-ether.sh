@@ -71,7 +71,8 @@ test_expect_success 'test insert-ether - tear down I' '
 	test "$testhostname" &&
 	testhostname=${testhostname%:*} &&
 	test $testhostname &&
-	rocks remove host $testhostname 
+	insert-ethers --remove $testhostname &&
+	! rocks list host $testhostname
 '
 
 test_expect_success 'test insert-ether - tear down II' '

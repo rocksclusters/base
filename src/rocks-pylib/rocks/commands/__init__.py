@@ -512,7 +512,6 @@ import traceback
 
 import rocks
 import rocks.graph
-import rocks.clusterdb
 import xml
 from xml.sax import saxutils
 from xml.sax import handler

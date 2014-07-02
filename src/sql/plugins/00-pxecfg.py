@@ -121,7 +121,7 @@ import subprocess
 class Plugin(rocks.sql.InsertEthersPlugin):
 	"Controls the PXE configuration when nodes are added and removed."
 
-	def added(self, nodename, id):
+	def added(self, nodename):
 		cmd = ("/opt/rocks/bin/rocks report "
 			"host attr attr=os %s " %(nodename))
 		p = subprocess.Popen(cmd, shell=True,stdin=subprocess.PIPE, 
@@ -138,7 +138,7 @@ class Plugin(rocks.sql.InsertEthersPlugin):
 		subprocess.call("/opt/rocks/bin/rocks set host boot " + \
 			"%s action=%s" % (nodename, "install"), shell=True)
 
-	def removed(self, nodename, id):
+	def removed(self, nodename):
 		pass
 
 	def update(self):

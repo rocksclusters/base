@@ -132,10 +132,10 @@ import rocks.sql
 class Plugin(rocks.sql.InsertEthersPlugin):
 	"DNS (nameserver) and /etc/hosts plugin for Insert Ethers"
 
-	def added(self, nodename, id):
+	def added(self, nodename):
 		self.restart()
 
-	def removed(self, nodename, id):
+	def removed(self, nodename):
 		self.restart()
 
 	def update(self):

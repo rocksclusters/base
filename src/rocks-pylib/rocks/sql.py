@@ -453,11 +453,11 @@ class InsertEthersPlugin:
 		have been added or removed."""
 		pass
 
-	def added(self, nodename, nodeid):
+	def added(self, nodename):
 		"""This node has been added to the cluster."""
 		pass
 
-	def removed(self, nodename, nodeid):
+	def removed(self, nodename):
 		"This node has been removed from the cluster"
 		pass
 
