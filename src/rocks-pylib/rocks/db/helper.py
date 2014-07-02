@@ -423,7 +423,7 @@ class DatabaseHelper(rocks.db.database.Database):
 
 		# they can not be in the form of rack<number>
 		if '.' in hostname:
-			raise ValueError('Hostname %s can not contains any dot.'
+			raise rocks.util.CommandError('Hostname %s can not contains any dot.'
 					% hostname)
 		msg = ''
 		if hostname.startswith('rack'):
@@ -436,14 +436,14 @@ class DatabaseHelper(rocks.db.database.Database):
 			except ValueError:
 				pass
 		if msg:
-			raise ValueError(msg)
+			raise rocks.util.CommandError(msg)
 
 		# they can not be equal to any appliance name
 		if hostname in self.getAppliancesListText():
 			msg = 'Hostname %s can not be equal to an appliance'\
 				' name.\n' % (hostname)
 			msg += 'Select a different hostname.'
-			raise ValueError(msg)
+			raise rocks.util.CommandError(msg)
 
 		# check the name is not already in use in the DB
 		try:
@@ -457,7 +457,7 @@ class DatabaseHelper(rocks.db.database.Database):
 		except (rocks.util.HostnotfoundException, NameError):
 			# good! Host does not exist
 			return
-		raise ValueError(msg)
+		raise rocks.util.CommandError(msg)
 
 
 

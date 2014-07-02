@@ -970,7 +970,7 @@ class InsertEthers(GUI):
 		if self.mac == "None":
 			self.mac = None
 		
-		# Will emit a ValueError if node already exists, 
+		# Will emit a CommandError if node already exists, 
 		# catch later.
 		nodename = self.getNodename()
 
@@ -1124,11 +1124,11 @@ class InsertEthers(GUI):
 				self.clusterdb.checkIP(ipaddr)
 				self.setIPaddr(ipaddr)
 				done = 1
-			except ValueError:
+			except rocks.util.CommandError:
 				snack.ButtonChoiceWindow(self.screen,
 					_("Duplicate IP"),
-					_("The IP address (%s) already exists.\n\n"),
-					_("Please select another.") % (ipaddr),
+					_("The IP address (%s) already exists.\n\n" \
+					% (ipaddr) + "Please select another."),
 					buttons = [ _("OK") ])
 
 		return ipaddr
@@ -1197,7 +1197,7 @@ class InsertEthers(GUI):
 	def discover(self, mac, dev):
 		"Returns 'true' if we inserted a new node, 'false' otherwise."
 		
-		retval = 'false'
+		retval = False
 
 		query = 'select mac from networks where mac="%s"' % (mac)
 
@@ -1218,7 +1218,7 @@ class InsertEthers(GUI):
 				self.addit(mac, nodename, ipaddr)
 				self.printDiscovered(mac)
 				
-			retval = 'true'
+			retval = True
 
 		return retval
 
@@ -1268,7 +1268,7 @@ class InsertEthers(GUI):
 		try:
 			status = int(fields[8])
 		except:
-			raise ValueError, _("Apache log file not well formed!")
+			raise InsertError, _("Apache log file not well formed!")
 
 		nodeid = int(self.sql.getNodeId(fields[0]))
 		self.sql.execute('select name from nodes where id=%d' % nodeid)
@@ -1316,7 +1316,7 @@ class InsertEthers(GUI):
 			if interface != subnet_dev:
 				return
 
-			if self.discover(tokens[7], interface) == 'false':
+			if not self.discover(tokens[7], interface):
 				return
 
 			self.statusGUI()
@@ -1375,7 +1375,12 @@ class InsertEthers(GUI):
 		# becuase at __init__ time the database is not connected yet
 		self.commands = rocks.commands.Command(self.sql.newdb)
 
-		self.commands.command('check.services',[])
+		try:
+			self.commands.command('check.services',[])
+		except rocks.util.CommandError as err:
+			# some services are not ready
+			sys.stderr.write('error - ' + str(err) + '\n')
+			return
 
 		#
 		# Batch does not make sense with --staticip, use --ipaddr.
@@ -1419,7 +1424,7 @@ class InsertEthers(GUI):
 			if self.hostname:
 				self.sql.newdb.checkHostnameValidity(self.hostname)
 
-		except (ValueError, InsertError), msg:
+		except (rocks.util.CommandError, InsertError), msg:
 			self.errorGUI(msg)
 			self.endGUI()
 			sys.stderr.write(_("%s\n") % str(msg))
@@ -1456,7 +1461,7 @@ class InsertEthers(GUI):
 				except InsertDone:
 					suggest_done = 1
 
-				except (ValueError, InsertError), msg:
+				except (rocks.util.CommandError, InsertError), msg:
 					self.warningGUI(msg)
 				continue
 

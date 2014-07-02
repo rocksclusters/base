@@ -1906,10 +1906,6 @@ class Command:
 					if self.debug():
 						traceback.print_exc()
 					self.abort("Dabase error: " + str(e))
-				except ValueError as e:
-					if self.debug():
-						traceback.print_exc()
-					Abort("Naming error: " + str(e))
 
 
 

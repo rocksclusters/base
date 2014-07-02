@@ -138,6 +138,7 @@
 import os
 import sqlalchemy
 
+import rocks.util
 
 class Nodes:
 	"""A class that knows how to insert/delete rocks appliances from
@@ -218,7 +219,7 @@ class Nodes:
 			# really really bad duplicate attribute error
 			# this should neve happen
 			msg = "Duplicate os attribute for host %s" % name
-			raise ValueError, msg
+			raise rocks.util.CommandError, msg
 
 
 
@@ -228,7 +229,7 @@ class Nodes:
 		rows = self.sql.execute("select id from subnets where name='%s'" % subnet);
 		if (rows == 0):
 			msg = "subnet %s does not exist. Bailing out" % (subnet)
-			raise KeyError, msg
+			raise rocks.util.CommandError, msg
 			return
 
 	def checkIP(self, ipaddr):
@@ -241,7 +242,7 @@ class Nodes:
 
 		if nodeid:
 			msg = "Duplicate IP '%s' Specified" % ipaddr
-			raise ValueError, msg
+			raise rocks.util.CommandError, msg
 
 
 	def checkMAC(self, mac):
@@ -258,7 +259,7 @@ class Nodes:
 
 		if self.sql.execute(query) == 1:
 			msg = "Duplicate MAC '%s' Specified" % mac
-			raise ValueError, msg
+			raise rocks.util.CommandError, msg
 
 
 	def checkMembershipName(self, name):
@@ -267,11 +268,11 @@ class Nodes:
 		
 		if self.sql.execute(query) == 0:
 			msg = 'Could not find Membership "%s"' % name
-			raise ValueError, msg
+			raise rocks.util.CommandError, msg
 
 
 	def checkMembership(self, mid):
 		query='select id from memberships where id="%s"' % mid
 		if self.sql.execute(query) == 0:
 			msg = 'Invalid Membership ID "%s"' % mid
-			raise ValueError, msg
+			raise rocks.util.CommandError, msg
