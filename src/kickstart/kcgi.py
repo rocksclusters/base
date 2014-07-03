@@ -554,9 +554,6 @@ class App(rocks.kickstart.Application):
 		self.usage_version	= '5.0'
 		self.form		= cgi.FieldStorage()
 		# The max number of simultaneous instances of this script.
-		self.privateNetmask	= ''
-		self.allAccess		= 0
-		self.doRestore		= 0
 		self.lockFile		= '/var/tmp/kickstart.cgi.lck'
 
 		# Lookup the hostname of the client machine.
@@ -577,12 +574,6 @@ class App(rocks.kickstart.Application):
 		except:
 			self.clientList.append(caddr)
 
-		# Default to native architecture and try to pick up the
-		# correct value from the form.
-		
-		if self.form.has_key('arch'):
-			self.arch = self.form['arch'].value
-
 			
 		# If the node reported the number of CPUs it has, record it.
 		if self.form.has_key('np'):
@@ -590,33 +581,10 @@ class App(rocks.kickstart.Application):
 		else:
 			self.cpus = None
 
-		# What generator should we use.  Defualt to kickstart,
-		# could be cfengine.
-
-		if self.form.has_key('generator'):
-			self.generator = self.form['generator'].value
-		else:
-			self.generator = 'kgen'
-
-		if self.form.has_key('membership'):
-			self.membership = self.form['membership'].value
-		else:
-			self.membership = None
-
-		self.distname = None
-
-		# Set to change the default search path for kpp and kgen.
-
-		self.helperpath = os.path.join(os.sep, 'opt', 'rocks', 'sbin')
-			
 		# Add application flags to inherited flags
 		self.getopt.s.extend([('c:', 'client')])
 		self.getopt.l.extend([('arch=', 'arch'),
 				      ('client=', 'client'),
-				      ('membership=', 'group-name'),
-				      ('dist=', 'distribution'),
-				      ('wan-all-access'),
-				      ('restore'),
 				      ('public')])
 		
 
@@ -631,22 +599,9 @@ class App(rocks.kickstart.Application):
 			except:
 				pass
 			self.clientName = c[1]
-		elif c[0] == '--membership':
-			self.membership = c[1]
 		elif c[0] == '--public':
 			self.public = 1
-		elif c[0] == '--dist':
-			self.distname = c[1]
-		elif c[0] == '--wan-all-access':
-			self.allAccess = 1
-		elif c[0] == '--restore':
-			self.doRestore = 1
 
-
-	def trailer(self):
-		out = []
-		out.append('#</pre></body></html>')
-		return out
 
 
 	def getNodeName(self, id):
@@ -662,142 +617,30 @@ class App(rocks.kickstart.Application):
 		return name
 
 
-	def getCopyright(self):
-		copyright="""#
-# @Copyright@
-# 
-# 				Rocks(r)
-# 		         www.rocksclusters.org
-# 		         version 5.6 (Emerald Boa)
-# 		         version 6.1 (Emerald Boa)
-# 
-# Copyright (c) 2000 - 2013 The Regents of the University of California.
-# All rights reserved.	
-# 
-# Redistribution and use in source and binary forms, with or without
-# modification, are permitted provided that the following conditions are
-# met:
-# 
-# 1. Redistributions of source code must retain the above copyright
-# notice, this list of conditions and the following disclaimer.
-# 
-# 2. Redistributions in binary form must reproduce the above copyright
-# notice unmodified and in its entirety, this list of conditions and the
-# following disclaimer in the documentation and/or other materials provided 
-# with the distribution.
-# 
-# 3. All advertising and press materials, printed or electronic, mentioning
-# features or use of this software must display the following acknowledgement: 
-# 
-# 	"This product includes software developed by the Rocks(r)
-# 	Cluster Group at the San Diego Supercomputer Center at the
-# 	University of California, San Diego and its contributors."
-# 
-# 4. Except as permitted for the purposes of acknowledgment in paragraph 3,
-# neither the name or logo of this software nor the names of its
-# authors may be used to endorse or promote products derived from this
-# software without specific prior written permission.  The name of the
-# software includes the following terms, and any derivatives thereof:
-# "Rocks", "Rocks Clusters", and "Avalanche Installer".  For licensing of 
-# the associated name, interested parties should contact Technology 
-# Transfer & Intellectual Property Services, University of California, 
-# San Diego, 9500 Gilman Drive, Mail Code 0910, La Jolla, CA 92093-0910, 
-# Ph: (858) 534-5815, FAX: (858) 534-7345, E-MAIL:invent@ucsd.edu
-# 
-# THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS''
-# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
-# THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
-# PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS
-# BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-# CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-# SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
-# BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
-# WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
-# OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
-# IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-# 
-# @Copyright@"""
-		return string.split(copyright, "\n")
-
-
 	def localKickstart(self):
 
-		membership=None
 		id = None
-		if self.membership:
-			membership = self.membership
-		else:
-			# Iterate over all the hostnames (aliases, IP addrs)
-			# of the node to find the host in the database.
-			for name in self.clientList:
-				id = self.getNodeId(name)
-				if id:
-					break
-			if not id:
-				raise KickstartError("node " +
-					self.clientList[0] +
-					"not found in database")
-			self.clientName = self.getNodeName(id)
+		# Iterate over all the hostnames (aliases, IP addrs)
+		# of the node to find the host in the database.
+		for name in self.clientList:
+			id = self.getNodeId(name)
+			if id:
+				break
+		if not id:
+			raise KickstartError("node " +
+				self.clientList[0] +
+				"not found in database")
+		self.clientName = self.getNodeName(id)
 
-		# Update the number of CPUs for this node.  Do nothing
-		# is we are just a "--membership"
+		# Update the number of CPUs for this node.
 
 		if id and self.cpus != None:
 			update = 'update nodes set CPUs=%s where id=%d' \
 				 % (self.cpus, id)
 			self.execute(update)
 
-		# before we start to run query against this new node save it!
-		# sqlalchemy does the autocommit self.link.commit()
-
-		# If we have a client IP address lookup the
-		# information needed to build its kickstart file.
-		# Otherwise we look up the information to build a
-		# generic membership kickstart file.
-		
-		if not membership:
-			query = ('select '
-				 'appliances.Graph,'
-				 'appliances.Node,'
-				 'distributions.Name '
-				 'from nodes,memberships,appliances,'
-				 'distributions '
-				 'where nodes.ID=%d and '
-				 'memberships.ID=nodes.Membership and '
-				 'memberships.Appliance=appliances.ID and '
-				 'memberships.Distribution=distributions.ID' %
-				 id)
-		else:
-			query = ('select '
-				 'appliances.Graph,'
-				 'appliances.Node,'
-				 'distributions.Name '
-				 'from memberships,appliances,distributions '
-				 'where memberships.Name="%s" and '
-				 'memberships.Appliance=appliances.ID and '
-				 'memberships.Distribution=distributions.ID' %
-				 membership)
-			
-		self.execute(query)
-		try:
-			graph, node, dist = self.fetchone()
-		except TypeError:
-			self.report.append('<h1>Bad Data from Database</h1>')
-			print self
-			return
-
-		# The values we just pulled from the database are the
-		# default values.  The FORM data can override any of
-		# these values.
-
-		if self.form.has_key('graph'):
-			graph = self.form['graph'].value
-		if self.form.has_key('node'):
-			node = self.form['node'].value
 		if self.form.has_key('arch'):
 			self.arch = self.form['arch'].value
-		if self.form.has_key('dist'):
-			dist = self.form['dist'].value
 		if self.form.has_key('os'):
 			OS = self.form['os'].value
 		else:
@@ -820,30 +663,9 @@ class App(rocks.kickstart.Application):
 			print "<h1>Bad OS value</h1>"
 			sys.exit(1)
 
-		rcl = '/opt/rocks/bin/rocks set host attr %s' % self.clientName
-		os.system('%s arch %s'	% (rcl, self.arch))
-		os.system('%s os %s'	% (rcl, OS))
+		self.newdb.setCategoryAttr('host', self.clientName, 'arch', self.arch)
+		self.newdb.setCategoryAttr('host', self.clientName, 'os', OS)
 			
-		dist = os.path.join(dist, 'lan')
-
-		# Command line args has the highest precedence.
-		if self.distname:
-			dist = self.distname
-
-		self.dist.setDist(dist)
-		self.dist.setArch(self.arch)
-		distroot = self.dist.getReleasePath()
-		buildroot = os.path.join(distroot, 'build')
-		# We want path without '/home/install'
-		self.dist.setRoot('')
-
-		# Export the form data to the environment to make it
-		# available to the first stage KPP pass over the XML
-		# files.
-
-		for var in self.form.keys():
-			os.environ[var] = self.form[var].value
-
 		for line in os.popen("""
 			/opt/rocks/bin/rocks list host xml arch=%s os=linux %s
 			""" %  (self.arch, self.clientName)).readlines():
@@ -884,39 +706,6 @@ class App(rocks.kickstart.Application):
 		cmd += 'attrs="%s"' % (attrs)
 		for line in os.popen(cmd).readlines():
 			self.report.append(line[:-1])
-
-
-	def proxyKickstart(self):
-		try:
-			fin = open('nodes.xml', 'r')
-		except IOError:
-			raise KickstartError, 'cannot kickstart external hosts'
-			
-		parser  = make_parser()
-		handler = NodesHandler()
-		parser.setContentHandler(handler)
-		parser.parse(fin)
-		fin.close()
-
-		try:
-			server, client, path = \
-			handler.getServer(self.clientName)
-		except TypeError:
-			raise KickstartError, \
-				"unknown host (not found in nodes.xml)", \
-				self.clientName
-
-		if not path:
-			path = 'install'
-		url = 'http://%s/%s/kickstart.cgi?client=%s' % (server,
-								path,
-								client)
-
-		cmd = 'wget -qO- %s' % url
-		for line in os.popen(cmd).readlines():
-			self.report.append(line[:-1])
-
-		return
 
 
 	def initCount(self):
@@ -1022,40 +811,6 @@ class App(rocks.kickstart.Application):
 		return 1
 
 
-	def insertAccess(self, urlroot, host, ip=''):
-		"""Gives access to this WAN client using .htaccess files.
-		This is a side effect, and is out of band from kickstart
-		generation."""
-
-		firstdir = self.dist.getArch()
-		os.chdir(urlroot)
-		try:
-			os.mkdir(host)
-		except:
-			# This is to prevent collisions between multiple
-			# kcgi processes.
-			if os.path.exists(os.path.join(host,'rolls')) and \
-				os.path.exists(os.path.join(host,firstdir)):
-					return
-		os.chdir(host)
-		try:
-			os.symlink('../%s' % firstdir, firstdir)
-			os.symlink('../rolls', 'rolls')
-
-			access=open('.htaccess','w')
-
-			acl = host
-			if ip:
-				acl += " %s" % ip
-			access.write('Allow from %s\n' % (acl))
-			access.write('Deny from all\n')
-			access.close()
-
-		except:
-			pass
-		self.report.append('# Opened WAN access to %s\n' % host)
-
-
 	def isInternal(self):
 		"""Returns true if the client request is inside our private
 		network."""
@@ -1065,8 +820,6 @@ class App(rocks.kickstart.Application):
 		fe = self.newdb.getFrontendName()
 		network = self.newdb.getHostAttr(fe, 'Kickstart_PrivateNetwork')
 		netmask = self.newdb.getHostAttr(fe, 'Kickstart_PrivateNetmask')
-		self.privateNetmask = netmask
-
 
 		# Test based on our client's IP address.
 		work = string.split(network, '.')
@@ -1150,69 +903,6 @@ class App(rocks.kickstart.Application):
 		print 'X-Avalanche-Pkg-Servers: %s' % (attrs['pkgservers'])
 		print ''
 		print out
-
-
-	
-class NodesHandler(rocks.util.ParseXML):
-
-	def __init__(self):
-		rocks.util.ParseXML.__init__(self)
-		self.nodes		= {}
-		self.attrs		= rocks.util.Struct()
-		self.attrs.default	= rocks.util.Struct()
-
-
-	def getServer(self, client):
-		try:
-			val = self.nodes[client]
-		except KeyError:
-			val = None
-		return val
-
-
-	def addClient(self):
-		if self.attrs.spoof:
-			val = (self.attrs.server, self.attrs.spoof,
-			       self.attrs.path)
-		else:
-			val = (self.attrs.server, self.attrs.client,
-			       self.attrs.path)
-		key = self.attrs.client
-		self.nodes[key] = val
-
-
-	def endElement_proxy(self, name):
-		if not self.attrs.server:
-			self.attrs.server = self.attrs.default.server
-		if not self.attrs.client:
-			self.attrs.client = self.attrs.default.client
-		if not self.attrs.path:
-			self.attrs.path = self.attrs.default.path
-		if not self.attrs.spoof:
-			self.attrs.spoof = self.attrs.default.spoof
-
-		if self.attrs.client:
-			self.addClient()
-
-
-	def startElement_client(self, name, attrs):
-		self.text		= ''
-		self.attrs.server	= self.attrs.default.server
-		self.attrs.path		= self.attrs.default.path
-		self.attrs.spoof	= self.attrs.default.spoof
-		
-		if attrs.has_key('server'):
-			self.attrs.server = attrs['server']
-		if attrs.has_key('path'):
-			self.attrs.path = attrs['path']
-		if attrs.has_key('spoof'):
-			self.attrs.spoof = attrs['spoof']
-
-
-	def endElement_client(self, name):
-		self.attrs.client = self.text
-		self.addClient()
-		self.attrs.client = None
 
 
 if __name__ == "__main__":
