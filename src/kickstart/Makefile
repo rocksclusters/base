@@ -105,11 +105,10 @@ ROCKSROOT       = ../devel/devel
 -include $(ROCKSROOT)/etc/Rules.mk
 include Rules.mk
 
-RCFILES	= kcgirc
 SCRIPTS	= kgen kdoc kcgi screengen
 
 
-build:	$(SCRIPTS) $(RCFILES)
+build:	$(SCRIPTS)
 
 install:: build
 	mkdir -p $(ROOT)/$(PKGROOT)/sbin
@@ -120,7 +119,6 @@ install:: build
 	cp init.d/rocks-kickstart $(ROOT)/etc/rc.d/init.d
 
 	mkdir -p $(ROOT)/$(PKGROOT)/etc
-	$(INSTALL) -m 0644 $(RCFILES) $(ROOT)/$(PKGROOT)/etc/
 
 	mkdir -p $(ROOT)/export/rocks/install/sbin
 	$(INSTALL) -m 0755 kcgi $(ROOT)/export/rocks/install/sbin/kickstart.cgi
@@ -133,6 +131,6 @@ install:: build
 
 
 clean::
-	rm -f $(RCFILES) $(SCRIPTS)
+	rm -f $(SCRIPTS)
 	rm -f $(SPECFILE).in
 

@@ -554,7 +554,6 @@ class App(rocks.kickstart.Application):
 		self.usage_version	= '5.0'
 		self.form		= cgi.FieldStorage()
 		# The max number of simultaneous instances of this script.
-		self.loadThresh		= 10
 		self.privateNetmask	= ''
 		self.allAccess		= 0
 		self.doRestore		= 0
@@ -615,7 +614,6 @@ class App(rocks.kickstart.Application):
 		self.getopt.l.extend([('arch=', 'arch'),
 				      ('client=', 'client'),
 				      ('membership=', 'group-name'),
-				      ('loadthresh=', 'max siblings'),
 				      ('dist=', 'distribution'),
 				      ('wan-all-access'),
 				      ('restore'),
@@ -637,8 +635,6 @@ class App(rocks.kickstart.Application):
 			self.membership = c[1]
 		elif c[0] == '--public':
 			self.public = 1
-		elif c[0] == '--loadthresh':
-			self.loadThresh = int(c[1])
 		elif c[0] == '--dist':
 			self.distname = c[1]
 		elif c[0] == '--wan-all-access':
