@@ -110,12 +110,9 @@ SCRIPTS	= kgen kdoc kcgi screengen
 
 
 build:	$(SCRIPTS) $(RCFILES)
-	$(MAKE) -C utils
 
 install:: build
 	mkdir -p $(ROOT)/$(PKGROOT)/sbin
-	$(INSTALL) -m 4555 utils/read-ssh-private-key $(ROOT)/$(PKGROOT)/sbin/
-	$(INSTALL) -m 4555 utils/read-411-shared-key $(ROOT)/$(PKGROOT)/sbin/
 	$(INSTALL) -m 0755 kgen kdoc screengen \
 		$(ROOT)/$(PKGROOT)/sbin/
 
@@ -136,7 +133,6 @@ install:: build
 
 
 clean::
-	$(MAKE) -C utils clean
 	rm -f $(RCFILES) $(SCRIPTS)
 	rm -f $(SPECFILE).in
 
