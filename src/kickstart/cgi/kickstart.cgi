@@ -536,22 +536,21 @@ import string
 import socket
 import syslog
 import traceback
-
-import rocks.util
-import rocks.kickstart
 import re
 from xml.sax import saxutils
 from xml.sax import handler
 from xml.sax import make_parser
+
+import rocks, rocks.sql, rocks.util
 from rocks.util import KickstartError
 
 
-class App(rocks.kickstart.Application):
+class App(rocks.sql.Application):
 
 	def __init__(self, argv):
-		rocks.kickstart.Application.__init__(self, argv)
+		rocks.sql.Application.__init__(self, argv)
 		self.usage_name		= 'Kickstart CGI'
-		self.usage_version	= '5.0'
+		self.usage_version	= rocks.version
 		self.form		= cgi.FieldStorage()
 		# The max number of simultaneous instances of this script.
 		self.lockFile		= '/var/tmp/kickstart.cgi.lck'
@@ -589,7 +588,7 @@ class App(rocks.kickstart.Application):
 		
 
 	def parseArg(self, c):
-		if rocks.kickstart.Application.parseArg(self, c):
+		if rocks.sql.Application.parseArg(self, c):
 			return 1
 		elif c[0] in ('-c', '--client'):
 			self.clientList = [ c[1] ]

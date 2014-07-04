@@ -570,7 +570,6 @@ import rocks.commands
 import rocks.ip
 import rocks.util
 import rocks.app
-import rocks.kickstart
 from syslog import syslog
 
 try:
