@@ -105,7 +105,7 @@ ROCKSROOT       = ../devel/devel
 -include $(ROCKSROOT)/etc/Rules.mk
 include Rules.mk
 
-SCRIPTS	= kgen kdoc kcgi screengen
+SCRIPTS	= kgen kdoc screengen
 
 
 build:	$(SCRIPTS)
@@ -118,14 +118,11 @@ install:: build
 	mkdir -p $(ROOT)/etc/rc.d/init.d
 	cp init.d/rocks-kickstart $(ROOT)/etc/rc.d/init.d
 
-	mkdir -p $(ROOT)/$(PKGROOT)/etc
-
 	mkdir -p $(ROOT)/export/rocks/install/sbin
-	$(INSTALL) -m 0755 kcgi $(ROOT)/export/rocks/install/sbin/kickstart.cgi
-	$(INSTALL) -m 0755 utils/*.cgi $(ROOT)/export/rocks/install/sbin/
+	$(INSTALL) -m 0755 cgi/*.cgi $(ROOT)/export/rocks/install/sbin/
 
 	mkdir -p $(ROOT)/export/rocks/install/site-profiles/$(VERSION)/nodes
-	$(INSTALL) -m 0644 $(wildcard site-nodes/*.xml) \
+	$(INSTALL) -m 0644 site-nodes/*.xml \
 		$(ROOT)/export/rocks/install/site-profiles/$(VERSION)/nodes/
 
 
