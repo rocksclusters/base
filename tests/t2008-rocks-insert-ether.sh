@@ -64,20 +64,20 @@ test_expect_success 'test insert-ether - check interface name of new hosts' '
 	pgrep insert-ether
 '
 
-
 test_expect_success 'test insert-ether - tear down I' '
+	pkill insert-ether &&
+	rm -f /var/lock/insert-ethers
+'
+
+
+test_expect_success 'test insert-ether - tear down II' '
 	rocks list host &&
 	testhostname=`rocks list host | grep utest-host` &&
 	test "$testhostname" &&
 	testhostname=${testhostname%:*} &&
 	test $testhostname &&
-	insert-ethers --remove $testhostname &&
+	rocks remove host $testhostname &&
 	! rocks list host $testhostname
-'
-
-test_expect_success 'test insert-ether - tear down II' '
-	pkill insert-ether &&
-	rm -f /var/lock/insert-ethers
 '
 
 test_done
