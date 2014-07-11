@@ -240,11 +240,13 @@ class Struct:
 
 def escapeAttr(value):
 	"""escape attribute values with XML escaping"""
-	return xml.sax.saxutils.escape(value, {"\"": "&quot;"})
+	return xml.sax.saxutils.escape(value, { "\"": "&quot;",
+						"%": "&#x0025;"})
 
 def unescapeAttr(value):
 	"""unescape attribute values with XML escaping """
-	return xml.sax.saxutils.unescape(value, {"&quot;": "\""})
+	return xml.sax.saxutils.unescape(value, {"&quot;": "\"",
+						"&#x0025;": "%"})
 
 
 def str2bool(s):
