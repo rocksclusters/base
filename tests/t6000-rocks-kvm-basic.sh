@@ -60,7 +60,7 @@ test_expect_success 'test KVM - report host vm config compute' '
 	echo transform a compute into a frontend &&
 	rocks set host installaction test-host-1 action="install vm frontend" &&
 	rocks report host vm config test-host-1 > output &&
-	xmllint output && 
+	xmllint output &&
 	virt-xml-validate output
 '
 

@@ -15,6 +15,8 @@ popd > /dev/null
 
 node_name="attribute-node"
 attr_name="test-attr"
+rversion=`rocks report version`
+rversion=RHEL${rversion:0:1}
 
 get_attr(){
 	rocks list attr | grep "^$1:" | awk "{print \$2}";
@@ -28,6 +30,8 @@ get_host_attr(){
 test_expect_success 'test attributes - set up tests' '
 	/opt/rocks/bin/rocks add host $node_name cpus=1 membership=compute\
 		os=linux rack=10 rank=10 &&
+	rocks add host interface $node_name eth0 ip=`rocks report nextip private` \
+		subnet=private mac=66:77:bb:bb:bb:bb &&
 	rocks list host 
 '
 
@@ -105,10 +109,27 @@ test_expect_success 'test attributes - host attributes set' '
 test_expect_success 'test attributes - host attributes dump' '
         rocks dump host attr | grep " $attr_name " | grep host2
 '
-# -- end -- host
 
 test_expect_success 'test attributes - rocks report host attr' '
 	rocks report host attr $node_name | grep "^$attr_name:" | grep host2
+'
+# -- end -- host
+
+# self contained test
+# need to define this here cos I can't inside the test
+crazy_value="<some attr='{crazy}'>attrvalue</some>"
+test_expect_success 'test attributes - kickstart wierd attribute' '
+	rocks add host attr $node_name wierd_attr1 "percent%attr" &&
+	rocks add host attr $node_name wierd_attr2 "$crazy_value" &&
+	value=`rocks report host attr $node_name attr=wierd_attr1`
+	test "$value" == "percent%attr" &&
+	value=`rocks report host attr $node_name attr=wierd_attr2`
+	test "$value" == "$crazy_value" &&
+	rocks list host xml $node_name | rocks list host profile > profile.sh &&
+	cat profile.sh | rocks list host installfile section=kickstart > ks.cfg &&
+	/usr/bin/ksvalidator -v $rversion -e ks.cfg &&
+	rocks remove host attr $node_name wierd_attr1 &&
+	rocks remove host attr $node_name wierd_attr1
 '
 
 test_expect_success 'test attributes - tear down removing attribute' '

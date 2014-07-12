@@ -361,11 +361,7 @@ class Command(rocks.commands.list.command):
 		# make sure all the attributes are XML escaped
 		#
 		for key in attrs.keys():
-			try:
-				a = saxutils.escape(attrs[key])
-			except:
-				a = attrs[key]
-			attrs[key] = a
+			attrs[key] = rocks.util.escapeAttr(attrs[key])
 
 		if 'os' not in attrs:
 			attrs['os'] = self.os

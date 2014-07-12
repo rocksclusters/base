@@ -484,7 +484,6 @@ class DatabaseHelper(rocks.db.database.Database):
 		"""general function to add an attribute to the DB given a category
 		and a catindex"""
 
-		value = rocks.util.escapeAttr(value)
 		(cat, catindex) = self.getCategoryIndex(category_name, catindex_name)
 
 		newAttr = Attribute(attr=attr, value=value, category=cat, catindex=catindex)
@@ -496,10 +495,6 @@ class DatabaseHelper(rocks.db.database.Database):
 		category and catindex"""
 
 		session = self.getSession()
-
-		if not attr.endswith(attr_postfix):
-			# escape only if it is not a _old attribute
-			value = rocks.util.escapeAttr(value)
 
 		(cat, catindex) = self.getCategoryIndex(category_name, \
 					catindex_name)
