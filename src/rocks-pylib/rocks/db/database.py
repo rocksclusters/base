@@ -62,15 +62,14 @@ import string
 import getopt
 import types
 import subprocess
+import threading
 
 from sqlalchemy import create_engine
 import sqlalchemy
-import mappings.base
-import rocks.db.mappings.base
 
 from rocks.db.mappings.base import *
 
-
+threadlocal = threading.local()
 
 
 class Database(object):
@@ -92,7 +91,6 @@ class Database(object):
 		self.verbose = False
 		#temporary holds results from self.conn.execute(sql)
 		self.results = False
-		self.session = None
 		self.conn = None
 		self.engine = None
 
@@ -184,7 +182,13 @@ class Database(object):
 			# TODO move this to the logger
 			print "Database connection URL: ", url
 
-		self.engine = create_engine(url)
+		self.engine = create_engine(url, max_overflow=30)
+		self.conn = self.engine.connect()
+
+
+	def reconnect(self):
+		"""try to restablish a connection after a process fork"""
+		self.engine.dispose()
 		self.conn = self.engine.connect()
 
 		
@@ -193,19 +197,32 @@ class Database(object):
 
 		the session is a singleton, you can call this method many time it 
 		returns always the same object"""
-		if self.session:
-			return self.session
+
+		session = getattr(threadlocal, "session", None)
+		if session:
+			return session
 		elif self.engine:
 			Session = sqlalchemy.orm.sessionmaker(bind=self.engine)
-			self.session = Session()
-			return self.session
+			session = Session()
+			setattr(threadlocal, "session", session)
+			return session
 		else:
 			return None
 
+	def closeSession(self):
+		session = getattr(threadlocal, "session", None)
+		if session:
+			session.close()
+			setattr(threadlocal, "session", None)
+			return
+		return
+
+
 	def commit(self):
 		"""Commit the current session if it exists"""
-		if self.session:
-			self.session.commit()
+		session = self.getSession()
+		if session:
+			session.commit()
 		else:
 			# no need to manually commit with sqlalchemy if using execute
 			# http://docs.sqlalchemy.org/en/rel_0_9/core/connections.html#understanding-autocommit
