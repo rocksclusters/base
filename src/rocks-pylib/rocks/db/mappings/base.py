@@ -61,10 +61,12 @@ class Alias(RocksBase, Base):
 
 	#column definitions
 	ID = Column('ID', Integer, primary_key=True, nullable=False)
+	node_ID = Column('Node', Integer, ForeignKey('nodes.ID'),
+					nullable=False, default=0)
 	name = Column('Name', String(32))
-	node = Column('Node', Integer, nullable=False, default=0)
 
-	#relation definitions
+	# relation definitions
+	# node from nodes
 
 
 class Appliance(RocksBase, Base):
@@ -300,6 +302,8 @@ class Node(RocksBase, Base):
 	#relation definitions
 	# map the networks belonging to this node
 	networks = sqlalchemy.orm.relationship("Network", backref="node")
+	public_keys = sqlalchemy.orm.relationship("PublicKey", backref="node")
+	aliases = sqlalchemy.orm.relationship("Alias", backref="node")
 	# backrefs defined in other tables
 	# membership from memeberships
 	# vm_defs	from vm_nodes
@@ -378,12 +382,14 @@ class PublicKey(RocksBase, Base):
 	__table_args__ = {}
 
 	#column definitions
-	description = Column('Description', String(4096))
 	ID = Column('ID', Integer, primary_key=True, nullable=False)
-	node = Column('Node', Integer, nullable=False)
+	node_ID = Column('Node', Integer, ForeignKey('nodes.ID'), nullable=False)
 	public_key = Column('Public_Key', String(4096))
+	description = Column('Description', String(4096))
 
 	#relation definitions
+	# backrefs defined in other tables
+	# node from Node
 
 
 class Resolvechain(RocksBase, Base):

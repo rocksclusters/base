@@ -375,7 +375,8 @@ CREATE TABLE aliases (
   ID		int(11) NOT NULL auto_increment,
   Node		int(11) NOT NULL default '0',
   Name		varchar(32) default NULL,
-  PRIMARY KEY (ID)
+  PRIMARY KEY (ID),
+  FOREIGN KEY(Node) REFERENCES nodes(id) ON DELETE CASCADE
 );
 
 
@@ -634,7 +635,8 @@ CREATE TABLE public_keys (
  Node		int(11) NOT NULL default '0',
  Public_Key	varchar(4096) default NULL,
  Description	varchar(4096) default NULL,
- PRIMARY KEY (ID)
+ PRIMARY KEY (ID),
+ FOREIGN KEY(Node) REFERENCES nodes(id) ON DELETE CASCADE
 );
 
 
