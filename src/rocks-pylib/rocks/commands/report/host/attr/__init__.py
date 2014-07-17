@@ -142,28 +142,26 @@ class Command(rocks.commands.HostArgumentProcessor,
 
 		self.beginOutput()
 		
-		try:
-			for host in self.getHostnames(args):
-	
-				if not attr:
-					if pyformat:
-						fmt="'%s':'%s',"
-					else:
-						fmt="%s:%s"
-					attrs = self.newdb.getHostAttrs(host)
-					if pyformat:
-						self.addOutput(host, '{')
-					for key in sorted(attrs.keys()):
-						self.addOutput(host,
-							fmt % (key, attrs[key]))
-					if pyformat:
-						self.addOutput(host,'}')
-				else:
+		for host in self.getHostnames(args):
+
+			attrs = self.newdb.getHostAttrs(host)
+			if attr:
+				try:
+					self.addOutput(host, attrs[attr])
+				except KeyError:
+					raise rocks.util.CommandError(
+						'Attribute %s does not exist' 
+						% attr)
+			elif pyformat:
+				# i don't understand why but when you pass it to the
+				# shell in this way no need to escape
+				#attrs = rocks.util.escapeStringForShell(str(attrs))
+				self.addOutput(host, attrs)
+			else:
+				fmt="%s:%s"
+				for key in sorted(attrs.keys()):
 					self.addOutput(host,
-						self.db.getHostAttr(host, attr))
-	
-		except:
-			pass
+						fmt % (key, attrs[key]))
 
 		if pyformat:
 			self.endOutput(padChar='',linesep='')

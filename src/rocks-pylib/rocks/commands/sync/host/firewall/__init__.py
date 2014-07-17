@@ -160,6 +160,7 @@ class Command(rocks.commands.sync.host.command):
 			# get the attributes for the host
 			#
 			attrs = self.db.getHostAttrs(host)
+			attrs = rocks.util.escapeStringForShell(str(attrs))
 
 			cmd = '/opt/rocks/bin/rocks report host firewall '
 			cmd += '%s | ' % host

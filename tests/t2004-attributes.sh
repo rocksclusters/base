@@ -118,7 +118,7 @@ test_expect_success 'test attributes - rocks report host attr' '
 # self contained test
 # need to define this here cos I can't inside the test
 crazy_value="<some attr='{crazy}'>attrvalue</some>"
-test_expect_success 'test attributes - kickstart wierd attribute' '
+test_expect_success 'test attributes - attribute special chars kickstart' '
 	rocks add host attr $node_name wierd_attr1 "percent%attr" &&
 	rocks add host attr $node_name wierd_attr2 "$crazy_value" &&
 	value=`rocks report host attr $node_name attr=wierd_attr1`
@@ -127,10 +127,29 @@ test_expect_success 'test attributes - kickstart wierd attribute' '
 	test "$value" == "$crazy_value" &&
 	rocks list host xml $node_name | rocks list host profile > profile.sh &&
 	cat profile.sh | rocks list host installfile section=kickstart > ks.cfg &&
-	/usr/bin/ksvalidator -v $rversion -e ks.cfg &&
-	rocks remove host attr $node_name wierd_attr1 &&
-	rocks remove host attr $node_name wierd_attr1
+	/usr/bin/ksvalidator -v $rversion -e ks.cfg
 '
+
+
+NODES_DIR=$TEST_DIRECTORY/../nodes
+test_expect_success 'test attributes - attribute special chars in shell' '
+	rocks add host attr localhost wierd_attr3 "$crazy_value" &&
+	rocks sync host firewall localhost &&
+	rocks report host firewall localhost | \
+	rocks report script attrs="`rocks report host attr localhost pydict=true`" \
+		> shell.sh &&
+        /bin/cat $NODES_DIR/database.xml | \
+		rocks report post attrs="`rocks report host attr localhost pydict=true`" \
+		> shell.sh &&
+	test_must_fail rocks report host attr localhost attr=asdfasdfa
+'
+
+test_expect_success 'test attributes - attribute special chars teardown' '
+	rocks remove host attr $node_name wierd_attr1 &&
+	rocks remove host attr $node_name wierd_attr1 &&
+	rocks remove host attr localhost wierd_attr3
+'
+
 
 test_expect_success 'test attributes - tear down removing attribute' '
 	rocks remove attr $attr_name &&

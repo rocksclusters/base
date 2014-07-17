@@ -249,6 +249,10 @@ def unescapeAttr(value):
 	return xml.sax.saxutils.unescape(value, {"&quot;": "\"",
 						"&#x0025;": "%"})
 
+def escapeStringForShell(string):
+	"""escape the given string so that it can be used in a shell script
+	inside a double quote string"""
+	return string.replace("\"", "\\\"") 
 
 def str2bool(s):
 	"""Converts an on/off, yes/no, true/false string to 1/0."""

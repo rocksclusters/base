@@ -182,6 +182,7 @@ class Command(rocks.commands.report.command):
 			attrs = eval(attributes)
 			xml += '<!DOCTYPE rocks-graph [\n'
 			for (k, v) in attrs.items():
+				v = rocks.util.escapeAttr(v)
 				xml += '\t<!ENTITY %s "%s">\n' % (k, v)
 			xml += ']>\n'
 

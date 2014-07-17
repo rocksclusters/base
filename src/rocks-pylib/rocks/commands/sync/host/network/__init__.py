@@ -181,6 +181,7 @@ class Command(rocks.commands.sync.host.command):
 			# get the attributes for the host
 			#
 			attrs = self.db.getHostAttrs(host)
+			attrs = rocks.util.escapeStringForShell(str(attrs))
 
 			exec_statement = self.getExecCommand(host, localhost)
 
