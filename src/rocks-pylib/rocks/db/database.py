@@ -253,6 +253,10 @@ class Database(object):
 		if self.conn:
 			self.conn.close()
 
+	def renewConnection(self):
+		self.close()
+		self.conn = self.engine.connect()
+
 
 if __name__ == "__main__":
 	d = Database()
