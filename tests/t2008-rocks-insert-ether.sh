@@ -15,8 +15,8 @@ popd > /dev/null
 
 
 # real mac address from a SUN workstation with NVIDA NIC
-magic_message1="May 22 16:12:18 `hostname` dhcpd: DHCPDISCOVER from 00:14:4f:80:de:00 via eth0: network 10.1.0.0/16: no free leases"
-magic_message2="X_RHN_PROVISIONING_MAC_0: eth0 00:14:4f:80:de:00 none ks"
+magic_message1="May 22 16:12:18 `hostname` dhcpd: DHCPDISCOVER from 00:14:gf:80:de:00 via eth0: network 10.1.0.0/16: no free leases"
+magic_message2="X_RHN_PROVISIONING_MAC_0: eth0 00:14:gf:80:de:00 none ks"
 
 
 
