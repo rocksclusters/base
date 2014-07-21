@@ -250,6 +250,9 @@ class Database(object):
 		return ()
 	
 	def close(self):
+		if self.results:
+			self.results.close()
+			self.results = None
 		if self.conn:
 			self.conn.close()
 
