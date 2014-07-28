@@ -474,13 +474,14 @@ class VmDisk(RocksBase, Base):
 
 	#column definitions
 	ID = Column('ID', Integer, primary_key=True, nullable=False)
-	vm_Node_ID = Column('Vm_Node', Integer, ForeignKey('vm_nodes.ID'), nullable=False)
-	vbd_type = Column('VBD_Type', String(64))
-	prefix = Column('Prefix', String(512))
-	name = Column('Name', String(512))
-	device = Column('Device', String(512))
-	mode = Column('Mode', String(64))
-	size = Column('Size', Integer, nullable=False)
+	vm_Node_ID = Column('Vm_Node', Integer, ForeignKey('vm_nodes.ID'), 
+			nullable=False, server_default='0')
+	vbd_type = Column('VBD_Type', String(64), server_default=text('NULL'))
+	prefix = Column('Prefix', String(512), server_default=text('NULL'))
+	name = Column('Name', String(512), server_default=text('NULL'))
+	device = Column('Device', String(512), server_default=text('NULL'))
+	mode = Column('Mode', String(64), server_default=text('NULL'))
+	size = Column('Size', Integer, nullable=False, server_default='0')
 
 	#relation definitions
 	node = sqlalchemy.orm.relationship("VmNode", backref="disks")
@@ -494,12 +495,13 @@ class VmNode(RocksBase, Base):
 	#column definitions
 	ID = Column('ID', Integer, primary_key=True, nullable=False)
 	physNode_ID = Column('PhysNode', Integer, ForeignKey('nodes.ID', 
-			ondelete="SET NULL"), nullable=False)
-	node_ID = Column('Node', Integer, ForeignKey('nodes.ID'), nullable=False)
-	mem = Column('Mem', Integer, nullable=False)
-	slice = Column('Slice', Integer, nullable=False)
-	virt_type = Column('Virt_Type', String(64))
-	cdrom_path = Column('cdrom_path', String(512))
+			ondelete="SET NULL"), server_default='0')
+	node_ID = Column('Node', Integer, ForeignKey('nodes.ID'), 
+			nullable=False, server_default='0')
+	mem = Column('Mem', Integer, nullable=False, server_default='1024')
+	slice = Column('Slice', Integer, nullable=False, server_default='0')
+	virt_type = Column('Virt_Type', String(64), server_default=text('NULL'))
+	cdrom_path = Column('cdrom_path', String(512), server_default='')
 
 	#relation definitions
 	# node is a 1-to-1 relationship aka uselist=Flase
