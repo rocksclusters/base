@@ -69,7 +69,7 @@
 # Rocks Postfix configuration for mail server.
 #
 mydomain = &Kickstart_PrivateDNSDomain;
-mydestination = $mydomain, $myhostname, localhost.$mydomain
+mydestination = $mydomain, $myhostname, localhost.$mydomain, localhost
 mynetworks = &Kickstart_PrivateNetwork;/&Kickstart_PrivateNetmaskCIDR;, 127.0.0.0/8
 inet_interfaces = all
 append_dot_mydomain = no
