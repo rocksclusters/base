@@ -368,17 +368,6 @@
 <post>
 
 <file name="/tmp/tables.sql">
-<!-- Aliases -->
-
-DROP TABLE IF EXISTS aliases;
-CREATE TABLE aliases (
-  ID		int(11) NOT NULL auto_increment,
-  Node		int(11) NOT NULL default '0',
-  Name		varchar(32) default NULL,
-  PRIMARY KEY (ID),
-  FOREIGN KEY(Node) REFERENCES nodes(id) ON DELETE CASCADE
-);
-
 
 <!-- Secure Attributes -->
 
@@ -455,6 +444,17 @@ CREATE TABLE nodes (
   InstallAction	varchar(64) default 'install',
   PRIMARY KEY  (ID),
   INDEX (Name)
+);
+
+<!-- Aliases -->
+
+DROP TABLE IF EXISTS aliases;
+CREATE TABLE aliases (
+  ID		int(11) NOT NULL auto_increment,
+  Node		int(11) NOT NULL default '0',
+  Name		varchar(32) default NULL,
+  PRIMARY KEY (ID),
+  FOREIGN KEY(Node) REFERENCES nodes(id) ON DELETE CASCADE
 );
 
 <!-- Subnets Table -->
