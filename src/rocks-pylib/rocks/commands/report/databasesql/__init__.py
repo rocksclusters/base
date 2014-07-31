@@ -59,6 +59,7 @@
 
 
 import inspect
+import os
 import sqlalchemy
 
 import rocks.commands
@@ -69,7 +70,7 @@ import rocks.db.mappings
 # dump mysql code
 #
 def dump(sql, *multiparams, **params):
-    print sql.compile(dialect=engine.dialect)
+    print sql.compile(dialect=engine.dialect), ';'
 
 engine = sqlalchemy.create_engine('mysql://', strategy='mock', executor=dump)
 
@@ -80,8 +81,14 @@ class Command(rocks.commands.report.command):
 
 	<arg type='string' name='component'>
 	output the database configuration of the given component name
-	the component are fetched from rocks.db.mappings.&lt;componenetname&gt;
+	the component are fetched from rocks.db.mappings.&lt;componentname&gt;
 	</arg>
+
+	<param optional='1' type='bool' name='droptable'>
+	If this parameters is true this command will drop the tables
+	before creating it (it will wipe all the data from it).
+	Default is false.
+	</param>
 
 	<example cmd='report databasesql base'>
 	print out the SQL for the base roll
@@ -89,6 +96,9 @@ class Command(rocks.commands.report.command):
 	"""
 
 	def run(self, params, args):
+
+		(droptable, ) = self.fillParams([('droptable','false'), ])
+		droptable=self.str2bool(droptable)
 	
 		if len(args) != 1:
 			self.abort('must supply one component name')
@@ -97,18 +107,34 @@ class Command(rocks.commands.report.command):
 
 		new_tables = []
 		try:
-			mod = __import__('rocks.db.mappings.' + component, fromlist=[''])
+			mod = __import__('rocks.db.mappings.' + component, 
+					fromlist=[''])
 		except ImportError:
-			self.abort("module component does not exists in rocks.db.mappings")
+			self.abort("module %s does not exists in "
+					"rocks.db.mappings" % component)
+
+		from sqlalchemy.ext.declarative.api import DeclarativeMeta
+		from rocks.db.mappings.base import RocksBase
+
 		for name, table in inspect.getmembers(mod):
-			if type(table) is sqlalchemy.ext.declarative.api.DeclarativeMeta and \
-				issubclass(table, rocks.db.mappings.base.RocksBase):
+			if type(table) is DeclarativeMeta and \
+				issubclass(table, RocksBase):
 				# table is a ORM table declaration (sqlalchemy)
 				new_tables.append(table.__table__)
 
 		base = rocks.db.mappings.base.Base
-		base.metadata.drop_all(engine, checkfirst=False, tables=new_tables)
-		base.metadata.create_all(engine, checkfirst=False, tables=new_tables)
+		if droptable:
+			base.metadata.drop_all(engine, tables=new_tables)
+		base.metadata.create_all(engine, tables=new_tables)
+
+
+		# extra sql files
+		extra_sql_path = os.path.join(rocks.db.mappings.__path__[0], 
+					component + ".sql")
+		if os.path.exists(extra_sql_path):
+			f = open(extra_sql_path)
+			print f.read()
+			f.close()
 
 	
 RollName = "base"

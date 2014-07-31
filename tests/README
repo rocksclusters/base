@@ -205,7 +205,7 @@ assignment to variable 'test_description', like this:
 
 	#!/bin/sh
 	#
-	# Copyright (c) 2005 Junio C Hamano
+	# Copyright (c) 2005 Some Dude
 	#
 
 	test_description='xxx test (option --frotz)
