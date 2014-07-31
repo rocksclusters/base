@@ -125,7 +125,14 @@ fi
 make -C OSROLL WORKDIR=$TMPDIR base updates
 
 # 2. Create a fake bootstrap appliance, network, and host in the database
-MYNAME=`hostname`
+if [ `hostname | grep localhost` ] ; then
+	# some built host (aka batlab) uses hostname == localhost
+	# this confuses really all rocks command so let's avoid that
+	MYNAME=develmachine
+else
+	MYNAME=`hostname`
+fi
+
 /opt/rocks/bin/rocks add distribution rocks-dist
 /opt/rocks/bin/rocks add appliance bootstrap node=server
 /opt/rocks/bin/rocks add host $MYNAME rack=0 rank=0 membership=bootstrap
