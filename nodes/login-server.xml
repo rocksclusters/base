@@ -49,6 +49,8 @@ the start of the login appliance
 /opt/rocks/bin/rocks set appliance attr login exec_host false
 # login appliance should be managed
 /opt/rocks/bin/rocks set appliance attr login    managed true
+# login appliance gets fail2ban
+/opt/rocks/bin/rocks set appliance attr login fail2ban true
 
 
 <!--

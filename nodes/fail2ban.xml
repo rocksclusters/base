@@ -1,0 +1,13 @@
+<?xml version="1.0" standalone="no"?>
+<kickstart>
+
+<description>
+Install fail2ban on node with public connection
+</description>
+
+<!-- fail2ban package comes from epel reporsitory and it is downloaded
+     at built time by src/yum-extras/Makefile
+     -->
+<package>python-inotify</package>
+<package>fail2ban</package>
+</kickstart> 

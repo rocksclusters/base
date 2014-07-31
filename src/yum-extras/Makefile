@@ -77,8 +77,19 @@ include Rules.mk
 -include $(ROCKSROOT)/etc/python.mk
 include python.mk
 
+#find the epel_rpm inside the list of rpm
+EPEL_RPM = $(shell for i in $(REPORPMS.NOARCH);do echo $$i | grep epel; done)
+#evaluate to true if it is installed when this script runs
+IS_EPEL_INSTALLED = $(shell rpm -qa |grep epel)
 
 rpm::	build
+	# you are wondering why this mess?
+	# if we are builing on a bare Centos we need to install epel to download
+	# fail2ban but then we have to remove it
+	# if we are on a Rocks node we don't need to install it
+	test "$(IS_EPEL_INSTALLED)" || rpm -Uvh $(EPEL_RPM);
+	yumdownloader --enablerepo=epel --destdir=$(REDHAT.RPMS)/noarch fail2ban;
+	test "$(IS_EPEL_INSTALLED)" || rpm -ev $(EPEL_RPM:.rpm=);
 	-cp $(REPORPMS) $(REDHAT.RPMS)/$(ARCH)/
 	-cp $(REPORPMS.NOARCH) $(REDHAT.RPMS)/$(ARCH)/
 

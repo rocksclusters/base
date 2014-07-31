@@ -536,7 +536,10 @@
 		<to>devel-server</to>
 		<to>google-otp-server</to>
 		<to>google-otp</to>
+		<to>fail2ban</to>
 	</edge>
+
+	<edge from="client" to="fail2ban" cond="fail2ban"/>
 
 	<edge from="server">
 		<to>screen-clusterinfo</to>
