@@ -172,7 +172,12 @@ class Command(rocks.commands.RollArgumentProcessor,
 				dict[o] = []
 			dict[o].append(string.join(dir.split(os.sep), ' '))
 
-		rolls = self.getRollNames(args, params)
+		try:
+			rolls = self.getRollNames(args, params)
+		except rocks.util.CommandError, e:
+			if len(args) != 1:
+				raise e
+			rolls = [(args[0], '')]
 		seenrolls = []
 			
 		self.beginOutput()
