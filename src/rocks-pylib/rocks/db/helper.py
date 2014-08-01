@@ -88,6 +88,12 @@ class DatabaseHelper(rocks.db.database.Database):
 		self._cacheAttrs = {}
 
 
+	def getListHostnames(self):
+		"""Return a list of string containing all the current hostnames"""
+		list = self.getSession().query(Node.name).all()
+		return [item for item, in list]
+
+
 	def getNodesfromNames(self, names=None, managed_only=0, preload=[]):
 		"""Expands the given list of names to valid set of Node entries.
 		A name can be a hostname, IP address, our group (membership name), 
