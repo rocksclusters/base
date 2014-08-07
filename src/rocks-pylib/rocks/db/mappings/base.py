@@ -21,7 +21,7 @@ class RocksBase(object):
 	@property
 	def session(self):
 		"""Singelton which return the session of the object"""
-		return object_session(self)
+		return sqlalchemy.orm.session.object_session(self)
 
 
 	def delete(self):
@@ -138,11 +138,11 @@ class Bootaction(RocksBase, Base):
 	__table_args__ = {}
 
 	#column definitions
-	action = Column('Action', String(256))
-	args = Column('Args', String(1024))
 	ID = Column('ID', Integer, primary_key=True, nullable=False)
+	action = Column('Action', String(256))
 	kernel = Column('Kernel', String(256))
 	ramdisk = Column('Ramdisk', String(256))
+	args = Column('Args', String(1024))
 
 	#relation definitions
 

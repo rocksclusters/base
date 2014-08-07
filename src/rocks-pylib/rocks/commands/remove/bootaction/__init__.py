@@ -79,10 +79,12 @@
 #
 #
 
+import os
 import sys
 import string
+import sqlalchemy
 import rocks.commands
-import os
+import rocks.db.mappings.base
 
 class Command(rocks.commands.HostArgumentProcessor,
 	rocks.commands.remove.command):
@@ -101,13 +103,20 @@ class Command(rocks.commands.HostArgumentProcessor,
 	"""
 
 	def run(self, params, args):
-		(action, ) = self.fillParams([('action', '%')])
+		(action, ) = self.fillParams([('action', '')])
 
-		# If no host list is provided remove the default action.
-		# Otherwise remove the action for each host.
-		
-		self.db.execute("""delete from bootaction where
-			bootaction.action = '%s' """ % action)
+		if not action:
+			self.abort("you need to specify an action")
+
+
+		s = self.newdb.getSession()
+		try:
+			bootaction = rocks.db.mappings.base.Bootaction.loadOne(s,
+					 action=action)
+			bootaction.delete()
+			s.commit()
+		except sqlalchemy.orm.exc.NoResultFound:
+			self.abort('no action found with name ' + action)
 
 		#	
 		# regenerate all the pxe boot configuration files
