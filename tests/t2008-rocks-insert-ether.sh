@@ -15,7 +15,8 @@ popd > /dev/null
 
 
 # real mac address from a SUN workstation with NVIDA NIC
-magic_message1="May 22 16:12:18 `hostname` dhcpd: DHCPDISCOVER from 00:14:gf:80:de:00 via eth0: network 10.1.0.0/16: no free leases"
+private_interface=`rocks report host attr localhost attr=Kickstart_PrivateInterface`
+magic_message1="May 22 16:12:18 `hostname` dhcpd: DHCPDISCOVER from 00:14:gf:80:de:00 via ${private_interface}: network 10.1.0.0/16: no free leases"
 magic_message2="X_RHN_PROVISIONING_MAC_0: eth0 00:14:gf:80:de:00 none ks"
 
 
@@ -45,9 +46,7 @@ test_expect_success 'test insert-ether - kickstart host' '
 	echo the new hostname is "$testhostname" &&
 	ip=`rocks list host interface $testhostname | grep private | awk "{print \\$4}"` &&
 	test $ip &&
-	interface=`rocks report host attr localhost attr=Kickstart_PrivateInterface` &&
-	test $interface && 
-	interface=$interface:5 &&
+	interface=$private_interface:5 &&
 	echo Kickstarting on interface $interface ip $ip &&
 	export interface hostname &&
 	ifconfig $interface $ip up &&
