@@ -236,62 +236,72 @@ class Command(rocks.commands.create.command):
 		distro.setRoot(os.getcwd())
 
 		#
-		# build the new distro in a temporary directory
+		# set the proper umask so we don't end up with a 
+		# distro which is unaccessible from apache
 		#
-		tempdist = tempfile.mkdtemp(dir="")
-		distro.setDist(tempdist)
-
-		distro.setLocal('/usr/src/redhat')
-		distro.setContrib(os.path.join(mirror.getRootPath(), 'contrib',
-			version))
-
-		builder = self.commandDist(distro, rolls)
-
-		#
-		# make sure everyone can traverse the the rolls directories
-		#
-		mirrors = distro.getMirrors()
-		fullmirror = mirrors[0].getRollsPath()
-		os.system('find %s -type d ' % (fullmirror) + \
-			'-exec chmod -R 0755 {} \;')
-
-		#
-		# if we are cross-kickstarting, and if there already is
-		# a distro directory, then just move the architecture
-		# directory into the existing distro
-		#
-		if self.arch != arch and os.path.exists(dist):
-			shutil.move(os.path.join(tempdist, arch),
-				os.path.join(dist, arch))
-			shutil.rmtree(tempdist)
-		else:
+		old_umask = os.umask(0o022)
+		try:
 			#
-			# now move the previous distro into a temporary
-			# directory
+			# build the new distro in a temporary directory
 			#
-			prevdist = tempfile.mkdtemp(dir="")
-			try:
-				shutil.move(dist, prevdist)
-			except:
-				pass
+			tempdist = tempfile.mkdtemp(dir="")
+			distro.setDist(tempdist)
+
+			distro.setLocal('/usr/src/redhat')
+			distro.setContrib(os.path.join(mirror.getRootPath(), 'contrib',
+				version))
+
+			builder = self.commandDist(distro, rolls)
 
 			#
-			# rename the temporary distro (the one we just built)
-			# to the 'official' name and make sure the permissions
-			# are correct
+			# make sure everyone can traverse the the rolls directories
 			#
-			shutil.move(tempdist, dist)
-			os.system('chmod 755 %s' % dist)
+			mirrors = distro.getMirrors()
+			fullmirror = mirrors[0].getRollsPath()
+			os.system('find %s -type d ' % (fullmirror) + \
+				'-exec chmod -R 0755 {} \;')
 
 			#
-			# nuke the previous distro
+			# if we are cross-kickstarting, and if there already is
+			# a distro directory, then just move the architecture
+			# directory into the existing distro
 			#
-			try:
-				shutil.rmtree(prevdist)
-			except:
-				pass
+			if self.arch != arch and os.path.exists(dist):
+				shutil.move(os.path.join(tempdist, arch),
+					os.path.join(dist, arch))
+				shutil.rmtree(tempdist)
+			else:
+				#
+				# now move the previous distro into a temporary
+				# directory
+				#
+				prevdist = tempfile.mkdtemp(dir="")
+				try:
+					shutil.move(dist, prevdist)
+				except:
+					pass
 
-		os.unlink(lockfile)
+				#
+				# rename the temporary distro (the one we just built)
+				# to the 'official' name and make sure the permissions
+				# are correct
+				#
+				shutil.move(tempdist, dist)
+				os.system('chmod 755 %s' % dist)
+
+				#
+				# nuke the previous distro
+				#
+				try:
+					shutil.rmtree(prevdist)
+				except:
+					pass
+
+			os.unlink(lockfile)
+
+		finally:
+			os.umask(old_umask)
+
 
 
 RollName = "base"
