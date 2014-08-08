@@ -270,7 +270,7 @@ class HTTPConnection:
 
 		contents = ''
 		while amt > 0:
-			chunk = self.fp.read(amt)
+			chunk = self.fd.read(amt)
 			if not chunk:
 				raise IncompleteRead(contents)
 			contents += chunk
