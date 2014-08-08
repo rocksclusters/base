@@ -67,6 +67,7 @@ import threading
 from sqlalchemy import create_engine
 import sqlalchemy
 
+import rocks
 from rocks.db.mappings.base import *
 
 threadlocal = threading.local()
@@ -139,7 +140,7 @@ class Database(object):
 			return self._dbHost
 		try:
 		        host = rocks.DatabaseHost
-		except:
+		except AttributeError:
 		        host = 'localhost'
 		return host
 
