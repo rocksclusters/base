@@ -152,7 +152,6 @@
 	<package os='linux'>foundation-coreutils</package>
 	<package os='linux'>foundation-rcs</package>
 	<package os='linux'>foundation-gawk</package>
-	<package os='linux'>foundation-readline</package>
 	<package os='linux'>foundation-mysql</package>
 	<package os='linux'>foundation-libxml2</package>
 	<package os='linux'>foundation-wget</package>
@@ -170,7 +169,6 @@
 	<package os='sunos'>ROCKSfoundation-coreutils</package>
 	<package os='sunos'>ROCKSfoundation-rcs</package>
 	<package os='sunos'>ROCKSfoundation-gawk</package>
-	<package os='sunos'>ROCKSfoundation-readline</package>
 	<package os='sunos'>ROCKSfoundation-libxml2</package>
 	<package os='sunos'>ROCKSfoundation-wget</package>
 

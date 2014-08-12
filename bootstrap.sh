@@ -211,7 +211,6 @@ if [ `./_os` == "linux" ]; then
 fi
 compile_and_install foundation-coreutils
 compile_and_install foundation-gawk
-compile_and_install foundation-readline
 compile_and_install foundation-wget
 compile_and_install foundation-mysql
 compile_and_install foundation-python

@@ -44,7 +44,6 @@ b5f8302941435adc4145cb16f5f9cb696069425d  src/foundation-python/Python-2.6.7.tar
 587edfbda731a0c4147e1680c5dea1fc3a53c4cd  src/foundation-python-xml-26/PyXML-0.8.4.tar.gz
 587edfbda731a0c4147e1680c5dea1fc3a53c4cd  src/foundation-python-xml/PyXML-0.8.4.tar.gz
 292c49f16c7b2a29aae3735c9bf8f876ddcc7ee2  src/foundation-rcs/rcs-5.7.tar.gz
-136dbfb8c7212f96787911dd31afc9f97515181e  src/foundation-readline/readline-5.1.tar.gz
 0478b07d18fd4225c5f31bd55ccca7f05f03d7bf  src/foundation-tidy/foundation-tidy.tar.gz
 28e8ad12521938496604f77cf60134af184cb11b  src/foundation-wget/wget-1.10.2.tar.gz
 b75a35f126ecd7fa593e324c257fa800946ce426  src/google-otp/google-authenticator.7SEP2012.gz
