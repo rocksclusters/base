@@ -161,6 +161,7 @@ class Command(rocks.commands.run.command):
 
 		script = []
 		script.append('#!/bin/sh\n')
+		script.append('yum clean all\n')
 			
 		rolls = []
 		for roll in args:
