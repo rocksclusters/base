@@ -315,12 +315,13 @@ class Listen411(rocks.service411.Service411):
 				except:
 					pass
 				retry = 0
-			except:
-				import time
-				time.sleep(random.uniform(0, 30))
-				# we don't syslog this since the msg would also
-				# hit the network to the frontend, making things worse.
+			except Exception, e:
 				retry -= 1
+				if retry:
+					import time
+					time.sleep(random.uniform(0, 30))
+				else:
+					syslog.syslog(syslog.LOG_ERR, 'Error: %s updating %s' % (url, str(e)))
 
 
 syslog.openlog('411-alert-handler', syslog.LOG_PID, syslog.LOG_LOCAL0)
