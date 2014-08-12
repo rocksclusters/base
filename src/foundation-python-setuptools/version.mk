@@ -1,4 +1,4 @@
-PYPKGNAME = setuptools
-NAME	= foundation-python-$(PYPKGNAME)
-VERSION = 0.6c11
+PYPKGNAME = distribute
+NAME	= foundation-python-setuptools
+VERSION = 0.6.10
 RELEASE = 0

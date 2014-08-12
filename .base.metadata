@@ -40,7 +40,7 @@ ecd046355054a655708b8f57cf1d837a4cf070f8  src/foundation-python-extras/pygobject
 18035755a0ab75fe23191b5588d4572bfe675b5c  src/foundation-python-extras/ssl-1.15.tar.gz
 18fc59d06f527f9be72b4126a7c90f8357cac6c3  src/foundation-python/Python-2.4.3.tar.gz
 b5f8302941435adc4145cb16f5f9cb696069425d  src/foundation-python/Python-2.6.7.tar.gz
-8d1ad6384d358c547c50c60f1bfdb3362c6c4a7d  src/foundation-python-setuptools/setuptools-0.6c11.tar.gz
+e92c3bc382df73147cb1992eed93fed52a2fd5f7  src/foundation-python-setuptools/distribute-0.6.10.tar.gz
 587edfbda731a0c4147e1680c5dea1fc3a53c4cd  src/foundation-python-xml-26/PyXML-0.8.4.tar.gz
 587edfbda731a0c4147e1680c5dea1fc3a53c4cd  src/foundation-python-xml/PyXML-0.8.4.tar.gz
 292c49f16c7b2a29aae3735c9bf8f876ddcc7ee2  src/foundation-rcs/rcs-5.7.tar.gz

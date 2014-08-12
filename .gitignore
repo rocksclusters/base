@@ -71,7 +71,7 @@ src/foundation-python-extras/SQLAlchemy-0.9.2.tar.gz
 src/foundation-python-extras/ssl-1.15.tar.gz
 src/foundation-python/Python-2.4.3.tar.gz
 src/foundation-python/Python-2.6.7.tar.gz
-src/foundation-python-setuptools/setuptools-0.6c11.tar.gz
+src/foundation-python-setuptools/distribute-0.6.10.tar.gz
 src/foundation-python-xml-26/PyXML-0.8.4.tar.gz
 src/foundation-python-xml/PyXML-0.8.4.tar.gz
 src/foundation-rcs/rcs-5.7.tar.gz
