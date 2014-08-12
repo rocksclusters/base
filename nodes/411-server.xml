@@ -196,6 +196,12 @@ Alias /411.d "/etc/411.d"
 
 </configure>
 
+<configure phase="reconfigure">
+# need to reload conf for apache
+/sbin/service httpd restart
+</configure>
+
+
 <post>
 
 <!--	Choose port 372 as the port to serve 411 on -->

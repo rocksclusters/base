@@ -808,6 +808,10 @@ fi
 /opt/rocks/bin/rocks sync host network localhost
 /opt/rocks/bin/rocks sync config
 
+# force regeneration of all PXE information
+# if private network changed they need to be rewritten
+/opt/rocks/bin/rocks set host boot compute vm-container nas login action=install
+
 </configure>
 
 <post>
