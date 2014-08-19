@@ -183,7 +183,7 @@ class Database(object):
 			# TODO move this to the logger
 			print "Database connection URL: ", url
 
-		self.engine = create_engine(url, max_overflow=30)
+		self.engine = create_engine(url, pool_recycle=3600)
 		self.conn = self.engine.connect()
 
 
