@@ -331,6 +331,7 @@ import stat
 import random
 import urllib
 import urlparse
+import syslog
 import cgi
 # No memory leaks in this version, unlike the standard httplib.
 from rocks.simplehttp import HTTPConnection
@@ -745,7 +746,13 @@ class Service411:
 		(base64 encoded) signature, and has not been altered since
 		signing. Returns true if message verifies."""
 
-		if not self.pub: self.readKeys()
+		if not self.pub:
+			try:
+				self.readKeys()
+			except IOError, e:
+				syslog.syslog(syslog.LOG_ERR, '411-error: ' \
+					+ str(e))
+				return 0
 
 		digest = POW.Digest(POW.MD5_DIGEST)
 		digest.update(msg)
