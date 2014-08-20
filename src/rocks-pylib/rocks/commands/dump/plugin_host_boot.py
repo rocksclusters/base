@@ -80,7 +80,7 @@ class Plugin(rocks.commands.Plugin):
 		return 'host-boot'
 		
 	def requires(self):
-		return [ 'host' ]
+		return ['host', 'network', 'interface']
 		
 	def run(self, args):
 		self.owner.addText(self.owner.command('dump.host.boot', []))
