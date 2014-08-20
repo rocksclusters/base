@@ -260,6 +260,9 @@ class Command(rocks.commands.list.host.command):
 
 			parser  = make_parser()
 			attrs = self.db.getHostAttrs(host)
+			for key in attrs:
+				# escape attribute in case they have some weird char
+				attrs[key] = rocks.util.escapeAttr(attrs[key])
 			handler = rocks.profile.GraphHandler(attrs, {}, prune=False)
 
 			for file in os.listdir(graphdir):

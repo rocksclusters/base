@@ -204,6 +204,10 @@ class Command(rocks.commands.report.command):
 		xml = ''
 
 		if attributes:
+			for key in self.attrs:
+				self.attrs[key] = \
+					rocks.util.escapeAttr(self.attrs[key])
+
 			for (k, v) in self.attrs.items():
 				xmlentities += '\t<!ENTITY %s "%s">\n' % (k, v)
 
