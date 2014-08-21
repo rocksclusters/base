@@ -677,6 +677,8 @@ class App(rocks.sql.Application):
 		# Default distribution name.
 		if self.form.has_key('arch'):
 			self.arch = self.form['arch'].value
+		else:
+			self.arch = 'x86_64'
 		if self.form.has_key('os'):
 			OS = self.form['os'].value
 		else:
