@@ -1840,7 +1840,7 @@ class Command:
 			elif format == 'parsed':
 				self.addText(handler.getParsedText())
 			elif format == 'sphinx':
-				self.addText(handler.getgetSphinxText())
+				self.addText(handler.getSphinxText())
 			else:
 				self.addText(handler.getPlainText())
 
