@@ -108,4 +108,9 @@ src/yum-extras/rpmforge-release-0.5.2-2.el5.rf.i386.rpm
 src/yum-extras/rpmforge-release-0.5.2-2.el5.rf.x86_64.rpm
 src/yum-extras/rpmforge-release-0.5.2-2.el6.rf.i686.rpm
 src/yum-extras/rpmforge-release-0.5.2-2.el6.rf.x86_64.rpm
+src/foundation-python-sphinx/docutils-0.12.tar.gz
+src/foundation-python-sphinx/jinja2-2.7.3.tar.gz
+src/foundation-python-sphinx/MarkupSafe-0.23.tar.gz
+src/foundation-python-sphinx/Pygments-1.6.tar.gz
+src/foundation-python-sphinx/Sphinx-1.2.2.tar.gz
 # --- END ---
