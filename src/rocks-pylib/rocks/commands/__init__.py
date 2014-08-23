@@ -1022,8 +1022,7 @@ class DocStringHandler(handler.ContentHandler,
 		else:
 			prompt = '$'
 
-		s  = ''
-		s += '.. _rocks-%s:\n\n' % self.name.replace(' ','-')
+		s  = ':orphan:\n\n'
 		s += '%s\n' % self.name
 		s += '%s\n\n' % ("-" * len(self.name))
 		s += '.. role:: defn\n\n' 
@@ -1059,14 +1058,14 @@ class DocStringHandler(handler.ContentHandler,
 			for (cmd, txt) in self.section['example']:
 				txt = txt.replace('*', '\*')
 				s += '%s::\n\n' % txt.replace('\t','   ')
-				s += '   %s rocks %s\n' % (prompt, cmd)
+				s += '        %s rocks %s\n' % (prompt, cmd)
 		if self.section['related']:
 			s += '\n**Related Commands:**\n\n'
 			for related in self.section['related']:
 				s += '   * :ref:`rocks-%s`\n' % related.replace(' ','-')
 
-                word = self.name.split()[0]
-		s += '\n|back| :ref:`%s commands <%s-ref>`\n' % (word, word)
+		word = self.name.split()[0]
+		s += '\n:ref:`%s commands <%s-ref>`\n' % (word, word)
 
 		return s
 
