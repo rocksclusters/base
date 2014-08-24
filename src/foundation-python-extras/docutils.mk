@@ -71,7 +71,7 @@
 #
 
 DOCUTILS_NAME = docutils
-DOCUTILS_VERSION = 0.7
+DOCUTILS_VERSION = 0.12
 build::
 	gunzip -c $(DOCUTILS_NAME)-$(DOCUTILS_VERSION).tar.gz | $(TAR) -xf -
 	(								\

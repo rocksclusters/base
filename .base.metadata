@@ -20,7 +20,7 @@ e7ba6b0cc6fa7c9e053c263952936bcca0c12eb0  src/firerox/firefox-3.5.19.source.tar.
 394e95b3ddfb9b725368b81ad60dc39382fb9e12  src/foundation-mercurial/mercurial-1.8.2.tar.gz
 8665c76ab4ab36e8d2379ddf6d678c89b95d9321  src/foundation-mysql/mysql-5.1.56.tar.gz
 90b46f973930c27eb8586387de5dfbc2af04d3ed  src/foundation-mysql/mysql-5.6.15.tar.gz
-e82988f826844ef8d8bf28fa286a19de211349cd  src/foundation-python-extras/docutils-0.7.tar.gz
+002450621b33c5690060345b0aac25bc2426d675  src/foundation-python-extras/docutils-0.12.tar.gz
 0538e7cf0cb1258a03c3d5e9c4143daa7ec86258  src/foundation-python-extras/egenix-mx-base-2.0.6.tar.gz
 4fd3e9322fe461c3946ac09fb6f4042d54f6af59  src/foundation-python-extras/IPy-0.55.tar.gz
 3935b3b823e9a1ab736aec5b3c87167dbcbea79c  src/foundation-python-extras/libxml2dom-0.3.3.tar.gz
@@ -77,7 +77,6 @@ ae0e5164252cb634a83705bb490c50ef3f9ff4ef  src/yum-extras/rpmforge-release-0.5.2-
 34ef027d935320fb7bf2af4f54d73d216506649b  src/yum-extras/rpmforge-release-0.5.2-2.el5.rf.x86_64.rpm
 92a0c2525d3aeda72c5c08d13a49c43d6b980652  src/yum-extras/rpmforge-release-0.5.2-2.el6.rf.i686.rpm
 6c335832ba3e8e9cbd6c83b125c36de102a5666a  src/yum-extras/rpmforge-release-0.5.2-2.el6.rf.x86_64.rpm
-002450621b33c5690060345b0aac25bc2426d675  src/foundation-python-sphinx/docutils-0.12.tar.gz
 06b974934629879b6fec45889ac006630bfcf7f9  src/foundation-python-sphinx/jinja2-2.7.3.tar.gz
 cd5c22acf6dd69046d6cb6a3920d84ea66bdf62a  src/foundation-python-sphinx/MarkupSafe-0.23.tar.gz
 53d831b83b1e4d4f16fec604057e70519f9f02fb  src/foundation-python-sphinx/Pygments-1.6.tar.gz
