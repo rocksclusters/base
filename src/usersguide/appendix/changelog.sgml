@@ -32,7 +32,7 @@
 	</para>
 
 	<para>
-	Base: 411-alter-handler properly handle corrupted timestamp file
+	Base: 411-alter-handler properly handles corrupted timestamp file
 	</para>
 
 	<para>
@@ -40,7 +40,7 @@
 	</para>
 
 	<para>
-	Base: fix for MTU not applied when using VLAN
+	Base: properly apply MTU when using VLAN on an interface
 	</para>
 
 	<para>
@@ -56,15 +56,72 @@
 	</para>
 
 	<para>
-	KVM: now you can specify the vcpu type with attributes
+	Base: insert-ethers now verifies that required serivces are
+	running at startup (dhcpd, httpd, tftpd, channeld)
 	</para>
 
 	<para>
-	HPC: use the proper BTL with openmpi
+	Base: rocks create distro sets proper umask before creating the distro
 	</para>
 
 	<para>
-	ZFS: updated to 0.6.1
+	Base: login and frontend nodes install fail2ban
+	</para>
+
+	<para>
+	Base: it is not possible to reconfigure networking of frontend without reinstallation
+	(pubblic/pirvate ip setting, fqdn, gateway, etc.)
+	</para>
+
+	<para>
+	Base: &lt;file&gt; tag supports disabling RCS file generation
+	</para>
+
+	<para>
+	Base: &lt;file&gt; tag supports include attribute to simplify xml scripting
+	</para>
+
+	<para>
+	Base: firewall now supports SNAT
+	</para>
+
+	<para>
+	Base: Use NFSv4 for home directories and /share
+	</para>
+
+	<para>
+	KVM: CPU capabilites can be specified with attributes
+	</para>
+
+	<para>
+	KVM: several plugins allow flexible configuration in several part of KVM roll
+	(starting a VM, stopping a VM, creating libvirt xml)
+	</para>
+
+	<para>
+	KVM: physical container can suspend and resume virtual machine
+	when shutting down and when restarting
+	</para>
+
+	<para>
+	KVM: Virtual Machine can now mount ISOs as cdrom drive
+	</para>
+
+	<para>
+	KVM: virtual machine can now run on different appliances 
+	type (not just VM Container)
+	</para>
+
+	<para>
+	KVM: airboss client can now fetch private keys from ssh-agent
+	</para>
+
+	<para>
+	HPC: openmpi uses the proper BTL
+	</para>
+
+	<para>
+	ZFS: updated to 0.6.3
 	</para>
 
 </section>
