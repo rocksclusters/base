@@ -63,13 +63,12 @@
 
   </changelog>
 
+<post>
+# we need to fix the Domain to get NFSv4 running
+# this regexp will match both initial idmapd.conf as well as following reconfigure
+sed -i 's/.*Domain.*=.*/Domain = &Kickstart_PublicHostname;/g' /etc/idmapd.conf
+</post>
 
 </kickstart> 
-
-
-
-
-
-
 
 

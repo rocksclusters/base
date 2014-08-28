@@ -80,6 +80,14 @@
 
 </post>
 
+
+<configure phase="post,reconfigure">
+# we need to fix the Domain to get NFSv4 running
+# this regexp will match both initial idmapd.conf as well as following reconfigure
+sed -i 's/.*Domain.*=.*/Domain = &Kickstart_PublicHostname;/g' /etc/idmapd.conf
+</configure>
+
+
 <configure phase="reconfigure">
 if [ "&Kickstart_PrivateAddress_old;" ]; then
 	sed -i 's/&Kickstart_PrivateAddress_old;/&Kickstart_PrivateAddress;/g' /etc/exports
@@ -93,6 +101,7 @@ if [ "&Kickstart_PrivateNetmask_old;" ]; then
 	sed -i 's/&Kickstart_PrivateNetmask_old;/&Kickstart_PrivateNetmask;/g' /etc/exports
 fi
 
+/sbin/service rpcidmapd restart
 /usr/sbin/exportfs -a
 
 </configure>

@@ -162,8 +162,10 @@ class Plugin(rocks.commands.Plugin):
 		# if there is a mount option specified in the database
 		# use it. otherwise, use the default.
 		options = self.db.getHostAttr('localhost', 'Info_HomeDirOptions')
-		if not options:
-			options="nfsvers=3"
+		if options:
+			options = '\t-' + options
+		else:
+			options = ""
 
 		for user in new_users:
 
@@ -180,7 +182,7 @@ class Plugin(rocks.commands.Plugin):
 			# then update the auto.home file
 
 			new_user_dir = os.path.join(homedirloc, user)
-			autofs_entry = '%s\t-%s\t%s:%s' % \
+			autofs_entry = '%s%s\t%s:%s' % \
 				(user, options, hostname, new_user_dir)
 
 			cmd = 'echo "%s" >> /etc/auto.home' % (autofs_entry)
