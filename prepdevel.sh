@@ -130,7 +130,7 @@ if [ `hostname | grep localhost` ] ; then
 	# this confuses really all rocks command so let's avoid that
 	MYNAME=develmachine
 else
-	MYNAME=`hostname`
+	MYNAME=`hostname -s`
 fi
 
 /opt/rocks/bin/rocks add distribution rocks-dist
