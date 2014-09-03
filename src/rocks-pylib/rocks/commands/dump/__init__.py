@@ -195,6 +195,7 @@ class Command(command):
 		if len(args):
 			self.abort('command does not take arguments')
 		self.runPlugins()
+		self.dump('run reconfigure clear=1')
 
 
 RollName = "base"
