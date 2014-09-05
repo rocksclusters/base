@@ -152,7 +152,7 @@ class Command(rocks.commands.set.host.command):
 			self.abort('must supply cpus')
 			
 		for node in self.newdb.getNodesfromNames(args):
-			node.CPUs = int(cpus)
+			node.cpus = int(cpus)
 
 
 RollName = "base"
