@@ -106,6 +106,7 @@
 <post interpreter="/opt/rocks/bin/python">
 import os
 import os.path
+import shutil
 import rocks.grub
 
 isXen = False
@@ -168,6 +169,8 @@ else:
 
 	newmakegrub.setFilename('grub-orig.conf')
 	newmakegrub.append(args)
+
+	shutil.copy('/boot/grub/grub-orig.conf', '/boot/grub/grub.conf')
 </post>
 
 </kickstart> 
