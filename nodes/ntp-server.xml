@@ -101,13 +101,10 @@
 <post>
 
 <!-- Configure NTP to use an external server -->
+<!-- leave centos 6 default which are more secure -->
 
-<file name="/etc/ntp.conf">
-server &Kickstart_PublicNTPHost; iburst
-server	127.127.1.1 iburst
-fudge	127.127.1.1 stratum 10
-driftfile /var/lib/ntp/drift
-</file>
+sed -i '/^server/d' /etc/ntp.conf
+echo server &Kickstart_PublicNTPHost; iburst >> /etc/ntp.conf
 
 <!-- Force the clock to be set to the server upon reboot -->
 
@@ -118,6 +115,7 @@ driftfile /var/lib/ntp/drift
 </file>
 
 <!-- Force the clock to be set to the server right now -->
+<!-- ntpdate should be replaced by ntpd -qg -ddd -->
 
 /usr/sbin/ntpdate &Kickstart_PublicNTPHost;
 /sbin/hwclock --systohc --utc
