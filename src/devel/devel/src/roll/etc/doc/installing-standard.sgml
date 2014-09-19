@@ -45,7 +45,7 @@ Revision 1.1  2006/09/21 00:18:30  mjk
 
 The &document-rollname; &roll; should be installed during the initial
 installation of your server (or cluster).  This procedure is documented
-in section 1.2 of the &rocks; usersguide.  You should select the
+in section 3.2 of the &rocks; usersguide.  You should select the
 &document-rollname; &roll; from the list of available &roll;s when you
 see a screen that is similar to the one below.
 

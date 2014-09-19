@@ -250,7 +250,7 @@ class DatabaseHelper(rocks.db.database.Database):
 				return hostname
 
 		if not hostname:					
-			hostname = socket.gethostname()
+			hostname = socket.gethostname().split('.')[0]
 		try:
 
 			# Do a reverse lookup to get the IP address.

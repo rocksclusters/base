@@ -10,4 +10,8 @@ Install fail2ban on node with public connection
      -->
 <package>python-inotify</package>
 <package>fail2ban</package>
+
+<configure phase="post,reconfigure">
+sed -i 's/\(^ignoreip = 127.0.0.1\/8.*$\)/\1 &Kickstart_PrivateNetwork;\/&Kickstart_PrivateNetmaskCIDR;/' /etc/fail2ban/jail.conf
+</configure>
 </kickstart> 

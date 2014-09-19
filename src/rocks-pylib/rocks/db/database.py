@@ -66,6 +66,7 @@ import threading
 
 from sqlalchemy import create_engine
 import sqlalchemy
+import sqlalchemy.exc
 
 import rocks
 from rocks.db.mappings.base import *
@@ -233,7 +234,14 @@ class Database(object):
 		if self.conn:
 			if '%' in command:
 				command = string.replace(command, '%', '%%')
-			self.results = self.conn.execute(command)
+			try:
+				self.results = self.conn.execute(command)
+			except sqlalchemy.exc.OperationalError as e:
+				# the database disconnected us, let's try to reconnect once
+				self.commit()
+				self.close()
+				self.renewConnection()
+				self.results = self.conn.execute(command)
 			# rowcont should not be used it is not portable
 			# http://docs.sqlalchemy.org/en/rel_0_9/core/connections.html#sqlalchemy.engine.ResultProxy.rowcount
 			return self.results.rowcount

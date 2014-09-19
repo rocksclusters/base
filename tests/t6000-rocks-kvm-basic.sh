@@ -72,6 +72,17 @@ test_expect_success 'test KVM - report host vm config disablekvm interface' '
         virt-xml-validate output
 '
 
+test_expect_success 'test KVM - report host vm config cpu mode and pinning' '
+	rocks set host attr test-host-1 kvm_cpu_pinning pin_all &&
+	rocks set host attr test-host-1 cpu_mode host-passthrough &&
+	rocks set host cpus test-host-1 2 &&
+	rocks report host vm config test-host-1 > output &&
+	test `grep -c "<vcpupin " output ` -eq 2 &&
+	grep -c "host-passthrough" output &&
+        virt-xml-validate output
+'
+
+
 test_expect_success 'test KVM - report host vm config FE' '
 	rocks report host vm config test-host-0 > output &&
 	xmllint output &&

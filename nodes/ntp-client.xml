@@ -100,22 +100,13 @@
 
 <post os='linux'>
 
-<!-- Configure NTP to use an external server -->
+<!-- Configure NTP to use Kickstart_PrivateNTPHost server 
+     we reuse the default centos configuration file -->
+sed -i '/^server/d' /etc/ntp.conf
+echo server &Kickstart_PrivateNTPHost; iburst >> /etc/ntp.conf 
 
-<file name="/etc/ntp.conf">
-server &Kickstart_PrivateNTPHost;
-driftfile /var/lib/ntp/drift
-</file>
 </post>
 
-<post os='sunos'>
-
-<!-- Configure NTP to use an external server -->
-<file name="/etc/inet/ntp.conf">
-server &Kickstart_PrivateNTPHost;
-driftfile /var/ntp/drift
-</file>
-</post>
 
 <post>
 <!-- Force the clock to be set to the server upon reboot -->
@@ -127,6 +118,7 @@ driftfile /var/ntp/drift
 </file>
 
 <!-- Force the clock to be set to the server right now -->
+<!-- ntpdate should be replaced by ntpd -qg -ddd -->
 
 /usr/sbin/ntpdate &Kickstart_PrivateNTPHost;
 </post>
