@@ -1,0 +1,8 @@
+<roll name="@DISTRO@-@VERSION@-Updated" interface="4.0">
+	<timestamp time="00:49:24" date="@DATE@" tz="PDT"/>
+	<color edge="" node=""/>
+	<info version="@DATE@" release="0" arch="x86_64" os="linux"/>
+	<iso maxsize="0" bootable="0" mkisofs="-b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table"/>
+	<rpm rolls="0" bin="1" src="0"/>
+	<author name="root" host="central-x86-64.calit2.optiputer.net"/>
+</roll>

@@ -20,3 +20,4 @@ endif
 MIRRORURL=http://mirror.hmc.edu
 UPDATESPATH=centos/$(VERSION)/updates/$(ARCH)/$(PKGS)/
 
+ROLLNAME=CentOS-$(VERSION)-Updated
