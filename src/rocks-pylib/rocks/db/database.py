@@ -238,8 +238,6 @@ class Database(object):
 				self.results = self.conn.execute(command)
 			except sqlalchemy.exc.OperationalError as e:
 				# the database disconnected us, let's try to reconnect once
-				self.commit()
-				self.close()
 				self.renewConnection()
 				self.results = self.conn.execute(command)
 			# rowcont should not be used it is not portable
