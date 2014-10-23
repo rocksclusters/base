@@ -233,8 +233,8 @@ class Command(rocks.commands.config.host.command):
 					# interfaces
 					#
 					self.command('swap.host.interface',
-						(host, 'sync-config="no"',
-						'ifaces="%s,%s"' %
+						(host, 'sync-config=no',
+						'ifaces=%s,%s' %
 						(old_iface, iface)))
 
 					sync_config = 1
