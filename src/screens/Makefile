@@ -169,7 +169,7 @@ ROCKSROOT       = ../devel/devel
 -include $(ROCKSROOT)/etc/Rules.mk
 include Rules.mk
 
-SCRIPTS		= rocks-buildscreens rocks-getroll.cgi sitexml2entities rocks-interface-menu
+SCRIPTS		= rocks-buildscreens rocks-getroll.cgi sitexml2entities rocks-interface-menu rocks-mtu-menu
 
 
 build: rolls.html
