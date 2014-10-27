@@ -609,10 +609,12 @@ if os.path.exists('/tmp/site.attrs'):
 	dnszone=&Kickstart_PrivateDNSDomain;	\
 	servedns=true
 
+if [ "&Kickstart_PublicMTU;" == "" ]; then Kickstart_PublicMTU = 1500; fi
 /opt/rocks/bin/rocks add network public		\
 	subnet=&Kickstart_PublicNetwork;	\
 	netmask=&Kickstart_PublicNetmask;	\
 	dnszone=&Kickstart_PublicDNSDomain;	\
+	mtu=&Kickstart_PublicMTU;	\
 	servedns=false
 
 <!--

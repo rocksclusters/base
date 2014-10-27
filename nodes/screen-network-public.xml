@@ -66,6 +66,17 @@ Support user selecting public and private interfaces on frontend
 		<help>Enter the netmask for eth1.</help>
 	</variable>
 
+	<variable>
+		<label>mtu</label>
+		<name>Kickstart_PublicMTU</name>
+		<type>menu</type>
+		<size>1</size>
+		<eval mode='xml'>
+			if [ -x /opt/rocks/screens/rocks-mtu-menu ]; then /opt/rocks/screens/rocks-interface-menu /proc/cmdline; fi
+		</eval>
+		<value>&Kickstart_PublicMTU;</value>
+		<help>This is the MTU (Maximum Transmission Unit) of your public network. Standard frames use 1500, jumbo frames use 9000</help>
+	</variable>
 
 	<!-- hidden variables -->
 	<variable>
