@@ -36,6 +36,7 @@ src/anaconda/anaconda-11.1.2.259-1.src.rpm
 src/anaconda/anaconda-13.21.149-1.el6.src.rpm
 src/anaconda/anaconda-13.21.176-1.el6_3.src.rpm
 src/anaconda/anaconda-13.21.215-1.el6.src.rpm
+src/anaconda/anaconda-13.21.229-1.el6.src.rpm
 src/anaconda-yum-plugins/anaconda-yum-plugins-1.0.tar.bz2
 src/environment-modules/envmodules-3.2.9c.tar.gz
 src/firerox/firefox-3.5.19.source.tar.bz2

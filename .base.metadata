@@ -5,6 +5,7 @@ cd9abe5a0267ae2b8f5ecad16a17d2cbaf1c3301  src/anaconda/anaconda-11.1.2.242-1.src
 983c169a399dc3c240323008138add509a37f155  src/anaconda/anaconda-13.21.149-1.el6.src.rpm
 cf9ae1f3fd760b5c1315de478ce501e3fd7a4879  src/anaconda/anaconda-13.21.176-1.el6_3.src.rpm
 df7ae54ab1e8c1c7781eaf140d13ce6d21a634fc  src/anaconda/anaconda-13.21.215-1.el6.src.rpm
+c9e4fa482e0bd883b1d41c3459c8a34ea49f74ca  src/anaconda/anaconda-13.21.229-1.el6.src.rpm
 cf8e3b28eb3aa06b5508a7e2144ebda0bc0de57b  src/anaconda-yum-plugins/anaconda-yum-plugins-1.0.tar.bz2
 d50fb14c8501d33a2815b5d513f37b98a62ace69  src/environment-modules/envmodules-3.2.9c.tar.gz
 e7ba6b0cc6fa7c9e053c263952936bcca0c12eb0  src/firerox/firefox-3.5.19.source.tar.bz2
