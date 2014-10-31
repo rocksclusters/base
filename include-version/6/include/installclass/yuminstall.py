@@ -267,7 +267,7 @@ class AnacondaCallback:
                     _("A fatal error occurred when installing the %s "
                       "package.  This could indicate errors when reading "
                       "the installation media.  Installation cannot "
-                      "continue.") % hdr['name'],
+                      "continue.") % hdr,
                     type="custom", custom_icon="error",
                     custom_buttons=[_("_Exit installer")])
                 sys.exit(1)
@@ -1367,6 +1367,12 @@ debuglevel=6
         if not anaconda.mediaDevice and os.path.ismount(self.ayum.tree):
             isys.umount(self.ayum.tree)
 
+        # Attempt to clean up Yum so that running yum in post will work (#1110148)
+        self.ayum.closeRpmDB()
+        del self.ayum.tsInfo
+        del self.ayum.ts
+        self.ayum.close()
+
         # clean up rpmdb locks so that kickstart %post scripts aren't
         # unhappy (#496961)
         iutil.resetRpmDb(anaconda.rootPath)
@@ -1611,6 +1617,9 @@ debuglevel=6
 
             return True
 
+        if anaconda.isKickstart and "kernel" in anaconda.id.ksdata.packages.excludedList:
+            return
+
         foundkernel = False
 
         if not foundkernel and isys.isPaeAvailable():
@@ -1628,13 +1637,12 @@ debuglevel=6
                 fspkgs.add(pkg)
         map(self.selectPackage, fspkgs)
 
-    # anaconda requires several programs on the installed system to complete
-    # installation, but we have no guarantees that some of these will be
-    # installed (they could have been removed in kickstart).  So we'll force
-    # it.
-    def selectAnacondaNeeds(self):
-        for pkg in ['authconfig', 'chkconfig', 'system-config-firewall-base']:
-            self.selectPackage(pkg)
+    def selectAnacondaNeeds(self, anaconda):
+        # Only add in chkconfig if they did something that needs it.
+        if anaconda.isKickstart and (anaconda.id.ksdata.services.disabled or
+                                     anaconda.id.ksdata.services.enabled) or \
+           anaconda.id.storage.services or anaconda.id.network.hasActiveIPoIBDevice():
+            self.selectPackage("chkconfig")
 
     def doPostSelection(self, anaconda):
         # Only solve dependencies on the way through the installer, not the way back.
@@ -1652,7 +1660,7 @@ debuglevel=6
             self.selectFSPackages(anaconda.id.storage)
             if anaconda.id.network.hasActiveIPoIBDevice():
                 self.selectPackage("rdma")
-            self.selectAnacondaNeeds()
+            self.selectAnacondaNeeds(anaconda)
         else:
             self.ayum.update()
 
@@ -1946,6 +1954,10 @@ debuglevel=6
 
         if anaconda.isKickstart and anaconda.id.ksdata.packages.excludeDocs:
             rpm.addMacro("_excludedocs", "1")
+
+        if anaconda.isKickstart and anaconda.id.ksdata.packages.instLangs is not None:
+            # Use nil if instLangs is empty
+            rpm.addMacro('_install_langs', anaconda.id.ksdata.packages.instLangs or '%{nil}')
 
         cb = AnacondaCallback(self.ayum, anaconda,
                               self.instLog, self.modeText)

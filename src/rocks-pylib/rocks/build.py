@@ -1462,7 +1462,7 @@ class DistributionBuilder(Builder):
 	# worker.py (Called by genpkgmetadata) needs tmp space
 	os.putenv("TMPDIR",".")
 	subprocess.call('%s ' % (createrepo) + 
-		gf + 
+		gf + ' --workers 8 ' +  
 		'--quiet .', shell=True)
 
 	if tmpdir is not None:

@@ -12,12 +12,12 @@ VERSION=5.9
 PKGS=RPMS
 BASEPATH=centos/$(VERSION)/os/$(ARCH)/CentOS/
 else
-VERSION=6.5
+VERSION=6.6
 PKGS=Packages
-BASEPATH=centos/$(VERSION)/os/$(ARCH)/$(PKGS)/
+BASEPATH=$(VERSION)/os/$(ARCH)/$(PKGS)/
 endif
 
-MIRRORURL=http://mirror.hmc.edu
-UPDATESPATH=centos/$(VERSION)/updates/$(ARCH)/$(PKGS)/
+MIRRORURL=http://mirror.pac-12.org
+UPDATESPATH=$(VERSION)/updates/$(ARCH)/$(PKGS)/
 
 ROLLNAME=CentOS-$(VERSION)-Updated
