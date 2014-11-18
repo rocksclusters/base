@@ -1,0 +1,13 @@
+<?xml version="1.0" standalone="no"?>
+
+<kickstart>
+
+	<description>
+ 	MOSH - Mobile Shell from MIT 	
+	</description>
+
+	<package>protobuf</package>
+	<package>mosh</package>
+
+</kickstart>
+

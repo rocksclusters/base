@@ -82,3 +82,5 @@ ae0e5164252cb634a83705bb490c50ef3f9ff4ef  src/yum-extras/rpmforge-release-0.5.2-
 cd5c22acf6dd69046d6cb6a3920d84ea66bdf62a  src/foundation-python-sphinx/MarkupSafe-0.23.tar.gz
 53d831b83b1e4d4f16fec604057e70519f9f02fb  src/foundation-python-sphinx/Pygments-1.6.tar.gz
 9e424b03fe1f68e0326f3905738adcf27782f677  src/foundation-python-sphinx/Sphinx-1.2.2.tar.gz
+b1dffe8562d7b2f4956699849fbe5d18bfd7749e  src/mosh/mosh-1.2.4.tar.gz
+a8f11eced7352edfefa814996ebf086ab3cfbaa0  src/protobuf/protobuf-2.6.1.tar.gz

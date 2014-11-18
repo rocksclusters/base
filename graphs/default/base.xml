@@ -496,6 +496,7 @@
 		<to>i18n</to>
 		<to>411-base</to>
 		<to>mail</to>
+		<to>mosh</to>
 		<to os="linux">partition</to>
 		<to os="linux">yum</to>
 		<to os="linux">yum-extras</to>
