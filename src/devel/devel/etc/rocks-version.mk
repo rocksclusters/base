@@ -5,10 +5,9 @@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		         version 5.6 (Emerald Boa)
-# 		         version 6.1 (Emerald Boa)
+# 		         version 6.2 (SideWinder)
 # 
-# Copyright (c) 2000 - 2013 The Regents of the University of California.
+# Copyright (c) 2000 - 2014 The Regents of the University of California.
 # All rights reserved.	
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -315,10 +314,9 @@ rocks-copyright.txt:
 	@echo '' >> $@
 	@echo '				Rocks(r)' >> $@
 	@echo '		         www.rocksclusters.org' >> $@
-	@echo '		         version 5.6 (Emerald Boa)' >> $@
-	@echo '		         version 6.1 (Emerald Boa)' >> $@
+	@echo '		         version 6.2 (SideWinder)' >> $@
 	@echo '' >> $@
-	@echo 'Copyright (c) 2000 - 2013 The Regents of the University of California.' >> $@
+	@echo 'Copyright (c) 2000 - 2014 The Regents of the University of California.' >> $@
 	@echo 'All rights reserved.	' >> $@
 	@echo '' >> $@
 	@echo 'Redistribution and use in source and binary forms, with or without' >> $@

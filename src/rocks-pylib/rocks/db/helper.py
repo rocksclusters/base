@@ -2,13 +2,12 @@
 #
 # @Copyright@
 # 
-#                               Rocks(r)
-#                        www.rocksclusters.org
-#                        version 5.6 (Emerald Boa)
-#                        version 6.1 (Emerald Boa)
+# 				Rocks(r)
+# 		         www.rocksclusters.org
+# 		         version 6.2 (SideWinder)
 # 
-# Copyright (c) 2000 - 2013 The Regents of the University of California.
-# All rights reserved.  
+# Copyright (c) 2000 - 2014 The Regents of the University of California.
+# All rights reserved.	
 # 
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are
@@ -25,9 +24,9 @@
 # 3. All advertising and press materials, printed or electronic, mentioning
 # features or use of this software must display the following acknowledgement: 
 # 
-#       "This product includes software developed by the Rocks(r)
-#       Cluster Group at the San Diego Supercomputer Center at the
-#       University of California, San Diego and its contributors."
+# 	"This product includes software developed by the Rocks(r)
+# 	Cluster Group at the San Diego Supercomputer Center at the
+# 	University of California, San Diego and its contributors."
 # 
 # 4. Except as permitted for the purposes of acknowledgment in paragraph 3,
 # neither the name or logo of this software nor the names of its

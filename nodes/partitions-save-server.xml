@@ -15,8 +15,8 @@ the database to be configured, so we order 'partitions-save-server' off 'TAIL'.
 </description>
 
         <copyright>
-        Copyright (c) 2000 - 2012 The Regents of the University of California.
-        All rights reserved. Rocks(r) v5.5/v6.0 www.rocksclusters.org
+        Copyright (c) 2000 - 2014 The Regents of the University of California.
+        All rights reserved. Rocks(r) 6.2 www.rocksclusters.org
         
         </copyright>
 
