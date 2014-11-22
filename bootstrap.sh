@@ -220,6 +220,7 @@ compile_and_install foundation-python-extras
 compile_and_install foundation-rcs
 compile_and_install foundation-ant
 compile_and_install qrencode
+compile_and_install protobuf
 
 if [ `./_os` == "linux" ]; then
 	compile_and_install librocks
