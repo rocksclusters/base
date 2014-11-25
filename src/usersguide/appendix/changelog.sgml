@@ -3,7 +3,7 @@
 
 
 <section>
-<title>Release 6.2 - changes from 6.1_sp1</title>
+<title>Release 6.2 - changes from 6.1.1</title>
 
 <section>
 	<title>Enhancements and Bug Fixes</title>
@@ -32,7 +32,7 @@
 	</para>
 
 	<para>
-	Base: 411-alter-handler properly handles corrupted timestamp file
+	Base: 411-alert-handler properly handles corrupted timestamp file
 	</para>
 
 	<para>
@@ -69,7 +69,7 @@
 	</para>
 
 	<para>
-	Base: it is not possible to reconfigure networking of frontend without reinstallation
+	Base: it is now possible to reconfigure networking of frontend without reinstallation
 	(pubblic/pirvate ip setting, fqdn, gateway, etc.)
 	</para>
 
@@ -94,7 +94,7 @@
 	</para>
 
 	<para>
-	KVM: several plugins allow flexible configuration in several part of KVM roll
+	KVM: several plugins allow flexible configuration in several parts of KVM roll
 	(starting a VM, stopping a VM, creating libvirt xml)
 	</para>
 
@@ -121,9 +121,16 @@
 	</para>
 
 	<para>
-	ZFS: updated to 0.6.3
+	ZFS: updated to 0.6.3. Support for the ZFS event Daemon is automatic.
 	</para>
 
+	<para>
+	ZFS: Bug Fix Properly rebuild ZFS modules when kernel is updated. 
+	</para>
+
+	<para>
+	HTCondor: updated to 8.2.4 
+	</para>
 </section>
 </section>
 
