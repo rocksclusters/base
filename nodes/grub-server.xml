@@ -102,15 +102,19 @@
 <!-- Setup /boot/grub/rocks.conf file -->
 <post interpreter="/opt/rocks/bin/python">
 import rocks.grub
+import random 
 
 makegrub = rocks.grub.App()
 
 makegrub.setInstallKernel('kickstart/default/vmlinuz-&version;-&arch;')
 makegrub.setInstallRamdisk('kickstart/default/initrd.img-&version;-&arch;')
+randomPass = random.randrange(1, 1 &lt;&lt; 31)
 
-args = 'build ksdevice=eth1 lang= devfs=nomount ekv central=%s ' \
+args = 'build ksdevice=%s lang= devfs=nomount vnc vncpassword=%d central=%s ' \
 	'ip=%s gateway=%s netmask=%s dns=%s selinux=0 dropcert' \
 		% (
+		'&Kickstart_PublicInterface;',
+		randomPass,
 		'&Kickstart_PublicKickstartHost;',
 		'&Kickstart_PublicAddress;',
 		'&Kickstart_PublicGateway;',
