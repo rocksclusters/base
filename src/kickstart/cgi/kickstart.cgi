@@ -838,6 +838,7 @@ class App(rocks.sql.Application):
 
 	def run(self):
 
+		lanClient = True
 		try:
 			self.checkLoad()
 		except KickstartError:
@@ -857,6 +858,7 @@ class App(rocks.sql.Application):
 			if not self.clientList[0] or self.isInternal():
 				self.localKickstart()
 			else:
+				lanClient = False
 				self.wanKickstart()
 		except Exception, e:
 			title = "Error %s: %s" % (type(e).__name__, str(e))
@@ -880,6 +882,7 @@ class App(rocks.sql.Application):
 		#
 		# get the avalanche attributes
 		#
+		newNodeAttrs = {}
 		try:
 			hostname = self.newdb.getHostname(self.clientList[0])
 			if hostname:
@@ -899,8 +902,9 @@ class App(rocks.sql.Application):
 
 		print 'Content-type: application/octet-stream'
 		print 'Content-length: %d' % (len(out))
-		print 'X-Avalanche-Trackers: %s' % (attrs['trackers'])
-		print 'X-Avalanche-Pkg-Servers: %s' % (attrs['pkgservers'])
+		if lanClient:
+			print 'X-Avalanche-Trackers: %s' % (attrs['trackers'])
+			print 'X-Avalanche-Pkg-Servers: %s' % (attrs['pkgservers'])
 		print ''
 		print out
 
