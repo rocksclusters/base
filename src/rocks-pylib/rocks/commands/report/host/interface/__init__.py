@@ -317,8 +317,8 @@ class Command(rocks.commands.HostArgumentProcessor,
 
 		self.addOutput(host, '</file>')
 
-	def writeBridgedConfig(self, host, mac, ip, device,
-			netmask, vlanid, mtu, options, channel, active):
+	def writeBridgedConfig(self, host, mac, ip, device, netmask,
+			vlanid, mtu, options, channel, active, net_id):
 		""" called when the interface is on a host that can host KVM VM """
 		brName = device
 		device = "p" + device
@@ -373,6 +373,7 @@ class Command(rocks.commands.HostArgumentProcessor,
 				self.addOutput(host, 'ONBOOT=no' )
 			if mtu:
 				self.addOutput(host, 'MTU=%s' % mtu)
+			self.helperRunPlugin(host, net_id)
 			self.addOutput(host, '</file>')
 		else:
 			# if the original brName file is not written we need
@@ -386,7 +387,7 @@ class Command(rocks.commands.HostArgumentProcessor,
 
 
 	def writeConfig(self, host, mac, ip, device, netmask, vlanid, mtu,
-			options, channel, interfaces_name):
+			options, channel, interfaces_name, net_id):
 
 		configured = 0
 
@@ -451,6 +452,7 @@ class Command(rocks.commands.HostArgumentProcessor,
 
 		if mtu:
 			self.addOutput(host, 'MTU=%s' % mtu)
+		self.helperRunPlugin(host, net_id)
 		
 
 	def writeModprobe(self, host, device, module, options):
@@ -484,12 +486,23 @@ class Command(rocks.commands.HostArgumentProcessor,
 		self.iface, = self.fillParams([('iface', ), ])
 		self.beginOutput()
 
+		self.plugins = self.loadPlugins()
+
                 for host in self.getHostnames(args):
 			osname = self.db.getHostAttr(host, 'os')               
 			f = getattr(self, 'run_%s' % (osname))
 			f(host)
 
 		self.endOutput(padChar = '')
+
+
+	def helperRunPlugin(self, host, net_id):
+		# we need to check if anyplugin exists or not
+		# if not runPlugin will invoke loadPlugin every time
+		args = {'host': host, 'net_id': net_id}
+		if self.plugins:
+			self.runPlugins(args, plugins=self.plugins)
+
 
 	def run_sunos(self, host):
 		# Ignore IPMI devices and get all the other configured
@@ -549,7 +562,7 @@ class Command(rocks.commands.HostArgumentProcessor,
 
 		self.db.execute("""select distinctrow 
 			net.mac, net.ip, net.device, s.netmask, net.vlanid, net.subnet, 
-			net.module, s.mtu, net.options, net.channel 
+			net.module, s.mtu, net.options, net.channel, net.id
 			from nodes n, networks net 
 			left outer join subnets s 
 			on net.subnet = s.id  
@@ -559,7 +572,7 @@ class Command(rocks.commands.HostArgumentProcessor,
 
 		for row in self.db.fetchall():
 			(mac, ip, device, netmask, vlanid, subnetid, module,
-				mtu, options, channel) = row
+				mtu, options, channel, net_id) = row
 
 			testOptions="%s" % options
 			if re.match('noreport', testOptions.lower()):
@@ -579,7 +592,7 @@ class Command(rocks.commands.HostArgumentProcessor,
 				if self.iface == device:
 					self.writeConfig(host, mac, ip, device,
 						netmask, vlanid, mtu, options,
-						channel, interfaces_name)
+						channel, interfaces_name, net_id)
 			else:
 				if self.isKVMContainer(host):
 					#we have to set up bridged devices
@@ -594,25 +607,25 @@ class Command(rocks.commands.HostArgumentProcessor,
 						s += '/etc/sysconfig/network-scripts/ifcfg-'
 						s += '%s">' % (device)
 						self.addOutput(host, s)
-						self.writeConfig(host, mac, ip, device,
-							netmask, vlanid, mtu, options, channel, interfaces_name)
+						self.writeConfig(host, mac, ip, device, netmask, vlanid,
+							mtu, options, channel, interfaces_name, net_id)
 						self.addOutput(host, '</file>')
 					else:
 						if subnetid:
 							# the interface is active bring it up at boot
-							self.writeBridgedConfig(host, mac, ip, device,
-								netmask, vlanid, mtu, options, channel, True)
+							self.writeBridgedConfig(host, mac, ip, device, netmask,
+								vlanid, mtu, options, channel, True, net_id)
 						else:
 							# inactive... don't bring it up when you boot
-							self.writeBridgedConfig(host, mac, ip, device,
-								netmask, vlanid, mtu, options, channel, False)
+							self.writeBridgedConfig(host, mac, ip, device, netmask,
+								vlanid, mtu, options, channel, False, net_id)
 				else:
 					s = '<file name="'
 					s += '/etc/sysconfig/network-scripts/ifcfg-'
 					s += '%s">' % (device)
 					self.addOutput(host, s)
-					self.writeConfig(host, mac, ip, device,
-						netmask, vlanid, mtu, options, channel, interfaces_name)
+					self.writeConfig(host, mac, ip, device, netmask, vlanid,
+							mtu, options, channel, interfaces_name, net_id)
 					self.addOutput(host, '</file>')
 
 
