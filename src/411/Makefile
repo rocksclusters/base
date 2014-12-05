@@ -212,7 +212,6 @@ build: $(SCRIPTS)
 install:: build
 	mkdir -p $(ROOT)/$(PKGROOT)/bin/
 	mkdir -p $(ROOT)/$(PKGROOT)/etc/
-	mkdir -p $(ROOT)/$(METRICS)
 	mkdir -p $(ROOT)/$(PY.ROCKS)/rocks
 	$(INSTALL) -m0555 $(SCRIPTS)  $(ROOT)/$(PKGROOT)/bin/
 	$(INSTALL) -m0444 rocks/*.py $(ROOT)/$(PY.ROCKS)/rocks
