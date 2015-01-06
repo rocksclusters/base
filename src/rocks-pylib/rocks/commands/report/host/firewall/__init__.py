@@ -200,14 +200,12 @@ class Command(rocks.commands.HostArgumentProcessor,
 		# if the service is not 'all', then try to find a match
 		# in the *_firewall tables
 		#
-		if service == 'all':
+		if service == 'all' or service == 'nat':
 			if protocol and protocol != 'all':
 				#
 				# this is useful for icmp rules
 				#
 				rule += ' -p %s' % protocol
-		elif service == 'nat':
-			pass
 		else:
 			s = self.translateService(service)
 			if s:
