@@ -472,6 +472,7 @@
 		<to>x11</to>
 		<to>snmp-client</to>
 		<to>rocks-devel</to>
+		<to>bootstrap-packages</to>
 	</edge>
 
 	<edge from="base">
