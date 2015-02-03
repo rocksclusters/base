@@ -82,7 +82,7 @@ ROOT ?= /
 build:: rocks-copyright.txt
 	
 install:: build
-	$(myenv) $(PY.PATH) setup.py install --root=$(ROOT)
+	$(myenv) $(PY.PATH) setup.py install -f --root=$(ROOT)
 	# TODO this is really hugly but for now it does the job
 	@echo "version = \"$(ROCKS_VERSION)\"" > \
 		$(ROOT)/$(PY.ROCKS)/rocks/__init__.py
