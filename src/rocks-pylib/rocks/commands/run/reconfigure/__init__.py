@@ -106,7 +106,8 @@ class Command(rocks.commands.run.command):
 				('showattr', 'n')
 			])
 
-		hostname = 'localhost'
+		hostname = self.newdb.getCategoryAttr('global', 'global', 'Kickstart_PrivateHostname')
+
 
 		#
 		# show which attr will be modified
