@@ -98,6 +98,18 @@ class Command(rocks.commands.run.command):
 	</example>
 	"""
 
+
+	def isValidHostname(self, name):
+		""" return true if name is a valid hostname otherwise false"""
+		if not name:
+			return False
+		try:
+			self.db.getHostname(name)
+			return True
+		except rocks.util.HostnotfoundException:
+			return False
+
+
 	def run(self, params, args):
 
 		(clear, showattr) = \
@@ -106,7 +118,18 @@ class Command(rocks.commands.run.command):
 				('showattr', 'n')
 			])
 
-		hostname = self.newdb.getCategoryAttr('global', 'global', 'Kickstart_PrivateHostname')
+		hostname = self.newdb.getCategoryAttr('global', 'global', 'Kickstart_PrivateHostname_old')
+
+		if not hostname or not self.isValidHostname(hostname):
+			# Kickstart_PrivateHostname did not get changed
+			# so we can use the original value
+			hostname = self.newdb.getCategoryAttr('global', 'global', 'Kickstart_PrivateHostname')
+
+			if not hostname:
+				self.abort("unable to get the value of Kickstart_PrivateHostname")
+
+			if not self.isValidHostname(hostname):
+				self.abort("The value of your Kickstart_PrivateHostname is invalid (%s)" % hostname)
 
 
 		#
