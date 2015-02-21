@@ -1,12 +1,14 @@
-# $Id: plugin_411.py,v 1.14 2012/11/27 00:48:31 phil Exp $
-# 
+#!/opt/rocks/bin/python
+#
+
 # @Copyright@
 # 
 # 				Rocks(r)
 # 		         www.rocksclusters.org
-# 		         version 6.2 (SideWinder)
+# 		         version 5.6 (Emerald Boa)
+# 		         version 6.1 (Emerald Boa)
 # 
-# Copyright (c) 2000 - 2014 The Regents of the University of California.
+# Copyright (c) 2000 - 2013 The Regents of the University of California.
 # All rights reserved.	
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -52,82 +54,14 @@
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # 
 # @Copyright@
-#
-# $Log: plugin_411.py,v $
-# Revision 1.14  2012/11/27 00:48:31  phil
-# Copyright Storm for Emerald Boa
-#
-# Revision 1.13  2012/05/06 05:48:38  phil
-# Copyright Storm for Mamba
-#
-# Revision 1.12  2011/07/23 02:30:41  phil
-# Viper Copyright
-#
-# Revision 1.11  2010/09/07 23:53:03  bruno
-# star power for gb
-#
-# Revision 1.10  2009/10/07 19:34:36  bruno
-# more fixes from Roy Dragseth. many thanks, dude!
-#
-# Revision 1.9  2009/05/01 19:07:04  mjk
-# chimi con queso
-#
-# Revision 1.8  2009/03/28 01:29:34  anoop
-# Differentiate between Solaris and Linux nodes when
-# restarting autofs service through "rocks sync users"
-#
-# Revision 1.7  2009/02/24 00:53:04  bruno
-# add the flag 'managed_only' to getHostnames(). if managed_only is true and
-# if no host names are provide to getHostnames(), then only machines that
-# traditionally have ssh login shells will be in the list returned from
-# getHostnames()
-#
-# Revision 1.6  2008/10/18 00:55:58  mjk
-# copyright 5.1
-#
-# Revision 1.5  2008/03/06 23:41:40  mjk
-# copyright storm on
-#
-# Revision 1.4  2007/07/02 17:38:51  bruno
-# cleanup the help and make sure the 411 files are 'force' updated and that
-# autofs is restarted on all known hosts.
-#
-# Revision 1.3  2007/06/19 16:42:43  mjk
-# - fix add host interface docstring xml
-# - update copyright
-#
-# Revision 1.2  2007/06/08 03:26:25  mjk
-# - plugins call self.owner.addText()
-# - non-existant bug was real, fix plugin graph stuff
-# - add set host cpus|membership|rack|rank
-# - add list host (not /etc/hosts, rather the nodes table)
-# - fix --- padding for only None fields not 0 fields
-# - list host interfaces is cool works for incomplete hosts
-#
-# Revision 1.1  2007/02/05 23:29:19  mjk
-# added 'rocks add roll'
-# added plugin_* facility
-# added 'rocks sync user' (plugin-able)
-#
 
 import os
-import rocks.commands
+import rocks.service411
 
-class Plugin(rocks.commands.Plugin, rocks.commands.HostArgumentProcessor):
-	"""Force a 411 update and re-load autofs on all nodes"""
+class Plugin(rocks.service411.Plugin):
+	def get_filename(self):
+		return '/etc/auto.share'
 
-	def provides(self):
-		return '411'
-		
-	def requires(self):
-		return ['fixnewusers']
+	def post(self):
+		os.system("/sbin/service autofs reload")
 
-	def run(self, args):
-		#
-		# force the rebuild of all files under 411's control
-		#
-                for line in os.popen('make -C /var/411 force').readlines():
-                        self.owner.addText(line)
-
-
-RollName = "base"
