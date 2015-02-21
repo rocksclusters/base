@@ -183,6 +183,8 @@ Alias /411.d "/etc/411.d"
 
 	Options Indexes MultiViews
 	IndexOptions FancyIndexing
+	RemoveHandler .var
+
 
 	AllowOverride None
 	Order deny,allow
