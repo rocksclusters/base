@@ -69,10 +69,15 @@ attr_postfix = "_old"
 
 
 class DatabaseHelper(rocks.db.database.Database):
-	"""This class extend the Database class with a set of helper method 
-	which returns object from the rocks.db.mappings classes
+	"""
+	This class extend the Database class with a set of helper methods
+	which deal with the new ORM interface (aka the objects from the 
+	rocks.db.mappings classes).
 
-	These methods will replace the old methods in rocks.command.__init__"""
+	These methods should replace the old methods in :mod:`rocks.commands`
+	only methods relative to the command line should remain in the that
+	module, all DB functionality should be migrated.
+	"""
 
 	def __init__(self):
 		# we need to call the super class constructor
@@ -88,13 +93,20 @@ class DatabaseHelper(rocks.db.database.Database):
 
 
 	def getListHostnames(self):
-		"""Return a list of string containing all the current hostnames"""
+		"""
+		Return a list of string containing all the current hostnames
+
+		:rtype: list
+		:return: a list of strings containing all the nodes names
+		"""
 		list = self.getSession().query(Node.name).all()
 		return [item for item, in list]
 
 
 	def getNodesfromNames(self, names=None, managed_only=0, preload=[]):
-		"""Expands the given list of names to valid set of Node entries.
+		"""
+		Expands the given list of names to valid set of 
+		:class:`rocks.db.mappings.base.Node` entries.
 		A name can be a hostname, IP address, our group (membership name), 
 		or a MAC address. Any combination of these is valid.
 		If the names list is empty a list of all Node in the cluster
@@ -102,22 +114,35 @@ class DatabaseHelper(rocks.db.database.Database):
 
 		The following groups are recognized:
 
-		rackN - All non-frontend host in rack N
-		appliancename - All appliances of a given type (e.g. compute)
-		select ... - an SQL statement that returns a list of hosts
+		- rackN: All non-frontend host in rack N
+		- appliancename: All appliances of a given type (e.g. compute)
+		- select ...: an SQL statement that returns a list of hosts
 
-		The 'managed_only' flag means that the list of hosts will
-		*not* contain hosts that traditionally don't have ssh login
-		shells (for example, the following appliances usually don't
-		have ssh login access: 'Ethernet Switches', 'Power Units',
-		'Remote Management')
+		:type names: list
+		:param names: a list of string containing the hostname we want to
+			      resolve following the naming rules stated above
 
-		The 'preload' list contains the relationships which should be 
-		preloaded to avoid sub-query when accessing related tables.
-		If you need to access node.membership.name (the node membership 
-		name) you should pass preload=['membership'] to preload the 
-		membership table 
-		(http://docs.sqlalchemy.org/en/latest/orm/loading.html)
+		:type managed_only: bool
+		:param managed_only: if true the list of hosts will *not* contain 
+				     hosts that traditionally don't have ssh login
+				     shells (for example, the following appliances
+				     usually don't have ssh login access: 
+				     'Ethernet Switches', 'Power Units',
+				     'Remote Management')
+
+
+		:type preload: list
+		:param preload: a list of strings containing the relationships
+		                which should be preloaded to avoid sub-query
+		                when accessing related tables. If you need to
+				access node.membership.name (the node
+				membership name) you should pass 
+				preload=['membership'] to preload the
+				membership table 
+				(http://docs.sqlalchemy.org/en/latest/orm/loading.html)
+
+		:rtype: list
+		:return: a list of :class:`rocks.db.mappings.base.Node`
 		"""
 
 		# Handle the simple case first and just return a complete
@@ -180,10 +205,15 @@ class DatabaseHelper(rocks.db.database.Database):
 
 
 	def getAppliancesListText(self):
-		"""return a list of all the appliances names
+		"""
+		Return a list of all the appliances names in the DB.
 
-		This query is run only once. If it is called multiple times it will return 
-		always the same results"""
+		This query is run only once, if it is called multiple times it will return 
+		always the same results (for obvious preformance reason)
+
+		:rtype: list
+		:return: a list of string with the appliances names
+		"""
 		if self._appliances_list:
 			return self._appliances_list
 		else:
@@ -194,12 +224,28 @@ class DatabaseHelper(rocks.db.database.Database):
 
 
 	def getApplianceNames(self, args=None, preload=[]):
-		"""Returns a list of rocks.db.mappings.base.Appliance instance
-		 from the database.
+		"""
+		Returns a list of :class:`rocks.db.mappings.base.Appliance` instance
+		from the database.
+
 		For each arg in the ARGS list find all the appliance
 		names that match the arg (assume SQL regexp).  If an
 		arg does not match anything in the database we Abort.  If the
 		ARGS list is empty return all appliance names.
+
+		
+		:type args: list
+		:param args: a list of string containing the appliances name
+			      we want to resolve (it supports SQL regexp) 
+
+		:type preload: list
+		:param preload: a list of strings containing the relationships
+		                which should be preloaded to avoid sub-query
+		                when accessing related tables. Check 
+				:meth:`getNodesfromNames` for some example.
+
+		:rtype: list
+		:return: a list of :class:`rocks.db.mappings.base.Appliance`
 		"""
                 clause = sqlalchemy.sql.expression.false()
                 query = self.getSession().query(Appliance)
@@ -217,7 +263,12 @@ class DatabaseHelper(rocks.db.database.Database):
 
 
 	def getFrontendName(self):
-		"""return the frontend name and caches it"""
+		"""
+		return the frontend name and caches it
+
+		:rtype: string
+		:return: the frontend name
+		"""
 		if self._frontend :
 			return self._frontend
 
@@ -228,13 +279,22 @@ class DatabaseHelper(rocks.db.database.Database):
 
 
 	def getHostname(self, hostname=None):
-		"""Returns the name of the given host as referred to in
-		the database.  This is used to normalize a hostname before
-		using it for any database queries."""
+		"""
+		Returns the name of the given host as referred to in the
+		database. This is used to normalize a hostname before
+		using it for any database queries.
 
-		# this is old code taken from rocks.commands.Database.getHostname
-		# TODO it should be improved and remove the original
-		
+		This is old code taken from
+		:meth:`rocks.commands.Database.getHostname`.  TODO it should
+		be improved.
+
+		:type hostname: string
+		:param hostname: a hostname in a non normalized form
+
+		:rtype: string
+		:return: the host name in a normalized form
+		"""
+
 		# Look for the hostname in the database before trying
 		# to reverse lookup the IP address and map that to the
 		# name in the nodes table.  This should speed up the
@@ -415,7 +475,8 @@ class DatabaseHelper(rocks.db.database.Database):
 
 
 	def checkHostnameValidity(self, hostname):
-		"""check that the given host name is valid
+		"""
+		check that the given host name is valid
 
 		it checks that the hostname:
 		- it does not contain any .
@@ -424,6 +485,15 @@ class DatabaseHelper(rocks.db.database.Database):
 		- it is not in the form of rack<number>
 		- it is not an alias
 		- it is not a mac address
+
+		I would like to have this method return true or false but for
+		legacy reason I leave it like this.
+
+		:type hostname: string
+		:param hostname: a hostname for a new host
+
+		:raises rocks.util.CommandError: if the name does not conform
+						 to the rules above mentioned
 		"""
 
 		# they can not be in the form of rack<number>
@@ -467,10 +537,22 @@ class DatabaseHelper(rocks.db.database.Database):
 
 
 	def getCategoryIndex(self, category_name, category_index):
-		"""given a category name and a category index it returns the correspondying
+		"""
+		given a category name and a category index it returns the correspondying
 		object if the category_index does not exist it will be created
+		All category are created at boot time
 
-		All category are created at boot time"""
+		:type category_name: string
+		:param category_name: a category name e.g. 'host', 'global'
+
+		:type category_index: string
+		:param category_index: a category index name e.g. 'compute-0-0'
+
+		:rtype: tuple
+		:return: a tuple containing a 
+			      :class:`rocks.db.mappings.base.Category` and a
+			      :class:`rocks.db.mappings.base.Catindex` object
+		"""
 
 		session = self.getSession()
 		try:
@@ -486,8 +568,22 @@ class DatabaseHelper(rocks.db.database.Database):
 			return (cat, catindex)
 
 	def addCategoryAttr(self, category_name, catindex_name, attr, value):
-		"""general function to add an attribute to the DB given a category
-		and a catindex"""
+		"""
+		it creates an Attribute with the given a category and a catindex
+		and it returns it
+
+		:type category_name: string
+		:param category_name: a category name e.g. 'host', 'global'
+
+		:type catindex_name: string
+		:param catindex_name: a category index name e.g. 'compute-0-0'
+
+		:type attr: string
+		:param attr: the name of the attribute we are adding
+
+		:type value: :class:`rocks.db.mappings.base.Attribute`
+		:param value: the value to be set
+		"""
 
 		(cat, catindex) = self.getCategoryIndex(category_name, catindex_name)
 
@@ -496,8 +592,24 @@ class DatabaseHelper(rocks.db.database.Database):
 
 
 	def setCategoryAttr(self, category_name, catindex_name, attr, value):
-		"""general function which set an attribute value for a given 
-		category and catindex"""
+		"""
+		This method set an attribute value for a given attribute name
+		category and catindex, if the attribute does not exists it will
+		be created. Caller needs to commit the session to send this stuff
+		to the DB.
+
+		:type category_name: string
+		:param category_name: a category name e.g. 'host', 'global'
+
+		:type catindex_name: string
+		:param catindex_name: a category index name e.g. 'compute-0-0'
+
+		:type attr: string
+		:param attr: the name of the attribute we are looking
+
+		:type value: string
+		:param value: the value to be set
+		"""
 
 		session = self.getSession()
 
@@ -526,8 +638,19 @@ class DatabaseHelper(rocks.db.database.Database):
 
 
 	def getCategoryAttrs(self, category_name, catindex_name):
-		"""Given a category name and a category index it returns all the
-		attribute in that group"""
+		"""
+		Given a category name and a category index it returns all the
+		attribute in that group
+
+		:type category_name: string
+		:param category_name: a category name e.g. 'host', 'global'
+
+		:type catindex_name: string
+		:param catindex_name: a category index name e.g. 'compute-0-0'
+
+		:rtype: list
+		:return: a list of :class:`rocks.db.mappings.base.Attribute`
+		"""
 
 		session = self.getSession()
 
@@ -538,8 +661,23 @@ class DatabaseHelper(rocks.db.database.Database):
 
 
 	def getCategoryAttr(self, category_name, catindex_name, attr_name):
-		"""Given a category name and a category index name and an attribute
-		name it return its value or null if it does not exist"""
+		"""
+		Given a category name and a category index name and an attribute
+		name it return its value or null if it does not exist
+
+		:type category_name: string
+		:param category_name: a category name e.g. 'host', 'global'
+
+		:type catindex_name: string
+		:param catindex_name: a category index name e.g. 'compute-0-0'
+
+		:type attr_name: string
+		:param attr_name: the name of the attribute we are looking
+
+		:rtype: string
+		:return: the value of the attribute
+
+		"""
 
 		session = self.getSession()
 
@@ -556,6 +694,20 @@ class DatabaseHelper(rocks.db.database.Database):
 
 
 	def removeCategoryAttr(self, category_name, catindex_name, attribute_name):
+		"""
+		it removes an Attribute with the given a category and a catindex
+		and name
+
+		:type category_name: string
+		:param category_name: a category name e.g. 'host', 'global'
+
+		:type catindex_name: string
+		:param catindex_name: a category index name e.g. 'compute-0-0'
+
+		:type attribute_name: string
+		:param attribute_name: the name of the attribute to be
+				       deleted
+		"""
 
 		session = self.getSession()
 
@@ -572,10 +724,25 @@ class DatabaseHelper(rocks.db.database.Database):
 
 
 	def getHostAttrs(self, hostname, showsource=False):
-		"""it returns a dictionary of {attr_name1 : (value1), attr_name2: (value2)}
+		"""
+		it returns a dictionary of {attr_name1: value1, attr_name2: value2}
 		for a given hostname. In the dictionary it resolve the attributes values
-		following their precendencei. If showsource is True the returned attr will
-		contains an extra field with the attribute type"""
+		following their precendence. If showsource is True the returned attr will
+		contains an extra field with the attribute type
+
+		:type hostname: string
+		:param hostname: the hostname we want to get the attribute
+
+		:type showsource: bool
+		:param showsource: if true the values of the results will be a tuple
+				   where the first element is the value of the attr
+				   and the second element is the scope of the
+				   attribute
+
+		:rtype: dict
+		:return: a dictionary with where the key is the name of the attribute
+			 and the key is the value
+		"""
 
 		session = self.getSession()
 
@@ -628,7 +795,19 @@ class DatabaseHelper(rocks.db.database.Database):
 
 
 	def getHostAttr(self, hostname, attr):
-		"""like getHostAttrs but it returns the value of the given attr """
+		"""
+		like :meth:`getHostAttrs` but it returns the value of the
+		given attr
+
+		:type hostname: string
+		:param hostname: the hostname we want to get the attribute
+
+		:type hostname: string
+		:param hostname: the name of the attribute
+
+		:rtype: string
+		:return: the value of the attribute
+		"""
 		return self.getHostAttrs(hostname).get(attr)
 
 

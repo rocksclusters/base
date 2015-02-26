@@ -39,14 +39,18 @@ class RocksBase(object):
 
 	@classmethod
 	def load(cls, session, **kwargs):
-		"""this method allow us to run query on all the mapping objects
+		"""
+		this method allow us to run query on all the mapping objects
 		simply using 
 
-		e.g.:
-		node = Nodes.load(session, Name='compute-0-0', Cpus=2)
+		e.g.::
+
+		  node = Nodes.load(session, Name='compute-0-0', Cpus=2)
+		  nic = Network.load(session, Name='compute-0-0', Interface='eth0')
 
 		taken from:
-		http://petrushev.wordpress.com/2010/06/22/sqlalchemy-base-model/"""
+		http://petrushev.wordpress.com/2010/06/22/sqlalchemy-base-model/
+		"""
 		q = session.query(cls)
 		filters = [getattr(cls, field_name)==kwargs[field_name] \
 				for field_name in kwargs]

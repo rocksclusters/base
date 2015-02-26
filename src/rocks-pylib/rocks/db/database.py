@@ -74,12 +74,24 @@ threadlocal = threading.local()
 
 
 class Database(object):
-	""" This class should proxy all the connection to the database
+	"""
+	This class should proxy all the connection to the database.
+
+	There are two main internal objects inside this class which come from
+	sqlalchemy:
+
+	- session: this is used by the ORM layer
+	- connection: this is used by the execute statement, so every time
+		      you use pure sql
+
+	These two objects have two separate DB connections, which means
+	that DB status can be different when queried through them.
 	
-	Usage Example:
-	db = Database()
-	db.setVerbose()
-	db.connect()
+	Usage Example::
+
+	  db = Database()
+	  db.setVerbose()
+	  db.connect()
 	"""
 
 	def __init__(self):
@@ -97,9 +109,23 @@ class Database(object):
 
 
 	def setDBPasswd(self, passwd):
+		"""
+		set the password for the DB
+
+		:type passwd: string
+		:param passwd: the password to be set
+		"""
 		self._dbPasswd = passwd
 
 	def getDBPasswd(self):
+		"""
+		return the passowrd for the DB connection
+
+		:rtype: string
+		:return: a string containing the password for the connection to the 
+			 DB. By defualt it is read from /root/.rocks.my.cnf for root
+			 and from /opt/rocks/mysql/my.cnf for apache
+		"""
 		if self._dbPasswd:
 			return self._dbPasswd
 		passwd = ''
@@ -154,14 +180,22 @@ class Database(object):
 
 
 	def setVerbose(self, verbose):
-		"""If the verbose is true all the sql will be printed to 
-		stdout 
+		"""
+		If the verbose is true all the sql will be printed to 
+		stdout. This function must be called before the connect
 
-		This function must be called before the connect"""
+		:type verbose: bool
+		:param verbose: if verbose should be set to True
+
+		"""
 		self.verbose = verbose
 
 
 	def connect(self):
+		"""
+		It start the connection to the DB and create all the internal
+		data structure
+		"""
 
 		if os.environ.has_key('ROCKSDEBUG'):
 			self.setVerbose(True)
@@ -184,20 +218,27 @@ class Database(object):
 			print "Database connection URL: ", url
 
 		self.engine = create_engine(url, pool_recycle=3600)
+		# TODO: do not keep a connection active here it not needed
 		self.conn = self.engine.connect()
 
 
 	def reconnect(self):
-		"""try to restablish a connection after a process fork"""
+		"""
+		Try to re-establish a connection after a process demonization
+		(which closes all open file descriptor).
+		"""
 		self.engine.dispose()
 		self.conn = self.engine.connect()
 
 		
 	def getSession(self):
-		"""return the current session. If it does not exist it creates one.
+		"""
+                Return the current session. If it does not exist it creates one.
+		The session is a singleton, you can call this method many time it 
+		returns always the same object
 
-		the session is a singleton, you can call this method many time it 
-		returns always the same object"""
+		TODO: this should be changed, 
+		"""
 
 		session = getattr(threadlocal, "session", None)
 		if session:
@@ -211,6 +252,10 @@ class Database(object):
 			return None
 
 	def closeSession(self):
+		"""
+		It closes the session and release all its resources. This
+		does not close or release the connection (see :meth:`close`)
+		"""
 		session = getattr(threadlocal, "session", None)
 		if session:
 			session.close()
@@ -220,7 +265,10 @@ class Database(object):
 
 
 	def commit(self):
-		"""Commit the current session if it exists"""
+		"""
+		Commit the current session if it existsi. *It does not touch the
+		connection.*
+		"""
 		session = self.getSession()
 		if session:
 			session.commit()
@@ -230,6 +278,17 @@ class Database(object):
 			pass
 
 	def execute(self, command):
+		"""
+		Given a SQL string it run the query and returns the rowcount.
+		To get the result use :meth:`fetchone` or :meth:`fetchall`.
+
+		:type command: string
+		:param command: if verbose should be set to True
+
+		:rtype: int
+		:return: the rowconunt of the query or None if there is not
+                         connection
+		"""
 		if self.conn:
 			if '%' in command:
 				command = string.replace(command, '%', '%%')
@@ -246,16 +305,35 @@ class Database(object):
 			return None
 	
 	def fetchone(self):
+		"""
+		Fetch one row from the results of the previous query
+
+		:rtype: tuple
+		:return: a tuple containing the values of the fetched row.
+                         It really returns a :class:`sqlalchemy.engine.result.RowProxy`
+                         but it can be treated as a tuple
+		"""
 		if self.results:
 			return self.results.fetchone()
 		return ()
 	
 	def fetchall(self):
+		"""
+		Fetch all rows from the results of the previous query
+
+		:rtype: list
+		:return: a list of tuples containing the values of the fetched rows
+		"""
 		if self.results:
 			return self.results.fetchall()
 		return ()
 	
 	def close(self):
+		"""
+		It closes the connection only. You also need to close the
+		session, if you want to release all the DB resources 
+		:meth:`closeSession`
+		"""
 		if self.results:
 			self.results.close()
 			self.results = None
@@ -263,6 +341,10 @@ class Database(object):
 			self.conn.close()
 
 	def renewConnection(self):
+		"""
+		It renews the connection, if inactive for few hours mysql
+		closes down the connection, so you might need to renew it.
+		"""
 		self.close()
 		self.conn = self.engine.connect()
 

@@ -1469,23 +1469,27 @@ class Command:
 		return rlist 
 
 	def fillParams(self, names, params=None):
-		"""Returns a list of variables with either default
+		"""
+                Returns a list of variables with either default
 		values of the values in the PARAMS dictionary.
-		
-		NAMES - list of (KEY, DEFAULT) tuples.
-			KEY - key name of PARAMS dictionary
-			DEFAULT - default value if key in not in dict
-		PARAMS - optional dictionary
-		
-		For example:
-		
-		(svc, comp) = self.fillParams(
-			('service', None),
-			('component', None))
-			
-		Can also be written as:
-		
-		(svc, comp) = self.fillParams(('service',), ('component', ))
+
+		:type names: list
+		:param names: a list of (KEY, DEFAULT) tuples, where KEY
+			is a key name of PARAMS dictionary and DEFAULT
+			is the default value if key in not in dict
+
+		:type params: dict
+		:param params: optional dictionary
+
+		For example::
+
+		  (svc, comp) = self.fillParams(
+		           ('service', None),
+		           ('component', None))
+
+		Can also be written as::
+
+		  (svc, comp) = self.fillParams(('service',), ('component', ))
 		"""
 
 		# make sure names is a list or tuple

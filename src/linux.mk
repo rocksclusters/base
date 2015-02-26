@@ -213,6 +213,7 @@ SRCDIRS = `find . -type d -maxdepth 1 \
 	-not -name lsof \
 	-not -name anaconda-yum-plugins \
 	-not -name foundation-python-xml-26 \
+	-not -name developersguiderst \
 	-not -name channel`
 
 ## Build environment modules on 5, it is part of 6 in the OS

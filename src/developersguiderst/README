@@ -1,0 +1,4 @@
+
+Run
+make html 
+to compile the developersguide. Output will be in _build/html/

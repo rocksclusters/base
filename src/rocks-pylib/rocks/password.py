@@ -126,8 +126,8 @@ class Password:
 
 		Here hash is already assumed to be an ASCII string.
 
-		In case of error '*0' is usually returned. But if passwd_hash
-		begins with '*0', then '*1' is returned to prevent false
+		In case of error '\*0' is usually returned. But if passwd_hash
+		begins with '\*0', then '\*1' is returned to prevent false
 		positive results of password check.
 		'''
 
