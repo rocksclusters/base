@@ -449,6 +449,7 @@
 
 	<edge from="client">
 		<to>client-rootpw</to>
+		<to>emacs</to>
 	</edge>
 
 	<edge from="nas">
