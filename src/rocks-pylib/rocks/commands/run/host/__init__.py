@@ -153,7 +153,6 @@ import sys
 import time
 import socket
 import subprocess
-import shlex
 import rocks.commands
 
 class Parallel(threading.Thread):
@@ -168,7 +167,7 @@ class Parallel(threading.Thread):
 
 	def run(self):
 		starttime = time.time()
-		self.p = subprocess.Popen(shlex.split(self.cmd),
+		self.p = subprocess.Popen(self.cmd,
 			stdin = subprocess.PIPE, stdout = subprocess.PIPE,
 			stderr = subprocess.STDOUT)
 
@@ -400,9 +399,9 @@ class Command(command):
 				# fire off the command
 				#
 				if runlocal:
-					cmd = 'bash -c "%s"' % command
+					cmd = ('bash', '-c', command)
 				else:
-					cmd = 'ssh %s "%s"' % (hostif, command)
+					cmd = ('ssh', hostif, command)
 
 				p = Parallel(self, cmd, host, hostif, stats, collate)
 				p.start()
