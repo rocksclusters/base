@@ -25,7 +25,7 @@ test_expect_success 'test create db - setup' '
 	test -f $NODES_DIR/database-schema.xml &&
 	cat $NODES_DIR/database-schema.xml | \
 		 rocks report post attrs="$attrs" | \
-		sed "s|/opt/rocks/mysql/bin/mysql|echo |g" > \
+		sed "s|/opt/rocks/mysql/bin/mysql|echo |g" | \
 		bash
 '
 
@@ -33,7 +33,7 @@ test_expect_success 'test create db - test schema' '
 	echo entering /tmp/tables.sql &&
 	/opt/rocks/mysql/bin/mysql --defaults-extra-file=/root/.rocks.my.cnf \
 		--user=root tempdb < /tmp/tables.sql &&
-	echo entering /tmp/categories.sql
+	echo entering /tmp/categories.sql &&
 	/opt/rocks/mysql/bin/mysql --defaults-extra-file=/root/.rocks.my.cnf \
 		--user=root tempdb < /tmp/categories.sql
 
