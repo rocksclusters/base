@@ -87,32 +87,33 @@ class Command(rocks.commands.remove.host.command):
 	Name of a host machine. This argument is required.
 	</arg>
 
-	<arg type='string' name='address'>
-	The address of the static route to remove. This argument is required.
-	</arg>
-
 	<param type='string' name='address'>
-	Can be used in place of the 'address' argument.
+	The address of the static route to remove. If not address is specified
+	all the static route relative to the given host will be deleted
 	</param>
 
-	<example cmd='remove host route compute-0-0 1.2.3.4'>
+	<example cmd='remove host route compute-0-0 address=1.2.3.4'>
 	Remove the static route for the host 'compute-0-0' that has the
 	network address '1.2.3.4'.
+	</example>
+
+	<example cmd='remove host route compute-0-0'>
+	Remove all the static routes for the host 'compute-0-0'
 	</example>
 	"""
 
 	def run(self, params, args):
-		(args, address) = self.fillPositionalArgs(('address', ))
 
-		if not address:
-			self.abort('requires address')
+		if not len(args):
+			self.abort('must supply host')
+
+		(address, ) = self.fillParams([('address', '%')])
 
 		for host in self.getHostnames(args):
 			self.db.execute("""
 			delete from node_routes where 
 			node = (select id from nodes where name='%s')
-			and network = '%s'
-			""" % (host, address))
+			and network like '%s' """ % (host, address))
 
 
 RollName = "base"
