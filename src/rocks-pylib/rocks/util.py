@@ -239,12 +239,16 @@ class Struct:
 
 def escapeAttr(value):
 	"""escape attribute values with XML escaping"""
+	if value is None:
+		return value
 	return xml.sax.saxutils.escape(value, { "\"": "&quot;",
 						"%": "&#x0025;",
 						"'": "\\'"})
 
 def unescapeAttr(value):
 	"""unescape attribute values with XML escaping """
+	if value is None:
+		return value
 	return xml.sax.saxutils.unescape(value, {"&quot;": "\"",
 						"&#x0025;": "%"})
 
