@@ -12,6 +12,10 @@
 	</para>
 
 	<para>
+	Base: rocks create distro now spawns 8 worker threads to improve speed of distro rebuild 
+	</para>
+
+	<para>
 	Base: rocks add host verifies hostname is not an appliance name
 	</para>
 
@@ -70,7 +74,7 @@
 
 	<para>
 	Base: it is now possible to reconfigure networking of frontend without reinstallation
-	(pubblic/pirvate ip setting, fqdn, gateway, etc.)
+	(public/private ip setting, fqdn, gateway, etc.)
 	</para>
 
 	<para>
@@ -91,6 +95,10 @@
 
 	<para>
 	KVM: CPU capabilites can be specified with attributes
+	</para>
+
+	<para>
+	KVM: support building virtual frontends on vm-containers when the container has a public interface
 	</para>
 
 	<para>
@@ -129,7 +137,11 @@
 	</para>
 
 	<para>
-	HTCondor: updated to 8.2.4 
+	HTCondor: updated to 8.2.8 
+	</para>
+
+	<para>
+	HTCondor: configuration now supports Condor's config directory structure. 
 	</para>
 </section>
 </section>
