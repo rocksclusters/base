@@ -129,7 +129,7 @@
 	</para>
 
 	<para>
-	ZFS: updated to 0.6.3. Support for the ZFS event Daemon is automatic.
+	ZFS: updated to 0.6.4.1 Support for the ZFS event Daemon is automatic.
 	</para>
 
 	<para>
@@ -138,6 +138,10 @@
 
 	<para>
 	HTCondor: updated to 8.2.8 
+	</para>
+
+	<para>
+	HTCondor: fixed UID_DOMAIN setting to be the local domain 
 	</para>
 
 	<para>
