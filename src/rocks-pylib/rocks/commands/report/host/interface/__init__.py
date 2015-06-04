@@ -581,6 +581,17 @@ class Command(rocks.commands.HostArgumentProcessor,
 			if device == 'ipmi':
 				self.writeIPMI(host, ip, channel, netmask)
 				continue # ipmi is special, skip the standard stuff
+
+			if module == 'ovs-bridge' or module == 'ovs-link':
+				s = '<file name="'
+				s += '/etc/sysconfig/network-scripts/ifcfg-'
+				s += '%s">' % (device)
+				self.addOutput(host, s)
+				self.writeConfig(host, mac, ip, device, netmask, vlanid,
+					mtu, options, channel, interfaces_name, net_id)
+				self.addOutput(host, '</file>')
+				continue
+
 			if device and device[0:4] != 'vlan':
 				#
 				# output a script to update modprobe.conf
@@ -630,4 +641,4 @@ class Command(rocks.commands.HostArgumentProcessor,
 
 
 
-RollName = "base"
+# vim: ts=4:sw=4
