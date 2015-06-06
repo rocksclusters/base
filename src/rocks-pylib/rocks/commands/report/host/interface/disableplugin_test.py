@@ -64,8 +64,11 @@ class Plugin(rocks.commands.Plugin):
 
 	def run(self, args):
 		""" """
-		# args is a dictionary with 'host' = hostname and net_id = net.id
-		# which is the primary keys of the interface table
-		self.owner.addOutput(args['host'], "plugin invoked with: " + str(args))
-
-RollName = "base"
+		# args is a dictionary with 'host' = hostname 
+		#                           net_id = net.id
+		#                               primary keys interface table
+		#                           text = outputText 
+		#				list of existing text 
+	 	#				so that it can be modified	
+		outputText = args['text']
+		outputText.append(args['host'], "plugin invoked with: " + str(args))
