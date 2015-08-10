@@ -90,6 +90,7 @@
 	<package os="linux">httpd-devel</package>
 	<package os="linux">glibc-static</package>
 	<package os="linux">gtk2-devel</package>
+	<package os="linux">gdk-pixbuf2-devel</package>
 	<package os="linux">gtk+-devel</package>
 	<package os="linux">intltool</package>
 	<package os="linux">isomd5sum-devel</package>

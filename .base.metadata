@@ -1,11 +1,5 @@
-9b5fe31f037d5bafe5329d754cb991d9dbcf0c41  src/anaconda/anaconda-11.1.2.209-1.src.rpm
-1a479f8161debc81a3a168c68894f8b63b97e0fd  src/anaconda/anaconda-11.1.2.224-1.src.rpm
-cd9abe5a0267ae2b8f5ecad16a17d2cbaf1c3301  src/anaconda/anaconda-11.1.2.242-1.src.rpm
-2df680bfded246947c8e9ad38d10492efe95a658  src/anaconda/anaconda-11.1.2.259-1.src.rpm
-983c169a399dc3c240323008138add509a37f155  src/anaconda/anaconda-13.21.149-1.el6.src.rpm
-cf9ae1f3fd760b5c1315de478ce501e3fd7a4879  src/anaconda/anaconda-13.21.176-1.el6_3.src.rpm
-df7ae54ab1e8c1c7781eaf140d13ce6d21a634fc  src/anaconda/anaconda-13.21.215-1.el6.src.rpm
 c9e4fa482e0bd883b1d41c3459c8a34ea49f74ca  src/anaconda/anaconda-13.21.229-1.el6.src.rpm
+7bed452c16c539b554a16ac58e5050016d44f7e4  src/anaconda/anaconda-13.21.239-1.el6.src.rpm
 cf8e3b28eb3aa06b5508a7e2144ebda0bc0de57b  src/anaconda-yum-plugins/anaconda-yum-plugins-1.0.tar.bz2
 d50fb14c8501d33a2815b5d513f37b98a62ace69  src/environment-modules/envmodules-3.2.9c.tar.gz
 e7ba6b0cc6fa7c9e053c263952936bcca0c12eb0  src/firerox/firefox-3.5.19.source.tar.bz2
