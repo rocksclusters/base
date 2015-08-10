@@ -102,7 +102,7 @@ else
 VERSION.MAJOR = 6
 VERSION.MINOR = 3
 #VERSION.PATCH = 3
-RELEASE_NAME = "San Jacinto" 
+RELEASE_NAME = "Diamondback" 
 endif
 
 VERSION_NAME = "$(RELEASE_NAME)"
