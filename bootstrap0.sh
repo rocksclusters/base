@@ -155,7 +155,7 @@ if [ `./_os` == "linux" ]; then
 	EXTRA_PACKAGES="$EXTRA_PACKAGES coreutils curl"
 	yum -y install rpm-build rpm-devel gcc gcc-c++ ncurses-devel swig glib2 glib2-devel openssl-devel pygobject2 pygobject2-devel cairo cairo-devel createrepo apr apr-devel expat-devel $EXTRA_PACKAGES
 	# packages required to build anaconda on 6
-	yum -y install cmake elfutils-devel e2fsprogs-devel gtk2-devel gdk-pixbuf2-devel intltool isomd5sum-devel libarchive-devel libXxf86misc-devel libblkid-devel libcurl-devel libnl-devel newt-devel pykickstart python-devel slang-devel NetworkManager-devel NetworkManager-glib-devel xmlto iscsi-initiator-utils-devel device-mapper-devel
+	yum -y install cmake elfutils-devel e2fsprogs-devel gtk2-devel gdk-pixbuf2-devel intltool isomd5sum-devel libarchive-devel libXxf86misc-devel libblkid-devel libcurl-devel libnl-devel newt-devel pycairo-devel pykickstart python-devel slang-devel NetworkManager-devel NetworkManager-glib-devel xmlto iscsi-initiator-utils-devel device-mapper-devel
 	#needed only for rocks 5
 	if awk '{print $3}' /etc/issue | grep 5 ;then 
 		#to run create mirror (centos 5 calls mkisofs while centos 6 genisoimage :-( )
