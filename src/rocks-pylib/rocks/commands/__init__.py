@@ -497,7 +497,7 @@
 # Revision 1.1  2006/11/02 21:49:46  mjk
 # prototype
 #
-
+import json
 import os
 import socket
 import string
@@ -1391,6 +1391,8 @@ class Command:
 		else:
 			self._debug = False
 
+		self.json = False
+
 
 	def debug(self):
 		"""return true if we are in debug mode"""
@@ -1694,6 +1696,37 @@ class Command:
 		self.output.append(list)
 		
 		
+	def JSONOutput(self,header):
+		"""Do JSON output for various reports, header contains """
+		what = self.__module__.split('.')[-1]
+		jsonOutput = []
+		ownerKey = header[0]
+		if ownerKey == what:
+			what = self.__module__.split('.')[-2]
+		currentOwner = None
+		ownerDict = None
+		for kk in self.output:
+			tmpOwner = kk[0].replace(":","")
+			if tmpOwner != currentOwner:
+				if currentOwner is not None:
+					jsonOutput.append(ownerDict)
+				currentOwner = tmpOwner
+				ownerDict={}
+				ownerDict[ownerKey] = currentOwner
+				ownerDict[what]=[]
+			dict = {}
+			for k,v in zip(header[1:],kk[1:]):
+				dict[k] = v
+			ownerDict[what].append(dict)
+
+		if currentOwner is not None:
+			jsonOutput.append(ownerDict)
+
+		jsonText = json.dumps(jsonOutput,indent=4)
+		self.addText(jsonText)
+			
+		
+
 	def endOutput(self, header=[], padChar='-', trimOwner=1,linesep='\n'):
 		"""Pretty prints the output list buffer."""
 
@@ -1708,6 +1741,11 @@ class Command:
 		# disable output of the header
 		# or output-col to disable output of some column
 
+		# Check if JSON output
+		if self.json:
+			self.JSONOutput(header)
+			return
+		
 		showHeader      = True
 		if 'output-header' in self._params:
 			showHeader = self.str2bool(self._params['output-header'])
@@ -1885,6 +1923,10 @@ class Command:
 				nparams += 1
 			else:
 				list.append(arg)
+
+		if  "json" in dict.keys():
+			if self.str2bool(dict['json']):
+				self.json=True
 
 		if list and list[0] == 'help':
 			self.help(name, dict)
