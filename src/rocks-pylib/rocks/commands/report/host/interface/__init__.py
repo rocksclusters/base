@@ -320,6 +320,7 @@ class Command(rocks.commands.HostArgumentProcessor,
 	def writeBridgedConfig(self, host, mac, ip, device, netmask,
 			vlanid, mtu, options, channel, active, net_id):
 		""" called when the interface is on a host that can host KVM VM """
+		outputText = []
 		brName = device
 		device = "p" + device
 		testOptions="%s" % options
@@ -333,47 +334,55 @@ class Command(rocks.commands.HostArgumentProcessor,
 		s += '%s">' % (device)
 		self.addOutput(host, s)
 		#add output
-		self.addOutput(host, 'DEVICE=%s' % device)
+		outputText.append( 'DEVICE=%s' % device)
 		if mac:
-			self.addOutput(host, 'HWADDR=%s' % mac)
+			outputText.append( 'HWADDR=%s' % mac)
 		if vlanid:
 			#if this is a vlan we don't create the bridge 
 			#and we use the macvtap driver for kvm
-			self.addOutput(host, 'VLAN=yes')
+			outputText.append( 'VLAN=yes')
 		if ip and netmask:
-			self.addOutput(host, 'BRIDGE="%s"' % brName)
+			outputText.append( 'BRIDGE="%s"' % brName)
 		if active :
-			self.addOutput(host, 'ONBOOT=yes')
+			outputText.append( 'ONBOOT=yes')
 		else : 
-			self.addOutput(host, 'ONBOOT=no' )
-		self.addOutput(host, 'BOOTPROTO=none' )
+			outputText.append( 'ONBOOT=no' )
+		outputText.append( 'BOOTPROTO=none' )
 		if mtu:
-			self.addOutput(host, 'MTU=%s' % mtu)
+			outputText.append( 'MTU=%s' % mtu)
+	
+		## run the plugins to mod this text
+		self.helperRunPlugin(host, net_id, outputText)
+		for line in outputText:
+			self.addOutput(host, line)
 		self.addOutput(host, '</file>')
 
 		# bridge with the name of IP address of the original interface
 		# attached to the physical interface
 		if ip and netmask:
+			outputText = []
 			s = '<file name="/etc/sysconfig/network-scripts/ifcfg-'
 			s += '%s">' % brName
 			self.addOutput(host, s)
 			#    ------      bridge dev with IP
-			self.addOutput(host, 'DEVICE=%s' % brName)
-			self.addOutput(host, 'TYPE=Bridge')
+			outputText.append('DEVICE=%s' % brName)
+			outputText.append( 'TYPE=Bridge')
 			if ip and netmask:
-				self.addOutput(host, 'IPADDR=%s' % ip)
-				self.addOutput(host, 'NETMASK=%s' % netmask)
+				outputText.append( 'IPADDR=%s' % ip)
+				outputText.append( 'NETMASK=%s' % netmask)
 			if dhcp:
-				self.addOutput(host, 'BOOTPROTO=dhcp')
+				outputText.append( 'BOOTPROTO=dhcp')
 			else:
-				self.addOutput(host, 'BOOTPROTO=none' )
+				outputText.append( 'BOOTPROTO=none' )
 			if active :
-				self.addOutput(host, 'ONBOOT=yes')
+				outputText.append( 'ONBOOT=yes')
 			else : 
-				self.addOutput(host, 'ONBOOT=no' )
+				outputText.append( 'ONBOOT=no' )
 			if mtu:
-				self.addOutput(host, 'MTU=%s' % mtu)
-			self.helperRunPlugin(host, net_id)
+				outputText.append( 'MTU=%s' % mtu)
+			self.helperRunPlugin(host, net_id, outputText)
+			for line in outputText:
+				self.addOutput(host, line)
 			self.addOutput(host, '</file>')
 		else:
 			# if the original brName file is not written we need
@@ -390,6 +399,7 @@ class Command(rocks.commands.HostArgumentProcessor,
 			options, channel, interfaces_name, net_id):
 
 		configured = 0
+		outputText = []
 
 		# Should we set up DHCP on this device?
 		testOptions="%s" % options
@@ -400,59 +410,61 @@ class Command(rocks.commands.HostArgumentProcessor,
 
 		reg = re.compile('bond[0-9]+')
 
-		self.addOutput(host, 'DEVICE=%s' % device)
+		outputText.append('DEVICE=%s' % device )
 
 		# we use dhcp in cloud configurations so mac addresses are no good
 		if mac and not dhcp:
-			self.addOutput(host, 'HWADDR=%s' % mac)
+			outputText.append('HWADDR=%s' % mac)
 
 		if ip and netmask:
 			if dhcp:
-				self.addOutput(host, 'BOOTPROTO=dhcp')
+				outputText.append( 'BOOTPROTO=dhcp')
 			else:	
-				self.addOutput(host, 'IPADDR=%s' % ip)
-				self.addOutput(host, 'NETMASK=%s' % netmask)
-				self.addOutput(host, 'BOOTPROTO=none')
+				outputText.append( 'IPADDR=%s' % ip)
+				outputText.append( 'NETMASK=%s' % netmask)
+				outputText.append( 'BOOTPROTO=none')
 
-			self.addOutput(host, 'ONBOOT=yes')
+			outputText.append( 'ONBOOT=yes')
 
 			if reg.match(device) and options:
-				self.addOutput(host, 'BONDING_OPTS="%s"' %
+				outputText.append( 'BONDING_OPTS="%s"' %
 					options)
 
 			configured = 1
 
 		if vlanid:
-			self.addOutput(host, 'VLAN=yes')
-			self.addOutput(host, 'ONBOOT=yes')
+			outputText.append( 'VLAN=yes')
+			outputText.append( 'ONBOOT=yes')
 			configured = 1
 
 		#
 		# check if this is part of a bonded channel
 		#
 		if channel and reg.match(channel):
-			self.addOutput(host, 'BOOTPROTO=none')
-			self.addOutput(host, 'ONBOOT=yes')
-			self.addOutput(host, 'MASTER=%s' % channel)
-			self.addOutput(host, 'SLAVE=yes')
+			outputText.append( 'BOOTPROTO=none')
+			outputText.append( 'ONBOOT=yes')
+			outputText.append( 'MASTER=%s' % channel)
+			outputText.append( 'SLAVE=yes')
 			configured = 1
 
 		if not configured:
 			if dhcp:
-				self.addOutput(host, 'BOOTPROTO=dhcp')
-				self.addOutput(host, 'ONBOOT=yes')
+				outputText.append( 'BOOTPROTO=dhcp')
+				outputText.append( 'ONBOOT=yes')
 			else:
-				self.addOutput(host, 'BOOTPROTO=none')
+				outputText.append( 'BOOTPROTO=none')
 				if interfaces_name and any([device + '.' in temp for temp in interfaces_name]):
 					# this is a ethN and we have a ethN.vlanid so this 
 					# dev must be active, red hat init madness
-					self.addOutput(host, 'ONBOOT=yes')
+					outputText.append( 'ONBOOT=yes')
 				else:
-					self.addOutput(host, 'ONBOOT=no')
+					outputText.append( 'ONBOOT=no')
 
 		if mtu:
-			self.addOutput(host, 'MTU=%s' % mtu)
-		self.helperRunPlugin(host, net_id)
+			outputText.append( 'MTU=%s' % mtu)
+		self.helperRunPlugin(host, net_id, outputText)
+		for line in outputText:
+			self.addOutput(host,line)
 		
 
 	def writeModprobe(self, host, device, module, options):
@@ -496,10 +508,10 @@ class Command(rocks.commands.HostArgumentProcessor,
 		self.endOutput(padChar = '')
 
 
-	def helperRunPlugin(self, host, net_id):
+	def helperRunPlugin(self, host, net_id, configText):
 		# we need to check if anyplugin exists or not
 		# if not runPlugin will invoke loadPlugin every time
-		args = {'host': host, 'net_id': net_id}
+		args = {'host': host, 'net_id': net_id, 'text' : configText}
 		if self.plugins:
 			self.runPlugins(args, plugins=self.plugins)
 
@@ -581,6 +593,17 @@ class Command(rocks.commands.HostArgumentProcessor,
 			if device == 'ipmi':
 				self.writeIPMI(host, ip, channel, netmask)
 				continue # ipmi is special, skip the standard stuff
+
+			if module == 'ovs-bridge' or module == 'ovs-link':
+				s = '<file name="'
+				s += '/etc/sysconfig/network-scripts/ifcfg-'
+				s += '%s">' % (device)
+				self.addOutput(host, s)
+				self.writeConfig(host, mac, ip, device, netmask, vlanid,
+					mtu, options, channel, interfaces_name, net_id)
+				self.addOutput(host, '</file>')
+				continue
+
 			if device and device[0:4] != 'vlan':
 				#
 				# output a script to update modprobe.conf
@@ -594,7 +617,8 @@ class Command(rocks.commands.HostArgumentProcessor,
 						netmask, vlanid, mtu, options,
 						channel, interfaces_name, net_id)
 			else:
-				if self.isKVMContainer(host):
+				if self.isKVMContainer(host) and \
+						testOptions.find("nobridge") <=0:
 					#we have to set up bridged devices
 					if device.startswith( 'vlan' ):
 						# vlan interfaces are not configured by RH network script
@@ -630,4 +654,4 @@ class Command(rocks.commands.HostArgumentProcessor,
 
 
 
-RollName = "base"
+# vim: ts=4:sw=4

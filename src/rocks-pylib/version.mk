@@ -1,4 +1,4 @@
 NAME = rocks-pylib
-RELEASE = 0
+RELEASE = 2
 RPM.ARCH	= noarch
 
