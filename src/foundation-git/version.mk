@@ -1,3 +1,3 @@
 NAME = foundation-git
-VERSION = 1.7.11.4
-RELEASE = 2
+VERSION = 2.6.5
+RELEASE = 1

@@ -64,7 +64,7 @@ RPM.EXTRAS += "AutoReqProv: no"
 include Rules.mk
 
 build::
-	tar -xvzf git-$(VERSION).tar.gz 
+	$(TAR) -xvzf git-$(VERSION).tar.gz 
 	(							\
 		cd git-$(VERSION);				\
 		./configure --prefix=$(PKGROOT) ;	\
@@ -78,13 +78,10 @@ install::
 	mkdir -p $(ROOT)/$(PKGROOT)/etc
 	(							\
 		cd git-$(VERSION);				\
-		mount --bind $(ROOT)/$(PKGROOT) $(PKGROOT);\
-		make install;		\
+		$(MAKE) DESTDIR=$(ROOT) install;		\
 		cd ..;                   \
-		tar -xvzf git-manpages-$(VERSION).tar.gz -C /opt/rocks/share/man ;\
-		umount $(ROOT)/$(PKGROOT);\
 		rm $(ROOT)/$(PKGROOT)/libexec/git-core/git-svn;  \
-		cp gitconfig $(ROOT)/$(PKGROOT)/etc; \
+		$(INSTALL) -m 644 gitconfig $(ROOT)/$(PKGROOT)/etc; \
 	)
 
 clean::
