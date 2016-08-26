@@ -8,6 +8,9 @@
 # to have work-in-progress content that wont get overwritten.
 #
 
+MYDIR=$(dirname $0)
+GGET=$MYDIR/gget.sh
+
 if [ ! "$SURL" ]; then
 	# rocksclusters download base URL
 	SURL="https://googledrive.com/host/0B0LD0shfkvCRRGtadUFTQkhoZWs"
@@ -26,6 +29,7 @@ fi
 while read a; do
   fsha=$( echo ${a}  | cut -f1 -d\ )
   fname=$( echo ${a} | cut -f2 -d\ )
+  fobj=$( echo ${a} | cut -f3 -d\ )
   if [ ${fsha} = "da39a3ee5e6b4b0d3255bfef95601890afd80709" ]; then
     # zero byte file
     touch ${fname}
@@ -34,7 +38,11 @@ while read a; do
       url=${SURL}/${pn}/`basename ${fname}`
       basepath=`dirname ${fname}`
       test -d $basepath || mkdir -p $basepath
-      curl -L "$url" -o ${fname}
+      if [ "x${fobj}" == "x" ]; then 
+      	curl -L "$url" -o ${fname}
+      else
+        $GGET ${fobj} ${fname}
+      fi
       if [ "$?" != "0" ]; then
           echo "Error download from URL $url"
           exit 1
