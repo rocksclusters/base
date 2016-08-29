@@ -10,4 +10,5 @@ VERSION = 2.6.7
 RELEASE = 0
 ADDFLAGS = "CFLAGS=-fPIC"
 #CONFIGOPTS += --exec-prefix=$(PKGROOT)
+RPM.EXTRAS="%define _python_bytecompile_errors_terminate_build 0\\n%define __python_requires  %{_builddir}/%{name}-%{version}/filter_python_requires.sh"
 endif 
