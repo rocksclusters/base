@@ -142,18 +142,39 @@ BOOTSTRAP_PY=bootstrap.py
 ## Linux
 ##
 
-function install_linux() {
+function install_linux_oldstyle() {
 	find /usr/src/redhat/RPMS -name "$1-[0-9]*.*.rpm" \
 		-exec rpm -Uhv --force --nodeps {} \;
 	find RPMS -name "$1-[0-9]*.*.rpm" \
 		-exec rpm -Uhv --force --nodeps {} \;
 }
 
+function install_linux() {
+	gmake createlocalrepo
+	yum -y -c yum.conf install $1
+}
+
 function compile_linux() {
 	(cd src/$1; gmake pkg)
 }
 
+
 function install_os_packages_linux() {
+	install_os_packages_system_linux $1
+}
+
+## Use a local repo (from this roll's RPMS) and system repos to install
+## Depedencies
+function install_os_packages_system_linux() {
+	pkgs=`/opt/rocks/bin/rocks list node xml $1 basedir=$PWD | \
+		/opt/rocks/sbin/kgen --section packages | grep "^[a-zA-Z]"`
+	make createlocalrepo
+	yum -y -c yum.conf install $pkgs
+}
+
+## Use a rocks-created repo to install
+## Depedencies
+function install_os_packages_rocks_dist_linux() {
 	for pkg in `/opt/rocks/bin/rocks list node xml $1 basedir=$PWD |	\
 		/opt/rocks/sbin/kgen --section packages |			\
 		grep "^[a-zA-Z]"`; do				\

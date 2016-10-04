@@ -281,6 +281,8 @@ include Rules.mk
 -include $(ROLLSROOT)/etc/roll-profile.mk
 include roll-profile.mk
 
+-include $(ROLLSROOT)/etc/Rules-repo-centos.mk
+include Rules-repo-centos.mk
 
 
 MKISOFSFLAGS = "-b isolinux/isolinux.bin -c isolinux/boot.cat \
@@ -448,6 +450,7 @@ Rolls.mk: $(wildcard $(ROLLSROOT)/etc/Rolls.mk)
 
 clean::
 	rm -f Rolls.mk 
+	-rm -f Rules-repo-centos.mk 
 	rm -rf anaconda anaconda-runtime
 	rm -rf rpmdb
 
