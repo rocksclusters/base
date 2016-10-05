@@ -445,11 +445,19 @@ $(NAME).spec: $(NAME).spec.mk
 	else \
 	echo "BUILDROOT=$(BUILDROOT) make install" >> $@; \
 	fi
+	echo "## Generating %files directive"
+	echo "## RPM.FILES =  list of (wildcarded) directories/files"
+	echo "## RPM.FILESLIST =  file name with list of files and other directives"
+	echo "## RPM.FILE.EXTRAS =  any other info (permissions)"
+	echo "## RPM.PREFIX =  All files below and including the PREFIX"
 ifeq ($(RPM.FILESLIST),)
 	@$(PF) "%%files $(RPM.PACKAGE)\n" >> $@
 ifeq ($(RPM.PREFIX),)
+ifeq ($(RPM.FILES),)
 	@$(PF) "/\n" >> $@
 else
+	@$(PF) "$(RPM.FILES)\n" >> $@
+endif
 	@$(PF) "$(RPM.PREFIX)\n" >> $@
 endif
 	echo -e "$(RPM.FILE.EXTRAS)" >> $@

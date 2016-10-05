@@ -1,2 +1,3 @@
 NAME = rocks-devel
-RELEASE = 5
+RELEASE = 6
+RPM.FILES="/etc/profile.d/*\\n/opt/rocks/share/devel/*"
