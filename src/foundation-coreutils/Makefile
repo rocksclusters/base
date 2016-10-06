@@ -143,7 +143,7 @@ build:
 	gunzip -c coreutils-$(VERSION).tar.gz | $(TAR) -xf - 
 	( 								\
 		cd coreutils-$(VERSION);				\
-		./configure --prefix=$(PKGROOT);	 		\
+		FORCE_UNSAFE_CONFIGURE=1 ./configure --prefix=$(PKGROOT);	 		\
 		$(MAKE);							\
 	)
 

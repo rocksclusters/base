@@ -215,10 +215,12 @@
 
 PKGROOT		= /opt/rocks/mysql
 PKGVAR		= /var/$(PKGROOT)
+REMLIST		= / /opt /etc /var
 INSTALLDB	= $(PKGROOT)/sbin/mysql-install-db
 REDHAT.ROOT     = $(CURDIR)/../../
 ROCKSROOT       = ../devel/devel
 # we set the path to load the shared library in the RPATH of 
+
 # each foundation-mysql executables instead of adding it to 
 # /etc/ld.conf.d/ which will change the behavior of the 
 # system mysql 
@@ -262,6 +264,16 @@ install::
 	echo "	--datadir=$(PKGVAR)  \\"		>> $(ROOT)/$(INSTALLDB)
 	echo "	--user=rocksdb"				>> $(ROOT)/$(INSTALLDB)
 	chmod +x $(ROOT)/$(INSTALLDB)
+	find $(ROOT)/ | sed "s#$(ROOT)##" | tr / % > $(RPM.FILESLIST)
+	( \
+		for p in $(REMLIST); \
+			do TRANSp=`echo $$p | tr / %`; \
+			sed -i -e "/^$$TRANSp$$/d" $(RPM.FILESLIST); \
+		done; \
+	)
+	sed -i 's#%#/#g' $(RPM.FILESLIST)
 
 clean::
 	rm -rf mysql-$(VERSION)
+	-/bin/rm $(RPM.FILESLIST)
+	

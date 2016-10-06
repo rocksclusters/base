@@ -499,9 +499,6 @@ install::
 	$(INSTALL) -m700 rocksconfig.d/pre* $(ROOT)/etc/rc.d/rocksconfig.d/
 	$(INSTALL) -m700 rocksconfig.d/post* $(ROOT)/etc/rc.d/rocksconfig.d/
 
-	mkdir -p $(ROOT)/etc/profile.d/
-	$(INSTALL) -m755 etc/profile.d/*sh $(ROOT)/etc/profile.d/
-
 	mkdir -p $(ROOT)/etc/rc.d/init.d
 	$(INSTALL) -m755 init.d/rocks-dmesg	$(ROOT)/etc/rc.d/init.d/
 	$(INSTALL) -m755 init.d/rocks-pre	$(ROOT)/etc/rc.d/init.d/

@@ -54,70 +54,6 @@
 # 
 # @Copyright@
 #
-# $Log: Makefile,v $
-# Revision 1.16  2012/11/27 00:48:37  phil
-# Copyright Storm for Emerald Boa
-#
-# Revision 1.15  2012/05/06 05:48:43  phil
-# Copyright Storm for Mamba
-#
-# Revision 1.14  2012/04/05 20:35:51  phil
-# make build empty and install do all the work
-#
-# Revision 1.13  2012/02/01 20:41:27  phil
-# update
-#
-# Revision 1.12  2011/07/23 02:30:46  phil
-# Viper Copyright
-#
-# Revision 1.11  2010/09/07 23:53:07  bruno
-# star power for gb
-#
-# Revision 1.10  2010/06/22 21:26:23  mjk
-# Build env is now from src/devel package, nothing outside of base roll.
-#
-# Revision 1.9  2009/05/01 19:07:07  mjk
-# chimi con queso
-#
-# Revision 1.8  2008/10/18 00:56:00  mjk
-# copyright 5.1
-#
-# Revision 1.7  2008/03/06 23:41:43  mjk
-# copyright storm on
-#
-# Revision 1.6  2007/06/23 04:03:23  mjk
-# mars hill copyright
-#
-# Revision 1.5  2006/12/02 01:04:54  anoop
-# Ridiculously big ass commit.
-# Also known as the week after thanksgiving 2006. Or "The day Anoop
-# broke Rocks".
-#
-# Main Changes.
-#
-# 1. Added a roll-profile.mk file. This is meant as a makefile for building
-# the profile rpm containing all the XML files meant for the roll. This is a
-# breakaway from the spec.in file method of building the profile RPM.
-#
-# 2. The variable PWD is now changed to CURDIR. The main reason for this is
-# PWD is supplied by the shell. CURDIR is the variable supplied by gmake itself.
-# This means we can have a slightly more platform independant way of doing things.
-# Also Solaris was failing to set PWD correctly in the source directories, wreaking
-# havoc on the location of the BUILD and PKG directories.
-#
-# Revision 1.4  2006/09/11 22:47:15  mjk
-# monkey face copyright
-#
-# Revision 1.3  2006/08/10 00:09:37  mjk
-# 4.2 copyright
-#
-# Revision 1.2  2006/01/19 19:58:38  mjk
-# put everything in /opt/rocks/redhat
-#
-# Revision 1.1  2006/01/19 19:58:01  mjk
-# *** empty log message ***
-#
-
 
 REDHAT.ROOT     = $(CURDIR)/../..
 ROCKSROOT       = ../devel/devel
@@ -126,12 +62,12 @@ PKGROOT		= /opt/rocks
 include Rules.mk
 
 build: 
-	echo "Nothing to build. Work done in getrpms.py"
+	echo "Nothing to build. Work done in getrpms.sh"
 
 install:: 
-	./getrpms.py $(ROOT)/$(PKGROOT)/redhat $(RPMS)
+	./getrpms.sh $(ROOT)/$(PKGROOT)/redhat $(RPMS)
 	if [ -d $(ROOT)/opt/rocks/redhat/var/lib/rpm ]; then \
 		/bin/rm -rf $(ROOT)/opt/rocks/redhat/var/lib/rpm; fi
 
 clean::
-	rm -rf rocks-dist
+	rm -rf *rpm 

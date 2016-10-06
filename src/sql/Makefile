@@ -425,7 +425,6 @@ install:: build
 
 	$(MAKE) install -C po 
 
-
 clean::
 	rm -f $(SCRIPTS)
 	rm -f $(NAME).spec.in

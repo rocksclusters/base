@@ -86,6 +86,7 @@
 #
 
 PKGROOT		= /
+RPM.PREFIX	= /var/www/html/misc
 REDHAT.ROOT     = $(CURDIR)/../../
 ROCKSROOT       = ../devel/devel
 -include $(ROCKSROOT)/etc/Rules.mk
@@ -94,9 +95,6 @@ include Rules.mk
 build::
 
 install::
-	mkdir -p $(ROOT)/etc/profile.d/
-	$(INSTALL) -m755 profile.d/ssh-key.csh $(ROOT)/etc/profile.d/
-	$(INSTALL) -m755 profile.d/ssh-key.sh $(ROOT)/etc/profile.d/
 
 	mkdir -p $(ROOT)/var/www/html/misc
 	$(INSTALL) -m644 misc/dot-graph.php $(ROOT)/var/www/html/misc
