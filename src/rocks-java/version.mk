@@ -1,2 +1,3 @@
 NAME = rocks-java
-RELEASE = 0
+RELEASE = 1
+RPM.FILES = "/etc/profile.d/*"
