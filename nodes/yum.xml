@@ -77,20 +77,6 @@ new files
 
 
 <post>
-
-<file name="/etc/yum.conf">
-[main]
-cachedir=/var/cache/yum
-debuglevel=2
-logfile=/var/log/yum.log
-pkgpolicy=newest
-distroverpkg=redhat-release
-tolerant=1
-exactarch=1
-assumeyes=1
-
-</file>
-
 pushd /etc/yum.repos.d
 if [ ! -d RCS ]; then
 	mkdir -m 700 RCS
@@ -117,7 +103,6 @@ enabled = 1
 </file> 
 
 </configure>
-
 
 </kickstart> 
 
