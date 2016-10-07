@@ -149,7 +149,6 @@
 # baseline
 #
 
-ROLLSROOT = $(CURDIR)/src/devel/devel/src/roll
 -include $(ROLLSROOT)/etc/Rolls.mk
 include Rolls.mk
 
