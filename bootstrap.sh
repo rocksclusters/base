@@ -205,28 +205,10 @@
 . src/devel/devel/src/roll/etc/bootstrap-functions.sh
 
 
-if [ `./_os` == "linux" ]; then
-	compile_and_install foundation-redhat
-fi
-compile_and_install foundation-coreutils
 compile_and_install foundation-gawk
-compile_and_install foundation-wget
-compile_and_install foundation-mysql
-compile_and_install foundation-python
-compile_and_install foundation-python-setuptools
-compile_and_install foundation-libxml2
-compile_and_install foundation-python-xml
-compile_and_install foundation-python-extras
-compile_and_install foundation-rcs
 compile_and_install foundation-ant
 compile_and_install qrencode
 compile_and_install protobuf
-
-if [ `./_os` == "linux" ]; then
-	compile_and_install librocks
-fi
-
-compile_and_install rocks-pylib
 
 compile java
 install jdk 
