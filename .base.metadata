@@ -22,8 +22,8 @@ a23db5bd268f916bb66bf78b33c6de5293405bd8  src/phpMyAdmin/phpMyAdmin-2.6.4-pl1.ta
 4ceb805b78aff4c872b7e55554d2364e06f695b3  src/postfix/postfix-2.5.1.tar.gz 0B0LD0shfkvCROHczdnNHQzVCTHM
 b81c649f80e6c7e40f7a3162c33cad76224dcab4  src/pxeflash/FDSTD.288 0B0LD0shfkvCRcWE2bUlRMEZ6bzg
 e92f191d86b8d8d1d0d26e4e58d18bc197d7c0f8  src/qrencode/qrencode-3.4.0.tar.bz2 0B0LD0shfkvCRNEpnNi1hZnNUcWM
-7a923ae9bd48502bc51b7df8468fe66035f26555  src/java/jdk-1.7.0_51-fcs.i586.rpm 0B0LD0shfkvCRODNUaTRRSFdGM2s
-3437b12923b25fb2a054689dca74560e87ce722d  src/java/jdk-1.7.0_51-fcs.x86_64.rpm 0B0LD0shfkvCRa1Y3MXhKd2xDT2s
+5eb899dd13f0e734df91df245aae3a79826b4d74  src/java/jdk-8u101-linux-i586.rpm 0B0LD0shfkvCRQ1V2QlQ2WC1VclE
+340f729027d5383a1930c85690ec3b9b461215bc  src/java/jdk-8u101-linux-x64.rpm 0B0LD0shfkvCRc3BMZVZvUlEzSXM
 1eeed73b44d924fa2b48dac5556e1c509c14d8e9  src/sun-java/jdk-6u17-solaris-i586.tar.Z 0B0LD0shfkvCRWkU5SndGZHU3N3M
 df6b838a98e3a7fdefcdcc7f1d7e85c14a1ce72f  src/sun-java/jdk-6u17-solaris-x64.tar.Z 0B0LD0shfkvCRMVQ1U3VXaDVkOXc
 abc5b551c0b988bb5147af575589dac8f535c0dd  src/sun-java/jdk-6u27-solaris-i586.tar.Z 0B0LD0shfkvCRM2VuSnc1X0x4Wlk
