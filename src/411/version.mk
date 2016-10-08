@@ -1,5 +1,6 @@
 NAME = rocks-411
 RELEASE = 1
+RPM.ARCH = noarch
 RPM.FILES = \
 /opt/rocks/bin/*\\n\
 /opt/rocks/etc/*\\n\
