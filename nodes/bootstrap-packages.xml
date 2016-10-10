@@ -146,10 +146,15 @@
 	<package os="linux">tcl-devel</package>
 	<package os="linux">tclx</package>
 	<package os="linux">telnet</package>
-	<package os="linux">tetex</package>
-	<package os="linux">tetex-dvips</package>
-	<package os="linux">tetex-fonts</package>
-	<package os="linux">tetex-latex</package>
+	<!-- TeX support - package name changed from 6 to 7 -->
+	<package os="linux" cond="not (version &gt;= 7)">tetex</package>
+	<package os="linux" cond="not (version &gt;= 7)">tetex-dvips</package>
+	<package os="linux" cond="not (version &gt;= 7)">tetex-fonts</package>
+	<package os="linux" cond="not (version &gt;= 7)">tetex-latex</package>
+	<package os="linux" cond=" version &gt;= 7">tex</package>
+	<package os="linux" cond="version &gt;= 7">texlive</package>
+	<package os="linux" cond="version &gt;= 7">texlive-fonts</package>
+
 	<package os="linux">xmlto</package>
 	<package os="linux">xorg-x11-util-macros</package>
 	<package os="linux">yum-utils</package>
