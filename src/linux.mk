@@ -204,7 +204,6 @@ SRCDIRS = `find . -type d -maxdepth 1 \
 	-not -name updates.img \
 	-not -name anaconda \
 	-not -name environment-modules \
-	-not -name kudzu \
 	-not -name pcre \
 	-not -name php \
 	-not -name sun-java \
@@ -212,6 +211,9 @@ SRCDIRS = `find . -type d -maxdepth 1 \
 	-not -name postfix \
 	-not -name lsof \
 	-not -name anaconda-yum-plugins \
+ifeq ($(VERSION.MAJOR),7)
+	-not -name firerox \
+endif
 	-not -name foundation-python-xml-26 \
 	-not -name developersguiderst \
 	-not -name channel`
