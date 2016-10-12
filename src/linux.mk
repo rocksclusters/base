@@ -199,7 +199,6 @@
 SRCDIRS = `find . -type d -maxdepth 1 \
 	-not -name CVS \
 	-not -name . \
-	-not -name ncurses \
 	-not -name rocks-pxe \
 	-not -name updates.img \
 	-not -name anaconda \
