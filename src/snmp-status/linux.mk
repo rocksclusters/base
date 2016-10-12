@@ -93,5 +93,4 @@
 
 RPM.REQUIRES	= rocks-pylib
 RPM.ARCH	= noarch
-RPM.PREFIX	= /opt/rocks
 
