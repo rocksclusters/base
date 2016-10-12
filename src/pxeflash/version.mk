@@ -5,3 +5,6 @@ DOSBOOT = FDSTD.288
 PXEIMAGE = $(NAME).img
 PKGROOT = /opt/pxeflash
 MEMDISK		= /usr/share/syslinux/memdisk
+RPM.FILES = \
+/opt/pxeflash \\n\
+/tftpboot/pxelinux/*
