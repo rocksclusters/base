@@ -203,7 +203,6 @@ SRCDIRS = `find . -type d -maxdepth 1 \
 	-not -name updates.img \
 	-not -name anaconda \
 	-not -name environment-modules \
-	-not -name php \
 	-not -name sun-java \
 	-not -name bittorrent \
 	-not -name postfix \
