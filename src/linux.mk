@@ -203,7 +203,6 @@ SRCDIRS = `find . -type d -maxdepth 1 \
 	-not -name updates.img \
 	-not -name anaconda \
 	-not -name environment-modules \
-	-not -name sun-java \
 	-not -name bittorrent \
 	-not -name anaconda-yum-plugins \
 ifeq ($(VERSION.MAJOR),7)
