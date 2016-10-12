@@ -93,5 +93,4 @@
 
 RPM.REQUIRES	= openssl
 RPM.ARCH	= noarch
-RPM.PREFIX	= /opt/rocks
 

@@ -214,7 +214,6 @@ PKGROOT = /opt/rocks/
 CERTDIR = $(PKGROOT)/lib/
 
 REDHAT.ROOT     = $(CURDIR)/../../
-ROCKSROOT       = ../devel/devel
 -include $(ROCKSROOT)/etc/Rules.mk
 include Rules.mk
 
