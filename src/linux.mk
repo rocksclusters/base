@@ -194,7 +194,7 @@
 # - added os makefiles
 #
 
--include $(CURDIR)/devel/devel/etc/rocks-version.mk
+-include $(ROCKSROOT)/etc/rocks-version.mk
 
 SRCDIRS = `find . -type d -maxdepth 1 \
 	-not -name CVS \
@@ -205,9 +205,7 @@ SRCDIRS = `find . -type d -maxdepth 1 \
 	-not -name environment-modules \
 	-not -name bittorrent \
 	-not -name anaconda-yum-plugins \
-ifeq ($(VERSION.MAJOR),7)
 	-not -name firerox \
-endif
 	-not -name foundation-python-xml-26 \
 	-not -name developersguiderst \
 	-not -name channel`
@@ -216,13 +214,17 @@ endif
 ifeq ($(VERSION.MAJOR),5)
 SRCDIRS += environment-modules
 endif
+## 
+ifeq ($(VERSION.MAJOR),6)
+SRCDIRS += firerox 
+endif
 #
 # make sure we build anaconda last, that's because it includes many packages
 # from the base roll
 #
-SRCDIRS += anaconda updates.img channel 
+SRCDIRS += anaconda channel 
 
 ifeq ($(VERSION.MAJOR),6)
-SRCDIRS += anaconda-yum-plugins
+SRCDIRS += anaconda-yum-plugins updates.img
 endif
 

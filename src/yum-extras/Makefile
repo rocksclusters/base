@@ -67,7 +67,6 @@
 #
 
 REDHAT.ROOT     = $(CURDIR)/../../
-ROCKSROOT       = ../devel/devel
 MAKE.iscontrib	= 1
 
 -include $(ROCKSROOT)/etc/Rules.mk

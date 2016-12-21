@@ -202,8 +202,7 @@
 # bootstrap roll development
 #
 
-. src/devel/devel/src/roll/etc/bootstrap-functions.sh
-
+. $ROLLSROOT/etc/bootstrap-functions.sh || exit 1
 
 compile_and_install foundation-gawk
 compile_and_install foundation-ant

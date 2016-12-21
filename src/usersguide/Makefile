@@ -150,7 +150,6 @@
 
 PKGROOT		= /var/www/html/roll-documentation/$(ROLL)/$(VERSION)
 REDHAT.ROOT	= $(PWD)/../../
-ROCKSROOT       = $(CURDIR)/../../src/devel/devel
 -include $(ROCKSROOT)/etc/Rules.mk
 include Rules.mk
 
