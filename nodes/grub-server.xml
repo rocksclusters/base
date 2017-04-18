@@ -100,7 +100,7 @@
 
 
 <!-- Setup /boot/grub/rocks.conf file -->
-<post interpreter="/opt/rocks/bin/python">
+<post cond="rocks_version_major==6" interpreter="/opt/rocks/bin/python">
 import rocks.grub
 import random 
 
