@@ -20,6 +20,7 @@ e9b6d1a2a91e6bb37ac6de617bee959f22e8f125  src/tentakel/tentakel-2.2.tar.gz 0B0LD
 f55e99a3d4a5e3f18fd9c0d1b45944b199577345  src/yum-extras/elrepo-release-6-4.el6.elrepo.noarch.rpm 0B0LD0shfkvCRRGFzMm9pNXQ5VkE
 8a721b54337bbbe4dbed148ca92900c3c8e82486  src/yum-extras/epel-release-5-4.noarch.rpm 0B0LD0shfkvCRd2RVRG5GQ3FPeGM
 31152ca36425555319d04d2cd18b8cbcf0aba8e1  src/yum-extras/epel-release-6-5.noarch.rpm 0B0LD0shfkvCRbEFhVEFWUlhjNnc
+cb0ec53f3473d360069a40b2128f67d1cca8262c  src/yum-extras/epel-release-7-9.noarch.rpm 0B0LD0shfkvCRS2lnMFpmYVBOa2s
 ae0e5164252cb634a83705bb490c50ef3f9ff4ef  src/yum-extras/rpmforge-release-0.5.2-2.el5.rf.i386.rpm 0B0LD0shfkvCRU2lBQ3h0U1FQc2s
 34ef027d935320fb7bf2af4f54d73d216506649b  src/yum-extras/rpmforge-release-0.5.2-2.el5.rf.x86_64.rpm 0B0LD0shfkvCRaFdSNkE0dGc4MFk
 92a0c2525d3aeda72c5c08d13a49c43d6b980652  src/yum-extras/rpmforge-release-0.5.2-2.el6.rf.i686.rpm 0B0LD0shfkvCRN1hnTDlid1dPNFE
