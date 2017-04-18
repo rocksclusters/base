@@ -85,11 +85,11 @@ fi
 
 ext=$$
 for repo in *repo; do
-  /opt/rocks/bin/ci -l -m"Original File"  $repo
+  echo "Original File" | /opt/rocks/bin/ci -l $repo
   /bin/sed -e 's/^enabled[[:print:]]*//' $repo &gt; $repo.$ext
   /bin/awk '{print};/^\[[[:print:]]*\]/ {print "enabled = 0 "}' $repo.$ext &gt; $repo 
   /bin/rm $repo.$ext
-  /opt/rocks/bin/ci -l -m"Disabled by Rocks Post Config"  $repo
+  echo "Disabled by Rocks Post Config" | /opt/rocks/bin/ci -l $repo
 done 
 popd
 </post>

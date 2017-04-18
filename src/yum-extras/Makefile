@@ -86,7 +86,7 @@ rpm::	build
 	# fail2ban but then we have to remove it
 	# if we are on a Rocks node we don't need to install it
 	test "$(IS_EPEL_INSTALLED)" || rpm -Uvh $(EPEL_RPM);
-	yumdownloader --enablerepo=epel --destdir=$(REDHAT.RPMS)/noarch fail2ban python-inotify;
+	yumdownloader --enablerepo=epel --destdir=$(REDHAT.RPMS)/noarch $(FAIL2BAN.PKGS);
 	test "$(IS_EPEL_INSTALLED)" || rpm -ev $(EPEL_RPM:.rpm=);
 	-cp $(REPORPMS) $(REDHAT.RPMS)/$(ARCH)/
 	-cp $(REPORPMS.NOARCH) $(REDHAT.RPMS)/$(ARCH)/
