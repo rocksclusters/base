@@ -175,7 +175,6 @@
 
 PKGROOT		= /opt/rocks
 REDHAT.ROOT     = $(CURDIR)/../../
-ROCKSROOT       = ../devel/devel
 NATIVEARCH	= $(shell /bin/arch)
 
 -include $(ROCKSROOT)/etc/Rules.mk
