@@ -139,7 +139,7 @@
   <package type="meta">x-software-development</package>
 
   <!-- For the pretty Gnome icons. -->
-  <package>indexhtml</package>
+  <package cond="rocks_version_major == 6">indexhtml</package>
 
   <!-- support packages used to configure X -->
   <package>pygtk2</package>

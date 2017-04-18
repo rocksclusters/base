@@ -262,7 +262,7 @@
 
   </changelog>
 
-  <package>libbdevid-python</package>
+  <package cond="rocks_version_major == 6">libbdevid-python</package>
   <package>python-pyblock</package>
   <package>pykickstart</package>
   <package>rocks-kickstart</package>

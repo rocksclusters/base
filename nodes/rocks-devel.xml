@@ -127,13 +127,8 @@
   <package>apr-devel</package>
   <package>apr-util-devel</package>
   <package>atk-devel</package>
-  <package>beecrypt-devel</package>
+  <package cond="rocks_version_major == 6">beecrypt-devel</package>
   <package>binutils-devel</package>
-  <package>booty</package>
-  <package>bogl</package>
-  <package>bogl-devel</package>
-  <package>bogl-bterm</package>
-  <package>busybox-anaconda</package>
   <package>cairo-devel</package>
   <package>cups-libs</package>
   <package>expat-devel</package>
@@ -146,19 +141,19 @@
   <package>gtk2-devel</package>
   <package>ImageMagick</package>
   <package>intltool</package>
-  <package>libdhcp-devel</package>
+  <package cond="rocks_version_major == 6">libdhcp-devel</package>
   <package>libglade2-devel</package>
   <package>libnl-devel</package>
   <package>libjpeg-devel</package>
   <package>libpcap</package>
   <package>libpng-devel</package>
   <package>libtool-ltdl</package>
-  <package>mkinitrd-devel</package>
+  <package cond="rocks_version_major == 6">mkinitrd-devel</package>
   <package arch="i386">nasm</package>
   <package>netpbm</package>
   <package>nspr-devel</package>
   <package arch="i386, x86_64">netpbm-progs</package>
-  <package>Omni</package>
+  <package cond="rocks_version_major == 6">Omni</package>
   <package>pango-devel</package>
   <package>pygobject2-devel</package>
   <package>pycairo-devel</package>

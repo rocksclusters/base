@@ -174,15 +174,17 @@
   <package>libstdc++-devel</package>
   <package>binutils</package>
   <package>patch</package>
-  <package>pump-devel</package>
+  <package cond="rocks_version_major == 6">pump-devel</package>
   <package arch="i386">dietlibc</package>
-  <package>gtk+</package>
-  <package>gtk+-devel</package>
+  <package cond="rocks_version_major == 6">gtk+</package>
+  <package cond="rocks_version_major == 6">gtk+-devel</package>
+  <package cond="rocks_version_major == 7">gtk3</package>
+  <package cond="rocks_version_major == 7">gtk3-devel</package>
   <package>vim-enhanced</package>
   <package>e2fsprogs-devel</package>
   <package>libselinux-devel</package>
   <package>pciutils-devel</package>
-  <package>kudzu-devel</package>
+  <package cond="rocks_version_major == 6">kudzu-devel</package>
   <package>slang-devel</package>
   <package>newt-devel</package>
   <package>krb5-devel</package>
@@ -197,7 +199,8 @@
   <package>curl-devel</package>
 
   <!-- For makedepend -->
-  <package>xorg-x11-devel</package>
+  <package cond="rocks_version_major == 6">xorg-x11-devel</package>
+  <package cond="rocks_version_major == 7">imake</package>
 
   <package arch="i386">dev86</package>
 
