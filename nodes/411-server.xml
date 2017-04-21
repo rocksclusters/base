@@ -222,12 +222,12 @@ then
 	chmod 0400 /etc/411-security/shared.key
 fi
 
-<!-- Generate 1024bit RSA master keypair in PEM format. 
+<!-- Generate 2048bit RSA master keypair in PEM format. 
      Used to sign 411 files and alerts. 
 -->
 if [ ! -s /etc/411-security/master.key ]
 then
-	/usr/bin/openssl genrsa 1024 &gt; /etc/411-security/master.key
+	/usr/bin/openssl genrsa 2048 &gt; /etc/411-security/master.key
 	chmod 0400 /etc/411-security/master.key
 fi
 
@@ -251,6 +251,8 @@ make -C /var/411 &gt; /dev/null
 </file>
 
 
+</post>
+<post cond="rocks_version_major<7">
 <!-- make sure ypbind is off -->
 
 /sbin/chkconfig ypbind off
