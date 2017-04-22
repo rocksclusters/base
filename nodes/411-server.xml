@@ -252,7 +252,7 @@ make -C /var/411 &gt; /dev/null
 
 
 </post>
-<post cond="rocks_version_major<7">
+<post cond="rocks_version_major==6">
 <!-- make sure ypbind is off -->
 
 /sbin/chkconfig ypbind off
