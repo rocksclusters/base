@@ -220,12 +220,14 @@ ifeq ($(VERSION.MAJOR),6)
 SRCDIRS += firerox 
 endif
 #
-# make sure we build anaconda last, that's because it includes many packages
-# from the base roll
+# make sure we build channel last
 #
-SRCDIRS += anaconda channel 
+SRCDIRS += channel 
 
-ifeq ($(VERSION.MAJOR),6)
-SRCDIRS += anaconda-yum-plugins updates.img
+
+# For version 6, rebuild anaconda, that's because it includes many packages
+# from the base roll. Version 7, we use the native OS version of anaconda
+ifeq ($(VERSION.MAJOR), 6)
+SRCDIRS += anaconda anaconda-yum-plugins updates.img
 endif
 

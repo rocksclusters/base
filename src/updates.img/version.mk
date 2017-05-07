@@ -1,3 +1,3 @@
 NAME		= rocks-anaconda-updates
-RELEASE		= 1
+RELEASE		= 2
 
