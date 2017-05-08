@@ -236,3 +236,5 @@ if [ `./_os` == "linux" ]; then
 	bootstrap_py_init
 	install_os_packages bootstrap-packages
 fi
+
+make -C OSROLL TMPDIR=/tmp base updates
