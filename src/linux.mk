@@ -208,6 +208,7 @@ SRCDIRS = `find . -type d -maxdepth 1 \
 	-not -name firerox \
 	-not -name foundation-python-xml-26 \
 	-not -name developersguiderst \
+	-not -name developersguide \
 	-not -name usersguide \
 	-not -name channel`
 
