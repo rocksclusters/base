@@ -1,0 +1,5 @@
+%_topdir /export/home/repositories/rocks/src/roll/base/src/rocks-anaconda-updates/../../
+%_buildrootdir /export/home/repositories/rocks/src/roll/base/src/rocks-anaconda-updates/rocks-anaconda-updates.buildroot
+%buildroot /export/home/repositories/rocks/src/roll/base/src/rocks-anaconda-updates/rocks-anaconda-updates.buildroot
+%_var	/var
+%debug_package	%{nil}

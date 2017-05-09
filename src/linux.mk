@@ -201,6 +201,7 @@ SRCDIRS = `find . -type d -maxdepth 1 \
 	-not -name . \
 	-not -name rocks-pxe \
 	-not -name updates.img \
+	-not -name rocks-anaconda-updates \
 	-not -name anaconda \
 	-not -name environment-modules \
 	-not -name bittorrent \
@@ -232,3 +233,6 @@ ifeq ($(VERSION.MAJOR), 6)
 SRCDIRS += anaconda anaconda-yum-plugins updates.img
 endif
 
+ifeq ($(VERSION.MAJOR), 7)
+SRCDIRS += rocks-anaconda-updates 
+endif
