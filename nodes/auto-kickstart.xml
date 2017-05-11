@@ -44,7 +44,7 @@
 
   </changelog>
 
-  <package os='linux'>rocks-boot-auto</package>
-  <package os='linux'>rocks-boot-xen</package>
+  <package cond="rocks_version_major == 6" os='linux'>rocks-boot-auto</package>
+  <package cond="rocks_version_major == 6" os='linux'>rocks-boot-xen</package>
 
 </kickstart> 
