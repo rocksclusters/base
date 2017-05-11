@@ -1,0 +1,4 @@
+<!-- Edges specific to Rocks Version 7 -->
+<graph>
+	<edge cond="rocks_version_major == 7" from="server" to="x11-server"/>
+</graph>
