@@ -13,7 +13,7 @@
         
         </copyright>
 
-  <package type="meta">graphical-server-environment</package>
+  <package type="meta">^graphical-server-environment</package>
 
 <post> 
 /usr/bin/systemctl set-default graphical.target
