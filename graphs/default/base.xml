@@ -513,7 +513,6 @@
 		<to>base</to>
 		<to>devel</to>
 		<to>rocks-dist</to>
-		<to>security-server</to>
 		<to>ntp-server</to>
 		<to>autofs-server</to>
 		<to>database</to>
