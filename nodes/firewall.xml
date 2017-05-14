@@ -76,14 +76,19 @@
   Olli-Pekka Lehto at Cluster2004.
 
   </changelog>
+<package cond="rocks_version_major == 7">iptables-services</package>
 
-<post os='linux'>
-	
+<post cond="rocks_version_major == 6" os='linux'>
 <!-- configure and turn on iptables -->
 /sbin/chkconfig iptables on
-<!-- turn off ip6tables -->
-/sbin/chkconfig ip6tables off
+/sbin/chkconfig ip6tables on
+</post>
 
+<post cond="rocks_version_major == 7" os='linux'>
+<!-- configure and turn on iptables -->
+/usr/bin/systemctl mask firewalld
+/usr/bin/systemctl enable iptables
+/usr/bin/systemctl enable ip6tables
 </post>
 
 </kickstart> 
