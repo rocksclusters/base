@@ -210,7 +210,6 @@ SRCDIRS = `find . -type d -maxdepth 1 \
 	-not -name foundation-python-xml-26 \
 	-not -name developersguiderst \
 	-not -name developersguide \
-	-not -name usersguide \
 	-not -name channel`
 
 ## Build environment modules on 5, it is part of 6 in the OS
