@@ -103,12 +103,10 @@ REDHAT.ROOT     = $(CURDIR)/../../
 -include $(ROCKSROOT)/etc/Rules.mk
 include Rules.mk
 
-SCRIPTS	= kgen kdoc screengen
 
+build:
 
-build:	$(SCRIPTS)
-
-install:: build
+install:: 
 	mkdir -p $(ROOT)/etc/rc.d/init.d
 	cp init.d/rocks-kickstart $(ROOT)/etc/rc.d/init.d
 
@@ -122,6 +120,5 @@ install:: build
 
 
 clean::
-	rm -f $(SCRIPTS)
 	rm -f $(SPECFILE).in
 
