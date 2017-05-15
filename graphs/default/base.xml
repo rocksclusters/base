@@ -400,6 +400,10 @@
 		<tail>do-partition</tail>
 	</order>
 
+	<order head="yum-core">
+		<tail>yum</tail>
+	</order>
+	
 	<order head="yum">
 		<tail>devel-appliance</tail>
 		<tail>yum-extras</tail>

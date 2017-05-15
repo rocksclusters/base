@@ -100,6 +100,8 @@ popd
 name=Rocks &version;
 baseurl=http://&Kickstart_PublicAddress;/install/&distribution;/&arch;
 enabled = 1
+gpgcheck = 0
+skip_if_unavailable = 1
 </file> 
 
 </configure>
