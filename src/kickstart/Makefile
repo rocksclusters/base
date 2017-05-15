@@ -109,10 +109,6 @@ SCRIPTS	= kgen kdoc screengen
 build:	$(SCRIPTS)
 
 install:: build
-	mkdir -p $(ROOT)/$(PKGROOT)/sbin
-	$(INSTALL) -m 0755 kgen kdoc screengen \
-		$(ROOT)/$(PKGROOT)/sbin/
-
 	mkdir -p $(ROOT)/etc/rc.d/init.d
 	cp init.d/rocks-kickstart $(ROOT)/etc/rc.d/init.d
 
