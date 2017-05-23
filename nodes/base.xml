@@ -443,9 +443,12 @@
 
 <main>
 
-<install>
+<install cond="rocks_version_major == 6">
 %include /tmp/partition-info
 </install>
+<clearpart cond="rocks_version_major == 7">--all</clearpart>
+<autopart cond="rocks_version_major == 7"/>
+<reboot cond="rocks_version_major == 7"/>
 
 <lang>&Kickstart_Lang;</lang>
 <keyboard>&Kickstart_Keyboard;</keyboard>
@@ -476,7 +479,7 @@
 <bootloader cond="Bootloader is not None">&Bootloader;</bootloader>
 
 <url> --url http://&Kickstart_PrivateKickstartHost;/&Kickstart_PrivateKickstartBasedir;/&distribution;/&arch; </url>
-<interactive/>
+<interactive cond="rocks_version_major == 6"/>
 
 </main>
 

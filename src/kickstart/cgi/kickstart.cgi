@@ -542,6 +542,7 @@ from xml.sax import make_parser
 
 import rocks, rocks.sql, rocks.util
 from rocks.util import KickstartError
+import subprocess
 
 
 class App(rocks.sql.Application):
@@ -642,6 +643,7 @@ class App(rocks.sql.Application):
 		if self.form.has_key('os'):
 			OS = self.form['os'].value
 		else:
+			self.arch='x86_64'
 			OS = 'linux' # should aways come from loader
 
 		# check for bogus input before putting it on a shell cmd line
@@ -664,11 +666,19 @@ class App(rocks.sql.Application):
 		self.newdb.setCategoryAttr('host', self.clientName, 'arch', self.arch)
 		self.newdb.setCategoryAttr('host', self.clientName, 'os', OS)
 			
-		for line in os.popen("""
-			/opt/rocks/bin/rocks list host xml arch=%s os=linux %s
-			""" %  (self.arch, self.clientName)).readlines():
-			
-			self.report.append(line[:-1])
+		pcmd = ['/opt/rocks/bin/rocks','list','host','xml','arch=%s' % self.arch, 'os=linux',self.clientName]
+        	profile = subprocess.Popen(pcmd,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        	output,errs = profile.communicate()
+		
+		if rocks.version_major == '6':
+			self.report.append(output)
+			return
+
+		# Version 7, go ahead and run kgen on the frontend
+		kgencmd = ['/opt/rocks/sbin/kgen']
+		kgen = subprocess.Popen(kgencmd,stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+		kstext,errs = kgen.communicate(output)
+		self.report.append(kstext)
 
 
 	def wanKickstart(self):
@@ -839,6 +849,12 @@ class App(rocks.sql.Application):
 	def run(self):
 
 		lanClient = True
+		#print "Content-type: text/html"
+		#print "Status: 503 Service Busy"
+		#print "Retry-After: 15"
+		#print
+		#print "<h1>Service is Busy</h1>"
+		#sys.exit(1)
 		try:
 			self.checkLoad()
 		except KickstartError:
