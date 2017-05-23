@@ -560,13 +560,13 @@
 	<edge from="client">
 		<to>ipmi-client</to>
 		<to>foundation-client</to>
+		<to>core</to>
 		<to>dhcp-client</to>
 		<to>base</to>
 		<to>security-client</to>
 		<to>ntp-client</to>
 		<to>syslog-client</to>
 		<to>autofs-client</to>
-		<to os="linux">grub-client</to>
 		<to>pxeboot</to>
 		<to>networking-client</to>
 		<to>411-client</to>
@@ -577,6 +577,10 @@
 		<to>client-firewall</to>
 		<to os="linux">partitions-save</to>
 		<to>routes-client</to>
+	</edge>
+
+	<edge cond="rocks_version_major == 6" from="client">
+		<to os="linux">grub-client</to>
 	</edge>
 
 	<edge from="security-client">
