@@ -70,7 +70,7 @@
   <package os='sunos'>SUNWatfsr</package>
   <package os='sunos'>SUNWatfsu</package>
 
-  <post cond="int(rocks_version_major) > 6">
+  <post cond="rocks_version_major &gt; 6">
 	/usr/bin/systemctl enable autofs.service
   </post>
 </kickstart> 
