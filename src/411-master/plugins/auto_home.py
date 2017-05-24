@@ -55,6 +55,7 @@
 # @Copyright@
 
 import os
+import rocks
 import rocks.service411
 
 class Plugin(rocks.service411.Plugin):
@@ -62,5 +63,8 @@ class Plugin(rocks.service411.Plugin):
 		return '/etc/auto.home'
 
 	def post(self):
-		os.system("/sbin/service autofs reload")
+		if rocks.version_major == '6':
+			os.system("/sbin/service autofs reload")
+		else:
+			os.system("/usr/bin/systemctl reload autofs")
 
