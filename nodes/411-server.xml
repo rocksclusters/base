@@ -181,6 +181,7 @@ Alias /411.d "/etc/411.d"
 
 &lt;Directory /etc/411.d&gt;
 
+	Require all granted
 	Options Indexes MultiViews
 	IndexOptions FancyIndexing
 	RemoveHandler .var
