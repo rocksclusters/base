@@ -125,6 +125,7 @@
 #
 
 import socket
+CRLF="\r\n"
 
 class HTTPException(Exception):
 	pass
@@ -209,15 +210,15 @@ class HTTPConnection:
 		if not self.connected:
 			raise HTTPException, "I am not connected"
 
-		self.sock.send('%s %s HTTP/1.1\n' % (method, url))
-		self.sock.send('Host: %s:%s\n' % (self.peer, self.port))
-		self.sock.send('Accept-Encoding: identity\n')
+		self.sock.send('%s %s HTTP/1.1%s' % (method, url,CRLF))
+		self.sock.send('Host: %s:%s%s' % (self.peer, self.port,CRLF))
+		self.sock.send('Accept-Encoding: identity%s'% CRLF)
 		if body:
-			self.sock.send('Content-Length: %d\n' % len(body))
+			self.sock.send('Content-Length: %d%s' % (len(body),CRLF))
 		if headers:
 			for key, val in headers.items():
-				self.sock.send('%s: %s\n' % (key, val))
-		self.sock.send('\n')
+				self.sock.send('%s: %s%s' % (key, val,CRLF))
+		self.sock.send(CRLF)
 		if body:
 			self.sock.send(body)
 
@@ -236,7 +237,7 @@ class HTTPConnection:
 		self.status = 0
 		while 1:
 			line = self.fd.readline()
-			if line == "\r\n":
+			if line == CRLF:
 				break
 			if not self.status:
 				tok = line.split()
