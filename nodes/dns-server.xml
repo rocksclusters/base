@@ -144,41 +144,5 @@ fi
 
 </configure>
 
-<post>
-
-<!-- TODO remove this section is not used in rocks 5 nor in rocks 6 -->
-
-<!--	need to patch the named startup file to make it wait for	-->
-<!--	the name service to come up before continuing.			-->
-
-awk '/usleep 100000/ {
-	printf("\tnamed_up=0\n");
-	printf("\twhile [ $named_up = 0 ]\n");
-	printf("\tdo\n");
-	printf("\t\thost %s.local ", "&Kickstart_PrivateHostname;");
-	printf("127.0.0.1 | grep \"no servers could be reached\" ");
-	printf("> /dev/null\n");
-        printf("\t\tnamed_up=$?\n");
-	printf("\tdone\n");
-
-	printf("\tnamed_up=0\n");
-	printf("\twhile [ $named_up = 0 ]\n");
-	printf("\tdo\n");
-	printf("\t\thost %s.%s ", "&Kickstart_PrivateHostname;", \
-		"&Kickstart_PublicDNSDomain;");
-	printf("127.0.0.1 | grep \"no servers could be reached\" ");
-	printf("> /dev/null\n");
-        printf("\t\tnamed_up=$?\n");
-	printf("\tdone\n");
-
-	next;
-} 
-{ print $0 }' /etc/rc.d/init.d/named &gt; /tmp/named
-
-cp /tmp/named /etc/rc.d/init.d/named
-rm -f /tmp/named
-
-</post>
-
 </kickstart> 
 
