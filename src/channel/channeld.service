@@ -1,0 +1,11 @@
+[Unit]
+Description=Rocks channeld alert service 
+After=rpcbind.service
+
+[Service]
+Type=forking
+ExecStart=/opt/rocks/sbin/channeld
+Restart=on-abort
+
+[Install]
+WantedBy=multi-user.target

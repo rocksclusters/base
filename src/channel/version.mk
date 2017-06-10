@@ -1,3 +1,19 @@
 NAME = rocks-channel
 RELEASE = 1
-RPM.FILES = "/etc/rc.d/init.d/*\\n/opt/rocks/sbin/*"
+SYSTEMDFOLDER = /etc/systemd/system
+SYSTEMDINITSCRIPT = channeld.service
+SYSVFOLDER = /etc/rc.d/init.d
+SYSVINITSCRIPT = channeld 
+
+ifeq ($(VERSION.MAJOR), 6)
+SCRIPTSRC=channel.init.linux
+SCRIPT=$(SYSVINITSCRIPT)
+SCRIPTDEST=$(SYSVFOLDER)
+endif
+ifeq ($(VERSION.MAJOR), 7)
+SCRIPTSRC=$(SYSTEMDINITSCRIPT)
+SCRIPT=$(SYSTEMDINITSCRIPT)
+SCRIPTDEST=$(SYSTEMDFOLDER)
+endif
+
+RPM.FILES = "$(SCRIPTDEST)/*\\n/opt/rocks/sbin/*"

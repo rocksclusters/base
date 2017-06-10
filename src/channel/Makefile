@@ -156,11 +156,11 @@ build: channeld 411-alert 411-alert-handler
 
 install:: build
 	mkdir -p $(ROOT)/$(PKGROOT)/sbin
-	mkdir -p $(ROOT)/$(INIT_SCRIPTS_DIR)
+	mkdir -p $(ROOT)/$(SCRIPTDEST)
 	$(INSTALL) -m544 411-alert $(ROOT)/$(PKGROOT)/sbin/
 	$(INSTALL) -m544 411-alert-handler $(ROOT)/$(PKGROOT)/sbin/
 	$(INSTALL) -m544 channeld  $(ROOT)/$(PKGROOT)/sbin/
-	$(INSTALL) -m755 channel.init.$(OS) $(ROOT)/$(INIT_SCRIPTS_DIR)/channeld
+	$(INSTALL) -m755 $(SCRIPTSRC) $(ROOT)/$(SCRIPTDEST)/$(SCRIPT)
 
 clean::
 	-rm *.o
