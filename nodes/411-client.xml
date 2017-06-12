@@ -176,9 +176,6 @@
 <package os="linux">rocks-sec-channel-client</package>
 <package os="sunos">ROCKSrocks-sec-channel-client</package>
 
-<post os="linux">
-/sbin/chkconfig channeld on
-</post>
 
 <post os="sunos">
 cp /opt/rocks/share/channeld/channeld.xml /var/svc/manifest/network/channeld.xml
@@ -324,4 +321,13 @@ cp -rf /opt/rocks/share/sync-411-key.xml \
 
 </post>
 
+<!-- turn services on -->
+<post cond="rocks_version_major == 6">
+/sbin/chkconfig channeld on
+</post>
+
+<post cond="rocks_version_major == 7">
+/usr/bin/systemctl enable rpcbind
+/usr/bin/systemctl enable channeld
+</post>
 </kickstart>
