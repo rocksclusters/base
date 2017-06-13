@@ -618,7 +618,7 @@ class Command(rocks.commands.HostArgumentProcessor,
 						channel, interfaces_name, net_id)
 			else:
 				if self.isKVMContainer(host) and \
-						testOptions.find("nobridge") <=0:
+						testOptions.find("nobridge") < 0:
 					#we have to set up bridged devices
 					if device.startswith( 'vlan' ):
 						# vlan interfaces are not configured by RH network script
