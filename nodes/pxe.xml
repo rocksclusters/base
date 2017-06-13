@@ -192,7 +192,7 @@ initial release
 <package>xinetd</package>
 <package>memtest86+</package>
 <package>pxeflash</package>
-<package cond="os_version_major == 7">rocks-boot-pxe</package>
+<package cond="rocks_version_major == 7">rocks-boot-pxe</package>
 
 
 <post>
