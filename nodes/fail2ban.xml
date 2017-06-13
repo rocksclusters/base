@@ -21,4 +21,7 @@ sed -i 's/\(^ignoreip = 127.0.0.1\/8.*$\)/\1 &Kickstart_PrivateNetwork;\/&Kickst
 sed  -i 's/\([ ]*sendmail-whois.*\)/#\1/' /etc/fail2ban/jail.conf
 </post>
 
+<post cond="rocks_version_major == 7">
+/usr/bin/systemctl enable fail2ban
+</post>
 </kickstart> 

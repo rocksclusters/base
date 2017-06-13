@@ -472,7 +472,7 @@
 <!-- CENTOS6: Anaconda on centOS 6 added the support for the timeout flag.
      When not specified the default is 0. Brilliant....  
 -->
-<bootloader cond="rocks_version_major >= 6 and Bootloader is None">--location=mbr --timeout=5</bootloader>
+<bootloader cond="rocks_version_major &gt;= 6 and Bootloader is None">--location=mbr --timeout=5</bootloader>
 
 <!-- USER OVERWRITE: If the Bootloader attribute is defined, then use it. 
 -->
@@ -635,7 +635,7 @@ SYSFONT="lat0-sun16"
 </post>
 
 
-<post cond="rocks_version_major >= 6">
+<post cond="rocks_version_major &gt;= 6">
 
 gawk '/net\.ipv4\.conf\.default\.rp_filter/ { \
 	printf("# Rocks fixup see https://access.redhat.com/site/solutions/53031\nnet.ipv4.conf.default.rp_filter = 2\n"); \
