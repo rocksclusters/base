@@ -14,12 +14,28 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <signal.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+
 
 
 #ifndef SIG_PF
 #define SIG_PF void(*)(int)
 #endif
 
+void writePidFile(char * pidfile, int pid)
+{
+	// fprintf(stderr,"writing %s with pid %d\n",pidfile, pid);
+	int f;
+	char outbuf[128];
+	f = open(pidfile,O_CREAT | O_WRONLY);
+	if (f <= 0) return;
+	sprintf(outbuf,"%d",pid);
+	outbuf[sizeof(outbuf)-1] = '\0';
+	write(f,outbuf,strlen(outbuf));
+	close(f);
+}
 static void
 sec_channel_1(struct svc_req *rqstp, register SVCXPRT *transp)
 {
@@ -65,19 +81,25 @@ int
 main (int argc, char **argv)
 {
 	register SVCXPRT *transp;
+	char c;
+	char * pidfile = NULL;
 	pid_t pid;
-	int i;
 
 	int debug = 0;
 	
-	if (argc > 1){
-		for(i = 0; i<argc; i++){
-			if(strcmp(argv[i], "-d")){
-				debug = 1;
-				break;
-			}
+	while ((c=getopt(argc,argv,"dp:")) != -1)
+	{
+		switch(c)
+		{
+			case 'd': debug = 1;
+				  break;
+			case 'p': pidfile = optarg;
+				  // fprintf(stderr,"pidfile is %s\n", pidfile);
+				  break;
+			default:  break;
 		}
 	}
+	debug = 0;
 	pmap_unset (SEC_CHANNEL, SEC_CHANNEL_VERS);
 
 	transp = svcudp_create(RPC_ANYSOCK);
@@ -108,6 +130,8 @@ main (int argc, char **argv)
 		case 0:			// Child
 			break;
 		default:		// Parent
+			// fprintf(stderr,"Parent writes pidfile %s %d\n",pidfile,pid);
+			writePidFile(pidfile,pid);
 			exit(0);
 	}
 	close(STDIN_FILENO);
@@ -131,3 +155,5 @@ main (int argc, char **argv)
 	exit (1);
 	/* NOTREACHED */
 }
+	
+	
