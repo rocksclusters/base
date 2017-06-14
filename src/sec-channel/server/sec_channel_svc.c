@@ -26,7 +26,7 @@
 
 void writePidFile(char * pidfile, int pid)
 {
-	// fprintf(stderr,"writing %s with pid %d\n",pidfile, pid);
+	if (pidfile == NULL) return;
 	int f;
 	char outbuf[128];
 	f = open(pidfile,O_CREAT | O_WRONLY);
@@ -99,7 +99,6 @@ main (int argc, char **argv)
 			default:  break;
 		}
 	}
-	debug = 0;
 	pmap_unset (SEC_CHANNEL, SEC_CHANNEL_VERS);
 
 	transp = svcudp_create(RPC_ANYSOCK);

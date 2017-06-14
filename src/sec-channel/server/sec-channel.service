@@ -1,5 +1,6 @@
 [Unit]
 Description=Rocks sec-channel service 
+Requires=rpcbind.service
 After=rpcbind.service
 
 [Service]

@@ -241,10 +241,6 @@ chmod 0444 /etc/411-security/master.pub
 
 /sbin/chkconfig 411 on
 
-<!-- Start 411 shared key server -->
-/sbin/chkconfig sec-channel on
-
-
 <!-- Publish altered login files periodically to propagate changes -->
 <file name="/etc/cron.hourly/make411" perms="0555">
 #!/bin/sh
@@ -260,4 +256,13 @@ make -C /var/411 &gt; /dev/null
 
 </post>
 
+<!-- turn services on -->
+<post cond="rocks_version_major == 6">
+/sbin/chkconfig sec-channel on
+</post>
+
+<post cond="rocks_version_major == 7">
+/usr/bin/systemctl enable rpcbind
+/usr/bin/systemctl enable sec-channel 
+</post>
 </kickstart>
