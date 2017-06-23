@@ -565,9 +565,17 @@ if os.path.isdir(keydir):
 EOF
 
 chmod 600 /tmp/authorized_keys
-
 </pre>
 
+<!-- for rocks version 7 use anaconda's ssh daemon, but protect it -->
+<pre cond="rocks_version_major == 7">
+if [ ! -d /root/.ssh ]; then mkdir -p /root/.ssh; fi 
+chmod 700 /root/.ssh
+mv /tmp/authorized_keys /root/.ssh
+</pre>
+<main cond="rocks_version_major == 7">
+<sshpw>--username root --iscrypted <eval>/opt/rocks/sbin/gen_root_pw</eval></sshpw>
+</main>
 
 <pre>
 
