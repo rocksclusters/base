@@ -575,6 +575,8 @@ mv /tmp/authorized_keys /root/.ssh
 </pre>
 <main cond="rocks_version_major == 7">
 <sshpw>--username root --iscrypted <eval>/opt/rocks/sbin/gen_root_pw</eval></sshpw>
+<eula>--agreed</eula>
+<firstboot>--disable</firstboot>
 </main>
 
 <pre>
