@@ -48,7 +48,7 @@ Revision 1.1  2008/07/29 16:48:05  bruno
 save the frontend's partitions in the database.
 
 </changelog>
-<package cond="rocks_version_major == 7>python-blivet</package>
+<package cond="rocks_version_major == 7">python-blivet</package>
 
 
 <post arg="--nochroot">
