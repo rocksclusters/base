@@ -19,7 +19,7 @@
         
         </copyright>
 
-  <changelog>
+<changelog><![CDATA[
   $Log: base.xml,v $
   Revision 1.62  2013/01/04 21:44:43  clem
   Fix for grub timeout problem on centos6
@@ -438,16 +438,14 @@
 
   Revision 1.1  2001/08/28 02:51:31  mjk
   graph/nodes layout
-  </changelog>
+]]></changelog>
 
 
 <main>
 
-<install cond="rocks_version_major == 6">
+<install>
 %include /tmp/partition-info
 </install>
-<clearpart cond="rocks_version_major == 7">--all</clearpart>
-<autopart cond="rocks_version_major == 7"/>
 <reboot cond="rocks_version_major == 7"/>
 
 <lang>&Kickstart_Lang;</lang>
