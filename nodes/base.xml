@@ -442,6 +442,8 @@
 
 
 <main>
+<eula>--agreed</eula>
+<firstboot>--disable</firstboot>
 
 <install>
 %include /tmp/partition-info
