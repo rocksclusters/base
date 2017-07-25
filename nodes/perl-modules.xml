@@ -31,5 +31,8 @@
   <package os='linux'>perl-ExtUtils-ParseXS</package>
   <package os='linux'>perl-Pod-Simple</package>
   <package os='linux'>perl-version</package>
+  <package os='linux'>subversion-perl</package>
+  <package os='linux'>perl-GD</package>
+  <package os='linux'>perl-YAML</package>
 
 </kickstart> 
