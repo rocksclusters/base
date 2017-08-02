@@ -392,6 +392,10 @@
 		<tail>server-firewall</tail>
 	</order>
 
+	<order head="custom-partition">
+		<tail>partition</tail>
+	</order>
+
 	<order head="partition">
 		<tail>do-partition</tail>
 	</order>
@@ -503,7 +507,7 @@
 		<to>411-base</to>
 		<to>mail</to>
 		<to>mosh</to>
-		<to os="linux">partition</to>
+		<to os="linux">custom-partition</to>
 		<to os="linux">yum</to>
 		<to os="linux">yum-extras</to>
 	</edge>
@@ -599,6 +603,9 @@
 		<to>ssh</to>
 	</edge>
 
+	<edge from="custom-partition">
+		<to os="linux">partition</to>
+	</edge>
 	<edge from="partition">
 		<to os="linux">do-partition</to>
 	</edge>

@@ -1,0 +1,20 @@
+<?xml version="1.0" standalone="no"?>
+<kickstart>
+<!-- Custom Partitioning Node -->
+<pre>
+# This node should be REPLACED by the user. 
+# REPLACED means:
+# 1. copy this file to:
+# /export/rocks/install/site-profiles/[version]/nodes/replace-custom-partition.xml
+# 2. edit the replace files to create your custom partitioning
+# 3. cd /export/rocks/install; rocks create distro
+# 4. install the node 
+
+# Within the <pre> section of the node
+# the file /tmp/user_partition_info should be created with 
+# kickstart partitioning and formatting directions.
+# on reinstalls, only /, /var, /boot are formatted
+echo "No Custom Partitioning"  &gt; /dev/null
+</pre>
+</kickstart> 
+
