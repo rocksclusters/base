@@ -478,7 +478,12 @@
 -->
 <bootloader cond="Bootloader is not None">&Bootloader;</bootloader>
 
-<url> --url http://&Kickstart_PrivateKickstartHost;/&Kickstart_PrivateKickstartBasedir;/&distribution;/&arch; </url>
+<url cond="rocks_version_major == 6"> --url http://&Kickstart_PrivateKickstartHost;/&Kickstart_PrivateKickstartBasedir;/&distribution;/&arch; </url>
+
+<!-- URL. Variable UseTracker governs whether to utilize the tracker or not -->
+<url cond="rocks_version_major == 7 and UseTracker"> --url http://127.0.0.1/&Kickstart_PrivateKickstartBasedir;/&distribution;/&arch; </url>
+<url cond="rocks_version_major == 7 and not UseTracker"> --url http://&Kickstart_PrivateKickstartHost;/&Kickstart_PrivateKickstartBasedir;/&distribution;/&arch; </url>
+
 <interactive cond="rocks_version_major == 6"/>
 
 </main>
