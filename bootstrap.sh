@@ -234,7 +234,7 @@ if [ `./_os` == "linux" ]; then
 	ignore_os_package openssh-askpass
 	install_os_packages server
 	bootstrap_py_init
-	install_os_packages bootstrap-packages
+	install_os_packages bootstrap-packages-base
 fi
 
 make -C OSROLL TMPDIR=/tmp base updates
