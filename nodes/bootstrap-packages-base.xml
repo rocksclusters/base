@@ -122,7 +122,8 @@
 	<package os="linux">libXt-devel</package>
 	<package os="linux">libXxf86misc-devel</package>
 	<package os="linux">mkinitrd-devel</package>
-	<package os="linux">mysql-devel</package>
+	<package os="linux" cond="rocks_version_major == 6">mysql-devel</package>
+	<package os="linux" cond="rocks_version_major == 7">mariadb-devel</package>
 	<package os="linux">NetworkManager-devel</package>
 	<package os="linux">NetworkManager-glib-devel</package>
 	<package os="linux">newt-devel</package>
