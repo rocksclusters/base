@@ -144,7 +144,9 @@
   <package cond="rocks_version_major == 6">libdhcp-devel</package>
   <package>libglade2-devel</package>
   <package>libnl-devel</package>
-  <package>libjpeg-devel</package>
+  <package cond="rocks_version_major == 6">libjpeg-devel</package>
+  <package cond="rocks_version_major == 7">libjpeg-turbo</package>
+  <package cond="rocks_version_major == 7">libjpeg-turbo-devel</package>
   <package>libpcap</package>
   <package>libpng-devel</package>
   <package>libtool-ltdl</package>
