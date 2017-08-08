@@ -10,7 +10,7 @@
 # 3. cd /export/rocks/install; rocks create distro
 # 4. install the node 
 
-# Within the <pre> section of the node
+# Within the --pre-- section of the node
 # the file /tmp/user_partition_info should be created with 
 # kickstart partitioning and formatting directions.
 # on reinstalls, only /, /var, /boot are formatted
