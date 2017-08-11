@@ -117,7 +117,7 @@ cat /tmp/chrony.conf.2 &gt; /etc/chrony.conf
 <!-- leave centos 6 default which are more secure -->
 
 sed -i '/^server/d' /etc/ntp.conf
-echo server &Kickstart_PublicNTPHost; iburst >> /etc/ntp.conf
+echo server &Kickstart_PublicNTPHost; iburst &amp;&amp; /etc/ntp.conf
 
 <!-- Force the clock to be set to the server upon reboot -->
 
