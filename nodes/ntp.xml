@@ -106,7 +106,12 @@
   <package os='sunos'>SUNWntpu</package>
   <package os='sunos'>SUNWrcmdc</package> <!-- used to slam the clock -->
 
-<post os='linux'>
+<post os='linux' cond="rocks_version_major &gt;= 7">
+<!-- Turn on the service -->
+/usr/bin/systemctl enable chronyd
+</post>
+
+<post os='linux' cond="rocks_version_major == 6">
 <!-- Turn on the service -->
 /sbin/chkconfig ntpd on 
 
