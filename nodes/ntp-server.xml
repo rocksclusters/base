@@ -98,7 +98,6 @@
 
   </changelog>
 
-<post>
 <post cond="rocks_version_major &gt;= 7">
 
 <!-- Per Redhat documentation prefer chrony over ntpd -->
