@@ -109,6 +109,12 @@
 <post os='linux' cond="rocks_version_major &gt;= 7">
 <!-- Turn on the service -->
 /usr/bin/systemctl enable chronyd
+
+<file name="/etc/sysconfig/chronyd">
+# Command line options for chronyd
+OPTIONS="-4"
+</file>
+
 </post>
 
 <post os='linux' cond="rocks_version_major == 6">
