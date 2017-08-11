@@ -99,6 +99,19 @@
   </changelog>
 
 <post>
+<post cond="rocks_version_major &gt;= 7">
+
+<!-- Per Redhat documentation prefer chrony over ntpd -->
+<!-- https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/7/html/System_Administrators_Guide/ch-Configuring_NTP_Using_the_chrony_Suite.html#sect-differences_between_ntpd_and_chronyd -->
+awk -v var="&Kickstart_PublicNTPHost;" '/^server/ &amp;&amp; !x {printf("server %s iburst\n", var); x=1} 1' /etc/chrony.conf &gt; /tmp/chrony.conf
+awk -v var="&Kickstart_PrivateNetwork;/&Kickstart_PrivateNetmaskCIDR;" '/^#allow|^allow/ &amp;&amp; !x {printf("allow %s\n", var); x=1} 1' /tmp/chrony.conf &gt; /tmp/chrony.conf.2
+cat /tmp/chrony.conf.2 &gt; /etc/chrony.conf
+
+/usr/bin/chronyc waitsync 15 0.01
+
+</post>
+
+<post cond="rocks_version_major == 6">
 
 <!-- Configure NTP to use an external server -->
 <!-- leave centos 6 default which are more secure -->
