@@ -1,0 +1,16 @@
+<?xml version="1.0" standalone="no"?>
+<kickstart interface="public">
+
+  <description>
+	profile.d entries for servers in Rocks 7
+  </description>
+
+        <copyright>
+        Copyright (c) 2000 - 2014 The Regents of the University of California.
+        All rights reserved. Rocks(r) 6.2 www.rocksclusters.org
+        
+        </copyright>
+
+  <package>rocks-config-server-profile</package>
+
+</kickstart> 

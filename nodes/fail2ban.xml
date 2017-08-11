@@ -11,14 +11,35 @@ Install fail2ban on node with public connection
 <package>python-inotify</package>
 <package>fail2ban</package>
 
-<configure phase="post,reconfigure">
+<configure cond="rocks_version_major == 6" phase="post,reconfigure">
 sed -i 's/\(^ignoreip = 127.0.0.1\/8.*$\)/\1 &Kickstart_PrivateNetwork;\/&Kickstart_PrivateNetmaskCIDR;/' /etc/fail2ban/jail.conf
 </configure>
 
 
-<post>
+<post cond="rocks_version_major == 6">
 # disable sending email everytime an event is triggered in fail2ban
 sed  -i 's/\([ ]*sendmail-whois.*\)/#\1/' /etc/fail2ban/jail.conf
 </post>
 
+<post cond="rocks_version_major == 7">
+<file name="/etc/fail2ban/jail.local">
+[DEFAULT]
+bantime = 900
+ignoreip = 127.0.0.1/8 10.1.124.0/24
+
+[sshd]
+enabled = true
+</file>
+
+<!-- Rocks uses iptables, not firewalld -->
+<file name="/etc/fail2ban/jail.d/00-firewalld.conf">
+# This file is part of the fail2ban-firewalld package to configure the use of
+# the firewalld actions as the default actions.  You can remove this package
+# (along with the empty fail2ban meta-package) if you do not use firewalld
+# [DEFAULT]
+# banaction = firewallcmd-ipset
+</file>
+
+/usr/bin/systemctl enable fail2ban
+</post>
 </kickstart> 

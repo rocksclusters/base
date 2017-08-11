@@ -2,7 +2,7 @@
 
 <kickstart>
 
-<changelog>
+<changelog><![CDATA[
 $Log: do-partition.xml,v $
 Revision 1.7  2012/11/13 23:27:50  clem
 When creating a RAID array use the proper hostname
@@ -61,6 +61,9 @@ hostname &hostname;.local
 chmod a+x /tmp/product/do_partition.py
 </pre>
 
+<pre cond="rocks_version_major == 7">
+	/opt/rocks/bin/python /opt/rocks/lib/python2.7/site-packages/rocks/do_partition.py &gt; /tmp/partition-info
+</pre>
 
 </kickstart> 
 

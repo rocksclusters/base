@@ -194,24 +194,19 @@
 # - added os makefiles
 #
 
--include $(CURDIR)/devel/devel/etc/rocks-version.mk
+-include $(ROCKSROOT)/etc/rocks-version.mk
 
 SRCDIRS = `find . -type d -maxdepth 1 \
 	-not -name CVS \
 	-not -name . \
-	-not -name ncurses \
 	-not -name rocks-pxe \
 	-not -name updates.img \
+	-not -name rocks-anaconda-updates \
 	-not -name anaconda \
 	-not -name environment-modules \
-	-not -name kudzu \
-	-not -name pcre \
-	-not -name php \
-	-not -name sun-java \
 	-not -name bittorrent \
-	-not -name postfix \
-	-not -name lsof \
 	-not -name anaconda-yum-plugins \
+	-not -name firerox \
 	-not -name foundation-python-xml-26 \
 	-not -name developersguiderst \
 	-not -name channel`
@@ -220,13 +215,22 @@ SRCDIRS = `find . -type d -maxdepth 1 \
 ifeq ($(VERSION.MAJOR),5)
 SRCDIRS += environment-modules
 endif
-#
-# make sure we build anaconda last, that's because it includes many packages
-# from the base roll
-#
-SRCDIRS += anaconda updates.img channel 
-
+## 
 ifeq ($(VERSION.MAJOR),6)
-SRCDIRS += anaconda-yum-plugins
+SRCDIRS += firerox 
+endif
+#
+# make sure we build channel last
+#
+SRCDIRS += channel 
+
+
+# For version 6, rebuild anaconda, that's because it includes many packages
+# from the base roll. Version 7, we use the native OS version of anaconda
+ifeq ($(VERSION.MAJOR), 6)
+SRCDIRS += anaconda anaconda-yum-plugins updates.img
 endif
 
+ifeq ($(VERSION.MAJOR), 7)
+SRCDIRS += rocks-anaconda-updates 
+endif

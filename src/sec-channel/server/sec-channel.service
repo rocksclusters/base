@@ -1,0 +1,13 @@
+[Unit]
+Description=Rocks sec-channel service 
+Requires=rpcbind.service
+After=rpcbind.service
+
+[Service]
+Type=forking
+PIDFile=/var/run/sec-channel.pid
+ExecStart=/opt/rocks/sbin/sec_channel_server -p /var/run/sec-channel.pid
+Restart=on-abort
+
+[Install]
+WantedBy=multi-user.target

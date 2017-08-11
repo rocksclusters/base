@@ -91,9 +91,9 @@ build: sec_channel.h sec_channel_server
 
 install::
 	mkdir -p $(ROOT)/$(PKGROOT)/sbin
-	mkdir -p $(ROOT)/$(INIT_SCRIPTS_DIR)
+	mkdir -p $(ROOT)/$(SCRIPTDEST)
 	$(INSTALL) -m0500 sec_channel_server $(ROOT)/$(PKGROOT)/sbin
-	$(INSTALL) -m0500 sec-channel.init $(ROOT)/$(INIT_SCRIPTS_DIR)/sec-channel
+	$(INSTALL) -m755 $(SCRIPTSRC) $(ROOT)/$(SCRIPTDEST)/$(SCRIPT)
 
 clean::
 	rm -rf sec_channel_server	\

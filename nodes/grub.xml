@@ -160,8 +160,10 @@
   </changelog>
 
 
-<package os='linux'>grub</package>
-<package os='sunos'>SUNWgrub</package>
+<package os='linux' cond="rocks_version_major == 6">grub</package>
+<package os='linux' cond="rocks_version_major == 7">grub2</package>
+<package os='linux' cond="rocks_version_major == 7">grub2-efi</package>
+<package os='linux' cond="rocks_version_major == 7">grub2-tools</package>
 
 <post os='linux'>
 

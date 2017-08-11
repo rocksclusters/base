@@ -345,7 +345,6 @@ MAKE.rpmflag	= -bb --define "__spec_install_post :"
 
 PKGROOT		= /
 REDHAT.ROOT     = $(CURDIR)/../../
-ROCKSROOT       = ../devel/devel
 -include $(ROCKSROOT)/etc/Rules.mk
 # Need this include for when we build as root.
 include Rules.mk
@@ -383,7 +382,9 @@ install::
 	cp /bin/gawk $(ROOT)/$(PKGROOT)/rocks/bin/
 	cp /bin/stty $(ROOT)/$(PKGROOT)/rocks/bin/
 	cp /bin/dd $(ROOT)/$(PKGROOT)/rocks/bin/
+ifneq ($(strip $(VERSION.MAJOR)), 7)
 	cp /usr/bin/volname $(ROOT)/$(PKGROOT)/rocks/bin/
+endif
 	cp /usr/bin/killall $(ROOT)/$(PKGROOT)/rocks/bin/
 	cp /usr/bin/telnet $(ROOT)/$(PKGROOT)/rocks/bin/
 	cp /usr/bin/find $(ROOT)/$(PKGROOT)/rocks/bin/

@@ -132,7 +132,22 @@ int _rpcpmstart;
 #include <sys/socket.h>
 #include <sys/wait.h>
 #include "channel.h"
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 
+void writePidFile(char * pidfile, int pid)
+{
+	if (pidfile == NULL) return;
+	int f;
+	char outbuf[128];
+	f = open(pidfile,O_CREAT | O_WRONLY);
+	if (f <= 0) return;
+	sprintf(outbuf,"%d",pid);
+	outbuf[sizeof(outbuf)-1] = '\0';
+	write(f,outbuf,strlen(outbuf));
+	close(f);
+}
 extern void channel_prog_1(struct svc_req *rqstp, register SVCXPRT *transp);
 
 /* 
@@ -208,8 +223,12 @@ RPC_SERVICE(channel_411_alert_1)(char *filename, char *signature,
 
 
 int
-main(int argc, char *argvp[])
+main(int argc, char *argv[])
 {
+	char c;
+	int debug = 0;
+	char * pidfile = NULL;
+	int pid;
 	register SVCXPRT *transp;
 
 	openlog("channeld", LOG_PID, LOG_LOCAL0);
@@ -219,14 +238,27 @@ main(int argc, char *argvp[])
 	_rpcpmstart = 0;
 #endif
 
+	while ((c=getopt(argc,argv,"dp:")) != -1)
+	{
+		switch(c)
+		{
+			case 'd': debug = 1;
+				  break;
+			case 'p': pidfile = optarg;
+				  break;
+			default:  break;
+		}
+	}
 #ifndef DEBUG
-        switch ( fork() ) {
+        switch ( (pid=fork()) ) {
 	case -1:
 		syslog(LOG_ERR, "%s", "cannot fork");
 		exit(1);
 	case 0:			/* child process */
 		break;
 	default:		/* parent process */
+		if (debug) fprintf(stderr,"pidfile is %s\n", pidfile);
+		writePidFile(pidfile,pid);
 		return 0;
 	}
  

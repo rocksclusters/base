@@ -3,7 +3,17 @@ RELEASE		= 0
 
 ifeq ($(VERSION.MAJOR), 5)
 FIREFOX_VERSION	= 3.5.3
-else
-FIREFOX_VERSION	= 3.5.19
-endif
 MOZILLA_VERSION	= 1.9.1
+endif
+
+ifeq ($(VERSION.MAJOR), 6)
+FIREFOX_VERSION	= 3.5.19
+MOZILLA_VERSION	= 1.9.1
+endif
+
+ifeq ($(VERSION.MAJOR), 7)
+FIREFOX_VERSION	= 31.0
+MOZILLA_VERSION	= release 
+endif
+
+RPM.FILES = /opt/rocks/firerox

@@ -209,7 +209,7 @@ sed -i -e 's/#PermitUserEnvironment no/PermitUserEnvironment yes/' \
 
 
 <!-- centos 5.* ships with sshd version 4.* which does not support match rules -->
-<post cond="rocks_version_major >= 6">
+<post cond="rocks_version_major &gt;= 6">
 <!-- Turn off HostbasedAuthentication for Root, Keys/Password Only -->
 <file name="/etc/ssh/sshd_config" mode="append">
 Match User root

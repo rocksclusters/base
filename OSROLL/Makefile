@@ -22,7 +22,6 @@
 SHELL = /bin/bash
 DATEFMT =  $(shell date +%F)
 #needs this to include proper version number
-ROLLSROOT = $(CURDIR)/../src/devel/devel/src/roll
 -include $(ROLLSROOT)/etc/Rolls.mk
 
 .PHONY : base updates updated-dist updated-iso rebuild-iso roll-$(DISTRO)-$(VERSION)-update.xml

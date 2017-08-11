@@ -1,0 +1,19 @@
+<?xml version="1.0" standalone="no"?>
+<kickstart>
+
+  <description>
+
+  Defines Upstart-compatible Services
+
+  </description>
+
+  <changelog>
+     $Log: upstart.xml,v $
+     Revision 1.1  2012/02/09 21:00:51  phil
+     Put rocks-pre and rocks-post scripts into CentOS/RHEL upstart framework
+
+  </changelog>
+
+<package os="linux">rocks-upstart</package>
+
+</kickstart>

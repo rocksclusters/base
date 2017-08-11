@@ -65,10 +65,14 @@
   </changelog>
 
   <package os='linux'>autofs</package>
+  <package cond="rocks_version_major &gt; 6">nfs-utils</package>
 
   <package os='sunos'>SUNWatfsr</package>
   <package os='sunos'>SUNWatfsu</package>
 
+  <post cond="rocks_version_major &gt; 6">
+	/usr/bin/systemctl enable autofs.service
+  </post>
 </kickstart> 
 
 

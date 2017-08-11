@@ -181,6 +181,7 @@ Alias /411.d "/etc/411.d"
 
 &lt;Directory /etc/411.d&gt;
 
+	Require all granted
 	Options Indexes MultiViews
 	IndexOptions FancyIndexing
 	RemoveHandler .var
@@ -222,12 +223,12 @@ then
 	chmod 0400 /etc/411-security/shared.key
 fi
 
-<!-- Generate 1024bit RSA master keypair in PEM format. 
+<!-- Generate 2048bit RSA master keypair in PEM format. 
      Used to sign 411 files and alerts. 
 -->
 if [ ! -s /etc/411-security/master.key ]
 then
-	/usr/bin/openssl genrsa 1024 &gt; /etc/411-security/master.key
+	/usr/bin/openssl genrsa 2048 &gt; /etc/411-security/master.key
 	chmod 0400 /etc/411-security/master.key
 fi
 
@@ -240,10 +241,6 @@ chmod 0444 /etc/411-security/master.pub
 
 /sbin/chkconfig 411 on
 
-<!-- Start 411 shared key server -->
-/sbin/chkconfig sec-channel on
-
-
 <!-- Publish altered login files periodically to propagate changes -->
 <file name="/etc/cron.hourly/make411" perms="0555">
 #!/bin/sh
@@ -251,10 +248,21 @@ make -C /var/411 &gt; /dev/null
 </file>
 
 
+</post>
+<post cond="rocks_version_major==6">
 <!-- make sure ypbind is off -->
 
 /sbin/chkconfig ypbind off
 
 </post>
 
+<!-- turn services on -->
+<post cond="rocks_version_major == 6">
+/sbin/chkconfig sec-channel on
+</post>
+
+<post cond="rocks_version_major == 7">
+/usr/bin/systemctl enable rpcbind
+/usr/bin/systemctl enable sec-channel 
+</post>
 </kickstart>

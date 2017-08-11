@@ -192,6 +192,7 @@ initial release
 <package>xinetd</package>
 <package>memtest86+</package>
 <package>pxeflash</package>
+<package cond="rocks_version_major == 7">rocks-boot-pxe</package>
 
 
 <post>
@@ -220,7 +221,10 @@ service tftp
 	this server
 -->
 mkdir -p /tftpboot/pxelinux
+</post>
 
+<!-- Version 6 did a copy; version 7 has this in  the rocks-boot-pxe package -->
+<post cond="os_version_major == 6">
 cp /boot/kickstart/default/vmlinuz* /tftpboot/pxelinux/
 cp /boot/kickstart/default/initrd.img* /tftpboot/pxelinux/
 
@@ -250,7 +254,8 @@ fi
 </post>
 
 
-<post>
+<!-- Version 6. Should be moved. Version 7 defined in the core roll -->
+<post cond="os_version_major == 6">
 
 <!-- now setup the global PXE boot default actions -->
 /opt/rocks/bin/rocks add bootaction action="install" \

@@ -1,3 +1,6 @@
 rpm:: build
-	for j in `ls *.x86_64.rpm.* | sed 's/rpm.*/rpm/' | sort | uniq`; do cat $$j.* > $$j; done 
-	-cp *.x86_64.rpm $(REDHAT.RPMS)/$(ARCH)/
+	( for j in *i586.rpm *x64.rpm ; do  \
+		destname=`/usr/bin/rpm -qip $$j | awk -f rpmname.awk`; \
+		/bin/cp $$j $(REDHAT.RPMS)/$(ARCH)/$$destname;\
+	  done; \
+	)

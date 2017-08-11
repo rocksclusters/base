@@ -1,0 +1,13 @@
+[Unit]
+Description=Rocks channeld alert service 
+Requires=rpcbind.service
+After=rpcbind.service
+
+[Service]
+Type=forking
+PIDFile=/var/run/channeld.pid
+ExecStart=/opt/rocks/sbin/channeld -p /var/run/channeld.pid
+Restart=on-abort
+
+[Install]
+WantedBy=multi-user.target

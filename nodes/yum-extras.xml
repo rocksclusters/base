@@ -25,7 +25,7 @@ Add extra repositories. Disabled by yum.xml
 
 </changelog>
 
-<package>elrepo-release</package>
+<package cond="rocks_version_major == 6">elrepo-release</package>
 <package>epel-release</package>
 <package>rpmforge-release</package>
 

@@ -64,7 +64,7 @@ chmod 755 /etc/rc.d/init.d/syslog
 
 </post>
 
-<post cond="rocks_version_major >= 6">
+<post cond="rocks_version_major &gt;= 6">
 
 <!-- fix rsyslog file to accept and forward message -->
 

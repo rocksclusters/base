@@ -80,10 +80,9 @@
 
 PKGROOT		= /var/www/html/roll-documentation/developers-guide/$(VERSION)
 REDHAT.ROOT	= $(PWD)/../../
-ROCKSROOT       = $(CURDIR)/../../src/devel/devel
 -include $(ROCKSROOT)/etc/Rules.mk
 include Rules.mk
-
+ROLL = core
 default: $(NAME).spec ../$(NAME)-$(VERSION).tar.gz
 
 build: html pdf

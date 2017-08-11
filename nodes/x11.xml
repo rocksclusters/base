@@ -134,19 +134,22 @@
 
   </changelog>
 
-  <package type="meta">base-x</package>
-  <package type="meta">gnome-desktop</package>
-  <package type="meta">x-software-development</package>
+  <!-- X11 Groups from CentOS 6 -->
+  <package type="meta" cond="rocks_version_major == 6">base-x</package>
+  <package type="meta" cond="rocks_version_major == 6">gnome-desktop</package>
+  <package type="meta" cond="rocks_version_major == 6">x-software-development</package>
+  <package cond="rocks_version_major == 6">indexhtml</package>
 
-  <!-- For the pretty Gnome icons. -->
-  <package>indexhtml</package>
+  <!-- X11 Groups from CentOS 7 -->
+  <package type="meta" cond="rocks_version_major == 7">x11</package>
+  <package type="meta" cond="rocks_version_major == 7">gnome-desktop</package>
+  <package type="meta" cond="rocks_version_major == 7">desktop-debugging</package>
 
   <!-- support packages used to configure X -->
   <package>pygtk2</package>
   <package>pygtk2-libglade</package>
 
-
-<post>
+<post cond="rocks_version_major == 6">
 
 /sbin/chkconfig xfs on
 

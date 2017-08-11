@@ -202,31 +202,12 @@
 # bootstrap roll development
 #
 
-. src/devel/devel/src/roll/etc/bootstrap-functions.sh
+. $ROLLSROOT/etc/bootstrap-functions.sh || exit 1
 
-
-if [ `./_os` == "linux" ]; then
-	compile_and_install foundation-redhat
-fi
-compile_and_install foundation-coreutils
 compile_and_install foundation-gawk
-compile_and_install foundation-wget
-compile_and_install foundation-mysql
-compile_and_install foundation-python
-compile_and_install foundation-python-setuptools
-compile_and_install foundation-libxml2
-compile_and_install foundation-python-xml
-compile_and_install foundation-python-extras
-compile_and_install foundation-rcs
 compile_and_install foundation-ant
 compile_and_install qrencode
 compile_and_install protobuf
-
-if [ `./_os` == "linux" ]; then
-	compile_and_install librocks
-fi
-
-compile_and_install rocks-pylib
 
 compile java
 install jdk 
@@ -253,5 +234,7 @@ if [ `./_os` == "linux" ]; then
 	ignore_os_package openssh-askpass
 	install_os_packages server
 	bootstrap_py_init
-	install_os_packages bootstrap-packages
+	install_os_packages bootstrap-packages-base
 fi
+
+make -C OSROLL TMPDIR=/tmp base updates

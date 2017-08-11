@@ -91,7 +91,7 @@
 </post>
 
 
-<post cond="rocks_version_major >= 6">
+<post cond="rocks_version_major &gt;= 6">
 
 <file name="/etc/rsyslog.conf" mode="append">
 #enable remote forwarding

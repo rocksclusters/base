@@ -62,6 +62,8 @@ include Rules.mk
 
 build:
 	zcat $(NAME)-$(VERSION).$(TARBALL_POSTFIX) | $(TAR) -xf -
+	zcat $(GTEST)-$(GTEST_RELEASE).$(TARBALL_POSTFIX) | $(TAR) -xf -
+	mv $(GTEST)-$(GTEST_RELEASE) $(NAME)-$(VERSION)/gtest;		
 	( 							\
 		cd $(NAME)-$(VERSION);				\
 		./autogen.sh;					\

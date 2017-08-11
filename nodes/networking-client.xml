@@ -101,5 +101,9 @@ os.system('/opt/rocks/bin/rocks config host interface &hostname; iface="%s" \
 
 </post>
 
+<post cond="rocks_version_major &gt; 6">
+/usr/bin/systemctl disable NetworkManager.service
+</post>
+
 
 </kickstart> 

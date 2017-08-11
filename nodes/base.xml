@@ -19,7 +19,7 @@
         
         </copyright>
 
-  <changelog>
+<changelog><![CDATA[
   $Log: base.xml,v $
   Revision 1.62  2013/01/04 21:44:43  clem
   Fix for grub timeout problem on centos6
@@ -438,14 +438,17 @@
 
   Revision 1.1  2001/08/28 02:51:31  mjk
   graph/nodes layout
-  </changelog>
+</changelog>
 
 
 <main>
+<eula>--agreed</eula>
+<firstboot>--disable</firstboot>
 
 <install>
 %include /tmp/partition-info
 </install>
+<reboot cond="rocks_version_major == 7"/>
 
 <lang>&Kickstart_Lang;</lang>
 <keyboard>&Kickstart_Keyboard;</keyboard>
@@ -469,14 +472,19 @@
 <!-- CENTOS6: Anaconda on centOS 6 added the support for the timeout flag.
      When not specified the default is 0. Brilliant....  
 -->
-<bootloader cond="rocks_version_major >= 6 and Bootloader is None">--location=mbr --timeout=5</bootloader>
+<bootloader cond="rocks_version_major &gt;= 6 and Bootloader is None">--location=mbr --timeout=5</bootloader>
 
 <!-- USER OVERWRITE: If the Bootloader attribute is defined, then use it. 
 -->
 <bootloader cond="Bootloader is not None">&Bootloader;</bootloader>
 
-<url> --url http://&Kickstart_PrivateKickstartHost;/&Kickstart_PrivateKickstartBasedir;/&distribution;/&arch; </url>
-<interactive/>
+<url cond="rocks_version_major == 6"> --url http://&Kickstart_PrivateKickstartHost;/&Kickstart_PrivateKickstartBasedir;/&distribution;/&arch; </url>
+
+<!-- URL. Variable UseTracker governs whether to utilize the tracker or not -->
+<url cond="rocks_version_major == 7 and UseTracker"> --url http://127.0.0.1/&Kickstart_PrivateKickstartBasedir;/&distribution;/&arch; </url>
+<url cond="rocks_version_major == 7 and not UseTracker"> --url http://&Kickstart_PrivateKickstartHost;/&Kickstart_PrivateKickstartBasedir;/&distribution;/&arch; </url>
+
+<interactive cond="rocks_version_major == 6"/>
 
 </main>
 
@@ -500,7 +508,6 @@
   <package>libobjc</package>
 
   <package>tentakel</package>
-  <package>librocks</package>
   <package>rocks-channel</package>
 
   <!-- to fix a yum bug on 64-bit -->
@@ -510,8 +517,6 @@
   <package os="linux">rocks-java</package>
   <package os="linux">sysstat</package>
   <package os="linux">environment-modules</package>
-
-  <package os="sunos">ROCKSrocks-java</package>
 
 <pre>
 
@@ -565,9 +570,19 @@ if os.path.isdir(keydir):
 EOF
 
 chmod 600 /tmp/authorized_keys
-
 </pre>
 
+<!-- for rocks version 7 use anaconda's ssh daemon, but protect it -->
+<pre cond="rocks_version_major == 7">
+if [ ! -d /root/.ssh ]; then mkdir -p /root/.ssh; fi 
+chmod 700 /root/.ssh
+mv /tmp/authorized_keys /root/.ssh
+</pre>
+<main cond="rocks_version_major == 7">
+<sshpw>--username root --iscrypted <eval>/opt/rocks/sbin/gen_root_pw</eval></sshpw>
+<eula>--agreed</eula>
+<firstboot>--disable</firstboot>
+</main>
 
 <pre>
 
@@ -635,7 +650,7 @@ SYSFONT="lat0-sun16"
 </post>
 
 
-<post cond="rocks_version_major >= 6">
+<post cond="rocks_version_major &gt;= 6">
 
 gawk '/net\.ipv4\.conf\.default\.rp_filter/ { \
 	printf("# Rocks fixup see https://access.redhat.com/site/solutions/53031\nnet.ipv4.conf.default.rp_filter = 2\n"); \

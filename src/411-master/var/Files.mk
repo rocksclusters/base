@@ -56,7 +56,7 @@
 # @Copyright@
 #
 
-AUTOMOUNT = $(wildcard /etc/auto.*)
+AUTOMOUNT = $(shell find /etc -type f -name 'auto.*' | grep -v RCS)
 
 # These files all take a "#" comment character. 
 # If you alter this list, you must do a 'make clean; make'.
