@@ -2,7 +2,7 @@
 
 <kickstart>
 
-<changelog><![CDATA[
+<changelog>
 $Log: do-partition.xml,v $
 Revision 1.7  2012/11/13 23:27:50  clem
 When creating a RAID array use the proper hostname
