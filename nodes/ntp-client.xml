@@ -98,7 +98,19 @@
   </changelog>
 
 
-<post os='linux'>
+<post os='linux' cond="rocks_version_major &gt;= 7">
+
+<!-- Per Redhat documentation prefer chrony over ntpd -->
+<!-- https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/7/html/System_Administrators_Guide/ch-Configuring_NTP_Using_the_chrony_Suite.html#sect-differences_between_ntpd_and_chronyd -->
+awk -v var="&Kickstart_PrivateNTPHost;" '/^server/ &amp;&amp; !x {printf("server %s iburst\n", var); x=1} 1' /etc/chrony.conf &gt; /tmp/chrony.conf
+sed -i '/^server[ ]*[0-9]/d' /tmp/chrony.conf
+cat /tmp/chrony.conf &gt; /etc/chrony.conf
+
+/usr/bin/chronyc waitsync 15 0.01
+
+</post>
+
+<post os='linux' cond="rocks_version_major == 6">
 
 <!-- Configure NTP to use Kickstart_PrivateNTPHost server 
      we reuse the default centos configuration file -->
@@ -108,7 +120,7 @@ echo server &Kickstart_PrivateNTPHost; iburst >> /etc/ntp.conf
 </post>
 
 
-<post>
+<post cond="rocks_version_major == 6">
 <!-- Force the clock to be set to the server upon reboot -->
 
 /bin/mkdir -p /etc/ntp
@@ -123,7 +135,7 @@ echo server &Kickstart_PrivateNTPHost; iburst >> /etc/ntp.conf
 /usr/sbin/ntpdate &Kickstart_PrivateNTPHost;
 </post>
 
-<post os='linux'>
+<post os='linux' cond="rocks_version_major == 6">
 /sbin/hwclock --systohc --utc
 </post>
 
