@@ -47,6 +47,7 @@ making the HPC roll optional.
 
 this also includes changes to help build and configure VMs for V.
 
+]]>
 </changelog>
 
 <post os='linux' cond="rocks_version_major == 6" arg="--nochroot">
