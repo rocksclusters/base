@@ -207,6 +207,11 @@ sed -i -e 's/#PermitUserEnvironment no/PermitUserEnvironment yes/' \
 	/etc/ssh/sshd_config
 </post>
 
+<post os='linux' cond="rocks_version_major &gt;= 7">
+<!-- CentOS 7 doesn't allow X11Forwarding when IPv6 is disabled in default config -->
+<!-- See https://bugzilla.redhat.com/show_bug.cgi?id=1436097 -->
+sed -i -e 's/^#AddressFamily any/AddressFamily inet/' /etc/ssh/sshd_config
+</post>
 
 <!-- centos 5.* ships with sshd version 4.* which does not support match rules -->
 <post cond="rocks_version_major &gt;= 6">
