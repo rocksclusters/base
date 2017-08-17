@@ -11,6 +11,7 @@ class plugin(rocks.commands.sec_attr_plugin):
 		return 'ssh_host_rsa_key'
 
 	def filter(self, value):
+		import grp
 		keyfile = '/etc/ssh/ssh_host_rsa_key'
 		pubkeyfile = keyfile + '.pub'
 		# write the ssh_host_key_rsa file 
@@ -19,7 +20,9 @@ class plugin(rocks.commands.sec_attr_plugin):
 		f = open(keyfile, 'w')
 		f.write(value)
 		f.close()
-		os.chmod(keyfile, 0400)
+		groupinfo = grp.getgrnam('ssh_keys')
+		os.chown(keyfile, -1, groupinfo.gr_gid)
+		os.chmod(keyfile, 0440)
 		
 		# regenerate the public key
 		if os.path.exists(pubkeyfile):
