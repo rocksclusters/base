@@ -70,7 +70,9 @@ for i in os.environ:
 		devinfo = os.environ[i].split()
 		iface = devinfo[0]
 		macaddr = devinfo[1].lower()
-		module = devinfo[2]
+		module = ''
+		if len(devinfo) > 2:
+			module = devinfo[2]
 
 		ks = ''
 		if len(devinfo) > 3:
