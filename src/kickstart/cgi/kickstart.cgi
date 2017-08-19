@@ -575,10 +575,11 @@ class App(rocks.sql.Application):
 
 			
 		# If the node reported the number of CPUs it has, record it.
+		self.cpus = None
 		if self.form.has_key('np'):
 			self.cpus = self.form['np'].value
-		else:
-			self.cpus = None
+		if os.environ.has_key('HTTP_NP'):
+			self.cpus = os.environ['HTTP_NP']
 
 		# Add application flags to inherited flags
 		self.getopt.s.extend([('c:', 'client')])
