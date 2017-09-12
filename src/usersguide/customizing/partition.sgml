@@ -352,7 +352,7 @@ dynamically determine the name of the boot disk.
 <![CDATA[
 <pre arg="--interpreter /opt/rocks/bin/python">
 
-import rocks_partition       
+from rocks import rocks_partition       
 
 membership = '&membership;'
 nodename = '&hostname;'
@@ -404,7 +404,7 @@ appropriate for a single-disk system.
 <![CDATA[
 <pre arg="--interpreter /opt/rocks/bin/python">
 
-import rocks_partition       
+from rocks import rocks_partition       
 
 membership = '&membership;'
 nodename = '&hostname;'
@@ -481,7 +481,7 @@ Rocks partitioning.
 <![CDATA[
 <pre arg="--interpreter /opt/rocks/bin/python">
 
-import rocks_partition       
+from rocks import rocks_partition       
 
 membership = '&membership;'
 nodename = '&hostname;'
