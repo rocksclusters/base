@@ -513,8 +513,6 @@
   <!-- to fix a yum bug on 64-bit -->
   <package>nspr.&arch;</package>
 
-  <package os="linux">jdk</package>
-  <package os="linux">rocks-java</package>
   <package os="linux">sysstat</package>
   <package os="linux">environment-modules</package>
   <package cond="rocks_version_major == 7">net-tools</package>
