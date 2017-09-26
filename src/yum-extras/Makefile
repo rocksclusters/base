@@ -90,7 +90,7 @@ rpm::	build
 	test "$(IS_EPEL_INSTALLED)" || rpm -ev $(EPEL_RPM:.rpm=);
 	-cp $(REPORPMS) $(REDHAT.RPMS)/$(ARCH)/
 	-cp $(REPORPMS.NOARCH) $(REDHAT.RPMS)/$(ARCH)/
-
+	-chmod go+r $(REDHAT.RPMS)/$(ARCH)/*rpm
 build:
 	mkdir -p $(REDHAT.RPMS)/$(ARCH)/
 	mkdir -p $(REDHAT.RPMS)/noarch/
