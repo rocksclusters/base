@@ -193,6 +193,8 @@ initial release
 <package>memtest86+</package>
 <package>pxeflash</package>
 <package cond="rocks_version_major == 7">rocks-boot-pxe</package>
+<package cond="rocks_version_major == 7">shim</package>
+<package cond="rocks_version_major == 7">grub2-efi</package>
 
 
 <post>
@@ -251,8 +253,16 @@ if [ -f /usr/share/syslinux/pxelinux.0 ]; then
 fi
 
 
-</post>
+if [ ! -d /tftpboot/pxelinux/uefi.cfg ]; then 
+	mkdir -p /tftpboot/pxelinux/uefi.cfg
+fi
 
+for f in grubx64.efi shim.efi; do 
+	/usr/bin/find /boot/efi -name $f -exec cp {} /tftpboot/pxelinux/uefi.cfg \; 
+done
+
+
+</post>
 
 <!-- Version 6. Should be moved. Version 7 defined in the core roll -->
 <post cond="os_version_major == 6">
