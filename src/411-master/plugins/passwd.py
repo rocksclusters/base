@@ -137,7 +137,7 @@ class Plugin(rocks.service411.Plugin):
 		return lambda(x): (x.split(':')[0].strip(), x)
 
 	# List of usernames to avoid transferring
-	# that may have UIDs greater than 1000
+	# that may have UIDs greater than self.UIDMIN 
 	@staticmethod
 	def avoid_uname():
 		return [
@@ -155,16 +155,16 @@ class Plugin(rocks.service411.Plugin):
 		lp = filter(self.filter_malformed(), content_lines)
 
 		# Get a list of all usernames in passwd file
-		# and keep only those whose UID >= 1000
-        # UID_MIN == 1000 from /etc/login.defs
+		# and keep only those whose UID >= self.UIDMIN
+		# UID_MIN from /etc/login.defs
 		lp = filter(self.uid_f, lp)
 
 		return string.join(lp, '\n')
 
-	# Function that returns true if UID >= 1000
+	# Function that returns true if UID >= self.UIDMIN 
 	def uid_f(self, x):
 		l = x.split(':')
-		if int(l[2]) < 1000:
+		if int(l[2]) < self.UIDMIN:
 			return False
 		if l[0] in self.avoid_uname():
 			return False
@@ -194,10 +194,10 @@ class Plugin(rocks.service411.Plugin):
 
 		for line in lp:
 			u_name = line.split(':')[0].strip()
-			# If we're under 1000, add the line
+			# If we're under self.UIDMIN, add the line
 			if not self.uid_f(line):
 				new_pw.append(line)
-			# If we're over UID 1000, and present
+			# If we're over UID self.UIDMIN, and present
 			# in the received passwd lines, then add
 			else:
 				if passwd_recv.has_key(u_name):

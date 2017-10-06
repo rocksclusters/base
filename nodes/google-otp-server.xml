@@ -21,9 +21,8 @@
 
   </changelog>
 
-<post>
 <post cond="rocks_version_major == 7">
-getent group google-otp &gt;/dev/null || groupadd -r google-otp
+getent group google-otp &gt; /dev/null || groupadd -r google-otp
 </post>
 
 <post cond="rocks_version_major == 6">

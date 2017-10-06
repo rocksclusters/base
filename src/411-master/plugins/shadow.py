@@ -96,7 +96,7 @@ class Plugin(rocks.service411.Plugin):
 		return '/etc/shadow'
 
 	# List of usernames to avoid transferring
-	# that may have UIDs greater than 500
+	# that may have UIDs greater than self.UIDMIN 
 	@staticmethod
 	def avoid_uname():
 		return [
@@ -108,7 +108,7 @@ class Plugin(rocks.service411.Plugin):
 
 	def get_uid_map(self):
 		# Get a list of all usernames in passwd file
-		# that are over UID 500
+		# that are over UID self.UIDMIN 
 		f = open('/etc/passwd', 'r')
 		lp = f.readlines()
 		f.close()
@@ -135,8 +135,8 @@ class Plugin(rocks.service411.Plugin):
 		lp = self.get_uid_map()
 
 		# Filter out all shadow entries for
-		# users with UID < 500
-		p = lambda(x): ( int(x[1]) >= 500 and \
+		# users with UID < self.UIDMIN
+		p = lambda(x): ( int(x[1]) >= self.UIDMIN and \
 			not x[0] in self.avoid_uname())
 		lp = filter(p, lp)
 		u_names = map((lambda(x): x[0]), lp)
@@ -179,8 +179,8 @@ class Plugin(rocks.service411.Plugin):
 		lp = self.get_uid_map()
 
 		# Filter out all shadow entries for
-		# users with UID < 500
-		#p = lambda(x): ( int(x[1]) >= 500 and \
+		# users with UID < self.UIDMIN 
+		#p = lambda(x): ( int(x[1]) >= self.UIDMIN and \
 		#	not x[0] in self.avoid_uname())
 		#lp = filter(p, lp)
 		u_names = map((lambda(x): x[0]), lp)
