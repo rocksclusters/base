@@ -22,8 +22,15 @@
   </changelog>
 
 <post>
+<post cond="rocks_version_major == 7">
+getent group google-otp &gt;/dev/null || groupadd -r google-otp
+</post>
 
+<post cond="rocks_version_major == 6">
 /usr/sbin/groupadd -g 426 google-otp
+</post>
+
+<post>
 /opt/rocks/bin/rocks add attr Info_GoogleOTPUsers yes
 /opt/rocks/bin/rocks add attr Info_GoogleOTPRoot yes
 

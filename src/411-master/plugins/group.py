@@ -124,7 +124,7 @@ class Plugin(rocks.service411.Plugin):
 		content = content.rstrip('\n')
 		content_lines = content.split('\n')
 
-		# Get all groups greater than 500
+		# Get all groups greater than 1000
 		# except for groups.
 		group_list = ''
 		for line in content_lines:
@@ -132,13 +132,13 @@ class Plugin(rocks.service411.Plugin):
 			entry = line.split(':')
 			gid = int(entry[2])
 			groupname = entry[0].strip()
-			if gid >= 500 and \
+			if gid >= 1000 and \
 				groupname not in avoid_gname:
 				group_list = group_list + line + '\n'
 
 		# Open the group file. and read 
 		# it's contents, so that we can
-		# maintain the UID's less than 500
+		# maintain the UID's less than 1000
 		# Also maintain all groupnames like
 		# nobody, nobody4, etc for solaris
 		f = open('/etc/group', 'r')
@@ -149,7 +149,7 @@ class Plugin(rocks.service411.Plugin):
 			group_entry = line.split(':')
 			gid = int(group_entry[2])
 			groupname = group_entry[0].strip()
-			if gid < 500 or groupname in avoid_gname:
+			if gid < 1000 or groupname in avoid_gname:
 				group_lines = group_lines + line + '\n'
 		f.close()
 

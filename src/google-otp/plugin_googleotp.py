@@ -74,7 +74,7 @@ class Plugin(rocks.commands.Plugin):
 			return 0
 
 	def run(self, args):
-		# scan the password for users >= 500  
+		# scan the password for users >= 1000
 		# this is the default entry as setup by useradd
 		otp_users = []
 		userOTP = self.db.getHostAttr('localhost', 'Info_GoogleOTPUsers')
@@ -89,8 +89,8 @@ class Plugin(rocks.commands.Plugin):
 				username = l[0]
 				uid = int(l[2])
 
-				# only users in Range
-				if uid >= 500 and uid < 65534: 
+				# only users in Range (UID_MIN and UID_MAX from /etc/login.defs)
+				if uid >= 1000 and uid < 60000:
 					otp_users.append(username)
 				file.close()
 
