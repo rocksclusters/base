@@ -43,6 +43,7 @@ partitioning tuning.
 	partition that is to be exported must be explicitly 
 	listed.--> 
 
+if [ ! -d /export/data1 ]; then mkdir -p /export/data1; fi
 <file name="/etc/exports">
 /export/data1 &Kickstart_PrivateNetwork;/&Kickstart_PrivateNetmask;(rw,no_root_squash,async)
 </file>

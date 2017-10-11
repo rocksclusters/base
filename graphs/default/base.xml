@@ -392,6 +392,10 @@
 		<tail>server-firewall</tail>
 	</order>
 
+	<order head="nas-partition">
+		<tail>custom-partition</tail>
+	</order>
+
 	<order head="custom-partition">
 		<tail>partition</tail>
 	</order>
@@ -400,9 +404,6 @@
 		<tail>do-partition</tail>
 	</order>
 
-	<order head="nas-partition">
-		<tail>do-partition</tail>
-	</order>
 
 	<order head="yum-core">
 		<tail>yum</tail>

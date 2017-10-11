@@ -6,17 +6,12 @@
 Define a partitioning layout for NAS nodes.
 </description>
 
-
-<changelog>
-$Log: nas-partition.xml,v $
-Revision 1.2  2008/04/22 17:47:25  bruno
-tweak partitioning
-
-Revision 1.1  2008/04/17 18:34:29  bruno
-add a nas-partition XML node to the framework
-
-</changelog>
-
+<!-- If you want custom partitioning for NAS appliances, define here by
+     replacing this node in the graph.  If you also replace custom-partition
+     this node's pre section is evaluated first.   -->
+<pre>
+echo "rocks manual" > /tmp/user_partition_info
+</pre>
 
 </kickstart> 
 

@@ -101,12 +101,12 @@
 
   </changelog>
 
-<pre>
-echo "rocks manual" > /tmp/user_partition_info
-</pre>
-
-<post>
+<post cond="rocks_version_major == 6">
 /sbin/chkconfig nfs on
+</post>
+
+<post cond="rocks_version_major == 7">
+/usr/bin/systemctl enable nfs 
 </post>
 
 <post>
