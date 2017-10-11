@@ -507,6 +507,7 @@
 		<to>411-base</to>
 		<to>mail</to>
 		<to>mosh</to>
+		<to>md-rebuild</to>
 		<to os="linux">custom-partition</to>
 		<to os="linux">yum</to>
 		<to os="linux">yum-extras</to>

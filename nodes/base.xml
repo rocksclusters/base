@@ -516,6 +516,8 @@
   <package os="linux">sysstat</package>
   <package os="linux">environment-modules</package>
   <package cond="rocks_version_major == 7">net-tools</package>
+  <package cond="rocks_version_major == 7">sed</package>
+  <package cond="rocks_version_major == 7">sqlite</package>
 
 <pre>
 

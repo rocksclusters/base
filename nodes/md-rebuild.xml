@@ -1,0 +1,18 @@
+<?xml version="1.0" standalone="no"?>
+<kickstart>
+
+  <description>
+  Moderate MD Raid Rebuild Speed
+  </description>
+
+        <copyright>
+        Copyright (c) 2000 - 2014 The Regents of the University of California.
+        All rights reserved. Rocks(r) 6.2 www.rocksclusters.org
+        </copyright>
+
+  <changelog>
+<pre>
+echo 1000 > /proc/sys/dev/raid/speed_limit_max 
+</pre>
+
+</kickstart> 
