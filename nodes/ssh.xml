@@ -192,15 +192,6 @@ Host *
 </post>
 
 <post os='linux'>
-<!--
-change permissions on /root/ and /root/.ssh/ directories so
-cluster-dist can read root's 'id_rsa.pub' when it's run by a
-non-root user
--->
-
-chmod a+rx /root
-mkdir /root/.ssh
-chmod a+rx /root/.ssh
 
 <!-- Permit user environment -->
 sed -i -e 's/#PermitUserEnvironment no/PermitUserEnvironment yes/' \
@@ -220,6 +211,16 @@ sed -i -e 's/^#AddressFamily any/AddressFamily inet/' /etc/ssh/sshd_config
 Match User root
       HostbasedAuthentication no
 </file>
+<!-- HostbasedAuthentication requires that ssh-keysign can read the 
+the private key in /etc/ssh/ssh_host_rsa_key.  In previous versions, this
+file could be set at group readable (ssh-keys) and ssh-keysign was set group
+setuid. But, sshd will not allow a private key with anyone other than root 
+read privs.  Only viable solution is to set keysign to be setuid root. 
+This isn't optimal, but is the only avenue available  -->
+KEYSIGNEXE=/usr/libexec/openssh/ssh-keysign
+if [ -f $KEYSIGNEXE ]; then
+	/usr/bin/chmod a+s $KEYSIGNEXE
+fi 
 </post>
 
 

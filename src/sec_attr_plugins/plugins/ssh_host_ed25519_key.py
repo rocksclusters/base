@@ -8,11 +8,11 @@ import tempfile
 
 class plugin(rocks.commands.sec_attr_plugin):
 	def get_sec_attr(self):
-		return 'ssh_host_dsa_key'
+		return 'ssh_host_ed25519_key'
 
 	def filter(self, value):
 		import grp
-		keyfile = '/etc/ssh/ssh_host_dsa_key'
+		keyfile = '/etc/ssh/ssh_host_ed25519_key'
 		pubkeyfile = keyfile + '.pub'
 		# write the ssh_host_key_rsa file 
 		if os.path.exists(keyfile):

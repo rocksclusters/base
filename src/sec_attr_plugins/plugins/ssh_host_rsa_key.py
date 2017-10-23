@@ -20,9 +20,7 @@ class plugin(rocks.commands.sec_attr_plugin):
 		f = open(keyfile, 'w')
 		f.write(value)
 		f.close()
-		groupinfo = grp.getgrnam('ssh_keys')
-		os.chown(keyfile, -1, groupinfo.gr_gid)
-		os.chmod(keyfile, 0440)
+		os.chmod(keyfile, 0400)
 		
 		# regenerate the public key
 		if os.path.exists(pubkeyfile):
