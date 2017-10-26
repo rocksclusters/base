@@ -17,6 +17,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <syslog.h>
 
 
 
@@ -99,25 +100,36 @@ main (int argc, char **argv)
 			default:  break;
 		}
 	}
+
+	openlog(SERVICE_NAME, LOG_PID, LOG_LOCAL0);
+	syslog(LOG_INFO, "starting service");
+
 	pmap_unset (SEC_CHANNEL, SEC_CHANNEL_VERS);
 
 	transp = svcudp_create(RPC_ANYSOCK);
 	if (transp == NULL) {
 		fprintf (stderr, "%s", "cannot create udp service.");
+		syslog (LOG_ERR, "%s", "cannot create tcp service.");
 		exit(1);
 	}
 	if (!svc_register(transp, SEC_CHANNEL, SEC_CHANNEL_VERS, sec_channel_1, IPPROTO_UDP)) {
 		fprintf (stderr, "%s", "unable to register (SEC_CHANNEL, SEC_CHANNEL_VERS, udp).");
+		syslog (LOG_ERR, "%s",
+			"unable to register (SEC_CHANNEL, SEC_CHANNEL_VERS, udp)");
 		exit(1);
 	}
 
 	transp = svctcp_create(RPC_ANYSOCK, 0, 0);
 	if (transp == NULL) {
 		fprintf (stderr, "%s", "cannot create tcp service.");
+		syslog (LOG_ERR, "%s", "cannot create tcp service.");
 		exit(1);
 	}
 	if (!svc_register(transp, SEC_CHANNEL, SEC_CHANNEL_VERS, sec_channel_1, IPPROTO_TCP)) {
 		fprintf (stderr, "%s", "unable to register (SEC_CHANNEL, SEC_CHANNEL_VERS, tcp).");
+		syslog(LOG_ERR, "%s",
+		       "unable to register (SEC_CHANNEL, SEC_CHANNEL_VERS, tcp)");
+
 		exit(1);
 	}
 
@@ -151,6 +163,7 @@ main (int argc, char **argv)
 	fprintf(stdout, "Starting SVC_RUN loop\n");
 	svc_run();
 	fprintf (stderr, "%s", "svc_run returned");
+	syslog (LOG_ERR, "%s", "svc_run returned");
 	exit (1);
 	/* NOTREACHED */
 }

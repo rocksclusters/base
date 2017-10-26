@@ -559,8 +559,18 @@ class App(rocks.sql.Application):
 
 		caddr = None
 		if self.form.has_key('client'):
-			caddr = self.form['client'].value
-		elif os.environ.has_key('REMOTE_ADDR'):
+			# try user-supplied client name, reject bogus values
+
+			if re.search("[^-\w._+:]", self.form['client'].value):
+				print "Content-type: text/html"
+				print "Status: 400 Bad Status"
+				print
+				print "<h1>Bad client value</h1>"
+				sys.exit(1)
+			else:
+				caddr = self.form['client'].value
+		# No luck, try remote addr.
+		if caddr == None and os.environ.has_key('REMOTE_ADDR'):
                 	caddr = os.environ['REMOTE_ADDR']
 
 		self.clientName = None
@@ -580,6 +590,9 @@ class App(rocks.sql.Application):
 			self.cpus = self.form['np'].value
 		if os.environ.has_key('HTTP_NP'):
 			self.cpus = os.environ['HTTP_NP']
+		if re.search("[^0-9]", self.cpus):
+			self.cpus = None
+
 
 		# Add application flags to inherited flags
 		self.getopt.s.extend([('c:', 'client')])
@@ -623,6 +636,16 @@ class App(rocks.sql.Application):
 		# Iterate over all the hostnames (aliases, IP addrs)
 		# of the node to find the host in the database.
 		for name in self.clientList:
+			# last chance check, DNS may have SQLi
+			# unlikely, but hey, it's cheap to check
+			if re.search("[^-\w._+:]", name):
+				print "Content-type: text/html"
+				print "Status: 400 Bad Status"
+				print
+				print "<h1>Found bad client name value</h1>"
+				# don't print unless debugging. below causes XSS
+				# print "'" + name + "'"
+				sys.exit(1)
 			id = self.getNodeId(name)
 			if id:
 				break
@@ -648,7 +671,6 @@ class App(rocks.sql.Application):
 			OS = 'linux' # should aways come from loader
 
 		# check for bogus input before putting it on a shell cmd line
-		import re
 		q = re.compile('[^-a-zA-Z0-9 _]+')
 		if q.search(self.arch):
 			print "Content-type: text/html"

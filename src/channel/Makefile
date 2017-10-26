@@ -112,7 +112,7 @@ CFLAGS		= -g
 ifeq ($(OS), linux)
 CFLAGS		+= -Wall 
 CPPFLAGS	= -I/opt/rocks/include
-LDFLAGS		= -L/opt/rocks/lib -lrocks
+LDFLAGS		= -L/opt/rocks/lib -lrocks -lwrap
 
 ifeq ($(strip $(VERSION.MAJOR)), 6)
 #Centos 6.* libtirpc-0.2.1 are bugged cannot get return value from the server
@@ -123,9 +123,10 @@ endif
 
 ifeq ($(OS), sunos)
 CFLAGS		+= -m64
-LDFLAGS		+= -lrpcsvc -lnsl
+LDFLAGS		+= -lrpcsvc -lnsl -lwrap
 endif
 
+CFLAGS		+= -DSERVICE_NAME=\"channeld\"
 
 #	rpcgen -h -N -o channel.h $@
 

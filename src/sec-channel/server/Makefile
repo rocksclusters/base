@@ -79,6 +79,9 @@ REDHAT.ROOT =	$(CURDIR)/../../../
 -include $(ROCKSROOT)/etc/Rules.mk
 include Rules.mk
 
+CFLAGS += -DSERVICE_NAME=\"sec_channel_server\"
+CFLAGS += -lwrap
+
 sec_channel.h:sec_channel.x
 	rpcgen -h -N -o $@ $^
 	sed -i sec_channel.h -e 's/sec_channel_ping_1_svc(int/sec_channel_ping_1_svc(int*/'
