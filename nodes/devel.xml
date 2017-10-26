@@ -17,6 +17,7 @@
 <package>foundation-tidy</package>
 <package>isomd5sum-devel</package>
 <package>iscsi-initiator-utils-devel</package>
+<package>tcp_wrappers-devel</package>
 
 <package>rocks-restore-roll</package>
 
