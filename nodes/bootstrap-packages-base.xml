@@ -147,6 +147,7 @@
 	<package os="linux">tcl-devel</package>
 	<package os="linux">tclx</package>
 	<package os="linux">telnet</package>
+	<package os="linux">tcp_wrappers-devel</package>
 	<!-- TeX support - package name changed from 6 to 7 -->
 	<package os="linux" cond="not (version &gt;= 7)">tetex</package>
 	<package os="linux" cond="not (version &gt;= 7)">tetex-dvips</package>
