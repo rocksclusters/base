@@ -359,8 +359,16 @@
 		<tail>devel-server</tail>
 	</order>
 
-	<order head="database-sec">
+	<order head="database-data">
 		<tail>devel-appliance</tail>
+	</order>
+
+	<order head="database-server">
+		<tail>devel-appliance</tail>
+	</order>
+
+	<order head="database-server">
+		<tail>rocks-dist</tail>
 	</order>
 
 	<order tail="server-firewall">
@@ -483,6 +491,8 @@
 		<to>snmp-client</to>
 		<to>rocks-devel</to>
 		<to>bootstrap-packages-base</to>
+		<to>bootstrap-packages-core</to>
+		<to>devel-server</to>
 	</edge>
 
 	<edge from="base">
