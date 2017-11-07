@@ -1,0 +1,28 @@
+<?xml version="1.0" standalone="no"?>
+
+<kickstart>
+
+  <description>
+
+  Boot loader configuration for cluster appliances. Grub2 edition
+
+  </description>
+
+        <copyright>
+        Copyright (c) 2000 - 2014 The Regents of the University of California.
+        All rights reserved. Rocks(r) 6.2 www.rocksclusters.org
+        
+        </copyright>
+
+
+<post>
+<eval>
+BOOTFLAGS=`/opt/rocks/bin/rocks report host bootflags &hostname;`
+echo "addargs=\"$BOOTFLAGS\""
+</eval>
+/opt/rocks/sbin/modify-grub2 --file=/etc/sysconfig/grub --keyword=GRUB_CMDLINE_LINUX --mode=append $addargs
+/usr/sbin/grub2-mkconfig -o /boot/grub2/grub.cfg
+</post>
+
+</kickstart> 
+
