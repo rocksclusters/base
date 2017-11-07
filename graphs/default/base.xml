@@ -371,6 +371,10 @@
 		<tail>rocks-dist</tail>
 	</order>
 
+	<order head="devel-appliance">
+		<tail>rocks-dist</tail>
+	</order>
+
 	<order tail="server-firewall">
 		<head>networking-server</head>
 		<head>database-data</head>
