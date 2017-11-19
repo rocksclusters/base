@@ -2,6 +2,8 @@
 Description=Rocks channeld alert service 
 Requires=rpcbind.service
 After=rpcbind.service
+Wants=rocks-rc-post.service
+After=rocks-rc-post.service
 
 [Service]
 Type=forking
