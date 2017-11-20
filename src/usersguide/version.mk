@@ -4,8 +4,12 @@ RPM.ARCH = noarch
 
 SUMMARY_COMPATIBLE      = $(VERSION)
 SUMMARY_MAINTAINER      = Rocks Group
-SUMMARY_ARCHITECTURE    = i386, x86_64
+SUMMARY_ARCHITECTURE    = x86_64
 
-ROLL_REQUIRES           = kernel core os
+ifeq($(VERSION.MAJOR),6)
+ROLL_REQUIRES           = kernel base os
+else
+ROLL_REQUIRES           = kernel core base CentOS 
+endif
 ROLL_CONFLICTS          =
 RPM.FILES	= /var/www/html/roll-documentation/base/*
