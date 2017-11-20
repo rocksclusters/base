@@ -6,7 +6,13 @@ This procedure describes how to use a Restore Roll to upgrade or
 reconfigure your existing Rocks cluster.
 </para>
 
-<para>
+<note>
+<para>Restoring/Upgrading from Rocks 6 to Rocks 7 involves a slightly
+different approach than Rocks 5 to Rocks 6 or Rocks 6 to Rocks 6.  The changes
+take  into account adminstrative differences as well as installer differences.
+These changes are noted in this document
+</para>
+</note> <para>
 Let's create a Restore Roll for your frontend.
 This roll will contain site-specific info that will be used to quickly
 reconfigure your frontend (see the section below for details).
@@ -20,22 +26,162 @@ reconfigure your frontend (see the section below for details).
 <para>
 The above command will output a roll ISO image that has the name of the form:
 <emphasis>hostname</emphasis>-restore-<emphasis>date</emphasis>-0.<emphasis>arch</emphasis>.disk1.iso.
-For example, on the i386-based frontend with the FQDN of <emphasis>rocks-45.sdsc.edu</emphasis>, the roll will be named like:
+For example, on an x86_64-based frontend with the FQDN of <emphasis>rocks-85.sdsc.edu</emphasis>, the roll will be named like:
 </para>
 
 <screen>
-rocks-45.sdsc.edu-restore-2006.07.24-0.i386.disk1.iso
+rocks-85.sdsc.edu-restore-2017.11.16-0.x86_64.disk1.iso
 </screen>
 
 <para>
-Burn your restore roll ISO image to a CD.
+<variablelist>
+  <varlistentry>
+     <term> Rocks 6</term>
+     <listitem><para>
+         Burn your restore roll ISO image to a CD.
+     </para></listitem>
+  </varlistentry>
+  <varlistentry>
+     <term> Rocks 6/7 Upgrade</term>
+     <listitem><para>
+         Copy your restore roll ISO image to another machine for safekeeping.
+     </para></listitem>
+  </varlistentry>
+</variablelist>
 </para>
 
 <para>
-Reinstall the frontend by putting the Rocks Boot CD in the CD tray (generally,
-this is the Kernel/Boot Roll) and reboot the frontend.
+
+<variablelist>
+  <varlistentry>
+     <term> Rocks 6</term>
+     <listitem><para>
+          Reinstall the frontend by putting the Rocks Boot CD in the CD tray (generally,
+          this is the Kernel/Boot Roll) and reboot the frontend.
+     </para></listitem>
+  </varlistentry>
+  <varlistentry>
+     <term> Rocks 6/7 Upgrade</term>
+     <listitem><para>
+         See full instructions for 6 to 7 upgrade. Restore roll is used
+         after your Rocks 7 frontend has been installed 
+     </para></listitem>
+  </varlistentry>
+</variablelist>
 </para>
 
+
+<section id="upgrade-rocks-7-instructions" xreflabel="upgrade-to-7">
+<title> Upgrade From 6 to 7 using a Restore Roll Created on Rocks 6</title>
+<para>
+Prior to upgrading to 7, you need to retain a copy of your restore roll iso image created using the process outlined in Section <xref linkend="upgrade-frontend">.
+</para>
+<para>
+Build your frontend as a fresh installation. See 
+<xref linkend="install-frontend"/>. 
+However, <emphasis>do not reformat the partition that holds user home areas. 
+</emphasis>
+This is usually named <computeroutput>/export/home</computeroutput>
+</para>
+
+<para>
+After installation of the frontend, you will need to copy your restore iso
+created in Section <xref linkend="upgrade-frontend"> to your newly installed 
+system.  For the rest of this 
+section, we will use the example iso image name of  
+<computeroutput>rocks-85.sdsc.edu-restore-2017.11.16-0.x86_64.disk1.iso</computeroutput>
+</para>
+<para>
+After your normal frontend installation, there are some "fixups" that need to
+be applied to your restore roll.  Once applied, the roll needs to be 
+Added to your frontend and then "run".  Finally, after the roll is run, some
+restored host keys need to be placed back into the rocks database.
+</para>
+<para> The detailed instructions now follow</para>
+<variablelist>
+  <varlistentry>
+     <term> 1. repack your existing restore roll</term>
+     <listitem>
+        <para>
+	<computeroutput>repack-roll rocks-85.sdsc.edu-restore-2017.11.17-0.x86_64.disk1.iso</computeroutput>
+        </para>
+        <note><para>
+            this will create a copy of your restore roll with a <emphasis>
+            repacked.iso</emphasis> ending. See the following screen output
+        </para></note>
+        <para><screen>
+# ls * iso
+rocks-85.sdsc.edu-restore-2017.11.17-0.x86_64.disk1.iso
+rocks-85.sdsc.edu-restore-2017.11.17-0.x86_64.disk1.repacked.iso
+        </screen></para>
+    </listitem>
+  </varlistentry>
+    
+  <varlistentry>
+     <term> 2. Add  your repacked restore roll. Enable. Rebuild distro</term>
+     <listitem>
+        <para><screen>
+# rocks add roll rocks-85.sdsc.edu-restore-2017.11.17-0.x86_64.disk1.repacked.iso
+# rocks enable roll rocks-85.sdsc.edu-restore
+# (cd /export/rocks/install; rocks create distro)
+        </screen></para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+     <term>3. Run your roll</term>
+     <listitem>
+        <para><screen>
+           # rocks run roll rocks-85.sdsc.edu-restore | sh
+        </screen></para>
+        <note><para>
+        You will see many warnings or errors. These are normal. The restore
+        roll will not overwrite attributes that were entered/created during 
+        the frontend installation process. Some typical errors are shown in
+        in the screen below
+        </para></note>
+        <para><screen>
+Error: attribute "Kickstart_PublicHostname" exists
+{attr} {value} [attr=string] [value=string]
+Error: attribute "Kickstart_PublicAddress" exists
+{attr} {value} [attr=string] [value=string]
+...
+Error: membership "Ethernet Switch" already exists
+{appliance} [distribution=string] [graph=string] [membership=string] [node=string] [os=string] [public=bool]
+...
+Error: route exists
+{host} {address} {gateway} [netmask=string]
+        </screen></para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+     <term> 4. Reload any keys that have been restored</term>
+     <listitem>
+        <para><screen>
+# restore-keys
+Removing host keys from Rocks DB and re-adding local...
+Synching configuration and forcing make in /var/411
+...
+# su - root 
+# exit
+        </screen></para>
+    </listitem>
+  </varlistentry>
+
+  <varlistentry>
+     <term> 5. Reinstall Compute nodes</term>
+     <listitem>
+        <para><screen>
+# rocks set host boot compute action=install 
+# rocks run host compute "shutdown -r now" 
+        </screen></para>
+    </listitem>
+  </varlistentry>
+</variablelist>
+</section>
+
+<section id="upgrade-rocks-6-instructions" xreflabel="upgrade-6">
+<title> Upgrade When Building a Rocks 6 Cluster</title>
 <para>
 At the <computeroutput>boot:</computeroutput> prompt type:
 </para>
@@ -98,8 +244,7 @@ all your compute nodes.
 # ssh-add
 # rocks run host compute '/boot/kickstart/cluster-kickstart-pxe'
 </screen>
-
-
+</section>
 
 <section id="upgrade-frontend-internals"
 	xreflabel="Restore Roll Internals">
