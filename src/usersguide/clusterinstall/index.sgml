@@ -14,6 +14,7 @@ This chapter describes the steps to build your cluster and install its software.
 
 </section>
 
+&frontend7;
 &frontend;
 &compute;
 &frontend-upgrade;

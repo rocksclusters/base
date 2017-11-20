@@ -1,6 +1,7 @@
 <!ENTITY supported SYSTEM "supported.sgml">
 <!ENTITY physical SYSTEM "physical.sgml">
 <!ENTITY minimum SYSTEM "minimum.sgml">
+<!ENTITY frontend7 SYSTEM "frontend7.sgml">
 <!ENTITY frontend SYSTEM "frontend.sgml">
 <!ENTITY compute SYSTEM "compute.sgml">
 <!ENTITY frontend-upgrade SYSTEM "frontend-upgrade.sgml">

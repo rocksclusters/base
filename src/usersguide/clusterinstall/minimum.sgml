@@ -9,14 +9,14 @@ Frontend Node
 	<listitem>
 		<para>
 		<emphasis role=strong>Disk Capacity:</emphasis>
-		30 GB
+		36 GB
 		</para>
 	</listitem>
 
 	<listitem>
 		<para>
 		<emphasis role=strong>Memory Capacity:</emphasis>
-		1 GB
+		2 GB
 		</para>
 	</listitem>
 
@@ -42,14 +42,14 @@ Compute Node
 	<listitem>
 		<para>
 		<emphasis role=strong>Disk Capacity:</emphasis>
-		30 GB
+		36 GB
 		</para>
 	</listitem>
 
 	<listitem>
 		<para>
 		<emphasis role=strong>Memory Capacity:</emphasis>
-		1 GB
+		2 GB
 		</para>
 	</listitem>
 
@@ -63,7 +63,7 @@ Compute Node
 	<listitem>
 		<para>
 		<emphasis role=strong>BIOS Boot Order:</emphasis>
-		CD, PXE (Network Boot), Hard Disk
+		PXE (Network Boot), Hard Disk
 		</para>
 	</listitem>
 	</itemizedlist>
