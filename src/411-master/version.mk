@@ -1,5 +1,5 @@
 NAME = rocks-411-master
-RELEASE = 1
+RELEASE = 2
 RPM.ARCH = noarch
 RPM.FILE.EXTRAS = "%config /var/411/Files.mk"
 RPM.FILES = \

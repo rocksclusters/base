@@ -255,6 +255,7 @@ import os
 import os.path
 import sys
 import stat
+import subprocess 
 import time
 import base64
 import rocks.sql
@@ -508,10 +509,18 @@ absolute path (after any chroots) will be maintained on clients."""
 				urldir, filename411)
 		sig   = self.sign(alert)
 
-		# replace ganglia channel with the rocks rpc channel
+		# use serf, if available, otherwise rocks rpc channel
 
-		os.spawnl(os.P_NOWAIT, '/opt/rocks/sbin/411-alert',
-			 '411-alert', alert, sig)
+		if os.path.exists("/opt/rocks/bin/serf"):
+			authf = open("/etc/serf/rpcauth","r")
+			key = authf.readlines()[0].strip()
+			authf.close()
+			subprocess.call(["/opt/rocks/bin/serf", "event",
+				"--rpc-auth=%s" % key, "--coalesce=false",
+				"411Alert",alert]) 
+		else:
+			os.spawnl(os.P_NOWAIT, '/opt/rocks/sbin/411-alert',
+			 	'411-alert', alert, sig)
 
 		
 
