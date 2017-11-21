@@ -1,0 +1,6 @@
+{
+  "event_handlers": [
+    "user:411Alert=/opt/rocks/bin/411event"
+  ]
+}
+
