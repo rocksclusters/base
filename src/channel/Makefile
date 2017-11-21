@@ -161,7 +161,7 @@ install:: build
 	$(INSTALL) -m544 411-alert $(ROOT)/$(PKGROOT)/sbin/
 	$(INSTALL) -m544 411-alert-handler $(ROOT)/$(PKGROOT)/sbin/
 	$(INSTALL) -m544 channeld  $(ROOT)/$(PKGROOT)/sbin/
-	$(INSTALL) -m755 $(SCRIPTSRC) $(ROOT)/$(SCRIPTDEST)/$(SCRIPT)
+	$(INSTALL) -m$(SCRIPTMODE) $(SCRIPTSRC) $(ROOT)/$(SCRIPTDEST)/$(SCRIPT)
 
 clean::
 	-rm *.o

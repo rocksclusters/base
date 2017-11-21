@@ -1,5 +1,5 @@
 NAME = rocks-channel
-RELEASE = 1
+RELEASE = 2
 SYSTEMDFOLDER = /etc/systemd/system
 SYSTEMDINITSCRIPT = channeld.service
 SYSVFOLDER = /etc/rc.d/init.d
@@ -13,6 +13,7 @@ endif
 ifeq ($(VERSION.MAJOR), 7)
 SCRIPTSRC=$(SYSTEMDINITSCRIPT)
 SCRIPT=$(SYSTEMDINITSCRIPT)
+SCRIPTMODE=644
 SCRIPTDEST=$(SYSTEMDFOLDER)
 endif
 
