@@ -1,0 +1,36 @@
+<?xml version="1.0" standalone="no"?>
+
+<kickstart>
+
+	<description>
+	serf
+	</description>
+
+	<copyright>
+	Copyright (c) 2000 - 2012 The Regents of the University of California.
+	All rights reserved. Rocks(r) v5.5/v6.0 www.rocksclusters.org
+	</copyright>
+
+	<package>serf</package>
+
+<post>
+
+# password for local rpc autentication, so non root
+# user will not be able to issue command to the agent
+localpasswd=$RANDOM$RANDOM
+# save it in a local file for easy access later on
+# non .json file are not loaded by serf
+<file name="/etc/serf/rpcauth" perms="0600" rcs="false" vars="expanded">
+$localpasswd
+</file>
+
+# only .json files are loaded by serf as configuration
+<file name="/etc/serf/rpcauth.json" perms="0600" rcs="false" vars="expanded">
+{
+    "rpc_auth" : "$localpasswd"
+}
+</file>
+
+
+</post>
+</kickstart>

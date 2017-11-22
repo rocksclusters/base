@@ -1,0 +1,12 @@
+
+{
+  "event_handlers": [
+    "user:411_deploy=/opt/rocks/bin/411get --all"
+  ],
+  "rejoin_after_leave": true,
+  "interface": "eth0",
+  "retry_join": ["comet-dev"],
+  "enable_syslog": true,
+  "log_level": "info"
+}
+

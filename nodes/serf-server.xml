@@ -1,0 +1,51 @@
+<?xml version="1.0" standalone="no"?>
+
+<kickstart>
+
+	<description>
+	serf
+	</description>
+
+	<copyright>
+	Copyright (c) 2000 - 2012 The Regents of the University of California.
+	All rights reserved. Rocks(r) v5.5/v6.0 www.rocksclusters.org
+	</copyright>
+
+<post>
+
+# setup encryption key to talk to the other agent in the cluster
+encryption=`cat /etc/411-security/shared.key |grep -v BEGIN |grep -v END | base64 -d |dd bs=1 count=16 |base64`
+
+
+<file name="/etc/serf/encryptionkey.json" perms="0600" rcs="false" vars="expanded">
+{
+    "encrypt_key": "$encryption"
+}
+</file>
+
+
+# only frontend needs to be stateful (event lost while the daemon
+# was down will be replayed when it is back up)
+# all other nodes if they lose it is ok so no need to snapshot
+mkdir -p /var/opt/rocks/serf/
+
+private_ip=`/opt/rocks/bin/rocks list host interface &hostname; output-col=subnet,iface,ip | \
+            /bin/awk '{if ($1 == "private" &amp;&amp; $2 !~ /vlan[0-9]*/ &amp;&amp; $4 ~ /-*/) {print $3}}'`
+<file name="/etc/serf/serf.json" perms="0600" rcs="false" vars="expanded">
+{
+  "snapshot_path": "/var/opt/rocks/serf/serf.snap",
+  "rejoin_after_leave": true,
+  "replay_on_join": true,
+  "bind": "$private_ip",
+  "retry_join": ["&Kickstart_PrivateHostname;.&Kickstart_PrivateDNSDomain;"]
+}
+</file>
+
+if [ -x /etc/init.d/rocks-serf ]; then  
+	/sbin/chkconfig rocks-serf on
+else
+	/usr/bin/systemctl enable rocks-serf
+fi
+
+</post>
+</kickstart>

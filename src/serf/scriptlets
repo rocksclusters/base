@@ -1,0 +1,6 @@
+%post
+# enable the services 
+/usr/bin/systemctl enable rocks-serf
+%postun
+/usr/bin/systemctl disable rocks-serf
+
