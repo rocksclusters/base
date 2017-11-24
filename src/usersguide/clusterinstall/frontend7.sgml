@@ -94,6 +94,8 @@ located on a roll server on a network that is accessible by your frontend
 </listitem>
 
 <listitem>
+	<para>Select language and configure your public network</para>
+
 	<warning> <para>
 	The CentOS installer, does not require a specific order to the screens
 	of information that must be entered. If a certain selection is 
@@ -471,7 +473,7 @@ located on a roll server on a network that is accessible by your frontend
 	the command console (CTRL-ALT-F2), you can follow the download
 	progress with
 	<screen>
-	# find /mnt/export/rocks/install/rolls | wc
+	# find /mnt/sysimage/export/rocks/install/rolls | wc
 	</screen>
 	The CentOS roll is over 9000 packages
 	</para></tip>
