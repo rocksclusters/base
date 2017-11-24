@@ -1,0 +1,25 @@
+<?xml version="1.0" standalone="no"?>
+<kickstart>
+
+<description>
+Create a simple cluster home page
+</description>
+
+
+        <copyright>
+        Copyright (c) 2000 - 2014 The Regents of the University of California.
+        All rights reserved. Rocks(r) 6.2 www.rocksclusters.org
+        
+        </copyright>
+
+<package>rocks-cluster-homepage</package>
+
+
+<post>
+<configure phase="post,reconfigure">
+<file name="/var/www/html/index.html" expr="/opt/rocks/bin/gen-home-page"/>
+</configure>
+</post>
+
+</kickstart> 
+
