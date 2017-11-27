@@ -16,9 +16,7 @@ Create a simple cluster home page
 
 
 <post>
-<configure phase="post,reconfigure">
 <file name="/var/www/html/index.html" expr="/opt/rocks/bin/gen-home-page"/>
-</configure>
 </post>
 
 </kickstart> 
