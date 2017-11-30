@@ -1,5 +1,5 @@
 NAME	=	rocks-sec-channel-server
-RELEASE	=	2
+RELEASE	=	3
 
 SYSTEMDFOLDER = /etc/systemd/system
 SYSTEMDINITSCRIPT = sec-channel.service

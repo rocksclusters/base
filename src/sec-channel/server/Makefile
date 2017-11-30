@@ -97,7 +97,7 @@ install::
 	mkdir -p $(ROOT)/$(PKGROOT)/sbin
 	mkdir -p $(ROOT)/$(SCRIPTDEST)
 	$(INSTALL) -m0500 sec_channel_server $(ROOT)/$(PKGROOT)/sbin
-	$(INSTALL) -m755 $(SCRIPTSRC) $(ROOT)/$(SCRIPTDEST)/$(SCRIPT)
+	$(INSTALL) -m644 $(SCRIPTSRC) $(ROOT)/$(SCRIPTDEST)/$(SCRIPT)
 
 clean::
 	rm -rf sec_channel_server	\
