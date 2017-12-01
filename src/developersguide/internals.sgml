@@ -563,7 +563,7 @@ When you edit "valgrind-base.xml", you'll see:
         
         				Rocks(r)
         		         www.rocksclusters.org
-        		         version 6.2 (SideWindwer)
+        		         version 6.2 (SideWinder)
         		         version 7.0 (Manzanita)
         
         Copyright (c) 2000 - 2017 The Regents of the University of California.
@@ -672,7 +672,7 @@ Now let's add a <constant>&lt;post&gt;</constant> section to it:
         
         				Rocks(r)
         		         www.rocksclusters.org
-        		         version 6.2 (SideWindwer)
+        		         version 6.2 (SideWinder)
         		         version 7.0 (Manzanita)
         
         Copyright (c) 2000 - 2017 The Regents of the University of California.
@@ -837,7 +837,7 @@ Now edit the file "valgrind.xml":
         
         				Rocks(r)
         		         www.rocksclusters.org
-        		         version 6.2 (SideWindwer)
+        		         version 6.2 (SideWinder)
         		         version 7.0 (Manzanita)
         
         Copyright (c) 2000 - 2017 The Regents of the University of California.
@@ -943,7 +943,7 @@ nodes, we'll make an edge from the "base" node XML file to "valgrind-base":
         
         				Rocks(r)
         		         www.rocksclusters.org
-        		         version 6.2 (SideWindwer)
+        		         version 6.2 (SideWinder)
         		         version 7.0 (Manzanita)
         
         Copyright (c) 2000 - 2017 The Regents of the University of California.
@@ -1100,7 +1100,7 @@ Here's the contents of "valgrind-client.xml":
 	
 					Rocks(r)
 			         www.rocksclusters.org
-			         version 6.2 (SideWindwer)
+			         version 6.2 (SideWinder)
 			         version 7.0 (Manzanita)
 	
 	Copyright (c) 2000 - 2017 The Regents of the University of California.
@@ -1208,7 +1208,7 @@ And here is the contents of "valgrind-server.xml":
 	
 					Rocks(r)
 			         www.rocksclusters.org
-			         version 6.2 (SideWindwer)
+			         version 6.2 (SideWinder)
 			         version 7.0 (Manzanita)
 	
 	Copyright (c) 2000 - 2017 The Regents of the University of California.
@@ -1320,7 +1320,7 @@ graph XML file "valgrind.xml" to look like:
         
         				Rocks(r)
         		         www.rocksclusters.org
-        		         version 6.2 (SideWindwer)
+        		         version 6.2 (SideWinder)
         		         version 7.0 (Manzanita)
         
         Copyright (c) 2000 - 2017 The Regents of the University of California.
@@ -1471,7 +1471,7 @@ We can enforce this ordering by adding two
 	
 					Rocks(r)
 			         www.rocksclusters.org
-			         version 6.2 (SideWindwer)
+			         version 6.2 (SideWinder)
 			         version 7.0 (Manzanita)
 	
 	Copyright (c) 2000 - 2017 The Regents of the University of California.
