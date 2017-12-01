@@ -63,7 +63,7 @@ h2 { color: #016c93; }
 withguide = "<td>&emsp;%s</td><td>(v.%s)&emsp;<a href=\"%s\">roll usersguide</a>&emsp;</td>"
 withoutguide = "<td>&emsp;%s</td><td>(v.%s)</td>"
 
-output = subprocess.check_output(["rocks","list","roll","output-header=no"]).replace(':','').split('\n')
+output = subprocess.check_output(["/opt/rocks/bin/rocks","list","roll","output-header=no"]).replace(':','').split('\n')
 rolls = filter(lambda x: len(x) > 0, map(lambda x: x.split(), output))
 rolls = sorted(rolls, key=itemgetter(0))
 
@@ -83,7 +83,7 @@ while i <= rows :
            rollList += "<tr>\n%s%s</tr>\n" % (col1, col2)
     i += 1
 
-contact = subprocess.check_output(["rocks","report","host", "attr", "localhost", "attr=Info_ClusterContact"]).strip()
-clustername = subprocess.check_output(["rocks","report","host", "attr", "localhost", "attr=Info_ClusterName"]).strip()
+contact = subprocess.check_output(["/opt/rocks/bin/rocks","report","host", "attr", "localhost", "attr=Info_ClusterContact"]).strip()
+clustername = subprocess.check_output(["/opt/rocks/bin/rocks","report","host", "attr", "localhost", "attr=Info_ClusterName"]).strip()
 
 print template % (clustername,contact,rollList)
