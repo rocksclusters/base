@@ -1,4 +1,4 @@
-RELEASE		= 2
+RELEASE		= 3
 COLOR		= yellow
 
 REDHAT.ROOT	= $(CURDIR)

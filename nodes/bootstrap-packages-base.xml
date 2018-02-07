@@ -132,9 +132,9 @@
 	<package os="linux">opensp</package>
 	<package os="linux">pam-devel</package>
 	<package os="linux">pango-devel</package>
-	<package os="linux">pycairo-devel</package>
 	<package os="linux">pcre-devel</package>
 	<package os="linux">pciutils-devel</package>
+	<package os="linux" cond="rocks_version_major == 7">protobuf-devel</package>
 	<package os="linux">pycairo-devel</package>
 	<package os="linux">pykickstart</package>
 	<package os="linux">python-devel</package>

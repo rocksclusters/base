@@ -208,7 +208,9 @@
 compile_and_install foundation-gawk
 compile_and_install foundation-ant
 compile_and_install qrencode
-compile_and_install protobuf
+if [ "$OS_RELEASE" == "6" ]; then
+	compile_and_install protobuf
+endif
 
 compile java
 install jdk 

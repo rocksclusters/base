@@ -210,6 +210,7 @@ SRCDIRS = `find . -type d -maxdepth 1 \
 	-not -name firerox \
 	-not -name foundation-python-xml-26 \
 	-not -name developersguiderst \
+	-not -name protobuf \
 	-not -name channel`
 
 ## Build environment modules on 5, it is part of 6 in the OS
@@ -217,8 +218,9 @@ ifeq ($(VERSION.MAJOR),5)
 SRCDIRS += environment-modules
 endif
 ## 
+## firerox and protobuf for 6, but not 7
 ifeq ($(VERSION.MAJOR),6)
-SRCDIRS += firerox 
+SRCDIRS += firerox protobuf
 endif
 #
 # make sure we build channel last
