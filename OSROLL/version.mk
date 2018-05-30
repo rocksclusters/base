@@ -18,7 +18,7 @@ PKGS=Packages
 BASEPATH=$(VERSION)/os/$(ARCH)/$(PKGS)/
 endif
 ifeq ($(VERSION.MAJOR), 7)
-VERSION=7.4.1708
+VERSION=7.5.1804
 PKGS=Packages
 BASEPATH=$(VERSION)/os/$(ARCH)/$(PKGS)/
 endif
