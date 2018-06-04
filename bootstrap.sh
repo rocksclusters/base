@@ -210,7 +210,7 @@ compile_and_install foundation-ant
 compile_and_install qrencode
 if [ "$OS_RELEASE" == "6" ]; then
 	compile_and_install protobuf
-endif
+fi
 
 compile java
 install jdk 
